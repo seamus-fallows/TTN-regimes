@@ -8,8 +8,8 @@ import numpy as np
 import torch
 from scipy.integrate import solve_ivp
 
-from ttn.losses import population_loss
-from ttn.network import TTNSpec, antisymmetric_double, forward
+from ttn.losses import centred_population_loss, population_loss
+from ttn.network import TTNSpec, antisymmetric_double, forward, sum_difference_cores
 from ttn.teachers import ShiftedTeacher, odeco_teacher
 from ttn.tree import make_tree
 
@@ -35,9 +35,20 @@ def run(kind="binary", n=4, d=3, chi=3, sigma=0.1, seed=0, weights=(3.0, 2.0, 1.
     u = [base.factors[:, i, :] for i in range(n)]
     ov0 = forward(spec, cores0, u)
 
+    b2 = base.norm2()
+
+    def loss_of(flat):
+        if mask is None:  # centred model, cancellation-free
+            return centred_population_loss(spec, spec.unflatten(flat), cores0, base, base_norm2=b2)
+        spec2 = spec  # two-copy: evaluate in sum/difference form
+        return population_loss(spec2, sum_difference_cores(spec2, spec2.unflatten(flat)), base, teacher_norm2=b2)
+
+    def loss_value(flat_np):
+        return loss_of(torch.from_numpy(flat_np)).item()
+
     def loss_grad(flat_np):
         flat = torch.from_numpy(flat_np).requires_grad_(True)
-        L = population_loss(spec, spec.unflatten(flat), teacher, teacher_norm2=t2)
+        L = loss_of(flat)
         (g,) = torch.autograd.grad(L, flat)
         if mask is not None:
             g = g * mask
@@ -51,13 +62,25 @@ def run(kind="binary", n=4, d=3, chi=3, sigma=0.1, seed=0, weights=(3.0, 2.0, 1.
         t_max = 30.0 * (sigma ** (-(K - 2)) if sigma < 1 else 30 * sigma ** (-2 * (K - 1)))
     t0 = 1e-3 * min(1.0, sigma ** (-2 * (K - 1)))
     t_eval = np.concatenate([[0.0], np.geomspace(t0, t_max, n_eval)])
+    L0 = loss_grad(flat0.numpy())[0]
+
+    def converged(t, y):
+        # stop once converged (l < 1e-4, below every plateau of the [3,2,1] teacher) and stationary
+        # in log-time (t |grad L|^2 < 1e-7 L0), or l < 1e-12
+        L, g = loss_grad(y)
+        if L / L0 < 1e-12 or (L / L0 < 1e-4 and t * (g @ g) < 1e-7 * L0):
+            return -1.0
+        return 1.0
+
+    converged.terminal = True
     tic = time.time()
-    sol = solve_ivp(rhs, (0, t_max), flat0.numpy(), method="RK45", t_eval=t_eval, rtol=rtol, atol=atol)
+    sol = solve_ivp(rhs, (0, t_max), flat0.numpy(), method="RK45", t_eval=t_eval, rtol=rtol, atol=atol,
+                    events=converged)
     wall = time.time() - tic
     Ls, A = [], []
     for k in range(sol.y.shape[1]):
         cores = spec.unflatten(torch.from_numpy(sol.y[:, k]))
-        Ls.append(population_loss(spec, cores, teacher, teacher_norm2=t2).item())
+        Ls.append(loss_value(sol.y[:, k]))
         A.append(((forward(spec, cores, u) - ov0) / base.weights).numpy())
     Ls, A = np.array(Ls), np.array(A)
 

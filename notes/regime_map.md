@@ -101,6 +101,34 @@ B_1 B_1^T (x) B_2 B_2^T ~ sigma^4 chi^2/81, dominates the leaf terms (~ sigma^4/
 the model becomes linear in the root core (fixed random features B_1 (x) B_2) and lazy as chi grows,
 at any fixed sigma (**derived**; compare SP + MSE in wide nets where the readout dominates).
 
+**Mechanism of the kernel change (derived).** For the N = 4 binary tree the leaf Gram changes by
+B_1 dB_1^T = eta_B W_0 R^T (R = time-integrated residual): the gradient of a core contracted with that
+core gives back the function W_0, not the core. Gram changes are therefore set by ||W_0|| ~ alpha
+while the Grams themselves grow with chi (B_1 B_1^T ~ sigma^2 chi / 9 under fan-in init). This is why
+the kernel change falls faster with chi than the naive "relative change of a core" estimate.
+
+**Lazy coefficients vs chi (empirical, at init, binary N = 4, d = 3, 5 seeds, `pilots/pilot_kappa_chi.py`,
+`pilots/pilot_kappa_plain.py`).** Two learning-rate rules: SP (eta_v = 1, the project default) and
+NTK-type (eta_v = 1/F_v, which makes every core's expected kernel term equal,
+E[J_v J_v^T] = sigma^{2(K-1)} F_v / d^N I with fan-in init).
+
+| chi | kappa (centred), SP | kappa (centred), NTK | kappa_plain (large sigma), SP | kappa_plain, NTK |
+|---|---|---|---|---|
+| 12 | 1.39 | 2.48 | 0.24 | 0.74 |
+| 24 | 0.113 | 0.89 | 0.054 | 0.53 |
+| 48 | 0.0094 | 0.44 | 0.0058 | 0.28 |
+| 96 | 0.00085 | 0.18 | 0.00071 | 0.15 |
+
+kappa_plain is the sigma-independent large-sigma kernel change of the *plain* (uncentred) model,
+whose lazy fit must remove W_0 (u = J^+ (W* - W_0) with ||W_0|| >> ||W*||). Readings: (i) under SP
+both coefficients fall like ~chi^{-3}: the root (fan-in chi^2) dominates the kernel and the model
+becomes linear in the root, so wide SP TTNs are lazy even without centring (chi >~ 20 at N = 4);
+(ii) under NTK-type rates both fall like ~chi^{-1}, so laziness of the plain model needs
+chi >~ 100 at N = 4; (iii) at large chi the centred and plain models have comparable kernel changes
+at large sigma, consistent with the literature correction that centring matters only at finite chi
+(`notes/literature.md` section 3, H4). The relative parameter change of the plain model matches the
+isotropic-kernel estimate sqrt(d^N / (sum_v F_v sum_e chi_e)) under SP for chi >= 24.
+
 ### 1.6 Two-copy model: same lazy residual, kernel change second order
 
 Two-copy model W = W(theta+) - W(theta-), theta+ = theta- = theta_0 at t = 0 (masked doubled TTN).

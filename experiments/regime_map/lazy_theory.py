@@ -28,21 +28,24 @@ def _jtj(spec: TTNSpec, flat0: torch.Tensor, mask: torch.Tensor | None = None):
 
         return torch.func.grad(f)(flat0)
 
-    def apply(u):
-        if mask is not None:
-            u = u * mask
+    root = mask.sqrt() if mask is not None else None
+
+    def apply(u):  # D^(1/2) J^T J D^(1/2) u
+        if root is not None:
+            u = u * root
         out = torch.func.jvp(grad_inner, (flat0,), (u,))[1]
-        return out * mask if mask is not None else out
+        return out * root if root is not None else out
 
     return apply
 
 
 def lazy_solution(spec: TTNSpec, flat0: torch.Tensor, teacher, mask=None, tol=1e-12, max_iter=None):
-    """u_lin = J^+ W* by CG on the normal equations; returns (u_lin, residual fraction, n_iter)."""
+    """u_lin = J^+ W* by CG on the normal equations; returns (u_lin, residual fraction, n_iter).
+    With per-parameter multipliers `mask` = eta: u_lin = eta^(1/2) (J eta^(1/2))^+ W*."""
     theta = flat0.clone().requires_grad_(True)
     g = torch.autograd.grad(teacher.inner_ttn(spec, spec.unflatten(theta)), theta)[0]  # J^T W*
     if mask is not None:
-        g = g * mask
+        g = g * mask.sqrt()
     apply = _jtj(spec, flat0, mask)
     w2 = teacher.norm2().item()
     u = torch.zeros_like(flat0)
@@ -61,15 +64,18 @@ def lazy_solution(spec: TTNSpec, flat0: torch.Tensor, teacher, mask=None, tol=1e
             break
         p = r + (rr_new / rr) * p
         rr = rr_new
-    fit = u @ g  # <W*, J u>
-    ju2 = u @ apply(u)  # ||J u||^2
+    fit = u @ g  # <W*, J D^(1/2) u>
+    ju2 = u @ apply(u)  # ||J D^(1/2) u||^2
     residual = (w2 - 2 * fit + ju2) / w2
+    if mask is not None:
+        u = u * mask.sqrt()
     return u, residual.item(), it
 
 
 def probe_jacobian(spec: TTNSpec, flat: torch.Tensor, probes: torch.Tensor, mask=None):
+    """J_p D^(1/2) on the probes, so that J J^T is the kernel Theta = J_p D J_p^T."""
     jac = torch.func.jacrev(lambda p: forward(spec, spec.unflatten(p), probes))(flat)
-    return jac * mask if mask is not None else jac
+    return jac * mask.sqrt() if mask is not None else jac
 
 
 def kernel_change_rate(spec, flat0, u, probes, mask=None, eps=1e-5):
@@ -86,13 +92,20 @@ def kernel_change_rate(spec, flat0, u, probes, mask=None, eps=1e-5):
 
 def lazy_solution_dense(spec: TTNSpec, flat0: torch.Tensor, teacher, mask=None):
     """Same as lazy_solution with the dense D x P Jacobian and an SVD least-squares solve
-    (robust for ill-conditioned J, e.g. square cores; only for small D * P)."""
+    (robust for ill-conditioned J, e.g. square cores; only for small D * P).
+
+    `mask` may be any nonnegative per-parameter vector (learning-rate multipliers eta times a 0/1
+    gradient mask): the flow is then d theta/dt = -eta grad L, whose linearization converges to
+    u = eta^(1/2) (J eta^(1/2))^+ W*."""
     jac = torch.func.jacrev(lambda p: to_dense(spec, spec.unflatten(p)).reshape(-1))(flat0)
-    if mask is not None:
-        jac = jac * mask
+    root = mask.sqrt() if mask is not None else None
+    if root is not None:
+        jac = jac * root
     wstar = teacher.dense().reshape(-1)
     u = torch.linalg.lstsq(jac, wstar.unsqueeze(1), driver="gelsd").solution[:, 0]
     residual = ((wstar - jac @ u).norm() ** 2 / wstar.norm() ** 2).item()
+    if root is not None:
+        u = u * root
     return u, residual, 0
 
 
