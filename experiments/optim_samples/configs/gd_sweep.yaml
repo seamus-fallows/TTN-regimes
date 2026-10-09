@@ -1,0 +1,21 @@
+# Step 1: GD vs gradient flow. ratio = eta / eta_max, eta_max = 2 / (K s_1^{2-2/K}).
+# Teacher: odeco, d = 3, weights [3, 2, 1], teacher seed 1; student chi = 3; fan-in init (seed = init seed).
+# GF reference: DOP853, rtol 1e-10, atol 1e-14. T in gradient-flow time units (t = eta * steps).
+full_ratios: &full [0.01, 0.03, 0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 0.95, 1.05, 1.1, 1.2, 1.3, 1.5, 1.75, 2.0, 2.5, 3.0]
+blocks:
+  # A: eta sweep at three init scales (binary N=4, K=3)
+  - {tree: binary, n: 4, sigmas: [0.03, 0.1, 0.3], seeds: [0, 1, 2, 3, 4], ratios: *full,
+     T: {0.03: 300, 0.1: 100, 0.3: 40}}
+  # B: smaller init scales (sigma scaling of the GD-GF difference), reduced ratio list
+  - {tree: binary, n: 4, sigmas: [0.003, 0.01], seeds: [0, 1, 2, 3, 4],
+     ratios: [0.1, 0.3, 0.5, 0.7, 0.9, 0.95, 1.05, 1.2, 1.5, 2.0], T: {0.003: 2800, 0.01: 900}}
+  # C, D: N = 8 trees (binary K=7, MPS K=8)
+  - {tree: binary, n: 8, sigmas: [0.9], seeds: [0, 1, 2, 3, 4], ratios: *full, T: 150}
+  - {tree: mps, n: 8, sigmas: [0.9], seeds: [0, 1, 2, 3, 4], ratios: *full, T: 60}
+  # E: imbalanced init (root core scale fixed to root_scale): which minimum does GD select?
+  - {tree: binary, n: 4, sigmas: [0.1], seeds: [0, 1, 2, 3, 4], root_scale: 2.0,
+     ratios: [0.1, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0, 1.05], T: 100}
+  - {tree: binary, n: 4, sigmas: [0.1], seeds: [0, 1, 2, 3, 4], root_scale: 4.0,
+     ratios: [0.1, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0, 1.05], T: 100}
+  - {tree: binary, n: 4, sigmas: [0.1], seeds: [0, 1, 2, 3, 4], root_scale: 6.0,
+     ratios: [0.1, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0, 1.05], T: 100}
