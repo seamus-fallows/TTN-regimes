@@ -1,0 +1,13 @@
+# Pilot: does chi = d or a gauge-balanced init give clean GF saddle-to-saddle runs on the deep trees?
+name: pilot_trap
+blocks:
+  - base: {tree: mps, n_sites: 8, d: 3, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
+    grid: {chi: [3, 4], init: [fanin, balanced], sigma: [0.3, 0.45], seed: [0, 1, 2]}
+    optimizers:
+      - {optimizer: gf, t_max: 1.0e6}
+      - {optimizer: adam, lr: 1.0e-2, n_steps: 200000}
+  - base: {tree: binary, n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
+    grid: {init: [fanin, balanced], sigma: [0.3, 0.45], seed: [0, 1, 2]}
+    optimizers:
+      - {optimizer: gf, t_max: 1.0e6}
+      - {optimizer: adam, lr: 1.0e-2, n_steps: 200000}

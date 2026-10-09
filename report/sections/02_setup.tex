@@ -309,8 +309,6 @@ bond dimensions.
   the masked flow $\dot\params=-\mask\odot\nabla\Loss(\params)$, with $\mask$ the $0/1$ indicator of
   the diagonal blocks, which keeps the blocks and equals gradient flow of
   $\tfrac12\normS{\W(\params^+)-\W(\params^-)-\Wt}^2$ in $(\params^+,\params^-)$.
-  % notes/model.md section 3 still says the block structure is preserved; the library
-  % (ttn.network.antisymmetric_double, tests/test_core.py) and notes/decisions.md are correct.
 \end{remark}
 
 \begin{proposition}[Aligned initialization]\label{prop:aligned}

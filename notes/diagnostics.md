@@ -28,8 +28,11 @@ delta_K threshold in {0.05, 0.1, 0.2}, separation threshold in {2, 3, 5}). Libra
   0.41 during the first escape on binary N = 4, then back down); a first-crossing width would then span
   the whole plateau and misclassify clean S2S runs (`ttn.diagnostics.event_widths`). If a transient
   exceeds 1/2, use the last upward crossing (`crossing_times(..., last=True)`) and report it.
-- For general teachers, event (e, k) occurs when s_k^e(t) first crosses half of its final value; its
-  width is the time between the 10% and 90% crossings of that final value (as for components). The
+- For general teachers, event (e, k) occurs when s_k^e(t) first crosses f x s_k^{e,*} (the teacher's
+  value) with **f = 0.05** (report sensitivity over f in [0.03, 0.1]): an onset threshold, because a
+  50%-of-final rule can skip intermediate (blended) saddles whose spectra stop below the final value
+  (`theory_teachers.md` section 3.3). Its width is the final-rise duration between f and 0.9 of the
+  teacher's value. The
   event set is the distinct times after merging events closer than their widths (a single
   component typically raises several bond spectra at once).
 - The **effective bond rank** r_e(t) = #{k : s_k^e(t) > theta_r} with theta_r = 0.1 x (smallest
@@ -69,7 +72,12 @@ delta_K >= 0.1.
 
 ## Saddle type at a plateau
 
-At the plateau midpoint, compute the gauge-projected Hessian spectrum. **Strict saddle**:
+Primary rule (sweep level): compute lambda_min of the gauge-projected Hessian at the plateau midpoint for
+several sigma. **Strict saddle**: lambda_min tends to a negative sigma-independent constant as sigma -> 0
+(k = 2 routes). **Higher-order saddle**: lambda_min -> 0 like sigma^(k-2) (k >= 3). Reason: at a plateau
+point (not exactly at the saddle) higher-order saddles show small negative eigenvalues of order
+sigma^(k-2), which a fixed threshold misclassifies at moderate sigma (`theory_saddles.md` R10-R11).
+Fallback (single sigma only, state it): at the plateau midpoint, compute the gauge-projected Hessian spectrum. **Strict saddle**:
 lambda_min < -epsilon (epsilon = 1e-3 x the largest eigenvalue's magnitude scale at that point, also
 reported raw). **Higher-order (non-strict) saddle**: no eigenvalue below -epsilon although the loss
 later decreases. Report the number of negative eigenvalues and lambda_min / lambda_max.
