@@ -4,22 +4,12 @@ You are one of several research agents on a project about the **training dynamic
 networks (TTNs)**. The lead researcher assigned you one question (your brief, in this folder). The
 lead reviews your work, may send you messages with redirections, and merges your branch.
 
-## Status of shared resources when you were launched (2026-10-09)
+## Status of shared resources
 
-- **Finished and on `main`**: the core library `ttn/tree.py`, `ttn/network.py`, `ttn/teachers.py`,
-  `ttn/losses.py`, `ttn/general.py` (tested in `tests/test_core.py`), `notes/model.md`,
-  `notes/diagnostics.md`, `notes/prior_knowledge.md`, `PLAN.md`, these briefs.
-- **Being finished right now** (ETA a few hours; you will get a message when they are on `main`,
-  then run `git fetch origin && git merge origin/main`): `ttn/dynamics.py` (adaptive gradient-flow
-  integrator, GD, SGD, trajectory recorder), `ttn/diagnostics.py` (events, plateaus, tangent
-  kernels, Hessians with gauge projection), `ttn/theory.py`, `ttn/plotting.py`, `ttn/config.py` +
-  `ttn/runner.py` (YAML configs, parallel resumable sweeps), `experiments/00_smoke/`,
-  `notes/literature.md`, `notes/theory_*.md`.
-- **Until they land**: read, derive the theory for your question, design your experiments
-  (parameter ranges, configs, cost estimates), and run small pilots with the core modules plus
-  `scipy.integrate.solve_ivp` on the flat parameter vector (`spec.flatten`/`spec.unflatten`, torch
-  autograd of `ttn.losses.population_loss`, float64, rtol ~1e-9, atol ~1e-14). Keep pilot code
-  minimal and throwaway: do not build your own general integrator, diagnostics or sweep framework.
+As of 2026-10-09 evening the whole shared library is on `main` (core, dynamics with DP5/LSODA/Radau and fine rows,
+diagnostics, theory, plotting, config + runner with resumable sweeps, `experiments/00_smoke/` as the example
+folder), as are `notes/literature.md` (v1.1), all six `notes/theory_*.md` (v2, verified) and the reviews in
+`notes/reviews/`. Run `git fetch origin && git merge origin/main` regularly.
 
 ## Before you start
 

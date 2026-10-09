@@ -1,0 +1,175 @@
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [0, 3] mps 4 small 5 56s
+None [0, 3] mps 4 small 6 57s
+None [0, 3] mps 4 small 3 58s
+None [0, 3] mps 4 small 2 59s
+None [0, 3] mps 4 small 0 60s
+None [0, 3] mps 4 small 4 61s
+None [0, 3] mps 4 small 1 71s
+None [0, 3] mps 4 small 1 72s
+None [0, 3] mps 4 small 0 74s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [0, 3] mps 4 small 5 29s
+None [0, 3] mps 4 small 3 32s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [0, 3] mps 4 small 2 36s
+None [0, 3] mps 4 small 7 31s
+None [0, 3] mps 4 small 4 42s
+None [0, 3] mps 4 small 6 45s
+None [0, 3] mps 4 small 2 49s
+None [0, 3] mps 4 small 4 35s
+None [0, 3] mps 4 small 0 54s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [0, 3] mps 4 small 5 36s
+None [0, 3] mps 4 small 1 57s
+None [0, 3] mps 4 small 6 38s
+None [0, 3] mps 4 small 3 42s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [0, 3] mps 4 small 7 43s
+None [0, 3] mps 4 small 3 57s
+None [0, 3] mps 4 small 5 61s
+None [0, 3] mps 4 small 0 49s
+None [0, 3] mps 4 small 0 86s
+None [0, 3] mps 4 small 6 65s
+None [0, 3] mps 4 small 7 73s
+None [0, 3] mps 4 small 2 80s
+None [0, 3] mps 4 small 4 77s
+None [0, 3] mps 4 small 1 87s
+None [0, 3] mps 4 small 2 31s
+None [0, 3] mps 4 small 4 32s
+None [0, 3] mps 4 small 6 25s
+None [0, 3] mps 4 small 0 32s
+None [0, 3] mps 4 small 2 20s
+None [0, 3] mps 4 small 4 22s
+None [0, 3] mps 4 small 5 22s
+None [0, 3] mps 4 small 6 18s
+None [0, 3] mps 4 small 7 21s
+None [0, 1, 2] mps 4 small 1 13s
+None [0, 1, 2] mps 4 small 0 18s
+None [0, 1, 2] mps 4 small 2 13s
+None [0, 1, 2] mps 4 small 3 14s
+None [0, 1, 2] mps 4 small 4 17s
+None [0, 1, 2] mps 4 small 6 10s
+None [0, 1, 2] mps 4 small 5 13s
+None [0, 1, 2] mps 4 small 7 16s
+None [0, 1, 2] mps 4 small 1 16s
+None [0, 1, 2] mps 4 small 0 24s
+None [0, 1, 2] mps 4 small 3 12s
+None [0, 1, 2] mps 4 small 2 16s
+None [0, 1, 2] mps 4 small 4 17s
+None [0, 1, 2] mps 4 small 5 17s
+None [0, 1, 2] mps 4 small 6 20s
+None [0, 1, 2] mps 4 small 7 17s
+None [0, 1, 2] mps 4 small 0 23s
+None [0, 1, 2] mps 4 small 1 24s
+None [0, 1, 2] mps 4 small 2 24s
+None [0, 1, 2] mps 4 small 3 15s
+None [0, 1, 2] mps 4 small 4 19s
+None [0, 1, 2] mps 4 small 5 21s
+None [0, 1, 2] mps 4 small 6 19s
+None [0, 1, 2] mps 4 small 7 26s
+None [0, 1, 2] mps 4 small 0 30s
+None [0, 1, 2] mps 4 small 1 30s
+None [0, 1, 2] mps 4 small 4 22s
+None [0, 1, 2] mps 4 small 2 38s
+None [0, 1, 2] mps 4 small 3 26s
+None [0, 1, 2] mps 4 small 6 19s
+None [0, 1, 2] mps 4 small 5 28s
+None [0, 1, 2] mps 4 small 7 29s
+None [0, 1, 2] mps 4 small 0 14s
+None [0, 1, 2] mps 4 small 1 12s
+None [0, 1, 2] mps 4 small 2 14s
+None [0, 1, 2] mps 4 small 3 11s
+None [0, 1, 2] mps 4 small 4 14s
+None [0, 1, 2] mps 4 small 5 13s
+None [0, 1, 2] mps 4 small 6 12s
+None [0, 1, 2] mps 4 small 7 11s
+None [0, 1, 2] mps 4 small 1 12s
+None [0, 1, 2] mps 4 small 0 13s
+None [0, 1, 2] mps 4 small 2 13s
+None [0, 1, 2] mps 4 small 3 10s
+None [0, 1, 2] mps 4 small 4 12s
+None [0, 1, 2] mps 4 small 6 9s
+None [0, 1, 2] mps 4 small 5 12s
+None [0, 1, 2] mps 4 small 7 9s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [1, 2] binary 4 small 2 18s
+None [1, 2] binary 4 small 0 21s
+None [1, 2] binary 4 small 1 21s
+None [1, 2] binary 4 small 5 8s
+None [1, 2] binary 4 small 3 10s
+None [1, 2] binary 4 small 4 10s
+None [1, 2] binary 4 small 7 9s
+None [1, 2] binary 4 small 6 11s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [1, 2] binary 4 small 0 27s
+None [1, 2] binary 4 small 2 18s
+None [1, 2] binary 4 small 1 21s
+None [1, 2] binary 4 small 3 11s
+None [1, 2] binary 4 small 5 11s
+None [1, 2] binary 4 small 4 13s
+None [1, 2] binary 4 small 6 13s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [1, 2] binary 4 small 7 13s
+None [1, 2] binary 4 small 0 29s
+None [1, 2] binary 4 small 1 23s
+None [1, 2] binary 4 small 2 25s
+None [1, 2] binary 4 small 3 17s
+None [1, 2] binary 4 small 4 15s
+None [1, 2] binary 4 small 5 17s

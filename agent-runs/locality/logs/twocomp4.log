@@ -1,0 +1,933 @@
+None [0, 1] binary 4 small 0 0s
+None [0, 1] binary 4 small 2 0s
+None [0, 1] binary 4 small 1 0s
+None [0, 1] binary 4 small 3 0s
+None [0, 1] binary 4 small 4 0s
+None [0, 1] binary 4 small 5 0s
+None [0, 1] binary 4 small 6 0s
+None [0, 1] binary 4 small 7 0s
+None [0, 1] binary 4 saddle 0 0s
+None [0, 1] binary 4 saddle 1 0s
+None [0, 1] binary 4 saddle 2 0s
+None [0, 1] binary 4 saddle 3 0s
+None [0, 1] binary 4 saddle 4 0s
+None [0, 1] binary 4 saddle 5 0s
+None [0, 1] binary 4 saddle 6 0s
+None [2, 3] binary 4 small 0 0s
+None [0, 1] binary 4 saddle 7 0s
+None [2, 3] binary 4 small 1 0s
+None [2, 3] binary 4 small 2 0s
+None [2, 3] binary 4 small 3 0s
+None [2, 3] binary 4 small 4 0s
+None [2, 3] binary 4 small 5 0s
+None [2, 3] binary 4 small 6 0s
+None [2, 3] binary 4 small 7 0s
+None [2, 3] binary 4 saddle 0 0s
+None [2, 3] binary 4 saddle 1 0s
+None [2, 3] binary 4 saddle 2 0s
+None [2, 3] binary 4 saddle 3 0s
+None [2, 3] binary 4 saddle 5 0s
+None [2, 3] binary 4 saddle 4 0s
+None [2, 3] binary 4 saddle 7 0s
+None [2, 3] binary 4 saddle 6 0s
+None [0, 1] binary 8 small 1 0s
+None [0, 1] binary 8 small 0 0s
+None [0, 1] binary 8 small 2 0s
+None [0, 1] binary 8 small 3 0s
+None [0, 1] binary 8 small 4 0s
+None [0, 1] binary 8 small 5 0s
+None [0, 1] binary 8 small 6 0s
+None [0, 1] binary 8 small 7 0s
+None [0, 1] binary 8 saddle 0 0s
+None [0, 1] binary 8 saddle 1 0s
+None [0, 1] binary 8 saddle 2 0s
+None [0, 1] binary 8 saddle 3 0s
+None [0, 1] binary 8 saddle 4 0s
+None [0, 1] binary 8 saddle 5 0s
+None [0, 1] binary 8 saddle 6 0s
+None [0, 1] binary 8 saddle 7 0s
+None [0, 1] star3 None small 0 0s
+None [0, 1] star3 None small 1 0s
+None [0, 1] star3 None small 2 0s
+None [0, 1] star3 None small 3 0s
+None [0, 1] star3 None small 4 0s
+None [0, 1] star3 None small 5 0s
+None [0, 1] star3 None small 6 0s
+None [0, 1] star3 None small 7 0s
+None [0, 1] star3 None saddle 0 0s
+None [0, 1] star3 None saddle 1 0s
+None [0, 1] star3 None saddle 2 0s
+None [0, 1] star3 None saddle 3 0s
+None [0, 1] star3 None saddle 4 0s
+None [0, 1] star3 None saddle 5 0s
+None [0, 1] star3 None saddle 6 0s
+None [0, 1] star3 None saddle 7 0s
+None [0, 1] mps 4 small 0 0s
+None [0, 1] mps 4 small 1 0s
+None [0, 1] mps 4 small 2 0s
+None [0, 1] mps 4 small 3 0s
+None [0, 1] mps 4 small 4 0s
+None [0, 1] mps 4 small 5 0s
+None [0, 1] mps 4 small 6 0s
+None [0, 1] mps 4 small 7 0s
+None [0, 1] mps 4 saddle 0 0s
+None [0, 1] mps 4 saddle 1 0s
+None [0, 1] mps 4 saddle 2 0s
+None [0, 1] mps 4 saddle 3 0s
+None [0, 1] mps 4 saddle 4 0s
+None [0, 1] mps 4 saddle 5 0s
+None [0, 1] mps 4 saddle 6 0s
+None [0, 1] mps 4 saddle 7 0s
+None [1, 2] mps 4 small 0 0s
+None [1, 2] mps 4 small 1 0s
+None [1, 2] mps 4 small 2 0s
+None [1, 2] mps 4 small 3 0s
+None [1, 2] mps 4 small 4 0s
+None [1, 2] mps 4 small 5 0s
+None [1, 2] mps 4 small 6 0s
+None [1, 2] mps 4 small 7 0s
+None [1, 2] mps 4 saddle 0 0s
+None [1, 2] mps 4 saddle 1 0s
+None [1, 2] mps 4 saddle 2 0s
+None [1, 2] mps 4 saddle 3 0s
+None [1, 2] mps 4 saddle 4 0s
+None [1, 2] mps 4 saddle 5 0s
+None [1, 2] mps 4 saddle 6 0s
+None [1, 2] mps 4 saddle 7 0s
+None [0, 1] mps 6 small 0 0s
+None [0, 1] mps 6 small 1 0s
+None [0, 1] mps 6 small 2 0s
+None [0, 1] mps 6 small 3 0s
+None [0, 1] mps 6 small 4 0s
+None [0, 1] mps 6 small 5 0s
+None [0, 1] mps 6 small 6 0s
+None [0, 1] mps 6 small 7 0s
+None [0, 1] mps 6 saddle 0 0s
+None [0, 1] mps 6 saddle 1 0s
+None [0, 1] mps 6 saddle 2 0s
+None [0, 1] mps 6 saddle 3 0s
+None [0, 1] mps 6 saddle 4 0s
+None [0, 1] mps 6 saddle 5 0s
+None [0, 1] mps 6 saddle 6 0s
+None [0, 1] mps 6 saddle 7 0s
+None [2, 3] mps 6 small 0 0s
+None [2, 3] mps 6 small 1 0s
+None [2, 3] mps 6 small 2 0s
+None [2, 3] mps 6 small 3 0s
+None [2, 3] mps 6 small 4 0s
+None [2, 3] mps 6 small 5 0s
+None [2, 3] mps 6 small 6 0s
+None [2, 3] mps 6 small 7 0s
+None [2, 3] mps 6 saddle 0 0s
+None [2, 3] mps 6 saddle 1 0s
+None [2, 3] mps 6 saddle 2 0s
+None [2, 3] mps 6 saddle 3 0s
+None [2, 3] mps 6 saddle 4 0s
+None [2, 3] mps 6 saddle 5 0s
+None [2, 3] mps 6 saddle 6 0s
+None [2, 3] mps 6 saddle 7 0s
+None [0, 1] mps 8 small 0 0s
+None [0, 1] mps 8 small 1 0s
+None [0, 1] mps 8 small 2 0s
+None [0, 1] mps 8 small 3 0s
+None [0, 1] mps 8 small 4 0s
+None [0, 1] mps 8 small 5 0s
+None [0, 1] mps 8 small 6 0s
+None [0, 1] mps 8 small 7 0s
+None [0, 1] mps 8 saddle 0 0s
+None [0, 1] mps 8 saddle 1 0s
+None [0, 1] mps 8 saddle 2 0s
+None [0, 1] mps 8 saddle 3 0s
+None [0, 1] mps 8 saddle 4 0s
+None [0, 1] mps 8 saddle 5 0s
+None [0, 1] mps 8 saddle 6 0s
+None [0, 1] mps 8 saddle 7 0s
+None [3, 4] mps 8 small 0 0s
+None [3, 4] mps 8 small 1 0s
+None [3, 4] mps 8 small 2 0s
+None [3, 4] mps 8 small 3 0s
+None [0, 2] mps 4 small 4 0s
+None [3, 4] mps 8 small 5 0s
+None [3, 4] mps 8 small 6 0s
+None [3, 4] mps 8 small 7 0s
+None [3, 4] mps 8 saddle 0 0s
+None [3, 4] mps 8 saddle 1 0s
+None [3, 4] mps 8 saddle 2 0s
+None [3, 4] mps 8 saddle 3 0s
+None [3, 4] mps 8 saddle 4 0s
+None [3, 4] mps 8 saddle 5 0s
+None [3, 4] mps 8 saddle 6 0s
+None [3, 4] mps 8 saddle 7 0s
+None [2, 3] midroot6 None small 0 0s
+None [2, 3] midroot6 None small 1 0s
+None [2, 3] midroot6 None small 2 0s
+None [2, 3] midroot6 None small 3 0s
+None [2, 3] midroot6 None small 4 0s
+None [2, 3] midroot6 None small 5 0s
+None [2, 3] midroot6 None small 6 0s
+None [2, 3] midroot6 None small 7 0s
+None [2, 3] midroot6 None saddle 0 0s
+None [2, 3] midroot6 None saddle 1 0s
+None [2, 3] midroot6 None saddle 2 0s
+None [2, 3] midroot6 None saddle 3 0s
+None [2, 3] midroot6 None saddle 4 0s
+None [2, 3] midroot6 None saddle 5 0s
+None [2, 3] midroot6 None saddle 6 0s
+None [2, 3] midroot6 None saddle 7 0s
+None [0, 2] mps 4 small 0 0s
+None [0, 2] mps 4 small 1 0s
+None [0, 2] mps 4 small 2 0s
+None [0, 2] mps 4 small 3 0s
+None [3, 4] mps 8 small 4 0s
+None [0, 2] mps 4 small 5 0s
+None [0, 2] mps 4 small 6 0s
+None [1, 2, 3] mps 4 small 7 0s
+None [0, 2] mps 4 saddle 0 0s
+None [0, 2] mps 4 saddle 1 0s
+None [0, 2] mps 4 saddle 2 0s
+None [0, 2] mps 4 saddle 3 0s
+None [0, 2] mps 4 saddle 4 0s
+None [0, 2] mps 4 saddle 5 0s
+None [0, 2] mps 4 saddle 6 0s
+None [1, 2, 3] mps 4 saddle 7 0s
+None [0, 1, 2] mps 4 small 0 0s
+None [0, 1, 2] mps 4 small 1 0s
+None [0, 1, 2] mps 4 small 2 0s
+None [0, 1, 2] mps 4 small 3 0s
+None [0, 1, 2] mps 4 small 4 0s
+None [0, 1, 2] mps 4 small 5 0s
+None [0, 1, 2] mps 4 small 6 0s
+None [0, 1, 2] mps 4 small 7 0s
+None [0, 1, 2] mps 4 saddle 0 0s
+None [0, 1, 2] mps 4 saddle 1 0s
+None [0, 1, 2] mps 4 saddle 2 0s
+None [0, 1, 2] mps 4 saddle 3 0s
+None [0, 1, 2] mps 4 saddle 4 0s
+None [0, 1, 2] mps 4 saddle 5 0s
+None [0, 1, 2] mps 4 saddle 6 0s
+None [0, 1, 2] mps 4 saddle 7 0s
+None [1, 2, 3] mps 4 small 0 0s
+None [1, 2, 3] mps 4 small 1 0s
+None [1, 2, 3] mps 4 small 2 0s
+None [1, 2, 3] mps 4 small 3 0s
+None [1, 2, 3] mps 4 small 4 0s
+None [1, 2, 3] mps 4 small 5 0s
+None [1, 2, 3] mps 4 small 6 0s
+None [0, 3] binary 4 small 7 0s
+None [1, 2, 3] mps 4 saddle 0 0s
+None [1, 2, 3] mps 4 saddle 1 0s
+None [1, 2, 3] mps 4 saddle 2 0s
+None [1, 2, 3] mps 4 saddle 3 0s
+None [1, 2, 3] mps 4 saddle 4 0s
+None [1, 2, 3] mps 4 saddle 5 0s
+None [1, 2, 3] mps 4 saddle 6 0s
+None [0, 2] mps 4 saddle 7 0s
+None [1, 2] binary 4 small 0 0s
+None [1, 2] binary 4 small 1 0s
+None [1, 2] binary 4 small 2 0s
+None [1, 2] binary 4 small 3 0s
+None [1, 2] binary 4 small 4 0s
+None [1, 2] binary 4 small 5 0s
+None [1, 2] binary 4 small 6 0s
+None [1, 2] binary 4 small 7 0s
+None [1, 2] binary 4 saddle 0 0s
+None [1, 2] binary 4 saddle 1 0s
+None [1, 2] binary 4 saddle 2 0s
+None [1, 2] binary 4 saddle 3 0s
+None [1, 2] binary 4 saddle 4 0s
+None [1, 2] binary 4 saddle 5 0s
+None [1, 2] binary 4 saddle 6 0s
+None [1, 2] binary 4 saddle 7 0s
+None [0, 3] binary 4 small 0 0s
+None [0, 3] binary 4 small 1 0s
+None [0, 3] binary 4 small 2 0s
+None [0, 3] binary 4 small 3 0s
+None [0, 3] binary 4 small 4 0s
+None [0, 3] binary 4 small 5 0s
+None [0, 3] binary 4 small 6 0s
+None [0, 2] mps 4 small 7 0s
+None [0, 3] binary 4 saddle 0 0s
+None [0, 3] binary 4 saddle 1 0s
+None [0, 3] binary 4 saddle 2 0s
+None [0, 1, 2] binary 4 saddle 3 0s
+None [0, 3] binary 4 saddle 4 0s
+None [0, 3] binary 4 saddle 5 0s
+None [0, 3] binary 4 saddle 6 0s
+None [0, 3] binary 4 saddle 7 0s
+None [0, 2] binary 4 small 0 0s
+None [0, 2] binary 4 small 1 0s
+None [0, 2] binary 4 small 2 0s
+None [0, 2] binary 4 small 3 0s
+None [0, 2] binary 4 small 4 0s
+None [0, 2] binary 4 small 5 0s
+None [0, 2] binary 4 small 6 0s
+None [0, 2] binary 4 small 7 0s
+None [0, 2] binary 4 saddle 0 0s
+None [0, 2] binary 4 saddle 1 0s
+None [0, 2] binary 4 saddle 2 0s
+None [0, 2] binary 4 saddle 3 0s
+None [0, 2] binary 4 saddle 4 0s
+None [0, 2] binary 4 saddle 5 0s
+None [0, 2] binary 4 saddle 6 0s
+None [0, 1, 2, 3] binary 4 saddle 7 0s
+None [0, 1, 2] binary 4 small 0 0s
+None [0, 1, 2] binary 4 small 1 0s
+None [0, 1, 2] binary 4 small 2 0s
+None [0, 1] ht 4 small 3 0s
+None [0, 1, 2] binary 4 small 4 0s
+None [0, 1, 2] binary 4 small 5 0s
+None [0, 1] ht 4 small 6 0s
+None [0, 1, 2] binary 4 small 7 0s
+None [0, 1] ht 4 saddle 0 0s
+None [0, 1, 2] binary 4 saddle 1 0s
+None [0, 1, 2] binary 4 saddle 2 0s
+None [0, 3] binary 4 saddle 3 0s
+None [0, 1, 2] binary 4 saddle 4 0s
+None [0, 1, 2] binary 4 saddle 5 0s
+None [0, 1, 2] binary 4 saddle 6 0s
+None [0, 1, 2] binary 4 saddle 7 0s
+None [0, 1, 2, 3] binary 4 small 0 0s
+None [0, 1, 2, 3] binary 4 small 1 0s
+None [0, 1, 2, 3] binary 4 small 2 0s
+None [0, 1, 2, 3] binary 4 small 3 0s
+None [0, 1, 2, 3] binary 4 small 4 0s
+None [0, 1, 2, 3] binary 4 small 5 0s
+None [0, 1, 2, 3] binary 4 small 6 0s
+None [0, 1, 2, 3] binary 4 small 7 0s
+None [0, 1, 2, 3] binary 4 saddle 0 0s
+None [0, 1, 2, 3] binary 4 saddle 1 0s
+None [0, 1, 2, 3] binary 4 saddle 2 0s
+None [0, 1, 2, 3] binary 4 saddle 3 0s
+None [0, 1, 2, 3] binary 4 saddle 4 0s
+None [0, 1, 2, 3] binary 4 saddle 5 0s
+None [0, 1, 2, 3] binary 4 saddle 6 0s
+None [0, 2] binary 4 saddle 7 0s
+None [0, 1] ht 4 small 0 0s
+None [0, 1] ht 4 small 1 0s
+None [0, 1] ht 4 small 2 0s
+None [0, 1, 2] binary 4 small 3 0s
+None [0, 1] ht 4 small 4 0s
+None [0, 1] ht 4 small 5 0s
+None [0, 1, 2] binary 4 small 6 0s
+None [0, 1] ht 4 small 7 0s
+None [0, 1, 2] binary 4 saddle 0 0s
+None [0, 1] ht 4 saddle 1 0s
+None [0, 1] ht 4 saddle 2 0s
+None [0, 1] ht 4 saddle 3 0s
+None [0, 1] ht 4 saddle 4 0s
+None [0, 1] ht 4 saddle 5 0s
+None [0, 1] ht 4 saddle 6 0s
+None [0, 1] ht 4 saddle 7 0s
+None [2, 3] ht 4 small 0 0s
+None [2, 3] ht 4 small 1 0s
+None [2, 3] ht 4 small 2 0s
+None [2, 3] ht 4 small 3 0s
+None [2, 3] ht 4 small 4 0s
+None [2, 3] ht 4 small 5 0s
+None [2, 3] ht 4 small 6 0s
+None [2, 3] ht 4 small 7 0s
+None [2, 3] ht 4 saddle 0 0s
+None [2, 3] ht 4 saddle 1 0s
+None [2, 3] ht 4 saddle 2 0s
+None [2, 3] ht 4 saddle 3 0s
+None [2, 3] ht 4 saddle 4 0s
+None [2, 3] ht 4 saddle 5 0s
+None [2, 3] ht 4 saddle 6 0s
+None [2, 3] ht 4 saddle 7 0s
+None [0, 2] mps 6 small 0 0s
+None [0, 2] mps 6 small 1 0s
+None [0, 2] mps 6 small 2 0s
+None [0, 2] mps 6 small 3 0s
+None [0, 2] mps 6 small 4 0s
+None [0, 2] mps 6 small 5 0s
+None [0, 2] mps 6 small 6 0s
+None [0, 2] mps 6 small 7 0s
+None [0, 2] mps 6 saddle 0 0s
+None [0, 2] mps 6 saddle 1 0s
+None [0, 2] mps 6 saddle 2 0s
+None [0, 2] mps 6 saddle 3 0s
+None [2, 3, 4] mps 8 saddle 4 0s
+None [0, 2] mps 6 saddle 5 0s
+None [0, 2] mps 6 saddle 6 0s
+None [0, 2] mps 6 saddle 7 0s
+None [2, 3, 4] mps 6 small 0 0s
+None [2, 3, 4] mps 6 small 1 0s
+None [2, 3, 4] mps 6 small 2 0s
+None [2, 3, 4] mps 6 small 3 0s
+None [2, 3, 4] mps 6 small 4 0s
+None [2, 3, 4] mps 6 small 5 0s
+None [2, 3, 4] mps 6 small 6 0s
+None [2, 3, 4] mps 6 small 7 0s
+None [2, 3, 4] mps 6 saddle 0 0s
+None [2, 3, 4] mps 6 saddle 1 0s
+None [2, 3, 4] mps 6 saddle 2 0s
+None [2, 3, 4] mps 6 saddle 3 0s
+None [2, 3, 4] mps 6 saddle 4 0s
+None [2, 3, 4] mps 6 saddle 5 0s
+None [2, 3, 4] mps 6 saddle 6 0s
+None [2, 3, 4] mps 6 saddle 7 0s
+None [2, 3, 4] mps 8 small 0 0s
+None [2, 3, 4] mps 8 small 1 0s
+None [2, 3, 4] mps 8 small 2 0s
+None [2, 3, 4] mps 8 small 3 0s
+None [2, 3, 4] mps 8 small 4 0s
+None [2, 3, 4] mps 8 small 5 0s
+None [2, 3, 4] mps 8 small 6 0s
+None [2, 3, 4] mps 8 small 7 0s
+None [2, 3, 4] mps 8 saddle 0 0s
+None [2, 3, 4] mps 8 saddle 1 0s
+None [2, 3, 4] mps 8 saddle 2 0s
+None [2, 3, 4] mps 8 saddle 3 0s
+None [0, 2] mps 6 saddle 4 0s
+None [2, 3, 4] mps 8 saddle 5 0s
+None [2, 3, 4] mps 8 saddle 6 0s
+None [2, 3, 4] mps 8 saddle 7 0s
+None [1, 2] binary 8 small 0 0s
+None [1, 2] binary 8 small 1 0s
+None [1, 2] binary 8 small 2 0s
+None [1, 2] binary 8 small 3 0s
+None [1, 2] binary 8 small 4 0s
+None [1, 2] binary 8 small 5 0s
+None [1, 2] binary 8 small 6 0s
+None [1, 2] binary 8 small 7 0s
+None [1, 2] binary 8 saddle 0 0s
+None [1, 2] binary 8 saddle 1 0s
+None [1, 2] binary 8 saddle 2 0s
+None [1, 2] binary 8 saddle 3 0s
+None [1, 2] binary 8 saddle 4 0s
+None [1, 2] binary 8 saddle 5 0s
+None [1, 2] binary 8 saddle 6 0s
+None [1, 2] binary 8 saddle 7 0s
+None [0, 2] binary 8 small 0 0s
+None [0, 2] binary 8 small 1 0s
+None [0, 2] binary 8 small 2 0s
+None [0, 2] binary 8 small 3 0s
+None [0, 2] binary 8 small 4 0s
+None [0, 2] binary 8 small 5 0s
+None [0, 2] binary 8 small 6 0s
+None [0, 2] binary 8 small 7 0s
+None [0, 2] binary 8 saddle 0 0s
+None [0, 2] binary 8 saddle 1 0s
+None [0, 2] binary 8 saddle 2 0s
+None [0, 2] binary 8 saddle 3 0s
+None [0, 2] binary 8 saddle 4 0s
+None [0, 2] binary 8 saddle 5 0s
+None [0, 2] binary 8 saddle 6 0s
+None [0, 2] binary 8 saddle 7 0s
+None [0, 1, 2, 3] binary 8 small 0 0s
+None [0, 1] ht 8 saddle 1 0s
+None [0, 1, 2, 3] binary 8 small 2 0s
+None [0, 1, 2, 3] binary 8 small 3 0s
+None [0, 1, 2, 3] binary 8 small 4 0s
+None [0, 1, 2, 3] binary 8 small 5 0s
+None [0, 1, 2, 3] binary 8 small 6 0s
+None [0, 1, 2, 3] binary 8 small 7 0s
+None [0, 1, 2, 3] binary 8 saddle 0 0s
+None [0, 1, 2, 3] binary 8 saddle 1 0s
+None [0, 1, 2, 3] binary 8 saddle 2 0s
+None [0, 1, 2, 3] binary 8 saddle 3 0s
+None [0, 1, 2, 3] binary 8 saddle 4 0s
+None [0, 1, 2, 3] binary 8 saddle 5 0s
+None [0, 1, 2, 3] binary 8 saddle 6 0s
+None [0, 1, 2, 3] binary 8 saddle 7 0s
+None [4, 5, 6] binary 8 small 0 0s
+None [4, 5, 6] binary 8 small 1 0s
+None [4, 5, 6] binary 8 small 2 0s
+None [4, 5, 6] binary 8 small 3 0s
+None [4, 5, 6] binary 8 small 4 0s
+None [4, 5, 6] binary 8 small 5 0s
+None [4, 5, 6] binary 8 small 6 0s
+None [4, 5, 6] binary 8 small 7 0s
+None [4, 5, 6] binary 8 saddle 0 0s
+None [4, 5, 6] binary 8 saddle 1 0s
+None [4, 5, 6] binary 8 saddle 2 0s
+None [4, 5, 6] binary 8 saddle 3 0s
+None [4, 5, 6] binary 8 saddle 4 0s
+None [4, 5, 6] binary 8 saddle 5 0s
+None [4, 5, 6] binary 8 saddle 6 0s
+None [4, 5, 6] binary 8 saddle 7 0s
+None [0, 1] ht 8 saddle 0 0s
+None [0, 1, 2, 3] binary 8 small 1 0s
+None [0, 1] ht 8 saddle 2 0s
+None [0, 1] ht 8 saddle 3 0s
+None [0, 1] ht 8 saddle 4 0s
+None [0, 1] ht 8 saddle 5 0s
+None [0, 1] ht 8 saddle 6 0s
+None [0, 1] ht 8 saddle 7 0s
+None [6, 7] ht 8 saddle 0 0s
+None [6, 7] ht 8 saddle 1 0s
+None [6, 7] ht 8 saddle 2 0s
+None [6, 7] ht 8 saddle 3 0s
+None [6, 7] ht 8 saddle 4 0s
+None [6, 7] ht 8 saddle 5 0s
+None [6, 7] ht 8 saddle 6 0s
+None [6, 7] ht 8 saddle 7 0s
+None [1, 2] star3 None small 0 0s
+None [1, 2] star3 None small 1 0s
+None [1, 2] star3 None small 2 0s
+None [1, 2] star3 None small 3 0s
+None [1, 2] star3 None small 4 0s
+None [1, 2] star3 None small 5 0s
+None [1, 2] star3 None small 6 0s
+None [1, 2] star3 None small 7 0s
+None [1, 2] star3 None saddle 0 0s
+None [1, 2] star3 None saddle 1 0s
+None [1, 2] star3 None saddle 2 0s
+None [1, 2] star3 None saddle 3 0s
+None [1, 2] star3 None saddle 4 0s
+None [1, 2] star3 None saddle 5 0s
+None [1, 2] star3 None saddle 6 0s
+None [1, 2] star3 None saddle 7 0s
+None [0, 5] star3 None small 0 0s
+None [0, 5] star3 None small 1 0s
+None [0, 5] star3 None small 2 0s
+None [0, 5] star3 None small 3 0s
+None [0, 5] star3 None small 4 0s
+None [0, 5] star3 None small 5 0s
+None [0, 5] star3 None small 6 0s
+None [0, 5] star3 None small 7 0s
+None [0, 3] mps 4 saddle 0 0s
+None [0, 5] star3 None saddle 1 0s
+None [0, 5] star3 None saddle 2 0s
+None [0, 5] star3 None saddle 3 0s
+None [0, 5] star3 None saddle 4 0s
+None [0, 5] star3 None saddle 5 0s
+None [0, 5] star3 None saddle 6 0s
+None [0, 5] star3 None saddle 7 0s
+None [0, 2] midroot6 None small 0 0s
+None [0, 2] midroot6 None small 1 0s
+None [0, 2] midroot6 None small 2 0s
+None [0, 2] midroot6 None small 3 0s
+None [0, 2] midroot6 None small 4 0s
+None [0, 2] midroot6 None small 5 0s
+None [0, 2] midroot6 None small 6 0s
+None [0, 2] midroot6 None small 7 0s
+None [0, 2] midroot6 None saddle 0 0s
+None [0, 2] midroot6 None saddle 1 0s
+None [0, 2] midroot6 None saddle 2 0s
+None [0, 2] midroot6 None saddle 3 0s
+None [0, 2] midroot6 None saddle 4 0s
+None [0, 2] midroot6 None saddle 5 0s
+None [0, 2] midroot6 None saddle 6 0s
+None [0, 2] midroot6 None saddle 7 0s
+None [0, 3] mps 4 small 0 0s
+None [0, 3] mps 4 small 2 0s
+None [0, 3] mps 4 small 6 0s
+None [0, 3] mps 6 small 3 0s
+None [0, 3] mps 4 saddle 1 0s
+None [0, 3] mps 4 saddle 2 0s
+None [0, 3] mps 4 saddle 4 0s
+None [0, 3] mps 4 saddle 6 0s
+None [0, 3] mps 4 saddle 7 0s
+None [0, 3] mps 6 saddle 1 0s
+None [0, 1, 2, 3] mps 4 small 1 0s
+None [0, 1, 2, 3] mps 4 small 2 0s
+None [0, 1, 2, 3] mps 4 small 3 0s
+None [0, 3] mps 6 saddle 5 0s
+None [0, 1, 2, 3] mps 4 small 5 0s
+None [0, 1, 2, 3] mps 4 small 6 0s
+None [0, 1, 2, 3] mps 4 small 7 0s
+None [0, 1, 2, 3] mps 4 saddle 0 0s
+None [0, 1, 2, 3] mps 4 saddle 1 0s
+None [0, 1, 2, 3] mps 4 saddle 2 0s
+None [0, 1, 2, 3] mps 4 saddle 4 0s
+None [1, 4] mps 6 small 5 0s
+None [0, 1, 2, 3] mps 4 saddle 7 0s
+None [0, 3] mps 6 small 0 0s
+None [0, 3] mps 6 small 1 0s
+None [0, 5] star3 None saddle 0 0s
+None [0, 3] mps 6 small 6 0s
+None [0, 3] mps 6 small 7 0s
+None [0, 3] mps 6 saddle 0 0s
+None [0, 1, 2, 3] mps 4 small 0 0s
+None [0, 3] mps 6 saddle 4 0s
+None [0, 1, 2, 3] mps 4 small 4 0s
+None [0, 3] mps 6 saddle 6 0s
+None [0, 3] mps 6 saddle 7 0s
+None [1, 4] mps 6 small 0 0s
+None [1, 4] mps 6 small 2 0s
+None [1, 4] mps 6 small 3 0s
+None [1, 4] mps 6 small 4 0s
+None [0, 1, 2, 3] mps 4 saddle 6 0s
+None [1, 4] mps 6 small 6 0s
+None [1, 4] mps 6 small 7 0s
+None [1, 4] mps 6 saddle 0 0s
+None [1, 4] mps 6 saddle 2 0s
+None [1, 4] mps 6 saddle 3 0s
+None [1, 4] mps 6 saddle 4 0s
+None [1, 4] mps 6 saddle 5 0s
+None [1, 4] mps 6 saddle 6 0s
+None [2, 5] mps 8 small 1 0s
+None [2, 5] mps 8 small 2 0s
+None [2, 5] mps 8 small 3 0s
+None [2, 5] mps 8 small 4 0s
+None [2, 5] mps 8 small 5 0s
+None [2, 5] mps 8 small 6 0s
+None [2, 5] mps 8 small 7 0s
+None [2, 5] mps 8 saddle 0 0s
+None [2, 5] mps 8 saddle 2 0s
+None [2, 5] mps 8 saddle 3 0s
+None [0, 2, 4] star3 None saddle 1 0s
+None [0, 2, 4] star3 None saddle 2 0s
+None [2, 5] mps 8 saddle 6 0s
+None [0, 2, 4] star3 None small 0 0s
+None [0, 2, 4] star3 None small 1 0s
+None [0, 2, 4] star3 None small 2 0s
+None [0, 2, 4] star3 None small 3 0s
+None [0, 2, 4] star3 None small 4 0s
+None [0, 2, 4] star3 None small 5 0s
+None [0, 2, 4] star3 None small 6 0s
+None [0, 2, 4] star3 None small 7 0s
+None [0, 2, 4] star3 None saddle 0 0s
+None [2, 5] mps 8 saddle 4 0s
+None [2, 5] mps 8 saddle 5 0s
+None [0, 2, 4] star3 None saddle 3 0s
+None [0, 2, 4] star3 None saddle 4 0s
+None [0, 2, 4] star3 None saddle 5 0s
+None [0, 2, 4] star3 None saddle 6 0s
+None [0, 2, 4] star3 None saddle 7 0s
+None [0, 1, 2, 3, 4, 5] star3 None small 0 0s
+None [0, 1, 2, 3, 4, 5] star3 None small 1 0s
+None [0, 1, 2, 3, 4, 5] star3 None small 2 0s
+None [0, 1, 2, 3, 4, 5] star3 None small 3 0s
+None [0, 3] midroot6 None small 0 0s
+None [0, 1, 2, 3, 4, 5] star3 None small 5 0s
+None [0, 1, 2, 3, 4, 5] star3 None small 6 0s
+None [0, 1, 2, 3, 4, 5] star3 None small 7 0s
+None [0, 1, 2, 3, 4, 5] star3 None saddle 0 0s
+None [0, 1, 2, 3, 4, 5] star3 None saddle 1 0s
+None [0, 1, 2, 3, 4, 5] star3 None saddle 2 0s
+None [0, 1, 2, 3, 4, 5] star3 None saddle 3 0s
+None [0, 1, 2, 3, 4, 5] star3 None saddle 4 0s
+None [0, 1, 2, 3, 4, 5] star3 None saddle 5 0s
+None [0, 1, 2, 3, 4, 5] star3 None saddle 6 0s
+None [0, 1, 2, 3, 4, 5] star3 None saddle 7 0s
+None [0, 1, 2, 3, 4, 5] star3 None small 4 0s
+None [0, 3] midroot6 None small 1 0s
+None [0, 3] midroot6 None small 3 0s
+None [0, 3] midroot6 None small 5 0s
+None [0, 3] midroot6 None small 6 0s
+None [0, 3] midroot6 None small 7 0s
+None [0, 3] midroot6 None saddle 1 0s
+None [0, 3] midroot6 None saddle 2 0s
+None [0, 3] midroot6 None saddle 4 0s
+None [0, 3] midroot6 None saddle 6 0s
+None [0, 3] midroot6 None saddle 7 0s
+None [1, 2] ht 4 small 7 0s
+None [1, 2] ht 4 small 1 0s
+None [1, 2] ht 4 small 2 0s
+None [1, 2] ht 4 small 3 0s
+None [1, 2] ht 4 small 4 0s
+None [1, 2] ht 4 small 5 0s
+None [1, 2] ht 4 small 6 0s
+None [1, 2] ht 4 small 0 0s
+None [1, 2] ht 4 saddle 0 0s
+None [1, 2] ht 4 saddle 2 0s
+None [1, 2] ht 4 saddle 3 0s
+None [1, 2] ht 4 saddle 4 0s
+None [1, 2] ht 4 saddle 5 0s
+None [1, 2] ht 4 saddle 6 0s
+None [1, 2] ht 4 saddle 7 0s
+None [0, 3] ht 4 small 0 0s
+None [0, 3] ht 4 small 1 0s
+None [0, 3] ht 4 small 2 0s
+None [0, 3] ht 4 small 3 0s
+None [0, 3] ht 4 small 4 0s
+None [0, 3] ht 4 small 5 0s
+None [0, 3] ht 4 small 6 0s
+None [0, 3] ht 4 small 7 0s
+None [0, 3] ht 4 saddle 0 0s
+None [0, 3] ht 4 saddle 1 0s
+None [0, 3] ht 4 saddle 2 0s
+None [0, 3] ht 4 saddle 3 0s
+None [0, 3] ht 4 saddle 4 0s
+None [0, 3] ht 4 saddle 5 0s
+None [0, 3] ht 4 saddle 6 0s
+None [0, 3] ht 4 saddle 7 0s
+None [0, 2] ht 4 small 0 0s
+None [0, 2] ht 4 small 1 0s
+None [0, 2] ht 4 small 2 0s
+None [0, 2] ht 4 saddle 1 0s
+None [0, 2] ht 4 small 4 0s
+None [0, 2] ht 4 small 5 0s
+None [0, 2] ht 4 small 6 0s
+None [0, 2] ht 4 saddle 5 0s
+None [0, 2] ht 4 saddle 0 0s
+None [0, 2] ht 4 small 3 0s
+None [0, 2] ht 4 saddle 2 0s
+None [0, 2] ht 4 saddle 3 0s
+None [0, 2] ht 4 saddle 4 0s
+None [0, 2] ht 4 small 7 0s
+None [0, 2] ht 4 saddle 6 0s
+None [0, 2] ht 4 saddle 7 0s
+None [1, 3, 5] mps 6 small 0 0s
+None [1, 3, 5] mps 6 small 2 0s
+None [1, 3, 5] mps 6 small 3 0s
+None [1, 3, 5] mps 6 small 4 0s
+None [1, 3, 5] mps 6 small 5 0s
+None [1, 3, 5] mps 6 small 6 0s
+None [1, 3, 5] mps 6 small 7 0s
+None [1, 3, 5] mps 6 saddle 0 0s
+None [1, 3, 5] mps 6 saddle 2 0s
+None [1, 3, 5] mps 6 saddle 3 0s
+None [1, 3, 5] mps 6 saddle 5 0s
+None [1, 3, 5] mps 6 saddle 6 0s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+None [0, 3] mps 6 saddle 2 51s
+None [0, 3] midroot6 None saddle 0 53s
+None [0, 1, 2, 3] mps 4 saddle 5 57s
+None [0, 1, 2, 3] mps 4 saddle 3 57s
+None [0, 3] mps 4 saddle 5 58s
+None [0, 3] mps 4 saddle 3 59s
+None [0, 3] mps 4 small 3 61s
+None [0, 3] mps 4 small 5 61s
+None [0, 3] mps 4 small 7 62s
+None [0, 3] midroot6 None saddle 5 62s
+None [0, 3] mps 4 small 1 62s
+None [0, 3] mps 4 small 4 62s
+None [0, 3] midroot6 None small 4 63s
+None [1, 5] mps 8 small 2 67s
+None [1, 3, 5] mps 6 saddle 1 81s
+None [1, 4] mps 6 saddle 1 81s
+None [0, 3] mps 6 small 2 84s
+None [1, 2] ht 4 saddle 1 84s
+None [0, 3] mps 6 saddle 3 84s
+None [1, 3, 5] mps 6 saddle 7 85s
+None [1, 4] mps 6 saddle 7 85s
+None [1, 3, 5] mps 6 small 1 88s
+None [1, 3, 5] mps 6 saddle 4 89s
+None [0, 3] midroot6 None small 2 91s
+None [1, 4] mps 6 small 1 94s
+None [0, 3] mps 6 small 4 95s
+None [1, 5] mps 8 small 5 45s
+None [1, 5] mps 8 saddle 3 40s
+None [1, 5] mps 8 small 6 46s
+None [1, 5] mps 8 small 7 47s
+None [3, 4] binary 8 small 0 41s
+None [1, 5] mps 8 saddle 0 48s
+None [3, 4] binary 8 small 1 40s
+None [1, 5] mps 8 saddle 6 45s
+None [1, 5] mps 8 small 4 59s
+None [1, 5] mps 8 small 3 109s
+None [1, 5] mps 8 saddle 5 48s
+None [1, 5] mps 8 saddle 2 50s
+None [3, 4] binary 8 saddle 0 33s
+None [3, 4] binary 8 small 2 39s
+None [3, 4] binary 8 small 3 40s
+None [3, 4] binary 8 saddle 3 30s
+None [3, 4] binary 8 small 6 37s
+None [3, 4] binary 8 small 5 39s
+None [3, 4] binary 8 saddle 1 35s
+None [0, 3] mps 6 small 5 123s
+None [3, 4] binary 8 small 4 40s
+None [3, 4] binary 8 saddle 5 31s
+None [3, 4] binary 8 saddle 4 32s
+None [3, 4] binary 8 small 7 42s
+None [1, 5] mps 8 small 0 129s
+None [3, 4] binary 8 saddle 2 41s
+None [3, 4] binary 8 saddle 6 32s
+None [3, 4] binary 8 saddle 7 30s
+None [1, 5] mps 8 small 1 134s
+None [2, 5] mps 8 small 0 134s
+None [0, 7] binary 8 small 4 29s
+None [0, 7] binary 8 saddle 2 20s
+None [0, 7] binary 8 small 2 33s
+None [0, 7] binary 8 small 0 39s
+None [0, 7] binary 8 saddle 5 21s
+None [0, 7] binary 8 saddle 0 32s
+None [0, 7] binary 8 saddle 3 22s
+None [0, 7] binary 8 saddle 4 22s
+None [0, 7] binary 8 saddle 1 33s
+None [0, 7] binary 8 small 5 37s
+None [0, 7] binary 8 small 1 41s
+None [0, 7] binary 8 saddle 7 23s
+None [0, 7] binary 8 saddle 6 27s
+None [0, 7] binary 8 small 3 43s
+None [0, 3] midroot6 None saddle 3 149s
+None [2, 3, 4, 5] binary 8 saddle 0 19s
+None [0, 7] binary 8 small 6 40s
+None [0, 7] binary 8 small 7 40s
+None [2, 3, 4, 5] binary 8 small 0 31s
+None [2, 3, 4, 5] binary 8 saddle 1 22s
+None [2, 3, 4, 5] binary 8 small 5 29s
+None [2, 3, 4, 5] binary 8 small 4 31s
+None [2, 3, 4, 5] binary 8 saddle 6 19s
+None [2, 3, 4, 5] binary 8 saddle 5 19s
+None [2, 3, 4, 5] binary 8 small 7 27s
+None [2, 3, 4, 5] binary 8 small 2 33s
+None [2, 3, 4, 5] binary 8 small 3 32s
+None [2, 3, 4, 5] binary 8 saddle 7 21s
+None [2, 3, 4, 5] binary 8 saddle 3 30s
+None [2, 3, 4, 5] binary 8 saddle 2 30s
+None [2, 3, 4, 5] binary 8 small 6 35s
+None [2, 3, 4, 5] binary 8 small 1 43s
+None [2, 3, 4, 5] binary 8 saddle 4 31s
+None [1, 5] mps 8 saddle 4 115s
+None [0, 1, 2] ht 4 small 1 29s
+None [0, 1, 2] ht 4 small 0 29s
+None [0, 1, 2] ht 4 saddle 2 24s
+None [0, 1, 2] ht 4 small 3 31s
+None [0, 1, 2] ht 4 saddle 0 31s
+None [0, 1, 2] ht 4 small 4 35s
+None [0, 1, 2] ht 4 small 2 37s
+None [0, 1, 2] ht 4 saddle 3 30s
+None [1, 2] ht 8 saddle 3 52s
+None [0, 5] mps 6 small 0 38s
+None [0, 5] mps 6 small 3 39s
+None [0, 5] mps 6 small 4 39s
+None [1, 2] ht 8 saddle 2 56s
+None [1, 2] ht 8 saddle 4 59s
+None [0, 1, 2, 3, 4, 5] mps 6 small 0 35s
+None [1, 2] ht 8 saddle 5 58s
+None [1, 2] ht 8 saddle 0 61s
+None [1, 2] ht 8 saddle 7 58s
+None [1, 2] ht 8 saddle 6 64s
+None [0, 1, 2] ht 4 saddle 4 55s
+None [0, 1, 2, 3, 4, 5] mps 6 small 4 35s
+None [0, 1, 2, 3, 4, 5] mps 6 small 1 39s
+None [0, 5] mps 6 saddle 4 54s
+None [0, 1, 2, 3, 4, 5] mps 6 small 3 43s
+None [0, 5] mps 6 saddle 2 57s
+None [0, 5] mps 6 saddle 0 61s
+None [0, 5] mps 6 small 2 66s
+None [0, 1, 2, 3, 4, 5] mps 6 saddle 0 43s
+None [0, 1, 2, 3, 4, 5] mps 6 saddle 2 43s
+None [0, 1, 2] ht 4 saddle 1 74s
+None [0, 5] mps 6 saddle 3 72s
+None [0, 5] mps 6 saddle 1 76s
+None [0, 1, 2, 3, 4, 5] mps 6 saddle 4 57s
+None [0, 2, 4] binary 8 small 0 45s
+None [0, 1, 2, 3, 4, 5] mps 6 saddle 1 75s
+None [0, 1, 2, 3, 4, 5] mps 6 small 2 79s
+None [0, 2, 4] binary 8 small 2 44s
+None [0, 2, 4] binary 8 small 1 47s
+None [1, 6] mps 8 saddle 0 56s
+None [0, 2, 4] binary 8 saddle 0 40s
+None [0, 1, 2, 3, 4, 5] mps 6 saddle 3 78s
+None [0, 2, 4] binary 8 saddle 2 42s
+None [0, 2, 4] binary 8 saddle 1 44s
+None [0, 2, 4] binary 8 saddle 4 41s
+None [0, 2, 4] binary 8 small 3 50s
+None [0, 2, 4] binary 8 small 4 46s
+None [2, 5] mps 8 saddle 7 270s
+None [0, 5] midroot6 None small 0 49s
+None [1, 6] mps 8 saddle 2 76s
+None [1, 6] mps 8 small 4 87s
+None [0, 1, 2, 3] ht 4 saddle 0 21s
+None [1, 6] mps 8 saddle 3 84s
+None [0, 5] mps 6 small 1 131s
+None [1, 6] mps 8 small 2 97s
+None [0, 1, 2, 3] ht 4 small 4 31s
+None [0, 1, 2, 3] ht 4 saddle 2 31s
+None [0, 1, 2, 3] ht 4 small 0 42s
+None [1, 6] mps 8 small 0 115s
+None [0, 5] midroot6 None saddle 2 55s
+None [0, 1, 2, 3] ht 4 small 3 50s
+None [0, 5] midroot6 None small 1 92s
+None [1, 6] mps 8 saddle 4 116s
+None [0, 5] midroot6 None saddle 4 63s
+None [0, 1, 2, 3] ht 4 small 1 64s
+None [0, 5] midroot6 None small 2 90s
+None [0, 5] midroot6 None small 4 87s
+None [0, 1, 2, 3] ht 4 saddle 4 62s
+None [0, 5] midroot6 None saddle 1 84s
+None [3, 4] ht 8 saddle 3 40s
+None [0, 5] midroot6 None saddle 0 88s
+None [0, 1, 2, 3] ht 8 saddle 0 65s
+None [0, 2, 4] binary 8 saddle 3 124s
+None [0, 1, 2, 3] ht 4 saddle 1 83s
+None [0, 5] midroot6 None small 3 111s
+None [0, 1, 2, 3] ht 8 saddle 2 65s
+None [3, 4] ht 8 saddle 2 61s
+None [3, 4] ht 8 saddle 1 66s
+None [1, 6] mps 8 small 3 167s
+None [1, 6] mps 8 small 1 169s
+None [3, 4] ht 8 saddle 0 72s
+None [0, 1, 2, 3] ht 4 small 2 108s
+None [0, 7] mps 8 small 1 65s
+None [0, 7] mps 8 small 3 71s
+None [0, 5] midroot6 None saddle 3 134s
+None [0, 7] mps 8 small 0 89s
+None [0, 7] mps 8 saddle 4 67s
+None [0, 7] mps 8 saddle 1 86s
+None [1, 6] mps 8 saddle 1 213s
+None [0, 1, 2, 3] ht 4 saddle 3 146s
+None [0, 7] mps 8 saddle 3 79s
+None [0, 7] mps 8 saddle 2 88s
+None [0, 7] mps 8 small 4 100s
+None [0, 7] mps 8 small 2 127s
+None [0, 1, 2, 3] ht 8 saddle 4 189s
+None [2, 5] mps 8 saddle 1 568s
+None [1, 5] mps 8 saddle 1 689s
+None [1, 5] mps 8 saddle 7 1038s
+None [3, 4] ht 8 saddle 4 940s
+None [0, 7] mps 8 saddle 0 968s
+None [1, 2] ht 8 saddle 1 1780s
+None [0, 1, 2, 3] ht 8 saddle 1 1658s

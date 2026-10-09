@@ -116,6 +116,9 @@ Q5 (regime map) as the other substantial open items.
 - **B3 Imbalance**: per-core sigma_v and the fan-in root imbalance; stalls near non-min-norm critical points
   (Furman 2026 Thm G.1).
 - **B4 Reproductions**: independent re-runs of every surprising result before it enters the report.
+- **B5 Real data** (launched 2026-10-09 as `real-data`): MNIST/Fashion-MNIST with cos/sin local features on
+  quadtree-binary, snake-MPS and scrambled trees: do plateaus, stepwise bond growth, the locality rule and the regime
+  map survive outside the teacher-student setting?
 
 ## 2. Theory programme
 
