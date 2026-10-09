@@ -1,0 +1,11 @@
+overlap0.2 mps 0.03 1 01 wall 1s
+overlap0.0 mps 0.03 0 10 wall 1s
+overlap0.2 mps 0.03 3 10 wall 2s
+overlap0.05 mps 0.03 0 01 wall 2s
+overlap0.2 mps 0.03 4 01 wall 2s
+overlap0.05 mps 0.03 1 10 wall 2s
+overlap0.2 mps 0.03 2 01 wall 2s
+overlap0.2 mps 0.03 6 01 wall 2s
+overlap0.0 mps 0.03 1 10 wall 2s
+overlap0.2 mps 0.03 7 01 wall 3s
+overlap0.2 mps 0.03 5 01 wall 3s

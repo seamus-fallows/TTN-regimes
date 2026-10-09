@@ -217,6 +217,52 @@ Sigma-loss; "race" tensor = best bond-rank-1 approximation of Sigma W*). Results
    levels and durations within ~20% (`white_mapped` rows), so the landscape transfer is exact and
    the metric changes only timing.
 
+## 3. Cross-site correlated inputs
+
+### 3.0 Model and theory
+
+Input model (one simple choice): x^(i) = sqrt(1 - rho) z^(i) + sqrt(rho) xi, with xi in R^d shared by all
+sites; marginals stay whitened, Cov(x^(i), x^(j)) = rho I for i != j; rho = 0 is the baseline. The
+feature metric M = E[Phi Phi^T] is then **not a product**: by Isserlis' theorem it is a sum over the
+pairings of the 2N Gaussian factors, including pairings *inside* Phi (x^(i) with x^(j), i != j). Two
+consequences (*derived*):
+- f* has a nonzero mean and the teacher components are no longer orthogonal in function space,
+  <U_1, M U_2> = (E[prod_i x_1^(i)])^2 = 9 rho^4 (N = 4);
+- M W* contains "pairing" terms such as delta_{a_0 a_1} (x) e_r (x) e_r (the feature (x^0 . x^1) x^2_r x^3_r),
+  which have bond rank 1 on binary-4 (the identity on sites 0, 1 lives inside one core) but bond
+  rank d on MPS-4. So a binary student can use non-teacher features from its first escape on;
+  an MPS student cannot at rank 1.
+Whitening does not help: M^{1/2} is not a product operator, so there is no substitution that maps the
+problem to a whitened TTN problem on the same tree. What survives is the general statement that
+plateaus are critical points of the rank-constrained M-loss; we compute them numerically
+(`predict_rank1.py`, `constrained.py` with the dense metric).
+
+### 3.1 Results (step 3) — exact population gradient flow (dense M, N = 4, d = 4), as in step 1
+
+`configs/e3_correlated.yaml`: odeco teacher on e1, e2 (weights 1, 0.7), rho in {0, 0.1, ..., 0.5},
+binary-4 at sigma = 0.05, MPS-4 at sigma = 0.1, 20 seeds. Results `results/e3_correlated_plateaus.csv`,
+figure `results/e3_correlated_summary.png`; predictions `results/rank1_predictions_e3_correlated.csv`.
+
+1. **S2S survives** — *empirical*: every run has the plateau-escape-plateau structure and converges
+   (L < 1e-6 L(0)); the first-plateau level matches the predicted rank-1 critical value of the M-loss
+   with median relative error <= 5e-4 (binary) and <= 5e-3 (MPS; the plateau gets short, see 3).
+2. **binary-4: the first saddle changes content and depth** — *empirical, explained*: the rank-1
+   plateau falls from 0.33 L(0) (rho = 0, = the second component's share) to 0.20 / 0.14 / 0.10 L(0) at
+   rho = 0.3 / 0.4 / 0.5. The predicted (and reached, |cos| = 1.000) rank-1 critical tensor is a
+   product of two 2-site blocks that are mixtures of e1 e1^T and e2 e2^T (|cos| 0.80 and 0.60 with
+   them at rho = 0.5), i.e. it blends both components and contains the non-teacher cross terms
+   e1 e1 (x) e2 e2 that the shared factor makes correlated with f*. The first saddle is no longer a
+   partial fit of the teacher.
+3. **MPS-4: same saddle, much shorter second plateau** — *empirical*: the rank-1 saddle stays the pure
+   component (|cos| 1.000 with e1^(x)4; level 0.329 -> 0.312 L(0)), but the rank-1 plateau duration
+   drops from 137 (rho = 0) to 46 / 1.4 / 0.6 / 0.3 / 0.14 at rho = 0.1 / ... / 0.5 (medians): with
+   non-orthogonal components in function space a cheap (2-core) escape route opens, as in steps 2 and
+   4(a) (theory_teachers.md R4).
+4. **Faster first escape** — *empirical*: median t_1 falls from 56 to 3.9 (binary) and from 186 to 14
+   (MPS) between rho = 0 and 0.5: the correlation E[f_theta f*] that drives the escape grows with rho.
+5. Order: the larger component is still learned first in most runs (binary 80-85%, MPS 65-75%).
+6. Sampled data: `e3_sgd_check.py` (online SGD, fresh batches) — see 3.2.
+
 ## 4(a). Non-orthogonal CP teacher — theory
 
 W* = s_1 U_1 + s_2 U_2, per-site overlap c = <u_1^(i), u_2^(i)>, whitened.
@@ -234,6 +280,34 @@ W* = s_1 U_1 + s_2 U_2, per-site overlap c = <u_1^(i), u_2^(i)>, whitened.
   <a_1, a_2> = <b_1, b_2> = c^2. The top mode is a blend for every c > 0 (no bifurcation), the plateau
   level is sigma_2^2 / 2 (sigma_k = singular values of the 2x2 problem), and the order is greedy
   as sigma -> 0 (unique local max of g, DLN). *Derived*.
+
+### 4(a).1 Results — gradient flow as in step 1; 20 seeds per point
+
+`configs/e4a_nonorth.yaml`: whitened inputs, u_1 = e1, u_2 = c e1 + sqrt(1 - c^2) e2 at every site,
+weights (1, s2), s2 in {0.7, 1}, c in {0, 0.2, 0.35, 0.45, 0.55, 0.65, 0.8}; binary-4 at sigma = 0.05,
+MPS-4 at sigma = 0.1. Results `results/e4a_nonorth_plateaus.csv`, figure `e4a_nonorth_summary.png`,
+predictions `rank1_predictions_e2_misaligned_e4a_nonorth.csv`.
+
+1. **Number of rank-1 saddles** — *derived and numerically confirmed*: on MPS-4 the constrained
+   minimization finds two rank-1 local minima for c <= 0.45 and one for c >= 0.55 at s2 = 1
+   (threshold c* = (N-2)/N = 1/2), and two for c <= 0.35, one for c >= 0.45 at s2 = 0.7 (fold between
+   0.35 and 0.45). On binary-4 there is a single rank-1 minimum for every c > 0 (matrix-like), except
+   numerically near-degenerate duplicates.
+2. **Plateaus sit at these critical points, never at a component** — *empirical*: binary-4 first
+   plateau = predicted value to median 5e-5 - 2e-3 relative, |cos| with the predicted tensor >= 0.97
+   (>= 0.9999 for c >= 0.35); MPS-4 to 2e-6 (c = 0) ... 3% (c = 0.8; plateau barely resolved, below).
+   The plateau level falls with c (more of the second component is captured by the blended rank-1 fit),
+   e.g. binary s2 = 0.7: 0.33 / 0.25 / 0.04 L(0) at c = 0 / 0.45 / 0.8.
+3. **The second plateau changes character on MPS-4, not on binary-4** — *empirical*: median duration
+   of the rank-1 plateau (sigma = 0.1 / 0.05): MPS-4 137 -> 8.2 -> 2.2 -> ~1.7 for c = 0 -> 0.2 -> 0.35 ->
+   0.8 (s2 = 0.7; same for s2 = 1); binary-4 35 -> 32 -> 33 -> 152 (it *grows* with c, because the
+   second singular value of the (01|23) matricization shrinks and binary-4's next escape is always a
+   3-core DLN route). On MPS-4 any overlap opens a 2-core strict-saddle route (theory_teachers.md R4,
+   R7), so at sigma = 0.1 the two learning events nearly merge (separation ratio < 3: by the rules of
+   diagnostics.md these runs are "rich, non-incremental" at this sigma). Scaling with sigma: section
+   4(a).2 (`configs/e4a_sigma.yaml`).
+4. Order: binary-4 learns the larger component first in 75-90% of runs (s2 = 0.7); with s2 = 1 the
+   choice is 50/50, as expected from symmetry.
 
 ## Results
 

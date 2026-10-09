@@ -61,10 +61,10 @@ def analyze_run(path, spec, preds):
     # alignment with predicted rank-1 tensors
     y = d["y"]
     w_pl = to_dense(spec, spec.unflatten(torch.from_numpy(y[km].copy())))
+    idx = np.unique(np.r_[np.arange(0, km + 1, max(1, km // 200)), km])
     norms = np.array([float(to_dense(spec, spec.unflatten(torch.from_numpy(y[k].copy()))).norm())
-                      for k in range(0, km + 1, max(1, km // 200))])
-    idx = np.arange(0, km + 1, max(1, km // 200))
-    early = idx[np.argmax(norms >= 0.2 * float(w_pl.norm()))]
+                      for k in idx])
+    early = idx[np.argmax(norms >= 0.2 * float(w_pl.norm()))]  # km itself always qualifies
     w_early = to_dense(spec, spec.unflatten(torch.from_numpy(y[early].copy())))
     for kind in ("race", "saddle"):
         cands = [p[1] for p in preds if p[0]["kind"] == kind]

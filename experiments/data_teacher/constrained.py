@@ -47,14 +47,19 @@ def constrained_minima(spec_r: TTNSpec, loss_of_dense, n_starts=20, seed=0, tol=
         found.append(dict(loss=res.fun, W=w, grad_norm=float(np.linalg.norm(res.jac))))
     found.sort(key=lambda f: f["loss"])
     distinct = []
+
+    def same(a, b):
+        # Same critical point: equal loss AND the same tensor (symmetric minima have equal loss).
+        close_loss = abs(a["loss"] - b["loss"]) <= tol * max(abs(b["loss"]), 1e-12)
+        return close_loss and float((a["W"] - b["W"]).norm()) <= 1e-3 * float(b["W"].norm())
+
     for f in found:
-        if not distinct or all(abs(f["loss"] - d["loss"]) > tol * max(abs(d["loss"]), 1e-12)
-                               for d in distinct):
+        match = next((d for d in distinct if same(f, d)), None)
+        if match is None:
             f["count"] = 1
             distinct.append(f)
         else:
-            next(d for d in distinct
-                 if abs(f["loss"] - d["loss"]) <= tol * max(abs(d["loss"]), 1e-12))["count"] += 1
+            match["count"] += 1
     return distinct
 
 
