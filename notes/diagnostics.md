@@ -22,8 +22,12 @@ delta_K threshold in {0.05, 0.1, 0.2}, separation threshold in {2, 3, 5}). Libra
 
 ## Learning events
 
-- For CP teachers, event r occurs at t_r = first time a_r(t) crosses 1/2. Its width is
-  w_r = t(a_r = 0.9) - t(a_r = 0.1).
+- For CP teachers, event r occurs at t_r = first time a_r(t) crosses 1/2. Its width is the duration of
+  the **final rise**: w_r = t(a_r first reaches 0.9) - t(last upward crossing of 0.1 before that).
+  Non-learned components can rise transiently while another component is learned (observed: a_2 up to
+  0.41 during the first escape on binary N = 4, then back down); a first-crossing width would then span
+  the whole plateau and misclassify clean S2S runs (`ttn.diagnostics.event_widths`). If a transient
+  exceeds 1/2, use the last upward crossing (`crossing_times(..., last=True)`) and report it.
 - For general teachers, event (e, k) occurs when s_k^e(t) first crosses half of its final value; its
   width is the time between the 10% and 90% crossings of that final value (as for components). The
   event set is the distinct times after merging events closer than their widths (a single
