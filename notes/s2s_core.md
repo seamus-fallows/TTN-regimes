@@ -257,14 +257,16 @@ linear time (no duration read off the log grid).
   and 5e-11 at sigma = 0.07 (binary8); the next singular value is <= 0.07 s_min (median 1e-5 .. 3e-4 s_min).
   Close teacher: the same except binary4 at sigma >= 0.05 (overlapping events; max 0.32, median 1e-4).
   (`max_rel_plateau_spectrum_err`, `max_plateau_next_sv_over_smin` in `results/main_runs.csv`.)
-- **Bond spectra grow one value at a time on every edge simultaneously**: in 213/236 runs with
-  event-window spectra, each event raises the number of singular values above s_r/2 by exactly one on
-  every edge, and all edges step at the same output sample of the refined window (spread < width/40).
-  The 23 exceptions are overlapping events (two ranks in one window: binary4, close teacher,
-  sigma >= 0.05). Effective bond rank 0 -> 1 -> 2 -> 3 (figure b).
+- **Bond spectra grow one value at a time on every edge simultaneously**: from the bond spectra recorded
+  in the refined event windows, each event raises the number of singular values above f s_r (f = 1/2,
+  or the nearest of 0.75, 0.3, ... that avoids the weights already learned) by exactly one on every
+  edge, in 517 of 551 complete runs (all sweeps, K = 3, 4, 7); the edges step within a median 0 and at
+  most 0.05 event widths of each other (HT4: up to 0.6). Exceptions: 28 binary4 close-teacher runs at
+  sigma >= 0.05 (overlapping events: two ranks in one window) and 6 HT4 runs. Effective bond rank
+  0 -> 1 -> 2 -> 3 (figure b).
 - **Order** (recorded; `order` studies it): binary4 learns the largest component first in 320/320
-  runs' first event (matrix-like, greedy); the full order is greedy in 157/160 at chi = 3, 6 ... (close
-  teacher: 0.9-0.96). On mps4 the first component is random (P(largest first) = 0.5-0.8 per cell) but is
+  runs' first event (matrix-like, greedy); the full order is greedy in 160/160 with the separated teacher and
+  in 89-95% with the close teacher. On mps4 the first component is random (P(largest first) = 0.5-0.8 per cell) but is
   the same at every sigma for each seed (10/10 seeds in every cell), as the race picture predicts
   (theory_escape E8).
 

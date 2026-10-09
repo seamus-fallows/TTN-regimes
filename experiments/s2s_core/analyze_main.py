@@ -78,6 +78,25 @@ def load(raw: Path) -> pd.DataFrame:
         lam_min = [p["saddle"]["lambda_min"] for p in plateaus if "saddle" in p]
         lam_max = [p["saddle"]["lambda_max"] for p in plateaus if "saddle" in p]
         n_neg = [p["saddle"]["n_negative"] for p in plateaus if "saddle" in p]
+        # Edge check recomputed from the saved event-window spectra with a threshold f s_r that
+        # avoids the weights already learned (s_r / 2 can coincide with one, e.g. 2 / 2 = 1).
+        edge_ok, edge_spread = [], []
+        if complete:
+            dz = np.load(f.with_suffix(".npz"))
+            for j, r in enumerate(order):
+                key = f"fine_spectra_{r}"
+                if key not in dz:
+                    continue
+                sr = s["weights"][r]
+                prev = [s["weights"][q] for q in order[:j]]
+                fsel = next((fr for fr in (0.5, 0.75, 0.3, 0.85, 0.2)
+                             if all(abs(fr * sr - x) >= 0.15 * sr for x in prev)), 0.5)
+                tz, sz = dz[f"fine_t_{r}"], np.nan_to_num(dz[key])
+                rk = (sz > fsel * sr).sum(axis=-1)
+                steps = [tz[np.flatnonzero(rk[:, e] >= rk[-1, e])[0]] for e in range(rk.shape[1])]
+                edge_ok.append(bool(np.all(rk[-1] - rk[0] == 1)))
+                if np.isfinite(w[r]) and w[r] > 0:
+                    edge_spread.append((max(steps) - min(steps)) / w[r])
         # theory_saddles R10 (k = K for odeco, A = 1): at a plateau midpoint the most negative
         # eigenvalue is ~ -(K-1) s_r b^(K-2), b = (s_r |a_r|)^(1/K), for the dormant component r with
         # the largest such value.
@@ -116,8 +135,8 @@ def load(raw: Path) -> pd.DataFrame:
             "edge_spread_over_width_max": max(
                 [(max(v) - min(v)) / w[int(r)] for r, v in s.get("edge_rank_step_times", {}).items()
                  if np.isfinite(w[int(r)]) and w[int(r)] > 0] or [np.nan]),
-            "edge_rank_change_all_one": (all(all(x == 1 for x in v) for v in s["edge_rank_change"].values())
-                                         if s.get("edge_rank_change") else np.nan),
+            "edge_rank_change_all_one": all(edge_ok) if edge_ok else np.nan,
+            "edge_spread_over_width_max2": max(edge_spread) if edge_spread else np.nan,
             "drift": s["max_conservation_drift"], "q0_max": s["q0_max"], "wall": s["wall_time"],
         }
         rows.append(row)
