@@ -7,7 +7,9 @@ sigma: run counts by class, S2S fraction, plateau-level errors, Hessian summary)
   complete    all components learned, every event resolved
   floor       not complete, and some dormant amplitude |<W,U_r>| fell below 1e-14 after the first
               escape (its later escape would be seeded by float64 roundoff: not physics)
-  stalled     not complete, dormant amplitudes stayed above 1e-14 (run hit t_max / step / wall limit)
+  stalled     not complete, dormant amplitudes stayed above 1e-14, and the run reached t_max
+              (1e3 x the RMS-overlap escape time of the weakest component)
+  unresolved  not complete, above the floor, stopped by the step or wall budget (still evolving)
 """
 
 from __future__ import annotations
@@ -37,7 +39,14 @@ def load(raw: Path) -> pd.DataFrame:
         # still dormant then.
         after = [v for row in s["dormant_min_between_events"][1:] for v in row.values()]
         min_after = min(after) if after else np.nan
-        cls = "complete" if complete else ("floor" if np.isfinite(min_after) and min_after < FLOOR else "stalled")
+        if complete:
+            cls = "complete"
+        elif np.isfinite(min_after) and min_after < FLOOR:
+            cls = "floor"
+        elif s["stop_reason"] == "completed":
+            cls = "stalled"
+        else:
+            cls = "unresolved"  # stopped by the step / wall budget while still above the floor
         plateaus = s["plateaus"]
         rel_level = [abs(p["loss"] - p["partial_fit_level"]) / p["partial_fit_level"] for p in plateaus]
         lam_min = [p["saddle"]["lambda_min"] for p in plateaus if "saddle" in p]
@@ -85,6 +94,7 @@ def summarize(df: pd.DataFrame) -> pd.DataFrame:
         complete=("class", lambda c: int((c == "complete").sum())),
         floor=("class", lambda c: int((c == "floor").sum())),
         stalled=("class", lambda c: int((c == "stalled").sum())),
+        unresolved=("class", lambda c: int((c == "unresolved").sum())),
         s2s=("s2s", "sum"),
         greedy=("greedy", "sum"),
         rho_min_median=("rho_min", "median"),

@@ -337,6 +337,7 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
         **{k: v for k, v in tr.data.items() if k not in ("params",)},
         **{f"fine_{k}": v for k, v in fine.items()},
         mid_params=np.array([params[int(np.flatnonzero(t == tm)[0])] for tm in mids if np.isfinite(tm)]),
+        theta_end=params[-1], theta0=theta0.numpy(),
         meta=np.array(json.dumps(tr.meta, default=_json)),
     )
     summary = {

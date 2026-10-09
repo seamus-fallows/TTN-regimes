@@ -193,3 +193,12 @@ much, vs sigma, K, chi, and does a gauge-balanced init avoid it?
   constant), as measured. Consequence (derived): the trap time 1/gamma ~ sigma^-2 competes with the
   escape time ~ sigma^-(K-2): for K = 4 both scale alike, so whether a seed traps is sigma-independent
   (as measured); for K >= 5 a trapped end dies long before the route can escape.
+- **Sign rule checked on two trapped runs** (empirical; mps4, chi = 3, sigma = 0.01, separated
+  teacher, seeds 5 and 6, re-run with the final state saved): with nu = the bond direction left free by
+  the two learned components at each end edge and Q from the init (conserved), Q_nu nu makes the END
+  core the light side at both route ends (child end core 0: Q_nu nu = -4.7e-5, -3.4e-5; root end core
+  3: +1.0e-4, +5.0e-5), i.e. every end is unfavourable, the condition of theory_saddles v2 section 8
+  for a dead route. Both ends then decay at the same rate (3.3e-5 / 3.1e-5 and 6.9e-6 / 6.7e-6): one
+  coupled route mode, 3-15x slower than the single-end estimate s_q |Q_nu nu| (which ignores the
+  |y_route|^2 term). So the reduced model gives the sign and the sigma^2 scaling, the magnitude only to
+  an order of magnitude.
