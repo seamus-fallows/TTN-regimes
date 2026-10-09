@@ -37,7 +37,7 @@ A tree is given by a parent array and the list of sites attached to each node. B
 
 | name | description | K |
 |---|---|---|
-| `binary` | balanced binary tree; bottom nodes carry up to 2 sites; internal nodes have 2 children | N - 1 when N is a power of 2 (more otherwise) |
+| `binary` | balanced binary tree; bottom nodes carry 2 sites; internal nodes have 2 children (for N not a power of 2 a lone site attaches to its parent node) | N - 1 |
 | `mps` | chain (caterpillar): node k carries site k; the most unbalanced tree | N |
 | `ht` | hierarchical Tucker: balanced binary tree plus one leaf core per site | 2N - 1 |
 | custom | any parent array / site assignment | - |

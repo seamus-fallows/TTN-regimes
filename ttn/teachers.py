@@ -3,7 +3,8 @@
 Two representations:
 - `CPTeacher`: W* = sum_r s_r u_r^(1) (x) ... (x) u_r^(N). Inner products with any TTN are
   tree-agnostic (evaluate the TTN on the rank-one terms). "Odeco" teachers (u_r^(i) orthonormal over
-  r at every site) have exactly the weights s_r as Schmidt values on every bond of every tree.
+  r at every site) have exactly the weights s_r as Schmidt values on every bond of every tree (for
+  whitened inputs; the Sigma-weighted values differ under anisotropic site covariances).
 - `TTNTeacher`: W* given as a TTN on some tree (the student's or another).
 """
 
@@ -11,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import numpy as np
 import torch
 
 from ttn.network import Cores, TTNSpec, forward, inner, to_dense
@@ -49,12 +51,21 @@ class CPTeacher:
             return [self.factors[:, i, :] for i in range(self.n_sites)]
         return [self.factors[:, i, :] @ site_metrics[i] for i in range(self.n_sites)]
 
-    def norm2(self, site_metrics: list[torch.Tensor] | None = None) -> torch.Tensor:
+    def gram(self, site_metrics: list[torch.Tensor] | None = None) -> torch.Tensor:
+        """G[r, r'] = <U_r, M U_r'> for the rank-one terms U_r = (x)_i u_r^(i)."""
         vecs = self._metric_vectors(site_metrics)
-        gram = torch.ones(self.n_components, self.n_components, dtype=self.weights.dtype)
+        gram = torch.ones(
+            self.n_components,
+            self.n_components,
+            dtype=self.weights.dtype,
+            device=self.weights.device,
+        )
         for i in range(self.n_sites):
             gram = gram * (self.factors[:, i, :] @ vecs[i].T)
-        return self.weights @ gram @ self.weights
+        return gram
+
+    def norm2(self, site_metrics: list[torch.Tensor] | None = None) -> torch.Tensor:
+        return self.weights @ self.gram(site_metrics) @ self.weights
 
     def inner_ttn(
         self, spec: TTNSpec, cores: Cores, site_metrics: list[torch.Tensor] | None = None
@@ -65,9 +76,12 @@ class CPTeacher:
     def component_overlaps(
         self, spec: TTNSpec, cores: Cores, site_metrics: list[torch.Tensor] | None = None
     ) -> torch.Tensor:
-        """a_r = <W, (x)_i u_r^(i)>_M / s_r. For an odeco teacher with whitened inputs, a_r is the
-        fraction of component r learned (0 at small init, 1 at the global minimum)."""
-        return forward(spec, cores, self._metric_vectors(site_metrics)) / self.weights
+        """a_r = <W, M U_r> / <W*, M U_r>, U_r = (x)_i u_r^(i): 0 at small init, 1 at W = W* for
+        any site metrics. For an odeco teacher with whitened inputs <W*, U_r> = s_r, so a_r is the
+        fraction of component r learned. (Dividing by s_r instead would converge to
+        prod_i <u_r, M_i u_r> != 1 under anisotropic inputs.)"""
+        target = self.gram(site_metrics) @ self.weights
+        return forward(spec, cores, self._metric_vectors(site_metrics)) / target
 
 
 @dataclass
@@ -97,6 +111,17 @@ class TTNTeacher:
 # ---- constructors ----------------------------------------------------------------------------
 
 
+def teacher_generator(seed: int) -> torch.Generator:
+    """Random stream for teacher construction, independent of `TTNSpec.init(seed=...)`.
+
+    With a plain manual_seed(seed), teacher and student init draw the same Gaussians for equal
+    seeds (both default to 0): random_ttn_teacher(spec) is then exactly proportional to
+    spec.init(sigma), and an odeco/pattern teacher's first site basis is the Q factor of the first
+    core's Gaussian matrix (the student's first core is triangular in the teacher basis)."""
+    mixed = np.random.SeedSequence([0x7EAC, seed]).generate_state(1, dtype=np.uint64)[0]
+    return torch.Generator().manual_seed(int(mixed))
+
+
 def random_orthogonal(d: int, generator: torch.Generator, dtype=torch.float64) -> torch.Tensor:
     """Haar-random orthogonal d x d matrix."""
     q, r = torch.linalg.qr(torch.randn(d, d, generator=generator, dtype=dtype))
@@ -109,7 +134,7 @@ def site_bases(
     """(N, d, d): an orthonormal basis per site (columns). basis = 'random' (Haar) or 'standard'."""
     if basis == "standard":
         return torch.eye(d, dtype=dtype).expand(n_sites, d, d).clone()
-    g = torch.Generator().manual_seed(seed)
+    g = teacher_generator(seed)
     return torch.stack([random_orthogonal(d, g, dtype) for _ in range(n_sites)])
 
 
@@ -147,7 +172,7 @@ def random_cp_teacher(
     n_sites: int, d: int, weights: list[float] | torch.Tensor, seed: int = 0
 ) -> CPTeacher:
     """Unit-norm Gaussian factors (generically non-orthogonal components)."""
-    g = torch.Generator().manual_seed(seed)
+    g = teacher_generator(seed)
     f = torch.randn(len(weights), n_sites, d, generator=g, dtype=torch.float64)
     f = f / f.norm(dim=-1, keepdim=True)
     return CPTeacher(torch.as_tensor(weights, dtype=torch.float64), f)
@@ -155,7 +180,7 @@ def random_cp_teacher(
 
 def random_ttn_teacher(spec: TTNSpec, seed: int = 0, norm: float = 1.0) -> TTNTeacher:
     """Gaussian cores (fan-in init), rescaled so that ||W*||_F = norm."""
-    cores = spec.init(sigma=1.0, seed=seed)
+    cores = spec.init(sigma=1.0, generator=teacher_generator(seed))
     current = inner(spec, cores, cores).sqrt()
     scale = (norm / current) ** (1.0 / spec.n_cores)
     return TTNTeacher(spec, [c * scale for c in cores])
@@ -166,7 +191,10 @@ class ShiftedTeacher:
     """Target W* + W_0, where W_0 is the student's initial tensor (Chizat et al.'s centred model).
 
     Training the TTN on this target is training f_theta - f_theta0 on W*: the initial function is
-    removed exactly, at any init scale, without changing the architecture.
+    removed exactly (in exact arithmetic), without changing the architecture. Numerically the loss
+    is a difference of terms of size ||W_0||^2 ~ sigma^(2K): its absolute error is ~1e-16 ||W_0||^2
+    (garbage for K = 7 at sigma >= 10). For large init scales use `antisymmetric_double` with
+    `sum_difference_cores`, which is cancellation-free.
     """
 
     base: CPTeacher | TTNTeacher
