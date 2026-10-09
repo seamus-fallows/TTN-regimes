@@ -19,7 +19,10 @@ Read this file first; it is how the lead and all agents recover context. Keep it
   lead copies them to `data/<experiment>/` locally (gitignored). Each experiment README says where.
 - Status tags for claims: **proven**, **derived** (under stated assumptions), **empirical**,
   **conjecture**. The report marks new vs known results.
-- Write large files in small pieces (an agent died hitting the 64k output-token limit writing one file).
+- Write large files in small pieces and keep final answers short (two agents died hitting the 64k output-token limit).
+- Call `torch.set_num_threads(1)` in every experiment process (small linear algebra is 100-1000x slower with many threads on a loaded machine).
+- Later plateaus are stiff (learned directions have O(1) Hessian eigenvalues): use `integrate_gf(..., method="lsoda")` once a component is learned.
+- float64 floor: a dormant component whose escape signal falls below ~1e-15 is seeded by roundoff, not by the init; flag such runs.
 
 ## Layout
 
@@ -43,10 +46,10 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 | `general.py` | `inner_general`: TTNs on different trees | main |
 | `teachers.py` | `CPTeacher` (odeco / pattern / random CP; `component_overlaps` reaches 1 at W* also under covariance), `TTNTeacher`, `ShiftedTeacher`, `teacher_generator` | main |
 | `losses.py` | exact `population_loss`, `centred_population_loss` (use for the centred model at large sigma), `empirical_loss`, `sample_inputs`, `power_law_cov` | main |
-| `diagnostics.py` | ranks, events (`crossing_times`, `event_widths` = final rise, `separation_ratios`), `find_plateaus`, `classify_regime`, `plateau_scaling`, tangent kernels, Hessian/Lanczos, gauge directions + projection, `saddle_type` | landing |
-| `theory.py` | balanced/unbalanced mode solutions, exact and asymptotic escape times, odeco aligned predictions | landing |
-| `plotting.py` | style, loss/overlap/spectra/scaling/phase-diagram plots, `fit_power_law`, `savefig` | landing |
-| `dynamics.py` | `Problem`, `integrate_gf` (adaptive DP5), `run_gd`, `run_sgd`, `Recorder`, `Trajectory` | being built |
+| `diagnostics.py` | ranks, events (`crossing_times`, `event_widths` = final rise, `separation_ratios`), `find_plateaus`, `classify_regime`, `plateau_scaling`, tangent kernels, Hessian/Lanczos, gauge directions + projection, `saddle_type` | main (v0, under review) |
+| `theory.py` | balanced/unbalanced mode solutions, exact and asymptotic escape times, odeco aligned predictions | main (v0, under review) |
+| `plotting.py` | style, loss/overlap/spectra/scaling/phase-diagram plots, `fit_power_law`, `savefig` | main (v0, under review) |
+| `dynamics.py` | `Problem` (cancellation-free `effective` tensor for centred/two-copy), `integrate_gf` (`method="dopri5"` or `"lsoda"` for stiff later plateaus, `"radau"`), `run_gd`, `run_sgd`, `make_dataset`, `Recorder`, `Trajectory`, `log_time_grid` | main (v0, under review) |
 | `config.py`, `runner.py` | YAML configs, `run`, sweeps (parallel, resumable), CLI | being built |
 
 "landing" = written and tested locally, not yet committed; "main" = on main.
