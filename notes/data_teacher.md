@@ -243,12 +243,14 @@ Sigma-loss; "race" tensor = best bond-rank-1 approximation of Sigma W*). Results
    variants (same landscape, Fact B), and the plateau state has |cos| >= 0.998 with the predicted
    critical tensor (theta <= 30). Exception: MPS-4, theta = 45: the "plateau" lasts < 1 time unit and is
    not resolved (errors up to 6%).
-2. **Early alignment with Sigma W*, then realignment** — *empirical; TTN analogue of Atanasov et al.
-   2022*: when W has grown to 20% of its plateau norm, it is aligned with the race tensor (top
+2. **Early alignment with Sigma W*, then realignment** — *empirical on binary-4 only (review M5: on
+   MPS-4 the early state is closer to the saddle than to the race tensor in 45-75% of runs at
+   theta = 10-30 deg; only at 45 deg does the race tensor win); TTN analogue of Atanasov et al. 2022*: when W has grown to 20% of its plateau norm, it is aligned with the race tensor (top
    bond-rank-1 approximation of Sigma W*; median |cos| 0.90-0.997) more than with the saddle it
    reaches (|cos| down to 0.44-0.88 at theta = 45); on the plateau |cos| with the saddle is 0.998-1.
    At theta = 0 the two tensors coincide.
-3. **Misalignment shortens the rank-1 plateau of MPS-4 by orders of magnitude** — *empirical* (single
+3. **[WITHDRAWN after the review: these single-sigma durations are mostly one output-grid step or false
+   events of a fixed s_2 > 1e-2 rule; see R2.0 and the dense re-analysis]** **Misalignment shortens the rank-1 plateau of MPS-4 by orders of magnitude** — *empirical* (single
    sigma, pilot grid: values below ~1 time unit are resolution-limited; the sigma law is item 4): median
    t_2 - t_1 (t_2 = first time max_e s_2^e > 1e-2) is 539 / 38 / 4.2 / 1.2 / 0.3 at theta = 0 / 10 / 20 /
    30 / 45 (alpha = 1; similar for alpha = 0.5: 327 / 168 / 34 / 3.3 / 0.9). On binary-4 it shrinks
@@ -305,7 +307,8 @@ figure `results/e3_correlated_summary.png`; predictions `results/rank1_predictio
    them at rho = 0.5), i.e. it blends both components and contains the non-teacher cross terms
    e1 e1 (x) e2 e2 that the shared factor makes correlated with f*. The first saddle is no longer a
    partial fit of the teacher.
-3. **MPS-4: same saddle, much shorter second plateau** — *empirical* (durations below ~1 time unit are
+3. **[Durations WITHDRAWN after the review (grid-limited); the sigma law under correlated inputs is
+   measured on a dense grid in R2.3]** **MPS-4: same saddle, much shorter second plateau** — *empirical* (durations below ~1 time unit are
    at the resolution of the 2000-point output grid of these pilot-integrator runs; the law in sigma was
    not measured for step 3 because the library's Problem has no non-product metric — that it is
    logarithmic, as in 2 and 4a, is a *conjecture* based on the same mechanism): the rank-1 saddle stays the pure
@@ -353,7 +356,8 @@ predictions `rank1_predictions_e2_misaligned_e4a_nonorth.csv`.
    (>= 0.9999 for c >= 0.35); MPS-4 to 2e-6 (c = 0) ... 3% (c = 0.8; plateau barely resolved, below).
    The plateau level falls with c (more of the second component is captured by the blended rank-1 fit),
    e.g. binary s2 = 0.7: 0.33 / 0.25 / 0.04 L(0) at c = 0 / 0.45 / 0.8.
-3. **The second plateau changes character on MPS-4, not on binary-4** — *empirical*: median duration
+3. **[Single-sigma durations WITHDRAWN after the review (grid-limited / fixed-threshold events); the law is
+   measured per seed in section 4(a).2 and R2.0]** **The second plateau changes character on MPS-4, not on binary-4** — *empirical*: median duration
    of the rank-1 plateau (sigma = 0.1 / 0.05): MPS-4 137 -> 8.2 -> 2.2 -> ~1.7 for c = 0 -> 0.2 -> 0.35 ->
    0.8 (s2 = 0.7; same for s2 = 1); binary-4 35 -> 32 -> 33 -> 152 (it *grows* with c, because the
    second singular value of the (01|23) matricization shrinks and binary-4's next escape is always a

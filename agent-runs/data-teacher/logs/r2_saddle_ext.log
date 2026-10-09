@@ -369,3 +369,4 @@ randmps8_303 mps 1e-05 4 t_esc=68.43
 randbin8_302 ht 1e-05 3 t_esc=5.019e+05
 misaligned8_45 ht 1e-05 1 t_esc=3.837e+07
 nonorth8_c0.7 ht 1e-05 1 t_esc=1.873e+06
+nonorth_c0.2 binary 3e-05 0 t_esc=7.161e+04
