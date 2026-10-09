@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-09 22:00 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-09 22:12 UTC
 
 ## Summary
 Task: phase diagrams of saddle-to-saddle (S2S) / rich / lazy dynamics over init scale sigma, bond
@@ -123,6 +123,10 @@ Other interim findings (N = 4):
     routes), and the centred target is floored near the expected boundary. For K >= 10 at chi = 6 the
     sigma grid is a window around the predicted boundary (0.4-1.6) integrated with dopri5, because
     LSODA's Hessian costs ~5 min per evaluation for P ~ 1800 under full load.
+    *Revised 22:10:* those dopri5 runs stopped at their step cap mid-plateau (stiff after the first
+    escape), so the full K range is now mapped at **d = 2** (teacher [3, 2], chi = 4 = 2R and chi = 2 = R;
+    <= 600 parameters, LSODA everywhere; `configs/sigma_K_d2.yaml`), as in theory P15. The d = 3 sweep
+    keeps K <= 8 (chi = 3, 6) and the chi = 3 stall slice up to K = 15.
 
 ## Files left on the machine
 - `/root/outputs/regime_map/` raw outputs (none yet).
@@ -155,3 +159,4 @@ Other interim findings (N = 4):
 - 21:08 plain-model convergence/stop floor now relative to 1/2 ||W*||^2 (decision 11); dropped 140 affected plain rows; relaunched all sweeps (5516 runs to do)
 - 21:45 library N = 4 data: per-seed rho exponent on the S2S side -1.03 (seed sd 0.001-0.09) vs predicted -(K-2) = -1 (interim log-grid data had given -0.5..-0.7); continuous per-seed threshold sensitivity
 - 21:55 heavy runs infeasible under load (binary16 chi = 6 Hessian 330 s, N = 8 chi = 81 gradient 0.2 s); stopped and restructured (decisions 13-14); relaunched 5749 runs
+- 22:10 d = 3 K >= 10 runs at chi = 6 stopped at step caps mid-plateau; moved the K sweep to d = 2 (sigma_K_d2, 1428 runs, P <= 600, LSODA); relaunched
