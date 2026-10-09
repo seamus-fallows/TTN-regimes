@@ -25,8 +25,10 @@ import pandas as pd
 from experiments.optimizers.analysis import RESULTS, collect
 from experiments.optimizers.plots import fig_adam_escape, fig_implicit_bias, fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
 
-B4_SCALING = ["GF", "heavy ball, lr 0.002", "Adam, lr 0.001", "Adam, lr 0.001, b2 0.9", "RMSProp, lr 0.001",
-              "GD + re-gauge, lr 0.02, every 1", "Riemannian GD, lr 1", "ALS (1-site)"]
+# Riemannian GD and ALS / DMRG are left out: their events fall within the first 1-2 steps / micro-steps
+# at every sigma (unresolved); their time to convergence has p = 0 (scaling_b4_exponents.csv).
+B4_SCALING = ["GF", "heavy ball, lr 0.002", "Adam, lr 0.001", "Adam, lr 0.001, b2 0.9", "Adam, lr 0.01",
+              "RMSProp, lr 0.001", "GD + re-gauge, lr 0.02, every 1"]
 B4_SIDE = ["GF", "Adam, lr 0.001", "GD + re-gauge, lr 0.02, every 1", "Riemannian GD, lr 0.1", "ALS (1-site)"]
 
 

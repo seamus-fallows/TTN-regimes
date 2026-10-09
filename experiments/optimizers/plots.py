@@ -140,6 +140,9 @@ def fig_scaling(name: str, methods: list[str], quantities=("t_first", "gap_0", "
             g = df[(df["method"] == m) & df["converged"]]
             if g.empty or q not in g:
                 continue
+            res_col = "t_first_resolved" if q == "t_first" else f"{q}_resolved"
+            if res_col in g:  # plot resolved events only (analysis standard 1)
+                g = g[g[res_col].astype(bool)]
             vals = g[q] * g["clock"]
             ok = np.isfinite(vals) & (vals > 0)
             # geometric means (the fit is in log space), error bars = s.e. of the mean log
