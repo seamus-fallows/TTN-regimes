@@ -298,7 +298,8 @@ figures `deep_side_<tree>_<teacher>_sigma0.3_seed0.png`, `later_b8_scaling.png`.
 2. **Fan-in GF stalls on MPS8 odeco** (0/12 converged by t = 2e6; dormant components die, overlaps
    ~1e-40, R12 trap) and partly on binary8 (4/6 at sigma = 0.3); the balanced version of the same W_0
    converges (12/12 binary8, 10/12 MPS8 by t = 2e6). Adam does not rescue MPS8 fan-in at lr 1e-3 (0/12
-   converged in 3e5 steps) but does in part at lr 1e-2 (7/12); on binary8 fan-in Adam converges 11/12.
+   converged in 3e5 steps) but does in part at lr 1e-2 (7/12); on binary8 fan-in Adam converges in
+   10/12 (lr 1e-3) and 12/12 (lr 1e-2) runs.
 3. **Adam's first escape is sigma-independent on deep trees too**: 107-115 steps (lr 1e-3) and 19-23
    steps (lr 1e-2) for sigma from 0.25 to 0.8 on binary8 (p = 0.04 +- 0.02 and 0.18 +- 0.05), while GF's
    grows 260-fold (p = 4.74 +- 0.18; theory K - 2 = 5).
@@ -324,7 +325,7 @@ figures `deep_side_<tree>_<teacher>_sigma0.3_seed0.png`, `later_b8_scaling.png`.
 7. **Re-gauged GD is sequential on deep trees**, with sigma-independent plateaus (`later_b8`: event
    times identical to 4 digits for sigma = 0.3-0.5; p = -0.02 +- 0.21, 0.20 +- 0.25, -0.05 +- 0.59), set by
    the overlaps of the random initial frames with the teacher (correction to 1.4). It also stalls: on
-   MPS8 odeco only 1/24 runs converged within 1e5 steps.
+   MPS8 odeco only 2/24 runs converged within 1e5 steps.
 8. **Gram-preconditioned GD** (scale-free damping) is unreliable on deep trees: overshoot then return,
    converging in 1/6 runs on MPS8 odeco at sigma = 0.3 within 1e5 steps (4/6 binary8), 6/6 on the E8 teacher.
 9. **Balance.** Adam / RMSProp end with balance index 0.37-0.82 (GF 0.000 from balanced init); the
