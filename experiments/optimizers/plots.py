@@ -380,3 +380,43 @@ def fig_adam_escape(tag=""):
     ax.legend(fontsize=5.5)
     tp.savefig(fig, FIG / f"adam_escape{tag}")
     return fig
+
+
+def fig_implicit_bias(name: str = "implicit_bias_b4"):
+    """Finite samples (binary4, chi = 4 > teacher rank 3): fraction of runs recovering the teacher
+    (population loss < 1e-2 L0... here < 1e-2 absolute, L0 = 7) and fraction ending with a full-chi
+    interpolant (effective rank 4 on an edge), against the number of samples. Only runs that reached
+    the training tolerance are counted for the rank panel (GF: the long t_max = 1e6 runs)."""
+    df = with_keys(collect(name))
+    gf_long = (df["optimizer"] == "gf") & (df["t_max"] == 1e6)
+    df = df[(df["optimizer"] != "gf") | gf_long].copy()
+    df.loc[gf_long, "method"] = "GF"
+    df = df[df["optimizer"] != "momentum"]
+    df["recovered"] = df["pop_loss_end"] < 1e-2
+    df["full_rank"] = df["eff_ranks_end"].astype(str).str.contains("4")
+    tp.set_style()
+    fig, axes = tp.subplots(1, 2, width=tp.TEXT_WIDTH, panel_aspect=0.75)
+    for m in ["GF", "Adam, lr 0.001", "Adam, lr 0.01", "RMSProp, lr 0.001"]:
+        g = df[df["method"] == m]
+        if g.empty:
+            continue
+        fam = g["optimizer"].iloc[0]
+        marker = "^" if m == "Adam, lr 0.01" else "o"
+        st = g.groupby("n_samples").agg(rec=("recovered", "mean"), full=("full_rank", "mean"), n=("seed", "count"))
+        se_r = np.sqrt(st["rec"] * (1 - st["rec"]) / st["n"])
+        se_f = np.sqrt(st["full"] * (1 - st["full"]) / st["n"])
+        axes[0].errorbar(st.index, st["rec"], yerr=se_r, fmt=marker + "-", ms=3.5, lw=1.0, color=FAMILY_COLOR[fam],
+                         mec="white", mew=0.5, label=m)
+        axes[1].errorbar(st.index, st["full"], yerr=se_f, fmt=marker + "-", ms=3.5, lw=1.0, color=FAMILY_COLOR[fam],
+                         mec="white", mew=0.5, label=m)
+    for ax in axes:
+        ax.axvline(45, color=tp.MUTED, lw=0.8, ls=":")
+        ax.set_xlabel("number of samples n")
+        ax.set_ylim(-0.05, 1.05)
+    axes[0].set_ylabel("teacher recovered (population loss < 0.01)")
+    axes[1].set_ylabel("ends with bond rank 4 > teacher rank 3")
+    axes[0].legend(fontsize=6)
+    axes[0].set_title("binary4, chi = 4, sigma in {0.01, 0.1}, 12 runs per point", fontsize=7)
+    axes[1].set_title("dotted: dimension of the rank-(3,3) manifold (45)", fontsize=7)
+    tp.savefig(fig, FIG / "implicit_bias_b4")
+    return fig

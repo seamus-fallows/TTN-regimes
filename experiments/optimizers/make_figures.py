@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 from experiments.optimizers.analysis import RESULTS, collect
-from experiments.optimizers.plots import fig_adam_escape, fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
+from experiments.optimizers.plots import fig_adam_escape, fig_implicit_bias, fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
 
 B4_SCALING = ["GF", "heavy ball, lr 0.002", "Adam, lr 0.001", "Adam, lr 0.001, b2 0.9", "RMSProp, lr 0.001",
               "GD + re-gauge, lr 0.02, every 1", "Riemannian GD, lr 1", "ALS (1-site)"]
@@ -74,7 +74,7 @@ def deep():
                          extra_filter={"tree": tree, "teacher": teacher, "init": "balanced"})
 
 
-FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "escape": fig_adam_escape, "deep": deep}
+FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "escape": fig_adam_escape, "deep": deep, "bias": fig_implicit_bias}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or FIGURES:
