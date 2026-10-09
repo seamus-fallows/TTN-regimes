@@ -47,8 +47,8 @@ def nonorth(cfg):
     u1[0] = 1.0
     u2 = torch.zeros(d, dtype=torch.float64)
     u2[0], u2[1] = c, math.sqrt(1 - c * c)
+    factors = torch.stack([u1.expand(n, d), u2.expand(n, d)]).clone()
     return CPTeacher(torch.as_tensor(weights, dtype=torch.float64), factors), None
-    return CPTeacher(torch.as_tensor(cfg["weights"], dtype=torch.float64), factors), None
 
 
 def absorbed(teacher: CPTeacher, metrics):
