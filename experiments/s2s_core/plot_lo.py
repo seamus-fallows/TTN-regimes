@@ -63,37 +63,38 @@ def main():
     args = ap.parse_args()
     res, out = Path(args.results), Path(args.out)
     tp.set_style()
-    df = pd.read_csv(res / "lo_chi.csv")
-    tab = chi_table(df)
-    tab.to_csv(out / "lo_chi_table.csv", index=False)
-    sl = slopes(tab, chi_min=2)
-    sl.to_csv(out / "lo_chi_slopes.csv", index=False)
-    print(tab.round(4).to_string())
-    print(sl.round(3).to_string())
+    if (res / "lo_chi.csv").exists():
+        df = pd.read_csv(res / "lo_chi.csv")
+        tab = chi_table(df)
+        tab.to_csv(out / "lo_chi_table.csv", index=False)
+        sl = slopes(tab, chi_min=2)
+        sl.to_csv(out / "lo_chi_slopes.csv", index=False)
+        print(tab.round(4).to_string())
+        print(sl.round(3).to_string())
 
-    trees = [t for t in TREES if t in set(tab.tree)]
-    fig, axes = plt.subplots(1, len(trees), figsize=(tp.TEXT_WIDTH, 2.3), layout="constrained", squeeze=False)
-    colors = tp.palette(2)
-    for ax, tree in zip(axes[0], trees):
-        for j, w in enumerate(["1", "3-2-1"]):
-            g = tab[(tab.tree == tree) & (tab.weights == w)].sort_values("chi")
-            if not len(g):
-                continue
-            lab = "single comp., $s=1$" if w == "1" else "$s=(3,2,1)$"
-            ax.errorbar(g.chi, g.T_median, yerr=[g.T_median - g.T_ci_lo, g.T_ci_hi - g.T_median],
-                        color=colors[j], marker="o", ms=3, lw=1.2, capsize=1.5, label=f"$\\hat t_1$, {lab}")
-            ax.plot(g.chi, g.tKH_median, color=colors[j], lw=0.8, ls="--",
-                    label="Kumar-Haupt $t_{KH}$" if j == 0 else None)
-            ax.axhline(g.P3.iloc[0], color=colors[j], lw=0.7, ls=":", label="RMS-overlap P3" if j == 0 else None)
-        K = int(tab[tab.tree == tree].K.iloc[0])
-        ax.set_xscale("log", base=2)
-        ax.set_yscale("log")
-        ax.set_xlabel(r"$\chi$")
-        ax.set_title(f"{tree} (K={K})", fontsize=8)
-    axes[0][0].set_ylabel(r"$\hat t_1=\lim\,\sigma^{K-2}t_1$")
-    h, lab = axes[0][0].get_legend_handles_labels()
-    fig.legend(h, lab, loc="outside lower center", ncols=4, fontsize=6.5)
-    tp.savefig(fig, out / "fig_e_chi")
+        trees = [t for t in TREES if t in set(tab.tree)]
+        fig, axes = plt.subplots(1, len(trees), figsize=(tp.TEXT_WIDTH, 2.3), layout="constrained", squeeze=False)
+        colors = tp.palette(2)
+        for ax, tree in zip(axes[0], trees):
+            for j, w in enumerate(["1", "3-2-1"]):
+                g = tab[(tab.tree == tree) & (tab.weights == w)].sort_values("chi")
+                if not len(g):
+                    continue
+                lab = "single comp., $s=1$" if w == "1" else "$s=(3,2,1)$"
+                ax.errorbar(g.chi, g.T_median, yerr=[g.T_median - g.T_ci_lo, g.T_ci_hi - g.T_median],
+                            color=colors[j], marker="o", ms=3, lw=1.2, capsize=1.5, label=f"$\\hat t_1$, {lab}")
+                ax.plot(g.chi, g.tKH_median, color=colors[j], lw=0.8, ls="--",
+                        label="Kumar-Haupt $t_{KH}$" if j == 0 else None)
+                ax.axhline(g.P3.iloc[0], color=colors[j], lw=0.7, ls=":", label="RMS-overlap P3" if j == 0 else None)
+            K = int(tab[tab.tree == tree].K.iloc[0])
+            ax.set_xscale("log", base=2)
+            ax.set_yscale("log")
+            ax.set_xlabel(r"$\chi$")
+            ax.set_title(f"{tree} (K={K})", fontsize=8)
+        axes[0][0].set_ylabel(r"$\hat t_1=\lim\,\sigma^{K-2}t_1$")
+        h, lab = axes[0][0].get_legend_handles_labels()
+        fig.legend(h, lab, loc="outside lower center", ncols=4, fontsize=6.5)
+        tp.savefig(fig, out / "fig_e_chi")
 
     if (res / "lo_K.csv").exists():
         dk = pd.read_csv(res / "lo_K.csv")
