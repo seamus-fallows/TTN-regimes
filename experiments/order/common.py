@@ -242,35 +242,13 @@ def crossings(t, x, level=0.5):
     return out
 
 
-def gauge_tangents(spec: TTNSpec, flat: torch.Tensor) -> torch.Tensor:
-    """Columns: generators delta G_v = G_v X (parent leg), delta G_p = -X G_p (v-leg) of the
-    GL(chi) gauge action on every edge, for X = elementary matrices."""
-    cores = spec.unflatten(flat)
-    t = spec.tree
-    cols = []
-    for v in t.edges:
-        p = t.parent[v]
-        chi = spec.bond_dims[v]
-        leg = len(t.sites[p]) + t.children[p].index(v)
-        for i in range(chi):
-            for j in range(chi):
-                x = torch.zeros(chi, chi, dtype=flat.dtype)
-                x[i, j] = 1.0
-                d = [torch.zeros_like(c) for c in cores]
-                d[v] = torch.tensordot(cores[v], x, dims=([cores[v].ndim - 1], [0]))
-                d[p] = -torch.movedim(torch.tensordot(cores[p], x, dims=([leg], [1])), -1, leg)
-                cols.append(spec.flatten(d))
-    return torch.stack(cols, 1)
+def projected_hessian(spec, teacher, y):
+    """Gauge-projected Hessian spectrum at y (library: ttn.diagnostics), plus the gauge rank."""
+    from ttn.diagnostics import gauge_complement, gauge_directions, project_out_gauge
 
-
-def projected_hessian(spec, teacher, y, rel_tol=1e-8):
-    """Eigenvalues of the loss Hessian restricted to the orthogonal complement of the gauge
-    tangent space at y (notes/diagnostics.md: H(t)); also returns the gauge-space dimension."""
     loss, _ = loss_grad_fn(spec, teacher)
     flat = torch.from_numpy(np.asarray(y, dtype=np.float64))
     h = torch.autograd.functional.hessian(loss, flat)
-    g = gauge_tangents(spec, flat)
-    u, s, _ = torch.linalg.svd(g, full_matrices=True)
-    rank = int((s > rel_tol * s.max()).sum())
-    comp = u[:, rank:]
-    return torch.linalg.eigvalsh(comp.T @ h @ comp).numpy(), rank
+    u = gauge_directions(spec, flat)
+    _, eigs = project_out_gauge(h, u)
+    return eigs.numpy(), spec.n_params - gauge_complement(u).shape[1]

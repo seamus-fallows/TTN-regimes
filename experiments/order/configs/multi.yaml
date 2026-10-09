@@ -1,0 +1,13 @@
+# Step 4: full order of R = 3, 4 odeco components with geometric weights (1, rho, rho^2, rho^3).
+# Library gradient flow (LSODA, rtol 1e-9, atol 1e-14), sigma = 0.03, 1500 log-spaced records,
+# stop at L < 1e-8 L(0) or t = 1e10. d = 4 (odeco needs d >= R), chi = 4.
+name: multi
+trees: ["binary:4", "mps:4", "mps:6", "binary:8"]
+d: [4]
+chi: [4]
+R: [3, 4]
+rho: [0.8, 0.9]
+sigma: 0.03
+t_max: 1.0e+10
+n_log: 1500
+seeds: 200
