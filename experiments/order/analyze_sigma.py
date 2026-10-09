@@ -109,26 +109,33 @@ def main():
     style.setup()
     groups = [s for s in names if s in set(tab.sweep)]
     fig, axes = plt.subplots(1, len(groups), figsize=(2.7 * len(groups), 2.8), squeeze=False)
+    rho_list = sorted(tab.rho.unique())
     for ax, name in zip(axes[0], groups):
         sub = tab[tab.sweep == name]
-        for ci, (key, g) in enumerate(sub.groupby(["chi", "rho"])):
-            col = style.SERIES[ci % len(style.SERIES)]
+        chis = sorted(sub.chi.unique())
+        for (chi, rho), g in sub.groupby(["chi", "rho"]):
+            col = style.SERIES[rho_list.index(rho)]  # colour = rho, marker fill = chi
+            filled = chi == chis[0]
             ok = g["sum"] > 0
             ax.errorbar(g.sigma[ok], g.p_wrong[ok],
                         yerr=[(g.p_wrong - g.ci_lo)[ok], (g.ci_hi - g.p_wrong)[ok]],
-                        fmt="o", color=col, ms=3.5, lw=0, elinewidth=0.8,
-                        label=f"chi={key[0]}, rho={key[1]}")
-            f = fits[(fits.sweep == name) & (fits.chi == key[0]) & (fits.rho == key[1])]
+                        fmt="o" if filled else "s", color=col, mfc=col if filled else "white",
+                        ms=3.5, lw=0, elinewidth=0.8,
+                        label=f"rho={rho}" if filled else None)
+            f = fits[(fits.sweep == name) & (fits.chi == chi) & (fits.rho == rho)]
             if M_OF.get(name) == 2 and len(f) and np.isfinite(f.gamma.iloc[0]):
                 ss = np.geomspace(g.sigma.min(), g.sigma.max(), 50)
-                ax.plot(ss, f.C.iloc[0] * ss ** f.gamma.iloc[0], color=col, lw=0.9)
-                ax.plot(ss, f.C.iloc[0] * ss ** f.gamma_pred.iloc[0], color=col, lw=0.7, ls=":")
+                ax.plot(ss, f.C.iloc[0] * ss ** f.gamma.iloc[0], color=col, lw=0.9,
+                        ls="-" if filled else "--")
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_ylim(5e-4, 1)
         ax.set_xlabel("sigma (per-core init scale)")
-        ax.set_title(f"{name} (m={M_OF.get(name)})", fontsize=8)
-        ax.legend(fontsize=5)
+        chi_txt = ", ".join(f"chi={c}" + (" (filled)" if c == chis[0] else " (open)") for c in chis)
+        ax.set_title(f"{name} (m={M_OF.get(name)}); {chi_txt}", fontsize=7)
+    handles = [plt.Line2D([], [], color=style.SERIES[i], marker="o", lw=0, ms=4, label=f"rho={r}")
+               for i, r in enumerate(rho_list)]
+    axes[0][-1].legend(handles=handles, fontsize=6, loc="lower right")
     axes[0][0].set_ylabel("P(smaller component first)")
     fig.savefig(RES / "sigma_scan.png")
     plt.close(fig)

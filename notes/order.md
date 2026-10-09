@@ -102,7 +102,72 @@ See `agent-runs/order/REPORT.md` (Results, step 1) for the table and numbers; da
 `experiments/order/results/main_summary.csv`, figure `results/main_pg_vs_rho.png`. Full GF, sigma = 0.01,
 400 seeds x 6 rho x 28 settings.
 
-### 7.2-7.5 (sigma scans, controls, chi scan, H1b, R >= 3): pending
+### 7.2 sigma dependence: m = 2 versus m >= 3 (complete)
+
+Full GF (RK45 with event location, rtol 1e-9, atol 1e-14), d = 2. Commands `sweep.py configs/b4_sigma.yaml`
+(binary4, chi 2 and 4, 1000 seeds, sigma 1e-4..0.1), `m4_sigma.yaml` (MPS4, chi 4, 400 seeds, sigma
+0.003-0.3), `b8_sigma.yaml` (binary8, chi 4, 400 seeds, sigma 0.01-0.3); `analyze_sigma.py`;
+`results/sigma_table.csv`, `results/sigma_fits.csv`, `results/sigma_scan.png`.
+
+- **m >= 3: P(greedy) does not depend on sigma** [empirical, confirms O1]. MPS4: P(smaller first) =
+  0.185 / 0.395 / 0.490 at rho = 0.5 / 0.8 / 0.95 for every sigma in 0.003-0.1; binary8: 0.240 / 0.4075 /
+  0.4875 for every sigma in 0.01-0.1. Per seed the winner is the same at all sigma <= 0.1 for 99.0-100% of
+  seeds (the few changes are at sigma = 0.3). Fitted gamma = 0.000 +- 0.004.
+- **m = 2 (binary4): P(smaller first) = C sigma^gamma** [empirical; exponent derived in section 5].
+  Fits over sigma = 1e-4..1e-2 (binomial ML, SE from a bootstrap over seeds, because the same seeds are
+  used at every sigma):
+
+  | rho | (1-rho)/rho | gamma, chi = 2 | gamma, chi = 4 |
+  |---|---|---|---|
+  | 0.7 | 0.429 | 0.35 +- 0.05 | 0.45 +- 0.09 |
+  | 0.8 | 0.250 | 0.232 +- 0.027 | 0.232 +- 0.028 |
+  | 0.9 | 0.111 | 0.110 +- 0.010 | 0.105 +- 0.010 |
+  | 0.95 | 0.053 | 0.045 +- 0.005 | 0.041 +- 0.005 |
+
+  Agreement within 1.5 SE for rho = 0.7-0.9; rho = 0.95 is 1.6-2.4 SE low (P(smaller first) >= 0.33 at
+  all sigma, i.e. far from the small-P regime the derivation assumes). rho = 0.5: wrong order only at
+  sigma >= 3e-3 (P = 0.033 / 0.021 at sigma = 0.1 for chi 2 / 4; 0 of 1000 at sigma <= 1e-3).
+  Wrong-order seeds at small sigma are (nearly) a subset of those at large sigma, as the threshold
+  picture (delta_0 < sigma^gamma) predicts. Values agree with the independent GF table of
+  `notes/theory_escape.md` 5.5 (rho = 0.7, d = chi = 2: 0.137 / 0.054 / 0.026 here vs their estimate
+  0.155 / 0.064 / 0.024 at sigma = 0.1 / 0.01 / 0.001).
+
+### 7.3 H1b (complete)
+
+Full GF with LSODA and the exact Hessian (rtol 1e-10, atol 1e-15), event times by root finding on the
+dense output, gauge-projected Hessian (`ttn.diagnostics`) at the minimum-speed point between the two
+events. `h1b.py configs/h1b_*.yaml`, `analyze_h1b.py`; `results/h1b_*.csv`, `results/h1b_fits.csv`,
+figures `results/h1b_correction_time.png`, `results/h1b_natural.png`, `results/h1b_example.png`.
+
+1. **Controlled start at the wrong saddle, binary4 (m = 2)**: component 2 learned exactly (balanced,
+   amplitude rho^(1/3)) plus a fan-in perturbation of scale sigma; 8 seeds x 6 sigma (1e-7..1e-2) x 4 rho,
+   d = 2, chi = 4. In all 192 runs the learned bond index rotates to component 1 (a_2 falls below 6e-4,
+   the second singular value stays ~0), the loss then sits at s_2^2/2 = 0.125 / 0.245 / 0.32 / 0.405, and
+   component 2 is relearned after ~sigma^-1. **Strict saddle by the primary rule**: lambda_min at the
+   plateau midpoint is sigma-independent (per-seed exponent of |lambda_min| vs sigma: 0.000) and equals
+   -0.39685 / -0.26637 / -0.18566 / -0.09655 to 5 digits for rho = 0.5 / 0.7 / 0.8 / 0.9 (prediction
+   -(1-rho) rho^(1/3): identical). **Correction time = ln(1/sigma)/|lambda_min| + const**: per-seed
+   slopes of t_corr vs ln(1/sigma) 2.555 +- 0.036, 3.809 +- 0.056, 5.466 +- 0.082, 10.51 +- 0.16 vs
+   1/|lambda_min| = 2.520, 3.754, 5.386, 10.357 (ratio 1.014-1.015, within 1 SE). A power law
+   t = c sigma^-p fits 10x worse in the same space (rms 1.5-6.0 vs 0.13-0.56; p = 0.08).
+2. **Controlled start, MPS4 (m = 4)**: no rotation (a_2 >= 0.96 when a_1 crosses 1/2), component 1 is
+   added in a new bond index; |lambda_min| at the midpoint scales as sigma^2.007 +- 0.016 (rho 0.5) and
+   sigma^2.000 +- 0.014 (rho 0.8), i.e. a higher-order saddle (k - 2 = 2); t_1 ~ sigma^-1.97 +- 0.03. The
+   fixed 1e-3 threshold would call some sigma = 0.05-0.1 midpoints strict (n_neg up to 1.6 on average),
+   the scaling rule does not.
+3. **Natural wrong-order runs, binary4** (the seeds whose first event was component 2 in b4_sigma, chi = 4;
+   up to 40 per (rho, sigma), rho 0.7-0.9, sigma 1e-4..0.1; 421 runs): for sigma <= 0.01, 92.5-100% rotate
+   (the rest add component 1 in a new index); at sigma = 0.1 only 2.5-42% rotate (the 3-core add route,
+   ~sigma^-1 = 10, competes). For the rotating runs |lambda_pred| (t_1 - t_2) has mean 1.07-1.38
+   (SE 0.14-0.30) at every sigma from 1e-4 to 1e-2: **no ln(1/sigma) growth**, as predicted in section 5
+   (a log law would raise it by ln 100 = 4.6 over this range). The wrong "plateau" is not resolved:
+   separation ratio (t_1 - t_2)/max(width) has median 0.3-0.6, > 3 in 0-7.5% of runs; lambda_min at the
+   minimum-speed point lies between 0 and the saddle value. So in natural runs a wrong order shows up as a
+   brief overshoot of the smaller component, then a plateau at s_2^2/2 with the smaller component
+   forgotten, then its relearning.
+4. **Natural wrong-order runs, MPS4 (m = 4)**: (pending)
+
+### 7.4-7.5 (controls, chi scan, R >= 3): pending
 
 ## 8. Status of H1 and H1b (to be finalized)
 
