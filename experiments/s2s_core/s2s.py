@@ -238,7 +238,8 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
 
     tr = integrate_chunked(problem, theta0, t_max, n_log=cfg.get("n_log", 400),
                            wall_limit=cfg.get("wall_limit", 1200.0),
-                           max_steps=cfg.get("max_steps", 20_000), stop_fn=at_floor,
+                           max_steps=cfg.get("max_steps", 20_000),
+                           stop_fn=at_floor if cfg.get("roundoff_stop", True) else None,
                            loss_floor=cfg.get("loss_floor", 1e-9) * loss0,
                            extra=[slice_norm_recorder(teacher), balance_recorder()], **gf)
     t, a, params = tr["t"], tr["overlaps"], tr["params"]
