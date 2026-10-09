@@ -1,0 +1,22 @@
+# Step 4(c): teacher on a different tree than the student (N = 8, d = 2, ||W*|| = 1).
+# (i) MPS-8 teacher, all bond ranks 2, on a binary-8 student (chi = 4): the student bonds {23} and
+#     {45} need rank min(d^2, r^2) = 4, the others 2 (theory_teachers.md 6.1, P11 bottom-up order).
+# (ii) binary-8 teacher, all bond ranks 2, on an MPS-8 student (chi = 4): student cuts {012} and
+#     {01234} cut through a teacher core and need rank up to 4.
+# K = 7 (binary-8) and 8 (MPS-8): first escape ~ sigma^-(K-2), so moderate sigma is already small init
+# (sigma^K <= 2e-3). Runs stop at L < 1e-4 L(0) or t = 3e4: some teacher singular values are ~1e-3 and
+# would take far longer; which bonds grow first is decided long before.
+name: e4c_cross
+base: {kind: ttn_teacher, n_sites: 8, d: 2, chi: 4, decay: 0.6, teacher_seed: 201}
+sweep:
+  teacher_seed: [201, 202, 203]
+  pair: [mps_on_binary, binary_on_mps]
+trees: [binary, mps]
+sigmas: {binary: [0.4], mps: [0.45]}
+seeds: [0, 8]
+t_max: {binary: 1.0e+5, mps: 1.0e+5}
+n_rec: 2000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-4
+n_dense: 3000
