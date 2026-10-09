@@ -1,0 +1,18 @@
+# Step 4(b): random TTN teacher on the student's tree (MPS-4, d = 3). Teacher bond ranks (2, 3, 2)
+# (edges 0|123, 01|23, 012|3), Gaussian cores from ttn.teachers.teacher_generator(teacher_seed)
+# (independent of the init stream), bond index k weighted by decay^k to spread the spectra,
+# ||W*|| = 1. Student chi = 4 (bonds capped at 3, 4, 3). sigma sweep for the plateau law of later
+# escapes (theory_teachers.md P6: log(1/sigma) for generic teachers on MPS students).
+name: e4b_ttn
+base: {kind: ttn_teacher, n_sites: 4, d: 3, chi: 4, teacher_ranks: [2, 3, 2], decay: 0.5, teacher_seed: 101}
+sweep:
+  teacher_seed: [101, 102, 103, 104, 105]
+trees: [mps]
+sigmas: {mps: [0.02, 0.0356, 0.0632, 0.1125, 0.2]}
+seeds: [0, 6]
+t_max: {mps: 1.0e+5}
+n_rec: 2000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-5
+n_dense: 3000
