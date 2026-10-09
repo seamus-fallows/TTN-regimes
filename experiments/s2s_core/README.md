@@ -82,11 +82,30 @@ dormant amplitudes). Not in git; regenerate with the commands above.
 
 ## Results
 
-See `notes/s2s_core.md` (section 2) and `agent-runs/s2s-core/REPORT.md`. Summary so far:
+Full statements with status tags and numbers: `notes/s2s_core.md` section 2; summary in
+`agent-runs/s2s-core/REPORT.md`. In short (odeco teachers, d = 4, gradient flow):
 - Aligned init reproduces the exact mode solutions on all five trees (max |a_GF - a_theory| <= 3e-9).
-- First escape: t_1 sigma^(K-2) -> T(theta_hat) per seed; Kumar-Haupt rho_0 law is a lower bound off
-  by 3x .. 3e7x.
-- Random init on odeco teachers: S2S with plateaus at the partial-fit levels and bond spectra growing
-  one value per event on all edges at once; gap exponents K - 2 per seed (K = 3, 4).
-- At chi = R and for K = 7, 8 at small sigma, dormant components are often suppressed below the
-  float64 floor and gradient flow stalls at a partial fit (two mechanisms; section 2.2 of the notes).
+- First escape: t_1 = sigma^-(K-2) T(theta_hat) + c_K per seed with no free parameter (exponent
+  0.9996, 2.0000, 4.998 for K = 3, 4, 7; prefactor to <= 2e-3 at the smallest sigma); the Kumar-Haupt
+  rho_0 law is a lower bound off by 3-500x (K = 3-7) and up to 3e7 at K = 15; at full bond the binary4
+  prefactor is pi/2 independent of d; the RMS-overlap heuristic P3 tracks the K dependence within 2x.
+- Random init: S2S with plateaus at the partial-fit levels, one rank step per event on every edge at
+  once, every gap ~ sigma^-(K-2) per seed (1.00, 2.00, 5.0 for K = 3, 4, 7), plateaus are higher-order
+  saddles (lambda_min ~ sigma^(K-2), magnitude within 0.8-1.7 of the route formula).
+- Dormant suppression: escapes barely shrink dormant components; plateaus do, through the conservation-
+  law trap of fan-in init (dead route ends, decay rate ~ sigma^2): never at K = 3, a sigma-independent
+  4/10 seeds at K = 4, chi = 3, most HT4 runs at chi = 3; gauge-balanced init removes the trap (0/210
+  trapped); chi = 2R avoids it at K = 3, 4, 7 (binary8, HT4). Runs that stall with live routes are on
+  ever-longer plateaus (continued runs escape at 0.5-0.85x the route estimate).
+
+## Figures (results/)
+
+| figure | file |
+|---|---|
+| (a) aligned init vs exact solution | `fig_a_aligned.*` |
+| (b) representative runs | `fig_b_run_mps4_chi3_..._s0.01_seed0.*` (K = 4), `fig_b_run_binary8_chi6_..._s0.1_seed0.*` (K = 7) |
+| (c) t_1 vs sigma with per-seed prediction | `fig_c_first_escape_chi{3,6}_{fanin,balanced}.*` |
+| (d) gaps vs sigma | `fig_d_gaps_chi{3,6}_{separated,close}.*` |
+| (e) prefactor vs chi and vs K (leading order) | `fig_e_chi.*`, `fig_e2_K.*` |
+| (f) Hessian lambda_min vs sigma at plateau midpoints | `fig_f_hessian.*` |
+| (g) dormant suppression: run classes, trap decay rate | `fig_g_dormant.*` |
