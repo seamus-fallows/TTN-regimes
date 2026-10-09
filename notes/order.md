@@ -208,8 +208,64 @@ P(smaller first) at sigma = 0.01 (Wilson 95% CI half-width <= 0.05):
 
 ### 7.4b-7.5 (MPS4 multiplicity test, chi scan, R >= 3): pending
 
-## 8. Status of H1 and H1b (to be finalized)
+## 8. Status of H1 and H1b
 
-## 9. What is new relative to the literature (to be finalized)
+**H1 ("the first escape direction is decided by the basin of the init, so the order is random; P(largest
+first) increases with s_1/s_2, decreases with K, may concentrate as chi grows")**
+- **Holds for tensor-like pairs (m >= 3)** [empirical over 5 trees, 28 (d, chi) settings, 67200 GF runs;
+  derived at leading order; exact race on MPS]. Quantitatively: P(larger first) = 0.60-0.88 at rho = 0.5
+  and 0.50-0.65 at rho = 0.8 (sigma = 0.01); independent of sigma (7.2); the per-init winner is the
+  argmin of tau_r/s_r of the leading-order race (100% on MPS).
+- **K and chi** [empirical]: the spread sd(log tau) grows with K (~sqrt(K-2), as in
+  `notes/theory_escape.md` 5.1) and falls with chi; with standard bond caps it saturates at fixed d, with
+  uncapped (over-parameterized) bonds it falls like chi^-1/2 (7.5), so over-parameterized bonds restore
+  greedy order, slowly (the analogue of over-parameterized CP, Ge et al. 2021).
+- **Fails for matrix-like pairs (m = 2)**, which include binary N = 4 (a depth-3 DLN): only the largest
+  component is a local maximum and the order is greedy as sigma -> 0 [derived; known for DLNs], with a
+  slow power law P(smaller first) ~ sigma^((1-rho)/rho) at finite sigma [derived heuristically; confirmed
+  in GF for rho = 0.7-0.9 on binary4 and MPS6].
+- **"init overlap enters with power K-2"** [empirical]: with the overlap defined as the projection of the
+  init onto the component's KKT orbit (nearest balanced bond-rank-one configuration), log tau_r ~ -q log
+  X_r with q ~ K-2, and "argmax s_r X_r^(K-2)" predicts 76-92% of winners (the rest needs the full
+  alignment dynamics, which the LO race captures exactly).
 
-## 10. Open issues (to be finalized)
+**H1b ("a wrong order is corrected through a strict saddle with lambda = q (s_learned - s_new), in time
+~ log(1/sigma), before the second rank is added")**
+- **Holds for m = 2, with the stated eigenvalue** [derived; checked]: from the wrong saddle the gauge-
+  projected Hessian has lambda_min = -(s_1-s_2) s_2^((K-2)/K) (5-digit agreement), sigma-independent
+  (strict by the primary rule); the learned bond index rotates to the larger component after
+  t_corr = ln(1/sigma)/|lambda_min| + const (slopes within 1.5% / 1 SE), the smaller component is then
+  forgotten (a_2 < 1e-3) and relearned in a new bond index after ~sigma^-(k-2) (k = 3 on binary4).
+- **But in natural runs the "log(1/sigma)" part does not appear** [derived + empirical]: the wrong order
+  itself becomes rare as sigma -> 0, and when it happens the piggyback amplitude is O(1) on arrival, so the
+  correction takes O(1/|lambda_min|) (|lambda| (t_1 - t_2) = 1.1-1.4 at every sigma 1e-4..1e-2) and no
+  wrong plateau is resolved (separation ratio < 3 in 92-100% of runs). The visible signature is an
+  overshoot of the smaller component, then a plateau at s_2^2/2 with the smaller component forgotten.
+- **Fails for m >= 3** [derived; checked]: the wrong-order state is a higher-order saddle (|lambda_min| ~
+  sigma^2 on MPS4), no rotation happens, the larger component is added in a new bond index after
+  ~sigma^-(k-2); the wrong order stays. Rarely (1/40 MPS4 runs at sigma = 0.01) the larger component's
+  route dies and GF stalls at the wrong saddle.
+
+## 9. Relation to the literature; what is new
+
+Known (cited in `notes/literature.md`): directional convergence near the origin to a KKT point of g
+(Kumar & Haupt 2025a); first escape of a DLN goes to the top mode (Jacot et al. 2021, Thm 2), and
+non-top rank-r critical points of DLNs are strict saddles (Achour et al. 2024, Thm 7) — binary4 is a
+depth-3 DLN, so the binary4 results are instances of these; odeco components are local optima of
+rank-one approximation (Anandkumar et al. 2014); order set by weight x (init overlap)^(p-2) in tensor PCA
+(Ben Arous et al. 2024a) and related models; over-parameterized CP learns largest first (Ge et al. 2021).
+New here for TTNs (together with `notes/theory_escape.md` and `notes/theory_saddles.md`, which derived
+parts of the same picture independently): the m-count classification of which components are attractors
+of the first escape on a general tree; the exact, sigma-independent race on MPS and its verification on
+40800 GF runs; quantitative P(larger first) tables versus rho, K, tree, chi, d; the finite-sigma
+wrong-order law sigma^((1-rho)/rho) for matrix-like pairs measured in full GF; a measured selection rule
+with exponent K-2 for the KKT-projection overlap; H1b dynamics measured (eigenvalue, log-law correction
+from the saddle, forget-and-relearn, O(1/lambda) correction in natural runs, no correction for m >= 3).
+
+## 10. Open issues
+
+- Prefactor C(rho) of the m = 2 law and the pre-asymptotic regime (rho = 0.95 never reaches small P).
+- Adjacent m = 2 pairs: is the asymptotic exponent n (1-rho)/rho with n = chi_e reached in GF (7.4b)?
+- Why the KKT-projection rule misses 8-24% of winners: the alignment phase mixes the non-aligned part of
+  the init into the escape direction; a closed form for the distribution of tau on a chain is open.
+- R >= 3: stalls of later components (conservation-law trap) at chi = R; see 7.6.
