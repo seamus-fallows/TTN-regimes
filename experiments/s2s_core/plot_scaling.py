@@ -104,6 +104,41 @@ def fig_hessian(runs: pd.DataFrame, out: Path):
     tp.savefig(fig, out / "fig_f_hessian")
 
 
+def fig_first(first: pd.DataFrame, out: Path, chi: int, init: str = "fanin"):
+    """(c): t_1 vs sigma per tree, one marker colour per seed, with each seed's zero-parameter
+    prediction sigma^-(K-2) T(theta_hat) + c_K (lines); bottom row: ratio t_1 / prediction."""
+    trees = [t for t in TREES if t in set(first.tree)]
+    fig, axes = plt.subplots(2, len(trees), figsize=(tp.TEXT_WIDTH, 3.6), layout="constrained", squeeze=False,
+                             height_ratios=[2, 1])
+    for j, tree in enumerate(trees):
+        K = KS[tree]
+        d = first[(first.tree == tree) & (first.chi == chi) & (first.init == init) & first.resolved]
+        ax, axr = axes[0][j], axes[1][j]
+        cols = tp.ordinal_colors(7)
+        for i, (seed, g) in enumerate(d[d.teacher == "separated"].groupby("seed")):
+            g = g.sort_values("sigma")
+            c = cols[i % 7]
+            ax.scatter(g.sigma, g.t1, s=6, color=c, zorder=3)
+            xs = np.geomspace(g.sigma.min(), g.sigma.max(), 50)
+            ax.plot(xs, xs ** (-(K - 2)) * g["T"].iloc[0], color=c, lw=0.6)
+            axr.plot(g.sigma, g.ratio_with_offset, color=c, lw=0.6, marker="o", ms=1.8)
+            axr.plot(g.sigma, g.ratio_leading, color=c, lw=0.6, ls=":", marker="x", ms=2)
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        axr.set_xscale("log")
+        axr.axhline(1, color=tp.MUTED, lw=0.7)
+        ax.set_title(f"{tree} (K={K})", fontsize=8)
+        axr.set_xlabel(r"$\sigma$")
+    axes[0][0].set_ylabel("$t_1$")
+    axes[1][0].set_ylabel("$t_1$ / prediction")
+    handles = [plt.Line2D([], [], color="k", lw=0, marker="o", ms=3, label="GF $t_1$ (one colour per seed)"),
+               plt.Line2D([], [], color="k", lw=0.6, label=r"$\sigma^{-(K-2)}T(\hat\theta)$ per seed"),
+               plt.Line2D([], [], color="k", lw=0.6, marker="o", ms=2, label=r"ratio to $\sigma^{-(K-2)}T+c_K$"),
+               plt.Line2D([], [], color="k", lw=0.6, ls=":", marker="x", ms=2, label=r"ratio to $\sigma^{-(K-2)}T$")]
+    fig.legend(handles=handles, loc="outside lower center", ncols=2, fontsize=6.5)
+    tp.savefig(fig, out / f"fig_c_first_escape_chi{chi}_{init}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", default=str(HERE / "results"))
@@ -117,6 +152,12 @@ def main():
         for teacher in ("separated", "close"):
             fig_gaps(runs, fits, out, chi, teacher)
     fig_hessian(runs, out)
+    if (res / "first_runs.csv").exists():
+        first = pd.read_csv(res / "first_runs.csv")
+        for chi in (3, 6):
+            for init in ("fanin", "balanced"):
+                if len(first[(first.chi == chi) & (first.init == init)]):
+                    fig_first(first, out, chi, init)
 
 
 if __name__ == "__main__":

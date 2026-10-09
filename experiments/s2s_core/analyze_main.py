@@ -43,6 +43,15 @@ def load(raw: Path) -> pd.DataFrame:
         lam_min = [p["saddle"]["lambda_min"] for p in plateaus if "saddle" in p]
         lam_max = [p["saddle"]["lambda_max"] for p in plateaus if "saddle" in p]
         n_neg = [p["saddle"]["n_negative"] for p in plateaus if "saddle" in p]
+        # theory_saddles R10 (k = K for odeco, A = 1): at a plateau midpoint the most negative
+        # eigenvalue is ~ -(K-1) s_r b^(K-2), b = (s_r |a_r|)^(1/K), for the dormant component r with
+        # the largest such value.
+        lam_pred = []
+        for i, p in enumerate(plateaus):
+            dormant = [r for r in range(R) if r not in order[: i + 1]]
+            vals = [-(s["K"] - 1) * s["weights"][r] * (s["weights"][r] * abs(p["overlaps"][r])) ** ((s["K"] - 2) / s["K"])
+                    for r in dormant]
+            lam_pred.append(min(vals) if vals else np.nan)
         transient = [r for r in range(R) if np.isfinite(ev[r]) and s["first_crossings"][r] is not None
                      and s["first_crossings"][r] < ev[r] * (1 - 1e-6)]
         row = {
@@ -58,6 +67,8 @@ def load(raw: Path) -> pd.DataFrame:
             "plateau1_lam_min": lam_min[0] if lam_min else np.nan,
             "plateau2_lam_min": lam_min[1] if len(lam_min) > 1 else np.nan,
             "plateau1_lam_max": lam_max[0] if lam_max else np.nan,
+            "plateau1_lam_pred": lam_pred[0] if lam_pred else np.nan,
+            "plateau2_lam_pred": lam_pred[1] if len(lam_pred) > 1 else np.nan,
             "plateau1_n_neg": n_neg[0] if n_neg else np.nan,
             "plateau2_n_neg": n_neg[1] if len(n_neg) > 1 else np.nan,
             "min_dormant_after_first": min_after,
@@ -104,6 +115,17 @@ def gap_fits(df: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
                         ("gap2", g.t3.values - g.t2.values)):
             ok = np.isfinite(y) & (y > 0)
             row[f"p_{name}"] = -np.polyfit(x[ok], np.log(y[ok]), 1)[0] if ok.sum() >= min_sigmas else np.nan
+        # Saddle type (diagnostics.md, primary rule): slope of log(-lambda_min) vs log(sigma) per seed;
+        # ~0 for a strict saddle, ~k-2 for a higher-order one. Plateaus without a negative
+        # eigenvalue are counted separately.
+        for i in (1, 2):
+            lam = g[f"plateau{i}_lam_min"].values
+            neg = np.isfinite(lam) & (lam < 0)
+            row[f"lam{i}_slope"] = np.polyfit(x[neg], np.log(-lam[neg]), 1)[0] if neg.sum() >= min_sigmas else np.nan
+            row[f"lam{i}_n_nonneg"] = int((np.isfinite(lam) & (lam >= 0)).sum())
+            pred = g[f"plateau{i}_lam_pred"].values
+            okp = neg & np.isfinite(pred) & (pred < 0)
+            row[f"lam{i}_over_pred_median"] = float(np.median(lam[okp] / pred[okp])) if okp.any() else np.nan
         rows.append(row)
     return pd.DataFrame(rows)
 
@@ -118,7 +140,11 @@ def fit_summary(fits: pd.DataFrame) -> pd.DataFrame:
     out = g.agg(n_seeds=("seed", "size"),
                 p_t1=("p_t1", "mean"), p_t1_se=("p_t1", se),
                 p_gap1=("p_gap1", "mean"), p_gap1_se=("p_gap1", se), n_gap1=("p_gap1", "count"),
-                p_gap2=("p_gap2", "mean"), p_gap2_se=("p_gap2", se), n_gap2=("p_gap2", "count")).reset_index()
+                p_gap2=("p_gap2", "mean"), p_gap2_se=("p_gap2", se), n_gap2=("p_gap2", "count"),
+                lam1_slope=("lam1_slope", "mean"), lam1_slope_se=("lam1_slope", se),
+                lam2_slope=("lam2_slope", "mean"), lam2_slope_se=("lam2_slope", se),
+                lam1_over_pred=("lam1_over_pred_median", "median"),
+                lam2_over_pred=("lam2_over_pred_median", "median")).reset_index()
     out["predicted"] = out.K - 2
     return out
 
