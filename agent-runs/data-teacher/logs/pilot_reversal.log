@@ -1,0 +1,24 @@
+('binary', 0.6, 0.25, 0.05, 4, 'white_sqrtLs', 3000.0) t_half [48.97 68.72] nfev 19271 wall 8
+('binary', 0.6, 0.25, 0.05, 3, 'white_sqrtLs', 3000.0) t_half [48.18 61.59] nfev 19259 wall 8
+('binary', 0.6, 0.25, 0.05, 0, 'white_sqrtLs', 3000.0) t_half [50.79 48.62] nfev 19259 wall 8
+('binary', 0.6, 0.25, 0.05, 2, 'white_sqrtLs', 3000.0) t_half [48.13 99.91] nfev 19469 wall 8
+('binary', 0.6, 0.25, 0.05, 6, 'white_sqrtLs', 3000.0) t_half [40.32 49.64] nfev 19265 wall 8
+('binary', 0.6, 0.25, 0.05, 1, 'white_sqrtLs', 3000.0) t_half [22.59 70.47] nfev 19592 wall 8
+('binary', 0.6, 0.25, 0.05, 5, 'white_sqrtLs', 3000.0) t_half [49.1 79. ] nfev 19496 wall 8
+('binary', 0.6, 0.25, 0.05, 7, 'white_sqrtLs', 3000.0) t_half [30.84 83.06] nfev 19589 wall 8
+('binary', 0.6, 0.25, 0.05, 3, 'white_Ls', 3000.0) t_half [46.96 42.03] nfev 24953 wall 10
+('binary', 0.6, 0.25, 0.05, 0, 'white_Ls', 3000.0) t_half [56.52 34.12] nfev 25235 wall 10
+('binary', 0.6, 0.25, 0.05, 4, 'white_Ls', 3000.0) t_half [52.06 43.11] nfev 25100 wall 10
+('binary', 0.6, 0.25, 0.05, 5, 'white_Ls', 3000.0) t_half [68.24 38.54] nfev 25400 wall 10
+('binary', 0.6, 0.25, 0.05, 6, 'white_Ls', 3000.0) t_half [42.81 30.86] nfev 25334 wall 10
+('binary', 0.6, 0.25, 0.05, 2, 'white_Ls', 3000.0) t_half [46.65 54.24] nfev 25631 wall 10
+('binary', 0.6, 0.25, 0.05, 1, 'white_Ls', 3000.0) t_half [21.7  27.77] nfev 25850 wall 10
+('binary', 0.6, 0.25, 0.05, 7, 'white_Ls', 3000.0) t_half [29.37 32.71] nfev 25685 wall 10
+('binary', 0.6, 0.25, 0.05, 4, 'sigma', 3000.0) t_half [47.9  42.95] nfev 20522 wall 13
+('binary', 0.6, 0.25, 0.05, 7, 'sigma', 3000.0) t_half [29.41 57.93] nfev 20759 wall 13
+('binary', 0.6, 0.25, 0.05, 0, 'sigma', 3000.0) t_half [48.23 33.96] nfev 20900 wall 13
+('binary', 0.6, 0.25, 0.05, 3, 'sigma', 3000.0) t_half [46.84 41.84] nfev 20324 wall 13
+('binary', 0.6, 0.25, 0.05, 1, 'sigma', 3000.0) t_half [21.7  49.75] nfev 20810 wall 13
+('binary', 0.6, 0.25, 0.05, 2, 'sigma', 3000.0) t_half [46.64 67.63] nfev 20564 wall 13
+('binary', 0.6, 0.25, 0.05, 5, 'sigma', 3000.0) t_half [46.01 38.3 ] nfev 20990 wall 13
+('binary', 0.6, 0.25, 0.05, 6, 'sigma', 3000.0) t_half [41.21 30.71] nfev 20609 wall 13
