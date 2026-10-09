@@ -512,3 +512,4 @@ randbin_302 ht 0.005 2 t_esc=1.414e+04
 misaligned_20 ht 0.005 2 t_esc=2.638e+05
 misaligned8_20 binary 0.002 0 t_esc=nan
 misaligned8_20 binary 0.002 3 t_esc=nan
+nonorth8_c0.7 mps 0.005 0 t_esc=90.99
