@@ -1,2 +1,0 @@
-kind,n_sites,d,chi,decay,teacher_seed,tag,tree,sigma,seed,t_a,loss0,t_end,loss_end,stop,max_drift
-ttn_teacher,4,3,4,0.5,103,base,mps,0.0356,0,1198.3228743195216,0.5000000492496489,1878.1716774281215,4.9850539762807955e-06,converged,1.4208449063261701e-10
