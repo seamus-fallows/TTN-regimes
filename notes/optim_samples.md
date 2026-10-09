@@ -387,45 +387,45 @@ Results: `results/samples_summary.csv`, `fig_samples.png`.
   ordered small init (1.3-3.9) < centred sigma = 1 (2.4-5) < lazy limit (4-6.9); only small init lands
   on rank 2 once the data determine W*.
 
-## 7. Synthesis: the learning-rate axis and when gradient-flow results apply (draft)
+## 7. Synthesis: the learning-rate axis and when gradient-flow results apply
 
-For small (saddle-to-saddle) init, with s_1 the largest teacher weight and K the number of cores:
+For small (saddle-to-saddle) init, with s_1 the largest teacher weight and K the number of cores
+(evidence: binary N=4 at sigma 0.003-0.3, binary N=8 and MPS N=8 at sigma 0.9, 5 seeds; 45 seeds for
+order flips):
 
-| step size (GD) | what happens | status |
+| GD step | what happens | status |
 |---|---|---|
-| eta << eta_max = 2/(K s_1^{2-2/K}) | GF: same saddles, same order, event times shifted by eta c_e (exact first-order formula), relative shift ~ eta ln(1/sigma) / t ~ eta sigma^{K-2} ln(1/sigma) | proven (sharpness), derived + empirical (shift) |
-| up to 0.95 eta_max | still GF-like; the only discrete change is a rare flip of near-tied races (2-9% of inits at 0.9 eta_max, 0% at 0.1 eta_max), which can remove a whole plateau | empirical |
-| eta_max < eta < ~1.3 eta_max | the top component oscillates (2-cycle, then period 4 at 1.245); the others are learned at GF-like times; the loss floors at s_1^2 L_map(eta/eta_max) | derived (1D map) + empirical (to 3 digits) |
+| eta << eta_max = 2/(K s_1^{2-2/K}) | GF: same saddles, same order, event times shifted by eta c_e (exact first-order formula), relative shift ~ eta ln(1/sigma) / t ~ eta sigma^{K-2} ln(1/sigma) | proven (sharpness), derived + empirical (shift, 3 digits) |
+| up to 0.95 eta_max | still GF-like; the only discrete change is a rare flip of near-tied races (1-4/45 inits at 0.3-0.9 eta_max, 0/45 at 0.1 eta_max), which can remove a whole plateau | empirical |
+| eta_max < eta < ~1.3 eta_max | the top component oscillates (2-cycle, period 4 from 1.245); the others are learned at GF-like times; the loss floors at s_1^2 L_map(eta/eta_max) | derived (1D map) + empirical (3-4 digits) |
 | ~1.5-1.75 eta_max (K = 3) | diverges | empirical |
 | ~2 eta_max (K = 3; 1.75-2.5 for K = 7, 8) | learned components are thrown back to the origin saddle and re-learned repeatedly | empirical (1D map: re-entry) |
 | >= 2.5-3 eta_max | diverges | empirical |
 
-For imbalanced (or large, non-small) inits the GF minimum is sharper than the balanced one, and GD
-with 2/lambda_GF < eta < eta_max converges to a flatter, more balanced minimum at sharpness ~2/eta (EoS
-selection).
+Across init scales (centred model, binary N=4, sigma 0.3-2): the GD limit is 2/lambda_GF(sigma), equal to
+eta_max up to sigma ~ 0.7 and falling like sigma^{-2(K-1)} on the lazy side (0.19 eta_max at sigma = 2);
+on the lazy side, steps above the limit never give a bounded oscillation (runs re-enter or diverge).
+Imbalanced inits converge, for 2/lambda_GF < eta < eta_max, to flatter and more balanced minima at
+sharpness ~2/eta (EoS selection); balanced small inits have no flatter minimum to go to.
 
-**Across the lazy transition (centred model, binary N=4, sigma = 0.3-2, 5 seeds x 11 step sizes,
-`configs/gd_centred.yaml`, `fig_lr_regime_map.png`; empirical).** The GD limit is 2/lambda_GF(sigma),
-lambda_GF = sharpness of the GF state reached (for sigma >= 1 the state at the end of the run, T = 2-5,
-not yet converged): predicted eta_max(sigma)/eta_max(balanced) = 1.00, 0.99, 0.97, 0.88, 0.57, 0.19 for
-sigma = 0.3, 0.5, 0.7, 1.0, 1.4, 2.0; observed converge/fail boundaries 0.9-1.05, 0.9-1.05, 0.9-1.05,
-~0.9 (3/5 converge), 0.5-0.7, ~0.2 (3/5 at 0.2). The GF sharpness grows like sigma^{2(K-1)} = sigma^4 in the
-lazy regime (init sharpness 15.5 -> 61.6 from sigma = 1.4 to 2, ratio 4.0 vs 1.43^4 = 4.2). Above the
-limit, small-init runs oscillate boundedly, while lazy-side runs (sigma >= 1.4) are thrown back or
-diverge: there is no bounded EoS regime in the lazy corner. The learned bond rank of the GF state is
-the teacher's (3) for sigma <= 0.5 and 4-6 for sigma >= 1. So **the stability limit is set by the
-teacher in the saddle-to-saddle regime and by the init scale (sigma^{-2(K-1)}) in the lazy regime**,
-and a fixed eta that is safe at small init becomes unstable as sigma grows past ~s_1^{1/K}.
+Online SGD (binary N=4): the first plateau keeps its GF law (mean shift >= 0 and small, spread
+~ (eta/B)^{1/2}, per-seed exponents 0.50-0.55); later degenerate plateaus are lengthened and, for
+x = c_gamma (eta/B) T_GF >~ 1, trapped (theory note P9; c_gamma ~ 34-45 on the aligned route, ~50-75 in
+random-init runs at the largest eta/B); learned components survive long plateaus only well below
+0.15-0.25 eta*_ms for teacher [3, 2, 1]; the gauge balance drifts ~ eta/B. Stability: eta*_ms(B) =
+0.00107 B (binary N=4, B <= 16; MPS N=4: 0.000765 B), convergence observed up to ~1.5-2 eta*_ms, i.e.
+~150x below GD per sample (product features have kurtosis 3^N).
 
-Online SGD with batch B at small step: the first plateau keeps its GF law (P7; mean delay
-~ (eta/2)(K-1)(1 + kappa/B) ln(a_e/a_0), spread ~ sqrt(kappa (eta/B) t)); later degenerate plateaus are
-lengthened by -ln(1-x)/x and trapped for x = c_gamma (eta/B) T_GF >= 1 (P9; c_gamma ~ 33-37 measured for
-binary N=4, teacher [3, 2, 1]); the step must also stay below the SGD stability limit
-eta_ms(B) ~ 0.001 B (binary N=4, B <= 16), ~150x below GD per sample, because product features have
-kurtosis 3^N.
+**Practical rule (derived from the above; tested on binary N=4 and N=8 trees).** Gradient-flow results
+describe GD training whenever eta < eta_max (at small init) or eta < 2/lambda_GF(sigma) (larger init),
+with event times correct to eta c_e and the same saddle sequence except near-tied races. They
+describe SGD training only when, in addition, eta < ~eta*_ms(B) (~B/(lambda 3^N) for small B) and
+(eta/B) c_gamma T_plateau << 1 for every later plateau that must be crossed; because plateaus grow
+like sigma^{-(k-2)}, at fixed eta/B SGD eventually stalls (or forgets learned components) where GF is
+only slow.
 
-**Practical rule (derived from the above).** GF results describe GD training whenever
-eta < eta_max (event times to within eta c_e). They describe SGD training only when, in addition,
-eta/B << 1/(c_gamma T_plateau) for every later plateau one wants to cross (otherwise SGD stalls on it),
-and eta << eta_ms(B). Because plateau lengths grow like sigma^{-(k-2)}, at small init and fixed eta/B
-SGD will eventually stall where GF would only be slow.
+**Implicit bias and generalization (binary N=8 d=2, N=6 d=3).** Small init (the saddle-to-saddle
+regime) recovers the teacher with its bond ranks from ~250 samples; the lazy limit at finite bond
+dimension cannot fit it at any n, and at full bond dimension needs n = d^N; between them, test error
+and learned bond rank grow monotonically with the init scale. The saddle-to-saddle regime is the
+sample-efficient one, but its threshold (5-9x the teacher manifold dimension) is not yet explained.
