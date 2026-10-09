@@ -1,0 +1,397 @@
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+E8 None mps 8 small 3 113s
+E8 None mps 8 small 2 114s
+E8 None mps 8 small 0 115s
+E8 None binary 8 small 0 116s
+E8 None mps 8 small 4 117s
+E8 None binary 8 small 3 117s
+E8 None binary 8 small 5 119s
+E8 None mps 8 small 6 123s
+E8 None mps 8 small 5 126s
+E8 None binary 8 small 2 128s
+E8 None mps 8 small 7 129s
+E8 None binary 8 small 4 129s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+E8 None binary 8 small 1 155s
+TC None mps 8 small 0 97s
+TC None mps 8 small 3 96s
+TC None mps 8 small 4 95s
+E8 None binary 8 small 6 102s
+TC None binary 8 small 1 89s
+E8 None binary 8 small 7 105s
+TC None binary 8 small 0 90s
+TC None mps 8 small 2 104s
+TC None mps 8 small 1 107s
+TC None mps 8 small 5 101s
+TC None mps 8 small 7 100s
+TC None binary 8 small 2 82s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TC None binary 8 small 7 49s
+TC None binary 8 small 4 67s
+TC None binary 8 small 3 72s
+TC None binary 8 small 6 70s
+TC None binary 8 small 5 74s
+TD None mps 8 small 5 61s
+TD None mps 8 small 1 73s
+TD None mps 8 small 2 73s
+TD None mps 8 small 0 75s
+TD None mps 8 small 3 70s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TD None mps 8 small 4 73s
+TD None mps 8 small 6 59s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TD None mps 8 small 7 52s
+B4 None mps 4 small 5 28s
+B4 None mps 4 small 3 34s
+B4 None mps 4 small 4 33s
+B4 None binary 4 small 2 26s
+B4 None mps 4 small 0 44s
+B4 None mps 4 small 7 30s
+B4 None binary 4 small 1 29s
+B4 None binary 4 small 0 32s
+B4 None binary 4 small 3 20s
+B4 None binary 4 small 7 17s
+B4 None binary 4 small 4 20s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+B4 None binary 4 small 5 20s
+B4 None binary 4 small 6 20s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+B4 None ht 4 small 3 63s
+B4 None ht 4 small 7 52s
+B4 None ht 4 small 5 60s
+B4 None ht 4 small_balanced 0 83s
+B4 None ht 4 small_balanced 1 44s
+B4 None ht 4 small_balanced 2 47s
+B4 None ht 4 small_balanced 3 61s
+B4 None ht 4 small_balanced 5 42s
+B4 None ht 4 small_balanced 4 51s
+N4 None mps 4 small 1 9s
+N4 None mps 4 small 0 17s
+N4 None mps 4 small 2 11s
+B4 None ht 4 small_balanced 6 56s
+N4 None mps 4 small 3 11s
+N4 None mps 4 small 5 11s
+N4 None mps 4 small 4 11s
+B4 None ht 4 small_balanced 7 47s
+N4 None mps 4 small 6 9s
+N4 None binary 4 small 0 9s
+N4 None binary 4 small 1 9s
+N4 None mps 4 small 7 10s
+N4 None binary 4 small 2 9s
+N4 None binary 4 small 3 9s
+N4 None binary 4 small 4 9s
+N4 None binary 4 small 5 9s
+B4 None ht 4 small 1 206s
+N4 None binary 4 small 6 9s
+N4 None binary 4 small 7 9s
+N4 None ht 4 small 1 33s
+N4 None ht 4 small 0 39s
+N4 None ht 4 small 2 36s
+N4 None ht 4 small 3 37s
+N4 None ht 4 small 4 38s
+N4 None ht 4 small 5 30s
+N4 None ht 4 small 7 29s
+N4 None ht 4 small 6 39s
+N4 None ht 4 small_balanced 0 38s
+N4 None ht 4 small_balanced 1 36s
+N4 None ht 4 small_balanced 2 40s
+N4 None ht 4 small_balanced 3 40s
+N4 None ht 4 small_balanced 6 34s
+N4 None ht 4 small_balanced 4 38s
+N4 None ht 4 small_balanced 5 39s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TA None mps 4 small 3 13s
+TA None mps 4 small 0 23s
+N4 None ht 4 small_balanced 7 31s
+TA None mps 4 small 1 18s
+TA None mps 4 small 2 21s
+TA None mps 4 small 5 8s
+TA None mps 4 small 4 8s
+TA None mps 4 small 7 7s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TA None mps 4 small 6 14s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TA None binary 4 small 3 15s
+TA None binary 4 small 1 17s
+TA None binary 4 small 0 21s
+TA None binary 4 small 2 19s
+W1009 19:31:13.220000 15515 torch/_dynamo/convert_frame.py:2008] [0/8] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.220000 15515 torch/_dynamo/convert_frame.py:2008] [0/8]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.220000 15515 torch/_dynamo/convert_frame.py:2008] [0/8]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.220000 15515 torch/_dynamo/convert_frame.py:2008] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.220000 15515 torch/_dynamo/convert_frame.py:2008] [0/8] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.230000 15515 torch/_dynamo/convert_frame.py:2008] [0/9] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.230000 15515 torch/_dynamo/convert_frame.py:2008] [0/9]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.230000 15515 torch/_dynamo/convert_frame.py:2008] [0/9]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.230000 15515 torch/_dynamo/convert_frame.py:2008] [0/9] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.230000 15515 torch/_dynamo/convert_frame.py:2008] [0/9] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.238000 15515 torch/_dynamo/convert_frame.py:2008] [0/10] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.238000 15515 torch/_dynamo/convert_frame.py:2008] [0/10]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.238000 15515 torch/_dynamo/convert_frame.py:2008] [0/10]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.238000 15515 torch/_dynamo/convert_frame.py:2008] [0/10] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.238000 15515 torch/_dynamo/convert_frame.py:2008] [0/10] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.254000 15515 torch/_dynamo/convert_frame.py:2008] [0/11] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.254000 15515 torch/_dynamo/convert_frame.py:2008] [0/11]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.254000 15515 torch/_dynamo/convert_frame.py:2008] [0/11]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.254000 15515 torch/_dynamo/convert_frame.py:2008] [0/11] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.254000 15515 torch/_dynamo/convert_frame.py:2008] [0/11] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.264000 15515 torch/_dynamo/convert_frame.py:2008] [0/12] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.264000 15515 torch/_dynamo/convert_frame.py:2008] [0/12]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.264000 15515 torch/_dynamo/convert_frame.py:2008] [0/12]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.264000 15515 torch/_dynamo/convert_frame.py:2008] [0/12] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.264000 15515 torch/_dynamo/convert_frame.py:2008] [0/12] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.274000 15515 torch/_dynamo/convert_frame.py:2008] [0/13] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.274000 15515 torch/_dynamo/convert_frame.py:2008] [0/13]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.274000 15515 torch/_dynamo/convert_frame.py:2008] [0/13]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.274000 15515 torch/_dynamo/convert_frame.py:2008] [0/13] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.274000 15515 torch/_dynamo/convert_frame.py:2008] [0/13] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/14] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/14]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/14]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/14] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/14] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.291000 15515 torch/_dynamo/convert_frame.py:2008] [0/15] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.291000 15515 torch/_dynamo/convert_frame.py:2008] [0/15]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.291000 15515 torch/_dynamo/convert_frame.py:2008] [0/15]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.291000 15515 torch/_dynamo/convert_frame.py:2008] [0/15] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.291000 15515 torch/_dynamo/convert_frame.py:2008] [0/15] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.522000 15515 torch/_dynamo/convert_frame.py:2008] [0/16] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.522000 15515 torch/_dynamo/convert_frame.py:2008] [0/16]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.522000 15515 torch/_dynamo/convert_frame.py:2008] [0/16]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.522000 15515 torch/_dynamo/convert_frame.py:2008] [0/16] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.522000 15515 torch/_dynamo/convert_frame.py:2008] [0/16] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:13.777000 15515 torch/_dynamo/convert_frame.py:2008] [0/17] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:13.777000 15515 torch/_dynamo/convert_frame.py:2008] [0/17]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:13.777000 15515 torch/_dynamo/convert_frame.py:2008] [0/17]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:13.777000 15515 torch/_dynamo/convert_frame.py:2008] [0/17] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:13.777000 15515 torch/_dynamo/convert_frame.py:2008] [0/17] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:14.020000 15515 torch/_dynamo/convert_frame.py:2008] [0/18] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:14.020000 15515 torch/_dynamo/convert_frame.py:2008] [0/18]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:14.020000 15515 torch/_dynamo/convert_frame.py:2008] [0/18]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:14.020000 15515 torch/_dynamo/convert_frame.py:2008] [0/18] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:14.020000 15515 torch/_dynamo/convert_frame.py:2008] [0/18] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:14.262000 15515 torch/_dynamo/convert_frame.py:2008] [0/19] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:14.262000 15515 torch/_dynamo/convert_frame.py:2008] [0/19]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:14.262000 15515 torch/_dynamo/convert_frame.py:2008] [0/19]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:14.262000 15515 torch/_dynamo/convert_frame.py:2008] [0/19] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:14.262000 15515 torch/_dynamo/convert_frame.py:2008] [0/19] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:14.506000 15515 torch/_dynamo/convert_frame.py:2008] [0/20] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:14.506000 15515 torch/_dynamo/convert_frame.py:2008] [0/20]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:14.506000 15515 torch/_dynamo/convert_frame.py:2008] [0/20]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:14.506000 15515 torch/_dynamo/convert_frame.py:2008] [0/20] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:14.506000 15515 torch/_dynamo/convert_frame.py:2008] [0/20] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:14.766000 15515 torch/_dynamo/convert_frame.py:2008] [0/21] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:14.766000 15515 torch/_dynamo/convert_frame.py:2008] [0/21]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:14.766000 15515 torch/_dynamo/convert_frame.py:2008] [0/21]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:14.766000 15515 torch/_dynamo/convert_frame.py:2008] [0/21] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:14.766000 15515 torch/_dynamo/convert_frame.py:2008] [0/21] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:15.018000 15515 torch/_dynamo/convert_frame.py:2008] [0/22] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:15.018000 15515 torch/_dynamo/convert_frame.py:2008] [0/22]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:15.018000 15515 torch/_dynamo/convert_frame.py:2008] [0/22]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:15.018000 15515 torch/_dynamo/convert_frame.py:2008] [0/22] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:15.018000 15515 torch/_dynamo/convert_frame.py:2008] [0/22] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:15.270000 15515 torch/_dynamo/convert_frame.py:2008] [0/23] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:15.270000 15515 torch/_dynamo/convert_frame.py:2008] [0/23]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:15.270000 15515 torch/_dynamo/convert_frame.py:2008] [0/23]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 36
+W1009 19:31:15.270000 15515 torch/_dynamo/convert_frame.py:2008] [0/23] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:15.270000 15515 torch/_dynamo/convert_frame.py:2008] [0/23] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:15.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/24] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:15.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/24]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:15.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/24]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 24
+W1009 19:31:15.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/24] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:15.282000 15515 torch/_dynamo/convert_frame.py:2008] [0/24] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:15.290000 15515 torch/_dynamo/convert_frame.py:2008] [0/25] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:15.290000 15515 torch/_dynamo/convert_frame.py:2008] [0/25]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:15.290000 15515 torch/_dynamo/convert_frame.py:2008] [0/25]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 24
+W1009 19:31:15.290000 15515 torch/_dynamo/convert_frame.py:2008] [0/25] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:15.290000 15515 torch/_dynamo/convert_frame.py:2008] [0/25] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+W1009 19:31:15.425000 15515 torch/_dynamo/convert_frame.py:2008] [0/26] torch._dynamo hit config.recompile_limit (8)
+W1009 19:31:15.425000 15515 torch/_dynamo/convert_frame.py:2008] [0/26]    function: 'wrapper' (/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_functorch/apis.py:458)
+W1009 19:31:15.425000 15515 torch/_dynamo/convert_frame.py:2008] [0/26]    last reason: 0/7: tensor 'args[0]' size mismatch at index 0. expected 20, actual 24
+W1009 19:31:15.425000 15515 torch/_dynamo/convert_frame.py:2008] [0/26] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W1009 19:31:15.425000 15515 torch/_dynamo/convert_frame.py:2008] [0/26] To diagnose recompilation issues, see https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_dynamo/convert_frame.py", line 2038, in _compile
+    raise_unimplemented_cache_limit_exceeded()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_dynamo/convert_frame.py", line 2022, in raise_unimplemented_cache_limit_exceeded
+    unimplemented(
+    ~~~~~~~~~~~~~^
+        gb_type="Dynamo recompile limit exceeded",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        ],
+        ^^
+    )
+    ^
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_dynamo/exc.py", line 775, in unimplemented
+    raise Unsupported(msg, gb_type, skip_frame)
+torch._dynamo.exc.Unsupported: Dynamo recompile limit exceeded
+  Explanation: Dynamo attempted to recompile the code object too many times, exceeding the recompile_limit cache size limit (currently set to 8). Excessive recompilations can degrade performance due to the compilation overhead of each recompilation.
+  Hint: To monitor recompilations, enable TORCH_LOGS=recompiles. If recompilations are expected, consider increasing torch._dynamo.config.recompile_limit to an appropriate value.
+  Hint: See https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.recompilation.html for tips on dealing with recompilations.
+
+  Developer debug context: Limit type: recompile_limit
+
+ For more details about this graph break, please visit: https://meta-pytorch.github.io/compile-graph-break-site/gb/gb0039.html
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ~~~~^^^^^^^^^^^^^^^
+  File "/root/work/TTN-regimes/experiments/locality/run.py", line 254, in run_task
+    out, traj = run_one(task, sigma)
+                ~~~~~~~^^^^^^^^^^^^^
+  File "/root/work/TTN-regimes/experiments/locality/run.py", line 147, in run_one
+    v_c = -grad(y0t)
+           ~~~~^^^^^
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_dynamo/eval_frame.py", line 1261, in compile_wrapper
+    result = fn(*args, **kwargs)
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_dynamo/convert_frame.py", line 2649, in __call__
+    result = self._torchdynamo_orig_backend(
+        frame, cache_entry, self.hooks, frame_state, skip=1
+    )
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_dynamo/convert_frame.py", line 778, in __call__
+    result = _compile(
+        frame.f_code,
+    ...<18 lines>...
+        convert_frame_box=self._box,
+    )
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_dynamo/convert_frame.py", line 2045, in _compile
+    raise FailOnRecompileLimitHit(
+        "Hard failure due to fullgraph=True"
+    ) from e
+torch._dynamo.exc.FailOnRecompileLimitHit: Hard failure due to fullgraph=True
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/work/TTN-regimes/experiments/locality/run.py", line 287, in <module>
+    for task, wall in pool.imap_unordered(run_task, tasks):
+                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 873, in next
+    raise value
+torch._dynamo.exc.FailOnRecompileLimitHit: Hard failure due to fullgraph=True
