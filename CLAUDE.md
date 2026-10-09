@@ -19,7 +19,10 @@ Read this file first; it is how the lead and all agents recover context. Keep it
   lead copies them to `data/<experiment>/` locally (gitignored). Each experiment README says where.
 - Status tags for claims: **proven**, **derived** (under stated assumptions), **empirical**,
   **conjecture**. The report marks new vs known results.
-- Write large files in small pieces (an agent died hitting the 64k output-token limit writing one file).
+- Write large files in small pieces and keep final answers short (two agents died hitting the 64k output-token limit).
+- Call `torch.set_num_threads(1)` in every experiment process (small linear algebra is 100-1000x slower with many threads on a loaded machine).
+- Later plateaus are stiff (learned directions have O(1) Hessian eigenvalues): use `integrate_gf(..., method="lsoda")` once a component is learned.
+- float64 floor: a dormant component whose escape signal falls below ~1e-15 is seeded by roundoff, not by the init; flag such runs.
 
 ## Layout
 
@@ -43,10 +46,10 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 | `general.py` | `inner_general`: TTNs on different trees | main |
 | `teachers.py` | `CPTeacher` (odeco / pattern / random CP; `component_overlaps` reaches 1 at W* also under covariance), `TTNTeacher`, `ShiftedTeacher`, `teacher_generator` | main |
 | `losses.py` | exact `population_loss`, `centred_population_loss` (use for the centred model at large sigma), `empirical_loss`, `sample_inputs`, `power_law_cov` | main |
-| `diagnostics.py` | ranks, events (`crossing_times`, `event_widths` = final rise, `separation_ratios`), `find_plateaus`, `classify_regime`, `plateau_scaling`, tangent kernels, Hessian/Lanczos, gauge directions + projection, `saddle_type` | landing |
-| `theory.py` | balanced/unbalanced mode solutions, exact and asymptotic escape times, odeco aligned predictions | landing |
-| `plotting.py` | style, loss/overlap/spectra/scaling/phase-diagram plots, `fit_power_law`, `savefig` | landing |
-| `dynamics.py` | `Problem`, `integrate_gf` (adaptive DP5), `run_gd`, `run_sgd`, `Recorder`, `Trajectory` | being built |
+| `diagnostics.py` | ranks, events (`crossing_times`, `event_widths` = final rise, `separation_ratios`), `find_plateaus`, `classify_regime`, `plateau_scaling`, tangent kernels, Hessian/Lanczos, gauge directions + projection, `saddle_type` | main (v0, under review) |
+| `theory.py` | balanced/unbalanced mode solutions, exact and asymptotic escape times, odeco aligned predictions | main (v0, under review) |
+| `plotting.py` | style, loss/overlap/spectra/scaling/phase-diagram plots, `fit_power_law`, `savefig` | main (v0, under review) |
+| `dynamics.py` | `Problem` (cancellation-free `effective` tensor for centred/two-copy), `integrate_gf` (`method="dopri5"` or `"lsoda"` for stiff later plateaus, `"radau"`), `run_gd`, `run_sgd`, `make_dataset`, `Recorder`, `Trajectory`, `log_time_grid` | main (v0, under review) |
 | `config.py`, `runner.py` | YAML configs, `run`, sweeps (parallel, resumable), CLI | being built |
 
 "landing" = written and tested locally, not yet committed; "main" = on main.
@@ -58,7 +61,7 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 | `notes/model.md` | the reference model and why |
 | `notes/diagnostics.md` | regime and event definitions (thresholds, reading of the rules) |
 | `notes/prior_knowledge.md` | what the lead knew before the literature review; hypotheses H1–H6 |
-| `notes/literature.md` | literature review v1 (7 verified clusters): what is known, hypothesis status, ranked open problems |
+| `notes/literature.md` | literature review v1.1 (7 verified clusters + completeness critique): what is known, hypothesis status, ranked open problems |
 | `notes/theory_saddles.md` | DRAFT (under verification): saddles after the first escape, Steiner/locality rule, escape times, stuck mechanism |
 | `notes/theory_regimes.md` | DRAFT (under verification): lazy/S2S boundaries, large-chi parameterizations, imbalance |
 | `notes/theory_teachers.md` | DRAFT (under verification): saddles for non-odeco and TTN teachers |
@@ -81,14 +84,20 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 
 ## Key findings so far
 
-- Literature: no paper characterizes saddle-to-saddle dynamics of gradient flow on dense-core TTNs (Q1–Q3 is
-  the top open problem); near-origin escape is a corollary of Kumar & Haupt 2025; Furman et al. 2026 treat
+- Literature: no paper characterizes saddle-to-saddle dynamics of gradient flow on dense-core TTNs with K >= 3
+  cores (the two-core case is a depth-2 matrix factorization, solved by Jiang, Chen & Ding 2023); Q1–Q3 is
+  the top open problem; near-origin escape is a corollary of Kumar & Haupt 2025; Furman et al. 2026 treat
   exactly our model's landscape (no spurious minima for realizable targets along balanced trajectories;
   descent order bounded by the rank-deficient core size).
 - Theory (draft, under verification): after the first escape the next escape takes the route with the
   fewest cores k* (Steiner subtree of the differing sites), not the largest component; k* = 2 strict saddle
   with lambda = s_r s_q^((K-2)/K), k* >= 3 higher-order; escape times carry a head-start factor
   (1 - s_r/s_q); on a plateau d log(da/dt)/d log a -> 2 - 2/k; fan-in imbalance can make gradient flow stall.
+- Theory (derived, re-checked): every KKT point of g = <W, W*> on the unit sphere with g* > 0 is exactly
+  balanced on every bond with core norms 1/K, so the near-origin escape direction is balanced and min-norm.
+- Lazy regime: the tangent kernel of a random TTN is isotropic only on average; a single draw is strongly
+  anisotropic unless every chi_e >> cut dimension min(d^n_e, d^(N-n_e)), so finite-chi lazy runs have an order
+  and end at the projected fit.
 - Dynamics: non-learned components rise transiently while another is learned (a_2 up to 0.41 on binary N = 4),
   so event widths use the final rise.
 - Library: the two-copy model is not a doubled-bond TTN without a gradient mask; centred/two-copy losses
