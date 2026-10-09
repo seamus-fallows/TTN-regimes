@@ -1,0 +1,47 @@
+# Step 1: escape-time exponent vs init scale with and without covariance (teacher T1 of e1_order).
+# Prediction: t_1 ~ sigma^-(K-2) for every variant; covariance changes only the prefactor.
+name: e1_scaling_sigma
+n_sites: 4
+d: 4
+chi: 4
+trees:
+- binary
+- mps
+sigmas:
+  binary:
+  - 0.01
+  - 0.0158
+  - 0.0251
+  - 0.0398
+  - 0.0631
+  - 0.1
+  mps:
+  - 0.03
+  - 0.0474
+  - 0.075
+  - 0.1186
+  - 0.1875
+  - 0.3
+teachers:
+  T1_clean_reversal:
+    weights:
+    - 1.0
+    - 0.8
+    eig_index:
+    - 1
+    - 0
+    alpha: 0.25
+variants:
+- sigma
+- white
+- white_Ls
+seeds:
+- 0
+- 10
+t_max:
+  binary: 1.0e5
+  mps: 1.0e6
+stop_rel_loss: '1.0e-8'
+n_rec: 2000
+rtol: '1.0e-9'
+atol: '1.0e-14'

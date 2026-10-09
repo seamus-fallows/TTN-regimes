@@ -93,6 +93,41 @@ saddle: a wrong first choice is not corrected quickly.
 Three candidate orderings, which the experiments separate: by s_r (teacher weights), by
 Lambda_r s_r (race / escape rate, H5), by Lambda_r s_r^2 (loss-greedy / stable saddles).
 
+## 2. Misaligned covariance — theory
+
+Fact B maps a misaligned product covariance to a whitened problem with the **non-orthogonal** CP
+teacher W~* = sum_r s_r (x)_i Sigma_i^{1/2} u_r^(i) (per-site overlaps u_r^T Sigma_i u_q), with
+the physical legs preconditioned by Sigma_i. Reparametrization maps critical points to critical points,
+so **the set of plateau states (saddles) is exactly that of the whitened non-orthogonal problem**
+(*proven*); only the timing (preconditioning, anisotropic init) differs. Two different tensors
+matter:
+- the race near the origin is driven by Sigma W* = sum_r s_r (x)_i Sigma_i u_r^(i) (factors
+  Sigma_i u_r, effective weights s_r prod_i ||Sigma_i u_r^(i)||; per-site overlap of the factors
+  grows like (lambda_1^2 - lambda_2^2)/(lambda_1^2 + lambda_2^2) at 45 degrees);
+- the plateau states are rank-constrained critical points of 1/2 ||W - W*||_Sigma^2, i.e. of the
+  whitened frame with factors Sigma_i^{1/2} u_r (overlap (lambda_1 - lambda_2)/(lambda_1 + lambda_2)
+  at 45 degrees).
+So the escape direction (top of Sigma W*) and the saddle it must reach (critical point in the
+Sigma^{1/2} frame) are different tensors: after the escape the state must rotate. *Derived*.
+
+## 4(a). Non-orthogonal CP teacher — theory
+
+W* = s_1 U_1 + s_2 U_2, per-site overlap c = <u_1^(i), u_2^(i)>, whitened.
+- Rank-1 critical points: for X = rho (x)_i x_i, L = 1/2 rho^2 - rho <(x)x_i, W*> + 1/2||W*||^2 is
+  minimized at rho = <(x)x_i, W*>, so the rank-1 critical points of L are the critical points of
+  g(x) = <(x)_i x_i, W*> on unit vectors, with plateau level 1/2 (||W*||^2 - g^2). *Proven*.
+- MPS-4 (tensorial): with equal weights, restricted to x_i = x in span(u_1, u_2) at angle psi,
+  g = s [cos^N(psi) + cos^N(psi - beta)], beta = arccos c. The symmetric point psi = beta/2 is a
+  local max iff tan^2(beta/2) < 1/(N-1), i.e. **c > (N-2)/N = 1/2 for N = 4**. *Derived*. Below it
+  there are two rank-1 local maxima (one near each component; the first plateau is at one of them,
+  chosen by the init basin); above it a single "blended" maximum, so the first saddle is a blend of
+  the two components and the order question disappears.
+- Binary-4 (matrix-like, Fact A): the rank-1 critical points are the singular modes of the
+  matricization W*_(01|23) = s_1 a_1 b_1^T + s_2 a_2 b_2^T with a_r = u_r (x) u_r,
+  <a_1, a_2> = <b_1, b_2> = c^2. The top mode is a blend for every c > 0 (no bifurcation), the plateau
+  level is sigma_2^2 / 2 (sigma_k = singular values of the 2x2 problem), and the order is greedy
+  as sigma -> 0 (unique local max of g, DLN). *Derived*.
+
 ## Results
 
 (filled in as experiments finish)

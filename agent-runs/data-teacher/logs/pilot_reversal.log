@@ -22,3 +22,27 @@
 ('binary', 0.6, 0.25, 0.05, 2, 'sigma', 3000.0) t_half [46.64 67.63] nfev 20564 wall 13
 ('binary', 0.6, 0.25, 0.05, 5, 'sigma', 3000.0) t_half [46.01 38.3 ] nfev 20990 wall 13
 ('binary', 0.6, 0.25, 0.05, 6, 'sigma', 3000.0) t_half [41.21 30.71] nfev 20609 wall 13
+('mps', 0.6, 0.25, 0.1, 0, 'white_sqrtLs', 30000.0) t_half [150.19 352.1 ] nfev 238382 wall 118
+('mps', 0.6, 0.25, 0.1, 1, 'white_sqrtLs', 30000.0) t_half [107.9  262.15] nfev 238589 wall 119
+('mps', 0.6, 0.25, 0.1, 3, 'white_sqrtLs', 30000.0) t_half [213.29 906.89] nfev 238301 wall 120
+('mps', 0.6, 0.25, 0.1, 2, 'white_sqrtLs', 30000.0) t_half [389.18 154.  ] nfev 237935 wall 120
+('mps', 0.6, 0.25, 0.1, 5, 'white_sqrtLs', 30000.0) t_half [351.77 343.68] nfev 235958 wall 121
+('mps', 0.6, 0.25, 0.1, 6, 'white_sqrtLs', 30000.0) t_half [241.34 274.67] nfev 237056 wall 121
+('mps', 0.6, 0.25, 0.1, 4, 'white_sqrtLs', 30000.0) t_half [137.11 311.04] nfev 238367 wall 122
+('mps', 0.6, 0.25, 0.1, 7, 'white_sqrtLs', 30000.0) t_half [230.17 109.66] nfev 238082 wall 120
+('mps', 0.6, 0.25, 0.1, 0, 'white_Ls', 30000.0) t_half [143.79 198.66] nfev 327881 wall 169
+('mps', 0.6, 0.25, 0.1, 1, 'white_Ls', 30000.0) t_half [104.   151.53] nfev 328532 wall 170
+('mps', 0.6, 0.25, 0.1, 3, 'white_Ls', 30000.0) t_half [203.74 389.01] nfev 327848 wall 162
+('mps', 0.6, 0.25, 0.1, 2, 'white_Ls', 30000.0) t_half [429.93 104.17] nfev 328664 wall 163
+('mps', 0.6, 0.25, 0.1, 4, 'white_Ls', 30000.0) t_half [133.36 167.11] nfev 327962 wall 164
+('mps', 0.6, 0.25, 0.1, 5, 'white_Ls', 30000.0) t_half [379.43 236.5 ] nfev 327176 wall 163
+('mps', 0.6, 0.25, 0.1, 0, 'sigma', 30000.0) t_half [143.79 198.71] nfev 241793 wall 174
+('mps', 0.6, 0.25, 0.1, 6, 'white_Ls', 30000.0) t_half [236.56 184.46] nfev 327482 wall 165
+('mps', 0.6, 0.25, 0.1, 7, 'white_Ls', 30000.0) t_half [223.93  75.21] nfev 329039 wall 164
+('mps', 0.6, 0.25, 0.1, 1, 'sigma', 30000.0) t_half [104.   154.85] nfev 242228 wall 178
+('mps', 0.6, 0.25, 0.1, 2, 'sigma', 30000.0) t_half [409.1  104.24] nfev 242348 wall 174
+('mps', 0.6, 0.25, 0.1, 5, 'sigma', 30000.0) t_half [371.12 236.42] nfev 241268 wall 172
+('mps', 0.6, 0.25, 0.1, 4, 'sigma', 30000.0) t_half [133.36 170.4 ] nfev 241922 wall 175
+('mps', 0.6, 0.25, 0.1, 3, 'sigma', 30000.0) t_half [203.74 440.86] nfev 242348 wall 175
+('mps', 0.6, 0.25, 0.1, 6, 'sigma', 30000.0) t_half [236.55 184.53] nfev 241586 wall 174
+('mps', 0.6, 0.25, 0.1, 7, 'sigma', 30000.0) t_half [219.54  75.18] nfev 242735 wall 175

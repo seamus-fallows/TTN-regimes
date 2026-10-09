@@ -1,0 +1,23 @@
+# Step 1: aligned anisotropic product covariance; order, swaps, event times, plateau levels.
+# Two-component odeco teachers; component r uses covariance eigenvector eig_index[r] at every
+# site (eigenvalues of ttn.losses.power_law_cov(d, alpha), index 0 = largest).
+# Variants run from the same init: "sigma" = (Sigma, s); "white_Ls" = (I, Lambda s);
+# "white_sqrtLs" = (I, sqrt(Lambda) s) (whitened frame, Fact B in notes/data_teacher.md).
+name: e1_order
+n_sites: 4
+d: 4
+chi: 4
+trees: [binary, mps]
+sigmas:
+  binary: [0.02, 0.05, 0.1]
+  mps: [0.05, 0.1, 0.2]
+teachers:
+  T1_clean_reversal: {weights: [1.0, 0.8], eig_index: [1, 0], alpha: 0.25}
+  T2_race_vs_greedy: {weights: [1.0, 0.6], eig_index: [1, 0], alpha: 0.25}
+variants: [sigma, white_Ls, white_sqrtLs]
+seeds: [0, 40]          # range(0, 40)
+t_max: {binary: 2.0e4, mps: 2.0e5}
+stop_rel_loss: 1.0e-8
+n_rec: 2000
+rtol: 1.0e-9
+atol: 1.0e-14

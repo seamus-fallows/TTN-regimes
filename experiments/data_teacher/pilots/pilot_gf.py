@@ -42,9 +42,14 @@ def dense_loss_fn(spec, w_star, metrics=None):
 
 
 def run_gf(spec, cores0, teacher, metrics=None, t_max=1e4, n_rec=400, rtol=1e-9, atol=1e-14,
-           method="DOP853", record_overlaps=True, w_star=None):
+           method="DOP853", record_overlaps=True, w_star=None, loss_fn=None, stop_rel_loss=None,
+           record_spectra=True, keep_y=False):
+    """stop_rel_loss: terminate once L < stop_rel_loss * L(0) (saves the stiff tail after
+    convergence). loss_fn overrides the loss (e.g. a non-product metric)."""
     t2 = teacher.norm2(metrics)
-    if w_star is not None:
+    if loss_fn is not None:
+        loss_of = loss_fn
+    elif w_star is not None:
         loss_of = dense_loss_fn(spec, w_star, metrics)
     else:
         def loss_of(flat):
@@ -59,7 +64,18 @@ def run_gf(spec, cores0, teacher, metrics=None, t_max=1e4, n_rec=400, rtol=1e-9,
     t_eval = np.concatenate([[0.0], np.logspace(-2, np.log10(t_max), n_rec)])
     t_eval[-1] = t_max
     tic = time.time()
-    sol = solve_ivp(rhs, (0, t_max), y0, method=method, rtol=rtol, atol=atol, t_eval=t_eval)
+    events = None
+    if stop_rel_loss is not None:
+        loss0 = loss_of(torch.from_numpy(y0)).item()
+
+        def converged(_t, y):
+            return loss_of(torch.from_numpy(y)).item() - stop_rel_loss * loss0
+
+        converged.terminal = True
+        converged.direction = -1
+        events = converged
+    sol = solve_ivp(rhs, (0, t_max), y0, method=method, rtol=rtol, atol=atol, t_eval=t_eval,
+                    events=events)
     wall = time.time() - tic
     rec = {"t": sol.t, "loss": [], "overlaps": [], "spectra": [], "nfev": sol.nfev, "wall": wall}
     q0 = conserved_quantities(spec, cores0)
@@ -70,8 +86,9 @@ def run_gf(spec, cores0, teacher, metrics=None, t_max=1e4, n_rec=400, rtol=1e-9,
         rec["loss"].append(loss_of(flat).item())
         if record_overlaps:
             rec["overlaps"].append(dual_overlaps(spec, cores, teacher).numpy())
-        sp = bond_spectra(spec, cores, metrics)
-        rec["spectra"].append({v: s.numpy() for v, s in sp.items()})
+        if record_spectra:
+            sp = bond_spectra(spec, cores, metrics)
+            rec["spectra"].append({v: s.numpy() for v, s in sp.items()})
         q = conserved_quantities(spec, cores)
         drift = max(drift, max((q[v] - q0[v]).abs().max().item() for v in q))
     rec["q_drift"] = drift
@@ -79,6 +96,8 @@ def run_gf(spec, cores0, teacher, metrics=None, t_max=1e4, n_rec=400, rtol=1e-9,
     if record_overlaps:
         rec["overlaps"] = np.array(rec["overlaps"])
     rec["y_final"] = sol.y[:, -1]
+    rec["y"] = sol.y.T.copy() if keep_y else None
+    rec["status"] = sol.status
     return rec
 
 
