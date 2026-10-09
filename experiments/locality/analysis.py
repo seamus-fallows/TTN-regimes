@@ -77,6 +77,8 @@ def plateau_table(paths) -> pd.DataFrame:
         if True:
             if rec.get("status") == "timeout" or "events" not in rec:
                 continue
+            if "patterns" not in rec or rec["patterns"] is None:
+                continue
             tree_name, case = case_label(rec)
             ev = rec["events"]
             order = ">".join(str(r) for _, r in ev)
@@ -99,6 +101,10 @@ def plateau_table(paths) -> pd.DataFrame:
                 for key in ("t_mid", "hess_min", "hess_max", "hess_neg"):
                     row[key] = p.get(key, np.nan)
                 row["a_mid"] = p["a_mid"][rb] if "a_mid" in p else np.nan
+                row["L_mid"] = p.get("L_mid", np.nan)
+                # float64 floor: the dormant overlap of the escaping component fell below 1e-14
+                row["dormant_min"] = rec.get("dormant_min", {}).get(str(rb), np.nan)
+                row["floor_flag"] = bool(row["dormant_min"] < 1e-14)
                 row["remaining"] = tb - p["t_mid"] if "t_mid" in p else np.nan
                 rows.append(row)
                 learned.append(rb)
@@ -165,6 +171,7 @@ def summarize(df: pd.DataFrame, group=("tree", "case", "start", "d", "chi", "w",
                     row["dormant_pred"] = 1 / (2 * lambda2(w, row["K"], row["before"],
                                                            1 - row["before"]))
         row["Qdrift_max"] = g["Qdrift"].max()
+        row["floor_flags"] = int(g["floor_flag"].sum()) if "floor_flag" in g else 0
         out.append(row)
     return pd.DataFrame(out)
 

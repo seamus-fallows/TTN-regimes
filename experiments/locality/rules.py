@@ -249,3 +249,61 @@ def route_rule(tree: Tree, w_saddle: np.ndarray, w_star: np.ndarray, max_size: i
             best = len(C)
             hits.append((sorted(C), norm))
     return best, hits
+
+
+# ---- whole-sequence prediction: route rule at rank-constrained optima (theory_saddles.md 5.1) ----
+
+def constrained_optimum(tree: Tree, profile: dict, w_star: np.ndarray, d: int, restarts: int = 6,
+                        seed: int = 0):
+    """Best approximation of w_star by a TTN with bond dimensions `profile` (edge -> rank), found by
+    L-BFGS from several random starts. Returns (dense W, loss = ||W - W*||^2 / 2)."""
+    import torch
+    from scipy.optimize import minimize
+
+    from ttn.network import TTNSpec, to_dense
+
+    bonds = tuple(1 if v == tree.root else int(profile[v]) for v in range(tree.n_nodes))
+    spec = TTNSpec(tree, (d,) * tree.n_sites, bonds)
+    target = torch.from_numpy(w_star)
+
+    def f(x):
+        xt = torch.from_numpy(x).requires_grad_(True)
+        diff = to_dense(spec, spec.unflatten(xt)) - target
+        L = 0.5 * (diff ** 2).sum()
+        (g,) = torch.autograd.grad(L, xt)
+        return L.item(), g.numpy()
+
+    best = None
+    for r in range(restarts):
+        x0 = spec.flatten(spec.init(1.0, seed=seed + r)).numpy()
+        res = minimize(f, x0, jac=True, method="L-BFGS-B",
+                       options=dict(maxiter=20000, gtol=1e-12, ftol=1e-15))
+        if best is None or res.fun < best.fun:
+            best = res
+    w = to_dense(spec, spec.unflatten(torch.from_numpy(best.x))).detach().numpy()
+    return w, float(best.fun)
+
+
+def route_sequence(tree: Tree, patterns, weights, d: int = 2, chi_max: int = 3, max_steps: int = 10,
+                   tol: float = 1e-5):
+    """Predicted saddle sequence: start from bond rank 1 everywhere (after the first escape), take the
+    rank-constrained optimum, find the minimal routes (route_rule), raise the rank of the internal
+    edges of the minimal route (ties: largest |R_C|), repeat until W* is fitted.
+    Returns a list of dicts (profile, loss, k_star, routes)."""
+    w_star = dense_pattern(patterns, weights, range(len(weights)), d)
+    teacher_rank = {v: edge_rank(tree, patterns, weights, list(range(len(weights))), v)
+                    for v in tree.edges}
+    profile = {v: 1 for v in tree.edges}
+    steps = []
+    for _ in range(max_steps):
+        w, loss = constrained_optimum(tree, profile, w_star, d)
+        if loss < 1e-12:
+            steps.append(dict(profile=dict(profile), loss=loss, k_star=0, routes=[]))
+            break
+        k, hits = route_rule(tree, w, w_star, tol=tol)
+        steps.append(dict(profile=dict(profile), loss=loss, k_star=k, routes=hits))
+        C = set(max(hits, key=lambda h: h[1])[0])
+        for v in tree.edges:
+            if v in C and tree.parent[v] in C:
+                profile[v] = min(profile[v] + 1, chi_max, teacher_rank[v])
+    return steps

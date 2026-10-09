@@ -29,6 +29,8 @@ RAW = Path("/root/outputs/locality")
 
 
 def npz_path(rec, raw_dir):
+    if rec.get("traj"):
+        return Path(rec["traj"])
     tree = get_tree(rec["kind"], rec.get("n"))
     tag = rec.get("name") or ("S" + "".join(map(str, rec["S"])))
     tag += "_saddle" if rec.get("start") == "saddle" else ""

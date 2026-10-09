@@ -1,0 +1,330 @@
+# Step 5: chi = 4, 8, d = 4, weight ratio 0.25 / 0.75 (N = 4)
+cases:
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 2
+  d: 2
+  chi: 4
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 2
+  d: 4
+  chi: 2
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 2
+  d: 4
+  chi: 4
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 2
+  d: 4
+  chi: 8
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 2
+  weights: [1.0, 0.25]
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 2
+  weights: [1.0, 0.75]
+- kind: mps
+  n: 4
+  S: [0, 1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 2
+  chi: 4
+- kind: mps
+  n: 4
+  S: [0, 1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 2
+- kind: mps
+  n: 4
+  S: [0, 1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 4
+- kind: mps
+  n: 4
+  S: [0, 1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 8
+- kind: mps
+  n: 4
+  S: [0, 1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  weights: [1.0, 0.25]
+- kind: mps
+  n: 4
+  S: [0, 1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  weights: [1.0, 0.75]
+- kind: binary
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 2
+  chi: 4
+- kind: binary
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 2
+- kind: binary
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 4
+- kind: binary
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 8
+- kind: binary
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  weights: [1.0, 0.25]
+- kind: binary
+  n: 4
+  S: [1, 2]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  weights: [1.0, 0.75]
+- kind: mps
+  n: 4
+  S: [0, 3]
+  start: small
+  sigmas: [0.2, 0.1099, 0.06034, 0.03314, 0.01821, 0.01]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 4
+  d: 2
+  chi: 4
+- kind: mps
+  n: 4
+  S: [0, 3]
+  start: small
+  sigmas: [0.2, 0.1099, 0.06034, 0.03314, 0.01821, 0.01]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 4
+  d: 4
+  chi: 2
+- kind: mps
+  n: 4
+  S: [0, 3]
+  start: small
+  sigmas: [0.2, 0.1099, 0.06034, 0.03314, 0.01821, 0.01]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 4
+  d: 4
+  chi: 4
+- kind: mps
+  n: 4
+  S: [0, 3]
+  start: small
+  sigmas: [0.2, 0.1099, 0.06034, 0.03314, 0.01821, 0.01]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 4
+  d: 4
+  chi: 8
+- kind: mps
+  n: 4
+  S: [0, 3]
+  start: small
+  sigmas: [0.2, 0.1099, 0.06034, 0.03314, 0.01821, 0.01]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 4
+  weights: [1.0, 0.25]
+- kind: mps
+  n: 4
+  S: [0, 3]
+  start: small
+  sigmas: [0.2, 0.1099, 0.06034, 0.03314, 0.01821, 0.01]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 4
+  weights: [1.0, 0.75]
+- kind: binary
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+  d: 2
+  chi: 4
+- kind: binary
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+  d: 4
+  chi: 2
+- kind: binary
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+  d: 4
+  chi: 4
+- kind: binary
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+  d: 4
+  chi: 8
+- kind: binary
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+  weights: [1.0, 0.25]
+- kind: binary
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.03981, 0.01585, 0.00631, 0.002512, 0.001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+  weights: [1.0, 0.75]
+- kind: ht
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.05253, 0.02759, 0.0145, 0.007615, 0.004]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 2
+  chi: 4
+- kind: ht
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.05253, 0.02759, 0.0145, 0.007615, 0.004]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 2
+- kind: ht
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.05253, 0.02759, 0.0145, 0.007615, 0.004]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 4
+- kind: ht
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.05253, 0.02759, 0.0145, 0.007615, 0.004]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  d: 4
+  chi: 8
+- kind: ht
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.05253, 0.02759, 0.0145, 0.007615, 0.004]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  weights: [1.0, 0.25]
+- kind: ht
+  n: 4
+  S: [0, 1]
+  start: small
+  sigmas: [0.1, 0.05253, 0.02759, 0.0145, 0.007615, 0.004]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 3
+  weights: [1.0, 0.75]
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: saddle
+  weights: [1.0, 0.25]
+  sigmas: [0.1, 0.03162, 0.01, 0.003162, 0.001, 0.0003162, 0.0001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: saddle
+  weights: [1.0, 0.75]
+  sigmas: [0.1, 0.03162, 0.01, 0.003162, 0.001, 0.0003162, 0.0001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1

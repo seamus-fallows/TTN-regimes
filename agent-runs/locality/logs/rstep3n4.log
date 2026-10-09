@@ -1,0 +1,64 @@
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+TB None ht 4 None 0 73s
+TB None ht 4 None 1 54s
+TB None ht 4 None 2 145s
+TA None ht 4 None 0 311s
+TA None ht 4 None 1 392s
+TB None ht 4 None 4 112s
+TB None ht 4 None 3 180s
+TB None ht 4 None 7 91s
+TA None mps 4 None 0 17s
+TA None mps 4 None 1 9s
+TA None mps 4 None 2 9s
+TB None ht 4 None 5 192s
+TA None mps 4 None 3 9s
+TA None mps 4 None 4 10s
+TA None mps 4 None 5 9s
+TA None mps 4 None 6 7s
+TA None mps 4 None 7 8s
+TB None ht 4 None 6 190s
+TA None binary 4 None 1 25s
+TA None binary 4 None 0 39s
+TA None binary 4 None 3 59s
+TA None binary 4 None 5 38s
+TA None binary 4 None 6 61s
+TA None binary 4 None 4 147s
+TB None mps 4 None 0 51s
+TA None binary 4 None 2 254s
+TB None mps 4 None 1 34s
+TA None binary 4 None 7 103s
+TB None mps 4 None 3 31s
+TB None mps 4 None 2 41s
+TB None mps 4 None 4 45s
+TB None mps 4 None 6 33s
+TB None mps 4 None 5 40s
+TB None mps 4 None 7 39s
+TB None binary 4 None 1 48s
+TA None ht 4 None 5 995s
+TB None binary 4 None 0 62s
+TB None binary 4 None 5 38s
+TB None binary 4 None 3 50s
+TB None binary 4 None 7 95s
+TB None binary 4 None 4 160s
+TB None binary 4 None 6 130s
+TB None binary 4 None 2 333s
+TA None ht 4 None 3 1807s
+TA None ht 4 None 6 1838s
+TA None ht 4 None 7 2034s
