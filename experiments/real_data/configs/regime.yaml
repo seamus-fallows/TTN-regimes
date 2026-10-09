@@ -1,7 +1,7 @@
 # Regime sweep (step 5): centred model (train f - f_0), binary quadtree, chi = 4, raw features.
 # Tangent kernel on the first 128 test images (delta_K). Phase-2 horizon min(1e4, 1e4 kernel units),
 # kernel unit = 128 / tr Theta(theta_a) at the start of phase 2.
-defaults: {t2: 1.0e+4, t2_units: kernel, t2_kernel: 1.0e+4, n_per_decade: 40, n_linear: 2000,
+defaults: {t2: 1.0e+4, t2_units: kernel, t2_kernel: 1.0e+4, n_per_decade: 30, n_linear: 1000,
            wall_limit: 5400, centred: true, kernel_probe: 128}
 cases:
   - {tree: binary, ordering: quadtree, features: raw, sigmas: [0.2, 0.3, 0.5, 0.7, 1.0, 1.4, 2.0, 2.8, 4.0], seeds: [0, 1, 2, 3, 4]}

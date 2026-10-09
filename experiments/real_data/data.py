@@ -154,13 +154,26 @@ class GNProblem(Problem):
     """
 
     def per_sample_jacobian(self, theta: torch.Tensor) -> torch.Tensor:
+        """J = d f(x_j) / d theta (n x P) in closed form: f is linear in each core, so d f / d G_v is
+        the outer product of the core's inputs (site vectors, child messages) and the message from
+        above (`messages`). The centred model fits f_theta - f_theta0, whose Jacobian is that of
+        f_theta (theta0 is fixed); the two-copy model is not supported here."""
+        if self.two_copy:
+            raise NotImplementedError("closed-form Jacobian is for plain / centred models")
+        spec = self.spec
+        t = spec.tree
         x = self.dataset[0]
-
-        def f_one(th, xj):
-            return forward(*self.effective(th), xj[None])[0]
-
-        return torch.func.vmap(torch.func.grad(f_one), in_dims=(None, 0), chunk_size=2000)(
-            theta.detach(), x)
+        cores = spec.unflatten(theta.detach())
+        with torch.no_grad():
+            up, down = messages(spec, cores, x)
+            blocks = []
+            for v in range(t.n_nodes):
+                ins = [x[:, s, :] for s in t.sites[v]] + [up[c] for c in t.children[v]] + [down[v]]
+                out = ins[0]
+                for m in ins[1:]:
+                    out = (out[:, :, None] * m[:, None, :]).reshape(len(x), -1)
+                blocks.append(out)
+        return torch.cat(blocks, dim=1)
 
     def jacobian(self, theta: torch.Tensor) -> torch.Tensor:
         jac = self.per_sample_jacobian(theta)

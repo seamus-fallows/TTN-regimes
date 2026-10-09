@@ -60,9 +60,37 @@ shorter later plateaus (smaller prefactors) and lower losses at equal rank.
 **R5 (non-product metric; derived in `theory_covariance.md` C10 for MPS).** Cross-site correlations
 open additional 2-core routes, so later plateaus on the MPS should be log-time or invisible.
 
-## 3. Methods
+## 3. Methods (adapted diagnostics)
 
-(see `experiments/real_data/README.md`)
+- **Dynamics.** Gradient flow on the empirical loss, float64, rtol 1e-8, atol 1e-14. Phase 1 (first
+  plateau): DP5, clock re-anchored (t -> 0, offset kept) whenever an accepted step is shorter than 1e-9 t,
+  so that the escape at t ~ 1e18-1e20 (sigma = 0.05) is resolved; stops when L has dropped by 1%.
+  Phase 2: LSODA on the clock tau = t - t_a for tau <= 1e4 (Newton matrix = Gauss-Newton part of the
+  Hessian, per-sample Jacobians; the error control is LSODA's). Gauge conservation drift (cumulative,
+  relative to max core norm^2) <= ~2e-9 in every checked run.
+- **Data-weighted bond spectra.** Across edge e, f(x) = sum_a up_a(x_below) down_a(x_above) with
+  per-sample messages; the Schmidt values w.r.t. the empirical marginals of the two sides are
+  sqrt(eig(G_up^1/2 G_down G_up^1/2)), G = (1/n) M^T M. Gauge invariant; equal to the Frobenius spectra
+  for a product law with identity second moments (checked to 2e-12 by exact enumeration). Needed because
+  after the escape |W|_F grows to 1e6-1e7 along directions the data barely sees (raw features), so
+  Frobenius spectra measure invisible weights.
+- **Learning events.** (a) Loss drops: peaks of r = -dL/dt standing out by a factor 3 against the minima
+  separating them from higher peaks, lowering L by >= 1% of L(0); time = rate peak, width = FWHM of the
+  peak. Separation ratio and S2S rule (i)-(ii) as in `notes/diagnostics.md`. Deviation from the notes:
+  the notes' width (10% -> 90% of the drop, ends at the flattest points) is not used because on real data
+  the loss keeps creeping down between events (it never saturates: ill-conditioned directions within the
+  current rank profile), which makes progress-based widths measure the tail (e.g. 909 vs a rate-peak FWHM
+  of 17). (b) Rank events: s_k^e / s_1^e crossing 0.05 (log-interpolated), used to say which edges gain a
+  singular value inside each loss drop (window: the drop's FWHM interval widened by one width on each side).
+  Final-value references (notes' f x s_k^{e,*}) are not used for widths for the same creep reason.
+- **Times.** t1 (first escape) = t_a + tau of the first loss drop (absolute clock); later gaps on the tau
+  clock. Merged log + fine rows (`ttn.dynamics.merged_rows`) everywhere.
+- **Route amplitudes** (`route_amplitudes.py`, derived from `theory_saddles.md` R1 / `locality.md` 2): at the
+  bond-rank-1 plateau of a binary run f ~ c prod_v q_v(x) over bottom cores; for a pair (u, w) of bottom
+  cores M_uw = (1/n) sum_j r_j h_uw(x_j) Phi_u(x_j) Phi_w(x_j)^T with h_uw = c prod_{v != u,w} q_v,
+  lambda_uw = |P_u M_uw P_w|_2 (complements of the learned directions). The escape along the route
+  (u, ..., w) has degree k = |Steiner(u, w)| and its leading term is -lambda_uw prod(eps); the route
+  with the smallest k escapes first, ties (equal k) are decided by lambda and by the dormant entries.
 
 ## 4. Results
 

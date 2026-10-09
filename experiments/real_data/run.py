@@ -76,6 +76,13 @@ def expand(config: dict) -> list[dict]:
     return out
 
 
+REANCHOR = 1e-9
+
+
+class Reanchor(Exception):
+    pass
+
+
 class RealRecorder(Recorder):
     """Library Recorder plus, on log rows, `test` = (test loss, test acc, train acc, rms f on train)
     and `fspectra` (data-weighted bond spectra on the training set, `data.function_spectra`), and
@@ -87,6 +94,7 @@ class RealRecorder(Recorder):
             extra.append(("delta_K", self._delta_k))
         super().__init__(overlaps=False, extra=extra)
         self.rp, self.kernel0, self.n_probe = rp, kernel0, n_probe
+        self.reanchor, self.last_t, self.last = False, None, None
 
     def _delta_k(self, prob, theta, t):
         """delta_K = |Theta_t - Theta_0|_F / |Theta_0|_F on the first n_probe test images, and the
@@ -109,6 +117,16 @@ class RealRecorder(Recorder):
     @staticmethod
     def _fspec(prob, theta, t):
         return function_spectra(*prob.effective(theta), prob.dataset[0])
+
+    def step(self, problem, theta, t, loss=None):
+        """Also re-anchors the clock (raises Reanchor) once an accepted step is shorter than
+        REANCHOR x t: at t ~ 1e15-1e20 (small-sigma escapes) O(1) steps would underflow."""
+        if self.reanchor and self.last_t is not None and 0 < t - self.last_t < REANCHOR * t:
+            self.last = (theta.detach().clone(), t)
+            raise Reanchor
+        self.last_t = t
+        self.last = (theta, t)
+        super().step(problem, theta, t, loss)
 
     def _fine_row(self, problem, theta, t, loss):
         super()._fine_row(problem, theta, t, loss)
@@ -142,28 +160,30 @@ def run_case(c: dict, out_dir: Path) -> dict:
     data = {"theta0": theta0.numpy()}
 
     # phase 1: first plateau, DP5 until the loss has dropped by escape_drop. The clock is restarted
-    # in chunks of tau_theta / (2K) (tau_theta = |theta| / |v|, which is ~(K-2) x the remaining time to
-    # the escape during power-law growth), so that steps of O(1) near the escape stay representable
-    # when the escape happens at t ~ 1e15-1e20 (small sigma).
+    # (t -> 0, offset accumulated) whenever an accepted step is shorter than REANCHOR x t, so that
+    # O(1) steps near the escape stay representable when it happens at t ~ 1e15-1e20 (small sigma).
     n_probe = c["kernel_probe"]
     kernel0 = tangent_kernel(spec, theta0, rp.x_test[:n_probe]) if n_probe else None
     loss0 = problem.loss(theta0).item()
     tau0 = theta0.norm().item() / problem.velocity(theta0).norm().item()
     floor = (1 - c["escape_drop"]) * loss0
-    theta, offset, chunks, stop, rate = theta0, 0.0, [], None, 0.0
+    theta, offset, chunks, stop = theta0, 0.0, [], None
     while stop is None:
-        speed = problem.velocity(theta).norm().item()
-        tau_theta = theta.norm().item() / speed
-        # remaining time to the escape ~ 1 / (d ln|v| / dt) (|v| ~ (t1 - t)^-(K-1)/(K-2)); before
-        # any growth has been measured, a conservative fraction of tau_theta
-        dur = 0.3 / rate if rate > 0 else tau_theta / (20 * spec.n_cores)
-        dur = min(dur, tau_theta / (2 * spec.n_cores))
-        grid = np.geomspace(1e-2 * dur, dur, 6)
+        tau_theta = theta.norm().item() / problem.velocity(theta).norm().item()
+        dur = 1e6 * tau_theta
+        grid = log_time_grid(1e-3 * tau_theta, dur, int(c["n_per_decade"] * 9))
         rec1 = RealRecorder(rp, kernel0, n_probe)
-        tr1 = integrate_gf(problem, theta, dur, log_times=grid, rtol=c["rtol"], atol=c["atol"],
-                           recorder=rec1, method="dopri5", loss_floor=floor,
-                           max_wall_time=max(60.0, c["wall_limit"] - (time.time() - wall0)))
-        part = dict(tr1.data)
+        rec1.reanchor = True
+        try:
+            tr1 = integrate_gf(problem, theta, dur, log_times=grid, rtol=c["rtol"], atol=c["atol"],
+                               recorder=rec1, method="dopri5", loss_floor=floor,
+                               max_wall_time=max(60.0, c["wall_limit"] - (time.time() - wall0)))
+            part, t_end, reason = dict(tr1.data), tr1.meta["t_end"], tr1.meta["stop_reason"]
+            theta = torch.as_tensor(tr1["theta_end"])
+        except Reanchor:
+            part = rec1.arrays()
+            theta, t_end = rec1.last
+            reason = "reanchor"
         if chunks:  # the first log row repeats the previous chunk's last state
             for k in [k for k in part if not k.startswith("fine_") and k != "theta_end"]:
                 part[k] = part[k][1:]
@@ -171,15 +191,12 @@ def run_case(c: dict, out_dir: Path) -> dict:
         if "fine_t" in part:
             part["fine_t"] = part["fine_t"] + offset
         chunks.append(part)
-        offset += tr1.meta["t_end"]
-        theta = torch.as_tensor(tr1["theta_end"])
-        speed_end = problem.velocity(theta).norm().item()
-        rate = max(np.log(speed_end / speed), 0.0) / tr1.meta["t_end"]
-        if tr1.meta["stop_reason"] == "converged":
+        offset += t_end
+        if reason == "converged":
             stop = "escaped"
-        elif tr1.meta["stop_reason"] != "completed":
-            stop = f"phase1_{tr1.meta['stop_reason']}"
-        elif len(chunks) >= 5000:
+        elif reason not in ("reanchor", "completed"):
+            stop = f"phase1_{reason}"
+        elif len(chunks) >= 1000:
             stop = "phase1_too_many_chunks"
     keys = [k for k in chunks[0] if k != "theta_end"]
     data |= {f"p1_{k}": np.concatenate([ch[k] for ch in chunks if k in ch]) for k in keys}
