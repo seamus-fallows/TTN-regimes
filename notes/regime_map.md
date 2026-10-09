@@ -202,6 +202,30 @@ where delta_K(T) drops below 0.1 (converged runs).
   sigma_floor = 0.56, 0.60, 0.71 is lower, increasingly so at chi = 6 where the floor is reached only at
   sigma ~ 1, outside the small-sigma expansion. **Empirical**, confirming theory R7 qualitatively.
 
+### 2.2 Stalls at chi = teacher rank (K >= 7)
+
+Stall test (`configs/stall_test*.yaml`; binary N = 8 (K = 7) and MPS N = 8 (K = 8), d = 3, chi = 3 =
+teacher rank, sigma in {0.3, 0.45, 0.6}, 6 seeds; LSODA, budget T = 50 t_esc + 1e4 (1.5e5-1.7e6
+time units at these sigma)). Stall type from the bond spectra of W at the end (3rd singular value,
+minimum over edges): dead route < 1e-12, decaying 1e-12..1e-4, long plateau >= 1e-4.
+
+| tree | model | init | converged (S2S) | stalled: dead route | stalled: decaying |
+|---|---|---|---|---|---|
+| binary 8 | plain | fan-in | 4/18 | 12/18 | 2/18 |
+| binary 8 | plain | gauge-balanced | 6/18 | 0 | 12/18 |
+| MPS 8 | plain | fan-in | 0/18 | 16/18 | 2/18 |
+| binary 8 | centred | fan-in | 4/18 | (spectra of W - W_0 recorded) | 14/18 stalled |
+| binary 8 | centred | gauge-balanced | 8/18 | | 10/18 stalled |
+
+- With chi equal to the teacher rank, most K >= 7 runs never learn the last component within the
+  budget, in both the plain and the centred model, so the stall is not caused by W_0 in the centred
+  target. With fan-in init the stalled route is dead (3rd bond singular value at roundoff, 1e-16 to
+  1e-18); gauge-balanced init (same W_0, every Q_e = 0, `balance.py`) removes the dead routes but the
+  route still decays (s_3 ~ 3e-5) and most runs do not escape. **Empirical** (36 + 18 runs), confirming
+  theory_regimes R10 / P14 and the conservation-law trap of theory_saddles R12.
+- Consequence for the map: at chi = teacher rank and K >= 7, "stalled" occupies the whole S2S side
+  at practical budgets; the S2S boundary is measured with spare channels or full bonds (2.3).
+
 ### 2.x Two-copy cross-check (binary N = 4)
 
 *Interim data (scipy RK45), 6 seeds x 8 chi x 19 sigma.*
