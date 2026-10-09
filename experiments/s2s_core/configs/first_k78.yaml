@@ -1,0 +1,17 @@
+# Step 3a continued for K = 7, 8 (same raw directory as first.yaml): separated teacher, fan-in init
+# only (the full first.yaml grid at K = 7, 8 needed ~15 min per job; K = 3, 4 cover the balanced-init
+# and close-teacher variants). Jobs already finished under first.yaml are kept.
+name: first
+trees: [[binary, 8], [ht, 4], [mps, 8]]
+d: 4
+chis: [3, 6]
+teachers:
+  separated: [3.0, 2.0, 1.0]
+teacher_seed: 1000
+inits: [fanin]
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+sigmas:
+  binary8: [0.4, 0.3, 0.2, 0.1, 0.05, 0.03, 0.02, 0.01]
+  ht4: [0.4, 0.3, 0.2, 0.1, 0.05, 0.03, 0.02, 0.01]
+  mps8: [0.4, 0.3, 0.2, 0.1, 0.05, 0.03, 0.02, 0.01]
+single_component: true

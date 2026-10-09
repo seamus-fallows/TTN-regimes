@@ -26,7 +26,7 @@ FLOOR = 1e-14
 
 
 def analyze(raw: Path):
-    phases, decays = [], []
+    phases, decays, drops = [], [], []
     for f in sorted(raw.glob("*.json")):
         s = json.loads(f.read_text())
         d = np.load(f.with_suffix(".npz"))
@@ -50,6 +50,18 @@ def analyze(raw: Path):
                 phases.append({**base, "phase": i, "component": r, "amp_start": seg[0],
                                "amp_min": seg.min(), "amp_end": seg[-1],
                                "amp_start_over_sigmaK": seg[0] / s["sigma"] ** s["K"]})
+        # Change of every dormant amplitude across the refined rise window of each escaping component
+        # (0.1 -> 0.9 of its final rise): the escape itself, without plateau decay.
+        for j, q in enumerate(order):
+            if f"fine_a_{q}" not in d:
+                continue
+            fa = np.abs(d[f"fine_a_{q}"]) * w
+            for r in range(R):
+                if r in order[: j + 1] or fa[0, r] == 0:
+                    continue
+                drops.append({**base, "event": j, "escaping": q, "component": r,
+                              "amp_before": fa[0, r], "amp_after": fa[-1, r],
+                              "ratio": fa[-1, r] / fa[0, r], "min_ratio": fa[:, r].min() / fa[0, r]})
         stuck = [r for r in range(R) if r not in order]
         after = [v for row in s["dormant_min_between_events"][1:] for v in row.values()]
         if stuck and after and min(after) < FLOOR and ev:
@@ -63,7 +75,7 @@ def analyze(raw: Path):
                     decays.append({**base, "component": r, "core": core, "rate": rate,
                                    "rate_over_sigma2": rate / s["sigma"] ** 2,
                                    "slice_start": y[ok][0], "slice_end": y[ok][-1]})
-    return pd.DataFrame(phases), pd.DataFrame(decays)
+    return pd.DataFrame(phases), pd.DataFrame(decays), pd.DataFrame(drops)
 
 
 def main():
@@ -74,8 +86,12 @@ def main():
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    ph, de = zip(*(analyze(Path(r)) for r in args.raw))
-    ph, de = pd.concat(ph), pd.concat(de)
+    ph, de, dr = zip(*(analyze(Path(r)) for r in args.raw if Path(r).exists()))
+    ph, de, dr = pd.concat(ph), pd.concat(de), pd.concat(dr)
+    dr.to_csv(out / f"{args.tag}_escape_drops.csv", index=False)
+    if len(dr):
+        dr["log10_ratio"] = np.log10(dr.ratio.clip(lower=1e-300))
+        print(dr.groupby(["tree", "chi", "init"]).log10_ratio.describe()[["count", "min", "25%", "50%", "75%", "max"]].round(2).to_string())
     ph.to_csv(out / f"{args.tag}_phases.csv", index=False)
     de.to_csv(out / f"{args.tag}_decay.csv", index=False)
     pd.set_option("display.width", 250)
