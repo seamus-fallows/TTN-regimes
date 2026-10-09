@@ -46,7 +46,9 @@ def main():
         start = "saddle" if S.endswith("s") else "small"
         S = [int(c) for c in S.rstrip("s")]
         cands = [r for r in recs if get_tree(r["kind"], r.get("n")).name == tname and r.get("S") == S
-                 and r["start"] == start and r["seed"] == args.seed and len(r["events"]) == 2]
+                 and r["start"] == start and len(r.get("events", [])) == 2]
+        seeds = sorted({r["seed"] for r in cands}, key=lambda x: (x < args.seed, x))
+        cands = [r for r in cands if seeds and r["seed"] == seeds[0]]  # first seed >= --seed that escaped
         if not cands:
             ax.set_title(f"{tname} S={S}: no run")
             continue
@@ -66,10 +68,11 @@ def main():
         ax.axvline(t2 - t1, color="k", ls=":", lw=1)
         ax.set_yscale("log")
         ax.set_xscale("symlog", linthresh=1.0)
-        ax.set_ylim(1e-12, 3)
+        ax.set_ylim(1e-14, 3)
         ax.set_xlim(left=-1)
         k = steiner_k(tree, S)
-        ax.set_title(f"{tname}, S = {{{','.join(map(str, S))}}}, k = {k}, σ = {rec['sigma']:.3g} ({start})",
+        ax.set_title(f"{tname}, S = {{{','.join(map(str, S))}}}, k = {k}, σ = {rec['sigma']:.3g} ({start}),"
+                     f" seed {rec['seed']}",
                      fontsize=8)
         ax.set_xlabel("t − t1")
         ax.grid(alpha=0.25, lw=0.5)

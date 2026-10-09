@@ -60,6 +60,10 @@ def _traceable_einsum(eq, *ops):
 ttn.network._einsum = _traceable_einsum
 
 
+class Stalled(Exception):
+    """Gradient at roundoff level after a component was learned: the remaining route is dead."""
+
+
 def teacher_patterns(case, n_sites):
     if case.get("patterns") is not None:
         return case["patterns"], case["weights"]
@@ -170,10 +174,21 @@ def run_one(case, sigma):
     t0 = time.time()
     wall_limit = case.get("wall_limit", 1500)
 
+    stall = dict(count=0)
+
     def fun(t, y):
         if time.time() - t0 > wall_limit:
             raise TimeoutError
-        return -grad(torch.from_numpy(y)).numpy()
+        v = -grad(torch.from_numpy(y)).numpy()
+        # dead route (theory_saddles.md R12 / float64 floor): after a component has been learned the
+        # field is pure roundoff (|v| ~ 1e-16) and LSODA would crawl to t_max; stop and record it
+        if np.abs(v).max() < 1e-12 and overlaps(y).max() > 0.5:
+            stall["count"] += 1
+            if stall["count"] > 5000:
+                raise Stalled(t, y.copy())
+        else:
+            stall["count"] = 0
+        return v
 
     def jac(t, y):
         return -hess(torch.from_numpy(y)).numpy()
@@ -196,6 +211,11 @@ def run_one(case, sigma):
                             rtol=out["rtol"], atol=out["atol"], events=events)
     except TimeoutError:
         out.update(status="timeout", wall=time.time() - t0)
+        return out, None
+    except Stalled as st:
+        ys = torch.from_numpy(st.args[1])
+        out.update(status="stalled", wall=time.time() - t0, t_stall=float(st.args[0]),
+                   L_stall=float(problem.loss(ys)), a_stall=overlaps(st.args[1]).tolist())
         return out, None
     out.update(status=int(sol.status), message=sol.message, wall=time.time() - t0, nfev=int(sol.nfev),
                njev=int(sol.njev), nsteps=len(sol.t), t_end=float(sol.t[-1]))
@@ -297,7 +317,8 @@ if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     cases = load_cases(sys.argv[1])
     prefix = sys.argv[2]
-    done = {r["_key"] for r in load_results(prefix) if r.get("status") != "error"}  # retry errors
+    # retry errors, and timeouts (now classified as stalled by the dead-route detector)
+    done = {r["_key"] for r in load_results(prefix) if r.get("status") not in ("error", "timeout")}
     tasks = [dict(c, seed=s, _out=prefix, _done=done) for c in cases for s in c["seeds"]]
     tasks.sort(key=lambda c: -c.get("cost", 1))
     with Pool(int(sys.argv[3]) if len(sys.argv) > 3 else 44) as pool:

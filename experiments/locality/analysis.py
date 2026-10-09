@@ -68,7 +68,11 @@ def load_records(paths):
         files = [path] if Path(path).exists() else sorted(glob.glob(path + ".part*"))
         for f in files:
             recs += [json.loads(line) for line in open(f)]
-    return recs
+    # a run retried after an error / timeout appears twice: keep its last record
+    last = {}
+    for i, r in enumerate(recs):
+        last[r.get("_key", i)] = r
+    return list(last.values())
 
 
 def plateau_table(paths) -> pd.DataFrame:
