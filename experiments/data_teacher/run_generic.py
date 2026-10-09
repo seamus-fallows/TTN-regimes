@@ -63,7 +63,10 @@ def job(args):
     if path.exists():
         return np.load(path, allow_pickle=True)["summary"].item()
     cfg = dict(case, tree=tree)
-    spec, teacher, metrics, loss_fn, init_map = build(cfg, seed)
+    built = build(cfg, seed)
+    if built is None:  # combination not used by this config
+        return None
+    spec, teacher, metrics, loss_fn, init_map = built
     cores0 = spec.init(sigma, seed=seed)
     if init_map is not None:
         cores0 = map_cores(spec, cores0, init_map)
@@ -124,6 +127,7 @@ if __name__ == "__main__":
     jobs.sort(key=lambda j: (j[2] != "mps", j[3]))
     with Pool(a.procs) as pool:
         rows = pool.map(job, jobs, chunksize=1)
+    rows = [r for r in rows if r is not None]
     pd.to_pickle(rows, OUT_ROOT / cfg["name"] / "summary_rows.pkl")
     df = pd.DataFrame(rows)
     df.drop(columns=[c for c in ("events", "spectral_events") if c in df]).to_csv(

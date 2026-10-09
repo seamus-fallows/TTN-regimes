@@ -59,7 +59,7 @@ def main():
     piv = df.set_index(["tree", "teacher", "sigma", "seed", "variant"])
     for (tree, teacher, sigma, seed), _ in df.groupby(["tree", "teacher", "sigma", "seed"]):
         a = piv.loc[(tree, teacher, sigma, seed, "sigma")]
-        for other in ("white_Ls", "white_sqrtLs"):
+        for other in ("white_Ls", "white_sqrtLs", "white_sqrtLs_mapped"):
             b = piv.loc[(tree, teacher, sigma, seed, other)]
             ta = np.nanmin([a["t_half_0"], a["t_half_1"]])
             tb = np.nanmin([b["t_half_0"], b["t_half_1"]])
@@ -112,8 +112,10 @@ def main():
 
 def plot_probs(tab):
     fig, axes = plt.subplots(2, 2, figsize=(11, 7), sharey=True)
-    styles = {"sigma": ("C3", "o-"), "white_Ls": ("C0", "s--"), "white_sqrtLs": ("C2", "^:")}
-    labels = {"sigma": "(Sigma, s)", "white_Ls": "(I, Lambda s)", "white_sqrtLs": "(I, sqrt(Lambda) s)"}
+    styles = {"sigma": ("C3", "o-"), "white_Ls": ("C0", "s--"), "white_sqrtLs": ("C2", "^:"),
+              "white_sqrtLs_mapped": ("C4", "v-.")}
+    labels = {"sigma": "(Sigma, s)", "white_Ls": "(I, Lambda s)", "white_sqrtLs": "(I, sqrt(Lambda) s)",
+              "white_sqrtLs_mapped": "(I, sqrt(Lambda) s), mapped init"}
     for i, tree in enumerate(CFG["trees"]):
         for j, teacher in enumerate(CFG["teachers"]):
             ax = axes[i, j]
@@ -142,7 +144,7 @@ def plot_paired(paired):
     for ax, col, title in [(axes[0], "t1", "first learning event"),
                            (axes[1], "t2", "second component's first learning")]:
         for tree, mk in [("binary", "o"), ("mps", "s")]:
-            for other, c in [("white_Ls", "C0"), ("white_sqrtLs", "C2")]:
+            for other, c in [("white_Ls", "C0"), ("white_sqrtLs_mapped", "C4")]:
                 g = paired[(paired.tree == tree) & (paired.other == other)]
                 ax.scatter(g[f"{col}_sigma"], g[f"{col}_other"], s=8, marker=mk, color=c,
                            alpha=0.6, label=f"{tree}: vs {other}")
@@ -172,7 +174,7 @@ def plot_examples(df):
     if len(g):
         r = g.sort_values("sigma").iloc[0]
         picks.append(("mps", r["sigma"], "T2_race_vs_greedy", r["seed"]))
-    fig, axes = plt.subplots(len(picks), 3, figsize=(14, 3.6 * len(picks)), squeeze=False)
+    fig, axes = plt.subplots(len(picks), 4, figsize=(18, 3.6 * len(picks)), squeeze=False)
     for i, (tree, sigma, teacher, seed) in enumerate(picks):
         for j, v in enumerate(CFG["variants"]):
             d = load(tree, sigma, teacher, v, seed)

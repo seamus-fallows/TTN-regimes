@@ -77,6 +77,11 @@ def run_gf(spec, cores0, teacher, metrics=None, t_max=1e4, n_rec=400, rtol=1e-9,
     sol = solve_ivp(rhs, (0, t_max), y0, method=method, rtol=rtol, atol=atol, t_eval=t_eval,
                     events=events)
     wall = time.time() - tic
+    if sol.status == 1 and len(sol.t_events[0]):
+        # Terminated between output points: record the terminal state too, or a fast final
+        # event (and the converged state) would be missing from the trajectory.
+        sol.t = np.append(sol.t, sol.t_events[0][0])
+        sol.y = np.concatenate([sol.y, sol.y_events[0][0][:, None]], axis=1)
     rec = {"t": sol.t, "loss": [], "overlaps": [], "spectra": [], "nfev": sol.nfev, "wall": wall}
     q0 = conserved_quantities(spec, cores0)
     drift = 0.0

@@ -41,7 +41,7 @@ seeds:
 t_max:
   binary: 1.0e5
   mps: 1.0e6
-stop_rel_loss: '1.0e-8'
+stop_rel_loss: 1.0e-6
 n_rec: 2000
 rtol: '1.0e-9'
 atol: '1.0e-14'

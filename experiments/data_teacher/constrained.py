@@ -25,7 +25,7 @@ def ranked_spec(spec: TTNSpec, ranks: dict[int, int]) -> TTNSpec:
 
 
 def constrained_minima(spec_r: TTNSpec, loss_of_dense, n_starts=20, seed=0, tol=1e-6,
-                       gtol=1e-12, max_iter=20000):
+                       gtol=1e-10, max_iter=5000):
     """Distinct local minima of loss_of_dense(W) over TTNs with spec_r's bond dims.
 
     loss_of_dense maps the dense tensor W (torch, float64) to the scalar loss. Returns a list of

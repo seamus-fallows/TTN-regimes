@@ -82,6 +82,13 @@ def build(cfg, seed):
         metric = moment_matrix(cfg["n_sites"], cfg["d"], site_cross_cov(cfg["n_sites"], cfg["rho"]))
         loss_fn = dense_metric_loss_fn(spec, teacher.dense(), metric)
     elif kind == "ttn_teacher":
+        if "pair" in cfg:  # step 4(c): teacher tree is the other one; skip mismatched combinations
+            teacher_tree = {"mps_on_binary": "mps", "binary_on_mps": "binary"}[cfg["pair"]]
+            student_tree = {"mps_on_binary": "binary", "binary_on_mps": "mps"}[cfg["pair"]]
+            if cfg["tree"] != student_tree:
+                return None
+            n_edges = make_tree(teacher_tree, cfg["n_sites"]).n_nodes - 1
+            cfg = dict(cfg, teacher_tree=teacher_tree, teacher_ranks=[2] * n_edges)
         teacher, metrics = ttn_teacher(cfg), None
     else:
         raise ValueError(kind)

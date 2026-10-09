@@ -6,10 +6,11 @@ TTNs on the student's tree with all bond ranks 1 (constrained.py), and for step 
 direction: the best bond-rank-1 approximation of Sigma W* in the Frobenius norm (the maximizer of
 g = <W, Sigma W*> on unit bond-rank-1 tensors, which sets the escape direction from the origin).
 
-Usage: uv run python experiments/data_teacher/predict_rank1.py
-Writes results/rank1_predictions.csv and /root/outputs/data_teacher/rank1_predictions.pt.
+Usage: uv run python experiments/data_teacher/predict_rank1.py [config names]
+Writes results/rank1_predictions_<names>.csv and /root/outputs/data_teacher/rank1_predictions_<names>.pt.
 """
 
+import sys
 from multiprocessing import Pool
 from pathlib import Path
 
@@ -18,7 +19,9 @@ import torch
 import yaml
 
 from common import OUT_ROOT
-from constrained import constrained_minima, metric_loss_of_dense, ranked_spec
+from constrained import (constrained_minima, matrix_loss_of_dense, metric_loss_of_dense,
+                         ranked_spec)
+from correlated import moment_matrix, site_cross_cov
 from run_generic import expand
 from setups import build
 
@@ -36,16 +39,25 @@ def one(args):
     w_star = teacher.dense()
     spec1 = ranked_spec(spec, {v: 1 for v in spec.tree.edges})
     rows, states = [], []
-    l0 = metric_loss_of_dense(w_star, metrics)(torch.zeros_like(w_star)).item()
-    for m in constrained_minima(spec1, metric_loss_of_dense(w_star, metrics), n_starts=40):
+    full = None
+    if case["kind"] == "correlated":
+        full = moment_matrix(case["n_sites"], case["d"], site_cross_cov(case["n_sites"], case["rho"]))
+        loss_dense = matrix_loss_of_dense(w_star, full)
+    else:
+        loss_dense = metric_loss_of_dense(w_star, metrics)
+    l0 = loss_dense(torch.zeros_like(w_star)).item()
+    for m in constrained_minima(spec1, loss_dense, n_starts=12):
         rows.append(dict(exp=name, tag=case["tag"], tree=tree, kind="saddle", loss=m["loss"],
                          rel_loss=m["loss"] / l0, count=m["count"], grad_norm=m["grad_norm"]))
         states.append(m["W"])
-    if metrics is not None:
+    if metrics is not None or full is not None:
         sw = w_star
-        for i, mat in enumerate(metrics):
-            sw = apply_on_leg(sw, mat, i)
-        for m in constrained_minima(spec1, metric_loss_of_dense(sw, None), n_starts=40):
+        if full is not None:
+            sw = (full @ w_star.reshape(-1)).reshape(w_star.shape)
+        else:
+            for i, mat in enumerate(metrics):
+                sw = apply_on_leg(sw, mat, i)
+        for m in constrained_minima(spec1, metric_loss_of_dense(sw, None), n_starts=12):
             rows.append(dict(exp=name, tag=case["tag"], tree=tree, kind="race", loss=m["loss"],
                              rel_loss=float("nan"), count=m["count"], grad_norm=m["grad_norm"]))
             states.append(m["W"])
@@ -54,14 +66,16 @@ def one(args):
 
 if __name__ == "__main__":
     jobs = []
-    for cfg_name in ("e2_misaligned", "e4a_nonorth"):
+    names = sys.argv[1:] or ["e2_misaligned", "e4a_nonorth", "e3_correlated"]
+    for cfg_name in names:
         cfg = yaml.safe_load(open(HERE / "configs" / f"{cfg_name}.yaml"))
         for case in expand(cfg):
             for tree in cfg["trees"]:
                 jobs.append((cfg["name"], case, tree))
-    with Pool(8) as pool:
+    with Pool(3) as pool:
         out = [x for res in pool.map(one, jobs) for x in res]
     df = pd.DataFrame([r for r, _ in out])
-    df.to_csv(HERE / "results" / "rank1_predictions.csv", index=False)
-    torch.save([(r, w) for r, w in out], OUT_ROOT / "rank1_predictions.pt")
+    tag = "_".join(names)
+    df.to_csv(HERE / "results" / f"rank1_predictions_{tag}.csv", index=False)
+    torch.save([(r, w) for r, w in out], OUT_ROOT / f"rank1_predictions_{tag}.pt")
     print(df.to_string())
