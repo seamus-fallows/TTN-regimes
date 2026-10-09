@@ -121,12 +121,13 @@ if __name__ == "__main__":
               for tname, tcfg in block.items() for tree in cfg["trees"][n]]
     with Pool(a.procs) as pool:
         hrows = pool.map(hessian_row, combos, chunksize=1)
-    pd.DataFrame(hrows).to_csv(HERE / "results" / f"{name}_hessian.csv", index=False)
+    out_tag = cfg.get("out_tag", name)
+    pd.DataFrame(hrows).to_csv(HERE / "results" / f"{out_tag}_hessian.csv", index=False)
     print(pd.DataFrame(hrows).to_string(), flush=True)
     jobs = [(name, tname, tcfg, n, tree, sigma, seed) for tname, tcfg, n, tree in combos
             for sigma in cfg["sigmas"] for seed in range(*cfg["seeds"])]
     jobs.sort(key=lambda j: j[5])  # smallest sigma (longest runs) first
     with Pool(a.procs) as pool:
         rows = pool.map(run, jobs, chunksize=1)
-    pd.DataFrame(rows).to_csv(HERE / "results" / f"{name}_runs.csv", index=False)
+    pd.DataFrame(rows).to_csv(HERE / "results" / f"{out_tag}_runs.csv", index=False)
     print("wrote", len(rows))
