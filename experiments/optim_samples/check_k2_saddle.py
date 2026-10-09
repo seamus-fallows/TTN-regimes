@@ -7,11 +7,13 @@ notes/diagnostics.md: a strict saddle has lambda_min -> a negative sigma-indepen
 sigma -> 0 (prediction for a k = 2 route: -s2 * s1^{(K-2)/K} = -0.52); a higher-order saddle has
 lambda_min -> 0 like sigma^(k-2).
 
-Run: uv run python experiments/optim_samples/check_k2_saddle.py [--out-dir DIR]
+Run: uv run python experiments/optim_samples/check_k2_saddle.py [--workers 15] [--out-dir DIR]
 Writes k2_saddle_hessian.json (sigma = 0.1, seed 0, full detail) and k2_saddle_sweep.csv.
 """
 
+import argparse
 import json
+from multiprocessing import Pool
 
 import numpy as np
 import pandas as pd
@@ -61,7 +63,30 @@ def plateau_lambda_min(prob, spec, sigma, seed):
                 n_negative_fallback=saddle_type(eigs)["n_negative"]), eigs
 
 
+def sweep_point(task):
+    torch.set_num_threads(1)
+    spec, prob = make_problem()
+    try:
+        res = plateau_lambda_min(prob, spec, *task)
+    except Exception as err:  # reported, not dropped (analysis standards)
+        return dict(sigma=task[0], seed=task[1], lambda_min=np.nan, error=repr(err))
+    return res[0] if isinstance(res, tuple) else res
+
+
+def make_problem():
+    spec = TTNSpec.uniform(make_tree("mps", 4), 3, 3)
+    teacher = pattern_teacher([3.0, 0.3], [[0, 0, 0, 0], [1, 1, 0, 0]], 3, seed=TEACHER_SEED)
+    return spec, Problem(spec, teacher)
+
+
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--workers", type=int, default=15)
+    args = ap.parse_known_args()[0]
+    # The sweep runs first: autograd must not be used in the parent before forking.
+    tasks = [(sigma, seed) for sigma in (0.1, 0.07, 0.05, 0.03, 0.02, 0.01) for seed in range(5)]
+    with Pool(args.workers) as pool:
+        rows = pool.map(sweep_point, tasks)
     torch.set_num_threads(1)
     spec = TTNSpec.uniform(make_tree("mps", 4), 3, 3)
     teacher = pattern_teacher([3.0, 0.3], [[0, 0, 0, 0], [1, 1, 0, 0]], 3, seed=TEACHER_SEED)
@@ -81,14 +106,9 @@ def main():
                saddle=saddle_type(eigs), predicted_lambda_min=-0.3 * 3.0**0.5)
     (RESULTS / "k2_saddle_hessian.json").write_text(json.dumps(out, indent=1, default=float))
     print(json.dumps(out, indent=1, default=float))
-    rows = []
-    for sigma in (0.1, 0.07, 0.05, 0.03, 0.02, 0.01):
-        for seed in range(5):
-            res = plateau_lambda_min(prob, spec, sigma, seed)
-            rows.append(res[0] if isinstance(res, tuple) else res)
-            print(rows[-1], flush=True)
     df = pd.DataFrame(rows)
     df.to_csv(RESULTS / "k2_saddle_sweep.csv", index=False)
+    print(df.to_string())
     print(df.groupby("sigma").lambda_min.agg(["mean", "sem", "count"]))
 
 

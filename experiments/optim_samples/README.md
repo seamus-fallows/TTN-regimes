@@ -32,16 +32,25 @@ student chi = 4. All float64 on CPU. The GD/SGD loops here are minimal and were 
 | `sgd_sweep.py configs/sgd_sweep.yaml` | step 2: online SGD, B = 1..256, eta sweeps, aligned init | raw: `/root/outputs/optim_samples/sgd/*.jsonl` |
 | `analyze_sgd.py`, `plot_sgd.py` | step-2 tables (incl. second plateau vs P9) and figures | `results/sgd_*.csv`, `fig_sgd.png`, `fig_sgd_stability.png` |
 | `p9_sgd.py`, `plot_p9.py` | test of the theory note's P9/P10 (SGD on a later plateau; uses `ttn.dynamics.run_sgd`) | `results/p9_sgd.csv`, `p9_fit.csv`, `fig_p9.png` |
-| `collapse_test.py` | stochastic collapse of a k = 2 route with label noise (`ttn.dynamics.run_sgd`) | `results/collapse_test.csv` |
+| `collapse_test.py` | stochastic collapse of a k = 2 route with label noise, MPS N=4 (`ttn.dynamics.run_sgd`) | `results/collapse_test.csv` |
+| `check_k2_saddle.py` | gauge-projected Hessian lambda_min at the k = 2 plateau vs sigma (saddle type) | `results/k2_saddle_sweep.csv`, `k2_saddle_hessian.json` |
+| `sgd_limit_test.py` | empirical SGD stability limit at the balanced minimum (B = 1, 16) | `results/sgd_limit_test.csv` |
 | `samples_sweep.py configs/samples_sweep.yaml` | step 3: fixed training sets, small vs centred large init, exact lazy limit | raw: `/root/outputs/optim_samples/samples/*.jsonl` |
 | `analyze_samples.py` | step-3 tables and figure | `results/samples_summary.csv`, `fig_samples.png` |
 | `validate_library.py` | reruns sample GD/GF/SGD settings with `ttn.dynamics` and compares | `results/validate_library.csv` |
+
+All scripts take `--out-dir DIR` (summaries and figures; default `/root/outputs/optim_samples/results`,
+outside git, so a re-run never overwrites the committed results; pass `--out-dir
+experiments/optim_samples/results` to regenerate them) and `--raw-dir DIR` (raw per-run data; default
+`/root/outputs/optim_samples`); the sweeps take `--workers N`. Analysis scripts read the CSVs written by
+earlier scripts from the same `--out-dir`.
 
 Helpers: `common.py` (setup, Problem with centred variant, GF reference via scipy DOP853, events),
 `plot_style.py`. Order to regenerate everything: `check_sharpness.py`, `map1d.py`,
 `sgd_stability.py`, the three `gd_sweep.py` configs, `predict_shift.py`, `analyze_gd.py`,
 `analyze_order.py`, `plot_gd.py`, `plot_regime.py`, `sgd_sweep.py`, `analyze_sgd.py`, `plot_sgd.py`,
-`p9_sgd.py`, `plot_p9.py`, `collapse_test.py`, `samples_sweep.py`, `analyze_samples.py`. Sweeps are
+`p9_sgd.py`, `plot_p9.py`, `collapse_test.py`, `check_k2_saddle.py`, `sgd_limit_test.py`,
+`samples_sweep.py`, `analyze_samples.py`; `validate_library.py` any time after the GD/SGD sweeps. Sweeps are
 resumable (finished runs are skipped). Variants: edit or copy a YAML config (trees, sigmas, seeds,
 ratios / batch sizes / n_train); `--workers` sets the process count (one torch thread each). Cost on
 30 vCPUs: step-1 sweep ~25 min, SGD sweep ~3 h, samples sweep ~45 min, P9 ~40 min.

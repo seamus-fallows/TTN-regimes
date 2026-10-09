@@ -277,10 +277,14 @@ components 2 and 3 at per-core amplitude b0), so the GF second plateau is exact:
 ### 4.2 Stochastic collapse of a k = 2 route (empirical; `collapse_test.py`, `check_k2_saddle.py`)
 
 MPS N=4 (K = 4), d = chi = 3, pattern teacher [3, 0.3] with patterns [[0,0,0,0],[1,1,0,0]] (component 2
-needs a second channel on the bond between cores 0 and 1 only). **Hessian check:** at the GF
-second-plateau midpoint (t = 36.15, a_2 = 0.015; sigma = 0.1, seed 0) the gauge-projected Hessian has 2
-negative eigenvalues, lambda_min = -0.478, vs the predicted -s2 s1^{(K-2)/K} = -0.520: a strict saddle
-(`results/k2_saddle_hessian.json`). Online SGD, B = 1, eta = 5e-4 (0.47 eta*_ms), 5 noise seeds,
+needs a second channel on the bond between cores 0 and 1 only). **Saddle type by the sweep-level rule
+of `notes/diagnostics.md`:** lambda_min of the gauge-projected Hessian at the GF second-plateau
+midpoint (dense grid around the events), sigma = 0.1, 0.07, 0.05, 0.03, 0.02, 0.01, 5 seeds:
+-0.422 +- 0.028, -0.459 +- 0.016, -0.479 +- 0.010, -0.494 +- 0.006, -0.500 +- 0.005, -0.503 +- 0.005
+(3 seeds; 2 seeds at sigma = 0.01 unresolved: no plateau midpoint found). lambda_min tends to a
+sigma-independent negative constant, -0.50, close to the predicted -s2 s1^{(K-2)/K} = -0.52 (the
+deviation at larger sigma comes from a_2 = 0.01-0.09 at the midpoint): **a strict saddle**
+(`check_k2_saddle.py`, `results/k2_saddle_sweep.csv`). Online SGD, B = 1, eta = 5e-4 (0.47 eta*_ms), 5 noise seeds,
 label noise zeta in {0, 10, 20, 30}:
 - zeta = 0: component 2 learned in 5/5 runs, second plateau 5.11 +- 0.25 vs GF 4.73 (+8 +- 5%): no
   collapse, as predicted (collapse would need s2 > ~30 here).

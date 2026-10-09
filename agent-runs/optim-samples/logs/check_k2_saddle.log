@@ -1,29 +1,30 @@
-{
- "events": [
-  35.34540058740689,
-  40.07964371155691
- ],
- "midpoint": 36.15,
- "overlaps_at_midpoint": [
-  1.0000637522491722,
-  0.01496743744379136
- ],
- "lowest_eigs": [
-  -0.47796100560288063,
-  -0.3428169854688907,
-  -0.003640899341132954,
-  -0.002821182015265331
- ],
- "top_eig": 20.78808625695119,
- "saddle": {
-  "type": "strict",
-  "n_negative": 2,
-  "lambda_min": -0.47796100560288063,
-  "lambda_max": 20.78808625695119,
-  "ratio": -0.02299206380496225,
-  "eps": 0.02078808625695119
- },
- "predicted_lambda_min": -0.5196152422706631
-}
-{'sigma': 0.1, 'seed': 0, 't1': 35.34588254917661, 't2': 40.07965927191695, 'midpoint': 36.129866312419985, 'a2_mid': 0.014633053028125497, 'lambda_min': -0.47787457714892695, 'lambda_2': -0.34509398945866837, 'lambda_max': 20.788000998379403, 'n_negative_fallback': 2}
-{'sigma': 0.1, 'seed': 1, 't1': 56.293600418996334, 't2': 61.683783195455426, 'midpoint': 57.1617949406118, 'a2_mid': 0.007886071989984679, 'lambda_min': -0.4962658052805041, 'lambda_2': -0.31166718524754766, 'lambda_max': 20.786274675745375, 'n_negative_fallback': 2}
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ~~~~^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 48, in mapstar
+    return list(map(*args))
+  File "/root/work/TTN-regimes/experiments/optim_samples/check_k2_saddle.py", line 69, in sweep_point
+    res = plateau_lambda_min(prob, spec, *task)
+  File "/root/work/TTN-regimes/experiments/optim_samples/check_k2_saddle.py", line 55, in plateau_lambda_min
+    mid = plateau_midpoints(traj["t"], traj["speed"], np.sort(events))[0]
+          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+IndexError: index 0 is out of bounds for axis 0 with size 0
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/work/TTN-regimes/experiments/optim_samples/check_k2_saddle.py", line 112, in <module>
+    main()
+    ~~~~^^
+  File "/root/work/TTN-regimes/experiments/optim_samples/check_k2_saddle.py", line 86, in main
+    rows = pool.map(sweep_point, tasks)
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 367, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 774, in get
+    raise self._value
+IndexError: index 0 is out of bounds for axis 0 with size 0
