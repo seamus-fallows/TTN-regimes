@@ -1,9 +1,9 @@
-# Pilot: cost and behaviour of gradient flow on MNIST 3 vs 5, 4x4, n_train 4000
-defaults: {t_max: 1.0e+9, n_per_decade: 30}
+# Pilot: structure after the first escape, choice of sigma range and horizon (MNIST 3 vs 5, 4x4)
+defaults: {t2: 3000, n_per_decade: 40, n_linear: 1500, wall_limit: 3000}
 cases:
-  - {tree: binary, ordering: quadtree, sigmas: [0.5, 0.35], seeds: [0], method: dopri5}
-  - {tree: binary, ordering: quadtree, sigmas: [0.5, 0.35], seeds: [0], method: lsoda}
-  - {tree: mps, ordering: snake, sigmas: [0.5], seeds: [0], method: dopri5}
-  - {tree: mps, ordering: snake, sigmas: [0.5], seeds: [0], method: lsoda}
-  - {tree: binary, ordering: scrambled0, sigmas: [0.5], seeds: [0], method: lsoda}
-  - {tree: binary, ordering: quadtree, features: white, sigmas: [0.5], seeds: [0], method: lsoda}
+  - {tree: binary, ordering: quadtree, features: raw, sigmas: [0.2, 0.3, 0.5], seeds: [0]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.2, 0.3, 0.5], seeds: [0]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.2, 0.3, 0.5], seeds: [0]}
+  - {tree: binary, ordering: quadtree, features: white, sigmas: [0.2, 0.3, 0.5], seeds: [0]}
+  - {tree: mps, ordering: snake, features: white, sigmas: [0.2, 0.3, 0.5], seeds: [0]}
+  - {tree: binary, ordering: scrambled0, features: white, sigmas: [0.2, 0.3, 0.5], seeds: [0]}

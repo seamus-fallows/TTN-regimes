@@ -192,3 +192,60 @@ class DenseHessianProblem(GNProblem):
         jac = self.per_sample_jacobian(theta)
         hess = (jac.T @ jac) / jac.shape[0] + hres
         return -hess
+
+
+_LEG = "abcdefghijklmnopqrstuvw"
+
+
+def messages(spec: TTNSpec, cores, x: torch.Tensor):
+    """Per-sample messages across every edge: up[v] (n, chi_v) = the subtree of v contracted with
+    the sample's site vectors, down[v] (n, chi_v) = everything else, so f(x_j) = up[v]_j . down[v]_j
+    for every edge v."""
+    t = spec.tree
+    vecs = [x[:, i, :] for i in range(x.shape[1])]
+    up = [None] * t.n_nodes
+    for v in t.postorder:
+        n_phys, kids = len(t.sites[v]), t.children[v]
+        legs = _LEG[: n_phys + len(kids) + 1]
+        ops = [vecs[s] for s in t.sites[v]] + [up[c] for c in kids]
+        eq = ",".join([legs] + ["z" + legs[k] for k in range(len(ops))]) + "->z" + legs[-1]
+        up[v] = torch.einsum(eq, cores[v], *ops)
+    down = [None] * t.n_nodes
+    down[t.root] = torch.ones(x.shape[0], 1, dtype=x.dtype)
+    for v in t.preorder:
+        n_phys, kids = len(t.sites[v]), t.children[v]
+        legs = _LEG[: n_phys + len(kids) + 1]
+        for k, c in enumerate(kids):
+            ops, terms = [down[v]], ["z" + legs[-1]]
+            for j, s in enumerate(t.sites[v]):
+                ops.append(vecs[s])
+                terms.append("z" + legs[j])
+            for k2, c2 in enumerate(kids):
+                if k2 != k:
+                    ops.append(up[c2])
+                    terms.append("z" + legs[n_phys + k2])
+            eq = ",".join([legs] + terms) + "->z" + legs[n_phys + k]
+            down[c] = torch.einsum(eq, cores[v], *ops)
+    return up, down
+
+
+def function_spectra(spec: TTNSpec, cores, x: torch.Tensor) -> np.ndarray:
+    """Data-weighted bond spectra (E, chi_max), NaN-padded, edges in `spec.tree.edges` order:
+    across edge v, f(x) = sum_a up_a(x_below) down_a(x_above), and the Schmidt values with respect to
+    the empirical marginals of the two sides are sqrt(eig(G_up^1/2 G_down G_up^1/2)), G = (1/n) M^T M
+    of the per-sample messages. Gauge invariant; for a product input law sum_k s_k^2 = E[f^2]. Unlike
+    the Frobenius spectra of W, directions of W that the data does not see do not count."""
+    with torch.no_grad():
+        up, down = messages(spec, cores, x)
+        n = x.shape[0]
+        edges = spec.tree.edges
+        chi = max(spec.bond_dims[v] for v in edges)
+        out = np.full((len(edges), chi), np.nan)
+        for j, v in enumerate(edges):
+            g_up = up[v].T @ up[v] / n
+            g_dn = down[v].T @ down[v] / n
+            vals, vecs = torch.linalg.eigh(g_up)
+            root = (vecs * vals.clamp_min(0).sqrt()) @ vecs.T
+            ev = torch.linalg.eigvalsh(root @ g_dn @ root).clamp_min(0).sqrt().flip(0)
+            out[j, : ev.numel()] = ev.numpy()
+    return out

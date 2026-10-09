@@ -10,9 +10,12 @@ Protocol (two phases, both `ttn.dynamics.integrate_gf`):
    absolute times cannot resolve later gaps in float64). Newton matrix: the exact Hessian (dense
    residual tensor, N <= 16) or its Gauss-Newton part (`hessian: gn`); LSODA's error control does
    not depend on it. Grid: log in tau from 1e-2 plus a uniform grid of T2 / n_linear spacing.
-Saved arrays: t (absolute; phase 1 only meaningful), tau (NaN in phase 1), phase, loss, spectra
-(n, E, chi), test = (test loss, test acc, train acc, rms f on train), conservation_drift, speed,
-core_norms, theta at the end of each phase.
+Saved arrays (npz): p1_* = phase-1 Trajectory data (absolute t), p2_* = phase 2 (t = tau, the
+phase-2 clock), each with the library Recorder's log rows (t, loss, spectra = Frobenius bond spectra,
+conservation_drift, speed, core_norms, ...) and fine rows (fine_t, fine_loss, fine_spectra), plus
+test = (test loss, test acc, train acc, rms f on train) and fspectra / fine_fspectra (data-weighted
+bond spectra, `data.function_spectra`); theta_end of each phase; theta0. Meta: case, t_a, stop.
+Default Newton matrix: Gauss-Newton (`hessian: gn`); `dense` = exact (N <= 16 only).
 
 The config lists `cases` (dicts; missing keys from `defaults`, then DEFAULTS), expanded over the
 lists `sigmas` and `seeds`. Finished cases are skipped (resumable); every process uses one thread.
@@ -38,7 +41,7 @@ import torch
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
-from data import DenseHessianProblem, GNProblem, Task, build  # noqa: E402
+from data import DenseHessianProblem, GNProblem, Task, build, function_spectra  # noqa: E402
 
 from ttn.dynamics import Recorder, integrate_gf, log_time_grid  # noqa: E402
 from ttn.network import forward  # noqa: E402
@@ -47,11 +50,7 @@ TASK_KEYS = ("dataset", "size", "pos", "neg", "n_train", "n_test", "data_seed")
 DEFAULTS = dict(dataset="mnist", size=4, pos=[3], neg=[5], n_train=4000, n_test=1600, data_seed=0,
                 tree="binary", ordering="quadtree", chi=4, features="raw", centred=False,
                 t2=1e4, n_per_decade=60, n_linear=1000, rtol=1e-8, atol=1e-14,
-                hessian="dense", escape_drop=0.01, wall_limit=3600, tag="")
-
-
-class WallLimit(Exception):
-    pass
+                hessian="gn", escape_drop=0.01, wall_limit=3600, tag="")
 
 
 def case_name(c: dict) -> str:
@@ -75,25 +74,34 @@ def expand(config: dict) -> list[dict]:
     return out
 
 
-def make_recorder(rp, wall_deadline: float) -> Recorder:
-    """Default diagnostics plus test metrics; aborts the integration past the wall-clock deadline."""
+class RealRecorder(Recorder):
+    """Library Recorder plus, on log rows, `test` = (test loss, test acc, train acc, rms f on train)
+    and `fspectra` (data-weighted bond spectra on the training set, `data.function_spectra`), and
+    `fine_fspectra` on fine rows (so `merged_rows(data, keys=("loss", "fspectra"))` resolves events)."""
 
-    def test_metrics(prob, theta, t):
-        if time.time() > wall_deadline:
-            raise WallLimit
+    def __init__(self, rp):
+        super().__init__(overlaps=False, extra=[("test", self._test), ("fspectra", self._fspec)])
+        self.rp = rp
+
+    def _test(self, prob, theta, t):
         spec, cores = prob.effective(theta)
         with torch.no_grad():
-            f_te = forward(spec, cores, rp.x_test)
+            f_te = forward(spec, cores, self.rp.x_test)
             f_tr = forward(spec, cores, prob.dataset[0])
-        y_tr = prob.dataset[1]
         return np.array([
-            0.5 * (f_te - rp.y_test).pow(2).mean().item(),
-            (torch.sign(f_te) == rp.y_test).double().mean().item(),
-            (torch.sign(f_tr) == y_tr).double().mean().item(),
+            0.5 * (f_te - self.rp.y_test).pow(2).mean().item(),
+            (torch.sign(f_te) == self.rp.y_test).double().mean().item(),
+            (torch.sign(f_tr) == prob.dataset[1]).double().mean().item(),
             f_tr.pow(2).mean().sqrt().item(),
         ])
 
-    return Recorder(overlaps=False, extra=[("test", test_metrics)])
+    @staticmethod
+    def _fspec(prob, theta, t):
+        return function_spectra(*prob.effective(theta), prob.dataset[0])
+
+    def _fine_row(self, problem, theta, t, loss):
+        super()._fine_row(problem, theta, t, loss)
+        self.fine_rows.setdefault("fine_fspectra", []).append(self._fspec(problem, theta, t))
 
 
 def run_case(c: dict, out_dir: Path) -> dict:
@@ -111,57 +119,33 @@ def run_case(c: dict, out_dir: Path) -> dict:
     cls = DenseHessianProblem if c["hessian"] == "dense" else GNProblem
     problem = cls(rp.problem.spec, rp.problem.teacher, dataset=rp.problem.dataset)
     theta0 = spec.flatten(cores0)
-    deadline = wall0 + c["wall_limit"]
     meta = {"case": c, "name": name, "order": rp.order.tolist()}
+    data = {"theta0": theta0.numpy()}
 
-    # phase 1: first plateau
+    # phase 1: first plateau, DP5 until the loss has dropped by escape_drop
     loss0 = problem.loss(theta0).item()
     tau0 = theta0.norm().item() / problem.velocity(theta0).norm().item()
-    t_min = 1e-3 * tau0
-    grid1 = log_time_grid(t_min, 1e6 * tau0, int(c["n_per_decade"] * 9))
-    rec1 = make_recorder(rp, deadline)
-    stop = None
-    try:
-        tr1 = integrate_gf(problem, theta0, 1e6 * tau0, log_times=grid1, rtol=c["rtol"],
-                           atol=c["atol"], recorder=rec1, method="dopri5",
-                           loss_floor=(1 - c["escape_drop"]) * loss0)
-    except WallLimit:
-        stop = "wall_limit_phase1"
-    if stop is None and tr1.meta["stop_reason"] != "converged":
-        stop = f"phase1_{tr1.meta['stop_reason']}"
-    arrays = [rec1.arrays()]
-    phases = [np.ones(len(arrays[0]["t"]), dtype=int)]
-    taus = [np.full(len(arrays[0]["t"]), np.nan)]
+    grid1 = log_time_grid(1e-3 * tau0, 1e6 * tau0, int(c["n_per_decade"] * 9))
+    rec1 = RealRecorder(rp)
+    tr1 = integrate_gf(problem, theta0, 1e6 * tau0, log_times=grid1, rtol=c["rtol"], atol=c["atol"],
+                       recorder=rec1, method="dopri5", loss_floor=(1 - c["escape_drop"]) * loss0,
+                       max_wall_time=c["wall_limit"])
+    meta["phase1"] = {k: v for k, v in tr1.meta.items() if k != "problem"}
+    data |= {f"p1_{k}": v for k, v in tr1.data.items()}
+    stop = None if tr1.meta["stop_reason"] == "converged" else f"phase1_{tr1.meta['stop_reason']}"
     if stop is None:
-        meta["phase1"] = {k: v for k, v in tr1.meta.items() if k != "problem"}
-        t_a = tr1.meta["t_end"]
-        theta_a = torch.as_tensor(tr1["theta_end"])
-        # phase 2: after the first escape, own clock
-        grid2 = np.union1d(log_time_grid(1e-2, c["t2"], int(c["n_per_decade"] * np.log10(c["t2"] / 1e-2))),
+        # phase 2: LSODA on its own clock tau = t - t_a
+        meta["t_a"] = tr1.meta["t_end"]
+        n_log = int(c["n_per_decade"] * np.log10(c["t2"] / 1e-2))
+        grid2 = np.union1d(log_time_grid(1e-2, c["t2"], n_log),
                            np.linspace(0, c["t2"], c["n_linear"] + 1))
-        rec2 = make_recorder(rp, deadline)
-        try:
-            tr2 = integrate_gf(problem, theta_a, c["t2"], log_times=grid2, rtol=c["rtol"],
-                               atol=c["atol"], recorder=rec2, method="lsoda")
-            stop = tr2.meta["stop_reason"]
-            meta["phase2"] = {k: v for k, v in tr2.meta.items() if k != "problem"}
-            theta_end = tr2["theta_end"]
-        except WallLimit:
-            stop = "wall_limit_phase2"
-            theta_end = None
-        a2 = rec2.arrays()
-        arrays.append(a2)
-        phases.append(np.full(len(a2["t"]), 2))
-        taus.append(a2["t"].copy())
-        a2["t"] = t_a + a2["t"]
-        meta["t_a"] = t_a
-    data = {k: np.concatenate([a[k] for a in arrays]) for k in arrays[0] if k != "step"}
-    data["tau"] = np.concatenate(taus)
-    data["phase"] = np.concatenate(phases)
-    data["theta0"] = theta0.numpy()
-    if stop is not None and "phase2" in meta:
-        data["theta_a"] = theta_a.numpy()
-        data["theta_end"] = theta_end
+        rec2 = RealRecorder(rp)
+        tr2 = integrate_gf(problem, torch.as_tensor(tr1["theta_end"]), c["t2"], log_times=grid2, rtol=c["rtol"],
+                           atol=c["atol"], recorder=rec2, method="lsoda",
+                           max_wall_time=max(60.0, c["wall_limit"] - (time.time() - wall0)))
+        meta["phase2"] = {k: v for k, v in tr2.meta.items() if k != "problem"}
+        data |= {f"p2_{k}": v for k, v in tr2.data.items()}
+        stop = tr2.meta["stop_reason"]
     meta.update(stop=stop, loss0=loss0, tau0=tau0, wall_total=time.time() - wall0,
                 n_params=spec.n_params, bond_dims=list(spec.bond_dims),
                 edges=list(spec.tree.edges), parent=list(spec.tree.parent),
