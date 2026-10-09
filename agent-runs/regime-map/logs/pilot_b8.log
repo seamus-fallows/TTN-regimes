@@ -1,8 +1,2 @@
 /root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
   sqnorm = x.dot(x)
-/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
-  sqnorm = x.dot(x)
-/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
-  sqnorm = x.dot(x)
-/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
-  sqnorm = x.dot(x)

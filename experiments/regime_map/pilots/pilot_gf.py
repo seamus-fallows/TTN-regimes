@@ -103,20 +103,35 @@ def run(kind="binary", n=4, d=3, chi=3, sigma=0.1, seed=0, weights=(3.0, 2.0, 1.
                 n_params=spec.n_params)
 
 
+def _cross(t, a, level, start=0):
+    """First time index >= start with a >= level, linearly interpolated (nan if never)."""
+    idx = np.nonzero(a[start:] >= level)[0]
+    if len(idx) == 0:
+        return np.nan, None
+    i = start + idx[0]
+    if i == 0:
+        return t[0], 0
+    return t[i - 1] + (level - a[i - 1]) / (a[i] - a[i - 1]) * (t[i] - t[i - 1]), i
+
+
 def events(t, A, lo=0.1, mid=0.5, hi=0.9):
+    """(t_r, w_r) per component, with the final-rise width of notes/diagnostics.md:
+    w = t(first reach 0.9) - t(last upward crossing of 0.1 before that)."""
     out = []
     for r in range(A.shape[1]):
         a = A[:, r]
-        def cross(level):
-            idx = np.nonzero(a >= level)[0]
-            if len(idx) == 0:
-                return np.nan
-            i = idx[0]
-            if i == 0:
-                return t[0]
-            # linear interpolation in t
-            return t[i - 1] + (level - a[i - 1]) / (a[i] - a[i - 1]) * (t[i] - t[i - 1])
-        out.append((cross(mid), cross(hi) - cross(lo)))
+        t_mid, _ = _cross(t, a, mid)
+        t_hi, i_hi = _cross(t, a, hi)
+        if i_hi is None:
+            out.append((t_mid, np.nan))
+            continue
+        below = np.nonzero(a[:i_hi] < lo)[0]
+        if len(below) == 0:
+            t_lo = t[0]
+        else:
+            j = below[-1]
+            t_lo = t[j] + (lo - a[j]) / (a[j + 1] - a[j]) * (t[j + 1] - t[j])
+        out.append((t_mid, t_hi - t_lo))
     return out
 
 
