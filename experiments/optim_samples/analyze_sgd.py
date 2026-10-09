@@ -68,14 +68,21 @@ def load_runs():
 
 
 def gf_reference():
-    ref = {}
+    """GF event times (t50) and the separation ratio of the first two GF events,
+    rho = gap / max(width_1, width_2) (notes/diagnostics.md), per (sigma, init seed)."""
+    ref, rho = {}, {}
     for p in (RAW / "gd").glob("binary4_*_gf.json"):
         d = json.loads(p.read_text())
         tk = d["task"]
-        if tk.get("root_scale"):
+        if tk.get("root_scale") or tk.get("centred"):
             continue
-        ref[(tk["sigma"], tk["seed"])] = [np.nan if v is None else v for v in d["t50"]]
-    return ref
+        t50 = np.array([np.nan if v is None else v for v in d["t50"]], float)
+        t10 = np.array([np.nan if v is None else v for v in d["t10"]], float)
+        t90 = np.array([np.nan if v is None else v for v in d["t90"]], float)
+        ref[(tk["sigma"], tk["seed"])] = list(t50)
+        width = t90[:2] - t10[:2]
+        rho[(tk["sigma"], tk["seed"])] = abs(t50[1] - t50[0]) / np.nanmax(width)
+    return ref, rho
 
 
 def fit_power(x, y, yerr=None):
@@ -91,7 +98,7 @@ def fit_power(x, y, yerr=None):
 
 def main():
     df = load_runs()
-    ref = gf_reference()
+    ref, rho = gf_reference()
     for r in range(3):
         df[f"t{r + 1}_gf"] = [
             ref.get((s, sd), [np.nan] * 3)[r] if i == "fanin" else
@@ -101,7 +108,13 @@ def main():
     # Classify runs before pooling event-2 statistics: "joint" = component 2 learned together with
     # component 1 (a near-tied race flipped by the noise, no second plateau), "sequential" = a second
     # plateau as in GF, "unresolved" = no event 2 within the run.
-    gap, gap_gf = df.t2 - df.t1, df.t2_gf - df.t1_gf
+    # Gaps follow the GF order of the first two events (at sigma = 0.3 some inits learn component 2
+    # first); a GF second plateau counts as resolved only if its separation ratio rho > 3.
+    sign = np.sign(df.t2_gf - df.t1_gf)
+    gap, gap_gf = sign * (df.t2 - df.t1), sign * (df.t2_gf - df.t1_gf)
+    df["rho_gf"] = [rho.get((s_, sd), np.nan) if i == "fanin" else np.inf
+                    for s_, sd, i in zip(df.sigma, df.seed, df.init)]
+    df["gap"], df["gap_gf"] = gap, gap_gf
     df["run_class"] = np.where(df.t2.isna(), "unresolved",
                                np.where(gap < 0.5 * gap_gf, "joint", "sequential"))
     df.to_csv(OUT / "sgd_runs.csv", index=False)
@@ -166,10 +179,12 @@ def main():
     # Second plateau (P9 of notes/theory_optimizer.md): T = t2 - t1 per run vs GF, excluding
     # near-tie inits (GF: the eventual second component peaks at 0.15-0.6 during the first event).
     ties = pd.read_csv(OUT / "order_flips.csv").groupby(["sigma", "seed"]).rival_peak.first()
-    r = df[(df.init == "fanin") & ~df.diverged & (df.run_class != "joint")].copy()
+    r = df[(df.init == "fanin") & ~df.diverged & (df.run_class != "joint") & (df.rho_gf > 3)].copy()
     r["near_tie"] = [0.15 <= ties.get((s, sd), 0.0) < 0.6 for s, sd in zip(r.sigma, r.seed)]
-    r["T"] = r.t2 - r.t1
-    r["T_gf"] = r.t2_gf - r.t1_gf
+    r["T"] = r.gap
+    r["T_gf"] = r.gap_gf
+    print("inits without a resolved GF second plateau (rho <= 3), excluded:",
+          sorted({(s_, sd) for s_, sd, rr in zip(df.sigma, df.seed, df.rho_gf) if rr <= 3}))
     r["T_ratio"] = r["T"] / r["T_gf"]
     sec = (r.groupby(["near_tie", "block", "sigma", "B", "eta"])
            .agg(n=("T_ratio", "count"), T_gf=("T_gf", "mean"), T_ratio=("T_ratio", "mean"),

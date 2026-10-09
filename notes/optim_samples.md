@@ -209,6 +209,43 @@ eta q s_new - eta^2 q^2 E xi^2/2, so collapse needs s_new < eta q (V + zeta^2)/(
 label noise to collapse (components weaker than ~eta q zeta^2/(2B)). Tests: `p9_sgd.py` (k = 3,
 section 6), `collapse_test.py` (k = 2 with label noise).
 
+### 4.0 Step-2 sweep results (empirical; `sgd_sweep.py`, `analyze_sgd.py`, `fig_sgd.png`)
+
+Setup: binary N=4, d = chi = 3, odeco [3, 2, 1] (teacher seed 101), online SGD (fresh Gaussian inputs,
+no label noise; my loop, validated identical to `ttn.dynamics.run_sgd`), events a_r = 1/2 checked every
+4 steps (resolution 4 eta = 0.002 time units). Blocks: B in {1, 2, ..., 256} at eta = 5e-4 (= 0.47 eta*_ms
+at B = 1, smaller fractions at larger B) for fan-in init sigma = 0.1, 0.3 (5 inits x 10-20 noise seeds)
+and sigma = 0.03 (B in {1, 4, 16, 64, 256}); eta sweeps at B = 4 (eta = 1e-4 ... 2e-3) and B = 64
+(5e-4 ... 2e-2) at sigma = 0.1; aligned balanced init (per-core amplitude 0.05, 20-40 noise seeds).
+1930 runs. GF references: the step-1 DOP853 runs of the same inits.
+
+- **First escape, mean (P7):** the shift of E t_1 relative to GF is >= 0 within errors at every
+  setting and small: at B = 1 it is +0.29 +- 0.41 (sigma = 0.03, t_1 = 24.2), +0.19 +- 0.24 (sigma = 0.1,
+  t_1 = 7.2), +0.28 +- 0.21 (sigma = 0.3, t_1 = 2.5) (mean +- s.e. over 5 inits) vs P7's
+  (eta/2)(K-1)(1 + kappa/B) ln(a_e/a_0) estimated with the measured GD coefficient: +0.17, +0.12,
+  +0.08. Aligned init (exact 1D theory): +0.084 +- 0.116 vs +0.114 at B = 1; all B consistent.
+  **No noise-assisted shortening of the first plateau.**
+- **First escape, spread (P7):** std(t_1) ~ (eta/B)^p with per-init fitted p = 0.531 +- 0.024
+  (sigma = 0.03), 0.497 +- 0.018 (0.1), 0.509 +- 0.011 (0.3) over the B sweep (2.1 decades in eta/B),
+  0.544 +- 0.046 (eta sweep, B = 4) and 0.548 +- 0.020 (eta sweep, B = 64); predicted 1/2. Magnitude: 1.2-1.4x
+  the 1D formula sqrt(kappa (eta/B) t_1) for fan-in inits (theory note: ~1.2x for generic init), within
+  ~5-16% of the exact aligned formula for the aligned init (e.g. B = 1: 0.52 vs 0.51; B = 16: 0.133 vs 0.128).
+- **Race flips:** inits whose GF race is a near-tie (sigma = 0.1 seeds 1, 3; several sigma = 0.3 seeds)
+  are flipped by the noise in 10-40% of runs (component 2 learned together with component 1, no second
+  plateau), more often at small B. These runs are classified "joint" and kept out of the
+  second-plateau statistics.
+- **Second plateau (P9), inits with a resolved GF plateau (rho > 3) and no near-tie** (sigma = 0.03:
+  seeds 0, 2, 4; sigma = 0.1: seeds 0, 4; no sigma = 0.3 init has rho > 3): lengthened by
+  +28 +- 5% (sigma = 0.03, B = 1), +11 +- 5% (sigma = 0.1, B = 1), +14 +- 6% (sigma = 0.1, B = 4,
+  eta = 2e-3), within errors of 0 for eta/B <= 1.25e-4; P9 with c_gamma = 35 gives +19%, +5%, +5%: the
+  measured lengthening is ~1.5-2.5x larger at the largest eta/B (c_gamma ~ 50-75 there), consistent with
+  the aligned test, where c_gamma grows with x. Never shorter than GF beyond 1 s.e.
+- **Gauge balance (Ziyin 2024, derived scaling):** |Delta tr Q_e| at the end grows like (eta/B)^p with
+  per-init p = 0.895 +- 0.047, 0.971 +- 0.030, 1.03 +- 0.013 (sigma = 0.03, 0.1, 0.3), 0.99 +- 0.05,
+  1.02 +- 0.03 (eta sweeps); predicted 1 (`fig_sgd.png` d): a systematic noise-driven drift along the
+  gauge orbits, ~0.6-0.9 in tr Q at B = 1 (cores have |G|^2 ~ 4).
+- No divergence in any run (all eta <= 0.47 eta*_ms).
+
 ### 4.1 Test of the theory note's P9/P10 (empirical; `p9_sgd.py`, `plot_p9.py`, `results/p9_fit.csv`)
 
 Binary N=4, d = chi = 3, teacher [3, 2, 1]; start on the aligned route (component 1 learned,

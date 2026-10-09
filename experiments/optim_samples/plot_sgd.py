@@ -25,22 +25,26 @@ def main():
     s = pd.read_csv(RES / "sgd_summary.csv")
     s["x"] = s.eta / s.B
     fig, axes = plt.subplots(2, 2, figsize=(9.5, 7.0))
-    # (a) relative shift of the mean event time vs B (fan-in init, eta = 5e-4)
+    # (a) first event: relative shift of the mean (all inits); second plateau: relative lengthening
+    # (inits with a resolved GF second plateau, rho > 3, and no near-tie; P9 overlay with c = 35)
     ax = axes[0, 0]
     b = s[(s.block == "B_sweep")]
     for i, sig in enumerate(sorted(b.sigma.unique())):
-        g = b[b.sigma == sig].assign(rel1=lambda d: d.shift1 / d.t1_gf,
-                                     rel2=lambda d: d.shift2 / d.t2_gf)
-        for r, mk in ((1, "o"), (2, "s")):
-            m = g.groupby("B")[f"rel{r}"]
-            ax.errorbar(m.mean().index, m.mean(), yerr=m.sem(), fmt=mk + "-", ms=3.5, lw=1,
-                        color=ps.BLUES[2 * i + 1], mfc="white" if r == 2 else None,
-                        label=f"σ={sig:g}, event {r}")
+        g = b[b.sigma == sig].assign(rel1=lambda d: d.shift1 / d.t1_gf).groupby("B").rel1
+        ax.errorbar(g.mean().index, g.mean(), yerr=g.sem(), fmt="o-", ms=3.5, lw=1,
+                    color=ps.BLUES[2 * i + 1], label=f"first escape, σ = {sig:g}")
+    sec = pd.read_csv(RES / "sgd_second_plateau.csv")
+    sec = sec[(sec.block == "B_sweep") & ~sec.near_tie]
+    for i, sig in enumerate(sorted(sec.sigma.unique())):
+        g = sec[sec.sigma == sig].sort_values("B")
+        ax.errorbar(g.B, g.T_ratio - 1, yerr=g.T_ratio_se, fmt="s-", ms=3.5, lw=1, mfc="white",
+                    color=ps.CAT[1 + i], label=f"second plateau, σ = {sig:g}")
+        ax.plot(g.B, g.pred_P9_c35 - 1, ":", color=ps.CAT[1 + i], lw=1)
     ax.axhline(0, color=ps.INK2, lw=0.6)
     ax.set(xscale="log", xlabel="batch size B (η = 5·10⁻⁴)",
-           ylabel="(E t^SGD − t^GF) / t^GF  (mean ± s.e. over 5 inits)",
-           title="(a) noise does not shorten plateaus")
-    ax.legend(fontsize=6.5, ncol=2)
+           ylabel="relative change vs GF (mean ± s.e.)",
+           title="(a) noise lengthens, never shortens (dotted: P9, c_γ = 35)")
+    ax.legend(fontsize=6.3, ncol=1)
     # (b) spread over noise vs eta / B, all fan-in blocks, normalized by sqrt(t_gf)
     ax = axes[0, 1]
     f = s[s.init == "fanin"].copy()
