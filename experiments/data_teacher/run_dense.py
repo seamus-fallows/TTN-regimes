@@ -48,7 +48,7 @@ def two_stage(problem, theta0, t_max, n_dense, stop_rel, rtol=1e-9, atol=1e-14):
         if k == "theta_end" or k not in b.data:
             continue
         xa, xb = np.asarray(a.data[k]), np.asarray(b.data[k])
-        if k == "t":
+        if k in ("t", "fine_t"):  # stage-B times are relative to t_a (fine rows too)
             xb = xb + t_a
         if xa.ndim == 0:
             continue

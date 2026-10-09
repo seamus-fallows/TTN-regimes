@@ -37,7 +37,7 @@ from run_generic import expand  # noqa: E402
 from setups import build  # noqa: E402
 
 from ttn.diagnostics import gauge_directions, hessian, project_out_gauge  # noqa: E402
-from ttn.dynamics import Problem, Trajectory  # noqa: E402
+from ttn.dynamics import Problem, Trajectory, merged_rows  # noqa: E402
 
 HERE = Path(__file__).parent
 
@@ -75,8 +75,14 @@ def analyze_run(args):
     path, meta, levels, spec_args = args
     torch.set_num_threads(1)
     tr = Trajectory.load(path)
-    t, loss, sp = tr.data["t"], tr.data["loss"], np.nan_to_num(tr.data["spectra"])
-    speed, params = tr.data["speed"], tr.data["params"]
+    # plateau point (speed minimum, parameters) from the log rows; event times from the merged
+    # log + fine rows when the run has them (final library; older runs have log rows only)
+    tl, speed, params = tr.data["t"], tr.data["speed"], tr.data["params"]
+    if "fine_t" in tr.data:
+        m = merged_rows(tr.data)
+        t, loss, sp = m["t"], m["loss"], np.nan_to_num(m["spectra"])
+    else:
+        t, loss, sp = tl, tr.data["loss"], np.nan_to_num(tr.data["spectra"])
     tsp = tr.data["teacher_spectra"]
     edges = [j for j in range(sp.shape[1]) if tsp[j, 1] > 1e-3]
     k0 = int(np.argmax(loss < 0.9 * loss[0]))
@@ -94,8 +100,13 @@ def analyze_run(args):
     if ke3 is None or ke3 - k0 < 3:
         row.update(resolved=False, reason="no plateau between first escape and second event")
         return row
-    kp = k0 + int(np.argmin(speed[k0:ke3]))
-    lp = float(loss[kp])
+    # plateau point on the log grid between the first escape and the second-escape onset
+    lk0, lke = np.searchsorted(tl, t[k0]), np.searchsorted(tl, t[ke3])
+    if lke - lk0 < 3:
+        row.update(resolved=False, reason="plateau shorter than 3 log rows")
+        return row
+    kpl = lk0 + int(np.argmin(speed[lk0:lke]))
+    lp = float(tr.data["loss"][kpl])
     lv = np.array([x["level"] for x in levels])
     j = int(np.argmin(np.abs(lv - lp) / lv))
     rel = abs(lv[j] - lp) / lv[j]
@@ -112,7 +123,7 @@ def analyze_run(args):
     # gauge-projected Hessian at the plateau point
     spec, teacher, metrics = spec_args
     prob = Problem(spec, teacher, site_metrics=metrics)
-    th = torch.as_tensor(params[kp])
+    th = torch.as_tensor(params[kpl])
     _, eigs = project_out_gauge(hessian(prob.loss, th), gauge_directions(spec, th))
     row["lambda_min"] = float(eigs[0])
     return row

@@ -1150,3 +1150,4 @@ misaligned8_20 ht 0.05 4 t_esc=nan
 misaligned8_20 ht 0.05 3 t_esc=6.496e+06
 misaligned8_20 ht 0.05 2 t_esc=8.252e+06
 misaligned8_20 ht 0.05 1 t_esc=8.165e+06
+misaligned8_20 mps 0.05 3 t_esc=1.2e+05

@@ -29,7 +29,7 @@ from common import RESULTS, OUT_ROOT
 from r2_common import balance_rank1, embed, rank1_saddles, saddle_start, student, teacher_for
 
 from ttn.diagnostics import gauge_directions, hessian, project_out_gauge, saddle_type
-from ttn.dynamics import Problem, Recorder, integrate_gf
+from ttn.dynamics import Problem, Recorder, integrate_gf, merged_rows
 
 HERE = Path(__file__).parent
 _SADDLES = {}
@@ -73,9 +73,10 @@ def run(args):
         tr = integrate_gf(prob, theta, t_max=chunk, n_log=600, rtol=1e-9, atol=1e-14,
                           method="lsoda", recorder=Recorder(spectra=True, overlaps=False))
         d = tr.data
-        parts.append((d["t"] + t_off, d["loss"], np.nan_to_num(d["spectra"]),
+        m = merged_rows(d)  # log rows + the Recorder's fine rows (event resolution)
+        parts.append((m["t"] + t_off, m["loss"], np.nan_to_num(m["spectra"]),
                       d["conservation_drift"]))
-        s2 = np.nan_to_num(d["spectra"])[:, :, 1].max(axis=1)
+        s2 = np.nan_to_num(m["spectra"])[:, :, 1].max(axis=1)
         theta = torch.as_tensor(d["theta_end"])
         t_off += chunk
         if s2.max() >= 0.2 or t_off > T_CAP:
