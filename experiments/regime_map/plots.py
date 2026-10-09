@@ -598,3 +598,33 @@ def fig_large_chi(exp="large_chi_b4", model="centred", sigma=1.5, chi_fit_min=16
     tab = pd.DataFrame(rows)
     save_csv(tab, f"large_chi_exponents_{exp}_{model}_sigma{sigma}.csv")
     return tab
+
+
+def fig_stall_fraction(specs, name="stalls_vs_K"):
+    """Fraction of runs labelled stalled vs sigma / a0c(K) (a0c = exact aligned S2S boundary), one
+    line per tree, one panel per (exp, chi-class). specs: list of (title, exp, chi or 'full')."""
+    from analysis import aligned_boundary_a0, load
+
+    fig, axes = plt.subplots(1, len(specs), figsize=(4.6 * len(specs), 3.6), sharey=True)
+    axes = np.atleast_1d(axes)
+    cmap = plt.get_cmap("viridis")
+    for ax, (title, exp, chi) in zip(axes, specs):
+        df = load(exp)
+        if chi != "full":
+            df = df[df.chi == chi]
+        w = tuple(df.weights.iloc[0]) if "weights" in df.columns and isinstance(df.weights.iloc[0], list) else (3.0, 2.0, 1.0)
+        trees = df.drop_duplicates(["kind", "n"]).sort_values("K")[["kind", "n", "K"]].values.tolist()
+        Kmax = max(t[2] for t in trees)
+        for kind, n, K in trees:
+            g = df[(df.kind == kind) & (df.n == n)]
+            fr = g.groupby("sigma").apply(lambda x: (x.label == "stalled").mean())
+            a0c = aligned_boundary_a0(int(K), w)
+            ax.semilogx(fr.index / a0c, fr.values, "o-", ms=3, lw=1.2, color=cmap((K - 3) / max(Kmax - 3, 1)),
+                        label=f"{kind}{n} (K={K})")
+        ax.axvline(1.0, color=MUTED, lw=0.8, ls=":")
+        ax.set_xlabel(r"$\sigma / a_{0c}(K)$")
+        ax.set_title(title, fontsize=9, loc="left")
+        ax.legend(fontsize=6, frameon=False)
+    axes[0].set_ylabel("fraction of seeds stalled")
+    fig.tight_layout()
+    save_fig(fig, f"{name}.png")
