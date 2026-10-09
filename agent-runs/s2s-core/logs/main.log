@@ -426,3 +426,4 @@ main: 1600 runs to do -> /root/outputs/s2s_core/main
 main: 1290 runs to do -> /root/outputs/s2s_core/main
 [1/1290 48s] mps4_chi3_w3-2-1_fanin_s0.02_seed7: stop_fn (47s)
 [2/1290 57s] mps4_chi3_w3-2-1_fanin_s0.02_seed5: stop_fn (56s)
+[3/1290 70s] mps4_chi3_w3-2-1_fanin_s0.02_seed9: converged (69s)

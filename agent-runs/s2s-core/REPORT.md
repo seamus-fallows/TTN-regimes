@@ -40,7 +40,7 @@ K sweep, chi = 3, 30 seeds, 17 trees with K = 3..15: geometric mean T / (RMS-ove
 0.94-2.1 while T spans a factor 1500; T / (Kumar-Haupt) = 3 .. 3e7. Details: `notes/s2s_core.md` 2.1.
 The systematic GF test across sigma (`first_escape.py`, `configs/first.yaml`) is queued.
 
-**Step 2, first pass (sweep `configs/main.yaml`, 400 of 1600 runs done; `results/main_summary.csv`
+**Step 2, first pass (sweep `configs/main.yaml`, ~310 of 1600 runs done; `results/main_summary.csv`
 to come):**
 - binary4 (K = 3), chi 3 and 6, sigma 0.003-0.02, 10 seeds per cell: 160/160 runs learn all 3
   components; S2S (every rho > 3) in 80/80 separated-teacher runs; close teacher [1, 0.85, 0.7]:
