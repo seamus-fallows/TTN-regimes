@@ -333,6 +333,17 @@ N = 4, 8 seeds, small init unless stated (`results/robust_table.md`):
 with either init over sigma in [0.03, 0.3] (mps8 S = {1,5}: 3.9 ± 0.3, mps6 S = {1,3,5}: 3.3 ± 0.2);
 see 7.9 for a smaller-sigma check.
 
+### 7.9 Open deviation: two MPS k = 5 rows — **empirical, unexplained**
+
+Smaller-sigma check (`configs/k5_extension.yaml`, sigma = 0.012-0.03, 8 seeds; local exponent over the
+three smallest sigma): mps6 S = {1,3,5}: 3.05 ± 0.06 (saddle start), 3.43 ± 0.19 (balanced init);
+mps8 S = {1,5}: 3.72 ± 0.16 (saddle start), 3.68 ± 0.31 (balanced init). Predicted 3. The binary8, ht4 and
+ht8 k = 5 rows give 2.9-3.1. Candidate mechanism (conjecture, untested): noise entries in flat directions
+next to the route (e.g. a new-index-to-old-index entry on a core adjacent to a route end) form degree-2
+sub-routes orthogonal to the residual whose quartic penalty shrinks the route amplitudes algebraically
+during a long plateau; the effect would grow with the plateau length (k) and depend on how many such
+entries the tree offers. Testing it needs the route amplitudes measured along the plateau.
+
 ## 8. Verdict
 
 **H2 (exponent set by locality), two-component teachers: supported** — derived (section 2; = Steiner

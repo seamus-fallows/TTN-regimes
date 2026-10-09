@@ -20,38 +20,61 @@ subtree of the sites where the new component differs; plateau ~ sigma^-(k-2) (k 
   length is the time between consecutive learning events) and **saddle** (exact balanced saddle s1 U1 from
   `aligned_init` plus sigma-scale fan-in noise; isolates the escape law and works for HT8, whose first
   plateau is unreachable at small sigma).
-- Dynamics: gradient flow, scipy `solve_ivp` RK45 (Dormand-Prince 5(4)), rtol 1e-9, atol 1e-14, on the flat
-  parameter vector with a `torch.compile`d autograd gradient of `ttn.losses.population_loss`
-  (`pilot/pilot3.py`; to be ported to `ttn.dynamics` when it lands). Wall-clock limit 1500 s per run.
+- Dynamics: gradient flow with scipy LSODA (`solve_ivp`, exact-Hessian Jacobian; the solver behind
+  `ttn.dynamics.integrate_gf(method="lsoda")`), rtol 1e-9, atol 1e-14, on the flat parameter vector of the
+  library model (`ttn.dynamics.Problem`), field and Jacobian compiled with torch.compile; event times by
+  root-finding (Radau fallback if LSODA's dense output fails); stalled runs (dead routes) detected and
+  recorded; wall-clock limit 1500 s (900 s for k >= 6). Runner: `run.py`.
 - Learning event of component r: final upward crossing of a_r = 1/2 (every crossing is recorded). Plateau =
   interval between consecutive events; its midpoint = minimum gradient norm inside it, where the
   gauge-projected Hessian is evaluated.
 
 ## How to run
+Order: (1) `run.py` for each config, (2) `predict_sequences.py`, (3) `finalize.sh <out_dir> [workers]`.
 ```
-uv run python experiments/locality/pilot/make_cases_2comp.py experiments/locality/pilot/cases_2comp.json
-uv run python experiments/locality/pilot/pilot3.py experiments/locality/pilot/cases_2comp.json /root/outputs/locality/r2comp 36
-uv run python experiments/locality/pilot/pilot3.py experiments/locality/pilot/cases_theory_examples.json /root/outputs/locality/rtheory 12
-uv run python experiments/locality/pilot/pilot3.py experiments/locality/pilot/cases_step3_n4.json /root/outputs/locality/rstep3n4 9
-uv run python experiments/locality/pilot/make_cases_extra.py   # nested N = 6, 8 and robustness case lists
-uv run python experiments/locality/analysis.py /root/outputs/locality/r2comp          # exponent table
+uv run python experiments/locality/run.py experiments/locality/configs/twocomp.yaml /root/outputs/locality/twocomp 36
+uv run python experiments/locality/run.py experiments/locality/configs/twocomp_balanced.yaml /root/outputs/locality/twocomp_balanced 16
+uv run python experiments/locality/run.py experiments/locality/configs/multicomp.yaml /root/outputs/locality/multicomp 16
+uv run python experiments/locality/run.py experiments/locality/configs/multicomp_wide.yaml /root/outputs/locality/multicomp_wide 8
+uv run python experiments/locality/run.py experiments/locality/configs/robust.yaml /root/outputs/locality/robust 22
+uv run python experiments/locality/run.py experiments/locality/configs/k5_extension.yaml /root/outputs/locality/k5ext 16
+uv run python experiments/locality/predict_sequences.py        # route-rule predictions -> results/route_sequences.json
+experiments/locality/finalize.sh /tmp/locality_results 8       # all tables and figures into a fresh directory
 ```
-The runner is resumable (finished runs are skipped) and writes one JSON line per run to
-`<prefix>.part<pid>`; subsampled trajectories go to `/root/outputs/locality/pilot3/*.npz`.
+`run.py <config> <out_prefix> <workers>` is resumable (finished runs are skipped, errors and timeouts are
+retried) and appends one JSON line per run to `<out_prefix>.part<pid>`; every accepted integrator step is
+saved to `/root/outputs/locality/traj/*.npz`. Configs are written by `make_configs.py`.
 
-Variants: edit or extend the case lists (keys: `kind`, `n`, `S` or `patterns` + `weights`, `d`, `chi`,
-`start` = small | saddle, `sigmas`, `seeds`, `teacher_seed`).
+Variants: case keys `kind`, `n`, `S` (two-component teacher) or `name` + `patterns` + `weights`, `d`, `chi`,
+`start` (small | saddle | small_balanced), `sigmas`, `seeds`, `teacher_seed` (default 1000), `rtol`, `atol`,
+`t_max`, `wall_limit`.
 
 ## Files
 | file | role |
 |---|---|
 | `rules.py` | trees, Steiner rule, bond-rank rule, route rule k* (projected local residual), Furman's N, literal H2 |
-| `pilot/pilot3.py` | runner (gradient flow, events, plateau Hessians, trajectories) |
+| `run.py` | runner (library model + LSODA, events, plateau Hessians, stall detection, balanced init) |
+| `make_configs.py`, `configs/*.yaml` | sweep definitions |
+| `predict_sequences.py` | route-rule predictions for the multi-component teachers |
+| `levels.py` | step 3: time at each predicted plateau level |
+| `make_figures.py` | exponent tables, exponents and Hessian figures |
+| `plot_bonds.py` | step 4 figure |
+| `finalize.sh` | regenerate all results into a given directory |
+| `pilot/pilot3.py` | RK45 runner used before library v0 (superseded) |
 | `analysis.py` | plateau table, per-seed exponent fits, log-law slopes, Hessian scaling, dormant-norm test |
 | `growth.py` | single-run escape degree from d log(da/dt) / d log a = 2 - 2/k |
 | `bond_events.py` | which bonds gain rank at each event vs prediction |
-| `plot_escape.py`, `plot_trees.py` | figures |
+| `plot_trees.py` | step 3 figure; `plot_escape.py`: pilot figure (superseded) |
 | `pilot/pilot2.py`, `fit.py` | first pilot (pre-fix library; superseded) |
 
-## Results
-See `notes/locality.md` section 7 and `agent-runs/locality/REPORT.md` (being filled).
+## Results (details: `notes/locality.md` sections 7-8)
+- Two components: the plateau after the first component scales as predicted by the Steiner count k on all
+  9 trees: no plateau (k = 1), log law with slope (1 - s2/s1)/λ2 (k = 2; 1/λ2 from the saddle start),
+  σ^-(k-2) for k = 3 (0.98-1.03), 4 (1.9-2.1), 5 (2.9-3.1 except two MPS rows), 6-8 (within errors).
+  `results/twocomp_table.md`, `twocomp_exponents.png`.
+- Hessian at plateau midpoints: λ_min = -λ2 (k = 2), ∝ σ^(k-2) (k >= 3). `results/twocomp_hessian.png`.
+- Several components: route rule at rank-constrained optima predicts all sequences tested (TA, TB, N4, B4,
+  E8, TC, TD); literal H2 fails. `results/trees_*.png`, `levels_summary.csv`.
+- Bond spectra: rank rises on exactly the Steiner edges in 98.7% of events. `results/bond_spectra.png`.
+- Fan-in init kills k >= 4 routes in a sizeable fraction of runs; gauge-balanced init does not.
+- Robust to χ, d and the weight ratio. `results/robust_table.md`.

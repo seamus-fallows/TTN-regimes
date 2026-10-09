@@ -1,0 +1,184 @@
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+None [0, 3] mps 4 small_balanced 3 26s
+None [0, 3] mps 4 small_balanced 6 27s
+None [0, 3] mps 4 small_balanced 1 27s
+None [0, 3] mps 4 small_balanced 2 28s
+None [0, 3] mps 4 small_balanced 7 29s
+None [0, 3] mps 4 small_balanced 4 29s
+None [0, 3] mps 4 small_balanced 5 30s
+None [0, 3] mps 4 small_balanced 0 32s
+None [0, 1, 2, 3] mps 4 small_balanced 0 10s
+None [0, 1, 2, 3] mps 4 small_balanced 1 10s
+None [0, 1, 2, 3] mps 4 small_balanced 3 11s
+None [0, 1, 2, 3] mps 4 small_balanced 4 11s
+None [0, 1, 2, 3] mps 4 small_balanced 5 11s
+None [0, 1, 2, 3] mps 4 small_balanced 2 13s
+None [0, 1, 2, 3] mps 4 small_balanced 6 15s
+None [0, 1, 2, 3] mps 4 small_balanced 7 13s
+None [0, 3] mps 6 small_balanced 1 27s
+None [0, 3] mps 6 small_balanced 2 29s
+None [0, 3] mps 6 small_balanced 5 28s
+None [0, 3] mps 6 small_balanced 0 33s
+None [0, 3] mps 6 small_balanced 3 30s
+None [0, 3] mps 6 small_balanced 4 33s
+None [0, 3] mps 6 small_balanced 7 28s
+None [0, 3] mps 6 small_balanced 6 31s
+None [1, 4] mps 6 small_balanced 1 20s
+None [1, 4] mps 6 small_balanced 0 25s
+None [1, 4] mps 6 small_balanced 4 20s
+None [1, 4] mps 6 small_balanced 3 21s
+None [1, 4] mps 6 small_balanced 2 22s
+None [1, 4] mps 6 small_balanced 6 22s
+None [1, 4] mps 6 small_balanced 5 23s
+None [1, 4] mps 6 small_balanced 7 26s
+None [2, 5] mps 8 small_balanced 3 45s
+None [2, 5] mps 8 small_balanced 4 51s
+None [2, 5] mps 8 small_balanced 2 52s
+None [2, 5] mps 8 small_balanced 1 54s
+None [2, 5] mps 8 small_balanced 5 50s
+None [2, 5] mps 8 small_balanced 6 57s
+None [0, 2, 4] star3 None small_balanced 0 22s
+None [2, 5] mps 8 small_balanced 7 61s
+None [0, 2, 4] star3 None small_balanced 1 24s
+None [0, 2, 4] star3 None small_balanced 3 22s
+None [0, 2, 4] star3 None small_balanced 2 25s
+None [0, 2, 4] star3 None small_balanced 4 24s
+None [0, 2, 4] star3 None small_balanced 6 17s
+None [0, 2, 4] star3 None small_balanced 5 24s
+None [0, 1, 2, 3, 4, 5] star3 None small_balanced 1 15s
+None [0, 1, 2, 3, 4, 5] star3 None small_balanced 2 15s
+None [0, 1, 2, 3, 4, 5] star3 None small_balanced 0 18s
+None [0, 1, 2, 3, 4, 5] star3 None small_balanced 3 17s
+None [0, 2, 4] star3 None small_balanced 7 24s
+None [0, 1, 2, 3, 4, 5] star3 None small_balanced 4 19s
+None [2, 5] mps 8 small_balanced 0 107s
+None [0, 1, 2, 3, 4, 5] star3 None small_balanced 5 20s
+None [0, 1, 2, 3, 4, 5] star3 None small_balanced 7 14s
+None [0, 1, 2, 3, 4, 5] star3 None small_balanced 6 17s
+None [0, 3] midroot6 None small_balanced 1 32s
+None [0, 3] midroot6 None small_balanced 2 35s
+None [0, 3] midroot6 None small_balanced 0 39s
+None [0, 3] midroot6 None small_balanced 6 32s
+None [0, 3] midroot6 None small_balanced 3 37s
+None [0, 3] midroot6 None small_balanced 4 36s
+None [0, 3] midroot6 None small_balanced 5 35s
+None [0, 3] midroot6 None small_balanced 7 33s
+None [1, 2] ht 4 small_balanced 0 34s
+None [1, 2] ht 4 small_balanced 2 33s
+None [1, 2] ht 4 small_balanced 1 37s
+None [1, 2] ht 4 small_balanced 4 30s
+None [1, 2] ht 4 small_balanced 3 33s
+None [1, 2] ht 4 small_balanced 7 31s
+None [1, 2] ht 4 small_balanced 6 32s
+None [1, 2] ht 4 small_balanced 5 35s
+None [0, 3] ht 4 small_balanced 0 20s
+None [0, 3] ht 4 small_balanced 1 21s
+None [0, 3] ht 4 small_balanced 2 19s
+None [0, 3] ht 4 small_balanced 4 19s
+None [0, 3] ht 4 small_balanced 3 21s
+None [0, 3] ht 4 small_balanced 5 21s
+None [0, 3] ht 4 small_balanced 7 20s
+None [0, 3] ht 4 small_balanced 6 23s
+None [0, 2] ht 4 small_balanced 0 20s
+None [0, 2] ht 4 small_balanced 1 20s
+None [0, 2] ht 4 small_balanced 2 20s
+None [0, 2] ht 4 small_balanced 3 21s
+None [0, 2] ht 4 small_balanced 4 21s
+None [0, 2] ht 4 small_balanced 5 22s
+None [0, 2] ht 4 small_balanced 7 20s
+None [0, 2] ht 4 small_balanced 6 21s
+None [1, 3, 5] mps 6 small_balanced 0 29s
+None [1, 3, 5] mps 6 small_balanced 1 27s
+None [1, 3, 5] mps 6 small_balanced 2 26s
+None [1, 3, 5] mps 6 small_balanced 4 28s
+None [1, 3, 5] mps 6 small_balanced 5 27s
+None [1, 3, 5] mps 6 small_balanced 6 26s
+None [1, 3, 5] mps 6 small_balanced 7 27s
+None [1, 3, 5] mps 6 small_balanced 3 40s
+None [1, 5] mps 8 small_balanced 6 38s
+None [1, 5] mps 8 small_balanced 4 43s
+None [1, 5] mps 8 small_balanced 0 55s
+None [1, 5] mps 8 small_balanced 5 44s
+None [1, 5] mps 8 small_balanced 2 52s
+None [1, 5] mps 8 small_balanced 7 39s
+None [1, 5] mps 8 small_balanced 1 76s
+None [3, 4] binary 8 small_balanced 0 58s
+None [3, 4] binary 8 small_balanced 1 55s
+None [3, 4] binary 8 small_balanced 3 57s
+None [3, 4] binary 8 small_balanced 5 54s
+None [3, 4] binary 8 small_balanced 2 59s
+None [3, 4] binary 8 small_balanced 4 61s
+None [3, 4] binary 8 small_balanced 6 49s
+None [0, 7] binary 8 small_balanced 1 33s
+None [3, 4] binary 8 small_balanced 7 37s
+None [0, 7] binary 8 small_balanced 0 36s
+None [0, 7] binary 8 small_balanced 3 32s
+None [0, 7] binary 8 small_balanced 2 33s
+None [0, 7] binary 8 small_balanced 4 34s
+None [0, 7] binary 8 small_balanced 5 32s
+None [0, 7] binary 8 small_balanced 6 53s
+None [2, 3, 4, 5] binary 8 small_balanced 0 57s
+None [0, 7] binary 8 small_balanced 7 60s
+None [2, 3, 4, 5] binary 8 small_balanced 1 60s
+None [2, 3, 4, 5] binary 8 small_balanced 3 59s
+None [2, 3, 4, 5] binary 8 small_balanced 2 65s
+None [2, 3, 4, 5] binary 8 small_balanced 4 73s
+None [0, 1, 2] ht 4 small_balanced 0 37s
+None [2, 3, 4, 5] binary 8 small_balanced 6 42s
+None [0, 1, 2] ht 4 small_balanced 2 34s
+None [2, 3, 4, 5] binary 8 small_balanced 5 49s
+None [2, 3, 4, 5] binary 8 small_balanced 7 43s
+None [0, 1, 2] ht 4 small_balanced 1 44s
+None [0, 1, 2] ht 4 small_balanced 3 30s
+None [0, 1, 2] ht 4 small_balanced 4 25s
+None [0, 5] mps 6 small_balanced 3 30s
+None [0, 5] mps 6 small_balanced 1 33s
+None [0, 5] mps 6 small_balanced 0 35s
+None [0, 5] mps 6 small_balanced 2 33s
+None [0, 5] mps 6 small_balanced 4 27s
+None [0, 1, 2, 3, 4, 5] mps 6 small_balanced 0 27s
+None [0, 1, 2, 3, 4, 5] mps 6 small_balanced 1 28s
+None [0, 1, 2, 3, 4, 5] mps 6 small_balanced 4 25s
+None [0, 1, 2, 3, 4, 5] mps 6 small_balanced 2 30s
+None [0, 1, 2, 3, 4, 5] mps 6 small_balanced 3 33s
+None [1, 6] mps 8 small_balanced 1 45s
+None [1, 6] mps 8 small_balanced 2 46s
+None [0, 2, 4] binary 8 small_balanced 0 33s
+None [0, 2, 4] binary 8 small_balanced 1 41s
+None [0, 2, 4] binary 8 small_balanced 2 33s
+None [1, 5] mps 8 small_balanced 3 352s
+None [0, 2, 4] binary 8 small_balanced 3 35s
+None [0, 2, 4] binary 8 small_balanced 4 37s
+None [1, 6] mps 8 small_balanced 4 78s
+None [0, 5] midroot6 None small_balanced 0 34s
+None [0, 5] midroot6 None small_balanced 1 28s
+None [0, 5] midroot6 None small_balanced 2 30s
+None [0, 5] midroot6 None small_balanced 3 30s
+None [0, 5] midroot6 None small_balanced 4 28s
+None [0, 1, 2, 3] ht 4 small_balanced 0 26s
+None [0, 1, 2, 3] ht 4 small_balanced 2 22s
+None [0, 1, 2, 3] ht 4 small_balanced 1 26s
+None [0, 1, 2, 3] ht 4 small_balanced 3 26s
+None [0, 1, 2, 3] ht 4 small_balanced 4 22s
+None [1, 6] mps 8 small_balanced 0 162s
+None [0, 7] mps 8 small_balanced 1 42s
+None [0, 7] mps 8 small_balanced 4 56s
+None [0, 7] mps 8 small_balanced 2 78s
+None [1, 6] mps 8 small_balanced 3 210s
+None [0, 7] mps 8 small_balanced 3 127s
+None [0, 7] mps 8 small_balanced 0 155s
