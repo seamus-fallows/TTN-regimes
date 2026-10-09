@@ -64,11 +64,11 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 | `notes/prior_knowledge.md` | what the lead knew before the literature review; hypotheses H1–H6 |
 | `notes/literature.md` | literature review v1.1 (7 verified clusters + completeness critique): what is known, hypothesis status, ranked open problems |
 | `notes/theory_saddles.md` | v2 (verified + revised): saddles after the first escape, Steiner route rule, piggyback-graph strictness criterion, escape times with head start, trap mechanism, predictions P1-P14 (section 12), literature mapping (section 9) |
-| `notes/theory_regimes.md` | DRAFT (being revised after verification): lazy/S2S boundaries, large-chi parameterizations, imbalance |
+| `notes/theory_regimes.md` | v2 (verified, revised): tangent kernel rank/scale, lazy boundary sigma_lazy ~ 6.5/sqrt(chi), centred floor, S2S fractions vs sigma (sigma_c ~ 0.29 at K=3, ~0.71 at K=7), stalls at K>=5 with chi = R cured by spare channels, muP-TTN, imbalance; 20 predictions (section 8) |
 | `notes/theory_teachers.md` | v2 (verified, revised): saddles for non-odeco and TTN teachers; origin vs rank-one plateaus; second-escape slopes; race model (derived as sigma -> 0, heuristic at accessible sigma) |
 | `notes/theory_covariance.md` | v2 (verified, revised): aligned covariance (exact clocks), misalignment, cross-site correlations (MPS route rates ~c^(N-2), two-stage MPS4 plateau law, crossover c* = O(sigma)) |
 | `notes/theory_optimizer.md` | v2 (verified, revised): sharpness and eta_max, EoS, GD event shift, SGD stability; SGD noise LENGTHENS later plateaus and can trap routes (stochastic collapse) |
-| `notes/theory_escape.md` | in progress |
+| `notes/theory_escape.md` | v2 (verified, revised): escape from the origin; per-init prefactor recipe (t1 sigma^(K-2) s1 / t_hat1 -> 1); Kumar-Haupt formula is a lower bound (medians 2.5x-1e4x); weak chi-dependence; equal norm shift of all cores; learning-order probabilities (tensor-like: sigma-independent; matrix-like: P(smaller first) ~ sigma^(n(1-rho)/rho)); 12 predictions (section 9) |
 | `notes/decisions.md` | decision log (incl. dropped directions, corrections) |
 | `notes/spend.md` | Vast.ai spend log |
 
