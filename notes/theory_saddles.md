@@ -16,6 +16,11 @@ correlation. Exponents, Hessian values and the head-start slopes were re-checked
 verifier (teacher seed 3); the v1 prefactors, learning orders and trap counts are flagged where they
 matter.
 
+
+> **Lead's correction (2026-10-09):** the wrong-order exponent carries a factor $n$, the number of unstable
+> directions of the matrix-like pair: $n=\chi_e$ when the two differing cores are adjacent and share bond $e$, else
+> $n=1$ (`notes/theory_escape.md` v2 §5.3, checked on 19 Hessians). The formulas in this note now include it.
+
 ## 0. Results at a glance
 
 | # | result | status |
@@ -360,7 +365,7 @@ $a_s^{K-2}\begin{pmatrix}-s_q&s_r\\s_r&-s_q\end{pmatrix}$, so $q$ is **not** a l
 spherical flow if a larger $r$ has $m=2$ or $k=2$ ("matrix-like pair"); it is one if every larger $r$
 has $m\ge3$ and $k\ge3$ (tensor-like pair, H1). Matrix-like pairs: the relative deviation from $q$
 grows like $\rho^{(s_r-s_q)/s_q}$ while the radius grows from $\rho_0$ to $O(1)$, so (heuristic)
-$P(\text{smaller first})\propto\sigma^{(s_r-s_q)/s_q}$ as $\sigma\to0$ (slow for close weights:
+$P(\text{smaller first})\propto\sigma^{n(s_r-s_q)/s_q}$ as $\sigma\to0$ (slow for close weights:
 $\sigma^{0.11}$ at $s_q/s_r=0.9$), and when it happens case 1 of 4.4 applies. Tensor-like pairs:
 $\sigma$-independent probability (H1), but then the wrong saddle is non-strict (case 3), no correction
 happens, and the final state is still $W^*$. **So, for two-component teachers, the H1b correction
@@ -785,7 +790,7 @@ Partial rebuttals (both minor):
 - **Plateau Hessian for $k\ge4$.** At $k=4$ the visible new-index pairs add $O(\sigma^2)$ negative
   directions. For $k\ge5$ they may decay before the midpoint or may dominate $\lambda_{\min}$, which
   would change its $\sigma$-scaling. Untested.
-- **Probability of the wrong order** for matrix-like pairs ($\propto\sigma^{(s_r-s_q)/s_q}$) is a
+- **Probability of the wrong order** for matrix-like pairs ($\propto\sigma^{n(s_r-s_q)/s_q}$) is a
   heuristic; the `order` agent's data should decide.
 - **Anisotropic inputs** (H5): route degrees unchanged, couplings reweighted by the site eigenvalues
   on the route's patterns (not checked).
@@ -888,7 +893,7 @@ $\lambda_{\min}=-(s_r-s_q)s_q^{(K-2)/K}$ and lasts $\approx\ln(1/\varepsilon)/\l
 It is followed by a plateau at $L=\tfrac12s_q^2$ with $a_q\approx0$, and $q$ is relearned after
 $\propto\sigma^{-(k-2)}$. (b) Tensor-like pair ($m\ge3$; odeco on mps4): no negative eigenvalue,
 $a_q$ stays 1, and $L:\tfrac12s_r^2\to0$ in one step. (c) $k=2$: $r$ is added directly. (d) Heuristic:
-$P(\text{smaller first})\propto\sigma^{(s_r-s_q)/s_q}$ for matrix-like pairs; for tensor-like pairs it
+$P(\text{smaller first})\propto\sigma^{n(s_r-s_q)/s_q}$ for matrix-like pairs; for tensor-like pairs it
 does not decay with $\sigma$.
 
 **P10. Locality beats weight** [derived; v1 checks for orders and exponents]. Three-component

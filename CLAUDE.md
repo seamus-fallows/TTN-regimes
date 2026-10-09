@@ -114,7 +114,7 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 - Experiments (interim): locality N=4 exponents match k = 1, 2, 3, 4 (incl. head-start log slope 1.005 vs 1.0);
   data-teacher: aligned covariance = race with weights Lambda s, landscape with sqrt(Lambda) s; optim-samples:
   eta_max = 2/(K s_1^(2-2/K)) exact, GD event shift predicted to 3 digits.
-- Theory (derived, re-checked): every KKT point of g = <W, W*> on the unit sphere with g* > 0 is exactly
+- Theory (proven, report Appendix A prop:A-kkt): every KKT point of g = <W, W*> on the unit sphere with g* > 0 is exactly
   balanced on every bond with core norms 1/K, so the near-origin escape direction is balanced and min-norm.
 - Lazy regime: the tangent kernel of a random TTN is isotropic only on average; a single draw is strongly
   anisotropic unless every chi_e >> cut dimension min(d^n_e, d^(N-n_e)), so finite-chi lazy runs have an order
