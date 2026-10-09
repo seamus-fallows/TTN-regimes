@@ -43,7 +43,7 @@ from ttn.diagnostics import (
 )
 from ttn.losses import population_loss, power_law_cov, sample_inputs
 from ttn.network import TTNSpec, aligned_init, forward, to_dense
-from ttn.teachers import odeco_teacher, random_cp_teacher
+from ttn.teachers import odeco_teacher, pattern_teacher, random_cp_teacher
 from ttn.tree import make_tree
 
 # ---- ranks -----------------------------------------------------------------------------------
@@ -498,3 +498,80 @@ def test_project_out_gauge_on_known_matrix():
     h_perp, eigs = project_out_gauge(h, u)
     assert torch.allclose(eigs, lam[2:], atol=1e-12)
     assert torch.allclose(c @ h_perp @ c.T, h - q[:, :2] @ torch.diag(lam[:2]) @ q[:, :2].T)
+
+
+def _k2_learned_saddle(s1, s2):
+    """MPS4 (d = chi = 2), pattern teacher whose second component differs from the first on sites
+    0 and 1 (a k = 2 route through cores 0, 1), and its learned saddle s1 U1 in balanced gauge."""
+    spec = TTNSpec.uniform(make_tree("mps", 4), 2, 2)
+    teacher = pattern_teacher([s1, s2], [[0, 0, 0, 0], [1, 1, 0, 0]], 2, seed=1000)
+    amps = torch.full((spec.n_cores, 1), s1 ** (1 / spec.n_cores), dtype=torch.float64)
+    return spec, teacher, spec.flatten(aligned_init(spec, teacher.factors[:1], amps))
+
+
+def _dormant_noise(theta, eta, seed):
+    """theta plus N(0, eta^2) noise on its zero entries (here: the unused bond index)."""
+    z = torch.randn(theta.shape, generator=torch.Generator().manual_seed(seed), dtype=theta.dtype)
+    return theta + eta * z * (theta == 0)
+
+
+@pytest.mark.parametrize("s1,s2", [(1.0, 0.5), (2.0, 0.25)])
+def test_gauge_projection_unbiased_near_k2_learned_saddle(s1, s2):
+    # Each bond's unused index has a gauge generator of size ~eta. The old cut (rtol 1e-10) projected
+    # it out, removing part of the escape direction (notes/reviews/locality_round1.md, B3).
+    spec, teacher, saddle = _k2_learned_saddle(s1, s2)
+    k = spec.n_cores
+    expected = -s2 * s1 ** ((k - 2) / k)
+    loss_fn = _loss(spec, teacher)
+    biases = []
+    for eta in (1e-6, 1e-5, 1e-4):
+        for seed in range(4):
+            theta = _dormant_noise(saddle, eta, seed)
+            h, u = hessian(loss_fn, theta), gauge_directions(spec, theta)
+            raw = torch.linalg.eigvalsh(h)[0].item()
+            assert raw == pytest.approx(expected, abs=1e-6)
+            assert project_out_gauge(h, u)[1][0].item() == pytest.approx(raw, abs=1e-6)
+            # Only the three tiny generators (one per bond) are dropped.
+            assert gauge_complement(u).shape[1] == spec.n_params - u.shape[1] + len(spec.tree.edges)
+            biases.append(project_out_gauge(h, u, rtol=1e-10)[1][0].item() - raw)
+    assert max(biases) > 0.1 * abs(expected)
+
+
+def test_runner_gauge_projected_eigs_unbiased_with_frozen_core():
+    # The runner's recorded spectra use project_out_gauge's default cut, applied after its selection
+    # of the gauge directions that keep the untrained (here: frozen root) coordinates fixed.
+    from ttn.dynamics import Problem
+    from ttn.runner import gauge_projected_eigs
+
+    spec, teacher, saddle = _k2_learned_saddle(1.0, 0.5)
+    theta = _dormant_noise(saddle, 1e-4, seed=0)
+    frozen = torch.ones(spec.n_params, dtype=torch.float64)
+    frozen[spec.core_slices()[spec.tree.root]] = 0.0  # the route (cores 0, 1) stays trained
+    for mask, n_removed in ((None, 12 - 3), (frozen, 8 - 2)):
+        raw, gauge = gauge_projected_eigs(Problem(spec, teacher, mask=mask), theta)
+        assert raw[0] == pytest.approx(-0.5, abs=1e-6) and gauge[0] == pytest.approx(-0.5, abs=1e-6)
+        assert np.isnan(gauge).sum() == n_removed
+
+
+@pytest.mark.parametrize("chi", [3, 4])
+@pytest.mark.parametrize("kind", ["binary", "mps", "ht"])
+def test_projected_spectrum_at_global_minimum_has_only_genuine_zero_modes(kind, chi):
+    # W = W* (odeco teacher, aligned init), so H = J^T J and its zero modes are null(J): the gauge
+    # directions plus, with chi = 4 > R = 3, the flat directions of the unused bond index.
+    n, d, weights = 4, 3, [2.0, 1.0, 0.5]
+    teacher = odeco_teacher(n, d, weights, seed=0)
+    spec = TTNSpec.uniform(make_tree(kind, n), d, chi)
+    amps = torch.ones(spec.n_cores, 3, dtype=torch.float64)
+    amps[spec.tree.root] = torch.tensor(weights, dtype=torch.float64)
+    theta = spec.flatten(aligned_init(spec, teacher.factors, amps))
+    h, u = hessian(_loss(spec, teacher), theta), gauge_directions(spec, theta)
+    c = gauge_complement(u)
+    removed = torch.eye(spec.n_params, dtype=torch.float64) - c @ c.T  # projector on the cut span
+    assert (h @ removed).abs().max() < 1e-12 * h.abs().max()  # well-conditioned directions are null
+    rank_u = torch.linalg.matrix_rank(u).item()
+    assert c.shape[1] == spec.n_params - rank_u  # the cut drops only exact dependencies here
+    n_flat = spec.n_params - torch.linalg.matrix_rank(tensor_jacobian(spec, theta)).item()
+    _, eigs = project_out_gauge(h, u)
+    zero = eigs.abs() < 1e-10 * eigs.abs().max()
+    assert int(zero.sum()) == n_flat - rank_u and (n_flat > rank_u) == (chi > 3)
+    assert eigs[~zero].min() > 0.2

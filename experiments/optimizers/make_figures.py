@@ -11,6 +11,7 @@ with --results-dir experiments/optimizers/results. Single process (each figure t
 
 from __future__ import annotations
 
+import json
 import os
 import sys
 
@@ -23,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 from experiments.optimizers.analysis import RESULTS, collect
-from experiments.optimizers.plots import fig_adam_escape, fig_implicit_bias, fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
+from experiments.optimizers.plots import fig_adam_escape, fig_implicit_bias, fig_implicit_bias2, fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
 
 # Riemannian GD and ALS / DMRG are left out: their events fall within the first 1-2 steps / micro-steps
 # at every sigma (unresolved); their time to convergence has p = 0 (scaling_b4_exponents.csv).
@@ -133,18 +134,90 @@ def order_agreement() -> pd.DataFrame:
         df["init"] = df["init"].fillna("fanin") if "init" in df else "fanin"
         key = ["tree", "n_sites", "teacher", "init", "sigma", "seed"]
         gf = df[df["optimizer"] == "gf"].set_index(key)["order"].astype(str)
-        for m, g in df[df["optimizer"] != "gf"].groupby("method"):
+        # the sigma-independent methods give one trajectory per seed: see order_independent_seeds()
+        sigma_free = ("als", "dmrg", "riemannian", "regauge")
+        for m, g in df[~df["optimizer"].isin(("gf",) + sigma_free)].groupby("method"):
             g = g.set_index(key)
+            g = g[g["order_resolved"].astype(bool)]  # orders with ties / events at the overshoot: no order
             common = g.index.intersection(gf.index)
             if len(common) == 0:
                 continue
             mine = g.loc[common, "order"].astype(str)
             ref = gf.loc[common]
             rows.append({"sweep": name, "method": m, "n_inits": len(common),
+                         "n_excluded_unresolved": int(len(df[(df["method"] == m)]) - len(g)),
                          "same_order": float(np.mean(mine.values == ref.values)),
                          "same_first": float(np.mean([a[1:2] == b[1:2] for a, b in zip(mine, ref)]))})
     out = pd.DataFrame(rows)
     out.to_csv(RESULTS / "order_agreement_with_gf.csv", index=False)
+    return out
+
+
+def order_independent_seeds() -> pd.DataFrame:
+    """Learning order of the sigma-independent methods (ALS, DMRG, Riemannian, re-gauged GD), counted over
+    independent seeds (one trajectory per seed at every sigma: the smallest sigma is used). Per seed: whether
+    two components reach 1/2 in the same step / micro-step (tie: no resolved temporal order), whether the
+    weakest component is strictly last and the largest strictly first, and the steps of the first and last
+    events."""
+    rows = []
+    for name in ("scaling_b4", "deep"):
+        df = with_keys(collect(name))
+        d = df[df["optimizer"].isin(["als", "dmrg", "riemannian", "regauge"])].copy()
+        d["problem"] = d["tree"] + d["n_sites"].astype(int).astype(str) + " " + d["teacher"]
+        d = d.sort_values("sigma").groupby(["problem", "method", "seed"]).head(1)
+        for _, r in d.iterrows():
+            w = np.array(json.loads(r["weights"]))
+            smp = np.array([r[f"sample_{k}"] for k in range(len(w))], dtype=float)
+            smp[smp < 0] = np.nan
+            weak, big = int(np.argmin(w)), int(np.argmax(w))
+            done = np.isfinite(smp).all()
+            rows.append({"problem": r["problem"], "method": r["method"], "seed": r["seed"],
+                         "all_learned": bool(done),
+                         "tie": bool(len(set(smp[np.isfinite(smp)].tolist())) < np.isfinite(smp).sum()),
+                         "weakest_strictly_last": bool(done and smp[weak] > np.max(np.delete(smp, weak))),
+                         "largest_strictly_first": bool(done and smp[big] < np.min(np.delete(smp, big))),
+                         "first_event_step": np.nanmin(smp), "last_event_step": np.nanmax(smp)})
+    out = pd.DataFrame(rows)
+    out.to_csv(RESULTS / "order_independent_seeds.csv", index=False)
+    return out
+
+
+def bias2() -> pd.DataFrame:
+    """Finite samples, round 2 (several data draws): per (n, sigma, data draw) and method, the runs that
+    reached the training tolerance, their median population loss, the fraction with a rank-4 edge and the
+    mean entropy rank; plus paired comparisons with GF on the same (draw, init seed)."""
+    df = with_keys(collect("implicit_bias2_b4"))
+    df["reached_tol"] = df["meta_stop_reason"].astype(str).eq("converged")
+    df["full_rank"] = df["eff_ranks_end"].astype(str).str.contains("4")
+    key = ["n_samples", "sigma", "data_seed", "seed"]
+    per = df.groupby(["n_samples", "sigma", "data_seed", "method"]).apply(
+        lambda g: pd.Series({"runs": len(g), "reached_tol": int(g["reached_tol"].sum()),
+                             "pop_median_reached": g.loc[g["reached_tol"], "pop_loss_end"].median(),
+                             "pop_median_all": g["pop_loss_end"].median(),
+                             "full_rank_reached": int(g.loc[g["reached_tol"], "full_rank"].sum()),
+                             "entropy_rank_reached": g.loc[g["reached_tol"], "entropy_rank_mean_end"].mean()}),
+        include_groups=False).reset_index()
+    per.to_csv(RESULTS / "implicit_bias2_per_draw.csv", index=False)
+    gf = df[df["optimizer"] == "gf"].set_index(key)
+    rows = []
+    for m, g in df[df["optimizer"] != "gf"].groupby("method"):
+        g = g.set_index(key)
+        common = g.index.intersection(gf.index)
+        both = [i for i in common if g.loc[i, "reached_tol"] and gf.loc[i, "reached_tol"]]
+        for (n, sg), sub in pd.Series(both, dtype=object).groupby(
+                [pd.Series([b[0] for b in both]), pd.Series([b[1] for b in both])]):
+            idx = list(sub.values)
+            diff = np.array([g.loc[i, "pop_loss_end"] - gf.loc[i, "pop_loss_end"] for i in idx])
+            rows.append({"method": m, "n_samples": n, "sigma": sg, "pairs_both_reached_tol": len(idx),
+                         "method_lower_pop_loss": int(np.sum(diff < 0)),
+                         "gf_lower_pop_loss": int(np.sum(diff > 0)),
+                         "median_pop_diff_vs_gf": float(np.median(diff)),
+                         "method_full_rank": int(sum(g.loc[i, "full_rank"] for i in idx)),
+                         "gf_full_rank": int(sum(gf.loc[i, "full_rank"] for i in idx)),
+                         "draws": len({i[2] for i in idx})})
+    out = pd.DataFrame(rows)
+    out.to_csv(RESULTS / "implicit_bias2_paired.csv", index=False)
+    fig_implicit_bias2()
     return out
 
 
@@ -161,10 +234,11 @@ def eps():
     deep = collect("deep")
     ref = deep[(deep["optimizer"] == "gf") & (deep["tree"] == "mps") & (deep["teacher"] == "odeco")
                & (deep["init"] == "balanced") & (deep["sigma"] == 0.3)].set_index("seed")["t_first"]
+    tiny, floor8 = np.isclose(df["eps"], 1e-30, rtol=1e-6, atol=0), np.isclose(df["eps"], 1e-8, rtol=1e-6, atol=0)
     sign = {(round(lr, 8), int(sd)): v for (lr, sd), v in
-            df[df["eps"] == 1e-30].groupby(["lr", "seed"])["t_first"].median().items()}
+            df[tiny].groupby(["lr", "seed"])["t_first"].median().items()}
     rows = []
-    for _, r in df[(df["eps"] == 1e-8) & (df["sigma"] <= 0.05)].iterrows():
+    for _, r in df[floor8 & (df["sigma"] <= 0.05)].iterrows():
         pred = 1e-8 / r["lr"] * ref[r["seed"]] * (0.3 / r["sigma"]) ** 6 + sign[(round(r["lr"], 8), int(r["seed"]))]
         rows.append({"lr": r["lr"], "sigma": r["sigma"], "seed": r["seed"], "measured": r["t_first"],
                      "predicted": pred, "ratio": r["t_first"] / pred, "budget": r["meta_n_steps"]})
@@ -185,8 +259,8 @@ def precond():
                                                                          index=False)
 
 
-FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "deep": deep, "bias": fig_implicit_bias, "later": later, "cost": cost_table,
-           "order": order_agreement, "eps": eps, "precond": precond}
+FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "deep": deep, "later": later, "cost": cost_table,
+           "order": order_agreement, "order_seeds": order_independent_seeds, "eps": eps, "precond": precond, "bias2": bias2}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or FIGURES:
