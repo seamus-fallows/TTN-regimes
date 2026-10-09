@@ -278,3 +278,34 @@ Results: `results/samples_summary.csv`, `fig_samples.png`.
 - **Effective ranks (the implicit bias, directly):** at every n the learned tensor's bond rank is
   ordered small init (1.3-3.9) < centred sigma = 1 (2.4-5) < lazy limit (4-6.9); only small init lands
   on rank 2 once the data determine W*.
+
+## 7. Synthesis: the learning-rate axis and when gradient-flow results apply (draft)
+
+For small (saddle-to-saddle) init, with s_1 the largest teacher weight and K the number of cores:
+
+| step size (GD) | what happens | status |
+|---|---|---|
+| eta << eta_max = 2/(K s_1^{2-2/K}) | GF: same saddles, same order, event times shifted by eta c_e (exact first-order formula), relative shift ~ eta ln(1/sigma) / t ~ eta sigma^{K-2} ln(1/sigma) | proven (sharpness), derived + empirical (shift) |
+| up to 0.95 eta_max | still GF-like; the only discrete change is a rare flip of near-tied races (2-9% of inits at 0.9 eta_max, 0% at 0.1 eta_max), which can remove a whole plateau | empirical |
+| eta_max < eta < ~1.3 eta_max | the top component oscillates (2-cycle, then period 4 at 1.245); the others are learned at GF-like times; the loss floors at s_1^2 L_map(eta/eta_max) | derived (1D map) + empirical (to 3 digits) |
+| ~1.5-1.75 eta_max (K = 3) | diverges | empirical |
+| ~2 eta_max (K = 3; 1.75-2.5 for K = 7, 8) | learned components are thrown back to the origin saddle and re-learned repeatedly | empirical (1D map: re-entry) |
+| >= 2.5-3 eta_max | diverges | empirical |
+
+For imbalanced (or large, non-small) inits the GF minimum is sharper than the balanced one, and GD
+with 2/lambda_GF < eta < eta_max converges to a flatter, more balanced minimum at sharpness ~2/eta (EoS
+selection). For the centred (lazy-side) model the limit is set by the sharpness of the GF minimum
+it reaches (section 3.4 and the centred sweep, results pending).
+
+Online SGD with batch B at small step: the first plateau keeps its GF law (P7; mean delay
+~ (eta/2)(K-1)(1 + kappa/B) ln(a_e/a_0), spread ~ sqrt(kappa (eta/B) t)); later degenerate plateaus are
+lengthened by -ln(1-x)/x and trapped for x = c_gamma (eta/B) T_GF >= 1 (P9; c_gamma ~ 33-37 measured for
+binary N=4, teacher [3, 2, 1]); the step must also stay below the SGD stability limit
+eta_ms(B) ~ 0.001 B (binary N=4, B <= 16), ~150x below GD per sample, because product features have
+kurtosis 3^N.
+
+**Practical rule (derived from the above).** GF results describe GD training whenever
+eta < eta_max (event times to within eta c_e). They describe SGD training only when, in addition,
+eta/B << 1/(c_gamma T_plateau) for every later plateau one wants to cross (otherwise SGD stalls on it),
+and eta << eta_ms(B). Because plateau lengths grow like sigma^{-(k-2)}, at small init and fixed eta/B
+SGD will eventually stall where GF would only be slow.

@@ -149,6 +149,21 @@ def main():
                              exponent=p, se=pe, n_x=len(trq), x_min=trq.index.min(),
                              x_max=trq.index.max(), predicted=1.0))
     fits = pd.DataFrame(fits).drop_duplicates(subset=["block", "sigma", "quantity", "event"])
+    # Second plateau (P9 of notes/theory_optimizer.md): T = t2 - t1 per run vs GF, excluding
+    # near-tie inits (GF: the eventual second component peaks at 0.15-0.6 during the first event).
+    ties = pd.read_csv(OUT / "order_flips.csv").groupby(["sigma", "seed"]).rival_peak.first()
+    r = df[(df.init == "fanin") & ~df.diverged].copy()
+    r["near_tie"] = [0.15 <= ties.get((s, sd), 0.0) < 0.6 for s, sd in zip(r.sigma, r.seed)]
+    r["T"] = r.t2 - r.t1
+    r["T_gf"] = r.t2_gf - r.t1_gf
+    r["T_ratio"] = r["T"] / r["T_gf"]
+    sec = (r.groupby(["near_tie", "block", "sigma", "B", "eta"])
+           .agg(n=("T_ratio", "count"), T_gf=("T_gf", "mean"), T_ratio=("T_ratio", "mean"),
+                T_ratio_se=("T_ratio", "sem"), missed=("t2", lambda v: int(v.isna().sum())))
+           .reset_index())
+    x = 35.0 * sec.eta / sec.B * sec.T_gf
+    sec["pred_P9_c35"] = np.where(x < 1, -np.log1p(-np.minimum(x, 0.999)) / x, np.inf)
+    sec.to_csv(OUT / "sgd_second_plateau.csv", index=False)
     fits.to_csv(OUT / "sgd_fits.csv", index=False)
     with pd.option_context("display.width", 250, "display.max_rows", 400):
         cols = ["block", "init", "sigma", "B", "eta", "n_runs", "frac_div", "t1_gf", "shift1",
@@ -158,6 +173,7 @@ def main():
         summary = per_init.groupby(["block", "init", "sigma", "B", "eta"])[cols[5:]].mean()
         print(summary.to_string(float_format=lambda v: f"{v:.4g}"))
         print(fits.to_string(float_format=lambda v: f"{v:.3g}"))
+        print(sec.to_string(float_format=lambda v: f"{v:.4g}"))
 
 
 if __name__ == "__main__":
