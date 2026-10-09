@@ -82,8 +82,9 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 | Q4 | learning order | analogues known, TTN open | `order` | running |
 | Q5 | regime map | analogues known, TTN open | `regime-map` | running |
 | Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | running |
-| Q8 | learning rate, SGD, samples | partly known | `optim-samples` | running |
-| B1 | optimizer dependence (Adam, gauge-aware, ALS) | open | `optimizers` | launching |
+| Q8 | learning rate, SGD, samples | partly known | `optim-samples` | round 1 DONE, merged, under review |
+| B1 | optimizer dependence (Adam, gauge-aware, ALS) | open | `optimizers` | round 1 merged + reviewed; fix round running |
+| B5 | real data (MNIST, quadtree vs MPS vs scrambled) | open | `real-data` | running |
 
 ## Key findings so far
 
@@ -113,6 +114,10 @@ Read this file first; it is how the lead and all agents recover context. Keep it
   same teacher S = {3,4}, N = 8: MPS log, binary sigma^-3, HT sigma^-5.7; rising edges = Steiner edges in 98.7% of 5132
   events; k readable from one run via the growth exponent; for >= 3 components the route rule at rank-constrained optima
   (not literal H2) predicts 7/7 teachers; dead routes only k >= 4 with fan-in init, removed by balanced init or spare chi.
+- **Optimization (agent `optim-samples`, under review):** eta_max = 2/(K s_1^(2-2/K)) exact at small init; GD = GF + O(eta)
+  shift predicted to 3 digits; above eta_max a 1D-map 2-cycle (loss to 3-4 digits), then divergence / return to the origin;
+  SGD never shortens plateaus, lengthens/traps later ones (depends on eta/B only); finite samples: small init recovers W*
+  with its bond ranks from n ~ 250, lazy limit never at finite chi; generalization degrades monotonically with init scale.
 - Local H2 pilot (experiments/pilot_h2_locality, d = chi = 2): H2 exponents hold wherever the second component is learned
   (k = 3, 4, 5, 7 on MPS4/6, binary4/8); first escape sigma^-(K-2) to +-0.003. COLLAPSE: with chi = 2, 95/332 runs with
   k >= 4 never learn the second component (route ends die to 1e-12..1e-16; failing seeds fixed across sigma); MPS6 k = 5-6
