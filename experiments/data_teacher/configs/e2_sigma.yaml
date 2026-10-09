@@ -1,0 +1,16 @@
+# Step 2, plateau law of the second escape vs init scale under misaligned covariance (MPS-4).
+# Fact B maps misalignment to a whitened non-orthogonal teacher, for which theory_teachers.md predicts
+# a 2-core strict-saddle (log(1/sigma)) second escape instead of the odeco sigma^-(K-2) one.
+name: e2_sigma
+base: {kind: misaligned, n_sites: 4, d: 4, chi: 4, weights: [1.0, 0.8], alpha: 1.0, theta_deg: 0, variant: sigma}
+sweep:
+  theta_deg: [0, 5, 20]
+trees: [mps]
+sigmas: {mps: [0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]}
+seeds: [0, 10]
+t_max: {mps: 1.0e+6}
+n_rec: 3000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-6
+n_dense: 3000
