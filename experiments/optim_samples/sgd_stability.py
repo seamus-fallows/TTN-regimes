@@ -77,7 +77,7 @@ def main():
         spec, lam, a1, a2, a3 = operator_pieces(kind, n)
         for batch in BATCHES:
             lo, hi = 0.0, 2.0 / lam
-            for _ in range(30):
+            for _ in range(22):
                 mid = 0.5 * (lo + hi)
                 lo, hi = (mid, hi) if spectral_radius(mid, batch, a1, a2, a3) < 1 else (lo, mid)
             est = 2 / (lam * (1 + (3**n - 1) / batch))

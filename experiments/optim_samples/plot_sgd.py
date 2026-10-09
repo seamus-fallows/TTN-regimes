@@ -89,6 +89,8 @@ def main():
     fig.savefig(RES / "fig_sgd.png")
     plt.close(fig)
 
+    if not (RES / "sgd_stability.csv").exists():
+        return
     st = pd.read_csv(RES / "sgd_stability.csv")
     fig, ax = plt.subplots(figsize=(4.6, 3.2))
     for i, (tree, g) in enumerate(st[st.B < 1e8].groupby("tree")):
