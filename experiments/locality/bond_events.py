@@ -27,6 +27,7 @@ from ttn.network import TTNSpec, bond_spectra  # noqa: E402
 from ttn.teachers import pattern_teacher  # noqa: E402
 
 RAW = Path("/root/outputs/locality")
+F_THRESH = 0.1  # effective rank: s_k^e > f x smallest nonzero teacher Schmidt value (diagnostics.md)
 
 
 def npz_path(rec, raw_dir):
@@ -77,7 +78,7 @@ def event_rank_changes(rec, raw_dir=RAW / "pilot3"):
     ranks = {}
     for v, s in spectra.items():
         nz = tsp[v][tsp[v] > 1e-9 * tsp[v][0]]
-        ranks[v] = (s > 0.1 * nz.min().item()).sum(1)
+        ranks[v] = (s > F_THRESH * nz.min().item()).sum(1)
     tree = spec.tree
     rows = []
     learned = [events[0][1]]
@@ -96,6 +97,11 @@ def event_rank_changes(rec, raw_dir=RAW / "pilot3"):
     return rows
 
 
+def _set_f(f):
+    global F_THRESH
+    F_THRESH = f
+
+
 def _rows(arg):
     rec, raw = arg
     tree = get_tree(rec["kind"], rec.get("n"))
@@ -110,7 +116,11 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--raw", default=str(RAW / "pilot3"))
     ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--f", type=float, default=0.1, help="rank threshold factor (sensitivity: 0.03-0.1)")
+    ap.add_argument("--max-runs", type=int, default=0, help="subsample runs (0 = all)")
     args = ap.parse_args()
+    global F_THRESH
+    F_THRESH = args.f
     from multiprocessing import Pool
 
     from analysis import load_records
@@ -118,7 +128,10 @@ def main():
     recs = [r for r in load_records(args.files)
             if r.get("status") not in ("timeout", "error") and len(r.get("events", [])) >= 2
             and r.get("patterns") and npz_path(r, args.raw).exists()]
-    with Pool(args.workers) as pool:
+    if args.max_runs:
+        recs = [recs[i] for i in np.random.default_rng(0).choice(len(recs), min(args.max_runs, len(recs)),
+                                                                 replace=False)]
+    with Pool(args.workers, initializer=_set_f, initargs=(F_THRESH,)) as pool:
         rows = [x for xs in pool.map(_rows, [(r, args.raw) for r in recs]) for x in xs]
     df = pd.DataFrame(rows)
     df.to_csv(args.out, index=False)

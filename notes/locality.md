@@ -231,8 +231,10 @@ sigma, per seed, mean ± SE; "local" = three smallest sigma):
   sigma (fitted exponent 0.00 ± 0.00 from the saddle start); one negative eigenvalue (chi - 1 = 1).
 - k >= 3: λ_min ∝ sigma^x with x = 1.00-1.04 (k = 3), 1.8-2.2 (k = 4), 2.9-3.1 (k = 5), 6.0-6.8 (k = 7),
   i.e. x ≈ k - 2: the negative curvature vanishes as sigma -> 0 (higher-order saddle).
-- So "strict iff k = 2" holds for these saddles, classified by the sigma-scaling of λ_min (the fixed
-  1e-3 relative threshold would call k = 3 plateaus strict at sigma >~ 0.03).
+- So "strict iff k = 2" holds for these saddles, classified by the primary rule of notes/diagnostics.md
+  (sweep-level sigma-scaling of λ_min). The negative-eigenvalue counts in the tables (`hess_neg`) use the
+  fixed 1e-3 threshold and are a single-sigma fallback only (that rule would call k = 3 plateaus strict at
+  sigma >~ 0.03).
 
 ### 7.3 Single-run escape degree and dormant amplitudes — **empirical**
 
@@ -314,8 +316,10 @@ leaves the plateau (L stays at the partial fit, e.g. 0.125 = s2^2/2).
 `results/bond_spectra.png` (mps8 S = {2,5}, binary8 S = {3,4}, ht8 S = {1,2}) and
 `results/bond_events.csv`: on the plateau the second singular value of every Steiner edge stays at the
 dormant level (1e-8..1e-3, set by sigma); at the second event all Steiner edges rise together to s2,
-the others stay at the noise level. Effective-rank changes per event agree with the predicted edge set in
-the fraction of runs listed in `results/bond_events_summary.txt`.
+the others stay at the noise level. The edges whose effective rank (s_k^e > f x smallest nonzero teacher
+Schmidt value) is higher on the plateau after the second event than before it equal the predicted Steiner
+edge set in 98.7% of 5,132 events for f = 0.1 (every (tree, S) >= 91%), and in 97.7% / 96.5% for
+f = 0.05 / 0.03 (1,500-run subsample; worst (tree, S) 80%): `results/bond_events*.csv`.
 
 ### 7.7 Robustness (step 5) — **empirical**
 
@@ -379,6 +383,20 @@ decay during the plateau** (empirical); why they decay on these MPS routes and n
 the same k is open (candidates above). The pilot's conjecture sigma^-(2k-6) corresponds to α = 2 at both
 ends (k = 5: exponent 4.2 by the estimate); the measured α is seed-dependent and between 1 and 2.
 
+### 7.10 Spare bond channels (chi = 4) — **empirical** (lead's request (b); theory_regimes P14)
+
+`configs/twocomp_chi4.yaml`, `results/twocomp_chi4_table.md`: all 24 two-component cases with k >= 4, small
+init, d = 2, chi = 4, 5-8 seeds. Exponents: k = 4: 1.99-2.03; k = 5: 2.96-3.03 on every tree, **including the
+two anomalous MPS rows** (mps8 {1,5}: 3.00 ± 0.04; mps6 {1,3,5}: 3.19 ± 0.15, median 3.01); k = 6: 3.95-4.17
+(binary8, ht4, mps8), but 5.0-5.1 for the two mps6 whole-chain routes; k = 7 (ht4): 5.07 ± 0.39.
+Stalls: 75 of 1002 runs (chi = 2: 376 of 5732). They remain only where **both route ends sit on bonds capped
+at d** (an MPS chain end, i.e. core 0 or the root, or an HT leaf): mps4 {0,3} 6/48, mps4 all 12/48, mps6
+{0,5} 18/30, mps6 all 10/30, mps8 {0,7} 15/25, midroot6 {0,5} 30/30, ht4 all 11/29, ht4 {0,1,2} 1/30. Every
+route with at least one end on an uncapped bond escapes (0 stalls in 15 cases, e.g. mps6 {0,3}, mps8 {1,5}).
+Two capped ends are necessary but not sufficient (ht4 k = 5 routes, both ends on leaves, 0 stalls). This
+is consistent with theory_saddles R12 (a route dies only if every end is unfavourable) and with spare
+channels removing the trap (P14) wherever the bond cap allows them.
+
 ## 8. Verdict
 
 **H2 (exponent set by locality), two-component teachers: supported** — derived (section 2; = Steiner
@@ -411,6 +429,9 @@ midpoints): λ_min -> -λ2 = -s2 s1^((K-2)/K) independent of sigma for k = 2; λ
 k = 3..8. Not tested here: wrong-order and star saddles, which theory_saddles.md shows can be strict
 with k* >= 3 (so "only if" needs "visited in greedy order, no stars").
 
-**New (empirical)**: under the default fan-in init, a large fraction of k >= 4 escapes never happen
-(dead routes; 7.5), never for k <= 3; gauge-balanced init removes them. Bond spectra: the second singular
+**New (empirical)**: under the default fan-in init with chi = d = 2, a large fraction of k >= 4 escapes
+never happen (dead routes; 7.5), never for k <= 3; gauge-balanced init or spare bond channels (chi = 4)
+remove nearly all of them, except routes whose two ends both sit on bonds capped at d (7.10). Where the
+sigma-exponent of a k >= 4 escape is too steep (two MPS k = 5 rows, mps6 k = 6), the route ends shrink
+during the plateau (pinned ends, 7.9); with spare channels these exponents return to k - 2. Bond spectra: the second singular
 value rises at the event on exactly the Steiner edges in 98.7% of 5132 events (7.6).

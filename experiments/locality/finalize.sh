@@ -15,8 +15,13 @@ py() { uv run python "$@" 2>&1 | grep -v -i "warn" || true; }
 
 # step 1/2: two-component exponent table, exponents figure, Hessian figure (+ balanced-init twins)
 py experiments/locality/make_figures.py $O/twocomp --out $R/twocomp > /dev/null
-[ -n "$(ls $O/twocomp_balanced.part* 2>/dev/null)" ] && \
-  py experiments/locality/make_figures.py $O/twocomp_balanced --out $R/twocomp_balanced > /dev/null
+for x in twocomp_balanced twocomp_chi4; do
+  [ -n "$(ls $O/$x.part* 2>/dev/null)" ] && py experiments/locality/make_figures.py $O/$x --out $R/$x > /dev/null
+done
+# lead's request (c): route-entry amplitudes at the plateau midpoint (pinned ends)
+py experiments/locality/route_amps.py $O/twocomp $O/twocomp_balanced $O/k5ext --cases mps6:135 mps8:15 mps6:05 \
+  mps6:012345 mps4:03 mps8:25 mps6:14 binary8:34 binary8:07 ht4:12 ht4:03 mps4:012 binary4:12 \
+  --out $R/route_amps.csv --workers $W > /dev/null
 # step 2: single-run escape degree from the growth exponent (theory_saddles.md P4)
 py experiments/locality/growth.py $O/twocomp --out $R/growth --workers $W > /dev/null
 # step 3: predicted sequences, level occupation times, side-by-side trees figures
@@ -32,6 +37,10 @@ py experiments/locality/plot_trees.py $O/multicomp --teacher TA --n 4 --sigma 0.
   --levels $R/levels_runs.csv --out $R/trees_TA.png
 # step 4: bond spectra at events
 py experiments/locality/bond_events.py $O/twocomp --out $R/bond_events.csv --workers $W > $R/bond_events_summary.txt
+for f in 0.03 0.05; do  # threshold sensitivity (notes/diagnostics.md: f in [0.03, 0.1])
+  py experiments/locality/bond_events.py $O/twocomp --f $f --max-runs 1500 --out $R/bond_events_f$f.csv \
+    --workers $W > $R/bond_events_f${f}_summary.txt
+done
 py experiments/locality/plot_bonds.py $O/twocomp --cases mps8:25 binary8:34 ht8:12s --sigma 0.05 \
   --out $R/bond_spectra.png
 # step 5: robustness (chi, d, weight ratio)
