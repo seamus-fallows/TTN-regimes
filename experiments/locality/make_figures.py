@@ -38,12 +38,13 @@ def main_rows(s):
 
 def table_md(t):
     lines = ["| tree | S | protocol | d | chi | weights | k (Steiner) | σ range (n) | seeds | predicted | "
-             "measured p ± SE | log-law slope ± SE (pred.) | λ_min at smallest σ | λ_min ∝ σ^x |",
-             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+             "measured p ± SE | p, 3 smallest σ | log-law slope ± SE (pred.) | λ_min at smallest σ | λ_min ∝ σ^x |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for _, r in t.iterrows():
         k = r["k_rank"]
         pred = {1: "no plateau", 2: "log"}.get(k, f"p = {k - 2}")
         p = f"{r['p_fit']:.3f} ± {r['p_se']:.3f}" if np.isfinite(r["p_fit"]) else "–"
+        pl = f"{r['p_local']:.2f} ± {r['p_local_se']:.2f}" if np.isfinite(r["p_local"]) and k >= 3 else "–"
         if k == 1:
             p = f"gap {r['gap_small_med']:.2g} (ρ<3)"
         ls = (f"{r['logslope']:.3f} ± {r['logslope_se']:.3f} ({r['logslope_pred']:.3f})"
@@ -52,7 +53,7 @@ def table_md(t):
         hx = (f"{r['hess_exp']:.2f} ± {r['hess_exp_se']:.2f}" if np.isfinite(r["hess_exp"]) else "–")
         lines.append(f"| {r['tree']} | {r['case'].replace('S=', '')} | {r['start']} | {r['d']} | {r['chi']} | "
                      f"{'/'.join(f'{x:g}' for x in r['w'])} | {k} | {r['sigma_range']} ({r['n_sigma']}) | "
-                     f"{r['fit_seeds']}/{r['seeds']} | {pred} | {p} | {ls} | {hm} | {hx} |")
+                     f"{r['fit_seeds']}/{r['seeds']} | {pred} | {p} | {pl} | {ls} | {hm} | {hx} |")
     return "\n".join(lines)
 
 

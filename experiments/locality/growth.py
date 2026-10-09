@@ -64,3 +64,62 @@ def growth_exponents(rec, raw_dir=RAW / "pilot3", a_hi=0.05, min_points=8):
         out.append(dict(g=g, k_est=2 / (2 - g) if g < 2 else np.inf, points=int(ok.sum()),
                         a_lo=float(aa[ok].min()), a_hi=float(aa[ok].max())))
     return out
+
+
+def _one(rec):
+    import torch as _t
+
+    _t.set_num_threads(1)
+    try:
+        g = growth_exponents(rec)
+    except FileNotFoundError:
+        return []
+    tree = get_tree(rec["kind"], rec.get("n"))
+    out = []
+    for j, x in enumerate(g):
+        if x is None:
+            continue
+        from rules import steiner_k
+
+        out.append(dict(tree=tree.name, case=rec.get("name") or "S=" + "".join(map(str, rec["S"])),
+                        start=rec.get("start", "small"), sigma=rec["sigma"], seed=rec["seed"], j=j,
+                        k_pred=steiner_k(tree, rec["S"]), **x))
+    return out
+
+
+def main():
+    import argparse
+    from multiprocessing import Pool
+
+    import pandas as pd
+
+    from analysis import load_records
+    ap = argparse.ArgumentParser()
+    ap.add_argument("inputs", nargs="+")
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--workers", type=int, default=6)
+    args = ap.parse_args()
+    recs = [r for r in load_records(args.inputs) if r.get("status") not in ("timeout", "error")
+            and r.get("traj") and len(r.get("weights", [])) == 2 and len(r.get("events", [])) == 2
+            and r["events"][0][1] == 0]
+    with Pool(args.workers) as pool:
+        rows = [x for xs in pool.map(_one, recs) for x in xs]
+    df = pd.DataFrame(rows)
+    df.to_csv(args.out + "_runs.csv", index=False)
+    # summary: the two smallest sigmas of every case (closest to the asymptotic regime)
+    rows = []
+    for (tree, case, start), g in df.groupby(["tree", "case", "start"]):
+        small = g[g["sigma"] <= sorted(g["sigma"].unique())[min(1, g["sigma"].nunique() - 1)]]
+        k = int(g["k_pred"].iloc[0])
+        rows.append(dict(tree=tree, case=case, start=start, k_pred=k, g_pred=2 - 2 / k,
+                         g_median=small["g"].median(), g_q25=small["g"].quantile(0.25),
+                         g_q75=small["g"].quantile(0.75), k_est_median=small["k_est"].median(),
+                         runs=len(small)))
+    s = pd.DataFrame(rows)
+    s.to_csv(args.out + "_summary.csv", index=False, float_format="%.4g")
+    pd.set_option("display.width", 200)
+    print(s.to_string(index=False))
+
+
+if __name__ == "__main__":
+    main()

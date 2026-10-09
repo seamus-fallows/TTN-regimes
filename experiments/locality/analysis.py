@@ -102,9 +102,11 @@ def plateau_table(paths) -> pd.DataFrame:
                     row[key] = p.get(key, np.nan)
                 row["a_mid"] = p["a_mid"][rb] if "a_mid" in p else np.nan
                 row["L_mid"] = p.get("L_mid", np.nan)
-                # float64 floor: the dormant overlap of the escaping component fell below 1e-14
-                row["dormant_min"] = rec.get("dormant_min", {}).get(str(rb), np.nan)
-                row["floor_flag"] = bool(row["dormant_min"] < 1e-14)
+                # float64 floor: on the plateau the route's escape signal (gradient of one route entry)
+                # is ~ |a|^((k-1)/k); flag it when it comes within ~1e3 of the ~1e-16 gradient roundoff
+                kk = max(int(row["k_rank"]), 2)
+                row["signal_mid"] = abs(row["a_mid"]) ** ((kk - 1) / kk) if np.isfinite(row["a_mid"]) else np.nan
+                row["floor_flag"] = bool(row["signal_mid"] < 1e-13)
                 row["remaining"] = tb - p["t_mid"] if "t_mid" in p else np.nan
                 rows.append(row)
                 learned.append(rb)
@@ -131,19 +133,22 @@ def summarize(df: pd.DataFrame, group=("tree", "case", "start", "d", "chi", "w",
         row["n_sigma"] = len(sig)
         row["seeds"] = g["seed"].nunique()
         row["runs"] = len(g)
-        p, lg, hp = [], [], []
+        p, lg, hp, ploc = [], [], [], []
         for _, gs in g.groupby("seed"):
-            gs = gs[gs["gap"] > 0]
+            gs = gs[gs["gap"] > 0].sort_values("sigma")
             if gs["sigma"].nunique() >= 3:
                 x = np.log(1 / gs["sigma"].values)
                 p.append(slope_se(x, np.log(gs["gap"].values))[0])
                 lg.append(slope_se(x, gs["gap"].values)[0])
+                # local exponent from the three smallest sigmas (closest to the asymptotic regime)
+                ploc.append(slope_se(x[:3], np.log(gs["gap"].values[:3]))[0])
             gh = gs[gs["hess_min"] < 0]
             if gh["sigma"].nunique() >= 3:
                 hp.append(slope_se(np.log(gh["sigma"]), np.log(-gh["hess_min"]))[0])
         row["fit_seeds"] = len(p)
         row["p_fit"], row["p_se"] = mean_se(p)
         row["p_pred"] = max(k - 2, 0)
+        row["p_local"], row["p_local_se"] = mean_se(ploc)
         row["logslope"], row["logslope_se"] = mean_se(lg)
         w = row["w"]
         if k == 2 and len(w) == 2:

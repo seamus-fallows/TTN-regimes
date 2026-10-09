@@ -32,6 +32,9 @@ import yaml
 from scipy.integrate import solve_ivp
 
 torch.set_num_threads(1)
+# one worker compiles many different models (one graph per teacher/tree): raise dynamo's recompile cap
+torch._dynamo.config.cache_size_limit = 512
+torch._dynamo.config.accumulated_cache_size_limit = 4096
 sys.path.insert(0, str(Path(__file__).parent))
 import ttn.network  # noqa: E402
 from rules import get_tree  # noqa: E402
@@ -181,8 +184,16 @@ def run_one(case, sigma):
                atol=case.get("atol", 1e-14))
     a_init = overlaps(y0)
     try:
-        sol = solve_ivp(fun, (0, case.get("t_max", 1e14)), y0, method="LSODA", jac=jac,
-                        rtol=out["rtol"], atol=out["atol"], events=events)
+        try:
+            sol = solve_ivp(fun, (0, case.get("t_max", 1e14)), y0, method="LSODA", jac=jac,
+                            rtol=out["rtol"], atol=out["atol"], events=events)
+        except ValueError:
+            # scipy's event root-finding can fail on LSODA's dense output (no sign change of the
+            # interpolant inside a bracketed step); Radau's collocation interpolant is consistent
+            memo.clear()
+            out["method"] = "Radau"
+            sol = solve_ivp(fun, (0, case.get("t_max", 1e14)), y0, method="Radau", jac=jac,
+                            rtol=out["rtol"], atol=out["atol"], events=events)
     except TimeoutError:
         out.update(status="timeout", wall=time.time() - t0)
         return out, None
@@ -207,11 +218,12 @@ def run_one(case, sigma):
     out["events"] = fin
     # overlaps on the stored steps: float64-floor check for dormant components
     a_steps = np.array([overlaps(sol.y[:, i]) for i in range(len(sol.t))])
+    # smallest overlap of each component on the plateau before it is learned (after the previous event)
     out["dormant_min"] = {}
-    for t_ev, r in fin:
-        before = sol.t < t_ev
-        if before.any():
-            out["dormant_min"][str(r)] = float(np.abs(a_steps[before, r]).min())
+    for (t_prev, _), (t_ev, r) in zip(fin[:-1], fin[1:]):
+        on = (sol.t > t_prev) & (sol.t < t_ev)
+        if on.any():
+            out["dormant_min"][str(r)] = float(np.abs(a_steps[on, r]).min())
     plateaus = []
     for (ta, ra), (tb, rb) in zip(fin[:-1], fin[1:]):
         idx = np.where((sol.t > ta) & (sol.t < tb))[0]
@@ -251,7 +263,12 @@ def run_task(task):
         key = run_key(task, sigma)
         if key in task["_done"]:
             continue
-        out, traj = run_one(task, sigma)
+        try:
+            out, traj = run_one(task, sigma)
+        except Exception as exc:  # record and continue: one bad run must not stop the sweep
+            out, traj = dict(name=task.get("name"), kind=task["kind"], n=task.get("n"), S=task.get("S"),
+                             seed=task["seed"], sigma=sigma, start=task.get("start", "small"),
+                             status="error", message=repr(exc)[:300]), None
         out["_key"] = key
         if traj is not None:
             t, y = traj
@@ -280,7 +297,7 @@ if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     cases = load_cases(sys.argv[1])
     prefix = sys.argv[2]
-    done = {r["_key"] for r in load_results(prefix)}
+    done = {r["_key"] for r in load_results(prefix) if r.get("status") != "error"}  # retry errors
     tasks = [dict(c, seed=s, _out=prefix, _done=done) for c in cases for s in c["seeds"]]
     tasks.sort(key=lambda c: -c.get("cost", 1))
     with Pool(int(sys.argv[3]) if len(sys.argv) > 3 else 44) as pool:
