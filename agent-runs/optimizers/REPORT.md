@@ -23,3 +23,6 @@ Status: working - Branch: agent/optimizers - Updated: 2026-10-09 19:20 UTC
 ## Log
 - 19:15 Read brief, notes (model, diagnostics, PLAN, literature, theory_saddles); merged origin/main (59bac30, includes the RNG-stream fix 57d5262). Nothing computed before the fix.
 - 19:20 Created report and experiment folder; CPU quota 92 cores, 503 GB RAM.
+- 19:40 Pilot code: Adam/RMSProp/momentum (torch.optim), GD + re-gauging, per-core Gram preconditioning, Riemannian GD (tangent projection + HSVD retraction), one-site ALS, two-site DMRG; gauge utilities with tests. Pilot binary4 odeco sigma=0.05: GD/momentum track GF; Adam/RMSProp keep sequential learning on a compressed clock; re-gauged GD, Riemannian GD, ALS/DMRG learn everything at once.
+- 19:55 Merged library v0 (f2f0d6f), ported to ttn.dynamics Problem/Recorder/Trajectory/integrate_gf (LSODA). Calibration on deep trees: fan-in init on mps8 (chi=4 > d=3) kills dormant components in GF (overlaps 1e-36): conservation-law trap; added gauge-balanced init (experiment code, tested). Theory draft in notes/optimizers.md (Adam scale invariance, eps crossover, re-gauge, Riemannian, ALS scale-free proof, block-GN overshoot).
+- 20:05 Launched scaling_b4 (672 runs), pilot_trap (chi / balanced init on deep trees), implicit_bias_b4 (240 runs).
