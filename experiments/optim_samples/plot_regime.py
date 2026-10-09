@@ -37,7 +37,9 @@ def main():
     ref = df.groupby("sigma").agg(gf=("sharp_gf_rel", "mean"))
     ax.plot(ref.index, 2 / (ref.gf * lam_bal), "-", color=ps.INK, lw=1,
             label="2/λ_GF(σ): sharpness of the GF state (measured)")
-    ranks = df.groupby("sigma").eff_ranks_gf.agg(lambda r: sorted({int(str(v).strip("[]").split(",")[0]) for v in r}))
+    lab_df = df[(df.centred & (df.sigma >= 0.3)) | (~df.centred & (df.sigma < 0.3))]
+    ranks = lab_df.groupby("sigma").eff_ranks_gf.agg(
+        lambda r: sorted({int(str(v).strip("[]").split(",")[0]) for v in r}))
     for sig, rk in ranks.items():
         txt = str(rk[0]) if len(rk) == 1 else f"{rk[0]}-{rk[-1]}"
         ax.text(sig, 0.6, txt, fontsize=6.5, color=ps.INK2, ha="center",

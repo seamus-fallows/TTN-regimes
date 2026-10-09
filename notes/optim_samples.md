@@ -311,6 +311,9 @@ Exact values at the balanced minimum, binary N=4, teacher [3, 2, 1] (`sgd_stabil
 | eta_ms | 0.00107 | 0.00213 | 0.00423 | 0.00831 | 0.0161 | 0.0300 | 0.0528 | 0.0831 | 0.112 | 0.142 | 0.154 |
 | 1D (U_1) estimate | 0.0019 | 0.0038 | 0.0073 | 0.0140 | 0.0257 | 0.0440 | 0.0685 | 0.0948 | 0.117 | 0.143 | 0.154 |
 
+MPS N=4 (K = 4, lambda = 20.78): eta_ms = 0.000765, 0.00152, 0.00301, 0.00590, 0.0113, 0.0209, 0.0357,
+0.0541, 0.0708, 0.0890 for B = 1 ... 1024 (GD 0.0962), equal to the theory note's P8 values.
+
 eta_ms = 0.00107 B for B <= 16: **small-batch SGD on product features is ~150x less stable than GD
 per sample** (effective kurtosis ~145 = 1.8 x 3^4: other directions feed the noise). For B >~ 3^N
 the GD limit returns.
