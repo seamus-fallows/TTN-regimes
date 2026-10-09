@@ -1,0 +1,14 @@
+None [0, 1, 2, 3] ht 4 small 1 0s
+None [0, 1, 2, 3] ht 4 small 0 0s
+None [0, 1, 2, 3] ht 4 small 4 0s
+None [0, 7] mps 8 small 1 0s
+None [0, 1, 2, 3] ht 4 small 3 0s
+None [0, 7] mps 8 small 2 0s
+None [0, 7] mps 8 small 3 0s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+None [0, 1, 2, 3] ht 4 small 2 1178s

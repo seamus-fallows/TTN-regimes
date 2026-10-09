@@ -125,3 +125,30 @@ for name in ("TC", "TD"):
     wide.append(dict(name=name, kind="mps", n=8, start="saddle", sigmas=logs(0.1, 1e-4, 7), seeds=SEEDS,
                      cost=5, **T[name]))
 dump("multicomp_wide.yaml", wide, "Step 3 supplement: MPS teachers with log plateaus, sigma over 4-5 decades")
+
+# ---- round-2 fixes (review notes/reviews/locality_round1.md) ----
+# chi = 4 twins of the k >= 4 cases (lead's request (b), round 1)
+chi4 = [dict(c, chi=4, cost=c["cost"]) for c in cases if c["start"] == "small"
+        and steiner_k(get_tree(c["kind"], c["n"]), c["S"]) >= 4]
+dump("twocomp_chi4.yaml", chi4, "Spare bond channels (chi = 4, d = 2) for every two-component case with k >= 4, small init")
+
+# k = 5 extension to smaller sigma for the two MPS rows above 3 (round 1)
+k5 = [dict(kind=kind, n=n, S=S, start=st, sigmas=[0.03, 0.019, 0.012], seeds=SEEDS, cost=1)
+      for kind, n, S in (("mps", 8, [1, 5]), ("mps", 6, [1, 3, 5])) for st in ("saddle", "small_balanced")]
+dump("k5_extension.yaml", k5, "Pre-asymptotic check of the two MPS k = 5 rows: smaller sigma")
+
+# k >= 6 rows over >= 1 decade with 8 seeds, gauge-balanced init (review issue 1)
+khigh = [dict(kind="binary", n=8, S=[0, 2, 4], start="small_balanced", sigmas=logs(0.5, 0.05, 8), seeds=SEEDS,
+              wall_limit=2400, cost=6),
+         dict(kind="ht", n=4, S=[0, 1, 2], start="small_balanced", sigmas=logs(0.5, 0.05, 8), seeds=SEEDS,
+              wall_limit=2400, cost=6),
+         dict(kind="mps", n=8, S=[1, 6], start="small_balanced", sigmas=logs(0.5, 0.05, 8), seeds=SEEDS,
+              wall_limit=2400, cost=6),
+         dict(kind="ht", n=4, S=[0, 1, 2, 3], start="small_balanced", sigmas=logs(0.6, 0.06, 8), seeds=SEEDS,
+              wall_limit=2400, cost=7)]
+dump("khigh_extension.yaml", khigh, "k >= 6 rows over one decade of sigma, 8 seeds, gauge-balanced init")
+
+# K-dependence of lambda_2 (s1 != 1): k = 2 from the exact saddle, weights (2, 1)
+lam = [dict(kind="mps", n=n, S=S, start="saddle", weights=[2.0, 1.0], sigmas=logs(0.1, 1e-4, 7), seeds=SEEDS,
+            cost=1) for n, S in ((4, [1, 2]), (6, [2, 3]), (8, [3, 4]))]
+dump("lambda2_K.yaml", lam, "K-dependence of lambda_2 = s2 s1^((K-2)/K): weights (2, 1), saddle start, k = 2")

@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -26,7 +27,7 @@ from rules import get_tree, rank_rule  # noqa: E402
 from ttn.network import TTNSpec, bond_spectra  # noqa: E402
 from ttn.teachers import pattern_teacher  # noqa: E402
 
-RAW = Path("/root/outputs/locality")
+RAW = Path(os.environ.get("LOCALITY_OUT", "/root/outputs/locality"))
 F_THRESH = 0.1  # effective rank: s_k^e > f x smallest nonzero teacher Schmidt value (diagnostics.md)
 
 
