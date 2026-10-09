@@ -1,0 +1,36 @@
+[project]
+name = "ttn"
+version = "0.1.0"
+description = "Training dynamics of tree tensor networks: shared library"
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "pyyaml",
+    "pandas",
+    "opt_einsum",
+    "tqdm",
+]
+
+# `uv sync` installs the dev group by default, so remote machines get pytest too.
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ttn"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint.isort]
+known-first-party = ["ttn"]
