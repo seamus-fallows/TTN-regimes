@@ -208,33 +208,47 @@ def boundaries_table(df, ycol):
 
 
 def fig_sensitivity(exp, model, ycol="chi"):
+    """Threshold sensitivity from continuous per-seed boundaries (median over seeds, bars: quartiles):
+    S2S boundary where min_i rho_i crosses 2 / 3 / 5, kernel boundary where delta_K crosses
+    0.05 / 0.1 / 0.2. Also writes the label-fraction boundaries (grid-limited) as a table."""
+    from analysis import sensitivity_table
+
     df = load(exp)
     df = df[df.model == model]
     K = int(df.K.iloc[0])
-    bt = boundaries_table(df, ycol)
-    save_csv(bt, f"boundaries_{exp}_{model}.csv")
-    fig, axes = plt.subplots(1, 2, figsize=(9, 3.4))
+    save_csv(boundaries_table(df, ycol), f"boundaries_{exp}_{model}.csv")
+    st = sensitivity_table(df, [ycol])
+    save_csv(st, f"sensitivity_per_seed_{exp}_{model}.csv")
+    fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.5))
     blues = ["#86b6ef", "#2a78d6", "#104281"]
     oranges = ["#f5b394", "#eb6834", "#a3401a"]
-    for c, rt in zip(oranges, RHO_THRESHOLDS):
-        b = bt[(bt.k_thr == 0.1) & (bt.rho_thr == rt)]
-        axes[0].plot(b[ycol], b.sigma_s2s, "o-", color=c, ms=4, lw=1.5, label=rf"$\rho$ threshold {rt:g}")
-    for c, kt in zip(blues, K_THRESHOLDS):
-        b = bt[(bt.k_thr == kt) & (bt.rho_thr == 3.0)]
-        axes[1].plot(b[ycol], b.sigma_lazy, "s-", color=c, ms=4, lw=1.5, label=rf"$\delta_K$ threshold {kt:g}")
-    axes[0].set_title(f"S2S boundary (S2S fraction = 1/2); predicted shift\n"
-                      rf"$\rho$ 2$\to$5: $\times(5/2)^{{1/(K-2)}}$ = {2.5 ** (1 / (K - 2)):.2f}", fontsize=8.5, loc="left")
-    axes[1].set_title(f"lazy boundary (lazy fraction = 1/2); predicted shift\n"
-                      rf"$\delta_K$ 0.05$\to$0.2: $\times4^{{-1/K}}$ = {4 ** (-1 / K):.2f}", fontsize=8.5, loc="left")
-    for ax in axes:
+    for ax, cols, colors, labs in (
+        (axes[0], [f"s2s_{t:g}" for t in RHO_THRESHOLDS], oranges, [rf"$\rho$ = {t:g}" for t in RHO_THRESHOLDS]),
+        (axes[1], [f"lazy_{t:g}" for t in K_THRESHOLDS], blues, [rf"$\delta_K$ = {t:g}" for t in K_THRESHOLDS]),
+    ):
+        for col, c, lab in zip(cols, colors, labs):
+            g = st.groupby(ycol)[col]
+            med, q1, q3 = g.median(), g.quantile(0.25), g.quantile(0.75)
+            ok = med.notna()
+            ax.errorbar(med.index[ok], med[ok], yerr=[med[ok] - q1[ok], q3[ok] - med[ok]], fmt="o-", color=c,
+                        ms=4, lw=1.3, capsize=2, label=lab)
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_xlabel(ycol)
-        ax.set_ylabel(r"boundary $\sigma$")
+        ax.set_ylabel(r"boundary $\sigma$ (median of seeds)")
         ax.legend(fontsize=7, frameon=False)
+        xs = np.sort(st[ycol].unique())
+        ax.set_xticks(xs, [str(x) for x in xs])
+        ax.minorticks_off()
+    r1 = (st["s2s_2"] / st["s2s_5"]).median()
+    r2 = (st["lazy_0.05"] / st["lazy_0.2"]).median()
+    axes[0].set_title(f"S2S boundary vs rho threshold: ratio 2->5 = {r1:.2f}\n(predicted (5/2)^(1/(K-2)) = "
+                      f"{2.5 ** (1 / (K - 2)):.2f})", fontsize=8.5, loc="left")
+    axes[1].set_title(f"kernel boundary vs delta_K threshold: ratio 0.05->0.2 = {r2:.2f}\n(first order 4^(1/K) = "
+                      f"{4 ** (1 / K):.2f}; second order 4^(1/(2K)) = {4 ** (1 / (2 * K)):.2f})", fontsize=8.5, loc="left")
     fig.tight_layout()
     save_fig(fig, f"sensitivity_{exp}_{model}.png")
-    return bt
+    return st
 
 
 def load_traj(exp, cfg):

@@ -309,3 +309,36 @@ def aligned_boundary_a0(K: int, weights=(3.0, 2.0, 1.0), rho_thr: float = 3.0) -
         return min((t[i + 1] - t[i]) / max(wid[i], wid[i + 1]) for i in range(len(w) - 1))
 
     return float(np.exp(brentq(lambda la: min_rho(la) - rho_thr, np.log(1e-4), np.log(0.999 * (0.5 * w[-1]) ** (1 / K)))))
+
+
+def seed_rho_boundary(rows: pd.DataFrame, thr: float = 3.0):
+    """One seed's S2S boundary in rho: the sigma where min_i rho_i first drops below `thr` coming
+    from small sigma (log-log interpolation between the bracketing runs; runs without a ratio count
+    as below the threshold)."""
+    r = rows.sort_values("sigma")
+    sig = r.sigma.values
+    rho = np.where(np.isfinite(r.min_rho.values), r.min_rho.values, 0.0)
+    above = rho > thr
+    if not above[0]:
+        return np.nan
+    i = np.argmax(~above) if (~above).any() else -1
+    if i <= 0:
+        return np.nan
+    if rho[i] <= 0:
+        return float(np.sqrt(sig[i - 1] * sig[i]))
+    w = (np.log(thr) - np.log(rho[i - 1])) / (np.log(rho[i]) - np.log(rho[i - 1]))
+    return float(np.exp(np.log(sig[i - 1]) + w * (np.log(sig[i]) - np.log(sig[i - 1]))))
+
+
+def sensitivity_table(df: pd.DataFrame, by: list[str]) -> pd.DataFrame:
+    """Per (group, seed): continuous S2S boundaries at rho thresholds 2/3/5 and kernel boundaries
+    at delta_K thresholds 0.05/0.1/0.2 (converged runs)."""
+    out = []
+    for key, g in df.groupby(by + ["seed"]):
+        row = dict(zip(by + ["seed"], key if isinstance(key, tuple) else (key,)))
+        for rt in RHO_THRESHOLDS:
+            row[f"s2s_{rt:g}"] = seed_rho_boundary(g, rt)
+        for kt in K_THRESHOLDS:
+            row[f"lazy_{kt:g}"] = seed_kernel_boundary(g, kt)
+        out.append(row)
+    return pd.DataFrame(out)
