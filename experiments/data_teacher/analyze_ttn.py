@@ -24,7 +24,7 @@ import torch
 import yaml
 from scipy.signal import find_peaks
 
-from common import OUT_ROOT
+from common import RESULTS, OUT_ROOT
 from constrained import constrained_minima, metric_loss_of_dense, ranked_spec
 from run_generic import expand
 from setups import build
@@ -158,8 +158,8 @@ def main():
         res = pool.map(per_case, [(name, c, cfg) for c in cases])
     rows = [r for rr, _ in res for r in rr]
     growth = [g for _, gg in res for g in gg]
-    pd.DataFrame(rows).to_csv(HERE / "results" / f"{name}_plateaus.csv", index=False)
-    pd.DataFrame(growth).to_csv(HERE / "results" / f"{name}_growth.csv", index=False)
+    pd.DataFrame(rows).to_csv(RESULTS / f"{name}_plateaus.csv", index=False)
+    pd.DataFrame(growth).to_csv(RESULTS / f"{name}_growth.csv", index=False)
     df = pd.DataFrame(rows)
     if len(df):
         print(df.groupby(["tag", "ranks"])[["loss", "loss_crit", "loss_hsvd", "dist_crit",

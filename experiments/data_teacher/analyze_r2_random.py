@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from analyze_e4b_order import rank1_theory  # noqa: E402
 from analyze_r2_saddle import lsq  # noqa: E402
-from common import OUT_ROOT  # noqa: E402
+from common import RESULTS, OUT_ROOT  # noqa: E402
 from run_generic import expand  # noqa: E402
 from setups import build  # noqa: E402
 
@@ -52,7 +52,7 @@ def gap(tr, l1, tsp, f):
 
 def main():
     cfg = yaml.safe_load(open(HERE / "configs" / f"{NAME}.yaml"))
-    hes = pd.read_csv(HERE / "results/r2_saddle_hessian.csv")
+    hes = pd.read_csv(RESULTS / "r2_saddle_hessian.csv")
     rows, preds = [], {}
     for case in expand(cfg):
         for tree in cfg["trees"]:
@@ -73,7 +73,7 @@ def main():
                         rows.append(dict(teacher=case["tag"], tree=tree, sigma=sigma, seed=seed, f=f,
                                          t1=t1, gap=g))
     df = pd.DataFrame(rows)
-    df.to_csv(HERE / "results" / f"{NAME}_gaps.csv", index=False)
+    df.to_csv(RESULTS / f"{NAME}_gaps.csv", index=False)
     fits = []
     teachers = list(dict.fromkeys(df["teacher"]))
     fig, axes = plt.subplots(1, len(teachers), figsize=(4 * len(teachers), 4), squeeze=False)
@@ -98,9 +98,9 @@ def main():
         ax.set(xscale="log", yscale="log", xlabel="sigma (init scale)", ylabel="gap t_e - t_1", title=tname)
         ax.legend(fontsize=6)
     fig.tight_layout()
-    fig.savefig(HERE / "results" / f"{NAME}_law.png", dpi=100)
+    fig.savefig(RESULTS / f"{NAME}_law.png", dpi=100)
     out = pd.DataFrame(fits)
-    out.to_csv(HERE / "results" / f"{NAME}_fits.csv", index=False)
+    out.to_csv(RESULTS / f"{NAME}_fits.csv", index=False)
     print(out.round(4).to_string())
 
 

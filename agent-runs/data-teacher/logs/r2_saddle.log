@@ -435,3 +435,7 @@ nonorth_c0.45 mps 0.005 4 t_esc=31.41
 nonorth_c0.45 binary 0.005 0 t_esc=548.7
 randbin8_303 ht 0.002 2 t_esc=1.551e+04
 nonorth_c0.45 binary 0.005 1 t_esc=670.2
+nonorth_c0.45 binary 0.005 2 t_esc=745.6
+nonorth_c0.45 binary 0.005 3 t_esc=1062
+nonorth_c0.45 binary 0.005 4 t_esc=733.7
+randmps8_303 ht 0.002 4 t_esc=3443

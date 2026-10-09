@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from common import OUT_ROOT
+from common import RESULTS, OUT_ROOT
 
 HERE = Path(__file__).parent
 rows = []
@@ -29,7 +29,7 @@ for name in ("e1_order", "e1_scaling_sigma", "e1_scaling_lambda", "e2_misaligned
                              min_envelope=float(env.min())))
 df = pd.DataFrame(rows)
 df["flag"] = df["min_envelope"] < 1e-12
-df.to_csv(HERE / "results" / "float_floor_check.csv", index=False)
+df.to_csv(RESULTS / "float_floor_check.csv", index=False)
 print(df.groupby("sweep").agg(n=("run", "size"), n_flag=("flag", "sum"),
                               min_envelope=("min_envelope", "min"),
                               min_abs=("min_abs_before", "min")).to_string())

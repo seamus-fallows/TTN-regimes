@@ -19,6 +19,7 @@ import pandas as pd
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from common import RESULTS  # noqa: E402
 
 HERE = Path(__file__).parent
 W_STAR = 2.0 / np.sqrt(2.0)
@@ -34,7 +35,7 @@ def threshold(ws, frac):
 
 
 def main():
-    sad = pd.read_csv(HERE / "results/r2_star_saddle.csv")
+    sad = pd.read_csv(RESULTS / "r2_star_saddle.csv")
     sad["forget"] = sad["outcome"] == "forget_q"
     thr = []
     fig, axes = plt.subplots(2, 3, figsize=(15, 8))
@@ -52,16 +53,16 @@ def main():
                title=f"{tree}: start at theta_q + noise", ylim=(-0.05, 1.05))
         ax.legend(fontsize=7)
     t = pd.DataFrame(thr)
-    t.to_csv(HERE / "results" / "r2_star_threshold.csv", index=False)
+    t.to_csv(RESULTS / "r2_star_threshold.csv", index=False)
     print(t.to_string())
-    rnd = pd.read_csv(HERE / "results/r2_star_random.csv")
+    rnd = pd.read_csv(RESULTS / "r2_star_random.csv")
     dep = rnd.groupby(["tree", "w", "sigma"]).agg(
         n=("seed", "size"), frac_forgot=("forgotten", "mean"),
         aq_peak=("aq_peak", "median"), aq_min_median=("aq_min_after", "median"),
         aq_min_lo=("aq_min_after", "min"), aq_min_hi=("aq_min_after", "max"),
         t_at_q_level=("time_at_q_level", "median"),
         t_at_forgot_level=("time_at_forgot_level", "median")).reset_index()
-    dep.to_csv(HERE / "results" / "r2_star_depth.csv", index=False)
+    dep.to_csv(RESULTS / "r2_star_depth.csv", index=False)
     print(dep.round(4).to_string())
     for j, tree in enumerate(sorted(rnd.tree.unique())):
         ax = axes[1, j]
@@ -79,7 +80,7 @@ def main():
         ax.legend(fontsize=7)
     axes[1, 2].set_visible(len(rnd.tree.unique()) > 2)
     fig.tight_layout()
-    fig.savefig(HERE / "results" / "r2_star.png", dpi=100)
+    fig.savefig(RESULTS / "r2_star.png", dpi=100)
 
 
 if __name__ == "__main__":

@@ -23,7 +23,7 @@ import yaml
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from common import OUT_ROOT  # noqa: E402
+from common import RESULTS, OUT_ROOT  # noqa: E402
 from run_generic import expand  # noqa: E402
 
 from ttn.dynamics import Trajectory  # noqa: E402
@@ -73,12 +73,12 @@ def main():
                                      "t1": t1, "t2": t2, "dt2": t2 - t1, "plateau_rel": s2_t1,
                                      "max_drift": drift})
     df = pd.DataFrame(rows)
-    df.to_csv(HERE / "results" / f"{name}_law.csv", index=False)
+    df.to_csv(RESULTS / f"{name}_law.csv", index=False)
     fits = []
     # theory slopes (theory_log_slope.py, lowest-loss rank-1 saddle) and which cases to draw where
     theory_a, log_cases, power_cases = {}, set(), set()
     if name == "e4a_sigma":
-        th = pd.read_csv(HERE / "results" / "e4a_theory_slopes.csv")
+        th = pd.read_csv(RESULTS / "e4a_theory_slopes.csv")
         theory_a = {r.overlap: r.A_pred for r in th.sort_values("saddle_loss")
                     .drop_duplicates("overlap").itertuples()}
         log_cases, power_cases = {0.2, 0.45}, {0.0}
@@ -130,9 +130,9 @@ def main():
     for ax in axes:
         ax.legend(fontsize=7)
     fig.tight_layout()
-    fig.savefig(HERE / "results" / f"{name}_law.png", dpi=110)
+    fig.savefig(RESULTS / f"{name}_law.png", dpi=110)
     out = pd.DataFrame(fits)
-    out.to_csv(HERE / "results" / f"{name}_law_fits.csv", index=False)
+    out.to_csv(RESULTS / f"{name}_law_fits.csv", index=False)
     print(out.to_string())
     print("max conservation drift", df["max_drift"].max())
 

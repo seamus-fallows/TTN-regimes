@@ -13,7 +13,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT, aligned_setup, make_spec, map_cores, run_and_save
+from common import RESULTS, OUT_ROOT, aligned_setup, make_spec, map_cores, run_and_save
 from ttn.losses import power_law_cov
 
 HERE = Path(__file__).parent
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     with Pool(a.procs) as pool:
         rows = pool.map(job, jobs, chunksize=1)
     df = pd.DataFrame(rows).drop(columns=["events"])
-    out = HERE / "results" / f"{cfg['name']}_summary.csv"
+    out = RESULTS / f"{cfg['name']}_summary.csv"
     df.to_csv(out, index=False)
     pd.to_pickle(rows, OUT_ROOT / cfg["name"] / "summary_rows.pkl")
     print("wrote", out)

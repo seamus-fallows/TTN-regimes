@@ -19,7 +19,7 @@ from scipy.integrate import solve_ivp
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from common import OUT_ROOT, aligned_setup, make_spec  # noqa: E402
+from common import RESULTS, OUT_ROOT, aligned_setup, make_spec  # noqa: E402
 from pilots.pilot_gf import run_gf  # noqa: E402
 
 from ttn.network import aligned_init  # noqa: E402
@@ -104,8 +104,8 @@ def main():
         axes[i, 1].set_xlabel("Lambda_r t")
         axes[i, 2].set_xlabel("t - t_half (linear)")
     fig.tight_layout()
-    fig.savefig(HERE / "results" / "e1_exact_aligned.png", dpi=110)
-    with open(HERE / "results" / "e1_exact_aligned.csv", "w") as f:
+    fig.savefig(RESULTS / "e1_exact_aligned.png", dpi=110)
+    with open(RESULTS / "e1_exact_aligned.csv", "w") as f:
         f.write("tree,component,s,Lambda,max_abs_dev_from_scalar_ode,q_drift,t_half,t_half_ode,"
                 "t_half_subst,width,width_ode,width_subst\n")
         for row in rows:

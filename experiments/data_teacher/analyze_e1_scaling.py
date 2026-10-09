@@ -17,7 +17,7 @@ import pandas as pd
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from common import OUT_ROOT  # noqa: E402
+from common import RESULTS, OUT_ROOT  # noqa: E402
 
 HERE = Path(__file__).parent
 
@@ -84,9 +84,9 @@ def main():
     for ax in axes:
         ax.legend(fontsize=6)
     fig.tight_layout()
-    fig.savefig(HERE / "results" / "e1_scaling.png", dpi=110)
+    fig.savefig(RESULTS / "e1_scaling.png", dpi=110)
     out = pd.DataFrame(rows)
-    out.to_csv(HERE / "results" / "e1_scaling_fits.csv", index=False)
+    out.to_csv(RESULTS / "e1_scaling_fits.csv", index=False)
     print(out.to_string())
 
 

@@ -21,7 +21,22 @@ from ttn.network import TTNSpec  # noqa: E402
 from ttn.teachers import pattern_teacher  # noqa: E402
 from ttn.tree import make_tree  # noqa: E402
 
-OUT_ROOT = Path(os.environ.get("DATA_TEACHER_OUT", "/root/outputs/data_teacher"))
+def _default_out_root() -> Path:
+    """Raw outputs: $DATA_TEACHER_OUT if set; else /root/outputs/data_teacher on the remote machines;
+    else <repo>/data/data_teacher (the gitignored local data folder of CLAUDE.md)."""
+    env = os.environ.get("DATA_TEACHER_OUT")
+    if env:
+        return Path(env)
+    if Path("/root/outputs").is_dir():
+        return Path("/root/outputs/data_teacher")
+    return Path(__file__).resolve().parents[2] / "data" / "data_teacher"
+
+
+OUT_ROOT = _default_out_root()
+# Summary CSVs and figures: $DATA_TEACHER_RESULTS if set (use this when re-running, so the committed
+# results are not overwritten), else experiments/data_teacher/results.
+RESULTS = Path(os.environ.get("DATA_TEACHER_RESULTS", Path(__file__).parent / "results"))
+RESULTS.mkdir(parents=True, exist_ok=True)
 
 
 def aligned_setup(n_sites, d, weights, eig_index, alpha, variant):

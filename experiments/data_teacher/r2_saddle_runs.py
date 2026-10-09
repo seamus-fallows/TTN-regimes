@@ -25,7 +25,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT
+from common import RESULTS, OUT_ROOT
 from r2_common import balance_rank1, embed, rank1_saddles, saddle_start, student, teacher_for
 
 from ttn.diagnostics import gauge_directions, hessian, project_out_gauge, saddle_type
@@ -122,12 +122,12 @@ if __name__ == "__main__":
     with Pool(a.procs) as pool:
         hrows = pool.map(hessian_row, combos, chunksize=1)
     out_tag = cfg.get("out_tag", name)
-    pd.DataFrame(hrows).to_csv(HERE / "results" / f"{out_tag}_hessian.csv", index=False)
+    pd.DataFrame(hrows).to_csv(RESULTS / f"{out_tag}_hessian.csv", index=False)
     print(pd.DataFrame(hrows).to_string(), flush=True)
     jobs = [(name, tname, tcfg, n, tree, sigma, seed) for tname, tcfg, n, tree in combos
             for sigma in cfg["sigmas"] for seed in range(*cfg["seeds"])]
     jobs.sort(key=lambda j: j[5])  # smallest sigma (longest runs) first
     with Pool(a.procs) as pool:
         rows = pool.map(run, jobs, chunksize=1)
-    pd.DataFrame(rows).to_csv(HERE / "results" / f"{out_tag}_runs.csv", index=False)
+    pd.DataFrame(rows).to_csv(RESULTS / f"{out_tag}_runs.csv", index=False)
     print("wrote", len(rows))

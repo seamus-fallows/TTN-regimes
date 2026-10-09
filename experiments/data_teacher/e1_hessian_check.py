@@ -18,7 +18,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import aligned_setup, make_spec
+from common import RESULTS, aligned_setup, make_spec
 
 from ttn.diagnostics import gauge_directions, hessian, project_out_gauge, saddle_type
 from ttn.dynamics import Problem
@@ -62,7 +62,7 @@ def main():
                                      pred_lambda_min_binary=pred if tree == "binary" else np.nan))
                     print(rows[-1], flush=True)
     df = pd.DataFrame(rows)
-    df.to_csv(HERE / "results" / "e1_hessian_check.csv", index=False)
+    df.to_csv(RESULTS / "e1_hessian_check.csv", index=False)
     print(df.to_string())
 
 

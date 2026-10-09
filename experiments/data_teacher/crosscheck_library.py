@@ -17,7 +17,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT, aligned_setup, crossings, make_spec, map_cores
+from common import RESULTS, OUT_ROOT, aligned_setup, crossings, make_spec, map_cores
 from run_generic import expand
 from setups import build
 
@@ -130,6 +130,6 @@ if __name__ == "__main__":
     with Pool(8) as pool:
         res = pool.map(run, jobs(), chunksize=1)
     df = pd.DataFrame([r for rows in res for r in rows])
-    df.to_csv(HERE / "results" / "crosscheck_library.csv", index=False)
+    df.to_csv(RESULTS / "crosscheck_library.csv", index=False)
     print(df.groupby(df["run"].str.split(":").str[0])["rel_diff"].agg(
         lambda x: np.nanmax(np.abs(x))).to_string())

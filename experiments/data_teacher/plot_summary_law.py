@@ -16,14 +16,15 @@ import pandas as pd
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from common import RESULTS  # noqa: E402
 
 HERE = Path(__file__).parent
 
 
 def main():
-    a = pd.read_csv(HERE / "results/e4a_sigma_law.csv")
-    b = pd.read_csv(HERE / "results/e2_sigma_law.csv")
-    c = pd.read_csv(HERE / "results/e4b_order.csv")
+    a = pd.read_csv(RESULTS / "e4a_sigma_law.csv")
+    b = pd.read_csv(RESULTS / "e2_sigma_law.csv")
+    c = pd.read_csv(RESULTS / "e4b_order.csv")
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
     series = [
         (a[a.overlap == 0.0], "odeco, whitened (baseline)", "k", "o", "-"),
@@ -52,7 +53,7 @@ def main():
                 title="same data vs log(1/sigma)")
     axes[0].legend(fontsize=7)
     fig.tight_layout()
-    fig.savefig(HERE / "results" / "summary_plateau_law.png", dpi=110)
+    fig.savefig(RESULTS / "summary_plateau_law.png", dpi=110)
 
 
 if __name__ == "__main__":

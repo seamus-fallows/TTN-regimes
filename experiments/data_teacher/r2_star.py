@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from common import OUT_ROOT
+from common import RESULTS, OUT_ROOT
 from run_dense import two_stage
 
 from ttn.diagnostics import gauge_directions, hessian, project_out_gauge, saddle_type
@@ -78,7 +78,7 @@ def hessian_mode():
                              n_negative=st["n_negative"]))
             print(rows[-1], flush=True)
     df = pd.DataFrame(rows)
-    df.to_csv(HERE / "results" / "r2_star_hessian.csv", index=False)
+    df.to_csv(RESULTS / "r2_star_hessian.csv", index=False)
     print(df.to_string())
 
 
@@ -187,7 +187,7 @@ if __name__ == "__main__":
         jobs.sort(key=lambda j: j[3])
         with Pool(a.procs) as pool:
             rows = pool.map(random_job, jobs, chunksize=1)
-        pd.DataFrame(rows).to_csv(HERE / "results" / "r2_star_random.csv", index=False)
+        pd.DataFrame(rows).to_csv(RESULTS / "r2_star_random.csv", index=False)
     else:
         jobs = [(tree, n, w, s, seed)
                 for tree, n in (("mps", 4), ("binary", 4), ("ht", 4))
@@ -195,4 +195,4 @@ if __name__ == "__main__":
                 for s in (1e-2, 1e-3, 1e-4, 1e-6) for seed in range(5)]
         with Pool(a.procs) as pool:
             rows = pool.map(saddle_job, jobs, chunksize=1)
-        pd.DataFrame(rows).to_csv(HERE / "results" / "r2_star_saddle.csv", index=False)
+        pd.DataFrame(rows).to_csv(RESULTS / "r2_star_saddle.csv", index=False)

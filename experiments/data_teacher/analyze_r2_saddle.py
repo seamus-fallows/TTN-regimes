@@ -18,6 +18,7 @@ import pandas as pd
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from common import RESULTS  # noqa: E402
 
 HERE = Path(__file__).parent
 
@@ -32,8 +33,8 @@ def lsq(x, y):
 
 
 def main():
-    runs = pd.read_csv(HERE / "results/r2_saddle_runs.csv")
-    hes = pd.read_csv(HERE / "results/r2_saddle_hessian.csv")
+    runs = pd.read_csv(RESULTS / "r2_saddle_runs.csv")
+    hes = pd.read_csv(RESULTS / "r2_saddle_hessian.csv")
     rows = []
     teachers = list(dict.fromkeys(runs["teacher"]))
     ncol = 6
@@ -76,9 +77,9 @@ def main():
                  "MPS: strict, log law (line: fit A ln(1/sigma)+B); binary/HT: non-strict, power law",
                  fontsize=10)
     fig.tight_layout()
-    fig.savefig(HERE / "results" / "r2_saddle_law.png", dpi=100)
+    fig.savefig(RESULTS / "r2_saddle_law.png", dpi=100)
     out = pd.DataFrame(rows)
-    out.to_csv(HERE / "results" / "r2_saddle_fits.csv", index=False)
+    out.to_csv(RESULTS / "r2_saddle_fits.csv", index=False)
     print(out.drop(columns=["t_range"]).round(4).to_string())
 
 

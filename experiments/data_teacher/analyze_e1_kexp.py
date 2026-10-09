@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from common import OUT_ROOT
+from common import RESULTS, OUT_ROOT
 
 HERE = Path(__file__).parent
 
@@ -36,5 +36,5 @@ out = pd.DataFrame(rows)
 agg = out.groupby(["tree", "variant"]).agg(n=("k_est", "size"), exponent=("exponent", "mean"),
                                            exponent_sem=("exponent", "sem"),
                                            k_est=("k_est", "median"))
-agg.to_csv(HERE / "results" / "e1_kexp.csv")
+agg.to_csv(RESULTS / "e1_kexp.csv")
 print(agg.to_string())

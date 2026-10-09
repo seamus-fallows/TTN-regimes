@@ -21,7 +21,7 @@ import yaml
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from common import OUT_ROOT, crossings  # noqa: E402
+from common import RESULTS, OUT_ROOT, crossings  # noqa: E402
 from run_generic import expand  # noqa: E402
 from setups import build  # noqa: E402
 
@@ -89,9 +89,9 @@ def main():
                                    if np.isfinite([t_root, t_left, t_right]).all() else np.nan)
                     sum_rows.append(row)
                     examples.setdefault(case["pair"], (tr, edges, below, case["tag"], seed))
-    pd.DataFrame(ev_rows).to_csv(HERE / "results" / f"{NAME}_events.csv", index=False)
+    pd.DataFrame(ev_rows).to_csv(RESULTS / f"{NAME}_events.csv", index=False)
     s = pd.DataFrame(sum_rows)
-    s.to_csv(HERE / "results" / f"{NAME}_summary.csv", index=False)
+    s.to_csv(RESULTS / f"{NAME}_summary.csv", index=False)
     print(s.to_string())
     print(s.groupby("pair").agg(n=("seed", "size"), naive_ok=("naive_ok", "mean")).to_string())
     if "bottom_up" in s:
@@ -114,7 +114,7 @@ def main():
                title=f"{pair} ({tag}, seed {seed})")
         ax.legend(fontsize=6, loc="lower right")
     fig.tight_layout()
-    fig.savefig(HERE / "results" / f"{NAME}.png", dpi=110)
+    fig.savefig(RESULTS / f"{NAME}.png", dpi=110)
 
 
 if __name__ == "__main__":
