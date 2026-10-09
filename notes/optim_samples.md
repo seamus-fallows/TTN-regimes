@@ -148,33 +148,64 @@ stability limit), but only through near-ties.
 
 ## 4. SGD noise on plateaus (derived)
 
-The per-sample gradient is J(theta)^T Phi(x) (f(x) - y), so **SGD noise is multiplicative**: its
-covariance carries the factor J, which vanishes on the unexcited directions as fast as the signal
-does (J ~ sigma^{K-1} near the origin; on a new bond channel J is proportional to the other new-channel
-entries). Noise of this form cannot push the system off a higher-order saddle faster than the drift.
+**Noise is multiplicative.** The per-sample gradient is J(theta)^T Phi(x) (f(x) - y), so the SGD noise
+covariance carries J twice. Near the origin J ~ sigma^{K-1}; for a dormant bond channel, J is
+proportional to the other dormant entries. The noise therefore vanishes on every unexcited direction
+as fast as the drift does (the TTN origin and dormant-channel saddles are "Type-II" saddles in the
+sense of Ziyin 2023), and it cannot push the system off a higher-order saddle faster than gradient
+flow. Plateaus are not shortened (H6, SGD part), unlike isotropic-noise escape (Jin et al. 2017).
 
-1D aligned balanced reduction: online SGD with batch B gives
-a_{k+1} = a_k + eta a_k^{K-1} xi_k, xi_k = (1/B) sum_b Z_1 Y (before the nonlinear phase), with
-Z_r = prod_i <u_r^(i), x_i>, Y = sum_r s_r Z_r, E xi = s_1, Var xi = V / B,
+**Aligned 1D reduction (derived; assumptions: aligned balanced mode, odeco teacher, other components
+unlearned, eta small).** Online SGD with batch B moves the per-core amplitude of component r as
+a_{k+1} = a_k + eta a_k^{K-1} xi_k with xi = (1/B) sum_b Z_r(x_b) (y_b - f(x_b)),
+Z_r = prod_i <u_r^(i), x_i>, so E xi = m(a) = s_r - a^K and
+Var xi = V(a)/B, V(a) = m^2 (E Z^4 - 1) + R^2 = m^2 (3^N - 1) + sum_{q != r} s_q^2
+(E Z^4 = 3^N: products of Gaussians are heavy-tailed). With f = a^{K-1} m and phi(a) = int da/f (the GF
+time), Ito's formula for phi gives for the event a^K = s_r/2:
 
-    V = s_1^2 (3^N - 1) + sum_{r>=2} s_r^2    (E Z^4 = 3^N: product features are heavy-tailed).
+    E t^SGD - t^GF = (eta/2) int_{a0}^{ae} (f'/f) (1 + V/(B m^2)) da,
+    Var t^SGD      = (eta/B) int_{a0}^{ae} V / (m^2 f) da.
 
-With u = a^{-(K-2)}/(K-2) (Ito), du = -s_1 dt - sqrt(eta V/B) dW + [(K-1) eta V / (2 B (K-2) u)] dt.
-Predictions for the first escape time t_1 (in t = eta * steps):
-- mean: E t_1^SGD - t_1^GF = (eta/2)(K-1)(1 + V/(B s_1^2)) ln(a_e/a_0) > 0, i.e. the GD delay times
-  E[xi^2]/E[xi]^2. **Noise lengthens, not shortens, the plateau** (volatility drag on log-growth).
-- spread: std(t_1) = sqrt(t_1^GF eta V / B) / s_1, i.e. relative spread ~ sqrt(eta V/(B t_1 s_1^2))
-  -> 0 as sigma -> 0.
-- both depend on eta and B only through eta/B (for B << V/s_1^2): exponents +1 (mean shift) and
-  +1/2 (std) in eta/B.
+The first term of the mean (the "1") is GD's own backward-error shift (section 3.1); noise multiplies
+it by E xi^2 / (E xi)^2 = 1 + V/(B m^2), so **SGD delays escapes** (a volatility drag on the
+log-growth). Small-a form: shift ~ (eta/2)(K-1)(1 + (3^N - 1)/B) ln(a_e/a0), relative spread
+std/t ~ sqrt(eta V / (B t s_r^2)) -> 0 as sigma -> 0 (t ~ sigma^{-(K-2)}). Scaling predictions:
+std(t) ~ (eta/B)^{1/2} t^{1/2}, mean shift ~ eta/B (when V/B >> s^2), both in units t = eta x steps; in
+steps and samples the plateau costs t/eta steps and B t/eta samples.
 
-## 5. SGD stability limit (derived; in progress)
+**Conservation laws under SGD (derived).** Q_e changes per step by eta^2 (g_v^T g_v - g_p g_p^T); the
+expectation of this includes the noise covariance, Cov/B, which differs between the cores on the two
+sides of a bond. Q therefore drifts systematically (not as a random walk) by ~ eta t Cov/B: the
+noise-driven flow along gauge orbits of Ziyin 2024. Prediction: |Delta tr Q_e| ~ eta/B.
 
-At an interpolating minimum (realizable teacher) the noise vanishes, and linear mean-square stability
-of e = W - W* under e <- (I - eta Theta Phi_B Phi_B^T) e requires the spectral radius of
-M -> M - eta(Theta M + M Theta) + eta^2[(1 - 1/B) Theta M Theta + Theta F(M) Theta / B] to be < 1,
-with F(M) = E[Phi Phi^T M Phi Phi^T] = (x)_i F_i, F_i(A) = A + A^T + tr(A) I (Gaussian fourth
-moments). Restricted to U_1: eta < 2 / (lambda (1 + (3^N - 1)/B)). For B << 3^N this is ~ 3^{-N} B
-times the GD limit.
+**Stochastic collapse (derived, order of magnitude).** Chen, Kunin et al. (2023) find that SGD makes
+invariant sets (dead channels) attractive when the noise curvature beats the drift. For a TTN
+dormant direction with growth rate lambda = q s_new (strict, k = 2 escape) the per-step multiplier is
+1 + eta q xi with E xi = s_new, E xi^2 = s_new^2 + (V + zeta^2)/B (zeta = label-noise std), so it decays
+(collapses) iff s_new < eta q (V + zeta^2)/(2B) approximately. Without label noise V ~ s_new^2 (3^n - 1)
+(n = sites carrying the dormant feature), which needs eta q 3^n ~ 2B: beyond the SGD stability limit of
+the learned component (section 5). **Collapse in the realizable model therefore needs label noise**;
+with it, components weaker than ~eta q zeta^2 / (2B) are never learned. For k >= 3 escapes the drag is
+~a^{2k-3} against a drift ~a^{k-1}, so no collapse from small amplitude. Test: `collapse_test.py`.
+
+## 5. SGD stability limit (derived)
+
+At an interpolating minimum (realizable teacher, no label noise) the noise vanishes; linear
+mean-square stability of e = W - W* under e <- (I - eta Theta Phi_B Phi_B^T) e requires the spectral
+radius of M -> M - eta(Theta M + M Theta) + eta^2[(1 - 1/B) Theta M Theta + Theta F(M) Theta / B] to
+be < 1, with F(M) = E[Phi Phi^T M Phi Phi^T] = (x)_i F_i, F_i(A) = A + A^T + tr(A) I (Gaussian fourth
+moments; F checked by Monte Carlo). Restricted to U_1 this gives eta < 2 / (lambda (1 + (3^N - 1)/B)).
+Exact values at the balanced minimum, binary N=4, teacher [3, 2, 1] (`sgd_stability.py`,
+`results/sgd_stability.csv`):
+
+| B | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 1024 | inf |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| eta_ms | 0.00107 | 0.00213 | 0.00423 | 0.00831 | 0.0161 | 0.0300 | 0.0528 | 0.0831 | 0.112 | 0.142 | 0.154 |
+| 1D (U_1) estimate | 0.0019 | 0.0038 | 0.0073 | 0.0140 | 0.0257 | 0.0440 | 0.0685 | 0.0948 | 0.117 | 0.143 | 0.154 |
+
+eta_ms = 0.00107 B for B <= 16: **small-batch SGD on product features is ~150x less stable than GD
+per sample** (effective kurtosis ~145 = 1.8 x 3^4: other directions feed the noise). For B >~ 3^N
+the GD limit returns. Mean-square stability is conservative (heavy tails: almost-sure stability can
+hold beyond it); the empirical SGD limit is not yet measured.
 
 ## 6. Finite samples (to do)

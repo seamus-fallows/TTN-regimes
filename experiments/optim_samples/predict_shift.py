@@ -69,7 +69,8 @@ def predict(path):
         g = prob.loss_grad(th)[1]
         rate = -(grad_a @ g).item()
         rows.append(dict(tree=task["tree"], n=task["n"], sigma=task["sigma"], seed=task["seed"],
-                         root_scale=task.get("root_scale"), comp=comp, t_e=t_e,
+                         root_scale=task.get("root_scale"),
+                         centred=bool(task.get("centred", False)), comp=comp, t_e=t_e,
                          a_check=a.item(), pred_shift_over_eta=-(grad_a @ de).item() / rate,
                          tangential_shift_over_eta=0.5 * np.log(g.norm().item() / g0)))
     return rows

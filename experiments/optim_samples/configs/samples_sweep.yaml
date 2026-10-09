@@ -14,3 +14,6 @@ blocks:
      n_train: [16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512]}
   - {name: chi16_centred, chi: 16, centred: true, lazy: true, sigmas: [1.0], seeds: [0, 1, 2, 3, 4],
      n_train: [16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512]}
+  # Path from rich to lazy: larger centred init scales (GD is slow here: runs may stop at max_steps).
+  - {name: chi4_centred_large, centred: true, lazy: true, sigmas: [1.5, 2.0], seeds: [0, 1, 2, 3, 4],
+     n_train: [32, 64, 128, 256, 512]}

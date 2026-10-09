@@ -75,18 +75,21 @@ def main():
     for p in RAW.glob("*_gf.json"):
         d = load(p)
         tk = d["task"]
-        gf[(tk["tree"], tk["n"], tk["sigma"], tk["seed"], tk.get("root_scale"))] = d
+        gf[(tk["tree"], tk["n"], tk["sigma"], tk["seed"], tk.get("root_scale"),
+            bool(tk.get("centred", False)))] = d
     shifts = {}
     shift_file = OUT / "gd_shift_prediction.csv"
     if shift_file.exists():
         for _, r in pd.read_csv(shift_file).iterrows():
             rs = None if pd.isna(r.root_scale) else r.root_scale
-            shifts[(r.tree, r.n, r.sigma, r.seed, rs, int(r.comp))] = r.pred_shift_over_eta
+            centred = bool(r.get("centred", False))
+            shifts[(r.tree, r.n, r.sigma, r.seed, rs, centred, int(r.comp))] = r.pred_shift_over_eta
     rows = []
     for p in sorted(q for q in RAW.glob("*.json") if not q.name.endswith("_gf.json")):
         d = load(p)
         tk = d["task"]
-        key = (tk["tree"], tk["n"], tk["sigma"], tk["seed"], tk.get("root_scale"))
+        key = (tk["tree"], tk["n"], tk["sigma"], tk["seed"], tk.get("root_scale"),
+               bool(tk.get("centred", False)))
         ref = gf.get(key)
         if ref is None:
             continue
@@ -108,7 +111,8 @@ def main():
         k = ref["K"]
         lam_bal = k * 3.0 ** (2 - 2 / k)
         row = dict(tree=tk["tree"], n=tk["n"], K=k, sigma=tk["sigma"], seed=tk["seed"],
-                   root_scale=tk.get("root_scale"), ratio=tk["ratio"], eta=d["eta"],
+                   root_scale=tk.get("root_scale"), centred=bool(tk.get("centred", False)),
+                   ratio=tk["ratio"], eta=d["eta"], sharp_init=d["probe"][0]["sharp"],
                    cls=cls, loss_end=d["loss_end"], loss_gf_end=ref["loss_end"],
                    loss0=d["loss0"], loss_tail_mean=d["loss_tail_mean"],
                    same_order=order_gd[: len(order_gf)] == order_gf[: len(order_gd)],
@@ -133,7 +137,7 @@ def main():
     df = pd.DataFrame(rows)
     OUT.mkdir(exist_ok=True)
     df.to_csv(OUT / "gd_sweep.csv", index=False)
-    g = df.groupby(["tree", "n", "sigma", "root_scale", "ratio"], dropna=False)
+    g = df.groupby(["tree", "n", "centred", "sigma", "root_scale", "ratio"], dropna=False)
     summ = g.agg(
         n_runs=("seed", "size"),
         frac_gf_like=("cls", lambda c: np.mean(c == "gf_like")),
@@ -154,7 +158,7 @@ def main():
     summ.to_csv(OUT / "gd_summary.csv", index=False)
     export_eos()
     with pd.option_context("display.width", 250, "display.max_rows", 500):
-        cols = ["tree", "n", "sigma", "root_scale", "ratio", "frac_gf_like", "frac_osc",
+        cols = ["tree", "n", "centred", "sigma", "root_scale", "ratio", "frac_gf_like", "frac_osc",
                 "frac_reentry", "frac_div", "frac_same_order", "rel_err1_mean", "rel_err2_mean",
                 "sharp_end_rel", "sharp_gf_rel", "trq_end", "trq_gf", "loss_tail_rel"]
         print(summ[cols].to_string(float_format=lambda x: f"{x:.3g}"))

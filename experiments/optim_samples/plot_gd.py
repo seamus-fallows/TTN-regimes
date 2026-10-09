@@ -180,6 +180,7 @@ def fig_min_selection(df):
 def main():
     ps.apply()
     df = pd.read_csv(RES / "gd_sweep.csv")
+    df = df[~df.centred & (df.seed <= 4)]  # step-1 sweep: plain model, init seeds 0-4
     fig_gd_vs_gf(df)
     fig_stability(df)
     fig_eos_example()

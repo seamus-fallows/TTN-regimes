@@ -51,10 +51,18 @@ and are being redone in the full sweep):**
 4. Step 1 sweep (750 runs), shift prediction, analysis, figures (commits 701314a and later).
 5. Step 2 sweep (3960 SGD runs) running; step 3 script written and piloted.
 
+**Library cross-check (after `ttn.dynamics` landed, commit f2f0d6f):** `validate_library.py` reruns 6
+GD, 4 GF and 2 SGD settings with `run_gd`, `integrate_gf` (dopri5 and lsoda, rtol 1e-10) and
+`run_sgd` (same generator seeds): GD event times agree to <= 5e-4 (interpolation only) with identical
+final losses; GF to ~1e-5 relative; SGD trajectories are identical (events to 2e-8).
+`results/validate_library.csv`. The sweeps made with my loops are therefore library-equivalent.
+
 ## Decisions
 - **Teacher [3, 2, 1], d = 3, chi = 3** (as `s2s-core`'s separated teacher) so stability limits
   and plateaus are comparable across agents; **teacher seed 101**, independent of init seeds 0-4
   (after the lead's RNG fix).
+- **Keep the step-1/2 sweeps from my own loops after the library landed** (validated equivalent,
+  above); new experiments (collapse test) use `ttn.dynamics` directly.
 - **Own minimal GD/SGD loops before `ttn.dynamics` lands.** The brief allows pilots only; the
   library is still hours away and the interim report is due after step 1. The loops are a few
   lines in my folder; I will rerun key settings with `ttn.dynamics` once it lands.
@@ -95,3 +103,5 @@ and are being redone in the full sweep):**
 - 19:02 Step-1 sweep done (750 runs); SGD sweep started (3960 runs).
 - 19:10 Backward-error shift prediction: matches GD to 3 digits. Step-1 figures.
 - 19:20 Interim report (step 1).
+- 19:25 Lead: library v0 on main; merged (126 tests pass). Float64-floor check: only never-learned components of N=8 runs collapse below 1e-14 (not used for any reported time).
+- 19:33 Library cross-check passed (GD/GF/SGD); SGD sweep and finite-sample sweep running (15 workers each).
