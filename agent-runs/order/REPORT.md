@@ -1,6 +1,6 @@
 # order: which teacher component a TTN learns first, and how random the order is (Q4, H1, H1b)
 
-Status: working - Branch: agent/order - Updated: 2026-10-09 21:05 UTC
+Status: working - Branch: agent/order - Updated: 2026-10-09 20:56 UTC
 
 ## Summary
 Interim (main sweep still running). Theory (notes/order.md, consistent with the draft
