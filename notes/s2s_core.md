@@ -375,3 +375,38 @@ every per-core amplitude is O(1e-3) and the escape signal ~ s b^{K-1} is far abo
 stopped by that criterion are classed unresolved and re-run without it (k78). All reported event times
 come from runs in which every dormant per-core slice stayed far above roundoff.
 
+
+## 3. Answers to the brief (status-tagged; numbers in section 2)
+
+1. **Known result in our setup** (derived; known for DLNs, explicit for TTNs): aligned balanced init on
+   an odeco teacher gives independent Saxe modes; TTN gradient flow matches them to 3e-9 on binary4/8,
+   mps4/8, ht4 (2.2).
+2. **Saddle-to-saddle for random init** (empirical): yes, on every tree, from fan-in init with odeco
+   teachers: plateaus at the partial-fit levels L_S (the bond-rank-constrained critical points W_S,
+   i.e. truncated teacher spectra on every bond), one rank step per event on every edge at the same
+   time, separation ratios growing like sigma^-(K-2). Visited saddles = partial fits W_S for the set S
+   learned so far, in a seed-dependent order on tensor-like trees (MPS, binary8, HT: first component
+   fixed per seed across sigma, race model) and greedy on binary4 (matrix-like). Plateaus are
+   higher-order saddles (lambda_min -> 0 like sigma^(K-2); no strict saddles seen with odeco teachers).
+3. **Escape-time scaling**:
+   - t_1 = sigma^-(K-2) T(theta_hat) + c_K per seed (derived = theory_escape E1; empirical check to
+     <= 2e-3 at the smallest sigma, exponents 0.9996, 2.0000, 4.998 for K = 3, 4, 7). **No free
+     parameter.** The rho_0 / Kumar-Haupt law is a strict lower bound (proven) off by 3-500x at K = 3-7
+     (empirical), growing with d, chi and K.
+   - Later gaps ~ sigma^-(K-2) per seed (derived for odeco: every route has k = K; empirical: 1.00,
+     2.00, 5.0 for K = 3, 4, 7). Prefactors are seed-dependent; for a gap whose dormant component was
+     suppressed by a factor S the gap is longer by ~S^-(K-2)/K (derived from the route ODE; continued
+     runs escape at 0.5-0.85x the route estimate, which is an upper bound).
+   - chi: weak decrease of the prefactor (slopes -0.26 .. -0.76), not the rho_0 law (empirical).
+   - K: the prefactor grows roughly like the RMS-overlap heuristic P3 (within 2x, K = 3-15; heuristic).
+4. **Saddle type** (empirical; theory_saddles R10): higher-order at every plateau of the odeco runs,
+   lambda_min ~ sigma^(K-2) per seed (slopes 1.06, 2.00, ~5.1 for K = 3, 4, 7), magnitude within
+   0.8-1.7 of the route formula -(K-1) s_r (s_r |a_r|)^((K-2)/K).
+5. **Dormant suppression** (lead's question): escapes shrink dormant components only mildly (median
+   x0.4-0.7 at K >= 4, growth at K = 3); plateaus kill them through the conservation-law trap of fan-in
+   init (dead route ends, rate ~ sigma^2 per seed). Trap fraction: 0 at K = 3; a sigma-independent
+   4/10 seeds at K = 4, chi = 3; ~80% on HT4 at chi = 3; none at chi = 2R for K = 3, 4 and on binary8
+   / HT4 at K = 7 (2/50 HT4). Gauge-balanced init removes the trap (0/210). So at large K saddle-to-saddle
+   from fan-in init at chi = R means effectively stuck dynamics for a large, sigma-independent fraction
+   of seeds; with balanced init or chi = 2R it means ever-longer plateaus (exponent K - 2, prefactors
+   inflated by any suppression), as long as the dormant amplitude stays above roundoff.
