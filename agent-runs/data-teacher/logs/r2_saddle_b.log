@@ -1,0 +1,4 @@
+          teacher  n    tree  l_saddle  n_rank1_minima     grad_norm    lambda_min  lambda_min_raw  n_negative        type  lambda_max
+0  misaligned8_45  8     mps  0.318357               2  7.300385e-09 -1.742361e-02   -1.742361e-02          17      strict   11.467033
+1  misaligned8_45  8  binary  0.316509               2  2.342027e-09 -1.919688e-15   -1.136041e-09           0  non-strict   11.224289
+2  misaligned8_45  8      ht  0.318357               3  6.409084e-09 -3.805381e-15   -2.458353e-09           0  non-strict   18.583976

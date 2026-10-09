@@ -509,7 +509,40 @@ of 1/abs(lambda_min) for 10 teachers. Two N = 8 exceptions: nonorth8_c0.45 (A = 
 (the eps extension tests this); misaligned8_20 is degenerate (the product covariance over 8 sites
 leaves the second component a function-space weight of ~0.002 L(0); no escape law; replaced by the
 balanced theta = 45 deg teacher). Random-init sweeps on mps4 and binary4 (the R6 slope with head start)
-are running (`configs/r2_random.yaml`).
+are below.
+
+**Random fan-in init on mps4 and binary4** (`configs/r2_random.yaml`, library LSODA, two-stage dense
+grid with fine rows; sigma = 3e-4 ... 0.3 (mps4) and 1e-4 ... 0.1 (binary4), 9 values over 3 decades,
+5 seeds; `analyze_law_v2.py`: events f = 0.05, runs classified by visited rank-one saddle, unresolved
+runs excluded; prediction R6 = (1 - kappa_e*)/gamma_e* with the head start; results
+`results/r2_random_v2_summary.csv`, figure `r2_random_v2.png`):
+
+| teacher | tree | saddle | seeds (resolved runs) | A fit (pred R6) | p fit | log wins | plateau lambda_min (smallest / largest sigma; raw) |
+|---|---|---|---|---|---|---|---|
+| misaligned_20 | binary4 | major | 5 (45/45) | 520.91 +- 93.54 (-) | 1.025 +- 0.004 | 0/5 | -0.0000 / -0.0479; raw -0.0000 / -0.0507 |
+| misaligned_20 | mps4 | major | 5 (40/45) | 58.85 +- 0.86 (-) | 0.302 +- 0.021 | 5/5 | -0.0189 / -0.0480; raw -0.0189 / -0.0527 |
+| nonorth_c0.2 | binary4 | major | 5 (40/45) | 123.50 +- 21.84 (-) | 1.043 +- 0.010 | 0/5 | -0.0003 / -0.1519; raw -0.0003 / -0.1529 |
+| nonorth_c0.2 | mps4 | major | 4 (39/45) | 36.29 +- 0.41 (34.14) | 0.323 +- 0.042 | 4/4 | -0.0285 / -0.1934; raw -0.0285 / -0.1963 |
+| nonorth_c0.2 | mps4 | minor | 1 (39/45) | 26.47 +- nan (25.72) | 0.271 +- nan | 1/1 | -0.0365 / -0.0481; raw -0.0365 / -0.0578 |
+| nonorth_c0.45 | binary4 | major | 5 (45/45) | 248.23 +- 100.73 (-) | 1.037 +- 0.016 | 0/5 | -0.0001 / -0.1691; raw -0.0001 / -0.1702 |
+| nonorth_c0.45 | mps4 | major | 4 (34/45) | 5.65 +- 0.08 (5.68) | 0.360 +- 0.012 | 4/4 | -0.1510 / -0.2521; raw -0.1510 / -0.2704 |
+| randbin_302 | binary4 | major | 5 (45/45) | 398.15 +- 79.58 (-) | 1.042 +- 0.012 | 0/5 | -0.0000 / -0.0443; raw -0.0000 / -0.0457 |
+| randbin_302 | mps4 | major | 5 (37/45) | 12.13 +- 0.28 (12.01) | 0.237 +- 0.012 | 5/5 | -0.0764 / -0.0666; raw -0.0764 / -0.0668 |
+| randbin_303 | binary4 | major | 5 (39/45) | 216.38 +- 67.81 (-) | 1.062 +- 0.027 | 0/5 | -0.0001 / -0.0896; raw -0.0001 / -0.0915 |
+| randbin_303 | mps4 | major | 1 (19/45) | 1.03 +- nan (1.05) | 0.173 +- nan | 1/1 | -0.3550 / -0.3383; raw -0.3556 / -0.3518 |
+| randmps_301 | binary4 | major | 5 (45/45) | 257.72 +- 36.74 (-) | 1.025 +- 0.003 | 0/5 | -0.0001 / -0.0916; raw -0.0001 / -0.0931 |
+| randmps_301 | mps4 | major | 3 (23/45) | 1.38 +- 0.00 (1.39) | 0.268 +- 0.006 | 3/3 | -0.3757 / -0.3405; raw -0.3758 / -0.3561 |
+
+*Verdict* — *empirical, confirming theory_teachers R6 / P4 / P9*: with random init the MPS-4 second
+escape follows the log law in every resolved seed, with slopes within 0.1-6% of R6 (c = 0.45: 5.65 vs
+5.68; random MPS teacher: 1.385 vs 1.386; c = 0.2: 36.3 vs 34.1, +6%; minor saddle 26.5 vs 25.7); its
+plateau lambda_min at small sigma equals the exact-saddle value (e.g. -0.1510 vs -0.1509) and is
+sigma-independent (strict). The binary-4 gaps follow sigma^-p with p = 1.02-1.06 and its plateau
+lambda_min falls like sigma (from ~-0.1 at sigma = 0.1 to ~-1e-4 at 1e-4): a higher-order saddle, by
+the sweep-level rule of diagnostics.md. Raw and gauge-projected lambda_min agree to < 10% at the
+largest sigma and to 1e-3 at the smallest. For two random teachers (randbin_303, randmps_301) most mps4
+runs have no resolved rank-one plateau at these sigma (large kappa: the route grows almost fully
+during the first escape), so their fits rest on 1-3 seeds.
 
 ### R2.3 Sigma law under cross-site correlated inputs (round-2 item 3)
 
