@@ -161,9 +161,10 @@ class Run:
 
 
 def integrate_chunked(problem, theta0, t_max, n_log=400, chunk=50, wall_limit=1200.0,
-                      loss_floor=None, extra=(), **gf):
+                      loss_floor=None, extra=(), max_steps=20_000, stop_fn=None, spectra=True, **gf):
     """`integrate_gf` on the default log grid, in chunks of `chunk` log times, stopping early when
-    the loss floor is reached or the wall time exceeds wall_limit (stop_reason 'wall_limit').
+    the loss floor is reached, a chunk needs more than max_steps steps, or the wall time exceeds
+    wall_limit (stop_reason 'wall_limit'), or stop_fn(chunk data) is true (stop_reason 'stop_fn').
     Saves params at every log time. Conservation drift is measured per chunk (relative to the
     chunk's start); 'conservation_drift' keeps the per-chunk values."""
     wall0 = time.perf_counter()
@@ -174,9 +175,9 @@ def integrate_chunked(problem, theta0, t_max, n_log=400, chunk=50, wall_limit=12
     parts, t_off, stop, metas = [], 0.0, None, []
     for i in range(0, n_log, chunk):
         times = grid[i : i + chunk] - t_off
-        rec = Recorder(save_params=True, extra=list(extra))
+        rec = Recorder(save_params=True, spectra=spectra, extra=list(extra))
         tr = integrate_gf(problem, theta, float(times[-1]), log_times=times, recorder=rec,
-                          loss_floor=loss_floor, **gf)
+                          loss_floor=loss_floor, max_steps=max_steps, **gf)
         d = dict(tr.data)
         d["t"] = d["t"] + t_off
         keep = slice(0, None) if not parts else slice(1, None)  # drop the repeated start point
@@ -185,6 +186,9 @@ def integrate_chunked(problem, theta0, t_max, n_log=400, chunk=50, wall_limit=12
         theta, t_off = torch.as_tensor(tr.data["theta_end"]), float(d["t"][-1])
         stop = tr.meta["stop_reason"]
         if stop != "completed":
+            break
+        if stop_fn is not None and stop_fn(d):
+            stop = "stop_fn"
             break
         if time.perf_counter() - wall0 > wall_limit:
             stop = "wall_limit"
@@ -220,8 +224,18 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
     # multiples of it), and a wall-clock limit for runs that stall (LSODA crawls on stalled plateaus).
     s_min = min(cfg["weights"])
     t_max = cfg.get("t_max") or 1e3 * p3_prefactor(cfg["d"], cfg["N"], K, s_min) * sigma ** (-(K - 2))
+    weights = np.asarray(cfg["weights"])
+
+    def at_floor(d):
+        # Every component that is not learned has stayed below 1e-15 for the whole chunk: whatever
+        # happens next is seeded by float64 roundoff, so stop (class 'floor' in the analysis).
+        amps = np.abs(d["overlaps"]) * weights
+        learned = d["overlaps"][-1] >= 0.9
+        return learned.any() and not learned.all() and amps[:, ~learned].max() < 1e-15
+
     tr = integrate_chunked(problem, theta0, t_max, n_log=cfg.get("n_log", 400),
                            wall_limit=cfg.get("wall_limit", 1200.0),
+                           max_steps=cfg.get("max_steps", 20_000), stop_fn=at_floor,
                            loss_floor=cfg.get("loss_floor", 1e-9) * loss0,
                            extra=[slice_norm_recorder(teacher), balance_recorder()], **gf)
     t, a, params = tr["t"], tr["overlaps"], tr["params"]

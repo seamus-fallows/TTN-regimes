@@ -1,0 +1,428 @@
+main: 1600 runs to do -> /root/outputs/s2s_core/main
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[1/1600 26s] binary4_chi3_w3-2-1_fanin_s0.003_seed0: converged (26s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[2/1600 29s] binary4_chi3_w3-2-1_fanin_s0.003_seed5: converged (28s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[3/1600 30s] binary4_chi3_w3-2-1_fanin_s0.003_seed4: converged (30s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[4/1600 30s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed3: converged (30s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[5/1600 30s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed3: converged (30s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[6/1600 31s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed2: converged (30s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[7/1600 32s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed5: converged (32s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[8/1600 33s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed1: converged (32s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[9/1600 33s] binary4_chi3_w3-2-1_fanin_s0.003_seed3: converged (32s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[10/1600 33s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed4: converged (33s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[11/1600 34s] binary4_chi3_w3-2-1_fanin_s0.003_seed7: converged (34s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[12/1600 35s] binary4_chi3_w3-2-1_fanin_s0.003_seed2: converged (34s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[13/1600 35s] binary4_chi3_w3-2-1_fanin_s0.003_seed9: converged (34s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[14/1600 35s] binary4_chi6_w3-2-1_fanin_s0.003_seed3: converged (34s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[15/1600 35s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed8: converged (35s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[16/1600 35s] binary4_chi6_w3-2-1_fanin_s0.003_seed4: converged (35s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[17/1600 35s] binary4_chi3_w3-2-1_fanin_s0.003_seed8: converged (35s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[18/1600 36s] binary4_chi6_w3-2-1_fanin_s0.003_seed0: converged (35s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[19/1600 36s] binary4_chi6_w3-2-1_fanin_s0.003_seed5: converged (35s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[20/1600 36s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed4: converged (35s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[21/1600 40s] binary4_chi6_w3-2-1_fanin_s0.003_seed1: converged (40s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[22/1600 40s] binary4_chi3_w3-2-1_fanin_s0.003_seed1: converged (40s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[23/1600 40s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed7: converged (40s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[24/1600 41s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed2: converged (41s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[25/1600 42s] binary4_chi6_w3-2-1_fanin_s0.003_seed6: converged (42s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[26/1600 43s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed1: converged (42s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[27/1600 46s] binary4_chi6_w3-2-1_fanin_s0.003_seed7: converged (46s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[28/1600 47s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed7: converged (46s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[29/1600 47s] binary4_chi6_w3-2-1_fanin_s0.003_seed8: converged (47s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[30/1600 48s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed5: converged (47s)
+[31/1600 48s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed0: converged (47s)
+[32/1600 49s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed2: converged (48s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[33/1600 49s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed6: converged (48s)
+[34/1600 51s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed5: completed (50s)
+[35/1600 54s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed3: converged (53s)
+[36/1600 54s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed7: completed (53s)
+[37/1600 62s] binary4_chi3_w3-2-1_fanin_s0.005_seed0: converged (22s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[38/1600 62s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed6: converged (62s)
+[39/1600 64s] mps4_chi3_w3-2-1_fanin_s0.003_seed9: converged (63s)
+[40/1600 65s] mps4_chi3_w3-2-1_fanin_s0.003_seed5: completed (64s)
+[41/1600 66s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed9: converged (65s)
+[42/1600 67s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed4: converged (66s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[43/1600 68s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed9: converged (67s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[44/1600 69s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed1: converged (20s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[45/1600 69s] binary4_chi6_w3-2-1_fanin_s0.003_seed9: converged (69s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[46/1600 69s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed0: converged (22s)
+[47/1600 71s] binary4_chi3_w3-2-1_fanin_s0.005_seed1: converged (31s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[48/1600 74s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed3: converged (23s)
+[49/1600 74s] binary4_chi3_w3-2-1_fanin_s0.005_seed2: converged (34s)
+[50/1600 75s] binary4_chi3_w3-2-1_fanin_s0.005_seed5: converged (32s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[51/1600 75s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed4: converged (22s)
+[52/1600 75s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed8: converged (75s)
+[53/1600 77s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed1: completed (76s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[54/1600 78s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed5: converged (24s)
+[55/1600 78s] binary4_chi3_w3-2-1_fanin_s0.005_seed9: converged (31s)
+[56/1600 79s] binary4_chi3_w3-2-1_fanin_s0.005_seed3: converged (37s)
+[57/1600 79s] binary4_chi3_w3-2-1_fanin_s0.005_seed4: converged (37s)
+[58/1600 80s] binary4_chi3_w3-2-1_fanin_s0.005_seed7: converged (33s)
+[59/1600 80s] mps4_chi3_w3-2-1_fanin_s0.003_seed4: converged (79s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[60/1600 80s] binary4_chi6_w3-2-1_fanin_s0.003_seed2: converged (80s)
+[61/1600 82s] mps4_chi6_w3-2-1_fanin_s0.003_seed1: converged (54s)
+[62/1600 82s] binary4_chi3_w3-2-1_fanin_s0.005_seed6: converged (36s)
+[63/1600 84s] mps4_chi6_w3-2-1_fanin_s0.003_seed3: converged (54s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[64/1600 84s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed8: converged (21s)
+[65/1600 86s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed2: converged (37s)
+[66/1600 86s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed0: converged (52s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[67/1600 87s] mps4_chi6_w3-2-1_fanin_s0.003_seed0: converged (60s)
+[68/1600 87s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed0: converged (86s)
+[69/1600 88s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed3: converged (53s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[70/1600 88s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed9: converged (23s)
+[71/1600 88s] mps4_chi6_w3-2-1_fanin_s0.003_seed5: converged (58s)
+[72/1600 88s] mps4_chi3_w3-2-1_fanin_s0.003_seed1: converged (88s)
+[73/1600 89s] binary4_chi3_w3-2-1_fanin_s0.005_seed8: converged (42s)
+[74/1600 89s] mps4_chi6_w3-2-1_fanin_s0.003_seed7: converged (56s)
+[75/1600 90s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed6: converged (54s)
+[76/1600 90s] mps4_chi6_w3-2-1_fanin_s0.003_seed4: converged (59s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[77/1600 90s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed8: converged (90s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[78/1600 90s] binary4_chi6_w1-0.85-0.7_fanin_s0.003_seed9: converged (90s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[79/1600 91s] binary4_chi3_w1-0.85-0.7_fanin_s0.003_seed0: converged (91s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[80/1600 93s] binary4_chi6_w3-2-1_fanin_s0.005_seed0: converged (27s)
+[81/1600 93s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed1: converged (58s)
+[82/1600 93s] binary4_chi6_w3-2-1_fanin_s0.005_seed3: converged (25s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[83/1600 94s] binary4_chi3_w3-2-1_fanin_s0.003_seed6: converged (93s)
+[84/1600 96s] binary4_chi6_w3-2-1_fanin_s0.005_seed6: converged (24s)
+[85/1600 98s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed0: converged (23s)
+[86/1600 98s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed6: converged (36s)
+[87/1600 98s] binary4_chi6_w3-2-1_fanin_s0.005_seed7: converged (24s)
+[88/1600 99s] binary4_chi6_w3-2-1_fanin_s0.005_seed8: converged (24s)
+[89/1600 105s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed7: converged (69s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[90/1600 105s] binary4_chi6_w3-2-1_fanin_s0.005_seed1: converged (39s)
+[91/1600 107s] mps4_chi6_w3-2-1_fanin_s0.003_seed9: converged (74s)
+[92/1600 108s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed4: converged (29s)
+[93/1600 109s] mps4_chi3_w3-2-1_fanin_s0.003_seed2: converged (109s)
+[94/1600 110s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed4: converged (75s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[95/1600 111s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed1: converged (36s)
+[96/1600 114s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed3: converged (36s)
+[97/1600 114s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed5: converged (79s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[98/1600 114s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed2: converged (38s)
+[99/1600 115s] binary4_chi6_w3-2-1_fanin_s0.005_seed9: converged (40s)
+[100/1600 115s] mps4_chi3_w3-2-1_fanin_s0.003_seed7: completed (115s)
+[101/1600 117s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed6: converged (38s)
+[102/1600 117s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed7: converged (38s)
+[103/1600 118s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed5: converged (39s)
+[104/1600 120s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed2: converged (85s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[105/1600 120s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed8: converged (40s)
+[106/1600 124s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed8: converged (88s)
+[107/1600 125s] binary4_chi6_w3-2-1_fanin_s0.005_seed5: converged (55s)
+[108/1600 125s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed5: completed (35s)
+[109/1600 126s] mps4_chi6_w3-2-1_fanin_s0.003_seed6: converged (94s)
+[110/1600 126s] mps4_chi3_w3-2-1_fanin_s0.005_seed5: completed (40s)
+[111/1600 126s] mps4_chi3_w3-2-1_fanin_s0.005_seed3: completed (42s)
+[112/1600 128s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed4: converged (38s)
+[113/1600 128s] mps4_chi6_w3-2-1_fanin_s0.003_seed8: converged (95s)
+[114/1600 129s] mps4_chi3_w3-2-1_fanin_s0.005_seed8: converged (41s)
+[115/1600 129s] mps4_chi6_w1-0.85-0.7_fanin_s0.003_seed9: converged (93s)
+[116/1600 130s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed3: converged (41s)
+[117/1600 131s] mps4_chi3_w3-2-1_fanin_s0.005_seed0: converged (48s)
+[118/1600 131s] mps4_chi6_w3-2-1_fanin_s0.003_seed2: converged (101s)
+[119/1600 131s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed0: converged (43s)
+[120/1600 132s] mps4_chi3_w3-2-1_fanin_s0.005_seed2: converged (48s)
+[121/1600 139s] binary4_chi6_w3-2-1_fanin_s0.005_seed2: converged (71s)
+[122/1600 139s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed9: converged (47s)
+[123/1600 141s] mps4_chi3_w3-2-1_fanin_s0.005_seed9: converged (53s)
+[124/1600 142s] binary4_chi3_w3-2-1_fanin_s0.01_seed4: converged (22s)
+[125/1600 143s] binary4_chi6_w1-0.85-0.7_fanin_s0.005_seed9: converged (63s)
+[126/1600 143s] mps4_chi6_w3-2-1_fanin_s0.005_seed3: converged (48s)
+[127/1600 145s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed1: completed (56s)
+[128/1600 145s] binary4_chi3_w3-2-1_fanin_s0.01_seed7: converged (20s)
+[129/1600 146s] binary4_chi3_w1-0.85-0.7_fanin_s0.005_seed7: converged (84s)
+[130/1600 147s] binary4_chi3_w3-2-1_fanin_s0.01_seed9: converged (21s)
+[131/1600 147s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed1: converged (19s)
+[132/1600 149s] mps4_chi6_w3-2-1_fanin_s0.005_seed1: converged (55s)
+[133/1600 149s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed0: converged (22s)
+[134/1600 149s] mps4_chi3_w3-2-1_fanin_s0.003_seed8: converged (149s)
+[135/1600 149s] binary4_chi3_w3-2-1_fanin_s0.01_seed1: converged (32s)
+[136/1600 150s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed6: converged (19s)
+[137/1600 150s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed5: converged (19s)
+[138/1600 150s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed3: converged (22s)
+[139/1600 151s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed8: converged (20s)
+[140/1600 151s] mps4_chi6_w3-2-1_fanin_s0.005_seed0: converged (59s)
+[141/1600 152s] binary4_chi3_w3-2-1_fanin_s0.01_seed2: converged (34s)
+[142/1600 152s] binary4_chi3_w3-2-1_fanin_s0.01_seed0: converged (35s)
+[143/1600 152s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed9: converged (20s)
+[144/1600 153s] mps4_chi6_w3-2-1_fanin_s0.005_seed6: converged (55s)
+[145/1600 154s] binary4_chi3_w3-2-1_fanin_s0.01_seed3: converged (34s)
+[146/1600 154s] mps4_chi6_w3-2-1_fanin_s0.005_seed4: converged (56s)
+[147/1600 154s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed2: converged (65s)
+[148/1600 155s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed7: converged (24s)
+[149/1600 158s] binary4_chi3_w3-2-1_fanin_s0.01_seed6: converged (34s)
+[150/1600 158s] mps4_chi3_w3-2-1_fanin_s0.005_seed4: converged (72s)
+[151/1600 160s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed1: converged (53s)
+[152/1600 160s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed3: converged (51s)
+[153/1600 161s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed2: converged (33s)
+[154/1600 161s] binary4_chi6_w3-2-1_fanin_s0.01_seed1: converged (22s)
+[155/1600 163s] binary4_chi3_w3-2-1_fanin_s0.01_seed8: converged (38s)
+[156/1600 165s] mps4_chi3_w3-2-1_fanin_s0.003_seed0: converged (164s)
+[157/1600 166s] binary4_chi6_w3-2-1_fanin_s0.01_seed3: converged (24s)
+[158/1600 167s] binary4_chi3_w1-0.85-0.7_fanin_s0.01_seed4: converged (38s)
+[159/1600 167s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed0: converged (20s)
+[160/1600 167s] binary4_chi6_w3-2-1_fanin_s0.01_seed7: converged (22s)
+[161/1600 168s] binary4_chi6_w3-2-1_fanin_s0.01_seed2: converged (26s)
+[162/1600 170s] binary4_chi6_w3-2-1_fanin_s0.01_seed9: converged (23s)
+[163/1600 170s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed2: converged (21s)
+[164/1600 170s] binary4_chi6_w3-2-1_fanin_s0.005_seed4: converged (101s)
+[165/1600 171s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed6: converged (21s)
+[166/1600 171s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed1: converged (22s)
+[167/1600 171s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed8: converged (21s)
+[168/1600 171s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed5: converged (22s)
+[169/1600 171s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed7: converged (21s)
+[170/1600 174s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed0: converged (67s)
+[171/1600 176s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed4: converged (26s)
+[172/1600 177s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed6: converged (63s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[173/1600 177s] binary4_chi6_w3-2-1_fanin_s0.01_seed6: converged (32s)
+[174/1600 178s] binary4_chi6_w3-2-1_fanin_s0.01_seed5: converged (34s)
+[175/1600 178s] binary4_chi6_w3-2-1_fanin_s0.01_seed4: converged (35s)
+[176/1600 179s] mps4_chi6_w3-2-1_fanin_s0.005_seed5: converged (81s)
+[177/1600 179s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed9: converged (64s)
+[178/1600 181s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed9: converged (29s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[179/1600 183s] binary4_chi6_w1-0.85-0.7_fanin_s0.01_seed3: converged (34s)
+[180/1600 183s] mps4_chi6_w3-2-1_fanin_s0.005_seed7: converged (84s)
+[181/1600 187s] mps4_chi3_w3-2-1_fanin_s0.01_seed3: completed (34s)
+[182/1600 189s] binary4_chi3_w3-2-1_fanin_s0.01_seed5: converged (64s)
+[183/1600 189s] mps4_chi3_w3-2-1_fanin_s0.01_seed5: completed (35s)
+[184/1600 191s] mps4_chi3_w3-2-1_fanin_s0.005_seed6: completed (105s)
+[185/1600 193s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed1: completed (32s)
+[186/1600 193s] mps4_chi3_w3-2-1_fanin_s0.005_seed1: converged (110s)
+[187/1600 193s] mps4_chi3_w3-2-1_fanin_s0.01_seed4: converged (40s)
+[188/1600 195s] mps4_chi3_w3-2-1_fanin_s0.01_seed2: converged (42s)
+[189/1600 198s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed8: converged (83s)
+[190/1600 198s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed2: converged (89s)
+[191/1600 199s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed7: converged (85s)
+[192/1600 201s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed5: converged (87s)
+[193/1600 201s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed3: converged (40s)
+[194/1600 202s] mps4_chi6_w1-0.85-0.7_fanin_s0.005_seed4: converged (90s)
+[195/1600 202s] mps4_chi3_w3-2-1_fanin_s0.01_seed8: converged (44s)
+[196/1600 204s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed8: converged (36s)
+[197/1600 204s] mps4_chi3_w3-2-1_fanin_s0.01_seed1: converged (52s)
+[198/1600 205s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed7: completed (114s)
+[199/1600 205s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed0: converged (45s)
+[200/1600 205s] mps4_chi3_w3-2-1_fanin_s0.01_seed7: completed (50s)
+[201/1600 208s] binary4_chi3_w3-2-1_fanin_s0.02_seed0: converged (22s)
+[202/1600 208s] binary4_chi3_w3-2-1_fanin_s0.02_seed2: converged (19s)
+[203/1600 209s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed9: converged (41s)
+[204/1600 211s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed6: converged (45s)
+[205/1600 212s] binary4_chi3_w3-2-1_fanin_s0.02_seed4: converged (20s)
+[206/1600 214s] binary4_chi3_w3-2-1_fanin_s0.02_seed7: converged (19s)
+[207/1600 214s] binary4_chi6_w3-2-1_fanin_s0.01_seed0: converged (75s)
+[208/1600 214s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed7: completed (47s)
+[209/1600 215s] mps4_chi3_w3-2-1_fanin_s0.01_seed6: completed (61s)
+[210/1600 216s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed5: completed (51s)
+[211/1600 217s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed4: converged (15s)
+[212/1600 218s] mps4_chi6_w3-2-1_fanin_s0.01_seed1: converged (48s)
+[213/1600 218s] mps4_chi6_w3-2-1_fanin_s0.01_seed7: converged (46s)
+[214/1600 218s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed4: converged (55s)
+[215/1600 219s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed2: converged (18s)
+[216/1600 220s] binary4_chi3_w3-2-1_fanin_s0.02_seed6: converged (26s)
+[217/1600 220s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed3: converged (18s)
+[218/1600 220s] mps4_chi6_w3-2-1_fanin_s0.01_seed5: converged (49s)
+[219/1600 220s] mps4_chi3_w1-0.85-0.7_fanin_s0.01_seed2: converged (59s)
+[220/1600 221s] mps4_chi6_w3-2-1_fanin_s0.01_seed8: converged (49s)
+[221/1600 222s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed5: converged (18s)
+[222/1600 223s] mps4_chi6_w3-2-1_fanin_s0.01_seed2: converged (54s)
+[223/1600 224s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed2: converged (46s)
+[224/1600 225s] binary4_chi3_w3-2-1_fanin_s0.02_seed3: converged (34s)
+[225/1600 225s] mps4_chi3_w1-0.85-0.7_fanin_s0.003_seed6: converged (225s)
+[226/1600 225s] mps4_chi3_w3-2-1_fanin_s0.01_seed0: converged (73s)
+[227/1600 226s] mps4_chi3_w3-2-1_fanin_s0.005_seed7: completed (139s)
+[228/1600 228s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed1: converged (27s)
+[229/1600 229s] binary4_chi6_w3-2-1_fanin_s0.02_seed3: converged (18s)
+[230/1600 229s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed0: converged (30s)
+[231/1600 230s] binary4_chi6_w3-2-1_fanin_s0.02_seed0: converged (21s)
+[232/1600 230s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed6: converged (25s)
+[233/1600 230s] mps4_chi6_w3-2-1_fanin_s0.01_seed6: converged (59s)
+[234/1600 231s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed9: converged (26s)
+[235/1600 231s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed0: converged (14s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[236/1600 231s] binary4_chi3_w3-2-1_fanin_s0.02_seed9: converged (33s)
+[237/1600 231s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed8: converged (27s)
+[238/1600 232s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed1: converged (14s)
+[239/1600 232s] binary4_chi6_w3-2-1_fanin_s0.02_seed2: converged (23s)
+[240/1600 232s] binary4_chi3_w3-2-1_fanin_s0.02_seed8: converged (34s)
+[241/1600 232s] binary4_chi6_w3-2-1_fanin_s0.02_seed4: converged (20s)
+[242/1600 233s] mps4_chi6_w3-2-1_fanin_s0.005_seed8: converged (128s)
+[243/1600 234s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed4: converged (15s)
+[244/1600 234s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed3: converged (15s)
+[245/1600 234s] mps4_chi3_w3-2-1_fanin_s0.003_seed3: completed (233s)
+[246/1600 234s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed6: converged (14s)
+[247/1600 234s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed2: converged (16s)
+[248/1600 235s] binary4_chi6_w3-2-1_fanin_s0.02_seed7: converged (21s)
+[249/1600 236s] mps4_chi3_w3-2-1_fanin_s0.01_seed9: converged (77s)
+[250/1600 236s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed7: converged (16s)
+[251/1600 236s] binary4_chi6_w3-2-1_fanin_s0.02_seed5: converged (22s)
+[252/1600 238s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed6: converged (58s)
+[253/1600 238s] mps4_chi6_w3-2-1_fanin_s0.01_seed4: converged (68s)
+[254/1600 239s] binary4_chi6_w3-2-1_fanin_s0.02_seed8: converged (24s)
+[255/1600 239s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed3: converged (61s)
+[256/1600 239s] binary4_chi6_w3-2-1_fanin_s0.02_seed1: converged (31s)
+[257/1600 241s] binary4_chi6_w3-2-1_fanin_s0.01_seed8: converged (95s)
+[258/1600 241s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed5: converged (62s)
+[259/1600 241s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed8: converged (21s)
+[260/1600 242s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed9: converged (21s)
+[261/1600 242s] mps4_chi6_w3-2-1_fanin_s0.01_seed0: converged (75s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[262/1600 243s] binary4_chi6_w3-2-1_fanin_s0.02_seed9: converged (27s)
+[263/1600 244s] binary4_chi6_w1-0.85-0.7_fanin_s0.02_seed5: converged (24s)
+[264/1600 249s] mps4_chi6_w3-2-1_fanin_s0.01_seed9: converged (75s)
+[265/1600 249s] mps4_chi6_w3-2-1_fanin_s0.005_seed9: converged (144s)
+[266/1600 250s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed0: converged (74s)
+[267/1600 251s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed8: converged (159s)
+[268/1600 253s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed9: converged (70s)
+[269/1600 255s] mps4_chi3_w1-0.85-0.7_fanin_s0.005_seed6: converged (165s)
+[270/1600 258s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed7: converged (78s)
+[271/1600 261s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed4: converged (82s)
+[272/1600 261s] binary4_chi3_w3-2-1_fanin_s0.02_seed1: converged (72s)
+[273/1600 262s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed1: converged (85s)
+[274/1600 262s] mps4_chi6_w1-0.85-0.7_fanin_s0.01_seed8: converged (79s)
+[275/1600 268s] binary4_chi3_w1-0.85-0.7_fanin_s0.02_seed7: converged (63s)
+[276/1600 282s] binary4_chi3_w3-2-1_fanin_s0.02_seed5: converged (90s)
+[277/1600 288s] mps4_chi6_w3-2-1_fanin_s0.005_seed2: converged (194s)
+[278/1600 296s] binary4_chi6_w3-2-1_fanin_s0.02_seed6: converged (83s)
+[279/1600 380s] mps4_chi6_w3-2-1_fanin_s0.01_seed3: converged (211s)
+[280/1600 398s] mps4_chi3_w3-2-1_fanin_s0.003_seed6: completed (398s)
+[281/1600 837s] binary8_chi3_w3-2-1_fanin_s0.03_seed1: max_steps (614s)
+[282/1600 922s] binary8_chi3_w3-2-1_fanin_s0.03_seed7: max_steps (694s)
+[283/1600 940s] binary8_chi3_w1-0.85-0.7_fanin_s0.03_seed1: max_steps (710s)
+[284/1600 958s] mps8_chi3_w3-2-1_fanin_s0.03_seed1: max_steps (715s)
+[285/1600 980s] binary8_chi3_w1-0.85-0.7_fanin_s0.03_seed6: wall_limit (748s)
+[286/1600 987s] binary8_chi3_w3-2-1_fanin_s0.03_seed8: max_steps (758s)
+[287/1600 1026s] binary8_chi6_w3-2-1_fanin_s0.03_seed8: wall_limit (790s)
+[288/1600 1036s] mps8_chi3_w3-2-1_fanin_s0.03_seed3: max_steps (787s)
+[289/1600 1065s] mps8_chi3_w3-2-1_fanin_s0.03_seed7: max_steps (812s)
+[290/1600 1093s] mps8_chi3_w1-0.85-0.7_fanin_s0.03_seed0: max_steps (832s)
+[291/1600 1104s] mps8_chi3_w3-2-1_fanin_s0.03_seed5: max_steps (854s)
+[292/1600 1159s] mps8_chi3_w3-2-1_fanin_s0.03_seed8: max_steps (904s)
+[293/1600 1187s] binary8_chi3_w3-2-1_fanin_s0.03_seed2: max_steps (963s)
+[294/1600 1194s] mps8_chi3_w1-0.85-0.7_fanin_s0.03_seed5: max_steps (911s)
+[295/1600 1230s] mps8_chi3_w1-0.85-0.7_fanin_s0.03_seed2: max_steps (969s)
+[296/1600 1256s] binary8_chi3_w3-2-1_fanin_s0.03_seed3: max_steps (1031s)
+[297/1600 1284s] binary8_chi3_w1-0.85-0.7_fanin_s0.03_seed3: max_steps (1054s)
+[298/1600 1318s] binary8_chi3_w3-2-1_fanin_s0.03_seed5: max_steps (1092s)
+[299/1600 1345s] binary8_chi3_w1-0.85-0.7_fanin_s0.03_seed4: wall_limit (1114s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:293: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[300/1600 1368s] binary8_chi3_w3-2-1_fanin_s0.03_seed4: max_steps (1142s)
+[301/1600 1388s] mps8_chi3_w1-0.85-0.7_fanin_s0.03_seed1: max_steps (1127s)
+[302/1600 1431s] mps4_chi3_w3-2-1_fanin_s0.02_seed0: converged (43s)
+[303/1600 1439s] mps8_chi3_w3-2-1_fanin_s0.03_seed6: max_steps (1189s)
+[304/1600 1463s] mps8_chi3_w1-0.85-0.7_fanin_s0.03_seed3: max_steps (1201s)
+[305/1600 1479s] mps4_chi3_w3-2-1_fanin_s0.02_seed2: converged (40s)
+[306/1600 1491s] binary8_chi3_w1-0.85-0.7_fanin_s0.03_seed2: max_steps (1261s)
+[307/1600 1499s] mps4_chi3_w3-2-1_fanin_s0.02_seed1: converged (68s)
+[308/1600 1501s] mps4_chi3_w3-2-1_fanin_s0.02_seed3: completed (38s)
+[309/1600 1507s] binary8_chi3_w3-2-1_fanin_s0.03_seed0: max_steps (1285s)
+[310/1600 1519s] mps4_chi3_w3-2-1_fanin_s0.02_seed4: converged (40s)
+main: 1290 runs to do -> /root/outputs/s2s_core/main
+[1/1290 48s] mps4_chi3_w3-2-1_fanin_s0.02_seed7: stop_fn (47s)
+[2/1290 57s] mps4_chi3_w3-2-1_fanin_s0.02_seed5: stop_fn (56s)
