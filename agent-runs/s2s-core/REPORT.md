@@ -24,3 +24,11 @@ theory and piloting with scipy.
 ## Log
 - 18:18 Started; read BRIEF.md, CLAUDE.md, notes/model.md, notes/diagnostics.md, PLAN.md, library.
   Machine: cgroup CPU quota 61.4 CPUs (6144000/100000), 251 GB RAM.
+- 18:25 Pilot (scipy DOP853, throwaway): binary N=4 GF at sigma 0.3..0.003: t_1 sigma^{K-2} -> 0.7696.
+- 18:30 Derived first-escape prediction (P1): t_1 = sigma^{-(K-2)} T(theta_hat) + c_K(s) with T the
+  blow-up time of the correlation flow theta' = grad <W, W*> from the sigma=1 init (exact scaling).
+  Pilot: matches to 4-5 digits for binary 4/8, MPS 8 (incl. the identity of the first component).
+- 18:35 Found stiffness problem: after the first escape, explicit RK steps are capped at
+  O(1/s^{2-2/K}), so integrating gaps costs ~ sigma^{-(K-2)}. scipy LSODA/BDF with exact Hessian
+  Jacobian (torch.func.hessian, 0.1 s for 850 params): cost independent of sigma (binary 4:
+  19 s at sigma 3e-3 and 3e-4 vs 55 s / ~550 s with DOP853), same event times to 1e-6.

@@ -1,0 +1,112 @@
+# s2s-core: saddle-to-saddle phenomenology and escape-time scaling (Q1, Q2)
+
+Agent `s2s-core`. Experiments in `experiments/s2s_core/`. Status tags: **proven**, **derived**
+(under stated assumptions), **empirical**, **conjecture**. Setting: `notes/model.md` (whitened
+inputs, exact population loss, odeco teacher W* = sum_r s_r U_r, fan-in init with per-core scale
+sigma, gradient flow).
+
+## 1. Theory
+
+Notation: K cores, g(theta) = <W(theta), W*> (degree-K homogeneous polynomial in theta),
+L = 1/2 ||W||^2 - g + 1/2 ||W*||^2. With the same seed, fan-in init is linear in sigma:
+theta_0(sigma) = sigma * theta_hat, theta_hat = the sigma = 1 init.
+
+### 1.1 Correlation flow and exact scaling of the first escape
+
+**Correlation flow.** For ||W|| << s_r the term 1/2 ||W||^2 (degree 2K) is negligible next to g
+(degree K): its gradient is smaller by a factor ~||W||/s. To leading order the first plateau is the
+gradient flow of g alone, theta' = grad g(theta) ("correlation flow").
+
+**Scaling (proven).** If theta(t) solves theta' = grad g(theta) then lambda theta(lambda^{K-2} t)
+solves it too (grad g is homogeneous of degree K-1). For K >= 3 the correlation flow blows up in
+finite time T(theta_0) whenever g eventually becomes positive along the flow, and
+T(sigma theta_hat) = sigma^{-(K-2)} T(theta_hat).
+
+**First-escape prediction (derived; assumption: the escaping component is balanced and aligned by
+the time ||W|| becomes O(s), which the conservation laws guarantee up to O(sigma^2) imbalance).**
+
+    t_1(sigma, seed) = sigma^{-(K-2)} T(theta_hat) + c_K(s_{r1}) + o(1),          (P1)
+
+where r1 = the component whose overlap blows up first in the correlation flow, and
+c_K(s) = s^{-(2-2/K)} [ int_0^{2^{-1/K}} x dx / (1 - x^K) - 2^{1-2/K} / (K-2) ] is the difference
+between the a = 1/2 crossing time of the balanced Saxe mode q' = q^{K-1}(s - q^K) and the blow-up
+time of its correlation part q' = s q^{K-1}, in the limit q_0 -> 0 (derivation: subtract the two
+integrals dt = dq / (q^{K-1}(s - q^K)) and dt = dq / (s q^{K-1})). Numerically the bracket is
+-0.850, -0.266, -0.047, 0.072, 0.148, 0.201 for K = 3..8.
+
+(P1) has **no free parameters**: T(theta_hat) is computed per seed by integrating the correlation
+flow from the sigma = 1 init (cheap: no stiffness, self-similar blow-up), and it predicts the
+exponent K - 2 exactly and the prefactor per seed. It also predicts which component is learned
+first (r1).
+
+**Spherical decomposition (derived).** Write theta = rho u, |u| = 1, d tau = rho^{K-2} dt. Then
+du/dtau = grad_S g(u) (spherical gradient ascent of g, independent of rho), and
+d rho / dtau = K g(u) rho. Hence
+
+    T(theta_0) = rho_0^{-(K-2)} int_0^inf exp( -(K-2) K int_0^tau g(u(tau')) dtau' ) dtau.
+
+If u started at a maximizer of g on the sphere, the integral would be 1 / ((K-2) K g_max).
+
+**Lower bound (proven for the trees used here, odeco W*).** For any TTN,
+|g(theta)| <= s_1 prod_v ||G_v||_F <= s_1 (||theta|| / sqrt(K))^K. (Write g = sum_r s_r a_r with
+a_r the tree contraction evaluated at u_r at every site; bound each internal contraction by the
+Frobenius norms; the cores carrying physical legs see disjoint slices G_v(u_r, ...) for different r,
+so sum_r prod_{v in P} ||slice_{v,r}|| <= prod_{v in P} (sum_r ||slice_{v,r}||^2)^{1/2} by Hoelder
+with |P| >= 2 factors, P = cores with physical legs.) Hence g_max <= s_1 K^{-K/2} on the unit
+sphere, with equality at the balanced rank-one configuration aligned with component 1, and
+
+    T(theta_hat) >= ||theta_hat||^{-(K-2)} K^{K/2-1} / ((K-2) s_1).                 (B1)
+
+The PLAN's hypothesis t_1 ~ rho_0^{-(K-2)} [tau_align + K^{K/2-1}/((K-2) s_1)] is (B1) plus an
+alignment delay. Only the parameters g depends on matter: at each physical leg, directions
+orthogonal to span{u_r} (and for a two-site core, the mixed slices u_r (x) u_r', r != r') have zero
+gradient in the correlation flow and stay frozen at O(sigma). Replacing ||theta_hat|| by the norm of
+the *active* parameters rho_act (slices along the teacher directions + cores without physical legs)
+gives a tighter bound (B1').
+
+### 1.2 Decoupling of components in the correlation flow (derived)
+
+For an odeco teacher, g = sum_r s_r a_r(theta) with a_r = f_theta(u_r^(1), ..., u_r^(N)). On a core
+with physical legs, a_r depends only on the slice G_v(u_r, ..., u_r; bonds). These slices are disjoint
+for different r. Hence:
+- **MPS** (every core carries a site): the correlation flow splits into R independent scalar
+  "deep linear networks" (depth K, widths chi, scalar input and output), one per component, each
+  with its own blow-up time T_r. Then T = min_r T_r and r1 = argmin: the first component is decided by
+  a race between independent DLN escapes (`order` studies the statistics).
+- **binary / HT**: the slices at cores carrying sites are disjoint, but the internal cores (no
+  physical legs) are shared by all components, so the components are coupled through them already
+  in the correlation flow.
+
+### 1.3 Later escapes (derived, heuristic)
+
+After component r1 is learned, its cores are balanced rank-one with amplitude s^{1/K} along a bond
+direction b_e on every edge e. Any part of another component's slices along b_e creates mixed terms
+(e.g. u_2 (x) u_1 (x) ...) that 1/2 ||W||^2 penalizes with curvature O(s^{2-2/K}); those parts relax in
+O(1) time. The rest of component 2's slices keeps following its correlation flow in the
+orthogonal complement of b_e. An odeco component differs from the learned one at every site, so
+adding it needs all K cores (the k-rule of H2 gives k = K): the next escape is again a degree-K
+escape and
+
+    t_{i+1} - t_i ~ sigma^{-(K-2)} * C_i(seed)        (exponent K - 2 for every gap)   (P2)
+
+with C_i from the projected correlation flow (no closed form). Widths of events are O(1) (time from
+a = 0.1 to a = 0.9 of a Saxe mode, ~ s^{-(2-2/K)}), so separation ratios grow like sigma^{-(K-2)}:
+**S2S for every tree with K >= 3 as sigma -> 0** (derived). Caveat: if two components blow up at
+nearly the same rescaled time (close weights), the separation at a given sigma can be small.
+
+### 1.4 Saddle type at partial fits (derived)
+
+At the partial fit W_S (components in S learned, balanced), the second-order change of L along a
+direction that adds component r' needs every core to change, so it is of order eps^K: zero Hessian
+(higher-order saddle) for K >= 3. Exception ("piggyback", H1b): perturb only the cores carrying
+physical legs, G_v += eps u_r'^{(x) sites(v)} (x) (bond directions of the learned component r).
+Then W gains eps^m q^K U_r' (m = number of cores with physical legs) plus mixed terms of order eps.
+For m = 2 (binary N = 4) the Hessian along this direction is q (s_r - s_r') with q = s_r^{1/K}:
+**negative iff a larger component r' is unlearned while r is learned** (a wrong-order saddle is
+strict). For m >= 3 (binary N = 8: m = 4; MPS and HT: m = N) the gain is O(eps^m) and the direction
+is again higher order. Prediction for the Hessian at plateau midpoints: no eigenvalue below -epsilon
+for K >= 3, except binary N = 4 plateaus where a larger component is still unlearned.
+
+## 2. Experiments and findings
+
+(in progress)
