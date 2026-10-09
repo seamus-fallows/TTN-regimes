@@ -1,10 +1,10 @@
 """Steps 4(b), 4(c): which saddles do runs with TTN teachers visit, and in which order do bonds grow?
 
 Per run:
-- plateaus from the loss: r(t) = -d log L / dt; drops are peaks of r; a plateau is the minimum of r
-  between two consecutive drops, kept if r there is < 0.1 x the smaller neighbouring peak;
-- effective bond ranks at each plateau (diagnostics.md: #{k: s_k^e > 0.1 x smallest nonzero teacher
-  Schmidt value on e}, nonzero meaning > 1e-3);
+- plateau midpoints: minima of the parameter speed |d theta/dt| (diagnostics.md) between the first
+  escape and L < 1e-4 L(0), kept if < 0.2 x both neighbouring maxima;
+- bond ranks at each plateau: #{k: s_k^e > 0.1 x the teacher's s_k^e on that cut} (a per-value version
+  of the diagnostics.md threshold, which with teacher values ~1e-2 counted still-rising values);
 - the plateau state W_pl (dense) vs (a) the HSVD truncation W_H of W* to the same ranks
   (projectors on the top-r_e left singular subspaces of W*_(e), all computed from W*, applied root-ward
   edges first) and (b) the nearest of the local minima of L restricted to those ranks (constrained.py):
@@ -63,18 +63,22 @@ def hsvd(w_star, tree, ranks):
     return w
 
 
-def plateaus(t, loss):
-    lg = np.log(np.maximum(loss, 1e-300))
-    r = -np.gradient(lg, t)
-    peaks, _ = find_peaks(r, prominence=0.2 * np.max(r))
+def plateaus(t, loss, speed=None):
+    """Plateau midpoints (diagnostics.md: minima of the parameter speed |d theta/dt| between
+    events): local minima of the speed after the first escape (L < 0.9 L(0)) and before L < 1e-4 L(0)
+    that are < 0.2 x both neighbouring maxima. Falls back to the loss rate -d log L/dt without speed."""
+    if speed is None:
+        speed = -np.gradient(np.log(np.maximum(loss, 1e-300)), t)
+    lo = int(np.argmax(loss < 0.9 * loss[0]))
+    hi = int(np.argmax(loss < 1e-4 * loss[0])) if (loss < 1e-4 * loss[0]).any() else len(t) - 1
+    v = speed[lo:hi + 1]
+    maxima, _ = find_peaks(v)
     out = []
-    for a, b in zip(peaks[:-1], peaks[1:]):
-        m = a + int(np.argmin(r[a:b + 1]))
-        if r[m] < 0.1 * min(r[a], r[b]):
-            out.append((m, a, b))
-    return out, peaks
-
-
+    for a, b in zip(maxima[:-1], maxima[1:]):
+        m = a + int(np.argmin(v[a:b + 1]))
+        if v[m] < 0.2 * min(v[a], v[b]):
+            out.append((lo + m, lo + a, lo + b))
+    return out, maxima + lo
 
 
 def analyze(name, case, tree, sigma, seed, spec, teacher, cache):
@@ -83,29 +87,29 @@ def analyze(name, case, tree, sigma, seed, spec, teacher, cache):
     if dense.exists():  # library two-stage run (run_dense.py), preferred: resolves short plateaus
         tr = Trajectory.load(dense)
         t, loss, tsp, y = tr.data["t"], tr.data["loss"], tr.data["teacher_spectra"], tr.data["params"]
+        speed = tr.data["speed"]
         sp = np.nan_to_num(tr.data["spectra"])
         edges = list(spec.tree.edges)
     elif path.exists():
         d = np.load(path, allow_pickle=True)
         t, loss, sp, tsp, y = d["t"], d["loss"], d["spectra"], d["teacher_spectra"], d["y"]
         edges = list(d["edges"])
+        speed = None
     else:
         return [], []
     w_star = teacher.dense()
     lfun = metric_loss_of_dense(w_star, None)
-    thr = []
-    for j in range(len(edges)):
-        nz = tsp[j][tsp[j] > 1e-3]
-        thr.append(0.1 * nz.min())
     rows = []
-    pls, _ = plateaus(t, loss)
+    pls, _ = plateaus(t, loss, speed)
     for i, (m, a, b) in enumerate(pls):
-        ranks = {v: max(1, int((sp[m, j] > thr[j]).sum())) for j, v in enumerate(edges)}
+        # rank: k-th singular value above 0.1 x the teacher's k-th value on that cut
+        ranks = {v: max(1, int(sum(1 for k in range(sp.shape[2]) if tsp[j, k] > 1e-3
+                                   and sp[m, j, k] > 0.1 * tsp[j, k]))) for j, v in enumerate(edges)}
         w_pl = to_dense(spec, spec.unflatten(torch.from_numpy(y[m].copy())))
         w_h = hsvd(w_star, spec.tree, ranks)
         key = (case["tag"], tree, tuple(sorted(ranks.items())))
         if key not in cache:
-            cache[key] = constrained_minima(ranked_spec(spec, ranks), lfun, n_starts=8)
+            cache[key] = constrained_minima(ranked_spec(spec, ranks), lfun, n_starts=6)
         mins = cache[key]
         dists = [float((w_pl - mm["W"]).norm()) for mm in mins]
         jc = int(np.argmin(dists))
@@ -128,29 +132,38 @@ def analyze(name, case, tree, sigma, seed, spec, teacher, cache):
     return rows, growth
 
 
+def per_case(args):
+    name, case, cfg = args
+    torch.set_num_threads(1)
+    rows, growth, cache = [], [], {}
+    for tree in cfg["trees"]:
+        built = build(dict(case, tree=tree), 0)
+        if built is None:
+            continue
+        spec, teacher = built[0], built[1]
+        for sigma in cfg["sigmas"][tree]:
+            for seed in range(*cfg["seeds"]):
+                r, g = analyze(name, case, tree, sigma, seed, spec, teacher, cache)
+                rows += r
+                growth += g
+    return rows, growth
+
+
 def main():
     name = sys.argv[1]
     cfg = yaml.safe_load(open(HERE / "configs" / f"{name}.yaml"))
-    rows, growth = [], []
-    for case in expand(cfg):
-        cache = {}
-        for tree in cfg["trees"]:
-            built = build(dict(case, tree=tree), 0)
-            if built is None:
-                continue
-            spec, teacher = built[0], built[1]
-            for sigma in cfg["sigmas"][tree]:
-                for seed in range(*cfg["seeds"]):
-                    r, g = analyze(name, case, tree, sigma, seed, spec, teacher, cache)
-                    rows += r
-                    growth += g
+    from multiprocessing import Pool
+    cases = expand(cfg)
+    with Pool(min(len(cases), 8)) as pool:
+        res = pool.map(per_case, [(name, c, cfg) for c in cases])
+    rows = [r for rr, _ in res for r in rr]
+    growth = [g for _, gg in res for g in gg]
     pd.DataFrame(rows).to_csv(HERE / "results" / f"{name}_plateaus.csv", index=False)
     pd.DataFrame(growth).to_csv(HERE / "results" / f"{name}_growth.csv", index=False)
     df = pd.DataFrame(rows)
     if len(df):
-        print(df.groupby(["tag", "tree", "ranks"])[["loss", "loss_crit", "loss_hsvd", "dist_crit",
-                                                    "dist_hsvd", "dist_crit_hsvd"]].median()
-              .to_string())
+        print(df.groupby(["tag", "ranks"])[["loss", "loss_crit", "loss_hsvd", "dist_crit",
+                                            "dist_hsvd", "dist_crit_hsvd"]].median().to_string())
 
 
 if __name__ == "__main__":

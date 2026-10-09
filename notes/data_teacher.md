@@ -14,8 +14,8 @@ MPS-4 = genuinely tensorial), 20-40 seeds per setting. Details and numbers in th
 | 2. Misaligned product covariance (rotation theta between eigenvectors and teacher factors) | non-commuting covariance is where linear-net theory breaks (Atanasov 2022) | Escape aligns first with the top rank-1 part of Sigma W*, then rotates to the saddle (realignment). Saddles are rank-1 critical points of the Sigma-loss (blends, not components). **Qualitative on MPS-4**: the later plateau becomes logarithmic in sigma (theta = 20: Dt_2 = 15.0 log(1/sigma) + B) instead of sigma^-2; it shrinks from ~540 to < 1 time unit as theta goes 0 -> 45 deg. Binary-4: same law, shorter plateau | **Yes, through the absorbed white problem** (exact landscape map to a whitened non-orthogonal CP teacher, Fact B) plus the non-orthogonal-teacher theory (2-core strict-saddle routes, theory_teachers.md). Levels match to 1e-5 - 1e-3. Timing differs from the white problem by the GF metric (preconditioning), ~20% |
 | 3. Cross-site correlated inputs (shared latent factor, rho) | breaks the product structure of the loss (no whitening substitution exists) | S2S survives (exact population GF; online SGD with sampled data agrees). Plateaus = rank-1 critical points of the non-product loss (levels to <= 0.5%). **binary-4: the first saddle changes content** (blends both components plus non-teacher pairing features; level 0.33 -> 0.10 L(0) at rho = 0.5). MPS-4: first saddle stays the component, later plateau collapses (137 -> 0.14). First escape faster (t_1 / 14) | **Partly**: no substitution maps it to the baseline; the general rule "plateaus are critical points of the bond-rank-constrained loss" holds, with the non-product metric, and the collapse on MPS-4 follows the non-orthogonality mechanism |
 | 4a. Non-orthogonal CP components (overlap c) | generic teachers are not odeco; theory_teachers.md predictions | First plateau is a blend (never a component); number of rank-1 saddles on MPS-4 drops from 2 to 1 above c* = 1/2 (equal weights) / fold ~0.4 (s2 = 0.7); on binary-4 always 1. **Qualitative on MPS-4**: later plateau logarithmic, Dt_2 = A log(1/sigma) with A = 31.9 +- 1.6 (pred 34.1) at c = 0.2, 4.7-5.6 (pred 5.68) at c = 0.45; sigma^-1.97 at c = 0. Binary-4 plateau gets longer with c (DLN) | **Yes** (theory_teachers.md R4, R6, R7), quantitatively |
-| 4b. Random TTN teacher on the student's tree | are saddles HSVD truncations? order of bond-rank growth | (pending) | (pending) |
-| 4c. Teacher on a different tree | which student bonds grow first | (pending) | (pending) |
+| 4b. Random TTN teacher on the student's tree (MPS-4) | are saddles HSVD truncations? order of bond-rank growth | Saddles are critical points of the bond-rank-constrained loss, **not** HSVD truncations (rank-1 plateau 3x closer to the critical point, distance -> 0 with sigma; they differ only at rank 1 here). **Qualitative**: ranks grow one bond at a time and every later plateau is a strict saddle of duration A log(1/sigma) (odeco baseline: sigma^-(K-2)) | **Yes** (theory_teachers.md R1-R6): slopes within 3-25% of A_e*, first bond = predicted e* in 43-100% of runs (lower when two rates are within 12%) |
+| 4c. Teacher on a different tree (N = 8) | which student bonds grow first; locality | Binary student, MPS teacher: bottom-up in 24/24 runs, sibling pairs first, the root bipartition (teacher's middle bond) last, blocked bonds need r^2 increments. MPS student, binary teacher: fast cascade of rank increments, first bond random at sigma = 0.45 | **Partly**: route/locality rules (P11) yes; "largest teacher Schmidt value first" fails (0-25%); the asymptotic e* rule is not reached at K = 8 accessible sigma |
 
 ## 0. Notation and two structural facts used throughout
 
@@ -359,3 +359,55 @@ changes the *law* of the later plateau on an MPS student from polynomial (sigma^
 with the slope the 2-core strict-saddle theory predicts to within the statistical error (c = 0.2) or
 ~20% (c = 0.45). The first plateau keeps its sigma^-(K-2) law (it is the escape from the origin).
 
+## 4(b). Random TTN teacher on the student's tree — results
+
+Library integrator (LSODA, rtol 1e-9, atol 1e-14), two-stage dense grid (`run_dense.py`).
+`configs/e4b_ttn.yaml`: MPS-4 student (d = 3, chi = 4), random MPS-4 teachers with bond ranks (2, 3, 2)
+and spread spectra (5 teacher seeds, `teacher_generator`), sigma = 0.02 ... 0.2 (5 values), 6 seeds.
+Results `results/e4b_ttn_plateaus.csv` (states vs HSVD vs critical points), `e4b_order.csv`,
+`e4b_order_fits.csv`, `e4b_theory.csv`, figure `e4b_law.png`.
+
+1. **Visited saddles are rank-constrained critical points, not HSVD truncations** — *empirical,
+   confirming theory_teachers.md R1-R3/P1*: at the rank-1 plateau (speed minimum), the state is closer
+   to the local minimum of the rank-(1,1,1)-constrained loss than to the HSVD truncation in 19/20
+   detected plateaus; median distances (relative to ||W*||) 0.005 vs 0.016, with HSVD and the
+   critical point 0.012 apart; the distance to the critical point shrinks with sigma (median 0.042 /
+   0.005 / 0.004 at sigma = 0.063 / 0.036 / 0.02), the distance to HSVD does not. The critical loss is
+   below the HSVD loss (e.g. 0.1588 vs 0.1637 for teacher 103). At higher ranks ((2,1,1), (2,2,2),
+   (2,3,1)) HSVD and the critical point coincide to 1e-9 for these teachers, so the question has no
+   content there. (Plateau detection: 42 plateaus in 150 runs; many later plateaus are too short at
+   these sigma to give a clean speed minimum.)
+2. **Bond ranks grow one bond at a time, through logarithmic plateaus** — *empirical*: e.g. teacher
+   103: (1,1,1) -> (2,1,1) -> (2,2,1) -> (2,3,1) -> (2,3,2) with plateaus at 5e-2, 6e-3, 6e-4 L(0). The
+   time from the first escape to the first rank increase is linear in log(1/sigma) for every teacher,
+   with slopes 2.76 +- 0.07, 2.91 +- 0.15, 0.65 +- 0.004, 5.95 +- 0.15, 3.32 +- 0.09 vs the predicted
+   A_e* = 2.49, 3.01, 0.87, 5.17, 3.66 (R6; 3-25% agreement, leading-order theory).
+3. **Which bond first**: the predicted e* = argmax_e s2(M_e) (and, for these teachers, also the naive
+   argmax_e s_2^e(W*)) is the first to grow in 93%, 67%, 100%, 43%, 97% of runs; the 43% case has two
+   rates within 12% (0.143 vs 0.163).
+So, compared with the odeco baseline, a generic TTN teacher keeps S2S but makes **every plateau after
+the first a strict saddle with a log(1/sigma) duration** (MPS student), and the saddles are critical
+points of the bond-rank-constrained problem.
+
+## 4(c). Teacher on a different tree — results
+
+`configs/e4c_cross.yaml` (N = 8, d = 2, ||W*|| = 1, 3 teacher seeds x 8 init seeds, library integrator,
+dense grid): (i) random MPS-8 teacher (ranks 2) on a binary-8 student (K = 7, sigma = 0.4);
+(ii) random binary-8 teacher (ranks 2) on an MPS-8 student (K = 8, sigma = 0.45). Runs stop at
+L < 1e-4 L(0) (all reached it). Results `results/e4c_cross_events.csv`, `e4c_cross_summary.csv`,
+`e4c_theory.csv`, figure `e4c_cross.png`.
+
+1. **Binary student, MPS teacher: bottom-up, sibling pairs first, root bipartition last** —
+   *empirical, confirming theory_teachers.md P11*: in 24/24 runs the root bipartition {0123}|{4567}
+   (= the teacher's middle bond) gets its second singular value only after bottom bonds on both halves
+   have grown; the first two rank increments are always a sibling pair under one parent (e.g. bonds
+   {01} and {23} together: the 3-core sibling route of theory_teachers.md 5.2), and the blocked bonds
+   {23}, {45} need up to min(d^2, r^2) = 4 increments (3rd/4th singular values appear last).
+2. **Naive rule fails**: "the bond with the largest teacher Schmidt value on its cut grows first" is
+   right in 0/24 runs (binary student) and 6/24 (MPS student).
+3. **MPS student, binary teacher: first bond random at accessible sigma** — *empirical*: the first
+   rank increase is on the predicted e* = argmax s2(M_e) in only 13-38% of runs. At sigma = 0.45,
+   log(1/sigma) = 0.8, so the O(1) differences between the initial route amplitudes outweigh the
+   log-time rate differences; the asymptotic rule needs much smaller sigma, which costs ~sigma^-6 at
+   K = 8 (not run). The cuts that cross a teacher core ({012}, {01234}) need rank 4 and get their 3rd
+   and 4th singular values last.
