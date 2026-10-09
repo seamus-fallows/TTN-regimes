@@ -86,6 +86,14 @@ def load(exp: str) -> pd.DataFrame:
                 continue
             rows.append(r)
     df = pd.DataFrame(rows)
+    # de-duplicate reruns of the same config (early rows stored a recomputed alpha, so the resume
+    # check missed them): key on the config with sigma / alpha rounded, keep the latest row
+    key = pd.DataFrame({c: df[c] if c in df.columns else None for c in
+                        ("model", "kind", "n", "d", "chi", "seed", "root_scale", "lr", "balance")})
+    key["sigma_r"] = [float(f"{x:.4g}") for x in df.sigma]
+    key["alpha_r"] = [float(f"{x:.3g}") if isinstance(x, float) and np.isfinite(x) else None
+                      for x in (df.alpha if "alpha" in df.columns and "root_scale" in df.columns else [None] * len(df))]
+    df = df.loc[~key.astype(str).duplicated(keep="last").values].reset_index(drop=True)
     if "rhos" in df.columns:
         df["events"] = [list(zip(t, w)) for t, w in zip(df.event_times, df.event_widths)]
         df["rhos"] = [[x for x in r if x is not None] if isinstance(r, list) else [] for r in df.rhos]
