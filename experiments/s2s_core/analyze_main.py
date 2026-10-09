@@ -156,6 +156,11 @@ def gap_fits(df: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
             neg = np.isfinite(lam) & (lam < 0)
             row[f"lam{i}_slope"] = np.polyfit(x[neg], np.log(-lam[neg]), 1)[0] if neg.sum() >= min_sigmas else np.nan
             row[f"lam{i}_n_nonneg"] = int((np.isfinite(lam) & (lam >= 0)).sum())
+            row[f"lam{i}_slope_raw"] = np.nan
+            if f"plateau{i}_lam_min_raw" in g:
+                raw = g[f"plateau{i}_lam_min_raw"].values
+                negr = np.isfinite(raw) & (raw < 0)
+                row[f"lam{i}_slope_raw"] = np.polyfit(x[negr], np.log(-raw[negr]), 1)[0] if negr.sum() >= min_sigmas else np.nan
             pred = g[f"plateau{i}_lam_pred"].values
             okp = neg & np.isfinite(pred) & (pred < 0)
             row[f"lam{i}_over_pred_median"] = float(np.median(lam[okp] / pred[okp])) if okp.any() else np.nan
@@ -191,6 +196,7 @@ def fit_summary(fits: pd.DataFrame) -> pd.DataFrame:
                 p_gap2=("p_gap2", "mean"), p_gap2_se=("p_gap2", se), n_gap2=("p_gap2", "count"),
                 lam1_slope=("lam1_slope", "mean"), lam1_slope_se=("lam1_slope", se),
                 lam2_slope=("lam2_slope", "mean"), lam2_slope_se=("lam2_slope", se),
+                lam1_slope_raw=("lam1_slope_raw", "mean"), lam2_slope_raw=("lam2_slope_raw", "mean"),
                 lam1_over_pred=("lam1_over_pred_median", "median"),
                 lam2_over_pred=("lam2_over_pred_median", "median")).reset_index()
     out["predicted"] = out.K - 2
@@ -202,10 +208,28 @@ def main():
     ap.add_argument("--raw", nargs="+", default=["/root/outputs/s2s_core/main"])
     ap.add_argument("--out", default=str(HERE / "results"))
     ap.add_argument("--tag", default="main")
+    ap.add_argument("--hess", nargs="*", default=[str(HERE / "results" / "hess_main.csv")],
+                    help="recomputed Hessian tables (recompute_hessians.py)")
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     df = pd.concat([load(Path(r)) for r in args.raw if Path(r).exists()], ignore_index=True)
+    # Hessians recomputed after the library's gauge-projection fix (recompute_hessians.py) replace
+    # the values stored by the runs; raw (unprojected) lambda_min is kept next to them.
+    for h in args.hess:
+        if not Path(h).exists():
+            continue
+        hs = pd.read_csv(h)
+        keys = ["sweep", "tree", "chi", "teacher", "init", "sigma", "seed"]
+        for i in (1, 2):
+            hi = hs[hs.plateau == i][keys + ["lam_min_proj", "lam_min_raw", "lam_max_proj"]].rename(columns={
+                "lam_min_proj": f"p{i}_proj", "lam_min_raw": f"plateau{i}_lam_min_raw", "lam_max_proj": f"p{i}_max"})
+            df = df.merge(hi, on=keys, how="left")
+            has = df[f"p{i}_proj"].notna()
+            df.loc[has, f"plateau{i}_lam_min"] = df.loc[has, f"p{i}_proj"]
+            if i == 1:
+                df.loc[has, "plateau1_lam_max"] = df.loc[has, "p1_max"]
+            df = df.drop(columns=[f"p{i}_proj", f"p{i}_max"])
     df.to_csv(out / f"{args.tag}_runs.csv", index=False)
     summ = summarize(df)
     summ.to_csv(out / f"{args.tag}_summary.csv", index=False)
