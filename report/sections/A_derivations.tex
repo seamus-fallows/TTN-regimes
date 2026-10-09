@@ -507,7 +507,7 @@ before the single-core rotations is shown only for this case.
 \end{definition}
 
 \begin{proposition}[Escape degree]\label{prop:A-escape-degree}
-  \derived{} \knownresult[mechanism: \citealp{kumar2025learning}, Thm~8, and the accumulated utility of
+  \derived{} \knownresult[mechanism: \citealp{kumar2026learning}, Thm~8, and the accumulated utility of
   \citealp{kunin2025alternating}; new: the degree is set by the tree]
   The new entries first lower $\Loss$ at order
   \begin{equation}\label{eq:A-kstar}
@@ -520,7 +520,7 @@ before the single-core rotations is shown only for this case.
   problem; it fails at the strict saddles of \cref{prop:A-piggyback-graph}, where the old entries move
   first.
 \end{proposition}
-In \citet{kumar2025learning} dormant weights of lowest homogeneity $k$ stay small for a time
+In \citet{kumar2026learning} dormant weights of lowest homogeneity $k$ stay small for a time
 $\propto\delta^{-(k-2)}$, $\delta$ their initial size, provided the active weights sit at a local minimum; the
 TTN content is which entries are dormant (the new entries of routes) and their degree $k^*$.
 
@@ -881,10 +881,9 @@ with $d_v=\prod_{i\in\sites v}\pd[i]$ (no $V_p$ factor at the root); and
 $\widetilde W^*_e:=P_{E_e^-}\,\mat{(\Wt)}{e}\,P_{E_e^+}$ is the \emph{environment-projected teacher}.
 
 \begin{proposition}[Critical points of the rank-constrained problem]\label{prop:A-critical-points}
-  \proven{} \knownresult[in substance: the fixed-point conditions of HOOI and of one-site ALS;
+  \proven{} \knownresult[in substance: the fixed-point conditions of HOOI,
+  \citealp{delathauwer2000best,elden2011perturbation}, and of one-site ALS, \citealp{holtz2012alternating};
   tangent spaces: \citealp{uschmajew2013geometry}]
-  % TODO-CITE: De Lathauwer, De Moor & Vandewalle (2000, SIMAX 21; HOOI); Elden & Savas (2011, SIMAX
-  % 32(4)); Holtz, Rohwedder & Schneider (2012, SISC 34, ALS in TT). Not in notes/literature.md sec. 7.
   $\W\in\mathcal M_{\mathbf r}$ is a critical point of $\Loss$ restricted to $\mathcal M_{\mathbf r}$ iff, for every bond $e$,
   \begin{equation}\label{eq:A-critical-points}
     \mat{\W}{e}=P_{U_e}\widetilde W^*_e=\widetilde W^*_eP_{V_e},
@@ -1211,7 +1210,8 @@ online SGD as in \cref{sec:setup-dynamics}, recorded at $t=\lr\times(\text{numbe
 \end{proposition}
 Consequences \derived{} \newresult: GD is linearly stable at the balanced minimum iff
 $\lr<\lr_c:=2/(\Kc\tw1^{2-2/\Kc})$, the stability limit tested in \cref{sec:other-optim}. Imbalanced aligned
-minima are sharper (AM--GM; \proven), and with $\bd e=\ncomp$ so is every gauge-equivalent minimum
+minima are sharper (AM--GM; \proven; for deep linear networks: \citealp{mulayoff2020unique}), and with
+$\bd e=\ncomp$ so is every gauge-equivalent minimum
 (\derived; random $\GL$ gauges were at least $1.43$ times sharper), so for $\lr>\lr_c$ no global minimum is
 linearly stable (\derived{} for $\bd e=\ncomp$, \conjecture{} for $\bd e>\ncomp$). Because the conservation laws
 fix the imbalance, the minimum reached by gradient flow and its sharpness are functions of $\Q e(0)$; a
@@ -1222,8 +1222,6 @@ $\Ns=4$; \knownresult[scalar and deep linear networks:
 \citealp{kreisler2023gradient,wang2022large,ghosh2025learning}]).
 Checked: autograd Hessians against \eqref{eq:A-pattern-rule} to $6\cdot10^{-15}$ on five trees with
 $\Kc=3$--$7$.
-% TODO-CITE: balanced minima are the flattest deep-linear-network minima (Mulayoff & Michaeli, ICML 2020);
-% not in notes/literature.md section 7.
 
 \paragraph{Sharpness along the saddle-to-saddle path.} \derived{} \newresult{} On the first plateau the Hessian
 of the degree-$\Kc$ polynomial $\W$ at $\norm{\params}\sim\isc$ is indefinite and $O(\isc^{\Kc-2})$. During the
@@ -1250,9 +1248,7 @@ $(1,0.6,0.3)$, $\lr=1.05\lr_c$): late loss $1.45\cdot10^{-2}$, against $1.452\cd
 $1.53\cdot10^{-2}$ from \eqref{eq:A-eos-loss}; the full network diverges between $1.5\lr_c$ and $1.65\lr_c$.
 
 \begin{proposition}[Shift of event times under gradient descent]\label{prop:A-gd-shift}
-  \derived{} \newresult[for TTNs; the modified flow is known]
-  % TODO-CITE: modified equation / implicit gradient regularization, Barrett & Dherin (ICLR 2021); not in
-  % notes/literature.md section 7.
+  \derived{} \newresult[for TTNs; the modified flow is known: \citealp{barrett2021implicit}]
   To order $\lr$, GD follows the modified flow $\dot\params=-(\Id+\frac\lr2\Hess)\nabla\Loss$. Its component along the
   gradient-flow path reparametrizes time, and since $\ddt\ln\norm{\nabla\Loss}=-\nabla\Loss\T\Hess\nabla\Loss/\norm{\nabla\Loss}^2$ along
   gradient flow,
@@ -1276,8 +1272,8 @@ within $1.3\%$; generic slopes $0.69$--$0.70$ per halving of $\isc$ on binary $\
 $\frac{\Kc-1}2\ln2=0.69$).
 
 \paragraph{SGD on the first plateau.} \derived{} \newresult[framework: stochastic differential equations
-for SGD and Type-II saddles, \citealp{ziyin2023typeii}; consistent with \citealp{corlouer2026stochastic}]
-% TODO-CITE: SDE approximation of SGD (Li, Tai & E, 2017/2019); not in notes/literature.md section 7.
+for SGD, \citealp{li2017stochastic,li2019stochastic}, and Type-II saddles, \citealp{ziyin2024typeii};
+consistent with \citealp{corlouer2026stochastic}]
 For online SGD with batch $\batch$, the per-sample gradient is $\ip{\W-\Wt}{\Feat(x)}J\T\Feat(x)$. Near the origin
 $J=O(\norm{\params}^{\Kc-1})$ and $\W-\Wt\approx-\Wt$, so the gradient covariance is
 $O(\tw1^23^\Ns\norm{\params}^{2\Kc-2})/\batch$ while the drift is $O(\tw1\norm{\params}^{\Kc-1})$: the noise vanishes at the
@@ -1295,10 +1291,9 @@ initialization; for generic initialization the spread is about $1.2$ times the f
 smaller.
 
 \paragraph{SGD at the minimum.} \derived{} (exact mean-square threshold) \proven{} (the inequality)
-\newresult[the reduction; general criteria are known: \citealp{ziyin2023typeii}]
-% TODO-CITE: exact mean-square stability criterion (Mulayoff & Michaeli, COLT 2024); radial 1D criterion
-% (Wu, Ma & E, NeurIPS 2018); top Lyapunov exponent criterion (Chemnitz & Engel, JMLR 2025). None is in
-% notes/literature.md section 7.
+\newresult[the reduction; general criteria are known: \citealp{ziyin2024typeii}; exact mean square,
+\citealp{mulayoff2024exact}; one-dimensional, \citealp{wu2018how}; top Lyapunov exponent,
+\citealp{chemnitz2025characterizing}]
 In the eigenbasis of \eqref{eq:A-pattern-rule}, linearized SGD at the minimum acts on one coordinate per
 pattern, with the products $Z_P(x)=\prod_i(t_{P,i}\cdot x^{(i)})$ of the pattern's site vectors. Its
 second-moment operator maps diagonal matrices to diagonal ones (since $\E[Z_R^2Z_PZ_Q]=0$ for $P\ne Q$) and

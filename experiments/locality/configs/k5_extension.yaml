@@ -1,0 +1,7 @@
+# Pre-asymptotic check for the two MPS k = 5 rows whose exponent is above 3 over sigma in [0.03, 0.3]:
+# extend the saddle-start protocol to smaller sigma.
+cases:
+- {kind: mps, n: 8, S: [1, 5], start: saddle, sigmas: [0.03, 0.019, 0.012], seeds: [0, 1, 2, 3, 4, 5, 6, 7], cost: 1}
+- {kind: mps, n: 6, S: [1, 3, 5], start: saddle, sigmas: [0.03, 0.019, 0.012], seeds: [0, 1, 2, 3, 4, 5, 6, 7], cost: 1}
+- {kind: mps, n: 8, S: [1, 5], start: small_balanced, sigmas: [0.03, 0.019, 0.012], seeds: [0, 1, 2, 3, 4, 5, 6, 7], cost: 1}
+- {kind: mps, n: 6, S: [1, 3, 5], start: small_balanced, sigmas: [0.03, 0.019, 0.012], seeds: [0, 1, 2, 3, 4, 5, 6, 7], cost: 1}

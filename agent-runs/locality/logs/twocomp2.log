@@ -1,0 +1,121 @@
+None [2, 3] binary 4 saddle 2 10s
+None [2, 3] binary 4 saddle 4 10s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+None [0, 1] binary 4 saddle 3 11s
+None [2, 3] binary 4 saddle 6 1s
+None [2, 3] binary 4 saddle 0 12s
+None [0, 1] binary 4 saddle 7 12s
+None [0, 1] binary 4 small 5 12s
+None [2, 3] binary 4 saddle 1 13s
+None [0, 1] binary 4 saddle 2 13s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+None [2, 3] binary 4 small 3 13s
+None [0, 1] binary 4 saddle 1 14s
+None [0, 1] binary 4 small 2 14s
+None [2, 3] binary 4 saddle 3 14s
+None [0, 1] binary 4 saddle 0 14s
+None [0, 1] binary 4 saddle 4 14s
+None [2, 3] binary 4 small 0 14s
+None [0, 1] binary 4 saddle 6 14s
+None [2, 3] binary 4 small 1 14s
+None [0, 1] binary 4 small 6 14s
+None [0, 1] binary 4 small 7 14s
+None [0, 1] binary 4 saddle 5 14s
+None [0, 1] binary 4 small 4 15s
+None [2, 3] binary 4 small 4 15s
+None [2, 3] binary 4 small 7 15s
+None [2, 3] binary 4 small 2 15s
+None [0, 1] binary 4 small 3 15s
+None [0, 1] binary 4 small 0 15s
+None [2, 3] binary 4 small 5 16s
+None [2, 3] binary 4 small 6 16s
+None [0, 1] binary 4 small 1 16s
+None [0, 1] binary 8 saddle 1 3s
+None [0, 1] binary 8 saddle 0 3s
+None [0, 1] binary 8 saddle 4 3s
+None [0, 1] binary 8 saddle 6 3s
+None [0, 1] binary 8 saddle 7 3s
+None [0, 1] binary 8 saddle 3 3s
+None [0, 1] binary 8 saddle 2 3s
+None [0, 1] binary 8 saddle 5 3s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+None [0, 1] star3 None saddle 0 6s
+None [0, 1] star3 None saddle 1 6s
+None [2, 3] binary 4 saddle 7 12s
+None [0, 1] star3 None saddle 2 6s
+None [0, 1] star3 None saddle 3 5s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+None [0, 1] star3 None saddle 5 5s
+None [0, 1] star3 None saddle 4 6s
+None [0, 1] star3 None saddle 7 6s
+None [0, 1] star3 None saddle 6 6s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+None [2, 3] binary 4 saddle 5 24s
+None [0, 1] mps 4 small 1 7s
+None [0, 1] star3 None small 0 10s
+None [0, 1] mps 4 small 3 7s
+None [0, 1] star3 None small 7 9s
+None [0, 1] binary 8 small 0 14s
+None [0, 1] star3 None small 4 10s
+None [0, 1] star3 None small 2 10s
+None [0, 1] mps 4 saddle 2 3s
+None [0, 1] star3 None small 6 10s
+None [0, 1] star3 None small 5 10s
+None [0, 1] mps 4 saddle 1 3s
+None [0, 1] mps 4 saddle 0 4s
+None [0, 1] binary 8 small 2 13s
+None [0, 1] star3 None small 3 10s
+None [0, 1] binary 8 small 1 14s
+None [0, 1] mps 4 saddle 3 3s
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ~~~~^^^^^^^^^^^^^^^
+  File "/root/work/TTN-regimes/experiments/locality/run.py", line 254, in run_task
+    out, traj = run_one(task, sigma)
+                ~~~~~~~^^^^^^^^^^^^^
+  File "/root/work/TTN-regimes/experiments/locality/run.py", line 184, in run_one
+    sol = solve_ivp(fun, (0, case.get("t_max", 1e14)), y0, method="LSODA", jac=jac,
+                    rtol=out["rtol"], atol=out["atol"], events=events)
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/ivp.py", line 686, in solve_ivp
+    root_indices, roots, terminate = handle_events(
+                                     ~~~~~~~~~~~~~^
+        sol, events, active_events, event_count, max_events,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        t_old, t)
+        ^^^^^^^^^
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/ivp.py", line 111, in handle_events
+    roots = [solve_event_equation(events[event_index], sol, t_old, t)
+             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/ivp.py", line 76, in solve_event_equation
+    return brentq(lambda t: event(t, sol(t)), t_old, t,
+                  xtol=4 * EPS, rtol=4 * EPS)
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/optimize/_zeros_py.py", line 858, in brentq
+    r = _zeros._brentq(f, a, b, xtol, rtol, maxiter, args, full_output, disp)
+ValueError: f(a) and f(b) must have different signs
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/work/TTN-regimes/experiments/locality/run.py", line 287, in <module>
+    for task, wall in pool.imap_unordered(run_task, tasks):
+                      ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 873, in next
+    raise value
+ValueError: f(a) and f(b) must have different signs
