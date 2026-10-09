@@ -104,6 +104,8 @@ def job(args):
 
 
 def expand(cfg):
+    if "cases" in cfg:  # explicit list of cases (dicts merged into base), tag = the case's key
+        return [dict(cfg["base"], **case, tag=tag) for tag, case in cfg["cases"].items()]
     keys = list(cfg.get("sweep", {}))
     cases = []
     for values in itertools.product(*(cfg["sweep"][k] for k in keys)):
