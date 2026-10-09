@@ -225,7 +225,17 @@ init; verified against GF above), median with bootstrap 95% CI.
   0.87-2.13; HT: 1.10-1.80; the excess grows with K), while the median t_hat_1 / t_KH grows from 3 to
   2.9e7. In the brief's terms: t_1 vs K across trees is captured by P3 to a factor 2 with no fit
   (empirical; P3 is a heuristic, derived from the RMS initial overlap under an aligned-mode assumption).
-- chi dependence: [lo_chi pending]
+- **chi dependence** (`configs/lo_chi.yaml`, d = 4, single component s = 1 and the 3-component
+  teacher, 100 inits per point, `results/lo_chi_table.csv`, `lo_chi_slopes.csv`, figure e; theory_escape
+  9.2, 9.6, 9.7): the prefactor falls with chi, much more slowly than the rho_0 law. Log-log slope of the
+  median over chi = 4-16 (bootstrap SE): mps4 -0.26 +- 0.04 (theory_escape: -0.20 +- 0.05; t_KH -0.47),
+  binary4 -0.34 +- 0.03 (theory_escape: -0.36 to -0.38; t_KH -0.47). Over chi = 2-16 (12 for binary8):
+  binary8 -0.76, ht4 -0.69, mps8 -0.72, vs -2.4, -1.5, -2.5 for t_KH. mps8, chi 2 -> 8: median
+  shortened 4.0x (theory_escape: 3.7x), t_KH 35x (33x). chi = 1 has heavy right tails (sd ln t_hat_1 =
+  0.67 binary4, 1.0 mps4, 1.8-2.2 for K = 7, 8), so medians are used throughout. The median ratio
+  t_hat_1 / t_KH grows with chi (binary8: 512 at chi = 2 to 8335 at chi = 12). So the brief's question
+  "t_1 vs chi at fixed sigma": weakly decreasing, slope -0.26 .. -0.76 depending on the tree, quantified
+  per init by the correlation flow, not by rho_0.
 
 ### 2.3 Saddle-to-saddle phenomenology at K = 3, 4 (empirical)
 
