@@ -1,0 +1,12 @@
+# Large bond dimension, binary N = 4 (K = 3), d = 3, uncapped chi = 4..128, three parameterizations
+# (notes/theory_regimes.md section 4.3): sp (fan-in, eta = 1), ntk (eta_v = 1/F_v), mup (muP-TTN:
+# root init x (2 chi)^-1/2, eta_v = chi_v / F_v); centred and plain models; sigma = 1.5 (the theory
+# note's check point) and 1.0; gradient flow (dopri5), time budget in kernel units.
+exp: large_chi_b4
+base: {kind: binary, n: 4, d: 3, cap: false, l_floor: 1.0e-6}
+grid:
+  chi: [4, 8, 16, 32, 64, 128]
+  lr: [sp, ntk, mup]
+  model: [centred, plain]
+  sigma: [1.0, 1.5]
+  seed: [0, 1, 2, 3, 4, 5]

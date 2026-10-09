@@ -1,0 +1,15 @@
+# sigma x chi, binary N = 8 (K = 7), d = 3, odeco [3, 2, 1], centred model, gradient flow.
+# chi <= 81 with capped bonds (bottom bonds <= 9; chi = 81: every bond full, square cores);
+# 'full2x': bonds 18 (2 sites) / 162 (4 sites) = twice the cut dimension on every edge.
+# Small chi uses LSODA (exact Hessian, cheap stiff later plateaus); large P uses dopri5 and starts
+# at sigma = 0.4 (later plateaus ~1e2-1e3 time units, stiff for explicit steps).
+exp: sigma_chi_b8
+base: {kind: binary, n: 8, d: 3, cap: true, model: centred, l_floor: 1.0e-6}
+grid: {seed: [0, 1, 2, 3, 4, 5]}
+variants:
+  - {chi: 3, method: lsoda, sigmas: {geomspace: [0.15, 30, 15]}}
+  - {chi: 6, method: lsoda, sigmas: {geomspace: [0.15, 30, 15]}}
+  - {chi: 12, method: lsoda, sigmas: {geomspace: [0.25, 30, 13]}}
+  - {chi: 24, method: dopri5, sigmas: {geomspace: [0.3, 30, 12]}}
+  - {chi: 81, method: dopri5, sigmas: {geomspace: [0.4, 30, 11]}}
+  - {chi: 162, cap: false, bonds: {2: 18, 4: 162}, method: dopri5, sigmas: {geomspace: [0.4, 30, 11]}}

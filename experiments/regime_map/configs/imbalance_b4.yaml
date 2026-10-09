@@ -1,0 +1,12 @@
+# Imbalance at fixed function-space scale alpha = lambda sigma^K (root init lambda sigma, other cores
+# sigma), binary N = 4, d = 3, odeco [3, 2, 1], centred model, gradient flow (dopri5).
+# lambda spans 1e-2 .. 1e2 x the expected-balance point lambda_bal = sqrt(chi)
+# (E Q_v = sigma^2 (1 - lambda^2 / chi) I on the root edges, theory_regimes section 5).
+exp: imbalance_b4
+base: {kind: binary, n: 4, d: 3, cap: false, model: centred, l_floor: 1.0e-6}
+grid:
+  seed: [0, 1, 2, 3, 4, 5]
+  alpha: [1.0e-6, 1.0e-5, 1.0e-4, 1.0e-3, 1.0e-2, 0.1, 1.0, 10.0, 100.0]
+variants:
+  - {chi: 24, grid: {root_scale: [0.049, 0.155, 0.49, 1.0, 1.55, 4.9, 15.5, 49.0, 155.0, 490.0]}}
+  - {chi: 3, grid: {root_scale: [0.0173, 0.0548, 0.173, 0.548, 1.0, 1.73, 5.48, 17.3, 54.8, 173.0]}}

@@ -10,6 +10,11 @@ weights [3, 2, 1] (||W*||^2 = 14).
 
 ## 1. Theory (derived here; to be compared with `notes/theory_regimes.md` when it lands)
 
+*Written before `notes/theory_regimes.md` (draft) landed. That note agrees with every statement
+below (its R2/R6 = 1.1, R4 = 1.2, R7-R8 = 1.3, R11 = 1.4, R10 = 1.5, R5 = 1.6) and goes further
+(exact aligned S2S boundary, muP-TTN). The experiments test its predictions P1-P13; this section is
+kept as the record of the independent derivation.*
+
 ### 1.1 Lazy limit of the centred model and its residual
 
 Linearize: W(theta_0 + u) - W_0 = J u + O(||u||^2). Gradient flow of the linearized loss from u = 0

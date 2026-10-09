@@ -2,3 +2,19 @@
   warnings.warn(
 /root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
   warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+         residual         kappa    rel_dtheta1  cg_iter
+chi                                                    
+3    9.770729e-01      1.079941       0.667526      0.0
+6    9.225357e-01      3.440458       5.909969      0.0
+12   7.140947e-01    555.859830    1757.418562      0.0
+24   5.117322e-01   2786.461217    6206.903819      0.0
+81   1.848856e-18  88495.970111  169319.717927      0.0
+162  3.806479e-16      0.283090       0.958039   6515.5

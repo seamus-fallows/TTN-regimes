@@ -1,0 +1,48 @@
+['sigma_K', 'sigma_chi_b4', 'sigma_chi_b8']: 3966 runs to do (0 done)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+20/3966 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(

@@ -1,0 +1,5 @@
+/root/work/TTN-regimes/experiments/regime_map/run_regime.py:117: UserWarning: gradient flow became stiff at t = 133; at the stability-limited step, reaching t_max takes ~2.4e+07 more steps. Use method='lsoda' (or a loss_floor if training has converged).
+  traj = integrate_gf(
+{"chi": 3, "sigma": 0.15, "method": "lsoda", "t_end": 5208997.035136942, "stop": "converged", "stiff_at": 15338.988858302906, "n_steps": 5024, "l_end": 8.520709850705943e-07, "dK": 17190416862.406536, "q_drift": 3.4364109770054556e-09, "event_times": [15100.781250885542, 5112299.745453388, 386145.44605299743], "rhos": [29.271754724952515, 30.833987908019104], "label": "saddle-to-saddle", "dormant_min": 6.532342548994061e-10, "wall": 637.4460988044739}
+/root/work/TTN-regimes/experiments/regime_map/run_regime.py:117: UserWarning: gradient flow became stiff at t = 8.743; at the stability-limited step, reaching t_max takes ~9.9e+05 more steps. Use method='lsoda' (or a loss_floor if training has converged).
+  traj = integrate_gf(

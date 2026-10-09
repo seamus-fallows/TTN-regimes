@@ -192,15 +192,29 @@ def fig_sensitivity(exp, model, ycol="chi"):
     return bt
 
 
+def load_traj(exp, cfg):
+    """(t, L/L0, overlaps) for a run of either driver (library Trajectory or interim npz)."""
+    from run_regime import run_id
+
+    path = os.path.join(OUT, exp, "traj", run_id(cfg) + ".npz")
+    if os.path.exists(path):
+        z = np.load(path, allow_pickle=False)
+        if "overlaps" in z.files:
+            return z["t"], z["loss"] / z["loss"][0], z["overlaps"]
+        return z["t"], z["L"], z["A"]
+    from pilots.interim import run_id as rid
+
+    z = np.load(os.path.join(OUT, exp, "traj", rid(cfg) + ".npz"))
+    return z["t"], z["L"], z["A"]
+
+
 def fig_examples(exp, picks, name):
     """Representative runs: list of (title, cfg-dict); L/L0 and overlaps a_r vs t."""
-    from pilots.interim import run_id
-
     fig, axes = plt.subplots(2, len(picks), figsize=(3.2 * len(picks), 4.6), sharex=False)
     comp_colors = ["#2a78d6", "#eb6834", "#1baf7a"]
     for k, (title, cfg) in enumerate(picks):
-        z = np.load(os.path.join(OUT, exp, "traj", run_id(cfg) + ".npz"))
-        t, L, A = z["t"][1:], z["L"][1:], z["A"][1:]
+        t, L, A = load_traj(exp, cfg)
+        t, L, A = t[1:], L[1:], A[1:]
         axes[0, k].loglog(t, L, color=INK, lw=1.5)
         axes[0, k].set_title(title, fontsize=8.5, loc="left")
         for r in range(A.shape[1]):

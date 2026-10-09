@@ -67,13 +67,17 @@ def label(l_end, dK, rhos, k_thr=0.1, rho_thr=3.0):
         return "stalled"
     if dK < k_thr:
         return "lazy"
-    if len(rhos) >= 1 and min(rhos) > rho_thr:
+    rh = np.asarray(rhos, dtype=float)
+    if rh.size >= 1 and np.all(rh > rho_thr):  # a NaN ratio (unfinished event) rules out S2S
         return "s2s"
     return "rich"
 
 
 def load(exp: str) -> pd.DataFrame:
-    """Per-run table with events, rho's and labels at every threshold pair."""
+    """Per-run table with events, rho's and labels at every threshold pair.
+
+    Library runs (run_regime.py) carry event_times / event_widths / rhos in their rows; interim runs
+    (pilots/interim.py) are re-analysed from their saved trajectories."""
     rows = []
     with open(os.path.join(OUT, exp, "results.jsonl")) as f:
         for line in f:
@@ -82,20 +86,22 @@ def load(exp: str) -> pd.DataFrame:
                 continue
             rows.append(r)
     df = pd.DataFrame(rows)
-    from pilots.interim import run_id  # same id as the driver
+    if "rhos" in df.columns:
+        df["events"] = [list(zip(t, w)) for t, w in zip(df.event_times, df.event_widths)]
+        df["rhos"] = [[x for x in r if x is not None] if isinstance(r, list) else [] for r in df.rhos]
+    else:
+        from pilots.interim import run_id  # same id as the interim driver
 
-    ev_col, rho_col, minrho = [], [], []
-    for _, r in df.iterrows():
-        z = np.load(os.path.join(OUT, exp, "traj", run_id(r.to_dict()) + ".npz"))
-        ev = component_events(z["t"], z["A"])
-        rho = separation_ratios(ev)
-        ev_col.append(ev)
-        rho_col.append(rho)
-        minrho.append(min(rho) if rho else np.nan)
-    df["events"] = ev_col
-    df["rhos"] = rho_col
-    df["min_rho"] = minrho
-    df["n_events"] = [sum(np.isfinite(t) for t, _ in ev) for ev in ev_col]
+        ev_col, rho_col = [], []
+        for _, r in df.iterrows():
+            z = np.load(os.path.join(OUT, exp, "traj", run_id(r.to_dict()) + ".npz"))
+            ev = component_events(z["t"], z["A"])
+            ev_col.append(ev)
+            rho_col.append(separation_ratios(ev))
+        df["events"] = ev_col
+        df["rhos"] = rho_col
+    df["min_rho"] = [float(np.min(np.asarray(r, float))) if len(r) else np.nan for r in df.rhos]
+    df["n_events"] = [sum(np.isfinite(t) for t, _ in ev) for ev in df.events]
     for kt in K_THRESHOLDS:
         for rt in RHO_THRESHOLDS:
             df[f"label_{kt}_{rt}"] = [
