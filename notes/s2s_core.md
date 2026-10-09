@@ -250,6 +250,13 @@ linear time (no duration read off the log grid).
 - **Plateau levels are the partial-fit levels** L_S = 1/2 sum_{r not learned} s_r^2 (S = the components
   learned so far, in whatever order): max relative deviation at the plateau midpoint 2e-3 (mps4),
   2e-2 (binary4, at sigma = 0.1), 3e-6 (the few complete K = 7 runs).
+- **Plateaus sit at bond-rank-constrained critical points** (lead's check): at every plateau midpoint
+  of the complete runs, every edge's top |S| singular values equal the learned weights (the truncated
+  teacher spectrum) to a max relative deviation that shrinks with sigma: separated teacher 3e-3
+  (binary4, sigma = 0.1), 3e-4 (mps4, 0.1), 3e-5 (ht4, 0.3) down to ~1e-9 at sigma = 0.003 (K = 3, 4)
+  and 5e-11 at sigma = 0.07 (binary8); the next singular value is <= 0.07 s_min (median 1e-5 .. 3e-4 s_min).
+  Close teacher: the same except binary4 at sigma >= 0.05 (overlapping events; max 0.32, median 1e-4).
+  (`max_rel_plateau_spectrum_err`, `max_plateau_next_sv_over_smin` in `results/main_runs.csv`.)
 - **Bond spectra grow one value at a time on every edge simultaneously**: in 213/236 runs with
   event-window spectra, each event raises the number of singular values above s_r/2 by exactly one on
   every edge, and all edges step at the same output sample of the refined window (spread < width/40).

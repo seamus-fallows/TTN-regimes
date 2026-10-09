@@ -63,6 +63,18 @@ def load(raw: Path) -> pd.DataFrame:
             cls = "unresolved"  # stopped by the step / wall budget or the amplitude stop while alive
         plateaus = s["plateaus"]
         rel_level = [abs(p["loss"] - p["partial_fit_level"]) / p["partial_fit_level"] for p in plateaus]
+        # Bond-rank-constrained critical point (lead): at the plateau midpoint after learning S, every
+        # edge's top |S| singular values equal the learned weights (truncated teacher spectrum) and the
+        # rest are small. Max relative deviation over edges, and max next singular value / min weight.
+        spec_dev, spec_next = [], []
+        for i, p in enumerate(plateaus):
+            learned = sorted((s["weights"][q] for q in order[: i + 1]), reverse=True)
+            k = len(learned)
+            for sv in p["spectra"]:
+                sv = sorted(sv, reverse=True)
+                spec_dev.append(max(abs(a - b) / b for a, b in zip(sv[:k], learned)))
+                if len(sv) > k:
+                    spec_next.append(sv[k] / min(s["weights"]))
         lam_min = [p["saddle"]["lambda_min"] for p in plateaus if "saddle" in p]
         lam_max = [p["saddle"]["lambda_max"] for p in plateaus if "saddle" in p]
         n_neg = [p["saddle"]["n_negative"] for p in plateaus if "saddle" in p]
@@ -88,6 +100,8 @@ def load(raw: Path) -> pd.DataFrame:
             "rho_min": min(s["separation_ratios"]) if s["separation_ratios"] else np.nan,
             "s2s": s["s2s"], "relearned": ",".join(map(str, transient)),
             "max_rel_plateau_level_err": max(rel_level) if rel_level else np.nan,
+            "max_rel_plateau_spectrum_err": max(spec_dev) if spec_dev else np.nan,
+            "max_plateau_next_sv_over_smin": max(spec_next) if spec_next else np.nan,
             "plateau1_lam_min": lam_min[0] if lam_min else np.nan,
             "plateau2_lam_min": lam_min[1] if len(lam_min) > 1 else np.nan,
             "plateau1_lam_max": lam_max[0] if lam_max else np.nan,
