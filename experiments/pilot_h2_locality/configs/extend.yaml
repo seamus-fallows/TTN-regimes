@@ -1,0 +1,15 @@
+# Censored runs of the large-tree sweep whose rank-2 content was still growing when they hit
+# t_max = 1e4 sigma^-(K-2): rerun with a 100x longer horizon to see whether (and when) they escape.
+# Same tags as in data/pilot_h2_locality/runs/; analyze.py uses these runs in place of the originals.
+out_dir: data/pilot_h2_locality/extend
+csv: extend_runs.csv
+method: LSODA
+rtol: 1.0e-10
+wall_limit: 900
+t_max_factor: 1.0e+6
+workers: 8
+groups:
+  - {tree: mps, n: 6, kinds: [far], sigmas: [0.05, 0.07, 0.1, 0.15, 0.2, 0.3], seeds: [1]}
+  - {tree: mps, n: 6, kinds: [far], sigmas: [0.05, 0.07, 0.1, 0.15, 0.2], seeds: [3]}
+  - {tree: mps, n: 6, kinds: [global], sigmas: [0.05, 0.07, 0.1, 0.15, 0.2, 0.3], seeds: [3]}
+  - {tree: mps, n: 6, kinds: [global], sigmas: [0.05, 0.07], seeds: [5]}

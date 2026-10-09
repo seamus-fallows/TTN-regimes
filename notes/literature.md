@@ -1022,7 +1022,7 @@ the topology-dependent plateau law is open.**
 - TTN with product covariance (derived (review)): absorbing Sigma_i^(1/2) into the core carrying site i is
   an invertible reparameterization, so the landscape is that of a white problem with target
   `((x)_i Sigma_i^(1/2)) W*` (critical points, saddle orders and [Furman2026] Thm 5.2 transfer); the GF
-  metric and the conservation laws are not preserved, so time scales and order can change. In the lazy
+  metric changes (the conservation laws are preserved in the original variables, `theory_covariance.md` Prop 1(4), but take a different form in the absorbed ones; lead's correction 2026-10-09), so time scales and order can change. In the lazy
   limit with an isotropic kernel (chi_e far above the cut dimension; section 2.3) the eigenmodes decay at
   rates c prod_i lambda_(i,k_i): a pure reordering. At practical chi the anisotropy of the random kernel
   competes with this reordering (critique A1).
