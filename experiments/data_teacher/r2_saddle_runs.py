@@ -105,10 +105,12 @@ def hessian_row(args):
     spec, teacher, metrics, cores, l_sad, n_sad = saddle_for(tname, tcfg, n, tree)
     prob = Problem(spec, teacher, site_metrics=metrics)
     th = spec.flatten(cores)
-    _, eigs = project_out_gauge(hessian(prob.loss, th), gauge_directions(spec, th))
+    h = hessian(prob.loss, th)
+    _, eigs = project_out_gauge(h, gauge_directions(spec, th))  # library default rtol (1e-3 after 6c42d85)
     st = saddle_type(eigs)
     return dict(teacher=tname, n=n, tree=tree, l_saddle=l_sad, n_rank1_minima=n_sad,
                 grad_norm=float(prob.grad(th).norm()), lambda_min=st["lambda_min"],
+                lambda_min_raw=float(torch.linalg.eigvalsh(h)[0]),
                 n_negative=st["n_negative"], type=st["type"], lambda_max=st["lambda_max"])
 
 

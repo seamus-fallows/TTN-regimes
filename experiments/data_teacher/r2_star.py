@@ -68,13 +68,15 @@ def hessian_mode():
             teacher = star(n, 2.0, w, w)
             prob = Problem(spec, teacher)
             th = theta_q(spec, teacher)
-            _, eigs = project_out_gauge(hessian(prob.loss, th), gauge_directions(spec, th))
+            h = hessian(prob.loss, th)
+            _, eigs = project_out_gauge(h, gauge_directions(spec, th))
             st = saddle_type(eigs)
+            lam_raw = float(torch.linalg.eigvalsh(h)[0])
             k = spec.n_cores
             rho = math.sqrt(2) * w
             pred = -(2.0 ** ((k - 2) / k)) * (rho - 2.0)
             rows.append(dict(tree=f"{tree}{n}", w=w, rho=rho, grad=float(prob.grad(th).norm()),
-                             lambda_min=st["lambda_min"], pred_if_strict=pred,
+                             lambda_min=st["lambda_min"], lambda_min_raw=lam_raw, pred_if_strict=pred,
                              n_negative=st["n_negative"]))
             print(rows[-1], flush=True)
     df = pd.DataFrame(rows)

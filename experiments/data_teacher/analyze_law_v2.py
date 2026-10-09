@@ -124,8 +124,10 @@ def analyze_run(args):
     spec, teacher, metrics = spec_args
     prob = Problem(spec, teacher, site_metrics=metrics)
     th = torch.as_tensor(params[kpl])
-    _, eigs = project_out_gauge(hessian(prob.loss, th), gauge_directions(spec, th))
+    h = hessian(prob.loss, th)
+    _, eigs = project_out_gauge(h, gauge_directions(spec, th))  # library default rtol (1e-3)
     row["lambda_min"] = float(eigs[0])
+    row["lambda_min_raw"] = float(torch.linalg.eigvalsh(h)[0])
     return row
 
 
@@ -168,7 +170,9 @@ def main():
             lam = r.groupby(["case", "tree", "saddle"]).apply(
                 lambda g: pd.Series(dict(
                     lam_small_sigma=g[g.sigma == g.sigma.min()]["lambda_min"].median(),
-                    lam_large_sigma=g[g.sigma == g.sigma.max()]["lambda_min"].median()))).reset_index()
+                    lam_large_sigma=g[g.sigma == g.sigma.max()]["lambda_min"].median(),
+                    lam_raw_small_sigma=g[g.sigma == g.sigma.min()]["lambda_min_raw"].median(),
+                    lam_raw_large_sigma=g[g.sigma == g.sigma.max()]["lambda_min_raw"].median()))).reset_index()
             summ = summ.merge(lam, on=["case", "tree", "saddle"], how="left")
             out_ps.append(ps)
             out_sum.append(summ)
