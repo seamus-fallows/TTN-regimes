@@ -179,6 +179,30 @@ the balanced Saxe mode a' = a^{K-1}(s - a^K) (Saxe et al. 2014 eq. 15 for DLNs; 
 max |a_GF - a_theory| over t and r = 2.0e-10 (binary4), 3.1e-10 (mps4), 2.2e-9 (binary8), 2.5e-9
 (ht4), 2.8e-9 (mps8); event times identical to 1e-11 relative on the same grid; Q drift <= 2e-14.
 
+### 2.2b First escape: per-seed test of the correlation-flow prediction (empirical; P1 = theory_escape E1)
+
+Sweep `configs/first.yaml` (+ `first_k78.yaml`): for every seed, T(theta_hat) from the correlation flow
+of the sigma = 1 init, then gradient flow (LSODA rtol 1e-8, atol 1e-11 sigma) at 8 sigmas until the
+first component is learned, event refined in linear time. Fan-in and gauge-balanced inits, d = 4,
+chi = 3, 6, both teachers, 10 seeds (K = 7, 8: separated teacher, fan-in; `results/first_*.csv`,
+figure c).
+- **Exponent** (per seed, then mean +- SE): binary4 (sigma 0.1 .. 0.002) 1.0045 +- 0.0002 raw,
+  0.9996 +- 0.0001 with the predicted O(1) offset c_K removed; mps4 (same sigmas) 2.0002 / 2.0000;
+  binary8 (sigma 0.4 .. 0.01, 1.6 decades) 4.9984 +- 0.0003 (K - 2 = 1, 2, 5). [ht4, mps8 pending]
+- **Prefactor, no free parameter**: |t_1 / (sigma^-(K-2) T(theta_hat) + c_K) - 1| at the smallest
+  sigma <= 2e-3 (binary4), 6e-5 (mps4), 2e-8 (binary8, sigma = 0.01). At larger sigma the residual
+  is the O(1) offset (K = 3, 4: the predicted c_K accounts for it to within ~25% (binary4) and ~10%
+  (mps4)) or, at K = 7, ~37x the c_K term at sigma = 0.3 (2% at sigma = 0.4), as theory_escape 2.4
+  anticipates (the escape direction has not converged at moderate sigma).
+- **First component** = the one dominating the correlation flow at its blow-up: 100% of runs on mps4
+  and binary8; 80-90% on binary4 with the close teacher (matrix-like pair: the wrong order at finite
+  sigma, theory_escape E9).
+- **Kumar-Haupt is a lower bound, far off**: median T / t_KH = 3.1-4.8 (binary4), 7.9-13.7 (mps4),
+  184-489 (binary8), inside the ranges theory_escape 9.2 predicts (2.5-5.2, 5.2-18, 94-4463).
+- **Fan-in imbalance and the prefactor**: gauge-balancing the same init (same W_0, Q_e = 0) changes
+  T per seed by a factor 0.88-1.92 (median 0.99-1.18 per cell; usually slower), keeps the first
+  component in 80-100% of seeds, and leaves the exponent unchanged.
+
 ### 2.3 Saddle-to-saddle phenomenology at K = 3, 4 (empirical)
 
 Sweep `configs/main.yaml`: fan-in init, d = 4, chi = 3, 6, teachers [3, 2, 1] and [1, 0.85, 0.7],
