@@ -56,6 +56,11 @@ Interim (pilot, seed 0 only; main sweep relaunched):
   lambda_uw = |P_u M_uw P_w| with M_uw = (1/n) sum_j r_j h_uw(x_j) Phi_u Phi_w^T, for every pair of bottom
   cores; the route degree is the Steiner size of (u, w). Used to test "lowest k first, then largest
   amplitude" and to see where locality enters.
+- **Parallelism: ~60 processes, not 126.** The CPU is 64 physical cores (SMT 2) and these runs are
+  memory-bandwidth bound: at 126 processes one gradient took 127 ms (14 ms idle), at ~60 it takes 38 ms.
+  The per-sample Jacobian is now a closed form from per-sample messages (0.4 s vs 27 s for vmap under load;
+  equal to 4e-18). The first two launches of the sweeps were killed (no valid run lost: all finished ones
+  had failed in phase 1).
 - **Merged main (34c76ad) at the lead's request**; event times use `merged_rows` (log + fine rows; fine rows
   also carry the data-weighted spectra).
 
@@ -69,3 +74,4 @@ Interim (pilot, seed 0 only; main sweep relaunched):
 - 21:19 reverted launch commit, read brief/notes/library, downloaded data, launched cost pilot
 - 21:37 cost probes: post-escape stiffness (lambda_max ~ 57); LSODA + Gauss-Newton Jacobian chosen; function-space spectra added; merged main; pilot (18 runs) launched
 - 22:08 pilot analysed (staircases on quadtree binary, route amplitudes predict first route); main sweep failed at sigma <= 0.1 (clock underflow) -> chunked phase 1; merged main 6c42d85 (gauge fix; no lambda_min reported yet)
+- 22:59 phase-1 clock re-anchoring (escape at t ~ 1e18-1e20 now resolved); closed-form Jacobian; sweeps relaunched with 48 + 12 workers (machine memory-bound)
