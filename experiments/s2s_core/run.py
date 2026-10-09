@@ -61,9 +61,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
     ap.add_argument("--workers", type=int, default=60)
+    ap.add_argument("--raw", default=str(s2s.OUT), help="parent directory of the raw outputs")
     args = ap.parse_args()
     config = yaml.safe_load(Path(args.config).read_text())
-    out_dir = s2s.OUT / config["name"]
+    out_dir = Path(args.raw) / config["name"]
     out_dir.mkdir(parents=True, exist_ok=True)
     runs = [c for c in expand(config) if not (out_dir / f"{c['name']}.json").exists()]
     # Longest runs first (large K, small sigma) so the pool drains evenly.

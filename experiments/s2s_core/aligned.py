@@ -73,7 +73,13 @@ def run(args):
 
 
 def main():
-    config = yaml.safe_load(Path(sys.argv[1]).read_text())
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("config")
+    ap.add_argument("--out", default=str(HERE / "results"))
+    args = ap.parse_args()
+    config = yaml.safe_load(Path(args.config).read_text())
     out_dir = s2s.OUT / config["name"]
     out_dir.mkdir(parents=True, exist_ok=True)
     jobs = []
@@ -87,8 +93,8 @@ def main():
     with Pool(len(jobs)) as pool:
         rows = pool.map(run, jobs)
     df = pd.DataFrame(rows)
-    (HERE / "results").mkdir(exist_ok=True)
-    df.to_csv(HERE / "results" / "aligned.csv", index=False)
+    Path(args.out).mkdir(parents=True, exist_ok=True)
+    df.to_csv(Path(args.out) / "aligned.csv", index=False)
     print(df.to_string())
     (out_dir / "summary.json").write_text(json.dumps(rows))
 

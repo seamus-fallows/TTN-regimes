@@ -103,9 +103,16 @@ def _job(cfg, out_dir):
 
 
 def main():
-    config = yaml.safe_load(Path(sys.argv[1]).read_text())
-    workers = int(sys.argv[2]) if len(sys.argv) > 2 else 60
-    out_dir = s2s.OUT / config["name"]
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("config")
+    ap.add_argument("--workers", type=int, default=60)
+    ap.add_argument("--raw", default=str(s2s.OUT), help="parent directory of the raw outputs")
+    args = ap.parse_args()
+    config = yaml.safe_load(Path(args.config).read_text())
+    workers = args.workers
+    out_dir = Path(args.raw) / config["name"]
     out_dir.mkdir(parents=True, exist_ok=True)
     jobs = []
     for (tree, n), chi, (tname, w), init, seed in itertools.product(

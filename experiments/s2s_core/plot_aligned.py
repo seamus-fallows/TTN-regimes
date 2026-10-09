@@ -20,8 +20,14 @@ TREES = ["binary4", "mps4", "binary8", "ht4", "mps8"]
 
 
 def main():
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--results", default=str(HERE / "results"))
+    ap.add_argument("--out", default=str(HERE / "results"))
+    args = ap.parse_args()
     tp.set_style()
-    table = pd.read_csv(HERE / "results" / "aligned.csv")
+    table = pd.read_csv(Path(args.results) / "aligned.csv")
     fig, axes = tp.subplots(1, len(TREES), width=tp.TEXT_WIDTH, panel_aspect=1.45, sharey=True)
     colors = tp.palette(3)
     for ax, tree in zip(axes, TREES):
@@ -37,7 +43,7 @@ def main():
         ax.set_xlim(0, t[-1])
     axes[0].set_ylabel("$a_r(t)$")
     axes[0].legend(fontsize=6.5, loc="lower right")
-    tp.savefig(fig, HERE / "results" / "fig_a_aligned")
+    tp.savefig(fig, Path(args.out) / "fig_a_aligned")
 
 
 if __name__ == "__main__":
