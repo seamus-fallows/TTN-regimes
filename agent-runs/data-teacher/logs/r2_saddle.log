@@ -35,3 +35,8 @@
 33    randmps8_303  8     mps  0.220628               2  8.790939e-10 -1.642441e-01          17      strict    4.807294
 34    randmps8_303  8  binary  0.170511               3  1.986881e-09 -1.914614e-16           0  non-strict    4.896035
 35    randmps8_303  8      ht  0.220628               1  1.136628e-09 -4.601452e-16           0  non-strict    8.712765
+nonorth_c0.45 mps 0.001 2 t_esc=43.29
+nonorth_c0.45 mps 0.001 3 t_esc=42.9
+nonorth_c0.45 mps 0.001 1 t_esc=41.76
+nonorth_c0.45 mps 0.001 0 t_esc=41.5
+nonorth_c0.45 mps 0.001 4 t_esc=42.1
