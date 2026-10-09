@@ -107,6 +107,37 @@ strict). For m >= 3 (binary N = 8: m = 4; MPS and HT: m = N) the gain is O(eps^m
 is again higher order. Prediction for the Hessian at plateau midpoints: no eigenvalue below -epsilon
 for K >= 3, except binary N = 4 plateaus where a larger component is still unlearned.
 
+### 1.5 Typical prefactor: RMS-overlap heuristic (derived heuristic, P3)
+
+Fan-in init makes W_0 rotation-invariant on every physical leg with E||W_0||^2 = sigma^{2K}, so the
+initial overlap with any unit rank-one U_r has RMS a_rms = sigma^K d^{-N/2}, independent of chi.
+If component r escaped like an aligned balanced mode started at that amplitude
+(q_0 = a_rms^{1/K} = sigma d^{-N/(2K)} per core), then
+
+    T_r ~ T_rms(s_r) = d^{N(K-2)/(2K)} / ((K-2) s_r)     [in units of sigma^{-(K-2)}]      (P3)
+
+and t_1 ~ sigma^{-(K-2)} min_r T_r. This has no free parameters and no chi dependence. It replaces the
+PLAN's rho_0-based hypothesis, whose aligned-at-start form is the lower bound (B1) and is off by
+factors 4 (K = 3) to ~5000 (K = 8, chi = 6) in pilots (section 2.1).
+
 ## 2. Experiments and findings
 
-(in progress)
+### 2.1 Pilots (throwaway scipy code, before the library landed; to be redone with the library)
+
+All gradient flow with scipy DOP853 / LSODA, rtol 1e-9, atol 1e-14 sigma; correlation flow
+DOP853 rtol 1e-10. d = 4, odeco teacher seed 100.
+
+- **(P1) confirmed per seed** (empirical): t_1 sigma^{K-2} at sigma = 0.3..0.003 (binary N=4,
+  K=3), 0.3..0.01 (binary N=8, MPS N=8) converges to the correlation-flow blow-up time T(theta_hat)
+  to 4-5 digits (binary 4 seed 0: 0.76962 at sigma = 3e-3 vs T = 0.77021; the remaining offset
+  t_1 - sigma^{-1} T = -0.198 matches c_3(3) = -0.196). The first component learned is the one whose
+  correlation flow blows up first (also when it is the smallest, MPS 8 seed 1).
+- **Race model** (MPS: proven by decoupling; others: empirical): the blow-up time with only
+  component r in the teacher, T_r, gives T = min_r T_r exactly for MPS (rel. diff 1e-12) and within
+  1-3% for binary/HT, with the correct first component in 93-100% of 40 seeds.
+- **Typical prefactor (P3)**: median T_r / T_rms(s_r) = 1.0-1.2 (binary 4, MPS 4), 1.3-1.75 (binary 8,
+  MPS 8, HT 4), chi = 3, 40 seeds. The aligned-at-start bound (B1, full norm) is 3.5-5600x too small.
+- **chi dependence** is weak: median T for chi = 6 vs chi = 3 is lower by factors 1.2 (binary 4,
+  MPS 4) to 1.6-1.9 (binary 8, MPS 8, HT 4), much less than the (sum chi)^{-(K-2)/2} ~ 1/8 implied
+  by the rho_0 picture for K = 8.
+- Seed-to-seed spread of T: coefficient of variation 0.2 (K = 3) to 0.8 (HT 4, MPS 8).
