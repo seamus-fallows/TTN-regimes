@@ -89,9 +89,9 @@ def plot_saddle(df, fits):
 def plot_natural(nat):
     plt = style.plt
     style.setup()
-    w = nat[nat.wrong].copy()
+    w = nat[nat.wrong & (nat.a2_min_after_t1 < 0.1)].copy()
     w["scaled"] = (w.t1 - w.t2) * np.abs(w.lam_pred)
-    fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.8))
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.0), gridspec_kw=dict(wspace=0.45))
     ax = axes[0]
     for i, (rho, g) in enumerate(w.groupby("rho")):
         for j, (s, gg) in enumerate(g.groupby("sigma")):
@@ -100,17 +100,20 @@ def plot_natural(nat):
                     label=f"rho={rho}" if j == 0 else None)
             ax.plot([x - 0.05, x + 0.05], [gg.scaled.mean()] * 2, color=style.INK, lw=1.2)
     ax.set_xlabel("log10 sigma")
-    ax.set_ylabel("|lambda_min| (t1 - t2)")
-    ax.set_title("natural wrong-order runs (binary4): no growth with 1/sigma", fontsize=7)
-    ax.legend(fontsize=6)
+    ax.set_ylabel("|lambda_pred| (t1 - t2)")
+    ax.set_title("binary4 natural wrong-order runs that rotate: |lambda| (t1 - t2) vs sigma",
+                 fontsize=7)
+    ax.legend(fontsize=6, loc="upper left", ncol=3)
+    ax.set_ylim(0, 5.5)
     ax = axes[1]
     for i, (rho, g) in enumerate(w.groupby("rho")):
         ax.plot(g.lam_pred, g.lam_min, "o", color=style.SERIES[i], ms=3, alpha=0.6, label=f"rho={rho}")
     lim = [min(w.lam_pred.min(), w.lam_min.min()) * 1.1, 0]
     ax.plot(lim, lim, color=style.MUTED, lw=0.8)
     ax.set_xlabel("predicted lambda_min = -(1-rho) rho^(1/3)")
-    ax.set_ylabel("measured lambda_min (plateau midpoint)")
-    ax.legend(fontsize=6)
+    ax.set_ylabel("lambda_min at minimum speed")
+    ax.set_title("no resolved plateau: lambda_min between 0 and the saddle value", fontsize=7)
+    ax.legend(fontsize=6, loc="lower right")
     fig.savefig(RES / "h1b_natural.png")
     plt.close(fig)
 
@@ -169,12 +172,34 @@ def main():
         nat = pd.read_csv(RES / "h1b_natural_b4.csv")
         nat["lam_pred"] = -lam_pred(nat.rho)
         w = nat[nat.wrong]
-        w = w.assign(scaled=(w.t1 - w.t2) * lam_pred(w.rho))
-        g = w.groupby(["rho", "sigma"]).agg(n=("seed", "size"), scaled_mean=("scaled", "mean"),
-                                           scaled_se=("scaled", lambda x: x.std() / np.sqrt(len(x))),
+        # classify before pooling: the correction-time statistics use rotated runs only
+        # (a_2 falls below 0.1 after t1); the others added the larger component in a new bond index
+        w = w.assign(scaled=np.where(w.a2_min_after_t1 < 0.1, (w.t1 - w.t2) * lam_pred(w.rho), np.nan))
+        g = w.groupby(["rho", "sigma"]).agg(n=("seed", "size"), n_rotated=("scaled", "count"),
+                                           scaled_mean=("scaled", "mean"),
+                                           scaled_se=("scaled", lambda x: x.std() / np.sqrt(x.count())),
                                            lam_min=("lam_min", "mean"),
                                            rotated=("a2_min_after_t1", lambda x: np.mean(x < 0.1)),
                                            loss_after=("loss_after_rotation", "mean")).reset_index()
+        sep = []
+        for row in w.itertuples():
+            z = np.load(OUT / "h1b_natural_b4" / f"rho{row.rho}_s{row.sigma:g}_seed{row.seed}.npz")
+            tr = z["traj"]
+            ws = []
+            t_down = row.a2_down if np.isfinite(row.a2_down) else np.inf
+            for col, t_ev, t_stop in ((3, row.t2, t_down), (2, row.t1, np.inf)):
+                # width of the rise through the event: last 0.1-crossing before it to the first
+                # 0.9-crossing after it, within the same rise (a_2 must reach 0.9 before it falls
+                # back below 1/2 during the rotation; else NaN and only a_1's width is used)
+                t, a = tr[:, 0], tr[:, col]
+                before = np.nonzero((t <= t_ev) & (a < 0.1))[0]
+                after = np.nonzero((t >= t_ev) & (t <= t_stop) & (a >= 0.9))[0]
+                ws.append(t[after[0]] - t[before[-1]] if len(before) and len(after) else np.nan)
+            sep.append((row.t1 - row.t2) / np.nanmax(ws) if np.isfinite(ws).any() else np.nan)
+        w = w.assign(separation=sep)
+        g = g.merge(w.groupby(["rho", "sigma"]).agg(
+            separation_median=("separation", "median"),
+            frac_plateau=("separation", lambda v: np.mean(v > 3))).reset_index())
         g["set"] = "natural_b4"
         out.append(g)
         print(g.to_string(index=False))
@@ -189,14 +214,33 @@ def main():
             plot_example(OUT / "h1b_natural_b4" / f"rho{ex_b4.rho}_s{ex_b4.sigma:g}_seed{ex_b4.seed}.npz",
                          ex_b4, OUT / "h1b_natural_mps4" /
                          f"rho{ex_m4.rho}_s{ex_m4.sigma:g}_seed{ex_m4.seed}.npz", ex_m4)
-    if (RES / "h1b_saddle_mps4.csv").exists():
-        m4s = pd.read_csv(RES / "h1b_saddle_mps4.csv")
-        g = m4s.groupby(["rho", "sigma"]).agg(n=("seed", "size"), t1_mean=("t1", "mean"),
-                                             a2_min=("a2_min_after_t1", "min"),
-                                             lam_min=("lam_min", "mean")).reset_index()
-        g["set"] = "saddle_mps4"
+    for name in ("h1b_saddle_b4", "h1b_saddle_mps4"):
+        if not (RES / f"{name}.csv").exists():
+            continue
+        d = pd.read_csv(RES / f"{name}.csv")
+        g = d.groupby(["rho", "sigma"]).agg(n=("seed", "size"), t1_mean=("t1", "mean"),
+                                           a2_min=("a2_min_after_t1", "min"),
+                                           lam_min=("lam_min", "mean"),
+                                           lam_min_sd=("lam_min", "std"),
+                                           n_neg=("n_neg", "mean")).reset_index()
+        g["set"] = name + "_by_sigma"
         out.append(g)
         print(g.to_string(index=False))
+        # primary saddle-type rule: per-seed scaling of lambda_min (and of t1) with sigma
+        rows = []
+        for (rho, seed), gs in d.groupby(["rho", "seed"]):
+            x = np.log(gs.sigma.values)
+            rows.append(dict(rho=rho, seed=seed,
+                             lam_exp=np.polyfit(x, np.log(np.abs(gs.lam_min.values)), 1)[0],
+                             t1_exp=np.polyfit(x, np.log(gs.t1.values), 1)[0]))
+        e = pd.DataFrame(rows).groupby("rho").agg(
+            n_seeds=("seed", "size"), lam_exponent=("lam_exp", "mean"),
+            lam_exponent_se=("lam_exp", lambda v: v.std(ddof=1) / np.sqrt(len(v))),
+            t1_exponent=("t1_exp", "mean"),
+            t1_exponent_se=("t1_exp", lambda v: v.std(ddof=1) / np.sqrt(len(v)))).reset_index()
+        e["set"] = name + "_exponents"
+        out.append(e)
+        print(e.to_string(index=False))
     if out:
         pd.concat(out).to_csv(RES / "h1b_fits.csv", index=False, float_format="%.5g")
 

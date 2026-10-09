@@ -89,6 +89,17 @@ def main():
                 if k.sum() >= 5:
                     boot.append(fit_power(sig, k, np.full(len(sig), len(w)))[0])
             rec.update(gamma=gam, gamma_se_binomial=se, gamma_se=np.std(boot, ddof=1), C=c)
+            # asymptotic regime only (sigma <= 0.01), where P(wrong) is further from saturation
+            small = wide.columns.values <= 0.01
+            if wide.values[:, small].sum() >= 5 and small.sum() >= 3:
+                boot_s = []
+                for _ in range(200):
+                    w = wide.values[rng.integers(0, len(wide), len(wide))][:, small]
+                    if w.sum() >= 5:
+                        boot_s.append(fit_power(sig[small], w.sum(0), np.full(small.sum(), len(w)))[0])
+                g_s = fit_power(sig[small], wide.values[:, small].sum(0),
+                                np.full(small.sum(), len(wide)))[0]
+                rec.update(gamma_small_sigma=g_s, gamma_small_sigma_se=np.std(boot_s, ddof=1))
         fits.append(rec)
     fits = pd.DataFrame(fits)
     fits.to_csv(RES / "sigma_fits.csv", index=False, float_format="%.4g")
@@ -111,8 +122,10 @@ def main():
             if M_OF.get(name) == 2 and len(f) and np.isfinite(f.gamma.iloc[0]):
                 ss = np.geomspace(g.sigma.min(), g.sigma.max(), 50)
                 ax.plot(ss, f.C.iloc[0] * ss ** f.gamma.iloc[0], color=col, lw=0.9)
+                ax.plot(ss, f.C.iloc[0] * ss ** f.gamma_pred.iloc[0], color=col, lw=0.7, ls=":")
         ax.set_xscale("log")
         ax.set_yscale("log")
+        ax.set_ylim(5e-4, 1)
         ax.set_xlabel("sigma (per-core init scale)")
         ax.set_title(f"{name} (m={M_OF.get(name)})", fontsize=8)
         ax.legend(fontsize=5)
