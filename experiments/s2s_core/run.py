@@ -41,6 +41,9 @@ def expand(config: dict) -> list[dict]:
                 "init": init, "sigma": float(sigma), "seed": seed,
                 **config.get("integrator", {}),
             }
+            if any(cfg["tree"] + str(cfg["N"]) == ex["tree"] and cfg["chi"] == ex["chi"]
+                   for ex in config.get("exclude", [])):
+                continue
             if init == "aligned":
                 cfg["a0"] = config["a0"][f"{tree}{n}"]
             cfg["name"] = s2s.name_of(cfg)

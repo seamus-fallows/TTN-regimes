@@ -81,6 +81,13 @@ def load(raw: Path) -> pd.DataFrame:
             "plateau1_n_neg": n_neg[0] if n_neg else np.nan,
             "plateau2_n_neg": n_neg[1] if len(n_neg) > 1 else np.nan,
             "min_dormant_after_first": min_after,
+            # Spread over edges of the time each edge's rank steps up, relative to the event width
+            # (runs with event-window spectra only), and whether every edge gained exactly one value.
+            "edge_spread_over_width_max": max(
+                [(max(v) - min(v)) / w[int(r)] for r, v in s.get("edge_rank_step_times", {}).items()
+                 if np.isfinite(w[int(r)]) and w[int(r)] > 0] or [np.nan]),
+            "edge_rank_change_all_one": (all(all(x == 1 for x in v) for v in s["edge_rank_change"].values())
+                                         if s.get("edge_rank_change") else np.nan),
             "drift": s["max_conservation_drift"], "q0_max": s["q0_max"], "wall": s["wall_time"],
         }
         rows.append(row)
@@ -140,6 +147,21 @@ def gap_fits(df: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def order_table(df: pd.DataFrame) -> pd.DataFrame:
+    """Learning order: per (tree, chi, teacher), the fraction of runs with each first component, the
+    greedy fraction, and the fraction of seeds whose first component is the same at every sigma."""
+    rows = []
+    for key, g in df[df.n_learned >= 1].groupby(["tree", "K", "chi", "teacher"]):
+        first = g.order.astype(str).str[0]
+        same = g.assign(first=first).groupby("seed")["first"].nunique()
+        row = dict(zip(["tree", "K", "chi", "teacher"], key))
+        row.update({"n_runs": len(g), **{f"P_first_{c}": float((first == c).mean()) for c in "012"},
+                    "P_greedy_complete": float(g[g["class"] == "complete"].greedy.mean()) if (g["class"] == "complete").any() else np.nan,
+                    "seeds_same_first_all_sigma": f"{int((same == 1).sum())}/{len(same)}"})
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
 def fit_summary(fits: pd.DataFrame) -> pd.DataFrame:
     """Mean +- SE over seeds of the per-seed exponents, vs the prediction K - 2."""
     def se(x):
@@ -175,6 +197,7 @@ def main():
     fits.to_csv(out / f"{args.tag}_gap_fits.csv", index=False)
     fs = fit_summary(fits) if len(fits) else fits
     fs.to_csv(out / f"{args.tag}_exponents.csv", index=False)
+    order_table(df).to_csv(out / f"{args.tag}_order.csv", index=False)
     pd.set_option("display.width", 250)
     pd.set_option("display.max_rows", 500)
     print(summ.to_string())

@@ -25,3 +25,9 @@ integrator:
   wall_limit: 300
   max_steps: 3000
 hessians: true
+# chi = 6 at K = 7, 8 is run in large.yaml (looser tolerances, longer budget; separated teacher only):
+# here those runs hit the step limit at ~800 s each. Runs done before this exclusion stay in the output.
+exclude:
+  - {tree: binary8, chi: 6}
+  - {tree: ht4, chi: 6}
+  - {tree: mps8, chi: 6}
