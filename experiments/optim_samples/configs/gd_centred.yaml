@@ -1,0 +1,8 @@
+# Learning-rate axis across the regime map: centred model (target W* + W_0) on binary N=4, sigma from
+# saddle-to-saddle (0.3) to lazy (2.0). ratio = eta / eta_max with eta_max = 2/(K s_1^{2-2/K}) of the
+# balanced minimum (0.154); prediction: the limit becomes 2/lambda_max(Theta_0) ~ sigma^{-2(K-1)} once
+# sigma > ~ s_1^{1/K} = 1.44.
+blocks:
+  - {tree: binary, n: 4, centred: true, sigmas: [0.3, 0.5, 0.7, 1.0, 1.4, 2.0], seeds: [0, 1, 2, 3, 4],
+     ratios: [0.003, 0.01, 0.03, 0.1, 0.2, 0.3, 0.5, 0.7, 0.9, 1.05, 1.3],
+     T: {0.3: 40, 0.5: 20, 0.7: 10, 1.0: 5, 1.4: 3, 2.0: 2}}
