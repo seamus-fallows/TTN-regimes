@@ -61,7 +61,7 @@ of perturbation matter:
 
 So, for s2 < s1 learned in greedy order, the escape is a **degree-k monomial mode**, exactly like a
 balanced depth-k linear-network mode with target lambda_k:
-  eps' = lambda_k eps^(k-1)   (balanced eps_v = eps; saturation at lambda_k eps^k ~ s2 q^(K-k)... ).
+  eps' = lambda_k eps^(k-1)   (balanced eps_v = eps, before saturation).
 
 **Escape-time law (derived; balanced, aligned reduction).** With eps(t1) the size of the
 new-index entries when the first component has been learned:
@@ -127,6 +127,46 @@ alone both have k = 2, but after U1 and U2 are learned, adding U3 raises the ran
 0|1, 1|2, 2|3, so k = 4 (sigma^-2 instead of log). The order of learning therefore changes the
 saddle types. To be tested in step 3 of the brief.
 
-## 6. Results
+## 6. Relation to the literature (after `notes/literature.md` v1)
+
+- **Landscape upper bound.** [Furman2026] Lemmas D.8-D.9 (same model and loss): at a min-norm
+  non-global critical point there is a descent curve of order N, N = number of nodes touching a
+  connected component of rank-deficient edges (student rank < teacher rank). For two-component
+  teachers at the saddle s1 U1 the deficient edges are exactly E(T_S), which is connected, so
+  **N = k**: the Steiner count is Furman's N, and our derivation adds that it is also a *lower* bound
+  for the descent order at this saddle (section 2: all of T_S must move, and no lower-degree term has
+  a non-zero residual correlation), plus the dynamics (escape-time law with the carry-over factor).
+- For several learned components N and the rank-rule k differ: the deficient set is the union of what
+  *all* remaining components need, while the escape takes the cheapest single component. Then
+  k = min_r k(L, r) <= N (`rules.furman_N`). Examples (section 5 teachers): TA on `ht4`, second escape
+  k = 3 vs N = 6; TC on `mps8`, k = 2, 3, 5 vs N = 8, 7, 5. This is the lead's refinement (ii)
+  ("lowest degree with non-zero residual correlation"), computed per case by the rank rule.
+- **Dynamics analogues.** [RawalDeWeese2026] Thm 4.2 (DLNs): escape Theta(1/Gamma),
+  Theta(log(1/eps)/Gamma), Theta(eps^-(r-2)/Gamma) for r = 1, 2, >= 3 small layers: the same
+  trichotomy, here with r = number of cores of the escape route and eps the size of their dormant
+  entries. [KumarHaupt2025c] Thm 8: plateau >= ~delta^-(L-2), L the lowest homogeneity degree of the
+  dormant block; our k is that L for TTN saddles. [Razin2022] Thm 1 (per-node exponent 2 - 2/L_nu) is
+  for CP-structured nodes and does not count Steiner cores.
+- **Dormant entries are rescaled by earlier phases** (refinement (iii)). Section 2 computes this for
+  the two-component case: eps(t1) ∝ sigma^(1 - s2/s1) for k = 2 (hence the log-law slope
+  (1 - s2/s1)/lambda_2) and eps(t1)^-(k-2) = eps0^-(k-2) - (s2/s1) a0^-(k-2) for k >= 3. The
+  gauge-invariant handle on the dormant block is the overlap itself: a_r ≈ prod_{v in route} eps_v
+  q^(K-k) / s_r on the plateau, so the law predicts, run by run, for the remaining time
+  t_b - t_mid from the plateau midpoint to the next event:
+  t_b - t_mid ≈ (1/(2 lambda)) log(1/a_r,mid) + c for k = 2 and ∝ a_r,mid^(-(k-2)/k) for k >= 3,
+  with a_r,mid the overlap at the midpoint. This is tested directly (section 7).
+- **H3 refined.** Single-core Hessian blocks are PSD (literature 1.3 item 6), so negative curvature
+  needs a pair of cores. At a critical point the quadratic form is ||J delta||^2 - 2 sum_{u<v}
+  <R, W[delta_u, delta_v]>. Negative curvature arises (a) from a pair of adjacent cores whose
+  new-index directions are first-order invisible (J delta = 0) and see the residual at degree 2:
+  this is the k = 2 route; or (b) from first-order-visible pairs whose residual coupling beats the
+  curvature: the index-0 / piggyback route, with eigenvalue q^(K-2)(s_learned - s_new) for m = 2,
+  negative only when the learned component is the smaller one (wrong order, H1b). For pattern
+  teachers this gives the tree analogue of [Achour2024]'s "tightened" (derived): **a saddle visited in
+  greedy order is non-strict iff no unlearned component can be added by raising the rank of a single
+  bond** (all k(L, r) >= 3); it is strict if some k(L, r) = 2, or if a wrong-order component can be
+  corrected through two S-nodes. Measured in section 7 via lambda_min vs sigma at plateau midpoints.
+
+## 7. Results
 
 (filled in as experiments finish; see `experiments/locality/README.md`)
