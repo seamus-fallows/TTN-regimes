@@ -1,0 +1,24 @@
+# Dormant-component suppression: the main sweep's seeds with gauge-balanced init (same W_0, Q_e = 0),
+# separated teacher, a subset of sigmas; compare with the fan-in runs of main.yaml.
+name: balanced
+trees: [[binary, 4], [mps, 4], [binary, 8], [ht, 4], [mps, 8]]
+d: 4
+chis: [3, 6]
+teachers:
+  separated: [3.0, 2.0, 1.0]
+teacher_seed: 1000
+inits: [balanced]
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+sigmas:
+  binary4: [0.03, 0.01, 0.003]
+  mps4: [0.03, 0.01, 0.003]
+  binary8: [0.3, 0.15, 0.07]
+  ht4: [0.3, 0.15, 0.07]
+  mps8: [0.3, 0.15, 0.07]
+integrator:
+  method: lsoda
+  rtol: 1.0e-8
+  atol_rel: 1.0e-11
+  wall_limit: 400
+  max_steps: 5000
+hessians: true

@@ -1,0 +1,22 @@
+# Leading-order prefactor vs number of cores K across trees (chi = 3, d = 4, separated teacher), 50 inits.
+name: lo_K
+teacher_seed: 1000
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+settings:
+  - {tree: mps, N: 3, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: mps, N: 4, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: mps, N: 5, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: mps, N: 6, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: mps, N: 7, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: mps, N: 8, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: mps, N: 10, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: mps, N: 12, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: binary, N: 4, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: binary, N: 6, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: binary, N: 8, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: binary, N: 12, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: binary, N: 16, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: ht, N: 3, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: ht, N: 4, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: ht, N: 6, chi: [3], weights: [3.0, 2.0, 1.0]}
+  - {tree: ht, N: 8, chi: [3], weights: [3.0, 2.0, 1.0]}
