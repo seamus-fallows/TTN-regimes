@@ -203,6 +203,23 @@ figure c).
   T per seed by a factor 0.88-1.92 (median 0.99-1.18 per cell; usually slower), keeps the first
   component in 80-100% of seeds, and leaves the exponent unchanged.
 
+### 2.2c Leading-order prefactor vs d, chi, K (empirical; tests of theory_escape section 9)
+
+Correlation-flow blow-up time only (`lo_sweep.py`, the exact sigma -> 0 limit of sigma^(K-2) t_1 per
+init; verified against GF above), median with bootstrap 95% CI.
+- **d-dependence at full bond** (`configs/lo_d.yaml`, single component s = 1, 200 inits; theory_escape
+  9.3, 9.5): binary4 median t_hat_1 = 1.544 [1.468, 1.594], 1.569 [1.525, 1.616], 1.563 [1.525, 1.586]
+  for d = 2, 3, 4 (chi = d^2), i.e. pi/2 = 1.571 and flat in d as predicted, while the Kumar-Haupt
+  time falls 1.9x (0.576 -> 0.301); sd ln t_hat_1 = 0.218, 0.157, 0.135 vs the predicted
+  1/(2 sqrt(chi_b)) = 0.250, 0.167, 0.125. mps4: 1.39 [1.26, 1.58], 1.41 [1.30, 1.52], 1.50 [1.43, 1.60]
+  (predicted 1.30, 1.35, 1.46), while t_KH falls 2.9x (predicted 2.8x). The rho_0 (whole-norm) law is
+  refuted; the per-init prediction is not.
+- **Balance at the escape** (lead's check of the critique claim that KKT points with g > 0 are
+  balanced with core norms 1/K): at the end of the correlation flow every core's squared-norm fraction
+  is 1/K to within 5e-4 .. 1.3e-2 (max over 1200 inits) (`frac_dev_max` in `results/lo_d.csv`).
+  (Expected by the conservation laws: Q_e is constant while |theta|^2 grows without bound.)
+- chi and K dependence: [lo_chi, lo_K pending]
+
 ### 2.3 Saddle-to-saddle phenomenology at K = 3, 4 (empirical)
 
 Sweep `configs/main.yaml`: fan-in init, d = 4, chi = 3, 6, teachers [3, 2, 1] and [1, 0.85, 0.7],
