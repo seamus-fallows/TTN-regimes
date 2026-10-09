@@ -302,7 +302,7 @@ y_vis' = -q^{2(K-2)} |x|^2 y_vis with |x|^2 - |y_vis|^2 - |y_route|^2 = Q_nu nu 
 (q = s_q^{1/K}); if Q_nu nu + |y_route|^2 < 0 then x ~ exp(-gamma t), gamma = q^{2(K-2)}
 |Q_nu nu + |y_route|^2|. Fan-in init makes Q = O(sigma^2) and y_route = O(sigma), so gamma ~ sigma^2 per
 seed. Measured (mps4, chi = 3, end-core slices of the trapped component): gamma / sigma^2 is constant
-per seed within a factor ~1.4 over sigma = 0.003-0.1 for 5 of 7 trapped seed/teacher pairs (values
+per seed within a factor 1.8 over sigma = 0.003-0.1 for 5 of 7 trapped seed/teacher pairs (values
 0.0003 .. 1.0 across seeds); two pairs switch between two such levels (by 20-100x) at sigma ~ 0.02-0.03.
 On two re-run trapped seeds, Q_nu nu (from the init, conserved) makes the end core the light side at
 BOTH route ends, the joint condition of theory_saddles v2 for a dead route; both ends decay at the same
