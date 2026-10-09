@@ -314,13 +314,26 @@ Results: `results/samples_summary.csv`, `fig_samples.png`.
   CLAUDE.md, lazy-regime finding), with effective rank up to 6.9.
 - **Centred sigma = 1 is not lazy** (parameters move 30-70% relative): it is in between, error
   ~0.01-0.04 at n = 384-512, rank 2.4-2.9: feature learning with a weaker low-rank bias.
-- **Sample complexity of the low-rank bias (conjecture):** small-init GD needs n ~ 200-256, about
-  7-9x the 28-dimensional teacher manifold and close to d^N = 256 here. Proposed reason: the first escape
-  follows the empirical correlation tensor (1/n) sum_j y_j Phi(x_j), whose noise per direction is set
-  by the heavy tails of product features, E[y^2 |Phi|^2] / ||W*||^2 = (1 + 2/d)^N = 256 for d = 2,
-  N = 8, so n must exceed ~(1 + 2/d)^N before the escape direction is right. For d = 2 this equals
-  d^N, so the advantage over the lazy regime is only a constant here; for d >= 3 it should grow
-  exponentially in N ((5/3)^N vs 3^N). Not yet tested.
+- **Recovery fraction** (test error < 1e-2; same picture at thresholds 1e-3 and 1e-1): small init
+  0-1/5 seeds up to n = 128, 2-4/5 at n = 192, 5/5 from n = 256 (chi = 4) or n = 384 (chi = 16); lazy
+  limit 0/5 at every n for chi = 4 and 5/5 from n = 256 = d^N for chi = 16; centred sigma = 1 never
+  below 1e-2 for chi = 4 up to n = 384.
+- **From rich to lazy at fixed data (n = 512, chi = 4):** test error 2.5e-5 / 0.010 / 0.53 / 1.51 / 1.74
+  and learned bond rank 2.0 / 2.4 / 5.0 / 5.1 / 5.3 for small init sigma = 0.5 / centred sigma = 1 /
+  1.5 / 2 / the lazy limit (sigma -> inf). Generalization degrades monotonically with the init scale
+  and the learned rank grows with it. (The sigma = 1.5, 2 GD runs stop at 60 000 steps with train
+  loss ~1e-3-1e-2 of its initial value: lazy-side training is ill-conditioned.)
+- **Second setting, d = 3, N = 6 (W in R^729, K = 5; teacher [3, 2]: 64 parameters, manifold
+  dimension 48; chi = 4 student, tangent dimension <= 120), small init sigma = 0.5:** recovery 0/5 up
+  to n = 128, 2/5 at 192, 4/5 at 256, 5/5 at 384 (test error 5.5e-5, bond rank 2.0); the exact lazy
+  limit has test error 2.6-39 (worse than zero) at every n <= 384, rank 5.8-8. Without a bond-dimension
+  cap the lazy regime would need n = d^N = 729.
+- **Sample complexity of the low-rank bias (empirical; conjecture refuted).** Small-init GD needs
+  n ~ 200-250 in both settings, ~5-9x the teacher manifold dimension (28, 48). I had conjectured that
+  the threshold is set by the heavy tails of product features, ~(1 + 2/d)^N; that predicts 256 for
+  d = 2, N = 8 but 21 for d = 3, N = 6, and the observed thresholds (~250 in both) do not follow it. The
+  threshold is roughly the number of student parameters for chi = 4 (208, 184), but chi = 16 (832
+  parameters) recovers by n = 384, so that is not the rule either. Open.
 - **Effective ranks (the implicit bias, directly):** at every n the learned tensor's bond rank is
   ordered small init (1.3-3.9) < centred sigma = 1 (2.4-5) < lazy limit (4-6.9); only small init lands
   on rank 2 once the data determine W*.
