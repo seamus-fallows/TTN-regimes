@@ -1,7 +1,7 @@
 # sigma x K at d = 2 (every tree has <= ~600 parameters, so LSODA with the exact Hessian is cheap):
 # binary N = 4, 8, 16 (K = 3, 7, 15) and MPS N = 4..12 (K = N); odeco teacher [3, 2]; plain model
 # (realizable); chi = 4 = 2 x teacher rank (spare bond channels, theory_regimes P14) and chi = 2
-# (= teacher rank: stalled fraction vs K). Theory P15 (bin8, d = 2, chi = 16, plain): sigma_c median
+# (= teacher rank: stalled fraction vs K); K >= 10 trees in `sigma_K_d2_large.yaml`. Theory P15 (bin8, d = 2, chi = 16, plain): sigma_c median
 # 0.71; conjecture sigma_c(K) -> 1 (K = 15 predicted in [0.74, 0.93]). sigma_min = 10^(-8/K).
 exp: sigma_K_d2
 base: {d: 2, cap: true, model: plain, weights: [3.0, 2.0], method: lsoda, l_floor: 1.0e-6, max_steps: 30000}
@@ -13,6 +13,3 @@ variants:
   - {kind: mps, n: 6, sigmas: {geomspace: [0.05, 2, 13]}}
   - {kind: binary, n: 8, sigmas: {geomspace: [0.07, 2, 13]}}
   - {kind: mps, n: 8, sigmas: {geomspace: [0.1, 2, 12]}}
-  - {kind: mps, n: 10, sigmas: {geomspace: [0.16, 2, 12]}}
-  - {kind: mps, n: 12, sigmas: {geomspace: [0.22, 2, 11]}}
-  - {kind: binary, n: 16, sigmas: {geomspace: [0.29, 2, 11]}}

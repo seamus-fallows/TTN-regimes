@@ -1,0 +1,9 @@
+# sigma x K at d = 3, chi = 3 = teacher rank, large trees (MPS N = 10, 12; binary N = 16): the
+# stalled fraction vs K. Same experiment as `sigma_K.yaml` (same exp); lower-priority pool, step cap 1e4.
+exp: sigma_K
+base: {d: 3, cap: true, model: plain, l_floor: 1.0e-6, max_steps: 10000}
+grid: {seed: [0, 1, 2, 3, 4, 5]}
+variants:
+  - {kind: mps, n: 10, method: auto, chi: 3, sigmas: {geomspace: [0.2, 2, 10]}}
+  - {kind: mps, n: 12, method: auto, chi: 3, sigmas: {geomspace: [0.25, 2, 9]}}
+  - {kind: binary, n: 16, method: auto, chi: 3, sigmas: {geomspace: [0.3, 2, 9]}}

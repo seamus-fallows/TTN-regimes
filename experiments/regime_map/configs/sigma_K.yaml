@@ -5,8 +5,8 @@
 # stalled fraction vs K (dead routes, R10). sigma_min = 10^(-8/K) keeps the initial component
 # amplitudes ~sigma^K above ~1e-8 (float64 floor of dormant routes).
 # Cost: at d = 3, chi = 6 runs for K >= 10 were infeasible (binary16: Hessian 330 s under load for
-# LSODA; dopri5 stops at its step cap mid-plateau), so d = 3 covers K <= 8 at chi = 3 and 6, and K >= 10
-# at chi = 3 only (stall fraction). The full K range at spare bond channels is `sigma_K_d2.yaml`.
+# LSODA; dopri5 stops at its step cap mid-plateau), so d = 3 covers K <= 8 at chi = 3 and 6 here; K >= 10 at chi = 3
+# only (stall fraction) is in `sigma_K_large.yaml`. The full K range at spare bond channels is `sigma_K_d2.yaml`.
 exp: sigma_K
 base: {d: 3, cap: true, model: plain, l_floor: 1.0e-6, max_steps: 30000}
 grid: {seed: [0, 1, 2, 3, 4, 5]}
@@ -17,6 +17,3 @@ variants:
   - {kind: mps, n: 6, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.05, 2, 12]}}
   - {kind: binary, n: 8, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.2, 2, 9]}}
   - {kind: mps, n: 8, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.2, 2, 9]}}
-  - {kind: mps, n: 10, method: auto, chi: 3, sigmas: {geomspace: [0.2, 2, 10]}}
-  - {kind: mps, n: 12, method: auto, chi: 3, sigmas: {geomspace: [0.25, 2, 9]}}
-  - {kind: binary, n: 16, method: auto, chi: 3, sigmas: {geomspace: [0.3, 2, 9]}}
