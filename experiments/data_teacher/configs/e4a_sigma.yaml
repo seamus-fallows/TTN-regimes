@@ -1,0 +1,16 @@
+# Step 4(a), plateau law of the second escape vs init scale (theory_teachers.md P6/P8): for an MPS-4
+# student and two components with per-site overlap c > 0 the second plateau should scale like
+# log(1/sigma) (2-core strict saddle), for c = 0 (odeco) like sigma^-2 (4-core route); crossover at
+# c_x ~ sigma [log(1/sigma)/(s2 a_N)]^(1/2).
+name: e4a_sigma
+base: {kind: nonorth, n_sites: 4, d: 4, chi: 4, s2: 0.7, overlap: 0.0}
+sweep:
+  overlap: [0.0, 0.05, 0.2, 0.45]
+trees: [mps]
+sigmas: {mps: [0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]}
+seeds: [0, 10]
+t_max: {mps: 1.0e+6}
+n_rec: 3000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-6
