@@ -1,5 +1,6 @@
 """Figures for the regime map (reads saved runs via analysis.load). Usage:
-uv run python experiments/regime_map/plots.py sigma_chi <exp> <model>
+uv run python experiments/regime_map/plots.py sigma_chi <exp> <model> [--lazy CSV] [--out DIR] [--force]
+Outputs go to --out (default results/); existing files are never overwritten without --force.
 """
 
 from __future__ import annotations
@@ -19,7 +20,25 @@ from matplotlib.patches import Patch  # noqa: E402
 sys.path.insert(0, os.path.dirname(__file__))
 from analysis import K_THRESHOLDS, OUT, REGIMES, RHO_THRESHOLDS, boundary, fractions, load  # noqa: E402
 
-RES = os.path.join(os.path.dirname(__file__), "results")
+RES = os.path.join(os.path.dirname(__file__), "results")  # default output dir (set by --out)
+FORCE = False  # --force: allow overwriting existing outputs
+
+
+def _target(name):
+    path = os.path.join(RES, name)
+    if os.path.exists(path) and not FORCE:
+        raise FileExistsError(f"{path} exists; pass --out <new dir> or --force")
+    os.makedirs(RES, exist_ok=True)
+    return path
+
+
+def save_fig(fig, name):
+    fig.savefig(_target(name), bbox_inches="tight")
+    plt.close(fig)
+
+
+def save_csv(df, name):
+    df.to_csv(_target(name), index=False)
 # categorical slots of the reference palette (validated: first three all-pairs), stalled = neutral
 COLORS = {"lazy": "#2a78d6", "s2s": "#eb6834", "rich": "#1baf7a", "stalled": "#b9b8b2"}
 NAMES = {"lazy": "lazy", "s2s": "saddle-to-saddle", "rich": "rich, non-incremental", "stalled": "stalled"}
@@ -162,9 +181,7 @@ def fig_sigma_chi(exp, model, lazy_csv=None, title=""):
     ax.set_title(r"median $\log_{10}\min_i\rho_i$ (white: $\rho=3$)", fontsize=9, loc="left")
     fig.colorbar(im, ax=ax, fraction=0.05)
     fig.tight_layout()
-    path = os.path.join(RES, f"phase_{exp}_{model}.png")
-    fig.savefig(path, bbox_inches="tight")
-    plt.close(fig)
+    save_fig(fig, f"phase_{exp}_{model}.png")
     return df
 
 
@@ -187,7 +204,7 @@ def fig_sensitivity(exp, model, ycol="chi"):
     df = df[df.model == model]
     K = int(df.K.iloc[0])
     bt = boundaries_table(df, ycol)
-    bt.to_csv(os.path.join(RES, f"boundaries_{exp}_{model}.csv"), index=False)
+    save_csv(bt, f"boundaries_{exp}_{model}.csv")
     fig, axes = plt.subplots(1, 2, figsize=(9, 3.4))
     blues = ["#86b6ef", "#2a78d6", "#104281"]
     oranges = ["#f5b394", "#eb6834", "#a3401a"]
@@ -208,16 +225,15 @@ def fig_sensitivity(exp, model, ycol="chi"):
         ax.set_ylabel(r"boundary $\sigma$")
         ax.legend(fontsize=7, frameon=False)
     fig.tight_layout()
-    fig.savefig(os.path.join(RES, f"sensitivity_{exp}_{model}.png"), bbox_inches="tight")
-    plt.close(fig)
+    save_fig(fig, f"sensitivity_{exp}_{model}.png")
     return bt
 
 
 def load_traj(exp, cfg):
     """(t, L/L0, overlaps) for a run of either driver (library Trajectory or interim npz)."""
-    from run_regime import run_id
+    from run_regime import row_cfg, run_id
 
-    path = os.path.join(OUT, exp, "traj", run_id(cfg) + ".npz")
+    path = os.path.join(OUT, exp, "traj", run_id(row_cfg(cfg)) + ".npz")
     if os.path.exists(path):
         z = np.load(path, allow_pickle=False)
         if "overlaps" in z.files:
@@ -246,15 +262,22 @@ def fig_examples(exp, picks, name):
     axes[1, 0].set_ylabel(r"overlap $a_r$")
     axes[1, 0].legend(fontsize=7, frameon=False)
     fig.tight_layout()
-    fig.savefig(os.path.join(RES, f"examples_{name}.png"), bbox_inches="tight")
-    plt.close(fig)
+    save_fig(fig, f"examples_{name}.png")
 
 
 if __name__ == "__main__":
-    what = sys.argv[1]
-    if what == "sigma_chi":
-        exp, model = sys.argv[2], sys.argv[3]
-        lazy_csv = sys.argv[4] if len(sys.argv) > 4 else None
-        fig_sigma_chi(exp, model, lazy_csv, title=f"{exp}, {model}: ")
-        bt = fig_sensitivity(exp, model)
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("what", choices=["sigma_chi"])
+    ap.add_argument("exp")
+    ap.add_argument("model")
+    ap.add_argument("--lazy", help="per-seed lazy predictions CSV (lazy_predict.py)")
+    ap.add_argument("--out", default=RES, help="output directory (default: results/)")
+    ap.add_argument("--force", action="store_true", help="overwrite existing outputs")
+    a = ap.parse_args()
+    RES, FORCE = a.out, a.force
+    if a.what == "sigma_chi":
+        fig_sigma_chi(a.exp, a.model, a.lazy, title=f"{a.exp}, {a.model}: ")
+        bt = fig_sensitivity(a.exp, a.model)
         print(bt[(bt.k_thr == 0.1) & (bt.rho_thr == 3.0)])

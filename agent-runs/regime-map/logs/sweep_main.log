@@ -205,3 +205,11 @@
   return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
 /root/work/TTN-regimes/experiments/regime_map/run_regime.py:162: UserWarning: gradient flow became stiff at t = 61.37; at the stability-limited step, reaching t_max takes ~4.1e+06 more steps. Use method='lsoda' (or a loss_floor if training has converged).
   return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
+/root/work/TTN-regimes/experiments/regime_map/run_regime.py:162: UserWarning: gradient flow became stiff at t = 95.37; at the stability-limited step, reaching t_max takes ~4.7e+06 more steps. Use method='lsoda' (or a loss_floor if training has converged).
+  return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
+/root/work/TTN-regimes/experiments/regime_map/run_regime.py:162: UserWarning: gradient flow became stiff at t = 23.68; at the stability-limited step, reaching t_max takes ~1.1e+06 more steps. Use method='lsoda' (or a loss_floor if training has converged).
+  return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
+/root/work/TTN-regimes/experiments/regime_map/run_regime.py:162: UserWarning: gradient flow became stiff at t = 102.4; at the stability-limited step, reaching t_max takes ~3.8e+06 more steps. Use method='lsoda' (or a loss_floor if training has converged).
+  return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
+/root/work/TTN-regimes/experiments/regime_map/run_regime.py:162: UserWarning: gradient flow became stiff at t = 29.82; at the stability-limited step, reaching t_max takes ~1.1e+06 more steps. Use method='lsoda' (or a loss_floor if training has converged).
+  return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,

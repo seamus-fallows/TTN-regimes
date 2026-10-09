@@ -5,7 +5,8 @@ cfg keys: exp, kind, n, d, chi, cap, sigma, seed, model (centred | plain | twoco
 weights (default [3, 2, 1]), root_scale (root init multiplier, imbalance), lr (sp | ntk | mup),
 bonds ({subtree size: bond dim}), method (dopri5 | lsoda | auto = lsoda for sigma < 0.7), tau_max
 (kernel-time budget, default 1e4), l_floor (stop when L < l_floor L(0), default 1e-6), max_steps
-(default 1e5; a run stopped there is labelled from its state at that time), rtol (1e-8), atol (1e-12).
+(default 1e5; a run stopped there is labelled from its state at that time), balance (gauge-balanced
+init: same W_0 with every Q_e = 0, `balance.py`), rtol (1e-8), atol (1e-12).
 
 Time budget: T = 50 t_esc + tau_max / max(lambda_bar, 1), t_esc = (0.3 sigma)^-(K-2) / ((K-2) s_min)
 (aligned escape-time estimate for the smallest component) and lambda_bar = tr Theta(0) / D
@@ -66,8 +67,18 @@ def parameterization(spec: TTNSpec, cfg: dict):
     return scales, eta
 
 
+def row_cfg(r: dict) -> dict:
+    """The config part of a result row (drops the derived 'alpha' of early rows)."""
+    if "alpha" in r and "alpha_init" not in r and "root_scale" not in r:
+        r = {k: v for k, v in r.items() if k != "alpha"}
+    return r
+
+
 def run_id(cfg: dict) -> str:
-    keys = ["model", "kind", "n", "d", "chi", "sigma", "seed", "root_scale", "lr", "alpha"]
+    """Identifier of a run from its config (a result row works too: derived fields are ignored).
+    Rows written before 2026-10-09 20:20 stored the derived init scale under 'alpha'; for
+    experiments without an 'alpha' input it is dropped (see analysis.row_cfg)."""
+    keys = ["model", "kind", "n", "d", "chi", "sigma", "seed", "root_scale", "lr", "alpha", "balance"]
     return "_".join(f"{k}{cfg.get(k)}" for k in keys if cfg.get(k) is not None)
 
 
@@ -78,6 +89,10 @@ def build(cfg: dict):
     weights = cfg.get("weights", [3.0, 2.0, 1.0])
     base = odeco_teacher(cfg["n"], cfg["d"], list(weights), seed=1000 + cfg["seed"])
     cores0 = spec.init(cfg["sigma"], seed=cfg["seed"], core_scales=scales)
+    if cfg.get("balance"):  # same W_0, gauge-transformed so that every Q_e = 0
+        from balance import gauge_balance
+
+        cores0 = gauge_balance(spec, cores0)[0]
     model = cfg["model"]
     if model == "centred":
         problem = Problem(spec, ShiftedTeacher(base, spec, cores0), lr_multipliers=eta)
@@ -206,7 +221,7 @@ def run_point(cfg: dict) -> dict:
 
     row = {k: v for k, v in cfg.items()}
     row.update(
-        K=K, P=problem.spec.n_params, alpha=info["alpha"], lam_bar=info["lam_bar"], t_max=t_max,
+        K=K, P=problem.spec.n_params, alpha_init=info["alpha"], lam_bar=info["lam_bar"], t_max=t_max,
         integrator=kw["method"],
         t_end=float(traj.meta["t_end"]), stop=traj.meta["stop_reason"], stiff_at=traj.meta.get("stiff_at"),
         n_steps=traj.meta["n_steps"], L0=L0, l_end=l_end, l_best=l_best, dK=dK, dK_dir=dK_dir,
@@ -247,7 +262,7 @@ def run_sweep(cfgs, exp=None, n_proc=340, order=None):
                 for line in f:
                     r = json.loads(line)
                     if "error" not in r:
-                        done.add((e, run_id(r)))
+                        done.add((e, run_id(row_cfg(r))))
         files[e] = open(path, "a")
     todo = [c for c in cfgs if (c["exp"], run_id(c)) not in done]
     todo.sort(key=order or (lambda c: (-c["n"], c["sigma"])))

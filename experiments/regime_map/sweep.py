@@ -9,7 +9,8 @@ Config schema:
                                 'sigmas' and 'grid' entries that override the top-level ones
   alpha (in grid or base):      fixed function-space scale prod_v sigma_v; then
                                 sigma = (alpha / root_scale)^(1/K) (imbalance sweeps)
-Usage: uv run python experiments/regime_map/sweep.py configs/a.yaml [configs/b.yaml ...] [n_proc]
+Usage: uv run python experiments/regime_map/sweep.py configs/a.yaml [configs/b.yaml ...] [--n-proc N] [--out DIR]
+Runs already present in <out>/<exp>/results.jsonl are skipped (resumable); nothing is overwritten.
 """
 
 from __future__ import annotations
@@ -58,11 +59,21 @@ def expected_cost(c):
 
 
 if __name__ == "__main__":
-    # one or more config files; the last argument may be the number of processes
-    args = sys.argv[1:]
-    n_proc = int(args.pop()) if args[-1].isdigit() else 340
+    import argparse
+
+    import run_regime
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("configs", nargs="+", help="YAML configs (a trailing integer = process count)")
+    ap.add_argument("--n-proc", type=int, default=340)
+    ap.add_argument("--out", default=run_regime.OUT, help="raw output root (default /root/outputs/regime_map)")
+    a = ap.parse_args()
+    paths = list(a.configs)
+    if paths[-1].isdigit():
+        a.n_proc = int(paths.pop())
+    run_regime.OUT = a.out
     runs = []
-    for path in args:
+    for path in paths:
         with open(path) as f:
             runs += expand(yaml.safe_load(f))
-    run_sweep(runs, n_proc=n_proc, order=expected_cost)
+    run_regime.run_sweep(runs, n_proc=a.n_proc, order=expected_cost)

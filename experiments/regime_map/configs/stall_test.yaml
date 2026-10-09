@@ -1,0 +1,15 @@
+# Test of the stalls seen at chi = teacher rank for K >= 7 (all fan-in runs leave one component
+# unlearned): fan-in vs gauge-balanced init (same W_0, every Q_e = 0) at chi = 3, and fan-in at chi = 6.
+exp: stall_test
+base: {kind: binary, n: 8, d: 3, cap: true, model: centred, method: auto, l_floor: 1.0e-6}
+grid:
+  seed: [0, 1, 2, 3, 4, 5]
+  sigma: [0.3, 0.45, 0.6]
+variants:
+  - {chi: 3}
+  - {chi: 3, balance: true}
+  - {chi: 6}
+  - {chi: 6, balance: true}
+  - {kind: mps, chi: 3}
+  - {kind: mps, chi: 3, balance: true}
+  - {kind: mps, chi: 6}

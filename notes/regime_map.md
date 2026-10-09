@@ -152,4 +152,32 @@ sigma = 3 and 10 is 1362 (two-copy) vs predicted (10/3)^6 = 1372, and 40.6 (cent
 
 ## 2. Results
 
-(in progress)
+All runs: whitened inputs, exact population loss, d = 3, odeco teacher [3, 2, 1] (teacher seed
+1000 + init seed), fan-in init, gradient flow. Labels: `notes/diagnostics.md` (converged = L(T) < 1e-3
+L(0)), at all 9 threshold pairs. Every number below states tree, chi, sigma range and seed count.
+
+### 2.1 sigma x chi, binary N = 4 (K = 3)
+
+*Interim data (scipy RK45, rtol 1e-9, 6 seeds x 8 chi x 19 sigma in [0.01, 40]; to be replaced by the
+library rerun with linear-time event refinement, `sigma_chi_b4`).*
+
+- **Three regions plus a stall region** (`results/phase_b4_sigma_chi_centred.png`): S2S for
+  sigma < sigma_c(chi); rich non-incremental in between; lazy for sigma > sigma_lazy(chi) only if
+  chi >= 9 (= the cut dimension d^2); for chi < 9 the runs stall above sigma ~ 0.8-1.3. **Empirical.**
+- **S2S boundary.** sigma_c (S2S fraction 1/2) = 0.25, 0.13, 0.14, 0.13, 0.10, 0.071, 0.076, 0.045 for
+  chi = 3, 4, 6, 9, 12, 18, 24, 36. Predicted per seed from its deepest run only (aligned-mode
+  extrapolation of the three event times, `analysis.aligned_sigma_c`): medians 0.34, 0.13, 0.13, 0.14,
+  0.10, 0.075, 0.074, 0.043 - within one grid step (x1.585) everywhere. **Empirical** test of the
+  **derived** small-sigma law rho_i = R_i sigma^-(K-2) + O(1) with aligned-mode O(1) terms.
+- **Stall = realizability.** For chi < 9 the final loss equals the best rank-chi fit of W_0 + W* across
+  the 01|23 cut (exact SVD) in every run, and the stall onset is where that best fit reaches 1e-3 L(0).
+  **Empirical**, confirming theory R6.
+- **Lazy boundary** (chi >= 9): sigma_lazy = 3.0, 2.1, 1.59, 1.26, 1.13 for chi = 9, 12, 18, 24, 36; first-
+  order prediction (kappa/0.1)^(1/3) with kappa from linear response at init: 3.8, 2.4, 1.45, 0.98, 0.59.
+  It holds where x = ||W*|| / sigma^3 <~ 1 (chi <= 18) and underestimates sigma_lazy when the predicted
+  boundary has x > 1 (chi >= 24): there delta_K is dominated by higher orders in x. At sigma >= 3 the
+  measured delta_K equals kappa / sigma^3 within 1% (chi = 24). **Empirical.**
+- **Threshold sensitivity.** S2S boundary ratio between rho thresholds 2 and 5: 2.2-2.55 for every chi
+  (predicted (5/2)^(1/(K-2)) = 2.5). Lazy boundary ratio between delta_K thresholds 0.05 and 0.2:
+  2.4, 1.7, 1.6, 1.1, 1.5 for chi = 9..36 (first-order prediction 4^(1/3) = 1.59; grid step 1.585).
+
