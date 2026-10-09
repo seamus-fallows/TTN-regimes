@@ -12,64 +12,45 @@ import pandas as pd
 import plot_style as ps
 
 from common import RESULTS as RES  # noqa: E402
-CLASSES = [("gf_like", "converges (GF-like)"), ("oscillating", "bounded oscillation"),
-           ("reentry", "thrown back to origin"), ("diverged", "diverges")]
+CLASSES = [("gf_like", "GF-like (monotone, GF's final loss)"),
+           ("catapult", "catapult (loss spike, then GF's loss)"),
+           ("oscillating", "bounded oscillation"), ("reentry", "thrown back to origin"),
+           ("other", "other final loss"), ("diverged", "diverges")]
 
 
 def fig_gd_vs_gf(df):
-    fig, axes = plt.subplots(1, 3, figsize=(10.5, 3.2))
+    """Relative error of the first event vs eta (persistent events); per-run accuracy of the O(eta)
+    prediction is in fig_shift_accuracy.png (analyze_shift.py)."""
+    fig, axes = plt.subplots(1, 2, figsize=(8.6, 3.3))
     small = df[df.root_scale.isna() & (df.cls == "gf_like")]
-    # (a) relative error of t_1 vs eta / eta_max, binary N=4 at five sigmas
     ax = axes[0]
-    b4 = small[(small.tree == "binary") & (small.n == 4)]
-    sigmas = sorted(b4.sigma.unique())
-    for i, sig in enumerate(sigmas):
+    b4 = small[(small.tree == "binary") & (small.n == 4) & (small.seed <= 4)]
+    for i, sig in enumerate(sorted(b4.sigma.unique())):
         g = b4[b4.sigma == sig].groupby("ratio")
         m, se = g.rel_err1.mean(), g.rel_err1.sem()
         col = ps.BLUES[i + 1]
         ax.errorbar(m.index, m.values, yerr=se.values, fmt="o", color=col, ms=3.5, lw=1,
                     label=f"σ = {sig:g}")
-        # prediction: rel err = eta * c_1 / t_1 (c_1 from the variational equation), mean over seeds
         pred = (b4[b4.sigma == sig].assign(p=lambda x: x.eta * x.pred_shift_over_eta1 / x.t1_gf)
                 .groupby("ratio").p.mean())
         ax.plot(pred.index, pred.values, "-", color=col, lw=1)
     ax.set(xscale="log", yscale="log", xlabel="η / η_max", ylabel="(t₁^GD − t₁^GF) / t₁^GF",
-           title="(a) binary N=4: first event, GD vs GF")
-    ax.legend(loc="upper left", ncol=1)
-    # (b) measured / predicted event shift for every run below eta_max (all trees, events 1-2)
-    ax = axes[1]
-    for i, (tree, n) in enumerate([("binary", 4), ("binary", 8), ("mps", 8)]):
-        g0 = small[(small.tree == tree) & (small.n == n) & (small.ratio < 1)]
-        for r, mk in ((1, "o"), (2, "s")):
-            q = (g0[f"shift_over_eta{r}"] / g0[f"pred_shift_over_eta{r}"]).rename("q")
-            q = pd.concat([g0.ratio, q], axis=1).dropna()
-            med = q.groupby("ratio").q.median()
-            ax.plot(med.index, med.values, mk + "-", color=ps.CAT[i], ms=3.5, lw=1,
-                    mfc="white" if r == 2 else ps.CAT[i],
-                    label=f"{tree} N={n}, event {r}")
-    ax.axhline(1, color=ps.MUTED, lw=0.8)
-    ax.set(xscale="log", xlabel="η / η_max", ylabel="measured / predicted shift (median)",
-           title="(b) O(η) prediction vs η", ylim=(0.5, 1.5))
-    ax.legend(loc="lower left", fontsize=6.5, ncol=2)
-    # (c) measured shift / eta vs prediction, all events, eta <= 0.1 eta_max
-    ax = axes[2]
-    pts = []
-    for r in (1, 2, 3):
-        c, pc = f"shift_over_eta{r}", f"pred_shift_over_eta{r}"
-        if c in small:
-            s = small[small.ratio <= 0.1][[c, pc, "tree", "n"]].dropna()
-            pts.append(s.rename(columns={c: "meas", pc: "pred"}).assign(event=r))
-    pts = pd.concat(pts)
-    for i, (key, g) in enumerate(pts.groupby(["tree", "n"])):
-        ax.plot(g.pred, g.meas, "o", ms=3.5, color=ps.CAT[i], alpha=0.8,
-                label=f"{key[0]} N={key[1]}")
-    lim = [pts[["meas", "pred"]].min().min() * 1.1, pts[["meas", "pred"]].max().max() * 1.1]
-    ax.plot(lim, lim, color=ps.MUTED, lw=0.8, zorder=0)
-    ax.set(xlabel="predicted shift / η (variational eq.)", ylabel="measured (t^GD − t^GF) / η",
-           title="(c) all events, η ≤ 0.1 η_max")
-    ax.set_xscale("symlog", linthresh=1)
-    ax.set_yscale("symlog", linthresh=1)
+           title="(a) binary N=4, first event (mean ± s.e., 5 seeds)")
     ax.legend(loc="upper left")
+    ax = axes[1]
+    for i, (tree, n) in enumerate([("binary", 8), ("mps", 8)]):
+        g0 = small[(small.tree == tree) & (small.n == n)]
+        ax.scatter(g0.ratio * (1.04 if i else 0.96), g0.rel_err1, s=12, color=ps.CAT[i + 1],
+                   label=f"{tree} N={n} (σ=0.9), each seed")
+        pred = g0.assign(p=lambda x: x.eta * x.pred_shift_over_eta1 / x.t1_gf)
+        for _, gs in pred.groupby("seed"):
+            gs = gs.sort_values("ratio")
+            ax.plot(gs.ratio, gs.p, "-", color=ps.CAT[i + 1], lw=0.6, alpha=0.6)
+    ax.set_xscale("log")
+    ax.set_yscale("symlog", linthresh=1e-4)
+    ax.set(xlabel="η / η_max", ylabel="relative error of t₁ (first event)",
+           title="(b) N=8 trees: every seed (lines: prediction)")
+    ax.legend(loc="upper left", fontsize=6.5)
     fig.tight_layout()
     fig.savefig(RES / "fig_gd_vs_gf.png")
     plt.close(fig)
@@ -143,10 +124,11 @@ def fig_eos_example():
 
 
 def fig_min_selection(df):
-    """Runs that converged to a global minimum (final loss < 1e-8 L(0)); binary N=4, sigma=0.1."""
+    """Runs that converged to a global minimum (GF-like or catapult, final loss < 1e-6 L(0));
+    binary N=4, sigma=0.1."""
     fig, axes = plt.subplots(1, 2, figsize=(8.5, 3.2))
-    ok = df[(df.cls == "gf_like") & (df.loss_end < 1e-8 * df.loss0) & (df.tree == "binary")
-            & (df.n == 4) & (df.sigma == 0.1)]
+    ok = df[df.cls.isin(["gf_like", "catapult"]) & (df.loss_end < 1e-6 * df.loss0)
+            & (df.tree == "binary") & (df.n == 4) & (df.sigma == 0.1)]
     series = [("balanced (fan-in) init", ok.root_scale.isna()), ("root core ×20 (scale 2)",
               ok.root_scale == 2.0), ("root ×40 (scale 4)", ok.root_scale == 4.0),
               ("root ×60 (scale 6)", ok.root_scale == 6.0)]
@@ -179,7 +161,8 @@ def fig_min_selection(df):
 def main():
     ps.apply()
     df = pd.read_csv(RES / "gd_sweep.csv")
-    df = df[~df.centred & (df.seed <= 4)]  # step-1 sweep: plain model, init seeds 0-4
+    # step-1 sweep: plain model, chi = 3, steps relative to eta_max, init seeds 0-4
+    df = df[~df.centred & (df.chi == 3) & (df.ratio_ref == "teacher") & (df.seed <= 4)]
     fig_gd_vs_gf(df)
     fig_stability(df)
     fig_eos_example()

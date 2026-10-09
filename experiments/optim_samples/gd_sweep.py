@@ -19,6 +19,7 @@ import json
 import math
 import os
 import time
+from types import SimpleNamespace
 from multiprocessing import Pool
 from pathlib import Path
 
@@ -27,7 +28,10 @@ import torch
 import yaml
 
 from common import RAW, Problem, eta_max, gradient_flow, record_events, save_json, setup
+from ttn.dynamics import Problem as LibProblem
+from ttn.dynamics import Recorder, integrate_gf
 from ttn.network import conserved_quantities
+from ttn.teachers import ShiftedTeacher
 
 OUT = RAW / "gd"
 
@@ -60,15 +64,36 @@ def make_problem(task):
     return spec, teacher, Problem(spec, teacher, cores0), theta0
 
 
+def gf_lsoda(task, spec, teacher, theta0):
+    """GF reference with `ttn.dynamics.integrate_gf(method='lsoda')` (stiff lazy-side runs);
+    events from a dense log record (`record_events`)."""
+    cores0 = spec.unflatten(theta0)
+    target = ShiftedTeacher(teacher, spec, [c.clone() for c in cores0]) if task.get("centred") else teacher
+    lib_prob = LibProblem(spec, target)
+    t_max = task.get("T_gf", task["T"])
+    floor = task.get("gf_loss_floor")
+    traj = integrate_gf(lib_prob, theta0, t_max, method="lsoda", n_log=3000,
+                        loss_floor=None if floor is None else floor,
+                        recorder=Recorder(spectra=False, conservation=False))
+    ev = record_events(traj["t"], traj["overlaps"])
+    ev.update(nfev=int(traj.meta.get("n_evals", 0) or 0), t_end=float(traj.meta["t_end"]),
+              integrator="lsoda")
+    return traj["t"], traj["loss"], traj["overlaps"], torch.from_numpy(traj["theta_end"]), ev
+
+
 def run_gf(task):
     spec, teacher, prob, theta0 = make_problem(task)
     q0 = conserved_quantities(spec, spec.unflatten(theta0))
     t0 = time.time()
-    sol, ev = gradient_flow(prob, theta0, task.get("T_gf", task["T"]),
-                            loss_floor=task.get("gf_loss_floor"))
-    a = np.array([prob.overlaps(torch.from_numpy(y)) for y in sol.y.T])
-    loss = np.array([prob.loss(torch.from_numpy(y)).item() for y in sol.y.T])
-    p_end = torch.from_numpy(sol.y[:, -1])
+    if task.get("gf_method") == "lsoda":
+        t_rec, loss, a, p_end, ev = gf_lsoda(task, spec, teacher, theta0)
+        sol = SimpleNamespace(t=t_rec)
+    else:
+        sol, ev = gradient_flow(prob, theta0, task.get("T_gf", task["T"]),
+                                loss_floor=task.get("gf_loss_floor"))
+        a = np.array([prob.overlaps(torch.from_numpy(y)) for y in sol.y.T])
+        loss = np.array([prob.loss(torch.from_numpy(y)).item() for y in sol.y.T])
+        p_end = torch.from_numpy(sol.y[:, -1])
     summary = dict(task=task, eta_max=eta_max(spec, teacher), K=spec.n_cores, **ev,
                    loss_end=loss[-1], loss0=loss[0], a_end=a[-1].tolist(),
                    sharp_end=prob.sharpness(p_end), q_drift=prob.q_drift(p_end, q0),
@@ -88,6 +113,8 @@ def run_gd(task):
         ref = json.loads((OUT / f"{tag_of(dict(task, ratio='gf'))}.json").read_text())
         lam_gf = ref["sharp_end"]
         eta = task["ratio"] * 2.0 / lam_gf
+        if task.get("T_from_gf"):  # run as long as the GF reference took to converge (x factor)
+            task = dict(task, T=task["T_from_gf"] * ref["t_end"])
     else:
         eta = task["ratio"] * em
     steps = int(math.ceil(task["T"] / eta))
@@ -158,7 +185,7 @@ def tasks_from_config(cfg):
             task = dict(tree=block["tree"], n=block["n"], sigma=sigma, seed=seed, ratio=ratio,
                         T=block["T"][sigma] if isinstance(block["T"], dict) else block["T"],
                         root_scale=block.get("root_scale"), centred=block.get("centred", False))
-            for key in ("chi", "ratio_ref", "gf_loss_floor", "T_gf"):  # optional block options
+            for key in ("chi", "ratio_ref", "gf_loss_floor", "T_gf", "gf_method", "T_from_gf"):
                 if key in block:
                     val = block[key]
                     task[key] = val[sigma] if isinstance(val, dict) else val

@@ -4,12 +4,18 @@ Per run: relative event-time errors (t_r^GD - t_r^GF)/t_r^GF, whether the learni
 the outcome class, final sharpness / lambda_bal, conservation drift, tail loss, and the backward-error
 prediction of the event shift (from predict_shift.py, if present).
 
-Outcome classes (checked in this order):
+Events are persistent (last upward crossing of a_r = 1/2, `common.record_events`).
+Outcome classes (fix round 1: the final loss is compared with GF's; checked in this order):
   diverged     loss non-finite or > 1e6 L(0)
-  reentry      after the first event the loss returns above 0.9 L(0) (kicked back to the origin)
-  oscillating  over the last 20% of steps (<= 2000) the total variation of the loss exceeds 10 x its net change
-               (+1e-9 L(0)), or the final point is linearly unstable (sharpness * eta / 2 > 1.001)
-  gf_like      otherwise (monotone; compared with GF through the event times and the final loss)
+  gf_like      final loss <= 2 L_GF(T) + 1e-3 L(0) (GF's level) and monotone loss (no step raises
+               the loss by more than 1e-3 L(0))
+  catapult     final loss at GF's level as above, but the loss rose by more than 1e-3 L(0) on the way
+               (loss spike then convergence: catapult / edge-of-stability selection)
+  reentry      not at GF's level and, after the first event, the loss returned above 0.9 L(0)
+               (thrown back to the origin)
+  oscillating  over the last 20% of steps (<= 2000) the total variation of the loss exceeds 10 x its
+               net change (+1e-9 L(0)), or the final point is linearly unstable (sharpness eta/2 > 1.001)
+  other        none of the above (ends monotonically at a loss level different from GF's)
 
 Run: uv run python experiments/optim_samples/analyze_gd.py  -> results/gd_sweep.csv, gd_summary.csv
 """
@@ -77,20 +83,21 @@ def main():
         d = load(p)
         tk = d["task"]
         gf[(tk["tree"], tk["n"], tk["sigma"], tk["seed"], tk.get("root_scale"),
-            bool(tk.get("centred", False)))] = d
+            bool(tk.get("centred", False)), tk.get("chi", 3))] = d
     shifts = {}
     shift_file = OUT / "gd_shift_prediction.csv"
     if shift_file.exists():
         for _, r in pd.read_csv(shift_file).iterrows():
             rs = None if pd.isna(r.root_scale) else r.root_scale
             centred = bool(r.get("centred", False))
-            shifts[(r.tree, r.n, r.sigma, r.seed, rs, centred, int(r.comp))] = r.pred_shift_over_eta
+            chi = int(r.get("chi", 3)) if not pd.isna(r.get("chi", 3)) else 3
+            shifts[(r.tree, r.n, r.sigma, r.seed, rs, centred, chi, int(r.comp))] = r.pred_shift_over_eta
     rows = []
     for p in sorted(q for q in RAW.glob("*.json") if not q.name.endswith("_gf.json")):
         d = load(p)
         tk = d["task"]
         key = (tk["tree"], tk["n"], tk["sigma"], tk["seed"], tk.get("root_scale"),
-               bool(tk.get("centred", False)))
+               bool(tk.get("centred", False)), tk.get("chi", 3))
         ref = gf.get(key)
         if ref is None:
             continue
@@ -102,23 +109,33 @@ def main():
                     if np.isfinite(t_gf[i])]
         if d["diverged"]:
             cls = "diverged"
-        elif d["reentry"]:
-            cls = "reentry"
         else:
             osc, tv, net = tail_class(p.with_suffix(".npz"), d["loss0"])
             # A converged GD run must sit at a linearly stable point: sharpness * eta / 2 <= 1.
             unstable = d.get("sharp_end", 0.0) * d["eta"] / 2 > 1.001
-            cls = "oscillating" if (osc or unstable) else "gf_like"
+            gf_level = d["loss_end"] <= 2 * ref["loss_end"] + 1e-3 * d["loss0"]
+            monotone = d.get("max_rise", 0.0) <= 1e-3
+            if gf_level and not (osc or unstable):
+                cls = "gf_like" if monotone else "catapult"
+            elif d["reentry"]:
+                cls = "reentry"
+            elif osc or unstable:
+                cls = "oscillating"
+            else:
+                cls = "other"
         k = ref["K"]
         lam_bal = k * 3.0 ** (2 - 2 / k)
         row = dict(tree=tk["tree"], n=tk["n"], K=k, sigma=tk["sigma"], seed=tk["seed"],
                    root_scale=tk.get("root_scale"), centred=bool(tk.get("centred", False)),
+                   chi=tk.get("chi", 3), ratio_ref=tk.get("ratio_ref", "teacher"),
+                   lam_gf=d.get("lam_gf"), max_rise=d.get("max_rise"),
+                   gf_loss_rel=ref["loss_end"] / ref["loss0"],
                    ratio=tk["ratio"], eta=d["eta"], sharp_init=d["probe"][0]["sharp"],
                    cls=cls, loss_end=d["loss_end"], loss_gf_end=ref["loss_end"],
                    loss0=d["loss0"], loss_tail_mean=d["loss_tail_mean"],
                    same_order=order_gd[: len(order_gf)] == order_gf[: len(order_gd)],
                    n_events_gd=len(order_gd), n_events_gf=len(order_gf),
-                   max_cross=max(d["n_cross"]),
+                   max_cross=max(d["n_cross"]), n_cross=str(d["n_cross"]),
                    sharp_end=d.get("sharp_end", math.nan),
                    sharp_end_rel=d.get("sharp_end", math.nan) / lam_bal,
                    stab_end=d.get("sharp_end", math.nan) * d["eta"] / 2,
@@ -138,12 +155,15 @@ def main():
     df = pd.DataFrame(rows)
     OUT.mkdir(exist_ok=True)
     df.to_csv(OUT / "gd_sweep.csv", index=False)
-    g = df.groupby(["tree", "n", "centred", "sigma", "root_scale", "ratio"], dropna=False)
+    g = df.groupby(["tree", "n", "centred", "chi", "ratio_ref", "sigma", "root_scale", "ratio"],
+                   dropna=False)
     summ = g.agg(
         n_runs=("seed", "size"),
         frac_gf_like=("cls", lambda c: np.mean(c == "gf_like")),
         frac_osc=("cls", lambda c: np.mean(c == "oscillating")),
         frac_reentry=("cls", lambda c: np.mean(c == "reentry")),
+        frac_catapult=("cls", lambda c: np.mean(c == "catapult")),
+        frac_other=("cls", lambda c: np.mean(c == "other")),
         frac_div=("cls", lambda c: np.mean(c == "diverged")),
         frac_same_order=("same_order", "mean"),
         rel_err1_mean=("rel_err1", "mean"), rel_err1_se=("rel_err1", "sem"),
@@ -159,8 +179,8 @@ def main():
     summ.to_csv(OUT / "gd_summary.csv", index=False)
     export_eos()
     with pd.option_context("display.width", 250, "display.max_rows", 500):
-        cols = ["tree", "n", "centred", "sigma", "root_scale", "ratio", "frac_gf_like", "frac_osc",
-                "frac_reentry", "frac_div", "frac_same_order", "rel_err1_mean", "rel_err2_mean",
+        cols = ["tree", "n", "centred", "chi", "ratio_ref", "sigma", "root_scale", "ratio", "frac_gf_like", "frac_osc",
+                "frac_reentry", "frac_catapult", "frac_other", "frac_div", "frac_same_order", "rel_err1_mean", "rel_err2_mean",
                 "sharp_end_rel", "sharp_gf_rel", "trq_end", "trq_gf", "loss_tail_rel"]
         print(summ[cols].to_string(float_format=lambda x: f"{x:.3g}"))
 

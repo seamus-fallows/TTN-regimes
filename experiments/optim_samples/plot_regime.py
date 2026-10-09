@@ -16,8 +16,10 @@ import pandas as pd
 import plot_style as ps
 
 from common import RESULTS as RES  # noqa: E402
-CLASSES = [("gf_like", "converges (GF-like)"), ("oscillating", "bounded oscillation"),
-           ("reentry", "thrown back to origin"), ("diverged", "diverges")]
+CLASSES = [("gf_like", "GF-like (monotone, GF's final loss)"),
+           ("catapult", "catapult (loss spike, then GF's loss)"),
+           ("oscillating", "bounded oscillation"), ("reentry", "thrown back to origin"),
+           ("other", "other final loss"), ("diverged", "diverges")]
 
 
 def main():

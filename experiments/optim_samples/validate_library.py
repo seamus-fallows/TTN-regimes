@@ -8,6 +8,7 @@ Run: uv run python experiments/optim_samples/validate_library.py  -> results/val
 """
 
 import argparse
+import os
 import json
 from multiprocessing import Pool
 
@@ -89,7 +90,7 @@ def main():
         pick.setdefault((r["task"]["sigma"], r["task"]["B"]), r)
     sgd = list(pick.values())[:2]
     ap = argparse.ArgumentParser()
-    ap.add_argument("--workers", type=int, default=12)
+    ap.add_argument("--workers", type=int, default=min(12, os.cpu_count() or 1))
     workers = ap.parse_known_args()[0].workers
     with Pool(workers) as pool:
         res = pool.map(gd_case, gd) + pool.map(gf_case, gf) + pool.map(sgd_case, sgd)

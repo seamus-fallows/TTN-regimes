@@ -1,7 +1,8 @@
 """Step-3 analysis and figure: test error and effective bond rank vs training-set size n.
 
 Reads /root/outputs/optim_samples/samples/*.jsonl (samples_sweep.py). Test error is relative to the
-zero predictor, test_rel = ||W_learned - W*||^2 / ||W*||^2. Effective bond rank: number of bond
+zero predictor, test_rel = ||W_learned - W*||^2 / ||W*||^2. The exact lazy limit depends only on the
+init direction, so it is counted once per (setup, n, seed) (fix round 1: it was triplicated for chi = 4). Effective bond rank: number of bond
 singular values of the learned tensor above 0.1 x (smallest teacher weight), averaged over edges.
 
 Run: uv run python experiments/optim_samples/analyze_samples.py
@@ -24,6 +25,7 @@ RAW = RAW_ROOT / "samples"
 
 def load():
     rows, curves = [], []
+    lazy_seen = set()  # the lazy limit depends only on the init direction: one row per (setup, n, seed)
     for f in RAW.glob("*.jsonl"):
         for line in f.read_text().splitlines():
             d = json.loads(line)
@@ -35,7 +37,9 @@ def load():
                              train_rel=d["train_loss"], eff_rank=np.mean(d["eff_ranks"]),
                              eff_ranks=str(d["eff_ranks"]), ent_rank=np.mean(d["entropy_ranks"]),
                              rel_change=d["rel_param_change"], t_end=d["t_end"]))
-            if "lazy_test_rel" in d:
+            lazy_key = (base["setup"], base["n"], base["seed"])
+            if "lazy_test_rel" in d and lazy_key not in lazy_seen:
+                lazy_seen.add(lazy_key)
                 rows.append(dict(base, method="lazy limit", status="exact",
                                  test_rel=d["lazy_test_rel"], train_rel=np.nan,
                                  eff_rank=np.mean(d["lazy_eff_ranks"]),

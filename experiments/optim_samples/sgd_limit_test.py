@@ -56,7 +56,7 @@ def run(task):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--workers", type=int, default=min(4, os.cpu_count() or 1))
     args = ap.parse_known_args()[0]
     tasks = [(b, r, s) for b in ETA_MS for r in RATIOS for s in range(5)]
     with Pool(args.workers) as pool:

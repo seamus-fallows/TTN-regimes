@@ -72,7 +72,8 @@ def predict(path):
         rate = -(grad_a @ g).item()
         rows.append(dict(tree=task["tree"], n=task["n"], sigma=task["sigma"], seed=task["seed"],
                          root_scale=task.get("root_scale"),
-                         centred=bool(task.get("centred", False)), comp=comp, t_e=t_e,
+                         centred=bool(task.get("centred", False)), chi=task.get("chi", 3),
+                         comp=comp, t_e=t_e,
                          a_check=a.item(), pred_shift_over_eta=-(grad_a @ de).item() / rate,
                          tangential_shift_over_eta=0.5 * np.log(g.norm().item() / g0)))
     return rows
@@ -80,9 +81,11 @@ def predict(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--workers", type=int, default=min(8, os.cpu_count() or 1))
     args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
-    paths = sorted(str(p) for p in RAW.glob("*_gf.json"))
+    # Plain-model, chi = 3 references of the step-1 sweep (seeds 0-4 and the order seeds).
+    paths = sorted(str(p) for p in RAW.glob("*_gf.json")
+                   if "_centred" not in p.name and "_chi" not in p.name and "_root" not in p.name)
     with Pool(args.workers) as pool:
         rows = [r for res in pool.imap_unordered(predict, paths) for r in res]
     df = pd.DataFrame(rows).sort_values(["tree", "n", "sigma", "root_scale", "seed", "comp"])

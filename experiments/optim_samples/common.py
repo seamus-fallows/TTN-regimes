@@ -9,6 +9,8 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -39,9 +41,14 @@ def _path_option(flag: str, default: Path) -> Path:
 # Every script takes --raw-dir (raw per-run outputs) and --out-dir (summary tables and figures). The
 # default output directory is outside git, so re-running never overwrites the committed results; pass
 # --out-dir experiments/optim_samples/results to regenerate them.
-RAW = _path_option("--raw-dir", Path("/root/outputs/optim_samples"))
-RESULTS = _path_option("--out-dir", Path("/root/outputs/optim_samples/results"))
+# Defaults can also be set with the environment variables OPTIM_SAMPLES_RAW / OPTIM_SAMPLES_OUT.
+RAW = _path_option("--raw-dir", Path(os.environ.get("OPTIM_SAMPLES_RAW", "/root/outputs/optim_samples")))
+RESULTS = _path_option("--out-dir", Path(os.environ.get("OPTIM_SAMPLES_OUT", str(RAW / "results"))))
 RESULTS.mkdir(parents=True, exist_ok=True)
+try:  # Greek letters in printed tables must not crash non-UTF-8 consoles
+    sys.stdout.reconfigure(errors="replace")
+except (AttributeError, ValueError):
+    pass
 
 
 TEACHER_SEED = 101  # independent of init seeds (0-4) and data seeds

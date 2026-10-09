@@ -97,44 +97,61 @@ times to within a few percent at small init, and the agreement improves as sigma
 
 ### 3.2 Saddle sequence below eta_max (empirical)
 
-Same learning order as GF in 225/235 runs below eta_max. The 10 exceptions are two seeds of binary
-N=4 at sigma = 0.1, where GF has a near-tie between components 1 and 2: GF learns component 1 at
-t = 7.8 and component 2 only after a second plateau (t = 23.2 and 16.6); with eta >= 0.2 eta_max
-(seed 1) or >= 0.5 eta_max (seed 3) both are learned together at t ~ 7.8-7.9 and **the second
-plateau disappears**. An O(eta) perturbation can flip a near-tied race, after which the loser of
-the race is no longer suppressed. No flips at sigma <= 0.03, at sigma = 0.3, or on the N = 8 trees
-(5 seeds each). **Conjecture:** the probability of a flip vanishes as eta -> 0 and as sigma -> 0 (the
-relative perturbation eta c / t ~ eta sigma^{K-2} ln(1/sigma)); to be quantified with more seeds.
-This partly confirms the literature correction to H6 (sequence changes are possible below the
-stability limit), but only through near-ties.
+**GD below eta_max kept the GF saddle sequence in every checked case.** With persistent events
+(last upward crossing of a_r = 1/2, notes/diagnostics.md), the learning order of GD equals GF's in
+765/765 runs below eta_max: binary N=4 at sigma = 0.003-0.3 (675 runs: 5 seeds x 18 steps, plus 40
+more seeds at 0.1, 0.3, 0.5, 0.9 eta_max for sigma = 0.03, 0.1, 0.3), binary N=8 and MPS N=8 at
+sigma = 0.9 (45 runs each). What GD does change is the size of **transient excursions**: in a near-
+tied race the eventually-second component rises during the first event and falls back (GF already
+shows a transient crossing of 1/2 in 0/5, 0/5, 1/45, 4/45, 7/45 inits at sigma = 0.003, 0.01, 0.03,
+0.1, 0.3). With GD the fraction of inits with a transient crossing grows with eta: at sigma = 0.1 from
+0.09 +- 0.04 (0.1 eta_max) to 0.18 +- 0.06 (0.9 eta_max); at sigma = 0.03 from 0.02 to 0.07 (45 inits
+each); the component is then learned at its GF time (e.g. sigma = 0.1 seed 1 at 0.9 eta_max: transient
+crossing at t = 7.97, persistent event at 23.53 vs GF 23.24). `analyze_order.py`,
+`results/order_flips.csv`, `fig_order_flips.png`.
+
+*Withdrawn (fix round 1):* the round-1 claim that "an O(eta) step flips near-tied races and can remove
+a whole plateau", and the conjecture that the flip probability vanishes as sigma -> 0. Both came from
+first-crossing events that counted these transients as events (the review's per-step reruns and
+this round's persistent events show no plateau is ever removed).
 
 ### 3.3 The stability limit (empirical, confirms section 1)
 
-| tree, sigma | converges like GF | oscillates (bounded) | thrown back to origin | diverges |
-|---|---|---|---|---|
-| binary N=4, sigma <= 0.3 (25 runs/ratio) | all at <= 0.95 eta_max | all at 1.05-1.3 | all at 2.0 | 1.5-1.75 and >= 2.5 |
-| binary N=8, sigma = 0.9 | <= 0.7 (all), 0.9 (4/5), 0.95 (2/5) | 1.05-1.5 | 1.75-2.5 (mostly) | 3.0 (4/5) |
-| MPS N=8, sigma = 0.9 | <= 0.7 (all), 0.9 (2/5) | 0.95-1.5 (4/5) | 1.75-2.5 (3/5) | 3.0 (3/5) |
+Classes (`analyze_gd.py`, fix round 1): GF-like = final loss at GF's level (<= 2 L_GF(T) + 1e-3 L(0))
+with a monotone loss; catapult = GF's level after a loss rise; thrown back to origin; bounded
+oscillation; diverged. Runs: 5 seeds per point (seeds 0-4); events persistent.
 
-- For small init the boundary is exactly eta_max = 2/(K s_1^{2-2/K}) (0/170 failures at
-  <= 0.95 eta_max, 25/25 oscillating at 1.05). **Empirical, 5 sigma x 5 seeds.**
-- At sigma = 0.9 the N = 8 inits are imbalanced (fan-in init gives Q_e != 0 at O(sigma^2)), the GF
-  state is 8-12% sharper than balanced, and the edge moves to ~2/lambda_GF ~ 0.9 eta_max, with slow
-  EoS transients (runs at 0.95 still oscillating at T).
+| tree, sigma | GF-like | oscillates (bounded) | thrown back to origin | diverges |
+|---|---|---|---|---|
+| binary N=4, sigma 0.003-0.3 (25 runs per ratio; 15 at 0.01/0.03/0.2/0.7 eta_max) | all 195 at <= 0.95 eta_max (675/675 incl. the 40 extra seeds) | all at 1.05-1.3 | 2/25 at 1.5, 25/25 at 2.0 | 23/25 at 1.5, all at 1.75, 2.5, 3.0 |
+| binary N=8, sigma = 0.9 | all at <= 0.7, 3/5 at 0.9 (1 catapult), 0/5 at 0.95 (2 catapult) | 1.05-1.5 (all) | 4/5 at 1.75-2.0 | 4/5 at 3.0 |
+| MPS N=8, sigma = 0.9 | all at <= 0.7, 2/5 at 0.9, 1/5 at 0.95 | 0.9-1.5 (3-4/5) | 3/5 at 1.75-2.5 | 3/5 at 3.0 |
+
+- For small init the boundary is exactly eta_max = 2/(K s_1^{2-2/K}): 195/195 runs (seeds 0-4; 675/675
+  with the order seeds) at <= 0.95 eta_max are GF-like, 25/25 at 1.05 oscillate. **Empirical, 5 sigma
+  x 5 seeds**; the independent review's own code finds the edge between 0.99 and 1.01 eta_max. Note:
+  "GF-like" includes runs that end on GF's last plateau at T (39/195 at L/L_0 = 0.071, component 3
+  not yet learned in either GF or GD).
+- N = 8 trees at sigma = 0.9: this is not small init. The GF state is 10-16% (binary N=8) and 12-35%
+  (MPS N=8) sharper than balanced (fan-in imbalance), so the edge moves to ~2/lambda_GF ~ 0.75-0.9
+  eta_max, with EoS transients (catapults and slow oscillations at 0.9-0.95 eta_max). Most N = 8 GF
+  references learn only 1-2 of the 3 components by T. MPS N=8 seed 3 never learns component 1 within
+  T = 60 (GF loss 5.0 of 7.06), so its "GF-like" runs above eta_max (0.95-1.75) never meet the
+  instability; it is excluded from the oscillation-loss comparison.
 - Above eta_max the outcome follows the 1D map qualitatively (2-cycle, then period doubling, then
   re-entry to the origin, then divergence) but **the bounded chaotic window of the 1D map
   (h/h_c ~ 1.35-1.8) is not robust in the full network**: binary N=4 diverges at 1.5-1.75, while at
   2.0 every run is thrown back to the origin saddle (as the 1D map predicts) and repeatedly
   re-learns and loses components (`fig_eos_example.png`). Conjecture: transverse (imbalance)
   directions are unstable on the chaotic set (cf. Hofmann 2026, imbalance factor 1 - a^2 r^2).
-- **Oscillation loss (P5 of the theory note; empirical, exact 1D comparison).** The time-averaged
-  excess loss of oscillating runs, L_tail - L_GF(T), equals s_1^2 x (mean loss of the 1D map attractor,
-  `map1d.py`) to 3-4 digits on binary N=4: 0.1306 vs 0.1306 (1.05 eta_max, 25 runs), 0.2472 vs 0.2479
-  (1.1), 0.4496 vs 0.4496 (1.2), 0.553 vs 0.557 (1.3); MPS N=8 and binary N=8 agree to a few % up to
-  1.1-1.2 (binary N=8 at 1.2-1.3: 0.26 vs 0.30-0.39, some seeds leave the 2-cycle). The theory note's
-  linear form 3K^2 s_1^2/(4(K-1)(5K-4)) (eta/eta_max - 1) is its small-excess limit (5% high at 1.05,
-  23% high at 1.2). So the full TTN above eta_max is the 1D balanced map of component 1 plus GF-like
-  learning of the rest.
+- **Oscillation loss (P5 of the theory note; empirical, exact 1D comparison; `analyze_p5.py`,
+  `results/p5_excess_loss.csv`).** The time-averaged excess loss of oscillating runs, L_tail - L_GF(T),
+  equals s_1^2 x (mean loss of the 1D map attractor, `map1d.py`) on binary N=4 to within 0.9%:
+  0.1306 vs 0.1306 (1.05 eta_max, 25 runs), 0.2472 vs 0.2479 (1.1, 15), 0.4496 vs 0.4496 (1.2, 25),
+  0.553 vs 0.557 (1.3, 15). Binary N=8 (5 runs per point): within 1% at 1.05-1.1 eta_max but 14% and
+  32% low at 1.2 and 1.3 (some seeds leave the 2-cycle). MPS N=8 (4 runs, seed 3 excluded): 17% high
+  at 1.05, within 3% at 1.1-1.3. The theory note's linear form 3K^2 s_1^2/(4(K-1)(5K-4))
+  (eta/eta_max - 1) is the small-excess limit of the map (5% high at 1.05, 23% at 1.2, 49% at 1.3).
 - Oscillation stays in the learned top component(s): at 1.05-1.3 eta_max component 1 oscillates
   (2- or 4-cycle) while components 2 and 3 are learned at GF-like times (fig_eos_example, middle).
   Component-wise threshold s_c(eta) (section 1) explains which components oscillate.
@@ -145,10 +162,12 @@ stability limit), but only through near-ties.
   stable eta. GD *creates* a small imbalance that grows linearly with eta (|tr Q_e| from 0.016 (GF)
   to ~0.08 at 0.95 eta_max, sigma = 0.1), because Q_e changes by O(eta^2) per step.
 - Imbalanced init (root core scale 2, 4, 6; GF minimum 1.13x, 1.68x, 2.37x sharper than balanced):
-  GD converges to sharpness min(lambda_GF, 2/eta) (`fig_min_selection.png` a), i.e. it selects a
-  flatter, more balanced minimum (|tr Q_e| down to ~0.6x GF) as soon as 2/eta < lambda_GF: classic
-  EoS selection. Some imbalanced runs with eta > 0.75 eta_max are thrown back to the origin or
-  diverge instead (root x6: 1-4 of 5 seeds).
+  GD converges to sharpness min(lambda_GF, 2/eta) (`fig_min_selection.png` a; to within 1-2% for the
+  converged runs), i.e. it selects a flatter, more balanced minimum (|tr Q_e| down to ~0.6x GF) as soon
+  as 2/eta < lambda_GF: classic EoS selection. These runs are classified "catapult" (the loss rises
+  before converging): root x2: 2-3/5 at 0.9-0.95 eta_max; root x4: 1-4/5 from 0.5 eta_max; root x6:
+  2-3/5 from 0.5 eta_max. Divergence starts at 0.6 eta_max for root x6 (1/5; 3-5/5 from 0.8) and at
+  0.95 eta_max for root x4 (1/5).
 - At the stability edge the imbalance is removed fastest: imbalanced inits that still converge at
   eta = eta_max end with |tr Q_e| ~0.35-0.4x the GF value; for small init, oscillating runs at
   1.05-1.3 eta_max end below the GF value (0.0139 vs 0.0162 at sigma = 0.1), as for DLNs (Ghosh 2025;
@@ -176,7 +195,8 @@ time), Ito's formula for phi gives for the event a^K = s_r/2:
 
 The first term of the mean (the "1") is GD's own backward-error shift (section 3.1); noise multiplies
 it by E xi^2 / (E xi)^2 = 1 + V/(B m^2), so **SGD delays escapes** (a volatility drag on the
-log-growth). Small-a form: shift ~ (eta/2)(K-1)(1 + (3^N - 1)/B) ln(a_e/a0), relative spread
+log-growth). Small-a form: shift ~ (eta/2)(K-1)(1 + kappa/B) ln(a_e/a0) with kappa = 3^N - 1 +
+sum_{r>=2} s_r^2/s_1^2 (= V/s_1^2 at a = 0; fix round 1: the R^2 term was dropped), relative spread
 std/t ~ sqrt(eta V / (B t s_r^2)) -> 0 as sigma -> 0 (t ~ sigma^{-(K-2)}). Scaling predictions:
 std(t) ~ (eta/B)^{1/2} t^{1/2}, mean shift ~ eta/B (when V/B >> s^2), both in units t = eta x steps; in
 steps and samples the plateau costs t/eta steps and B t/eta samples.
@@ -205,7 +225,8 @@ lengthened by -ln(1-x)/x and the route is trapped for x = c_gamma (eta/B) T_GF >
 The first plateau is exempt (no learned cores, so every coupling is small). My estimate for
 strict (k = 2) escapes stands: the dormant multiplier 1 + eta q xi has Lyapunov exponent
 eta q s_new - eta^2 q^2 E xi^2/2, so collapse needs s_new < eta q (V + zeta^2)/(2B); without label noise
-(V ~ 3^n s_new^2) that requires eta q 3^n ~ 2B, beyond the SGD stability limit, so k = 2 escapes need
+(V ~ 3^n s_new^2) that requires eta q 3^n s_new ~ 2B (fix round 1: s_new was missing), beyond the
+SGD stability limit, so k = 2 escapes need
 label noise to collapse (components weaker than ~eta q zeta^2/(2B)). Tests: `p9_sgd.py` (k = 3,
 section 6), `collapse_test.py` (k = 2 with label noise).
 
@@ -314,8 +335,8 @@ Exact values at the balanced minimum, binary N=4, teacher [3, 2, 1] (`sgd_stabil
 MPS N=4 (K = 4, lambda = 20.78): eta_ms = 0.000765, 0.00152, 0.00301, 0.00590, 0.0113, 0.0209, 0.0357,
 0.0541, 0.0708, 0.0890 for B = 1 ... 1024 (GD 0.0962), equal to the theory note's P8 values.
 
-eta_ms = 0.00107 B for B <= 16: **small-batch SGD on product features is ~150x less stable than GD
-per sample** (effective kurtosis ~145 = 1.8 x 3^4: other directions feed the noise). For B >~ 3^N
+eta_ms / B = 0.00107 at B = 1, falling to 0.00100 at B = 16 (and 0.00082 at B = 64): **small-batch SGD
+on product features is ~150x less stable than GD per sample** (effective kurtosis ~145 = 1.8 x 3^4: other directions feed the noise). For B >~ 3^N
 the GD limit returns.
 
 **Empirical limit (`sgd_limit_test.py`, `results/sgd_limit_test.csv`; 5 seeds per point, start 1e-5
