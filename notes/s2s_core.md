@@ -160,3 +160,27 @@ DOP853 rtol 1e-10. d = 4, odeco teacher seed 100.
   MPS 4) to 1.6-1.9 (binary 8, MPS 8, HT 4), much less than the (sum chi)^{-(K-2)/2} ~ 1/8 implied
   by the rho_0 picture for K = 8.
 - Seed-to-seed spread of T: coefficient of variation 0.2 (K = 3) to 0.8 (HT 4, MPS 8).
+
+### 2.2 Dormant-component suppression (in progress; sweep `configs/main.yaml`, LSODA rtol 1e-8, atol 1e-11 sigma)
+
+Question (from the lead): do dormant components shrink during earlier escapes and plateaus, by how
+much, vs sigma, K, chi, and does a gauge-balanced init avoid it?
+
+- **Two mechanisms are seen.** (i) *Plateau decay (trap, theory_saddles R12)*: on a plateau after an
+  escape, the dormant component's slices on the route END cores decay exponentially while the inner
+  slices stay put; its amplitude falls to 1e-30 and below. (ii) *Collapse at an escape*: the dormant
+  amplitude drops by orders of magnitude while another component escapes, and its slices then stay
+  roughly constant (MPS8 floor runs: end-slice decay rate / sigma^2 ~ 1e-9; binary8 chi = 3 seed 0
+  with both fan-in and gauge-balanced init).
+- **Plateau-decay rate scales as sigma^2 per seed** (empirical, mps4, chi = 3, sigma = 0.003-0.02, 7
+  trapped seeds over both teachers): the end-core decay rate divided by sigma^2 is constant per seed
+  across 0.8 decade of sigma (e.g. 0.27-0.29, 0.49-0.82, 0.009-0.013, 0.012-0.016); the same seeds trap
+  at every sigma. **Derived (reduced model of theory_saddles section 8)**: with the learned components
+  balanced at amplitude q = s_q^(1/K) per core, the dead end's new column x and the parent's visible
+  slice y_vis obey x' = -q^(2(K-2)) |y_vis|^2 x, y_vis' = -q^(2(K-2)) |x|^2 y_vis, with
+  |x|^2 - |y_vis|^2 - |y_route|^2 = Q_nu nu conserved; if Q_nu nu + |y_route|^2 < 0 then
+  x ~ exp(-gamma t) with gamma = q^(2(K-2)) |Q_nu nu + |y_route|^2|. Fan-in init makes Q_e = O(sigma^2)
+  (sigma^2 times a seed-dependent O(1) matrix) and y_route = O(sigma), so gamma = sigma^2 x (seed
+  constant), as measured. Consequence (derived): the trap time 1/gamma ~ sigma^-2 competes with the
+  escape time ~ sigma^-(K-2): for K = 4 both scale alike, so whether a seed traps is sigma-independent
+  (as measured); for K >= 5 a trapped end dies long before the route can escape.
