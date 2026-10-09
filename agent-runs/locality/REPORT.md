@@ -75,9 +75,10 @@ Steiner edges in **98.7% of 5,132 events**, ≥ 90% for every (tree, S).
 - Remaining plateau time vs overlap a_mid of the escaping component at the plateau midpoint: slope
   0.98-1.01 vs ln(1/a_mid) for k = 2 (predicted 1/(2λ) = 1); exponent -0.25..-0.31 for k = 3 (predicted
   -1/3), -0.67..-0.77 for k = 7 (predicted -0.71) (`twocomp_table.csv`, columns dormant_*).
-- Growth exponent γ = d log ȧ / d log a on the plateau (theory P4: 2 - 2/k): 1.000 (k = 2), 1.30-1.33 (k = 3),
-  1.70-1.71 (k = 7), 1.77 (k = 8) (first pass, window a <= 0.05; final window [1e-4, 1e-2]:
-  `results/growth_summary.csv`).
+- Growth exponent γ = d log ȧ / d log a on the plateau, window a in [1e-4, 1e-2] (theory P4: 2 - 2/k):
+  k = 2..8 give γ = 0.996-0.999, 1.331-1.340, 1.498-1.511, 1.605-1.624, 1.664-1.677, 1.712-1.741,
+  1.739-1.747, i.e. k = 2/(2-γ) = 2.0, 3.0, 4.0, 5.1, 6.0, 7.0-7.7, 7.7-7.9 (`results/growth_summary.csv`):
+  the escape degree can be read off a single run and equals the Steiner count.
 
 ### 6. Dead routes (theory R12) and gauge balance
 Runs where, after a component is learned, the gradient stays at roundoff (dead route; the loss never leaves
@@ -136,8 +137,10 @@ t2 - t1 = 69,649.37 to 3e-8 relative (LSODA 15 s, RK45 919 s). Conservation-law 
 ## Caveats and next steps
 - Two MPS k = 5 rows stay above the predicted exponent 3: mps8 S = {1,5} 3.7 ± 0.2 (saddle start, σ down to
   0.012) and 3.7 ± 0.3 (balanced init); mps6 S = {1,3,5} reaches 3.05 ± 0.06 only at σ <= 0.03 (saddle start).
-  Not explained; candidate: quartic penalties from flat noise entries that shrink the route amplitudes during
-  long plateaus (conjecture, untested).
+  Their growth exponent is that of a degree-5 route (γ = 1.61), so the degree is right and the dormant amplitude
+  entering the plateau is what deviates; at σ <= 0.03 they also stall with balanced init (5-10 of 24 runs), so a
+  route-killing mechanism other than the R12 gauge trap is at work. Candidate: quartic penalties from flat noise
+  entries next to the route that shrink its amplitudes during long plateaus (conjecture, untested).
 - k = 6-8 exponents rest on < 1 decade of σ and 5 seeds; balanced init gives values within ~0.2-0.6 of k - 2.
 - Log-time (k* = 2) levels in multi-component runs are short; some are unresolved (counted in
   `levels_summary.csv`); their law is shown with the saddle-start wide-σ runs (TC, TD).

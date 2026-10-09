@@ -236,8 +236,13 @@ sigma, per seed, mean ± SE; "local" = three smallest sigma):
 
 ### 7.3 Single-run escape degree and dormant amplitudes — **empirical**
 
-- Growth exponent γ = d log(da/dt)/d log a on the plateau (theory P4: 2 - 2/k): 1.000 (k = 2, saddle
-  start), 1.30-1.33 (k = 3), 1.70-1.71 (k = 7), 1.77 (k = 8); k is readable from one run.
+- Growth exponent γ = d log(da/dt)/d log a on the plateau, fitted in the window a in [1e-4, 1e-2]
+  (theory P4: 2 - 2/k; `results/growth_summary.csv`, median per (tree, S, protocol), 1-22 rows per k):
+  k = 2: 0.996-0.999 (saddle start); 3: 1.331-1.340; 4: 1.498-1.511; 5: 1.605-1.624; 6: 1.664-1.677;
+  7: 1.712-1.741; 8: 1.739-1.747, i.e. k = 2/(2 - γ) = 2.0, 3.0, 4.0, 5.1, 6.0, 7.0-7.7, 7.7-7.9. The escape
+  degree is readable from a single run and equals the Steiner count for every k = 2..8 tested, including
+  the two MPS k = 5 rows whose sigma-exponent is too high (7.9): there the route degree is 5, and the
+  excess sigma-exponent comes from the dormant amplitude entering the plateau, not from the degree.
 - Dormant-norm test (lead's refinement iii): the remaining plateau time from the midpoint scales with
   the overlap of the escaping component there, a_mid: slope 0.98-1.01 vs ln(1/a_mid) for k = 2
   (predicted 1/(2λ) = 1), exponent -0.25..-0.31 for k = 3 (predicted -(k-2)/k = -0.33), -0.67..-0.77
@@ -342,7 +347,11 @@ ht8 k = 5 rows give 2.9-3.1. Candidate mechanism (conjecture, untested): noise e
 next to the route (e.g. a new-index-to-old-index entry on a core adjacent to a route end) form degree-2
 sub-routes orthogonal to the residual whose quartic penalty shrinks the route amplitudes algebraically
 during a long plateau; the effect would grow with the plateau length (k) and depend on how many such
-entries the tree offers. Testing it needs the route amplitudes measured along the plateau.
+entries the tree offers. Testing it needs the route amplitudes measured along the plateau. Supporting
+observations: the growth exponent on these plateaus is that of a degree-5 route (γ = 1.61, 7.3), and at
+sigma <= 0.03 these two cases stall even with gauge-balanced init (mps6 S = {1,3,5}: 5/24, mps8 S = {1,5}:
+10/24 runs; saddle start 9/24 and 7/21), so a route-killing mechanism other than the R12 gauge trap acts
+here.
 
 ## 8. Verdict
 
