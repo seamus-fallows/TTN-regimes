@@ -5,7 +5,7 @@ r2_random), following theory_teachers.md v2 section 9:
 - rank-one critical points of the loss on the student's tree (constrained.py): levels L_1 and, for
   whitened MPS-4 students, the predicted slope A = (1 - kappa_e*)/gamma_e* of each (R6);
 - per run: k0 = first time L < 0.9 L(0); the second-escape event t_e(f) = first time after k0 that
-  s_2^e >= f sigma_2^e(T) on some edge (f = 0.03 and 0.1); the plateau point = minimum parameter speed
+  s_2^e >= f sigma_2^e(T) on some edge (diagnostics.md: f = 0.05, sensitivity f = 0.03, 0.1); the plateau point = minimum parameter speed
   between k0 and t_e(0.03); its loss is matched to the nearest rank-one level, and the run counts as
   RESOLVED only if it is within 5% of it (else it is flagged and excluded from the fits);
   t_1 = first time L <= (L(0) + L_visited)/2; gap_f = t_e(f) - t_1; first edge = argmax at t_e;
@@ -105,7 +105,7 @@ def analyze_run(args):
     l_vis = lv[j]
     k1 = int(np.argmax(loss <= 0.5 * (loss[0] + l_vis)))
     row["t1"] = float(t[k1])
-    for f in (0.03, 0.1):
+    for f in (0.03, 0.05, 0.1):
         ke, edge = event(f, k1)
         row[f"gap_{f}"] = float(t[ke] - t[k1]) if ke is not None else np.nan
         row[f"edge_{f}"] = edge
@@ -147,7 +147,7 @@ def main():
     df.to_csv(RESULTS / f"{name}_v2_runs.csv", index=False)
     res = df[df.resolved == True].copy()  # noqa: E712
     out_ps, out_sum = [], []
-    for f in (0.03, 0.1):
+    for f in (0.03, 0.05, 0.1):
         r = res.rename(columns={f"gap_{f}": "gap"})
         ps, summ = per_seed(r, ["case", "tree", "saddle"])
         if len(ps):
@@ -175,15 +175,15 @@ def main():
             g = res[(res.case == c) & (res.tree == tree)]
             for (seed, sad), gg in g.groupby(["seed", "saddle"]):
                 gg = gg.sort_values("sigma")
-                axes[0, i].plot(gg["sigma"], gg["gap_0.03"], "-", color=col, alpha=0.5, lw=0.8,
+                axes[0, i].plot(gg["sigma"], gg["gap_0.05"], "-", color=col, alpha=0.5, lw=0.8,
                                 marker="o" if sad == 0 else "x", ms=3)
             lam = g.groupby("sigma")["lambda_min"].median()
             axes[1, i].plot(lam.index, -lam.values, "o-", color=col, label=f"{tree}4")
-        s = summ[(summ.case == c) & (summ.f == 0.03)]
+        s = summ[(summ.case == c) & (summ.f == 0.05)]
         txt = "\n".join(f"{r.tree} saddle {r.saddle}: A={r.A_mean:.2f}+-{r.A_sem:.2f} (pred {r.A_pred:.2f}), "
                         f"p={r.p_mean:.2f}+-{r.p_sem:.2f}, log wins {r.log_wins}/{r.n_seeds}"
                         for r in s.itertuples())
-        axes[0, i].set(xscale="log", yscale="log", xlabel="sigma", ylabel="gap (f = 0.03)", title=c)
+        axes[0, i].set(xscale="log", yscale="log", xlabel="sigma", ylabel="gap (f = 0.05)", title=c)
         axes[0, i].text(0.02, 0.02, txt, transform=axes[0, i].transAxes, fontsize=5.5, va="bottom")
         axes[1, i].set(xscale="log", yscale="log", xlabel="sigma",
                        ylabel="-lambda_min at the plateau (gauge-projected)")

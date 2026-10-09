@@ -1,7 +1,7 @@
 """Step 4(c) re-analysis (after the round-1 review): event rule of theory_teachers.md 3.3 / section 9.
 
 Events (e, k): first time after the first escape (L < 0.9 L(0)) that s_k^e >= f sigma_k^e(T), with
-f = 0.03 and 0.1 (the 50%-of-teacher rule of round 1 fires only after later escapes and gave
+f = 0.05 (diagnostics.md; sensitivity 0.03, 0.1) (the 50%-of-teacher rule of round 1 fires only after later escapes and gave
 artefacts). For each config's runs (default e4c_cross; also the saddle-start runs of r2_cross):
 - binary student: are the first two k = 2 events a sibling pair (same parent)? Does the root
   bipartition get k = 2 only after a bottom bond on each half (P11)? Is P11 discriminating, i.e. is the
@@ -63,7 +63,7 @@ def main():
                     t, loss = tr.data["t"], tr.data["loss"]
                     sp, tsp = np.nan_to_num(tr.data["spectra"]), tr.data["teacher_spectra"]
                     start = int(np.argmax(loss < 0.9 * loss[0]))
-                    for f in (0.03, 0.1):
+                    for f in (0.03, 0.05, 0.1):
                         ev = events(t, sp, tsp, f, start)
                         for (te, j, k) in ev:
                             ev_rows.append(dict(case=case["tag"], tree=tree, sigma=sigma, seed=seed,
