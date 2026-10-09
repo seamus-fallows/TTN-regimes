@@ -13,7 +13,6 @@ import pandas as pd
 
 from experiments.optimizers.analysis import RESULTS, collect, load
 from ttn import plotting as tp
-from ttn.diagnostics import plateau_scaling
 
 FIG = RESULTS / "figures"
 
@@ -68,30 +67,70 @@ def with_keys(df: pd.DataFrame) -> pd.DataFrame:
 # ---- scaling of event times with sigma ------------------------------------------------------------
 
 
+def per_seed_fits(g: pd.DataFrame, q: str, min_sigmas: int = 4) -> dict:
+    """Scaling of quantity q (method clock) with sigma, fitted per seed (each seed is one init direction
+    rescaled by sigma; notes/briefs/README.md, analysis standards 1, 3, 4, 5).
+
+    Per seed: keep converged runs whose event is resolved (`<q>_resolved`) and whose learning order is the
+    seed's most common order (same saddle sequence), need >= min_sigmas sigma values; fit
+    power  ln T = c + p ln(1/sigma)  and  log  T = a + b ln(1/sigma), both scored by the rms residual of
+    ln T (the log-law prediction is clipped at a tiny positive value). Returns mean +- s.e. of p over seeds,
+    the mean scores and the exclusion counts."""
+    res_col = "t_first_resolved" if q == "t_first" else (f"{q}_resolved" if f"{q}_resolved" in g else None)
+    p_list, rms_pow, rms_log = [], [], []
+    n_unres = n_order = n_short = 0
+    for seed, gs in g.groupby("seed"):
+        gs = gs[gs["converged"] & np.isfinite(gs[q] * gs["clock"])]
+        if res_col is not None:
+            n_unres += int((~gs[res_col].astype(bool)).sum())
+            gs = gs[gs[res_col].astype(bool)]
+        if gs.empty:
+            continue
+        modal = gs["order"].astype(str).value_counts().index[0]
+        n_order += int((gs["order"].astype(str) != modal).sum())
+        gs = gs[gs["order"].astype(str) == modal]
+        y = (gs[q] * gs["clock"]).values
+        x = np.log(1 / gs["sigma"].values)
+        if gs["sigma"].nunique() < min_sigmas or np.any(y <= 0):
+            n_short += 1
+            continue
+        A = np.vstack([np.ones_like(x), x]).T
+        cp, *_ = np.linalg.lstsq(A, np.log(y), rcond=None)
+        cl, *_ = np.linalg.lstsq(A, y, rcond=None)
+        p_list.append(cp[1])
+        rms_pow.append(np.sqrt(np.mean((np.log(y) - A @ cp) ** 2)))
+        rms_log.append(np.sqrt(np.mean((np.log(y) - np.log(np.clip(A @ cl, 1e-300, None))) ** 2)))
+    p_arr = np.array(p_list)
+    return {"exponent": p_arr.mean() if len(p_arr) else np.nan,
+            "exponent_se": p_arr.std(ddof=1) / np.sqrt(len(p_arr)) if len(p_arr) > 1 else np.nan,
+            "n_seeds": len(p_arr), "rms_lnT_power": np.mean(rms_pow) if rms_pow else np.nan,
+            "rms_lnT_log": np.mean(rms_log) if rms_log else np.nan, "n_unresolved": n_unres,
+            "n_other_order": n_order, "n_seeds_too_few_sigma": n_short,
+            "per_seed": " ".join(f"{v:.2f}" for v in p_arr)}
+
+
 def scaling_table(df: pd.DataFrame, quantities=("t_first", "gap_0", "gap_1", "t_loss_0.001")) -> pd.DataFrame:
-    """Per method and quantity: fitted power-law exponent of T vs 1/sigma over all seeds (T in the
-    method's clock), its standard error, the log-law slope, and the number of runs used. Runs that
-    did not converge are excluded, and counted."""
+    """Per method and quantity: per-seed power-law exponents (T ~ sigma^-p, mean +- s.e. over seeds), the
+    log-law alternative's score, and what was excluded (unresolved, other saddle sequence, too few sigma)."""
     rows = []
     for method, g in df.groupby("method"):
         for q in quantities:
             if q not in g:
                 continue
-            ok = g[g["converged"] & np.isfinite(g[q])]
-            fit = plateau_scaling(ok["sigma"], ok[q] * ok["clock"])
+            fit = per_seed_fits(g, q)
             rows.append({"method": method, "optimizer": g["optimizer"].iloc[0], "quantity": q,
-                         "exponent": fit["power"]["exponent"], "exponent_se": fit["power"]["exponent_se"],
-                         "log_slope": fit["log"]["slope"], "log_slope_se": fit["log"]["slope_se"],
-                         "n_runs": fit["n"], "n_not_converged": int((~g["converged"]).sum()),
-                         "sigma_min": ok["sigma"].min(), "sigma_max": ok["sigma"].max()})
+                         "n_runs": len(g), "n_not_converged": int((~g["converged"]).sum()),
+                         "sigma_min": g["sigma"].min(), "sigma_max": g["sigma"].max(),
+                         "n_sigma": g["sigma"].nunique(), **fit})
     return pd.DataFrame(rows)
 
 
 def fig_scaling(name: str, methods: list[str], quantities=("t_first", "gap_0", "gap_1"),
                 titles=("first escape", "second event - first", "third event - second"), tag=""):
     """Event times vs sigma (mean +- s.e. over seeds; converged runs), each method normalized by its
-    geometric mean so that slopes can be compared on one axis. Lines and legend: least-squares fit
-    of log T on log(1/sigma) over all seeds (ttn.diagnostics.plateau_scaling), T ~ sigma^-p."""
+    geometric mean so that slopes can be compared on one axis. Lines and legend: per-seed fits of
+    log T on log(1/sigma) (`per_seed_fits`: resolved events, the seed's modal saddle sequence), mean +- s.e.
+    of the exponent over seeds, T ~ sigma^-p."""
     df = with_keys(collect(name))
     tp.set_style()
     fig, axes = tp.subplots(1, len(quantities), width=tp.TEXT_WIDTH, panel_aspect=0.95, sharey=True)
@@ -108,7 +147,7 @@ def fig_scaling(name: str, methods: list[str], quantities=("t_first", "gap_0", "
             stats = stats[stats["count"] >= 2]
             if stats.empty:
                 continue
-            fit = plateau_scaling(g["sigma"][ok], vals[ok])["power"]
+            fit = per_seed_fits(g, q)
             norm = np.exp(stats["mean"].mean())
             geo = np.exp(stats["mean"])
             err = np.vstack([geo * (1 - np.exp(-stats["sem"])), geo * (np.exp(stats["sem"]) - 1)])
@@ -117,11 +156,13 @@ def fig_scaling(name: str, methods: list[str], quantities=("t_first", "gap_0", "
             h = ax.errorbar(stats.index, geo / norm, yerr=np.nan_to_num(err) / norm, fmt=marker, ms=3.5,
                             color=FAMILY_COLOR[fam], mec="white", mew=0.6, elinewidth=0.8)
             xs = np.geomspace(stats.index.min(), stats.index.max(), 50)
-            pref = np.exp(fit["log_prefactor"])
-            ax.plot(xs, pref * (1 / xs) ** fit["exponent"] / norm, color=FAMILY_COLOR[fam], lw=0.9,
-                    ls="--" if fam in ("gd", "dmrg") else "-")
+            if np.isfinite(fit["exponent"]):  # line with the mean per-seed slope through the geometric means
+                lx = np.log(1 / stats.index.values)
+                c0 = np.mean(stats["mean"].values - fit["exponent"] * lx)
+                ax.plot(xs, np.exp(c0 + fit["exponent"] * np.log(1 / xs)) / norm, color=FAMILY_COLOR[fam],
+                        lw=0.9, ls="--" if fam in ("gd", "dmrg") else "-")
             handles.setdefault(m, h)
-            exps.setdefault(m, []).append(f"{fit['exponent']:.2f}")
+            exps.setdefault(m, []).append(f"{fit['exponent']:.2f}+-{fit['exponent_se']:.2f}")
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_xlabel(r"init scale $\sigma$")
@@ -130,7 +171,7 @@ def fig_scaling(name: str, methods: list[str], quantities=("t_first", "gap_0", "
     labels = [f"{m}   (p = {' / '.join(exps[m])})" for m in handles]
     fig.legend(list(handles.values()), labels, loc="lower center", ncol=2, fontsize=6.5,
                bbox_to_anchor=(0.5, -0.17 - 0.035 * ((len(labels) + 1) // 2)), frameon=False,
-               title=r"fitted $T\propto\sigma^{-p}$, p per panel (all seeds)", title_fontsize=6.5)
+               title=r"$T\propto\sigma^{-p}$: per-seed fits, mean $\pm$ s.e. over seeds, p per panel", title_fontsize=6.5)
     tp.savefig(fig, FIG / f"{name}_scaling{tag}")
     return fig
 

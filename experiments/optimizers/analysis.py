@@ -2,12 +2,17 @@
 implemented in ttn.diagnostics).
 
     uv run python -m experiments.optimizers.analysis <sweep-name> [--refresh]
-        -> experiments/optimizers/results/<sweep-name>_summary.csv
+        -> $OPTIMIZERS_RESULTS/<sweep-name>_summary.csv
+
+Summaries, tables and figures go to $OPTIMIZERS_RESULTS (default /root/outputs/optimizers/results, outside
+git, so re-running never overwrites the committed results); the committed ones in
+experiments/optimizers/results were made with `make_figures.py --results-dir experiments/optimizers/results`.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -18,7 +23,7 @@ from experiments.optimizers.run import OUT_ROOT
 from ttn.diagnostics import crossing_times, entropy_rank, event_widths, separation_ratios
 from ttn.dynamics import Trajectory
 
-RESULTS = Path(__file__).parent / "results"
+RESULTS = Path(os.environ.get("OPTIMIZERS_RESULTS", "/root/outputs/optimizers/results"))
 
 
 def event_trace(traj: Trajectory) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -27,6 +32,12 @@ def event_trace(traj: Trajectory) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     if "fine_t" in d:
         return d["fine_t"], d["fine_overlaps"], d["fine_loss"]
     return d["t"], d["overlaps"], d["loss"]
+
+
+def local_spacing(t: np.ndarray, te: float) -> float:
+    """Output interval of the trace around time te."""
+    i = int(np.clip(np.searchsorted(t, te), 1, len(t) - 1))
+    return float(t[i] - t[i - 1])
 
 
 def component_events(t: np.ndarray, a: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -110,10 +121,14 @@ def summarize(path: Path) -> dict:
     row["n_events"] = int(ok.sum())
     rho = separation_ratios(times, widths)
     sorted_t = np.sort(times[ok])
+    spacing = [local_spacing(t, te) for te in sorted_t]
     for i in range(len(sorted_t) - 1):
         row[f"gap_{i}"] = sorted_t[i + 1] - sorted_t[i]
         row[f"rho_{i}"] = rho[i]
+        # a gap shorter than two output intervals at its ends is not a measurement
+        row[f"gap_{i}_resolved"] = bool(row[f"gap_{i}"] > 2 * max(spacing[i], spacing[i + 1]))
     row["t_first"] = sorted_t[0] if ok.any() else np.nan
+    row["t_first_resolved"] = bool(ok.any() and sorted_t[0] > 2 * spacing[0])
     row["s2s"] = bool(ok.sum() >= 2 and np.all(rho > 3))
     for k, v in spectral_events(d["t"], d["spectra"], d["teacher_spectra"]).items():
         row[f"spec_{k}"] = v

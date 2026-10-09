@@ -109,9 +109,11 @@ def main():
     ap.add_argument("config")
     ap.add_argument("--workers", type=int, default=int(os.environ.get("WORKERS", 88)))
     ap.add_argument("--dry", action="store_true")
+    ap.add_argument("--out", default=str(OUT_ROOT), help="root of the raw outputs (default $OPTIMIZERS_OUT "
+                    "or /root/outputs/optimizers); runs already there are skipped")
     a = ap.parse_args()
     name, jobs = jobs_from_config(a.config)
-    out_dir = OUT_ROOT / name
+    out_dir = Path(a.out) / name
     out_dir.mkdir(parents=True, exist_ok=True)
     todo = [j for j in jobs if not (out_dir / f"{run_id(j)}.npz").exists()]
     print(f"{name}: {len(jobs)} runs, {len(todo)} to do", flush=True)

@@ -1,4 +1,4 @@
-sweep,method,n,same_order,same_first
+sweep,method,n_inits,same_order,same_first
 scaling_b4,ALS (1-site),42,0.0,0.3333333333333333
 scaling_b4,"Adam, lr 0.0001",42,0.9523809523809523,0.9523809523809523
 scaling_b4,"Adam, lr 0.0003",42,0.9523809523809523,0.9523809523809523
@@ -29,3 +29,6 @@ deep,"RMSProp, lr 0.001",96,0.6770833333333334,0.9375
 deep,"Riemannian GD, lr 0.1",48,0.25,0.5
 deep,"Riemannian GD, lr 1",48,0.3125,0.5416666666666666
 deep,"heavy ball, lr 0.001",48,0.8333333333333334,0.9791666666666666
+later_b8,"Adam, lr 0.001",42,0.9285714285714286,1.0
+later_b8,"Adam, lr 0.01",42,0.9285714285714286,1.0
+later_b8,"GD + re-gauge, lr 0.01, every 1",42,0.23809523809523808,0.5238095238095238
