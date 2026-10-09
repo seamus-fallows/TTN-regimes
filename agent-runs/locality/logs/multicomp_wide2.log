@@ -83,3 +83,14 @@ TA None mps 4 small 6 12s
 TA None mps 4 small 7 13s
 TC None mps 8 saddle 3 53s
 TB None mps 4 small 0 22s
+TB None mps 4 small 1 23s
+TB None mps 4 small 2 23s
+TB None mps 4 small 3 22s
+TB None mps 4 small 6 22s
+TB None mps 4 small 4 23s
+TB None mps 4 small 5 23s
+TB None mps 4 small 7 22s
+B4 None mps 4 small 2 67s
+B4 None mps 4 small 6 68s
+B4 None mps 4 small 1 68s
+TC None mps 8 saddle 6 159s

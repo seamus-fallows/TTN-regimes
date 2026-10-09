@@ -353,6 +353,32 @@ sigma <= 0.03 these two cases stall even with gauge-balanced init (mps6 S = {1,3
 10/24 runs; saddle start 9/24 and 7/21), so a route-killing mechanism other than the R12 gauge trap acts
 here.
 
+**Route-end amplitudes (lead's request (c); `route_amps.py`, `results/route_amps*.csv`).** At the plateau
+midpoint the route entry of every core of T_S (core projected onto component 2's site vectors and the
+new-index complement of the learned bond directions) was measured; per seed, log(amplitude) was fitted
+against log(sigma):
+
+| case | protocol | route ends ∝ sigma^α | interior ∝ sigma^β | gap exponent (pred.) | (k-2)(2α+k-2)/k |
+|---|---|---|---|---|---|
+| mps6 {1,3,5}, k = 5 | small | 1.43 ± 0.17 | 1.10 ± 0.06 | 3.76 ± 0.27 (3) | 3.5 |
+| | balanced | 1.24 ± 0.10 | 1.09 ± 0.04 | 3.36 ± 0.19 | 3.3 |
+| | saddle | 1.02 ± 0.03 | 1.02 ± 0.08 | 2.92 ± 0.07 | 3.0 |
+| mps8 {1,5}, k = 5 | balanced | 1.91 ± 0.40 | 1.02 ± 0.01 | 3.86 ± 0.33 (3) | 4.1 |
+| mps6 all sites, k = 6 | small | 1.76 ± 0.08 | 1.01 ± 0.05 | 4.84 ± 0.16 (4) | 5.0 |
+| mps6 {0,5}, k = 6 | small | 1.40 ± 0.25 | 0.96 ± 0.04 | 4.54 ± 0.57 (4) | 4.5 |
+| normal rows (mps4 {0,3}, mps8 {2,5}, mps6 {1,4}, ht4 k = 5, ...) | all | 0.95-1.14 | 0.94-1.21 | on target | - |
+
+The interior of the route always scales like sigma; the steep exponents occur exactly where the route
+**ends** scale faster than sigma, and a balanced product-of-amplitudes estimate of the escape time,
+gap ∝ (prod eps)^-(k-2)/k with ends ∝ sigma^α, reproduces them ((k-2)(2α+k-2)/k, last column). At the
+first event the ends are 0.3-0.5 sigma in every case; in the steep rows they then **shrink during the
+plateau** (median ratio midpoint/first event 0.53-0.78, single runs down to 1e-4-1e-7: pinned or dying
+ends), against 0.9-1.0 in the normal rows. This shrinking also happens with balanced init (mps8 {1,5}:
+0.53), so it is not only the Q-driven R12 trap. So: **the steeper MPS exponents come from route ends that
+decay during the plateau** (empirical); why they decay on these MPS routes and not on binary/HT routes of
+the same k is open (candidates above). The pilot's conjecture sigma^-(2k-6) corresponds to α = 2 at both
+ends (k = 5: exponent 4.2 by the estimate); the measured α is seed-dependent and between 1 and 2.
+
 ## 8. Verdict
 
 **H2 (exponent set by locality), two-component teachers: supported** — derived (section 2; = Steiner

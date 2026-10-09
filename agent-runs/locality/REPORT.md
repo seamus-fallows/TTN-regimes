@@ -86,6 +86,17 @@ the plateau): with fan-in init **only for k >= 4**, e.g. mps4 S = {0,3} 30/48 ru
 k = 6-8 up to 23/24; **none in ~3,000 runs with k <= 3**, none on star3. Gauge-balanced init of the same W_0:
 2 of 1,008 runs. Spare dimensions also help (mps4 S = {0,3}: 6/48 at χ = 4, 0/48 at d = 4).
 
+### 6b. Lead's requests after the pilot cross-check
+- (a) Collapsed (stalled) runs are a separate class in every table (`runs:` column) and never pooled. The
+  pilot's failing seeds for mps4 "far" (seeds 1, 3, 4, 5, 7) are exactly my stalled seeds for mps4 S = {0,3}.
+- (b) χ = 4 for every k >= 4 two-component case: `configs/twocomp_chi4.yaml`, results below (section 7).
+- (c) The steeper MPS exponents come with route **ends** that scale like σ^α with α = 1.2-1.9 at the plateau
+  midpoint while interior route entries scale like σ (`results/route_amps*.csv`); the ends are normal
+  (0.3-0.5 σ) at the first event and shrink during the plateau (median factor 0.53-0.78), also with balanced
+  init. The estimate gap ∝ (Π ε)^-(k-2)/k with the measured α reproduces the measured exponents
+  (3.5 / 4.1 / 5.0 / 4.5 vs 3.76 / 3.86 / 4.84 / 4.54). Rows with normal exponents have α = 0.95-1.14.
+  Details: notes/locality.md 7.9.
+
 ### 7. Robustness (step 5, `results/robust_table.md`)
 χ = 4 (d = 2) and d = 4 with χ = 2, 4, 8: k = 2 slopes 1.00-1.01, k = 3 exponents 0.99-1.05, k = 4 1.90-2.01.
 Weight ratio s2/s1 = 0.25 / 0.75: k = 2 slopes 3.02 ± 0.01 (pred 3.00) / 0.40 ± 0.05 (pred 0.33); saddle start

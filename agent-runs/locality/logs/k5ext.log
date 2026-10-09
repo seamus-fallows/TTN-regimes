@@ -61,3 +61,4 @@ None [1, 3, 5] mps 6 small_balanced 3 42s
 None [1, 3, 5] mps 6 small_balanced 7 17s
 None [1, 3, 5] mps 6 saddle 4 136s
 None [1, 5] mps 8 saddle 4 688s
+None [1, 5] mps 8 saddle 7 848s

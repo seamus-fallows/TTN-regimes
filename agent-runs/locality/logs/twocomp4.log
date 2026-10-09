@@ -929,3 +929,5 @@ None [1, 5] mps 8 saddle 1 689s
 None [1, 5] mps 8 saddle 7 1038s
 None [3, 4] ht 8 saddle 4 940s
 None [0, 7] mps 8 saddle 0 968s
+None [1, 2] ht 8 saddle 1 1780s
+None [0, 1, 2, 3] ht 8 saddle 1 1658s
