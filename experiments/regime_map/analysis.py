@@ -190,3 +190,99 @@ def aligned_sigma_c(rows: pd.DataFrame, K: int, weights=(3.0, 2.0, 1.0), rho_thr
         return np.nan, min_rho(s0) * s0 ** (K - 2)
     i = below[0]
     return float(np.sqrt(grid[i - 1] * grid[i])), min_rho(s0) * s0 ** (K - 2)
+
+
+# ---- per-seed boundaries and scaling fits (analysis standards 3-4) ------------------------------
+
+
+def seed_s2s_boundary(rows: pd.DataFrame, label_col: str = "label"):
+    """One seed's S2S boundary: geometric mean of the largest sigma below which every run is S2S
+    and the next sigma (first non-S2S run). Returns (sigma_c, status): status 'ok', 'never_s2s'
+    (deepest run not S2S), 'all_s2s' (no exit within the grid), or 'unresolved' (first non-S2S run
+    did not finish: stalled at the budget, so the label may be a budget artefact)."""
+    r = rows.sort_values("sigma")
+    lab = r[label_col].values
+    sig = r.sigma.values
+    if lab[0] != "s2s":
+        return np.nan, "never_s2s"
+    non = np.flatnonzero(lab != "s2s")
+    if non.size == 0:
+        return np.nan, "all_s2s"
+    i = non[0]
+    status = "unresolved" if lab[i] == "stalled" else "ok"
+    return float(np.sqrt(sig[i - 1] * sig[i])), status
+
+
+def seed_kernel_boundary(rows: pd.DataFrame, thr: float = 0.1, converged_only: bool = True):
+    """One seed's kernel boundary: sigma where delta_K(T) crosses `thr` from above (log-log
+    interpolation between the bracketing runs; the last crossing if delta_K is not monotone).
+    With converged_only, stalled runs are excluded (their delta_K is not an end-of-training value)."""
+    r = rows.sort_values("sigma")
+    if converged_only:
+        r = r[r.label != "stalled"]
+    sig, dk = r.sigma.values, r.dK.values
+    idx = np.flatnonzero((dk[:-1] >= thr) & (dk[1:] < thr))
+    if idx.size == 0:
+        return np.nan
+    i = idx[-1]
+    w = (np.log(thr) - np.log(dk[i])) / (np.log(dk[i + 1]) - np.log(dk[i]))
+    return float(np.exp(np.log(sig[i]) + w * (np.log(sig[i + 1]) - np.log(sig[i]))))
+
+
+def seed_power_fit(x, y):
+    """Least-squares slope and intercept of log y vs log x (finite, positive values)."""
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    ok = np.isfinite(x) & np.isfinite(y) & (x > 0) & (y > 0)
+    if ok.sum() < 3:
+        return np.nan, np.nan
+    b, a = np.polyfit(np.log(x[ok]), np.log(y[ok]), 1)
+    return float(b), float(a)
+
+
+def mean_se(v):
+    v = np.asarray(v, float)
+    v = v[np.isfinite(v)]
+    if v.size == 0:
+        return np.nan, np.nan, 0
+    return float(v.mean()), float(v.std(ddof=1) / np.sqrt(v.size)) if v.size > 1 else np.nan, int(v.size)
+
+
+def per_seed_table(df: pd.DataFrame, by: list[str], K: int | None = None) -> pd.DataFrame:
+    """Per (group, seed): S2S boundary (+status), aligned-extrapolation prediction, kernel boundary,
+    and the rho exponent on the S2S side (slope of log min_rho vs log sigma over the S2S runs)."""
+    out = []
+    for key, g in df.groupby(by + ["seed"]):
+        k = K or int(g.K.iloc[0])
+        sc, status = seed_s2s_boundary(g)
+        pred, _ = aligned_sigma_c(g, k)
+        s2s = g[g.label == "s2s"]
+        slope, _ = seed_power_fit(s2s.sigma, s2s.min_rho) if len(s2s) >= 3 else (np.nan, np.nan)
+        row = dict(zip(by + ["seed"], key if isinstance(key, tuple) else (key,)))
+        row.update(K=k, sigma_c=sc, s2s_status=status, sigma_c_pred=pred, sigma_K01=seed_kernel_boundary(g),
+                   rho_slope=slope, n_s2s=len(s2s))
+        out.append(row)
+    return pd.DataFrame(out)
+
+
+def stall_type(exp: str, row: dict, R: int = 3) -> dict:
+    """Classify a stalled run from its bond spectra (theory_regimes section 7): the R-th singular
+    value of every edge at the end; 'dead route' if its minimum over edges is < 1e-12 (at roundoff:
+    the route cannot be revived by the float64 gradient), 'long plateau' if >= 1e-4, 'decaying'
+    in between."""
+    from run_regime import row_cfg, run_id
+
+    from ttn.dynamics import Trajectory
+
+    tr = Trajectory.load(os.path.join(OUT, exp, "traj", run_id(row_cfg(row)) + ".npz"))
+    t, spec = tr["t"], tr["spectra"]  # (n, E, chi_max), NaN-padded
+    if spec.shape[2] < R:
+        return dict(sR_end=np.nan, stall_kind="n/a")
+    sR = np.nanmin(spec[:, :, R - 1], axis=1)  # smallest R-th singular value over edges
+    end = sR[-1]
+    if end < 1e-12:
+        kind = "dead route"
+    elif end >= 1e-4:
+        kind = "long plateau"
+    else:
+        kind = "decaying"
+    return dict(sR_end=float(end), stall_kind=kind)
