@@ -53,11 +53,12 @@ Findings (all at sigma = 0.01, 400 seeds per setting):
 - **Selection rule "s_r X_r^q" (lead's request; `analyze_rule.py`, `results/main_rules.csv`).** With
   X_r = projection of the init onto the nearest balanced bond-rank-one configuration of component r (its
   KKT orbit), the fitted exponent of log tau vs -log X is q = 2.1-2.4 (MPS4), 4.1-4.9 (MPS6), 4.9-6.2
-  (binary8), 6.4-7.3 (MPS8), i.e. ~K-2 as in the Kumar-Haupt escape time, and "argmax s_r X_r^(K-2)"
-  predicts 82-93% of GF winners. Weaker predictors: |grad T_r(theta_0)|^2 (82-90%), product of per-core
-  overlaps (75-90%), |T_r(theta_0)| (68-80%), slice norm (66-89%). The library heuristic
-  `ttn.theory.winner_probability` (decoupled balanced modes) is off by up to -0.13 (c_r = |T_r(0)|^(1/K))
-  and -0.32 (product-Gaussian c_r) in P(greedy) (`results/main_heuristic.csv`).
+  (binary8), 6.4-7.3 (MPS8), i.e. ~K-2 as in the Kumar-Haupt escape time, and "argmax s_r X_r^q" predicts
+  76-92% of GF winners on the m >= 3 trees (exact race: 97-100%). Weaker predictors on the same trees:
+  |grad T_r(theta_0)|^2 82-91%, product of per-core overlaps 75-90%, |T_r(theta_0)| 68-77%, slice norm
+  66-83%. The library heuristic `ttn.theory.winner_probability` (decoupled balanced modes) misses
+  P(greedy) by -0.13 to +0.07 (c_r = |T_r(0)|^(1/K)) and -0.27 to +0.05 (product-Gaussian c_r) on the
+  m >= 3 trees (`results/main_heuristic.csv`).
 
 ### Pilots for steps 2-3 (final runs queued)
 - binary4 sigma scan (pilot, 1000 seeds, chi 4): P(wrong order) = C sigma^gamma, gamma = 0.42 +- 0.05,
