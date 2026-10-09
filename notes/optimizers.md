@@ -285,6 +285,70 @@ lr / P is then ~2-5 GF-time units per step, close to 38 / lambda_max (lambda_max
   GF output grid. Not a precise test (that is `optim-samples`' job); nothing contradicts P6.
 - P5, P7, P9 concern GD above eta_c and SGD, which this experiment does not run.
 
+### 2.5 Deep trees: binary N = 8 (K = 7) and MPS N = 8 (K = 8) (`deep`, 864 runs; `later_b8`, 168 runs)
+
+Problems: odeco (3, 2, 1) with d = 3, chi = 4, and the locality teacher E8 (d = 2, chi = 3); sigma = 0.3
+(S2S) and 0.8 (moderate); balanced init (clean GF baseline) and fan-in init; 6 seeds each. Table:
+`results/deep_table.csv`; per-seed order agreement with GF: `results/order_agreement_with_gf.csv`;
+figures `deep_side_<tree>_<teacher>_sigma0.3_seed0.png`, `later_b8_scaling.png`.
+
+1. **GD and heavy ball = GF** (sigma = 0.8, where GD fits in the budget): first escape 8.59 vs 8.58,
+   gaps equal to < 1% (binary8 odeco); same per-seed order in 83% (first component 98%; the rest are
+   runs cut by the step budget).
+2. **Fan-in GF stalls on MPS8 odeco** (0/12 converged by t = 2e6; dormant components die, overlaps
+   ~1e-40, R12 trap) and partly on binary8 (4/6 at sigma = 0.3); the balanced version of the same W_0
+   converges (12/12 binary8, 10/12 MPS8 by t = 2e6). Adam does not rescue MPS8 fan-in at lr 1e-3 (0/12
+   converged in 3e5 steps) but does in part at lr 1e-2 (7/12); on binary8 fan-in Adam converges 11/12.
+3. **Adam's first escape is sigma-independent on deep trees too**: 107-115 steps (lr 1e-3) and 19-23
+   steps (lr 1e-2) for sigma from 0.25 to 0.8 on binary8 (p = 0.04 +- 0.02 and 0.18 +- 0.05), while GF's
+   grows 260-fold (p = 4.74 +- 0.18; theory K - 2 = 5).
+4. **Adam's later plateaus do scale with sigma, with about half GF's exponent** (`later_b8`, 7 sigma in
+   [0.25, 0.8], 6 seeds; only 0.5 decade, so indicative): p = 2.19 +- 0.32 / 2.65 +- 0.32 (lr 1e-3, gaps
+   1 and 2), 2.40 +- 0.52 / 2.96 +- 0.33 (lr 1e-2), against GF 4.72 +- 0.40 / 4.64 +- 0.64. They are long
+   (up to 8e4 steps at sigma = 0.25) and S2S by the rho > 3 rule in 83-100% of runs at sigma <= 0.4.
+   This is the AEoS phase of 1.2 (e'): once a component is learned, Adam is GD with an lr-independent
+   step, so the GF time scale of the dormant route (which depends on sigma through its amplitude) comes
+   back, partly. Why the exponent is about half is open (conjecture: Adam's sign phase changes the
+   dormant amplitudes in a sigma-dependent way).
+5. **Order.** Adam / RMSProp pick the same first component as GF from the same init in 92-94% of deep
+   runs (full order 66-74%; binary4: 86-98%): the selection rule (largest weight x overlap^(K-2), i.e.
+   largest gradient) is the same because the sign of the total gradient is set by the dominant
+   component. The locality order of the E8 teacher survives: MPS8 learns q0, qA (k = 2), then qB (k = 6)
+   in 4-5 of 6 runs for GF and Adam alike; binary8 learns q0, qB, qA in 6/6 for GF, Adam and RMSProp at
+   sigma = 0.3 (theory: tied k = 5 routes, weight favours qB).
+6. **Gauge-invariant methods.** ALS and DMRG reach the teacher in less than one sweep (7-11 micro-steps,
+   0.05 s) on every deep problem, with event times identical at sigma = 0.3 and 0.8 (proven, 1.6);
+   Riemannian GD at lr 1 in 6-9 steps (identical at both sigma); orders at chance level (first
+   component as GF's in 31-54%, chance 33%). The rank-growth pattern differs from GF in kind: the bond
+   spectra jump to their final rank within a few micro-steps as the sweep passes each edge.
+7. **Re-gauged GD is sequential on deep trees**, with sigma-independent plateaus (`later_b8`: event
+   times identical to 4 digits for sigma = 0.3-0.5; p = -0.02 +- 0.21, 0.20 +- 0.25, -0.05 +- 0.59), set by
+   the overlaps of the random initial frames with the teacher (correction to 1.4). It also stalls: on
+   MPS8 odeco only 1/24 runs converged within 1e5 steps.
+8. **Gram-preconditioned GD** (scale-free damping) is unreliable on deep trees: overshoot then return,
+   converging in 1/6 runs on MPS8 odeco at sigma = 0.3 within 1e5 steps (4/6 binary8), 6/6 on the E8 teacher.
+9. **Balance.** Adam / RMSProp end with balance index 0.37-0.82 (GF 0.000 from balanced init); the
+   entry-count heuristic of 1.2 (f) captures the trend across edges (heuristic 0, 0.14, 0.28, 0.6 ->
+   measured ~0.2, 0.25, 0.35, 0.45-0.5) but misses a floor of ~0.2 for equal-size cores (`balance.png`).
+
+### 2.6 Finite samples: implicit bias (`implicit_bias_b4`, 288 runs; figure `implicit_bias_b4.png`)
+
+binary N = 4, d = 3, chi = 4 (W has 81 entries; the rank-(3,3) manifold has dimension 45), odeco (3, 2, 1),
+n = 30, 45, 60, 90 Gaussian samples, sigma = 0.01 and 0.1, 6 seeds, trained to empirical loss < 1e-8 L0
+(GF with t_max = 1e6 to make sure it interpolates; RMSProp never reaches that tolerance and is reported
+at its final state).
+
+- n = 30: no method recovers the teacher (population loss 12-40 > L0 = 7). n = 90: all do.
+- n = 45 (= manifold dimension): GF ends with bond ranks (3, 3) in 11/12 runs (one rank-4 edge);
+  Adam lr 1e-3 in 8/12, Adam lr 1e-2 in 9/12 and RMSProp in 11/12 runs end with a rank-4 edge
+  (bond dimension fully used); no method recovers the teacher.
+- n = 60: teacher recovered (population loss < 0.01) by GF in 10/12, Adam lr 1e-3 in 9/12, RMSProp in 8/12,
+  Adam lr 1e-2 in 6/12; the failures are rank-4 interpolants with population loss ~2.
+
+**Empirical**: GF from small init has the strongest low-bond-rank bias; Adam (more so at larger lr and
+larger sigma) and RMSProp more often use the full bond dimension and generalize worse at intermediate
+sample sizes, as expected from the loss of gauge equivariance (Singh 2026, abstract only).
+
 ## 3. Synthesis (for practitioners and the report)
 
 **Why GF has plateaus that scale with the init, and what removes them (derived).** Near the origin the

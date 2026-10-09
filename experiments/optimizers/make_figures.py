@@ -78,7 +78,14 @@ def deep():
                          extra_filter={"tree": tree, "teacher": teacher, "init": "balanced"})
 
 
-FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "escape": fig_adam_escape, "deep": deep, "bias": fig_implicit_bias}
+def later():
+    df = with_keys(collect("later_b8"))
+    scaling_table(df, quantities=("t_first", "gap_0", "gap_1", "t_loss_0.001")).to_csv(
+        RESULTS / "later_b8_exponents.csv", index=False)
+    fig_scaling("later_b8", ["GF", "Adam, lr 0.001", "Adam, lr 0.01", "GD + re-gauge, lr 0.01, every 1"])
+
+
+FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "escape": fig_adam_escape, "deep": deep, "bias": fig_implicit_bias, "later": later}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or FIGURES:
