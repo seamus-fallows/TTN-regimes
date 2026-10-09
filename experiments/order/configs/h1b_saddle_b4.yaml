@@ -1,0 +1,13 @@
+# H1b, controlled start: binary4 (m = 2) at the balanced wrong saddle (smaller component learned,
+# amplitude rho^(1/3) per core) plus a fan-in perturbation of scale sigma. Prediction: rotation to
+# the larger component after t_corr = ln(1/sigma)/|lambda| + O(1), lambda = -(1-rho) rho^(1/3).
+name: h1b_saddle_b4
+mode: saddle
+kind: binary
+n: 4
+d: 2
+chi: 4
+rho: [0.5, 0.7, 0.8, 0.9]
+sigma: [1.0e-2, 1.0e-3, 1.0e-4, 1.0e-5, 1.0e-6, 1.0e-7]
+seeds: 8
+t_max: 1.0e+9

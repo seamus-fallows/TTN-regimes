@@ -1,0 +1,13 @@
+# Control: pattern teacher on MPS6 whose two components differ on the sites of m cores
+# (rest: shared basis vector e_0). m = 2 ("matrix-like pair"): greedy as sigma -> 0;
+# m >= 3: sigma-independent random order (notes/order.md sec. 3).
+name: pat_mps6_m2adj
+trees: ["mps:6"]
+d: [2]
+chi: [4]
+pattern: [[0,0,0,0,0,0],[0,0,1,1,0,0]]
+rho: [0.7, 0.8, 0.9]
+sigma: [0.1, 0.03, 0.01, 0.003]
+seeds: 400
+proxies: false
+lo_race: false

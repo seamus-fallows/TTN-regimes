@@ -202,3 +202,75 @@ def init_proxies(spec: TTNSpec, teacher: CPTeacher, u0: np.ndarray, seed: int = 
             )
         )
     return out
+
+
+# ---- full trajectories and saddle diagnostics ----------------------------------------------------
+
+
+def gf_trajectory(spec, teacher, y0, t_max, loss_stop=1e-10, rtol=1e-10, atol=1e-15,
+                  method="LSODA"):
+    """Full gradient flow with dense output until L < loss_stop * L(0) or t_max.
+
+    Later plateaus sit near learned saddles with O(1) positive curvature, which makes explicit
+    integrators step-size limited over plateaus of length sigma^-(k-2); the default is therefore
+    LSODA with the exact Hessian as Jacobian (stiff-capable)."""
+    loss, rhs = loss_grad_fn(spec, teacher)
+    l0 = loss(torch.from_numpy(y0)).item()
+
+    def done(t, y):
+        with torch.no_grad():
+            return loss(torch.from_numpy(y)).item() - loss_stop * l0
+
+    def jac(t, y):
+        return -torch.autograd.functional.hessian(loss, torch.from_numpy(y)).numpy()
+
+    done.terminal = True
+    kw = dict(jac=jac) if method in ("LSODA", "Radau", "BDF") else {}
+    return solve_ivp(rhs, (0.0, t_max), y0, method=method, rtol=rtol, atol=atol,
+                     events=done, dense_output=True, **kw)
+
+
+def crossings(t, x, level=0.5):
+    """Times where x crosses `level` (linear interpolation), with direction +1 / -1."""
+    out = []
+    s = np.sign(x - level)
+    for i in np.nonzero(s[1:] != s[:-1])[0]:
+        if s[i] == 0:
+            continue
+        tc = t[i] + (level - x[i]) * (t[i + 1] - t[i]) / (x[i + 1] - x[i])
+        out.append((tc, int(np.sign(x[i + 1] - x[i]))))
+    return out
+
+
+def gauge_tangents(spec: TTNSpec, flat: torch.Tensor) -> torch.Tensor:
+    """Columns: generators delta G_v = G_v X (parent leg), delta G_p = -X G_p (v-leg) of the
+    GL(chi) gauge action on every edge, for X = elementary matrices."""
+    cores = spec.unflatten(flat)
+    t = spec.tree
+    cols = []
+    for v in t.edges:
+        p = t.parent[v]
+        chi = spec.bond_dims[v]
+        leg = len(t.sites[p]) + t.children[p].index(v)
+        for i in range(chi):
+            for j in range(chi):
+                x = torch.zeros(chi, chi, dtype=flat.dtype)
+                x[i, j] = 1.0
+                d = [torch.zeros_like(c) for c in cores]
+                d[v] = torch.tensordot(cores[v], x, dims=([cores[v].ndim - 1], [0]))
+                d[p] = -torch.movedim(torch.tensordot(cores[p], x, dims=([leg], [1])), -1, leg)
+                cols.append(spec.flatten(d))
+    return torch.stack(cols, 1)
+
+
+def projected_hessian(spec, teacher, y, rel_tol=1e-8):
+    """Eigenvalues of the loss Hessian restricted to the orthogonal complement of the gauge
+    tangent space at y (notes/diagnostics.md: H(t)); also returns the gauge-space dimension."""
+    loss, _ = loss_grad_fn(spec, teacher)
+    flat = torch.from_numpy(np.asarray(y, dtype=np.float64))
+    h = torch.autograd.functional.hessian(loss, flat)
+    g = gauge_tangents(spec, flat)
+    u, s, _ = torch.linalg.svd(g, full_matrices=True)
+    rank = int((s > rel_tol * s.max()).sum())
+    comp = u[:, rank:]
+    return torch.linalg.eigvalsh(comp.T @ h @ comp).numpy(), rank

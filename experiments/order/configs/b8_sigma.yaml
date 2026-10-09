@@ -1,0 +1,10 @@
+# m = 4 (odeco on binary8, shared internal cores): P(greedy) should not depend on sigma.
+name: b8_sigma
+trees: ["binary:8"]
+d: [2]
+chi: [4]
+rho: [0.5, 0.8, 0.95]
+sigma: [0.3, 0.1, 0.03, 0.01]
+seeds: 400
+proxies: false
+lo_race: false

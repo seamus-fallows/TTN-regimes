@@ -1,0 +1,12 @@
+# H1b contrast, natural wrong-order runs on MPS4 (m = 4) from the main sweep (sigma = 0.01).
+name: h1b_natural_mps4
+mode: natural
+from_sweep: main
+kind: mps
+n: 4
+d: 2
+chi: 4
+rho: [0.5, 0.8]
+sigma: [0.01]
+max_seeds: 20
+t_max: 1.0e+12
