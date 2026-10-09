@@ -1,0 +1,14 @@
+# Underdetermined variant: finite samples (empirical loss), binary N=4, d=3, chi=4 (W has 81 entries,
+# the rank-(3,3) TTN manifold has dimension 45), odeco teacher (3, 2, 1). Which interpolant does each
+# optimizer pick? Measured: population loss and bond spectra at the end (train loss < 1e-6 L0).
+name: implicit_bias_b4
+blocks:
+  - base: {tree: binary, n_sites: 4, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
+    grid: {n_samples: [30, 45, 60, 90], sigma: [0.01, 0.1], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers:
+      - {optimizer: gf, budget_c: 20.0, budget_power: 1.0, tol: 1.0e-8}
+      # the 20/sigma budget leaves GF on plateaus for n <= 60: long reference run
+      - {optimizer: gf, t_max: 1.0e6, tol: 1.0e-8}
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 300000, tol: 1.0e-8}
+      - {optimizer: rmsprop, lr: 1.0e-3, n_steps: 300000, tol: 1.0e-8}
+      - {optimizer: momentum, lr: 0.0005, beta: 0.9, budget_c: 20.0, budget_power: 1.0, tol: 1.0e-8}

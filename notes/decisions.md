@@ -43,3 +43,20 @@ here too.
   anyway. Risk: some throwaway pilot code; agents are told not to build their own frameworks.
 - **Mode**: autonomous (agents record decisions instead of blocking on questions); the lead checks in
   every ~2 h and redirects with messages.
+
+## 2026-10-09 (evening) — Review gate, follow-ups, deep-tree baselines
+
+- **Review gate before results enter the report.** Every agent's round of results gets an independent
+  local review: (A) partial reproduction from the committed code plus one independent check, (B) an
+  adversarial audit of claims vs data. Reviews are committed to `notes/reviews/`. The first review
+  (data-teacher round 1) found the runs correct but several headline numbers unsupported by the analysis
+  (grid-limited durations, unfair log-vs-power comparison, residual-based error bars); the resulting
+  "Analysis standards" were added to `notes/briefs/README.md` and sent to all agents.
+- **data-teacher continues (round 2)** instead of being shut down: the tree-shape contrast for generic
+  teachers (MPS log plateaus vs binary/HT polynomial) is central to the report, and the agent has the tools.
+  It also fixes the review's issues first.
+- **Deep-tree baselines use gauge-balanced inits** (decision by `optimizers`, endorsed): fan-in inits on
+  MPS8/binary8 with chi = teacher rank stall (dormant routes die; theory_saddles R12, theory_regimes P14).
+  Stalls are a finding in their own right (regime-map studies them); experiments that need clean S2S on deep
+  trees use balanced inits or spare bond channels, and must say so.
+- **Theory programme complete**: all six theory notes are at v2 after derive -> adversarial verify -> revise.

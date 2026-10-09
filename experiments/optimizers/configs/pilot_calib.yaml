@@ -1,0 +1,22 @@
+# Calibration pilot: cost and event times on the deep trees (not used for figures)
+name: pilot_calib
+blocks:
+  - base: {tree: binary, n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
+    grid: {sigma: [0.2, 0.3, 0.45], seed: [0, 1]}
+    optimizers:
+      - {optimizer: gf, t_max: 2.0e5}
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 200000}
+      - {optimizer: rmsprop, lr: 1.0e-3, n_steps: 200000}
+  - base: {tree: mps, n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
+    grid: {sigma: [0.2, 0.3, 0.45], seed: [0, 1]}
+    optimizers:
+      - {optimizer: gf, t_max: 2.0e5}
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 200000}
+      - {optimizer: rmsprop, lr: 1.0e-3, n_steps: 200000}
+  - base: {tree: mps, n_sites: 8, d: 2, chi: 3, teacher: pattern, weights: [1.0, 0.4, 0.7],
+           patterns: [[0,0,0,0,0,0,0,0], [0,0,0,1,1,0,0,0], [0,1,0,0,0,0,1,0]], teacher_seed: 100}
+    grid: {sigma: [0.2, 0.3, 0.45], seed: [0, 1]}
+    optimizers:
+      - {optimizer: gf, t_max: 2.0e5}
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 200000}
+      - {optimizer: rmsprop, lr: 1.0e-3, n_steps: 200000}

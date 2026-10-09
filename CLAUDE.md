@@ -107,10 +107,14 @@ Read this file first; it is how the lead and all agents recover context. Keep it
   escape in a sigma-independent number of steps); re-gauged GD, Riemannian GD, Gram preconditioning, ALS, DMRG remove
   plateaus altogether. data-teacher: any non-orthogonality (misaligned covariance, CP overlap, correlations, generic TTN
   teachers) turns MPS later plateaus into strict log-time saddles (analysis under revision after review).
+- Local H2 pilot (experiments/pilot_h2_locality, d = chi = 2): H2 exponents hold wherever the second component is learned
+  (k = 3, 4, 5, 7 on MPS4/6, binary4/8); first escape sigma^-(K-2) to +-0.003. COLLAPSE: with chi = 2, 95/332 runs with
+  k >= 4 never learn the second component (route ends die to 1e-12..1e-16; failing seeds fixed across sigma); MPS6 k = 5-6
+  exponents seed-dependent and steeper than -(k-2). Spare channels (chi > R) expected to cure it (theory_regimes P14).
 - Experiments (interim): locality N=4 exponents match k = 1, 2, 3, 4 (incl. head-start log slope 1.005 vs 1.0);
   data-teacher: aligned covariance = race with weights Lambda s, landscape with sqrt(Lambda) s; optim-samples:
   eta_max = 2/(K s_1^(2-2/K)) exact, GD event shift predicted to 3 digits.
-- Theory (derived, re-checked): every KKT point of g = <W, W*> on the unit sphere with g* > 0 is exactly
+- Theory (proven, report Appendix A prop:A-kkt): every KKT point of g = <W, W*> on the unit sphere with g* > 0 is exactly
   balanced on every bond with core norms 1/K, so the near-origin escape direction is balanced and min-norm.
 - Lazy regime: the tangent kernel of a random TTN is isotropic only on average; a single draw is strongly
   anisotropic unless every chi_e >> cut dimension min(d^n_e, d^(N-n_e)), so finite-chi lazy runs have an order

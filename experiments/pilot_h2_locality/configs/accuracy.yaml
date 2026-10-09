@@ -1,0 +1,80 @@
+# Integration accuracy checks. Reference = LSODA, rtol 1e-10 (the sweep setting). Each case is rerun
+# with a tighter tolerance, a tighter atol, other implicit methods (Radau, BDF), explicit
+# Dormand-Prince (DOP853/RK45, where affordable) and a capped step size (plateaus cannot be stepped
+# over). check_accuracy.py compares the crossing times.
+out_dir: data/pilot_h2_locality/accuracy
+csv: accuracy_runs.csv
+method: LSODA
+rtol: 1.0e-10
+wall_limit: 1500
+t_max_factor: 1.0e+4  # same horizon for reference and variants
+workers: 8
+groups:
+  # --- cases spanning all regimes, at small sigma ---
+  - {tree: mps, n: 4, kinds: [local], sigmas: [0.001], seeds: [0]}
+  - {tree: mps, n: 4, kinds: [far], sigmas: [0.01], seeds: [0]}
+  - {tree: mps, n: 4, kinds: [global], sigmas: [0.01], seeds: [3]}
+  - {tree: mps, n: 4, kinds: [sites0-2], sigmas: [0.01], seeds: [0]}
+  - {tree: binary, n: 4, kinds: [local], sigmas: [0.0005], seeds: [0]}
+  - {tree: binary, n: 4, kinds: [far], sigmas: [0.0005], seeds: [1]}
+  - {tree: binary, n: 4, kinds: [global], sigmas: [0.001], seeds: [2]}
+  - {tree: mps, n: 6, kinds: [sites0-3], sigmas: [0.07], seeds: [0]}
+  - {tree: mps, n: 6, kinds: [far], sigmas: [0.1], seeds: [0]}
+  - {tree: binary, n: 8, kinds: [far], sigmas: [0.1], seeds: [1]}
+  - {tree: binary, n: 8, kinds: [global], sigmas: [0.15], seeds: [0]}
+  # same cases, tighter tolerance / tighter atol / other implicit methods
+  - &tight {tree: mps, n: 4, kinds: [local], sigmas: [0.001], seeds: [0], overrides: {rtol: 1.0e-12}}
+  - {<<: *tight, kinds: [far], sigmas: [0.01], seeds: [0]}
+  - {<<: *tight, kinds: [global], sigmas: [0.01], seeds: [3]}
+  - {<<: *tight, kinds: [sites0-2], sigmas: [0.01], seeds: [0]}
+  - {<<: *tight, tree: binary, kinds: [local], sigmas: [0.0005], seeds: [0]}
+  - {<<: *tight, tree: binary, kinds: [far], sigmas: [0.0005], seeds: [1]}
+  - {<<: *tight, tree: binary, kinds: [global], sigmas: [0.001], seeds: [2]}
+  - {<<: *tight, n: 6, kinds: [sites0-3], sigmas: [0.07], seeds: [0]}
+  - {<<: *tight, n: 6, kinds: [far], sigmas: [0.1], seeds: [0]}
+  - {<<: *tight, tree: binary, n: 8, kinds: [far], sigmas: [0.1], seeds: [1]}
+  - {<<: *tight, tree: binary, n: 8, kinds: [global], sigmas: [0.15], seeds: [0]}
+  - &atol {tree: mps, n: 4, kinds: [far], sigmas: [0.01], seeds: [0], overrides: {atol_factor: 1.0e-9}}
+  - {<<: *atol, kinds: [global], sigmas: [0.01], seeds: [3]}
+  - {<<: *atol, n: 6, kinds: [far], sigmas: [0.1], seeds: [0]}
+  - {<<: *atol, tree: binary, n: 8, kinds: [global], sigmas: [0.15], seeds: [0]}
+  - {<<: *atol, tree: binary, n: 8, kinds: [far], sigmas: [0.1], seeds: [1]}
+  - &radau {tree: mps, n: 4, kinds: [far], sigmas: [0.01], seeds: [0], overrides: {method: Radau}}
+  - {<<: *radau, kinds: [global], sigmas: [0.01], seeds: [3]}
+  - {<<: *radau, kinds: [local], sigmas: [0.001], seeds: [0]}
+  - {<<: *radau, tree: binary, kinds: [far], sigmas: [0.0005], seeds: [1]}
+  - {<<: *radau, n: 6, kinds: [sites0-3], sigmas: [0.07], seeds: [0]}
+  - {<<: *radau, n: 6, kinds: [far], sigmas: [0.1], seeds: [0]}
+  - {<<: *radau, tree: binary, n: 8, kinds: [far], sigmas: [0.1], seeds: [1]}
+  - {<<: *radau, tree: binary, n: 8, kinds: [global], sigmas: [0.15], seeds: [0]}
+  - {tree: mps, n: 4, kinds: [far], sigmas: [0.01], seeds: [0], overrides: {method: BDF}}
+  # --- explicit Dormand-Prince, on cases short enough for stability-limited steps ---
+  # (MPS4 global at sigma = 0.1 is left out: its second plateau, ~5e4 time units, is too long for
+  #  stability-limited explicit steps on a shared machine)
+  - &dop {tree: mps, n: 4, kinds: [local, far, sites0-2], sigmas: [0.1], seeds: [0], overrides: {method: DOP853}}
+  - {<<: *dop, kinds: [local, sites0-2], sigmas: [0.01]}
+  - {<<: *dop, tree: binary, kinds: [local, far, global], sigmas: [0.01]}
+  - {<<: *dop, tree: binary, n: 8, kinds: [local, far], sigmas: [0.3]}
+  - {<<: *dop, n: 6, kinds: [local, sites0-2], sigmas: [0.2]}
+  - {tree: mps, n: 4, kinds: [local, far, sites0-2], sigmas: [0.1], seeds: [0]}
+  - {tree: mps, n: 4, kinds: [local, sites0-2], sigmas: [0.01], seeds: [0]}
+  - {tree: binary, n: 4, kinds: [local, far, global], sigmas: [0.01], seeds: [0]}
+  - {tree: binary, n: 8, kinds: [local, far], sigmas: [0.3], seeds: [0]}
+  - {tree: mps, n: 6, kinds: [local, sites0-2], sigmas: [0.2], seeds: [0]}
+  - {tree: mps, n: 4, kinds: [far, sites0-2], sigmas: [0.1], seeds: [0], overrides: {method: DOP853, rtol: 1.0e-12}}
+  - {tree: binary, n: 4, kinds: [far], sigmas: [0.01], seeds: [0], overrides: {method: RK45, rtol: 1.0e-12}}
+  # --- stuck case: same finite horizon with LSODA and explicit DOP853 (collapse of the 2nd bond
+  #     singular values must not be an implicit-solver artifact) ---
+  - {tree: mps, n: 6, kinds: [far], sigmas: [0.3], seeds: [0], overrides: {t_max: 3000.0}}
+  - {tree: mps, n: 6, kinds: [far], sigmas: [0.3], seeds: [0], overrides: {t_max: 3000.0, method: DOP853}}
+  # --- early stop at collapse onto the rank-one saddle vs following the run to t_max ---
+  - {tree: mps, n: 4, kinds: [far], sigmas: [0.02], seeds: [1]}
+  - {tree: mps, n: 4, kinds: [far], sigmas: [0.02], seeds: [1], overrides: {collapse_stop: false}}
+  - {tree: mps, n: 6, kinds: [far], sigmas: [0.1], seeds: [0], overrides: {collapse_stop: false}}
+  - {tree: binary, n: 8, kinds: [global], sigmas: [0.15], seeds: [0], overrides: {collapse_stop: false}}
+  # --- capped step size: the plateaus are integrated, not stepped over ---
+  - {tree: mps, n: 4, kinds: [far], sigmas: [0.03], seeds: [0], overrides: {max_step: 5.0}}
+  - {tree: mps, n: 4, kinds: [far], sigmas: [0.03], seeds: [0]}
+  - {tree: binary, n: 4, kinds: [far], sigmas: [0.002], seeds: [0], overrides: {max_step: 2.0}}
+  - {tree: binary, n: 4, kinds: [far], sigmas: [0.002], seeds: [0]}
+  - {tree: mps, n: 4, kinds: [local], sigmas: [0.01], seeds: [0], overrides: {max_step: 10.0}}
