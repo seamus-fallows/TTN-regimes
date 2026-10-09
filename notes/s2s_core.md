@@ -329,7 +329,25 @@ Consequence (derived): trap time ~ sigma^-2 vs escape time ~ sigma^-(K-2). K = 3
 trapped (0/320). K = 4: same order, a sigma-independent seed-dependent fraction traps (4/10 at chi = 3).
 K >= 5: the ends' fate is settled long before the route can escape.
 
-**(b) Gauge-balanced init.** [pending: balanced (K = 3, 4) and k78 (K = 7, 8) sweeps]
+**(b) Gauge-balanced init removes the trap (empirical; supports theory_saddles R12).** Same seeds and
+W_0, rescaled so that every Q_e = 0 (`s2s.gauge_balance`):
+- K = 4 (mps4, chi = 3, sigma = 0.003 .. 0.03): every balanced run completes (fan-in: 4/10 seeds trap at
+  every sigma). K = 3: nothing to remove (fan-in never traps). [`balanced` sweep]
+- K = 7, 8, chi = 3, sigma = 0.15-0.3 (`k78`, 90 matched runs per init): trapped 0/90 balanced vs 47/90
+  fan-in (binary8 0 vs 9/30, ht4 0 vs 24/30, mps8 0 vs 14/30). Of the 47 fan-in-trapped seeds, 17
+  complete with balanced init, 29 are "stalled" (all route ends alive, budget exhausted), 1 unresolved.
+  Complete: binary8 3 vs 2, ht4 17 vs 3, mps8 0 vs 0 (30/30 balanced mps8 runs learn 2 of 3
+  components; with fan-in 18/30 learn only 1). Balanced init is not uniformly better: 5 runs complete
+  with fan-in but stall with balanced init (the first escapes differ).
+- **Stalled is not stuck (continuation test).** 8 stalled k78 runs (both inits; chosen as the ones with
+  the shortest predicted remaining plateau) were continued from their final state: all 8 escape, at
+  0.49-0.85x the balanced-route estimate of the remaining plateau b^-(K-2)/((K-2) s_r) with
+  b = (s_r |a_r|)^(1/K) from the dormant amplitude at the end of the run; the ratio is the same per
+  seed across sigma (e.g. 0.80-0.85, 0.49-0.54, 0.85). The estimate is an upper bound (derived: for a
+  fixed product of route amplitudes the balanced route is the slowest, since a_v^2 - a_w^2 is
+  conserved and the product's growth rate is s prod_v a_v sum_v 1/a_v^2). For all stalled runs the
+  estimate is a median 10-60x the time already integrated: these runs sit on ever-longer plateaus whose
+  length is set by how far the dormant amplitude was suppressed, (suppression)^-(K-2)/K.
 
 **(d) Physics vs roundoff.** A dead end's slice decays exponentially until it reaches the integrator's
 absolute tolerance / float64 roundoff (~1e-12 .. 1e-15 absolute), where it stays; any later escape of
