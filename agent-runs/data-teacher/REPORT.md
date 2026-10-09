@@ -127,8 +127,8 @@ the full list are in `notes/data_teacher.md` (sections 0, 1).
 - 19:20 Library v0 merged. Cross-check pilot vs ttn.dynamics.integrate_gf (LSODA): max relative
   difference 7e-7 in event times and losses (results/crosscheck_library.csv). Float64-floor scan
   (lead's note): no dormant signal below 1e-11 in any CP run (results/float_floor_check.csv).
-- 19:40 Plateau laws: e4a_sigma and e2_sigma (dense, library LSODA) show polynomial -> logarithmic
-  change with overlap / misalignment, slopes as predicted. Exact Hessian check of the swap criterion.
 - 19:25 Found that the 2000-point log grid cannot resolve the short (log-time) later plateaus of
   generic teachers; new two-stage dense runner on the library integrator (run_dense.py); 4(b), 4(c)
   and the sigma sweeps (e4a_sigma, e2_sigma) rerun with it (pilot versions discarded).
+- 19:40 Plateau laws: e4a_sigma and e2_sigma (dense, library LSODA) show polynomial -> logarithmic
+  change with overlap / misalignment, slopes as predicted. Exact Hessian check of the swap criterion.
