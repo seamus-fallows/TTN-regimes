@@ -7,6 +7,18 @@ Experiments: `experiments/data_teacher/`. Raw outputs: `/root/outputs/data_teach
 
 Baseline: whitened inputs, odeco teacher, fan-in init, gradient flow; N = 4 (binary-4 = depth-3 DLN,
 MPS-4 = genuinely tensorial), 20-40 seeds per setting. Details and numbers in the sections below.
+Overview figure: `experiments/data_teacher/results/summary_plateau_law.png` (later-plateau duration
+vs sigma, baseline sigma^-2 vs logarithmic for every complication that breaks orthogonality).
+
+**One-line answer.** Covariance aligned with an odeco teacher only reweights (race by Lambda s,
+landscape by sqrt(Lambda) s). Everything that makes the teacher's components non-orthogonal in the
+metric that defines the loss changes the picture *qualitatively* on students where a 2-core
+correction route exists (MPS): misaligned covariance, overlapping CP components, cross-site
+correlations, generic TTN teachers. The later plateaus become strict saddles with
+log(1/sigma) durations instead of higher-order saddles with sigma^-(K-2) durations, and the
+plateaus are blended rank-constrained critical points instead of partial sums of components. The
+first escape always keeps its sigma^-(K-2) law. Binary-4 (a depth-3 linear network on one
+matricization) is insensitive to this and stays polynomial.
 
 | complication | why checked | what changed | baseline theory (with substitution) predicts it? |
 |---|---|---|---|
@@ -226,7 +238,8 @@ Sigma-loss; "race" tensor = best bond-rank-1 approximation of Sigma W*). Results
    bond-rank-1 approximation of Sigma W*; median |cos| 0.90-0.997) more than with the saddle it
    reaches (|cos| down to 0.44-0.88 at theta = 45); on the plateau |cos| with the saddle is 0.998-1.
    At theta = 0 the two tensors coincide.
-3. **Misalignment shortens the rank-1 plateau of MPS-4 by orders of magnitude** — *empirical*: median
+3. **Misalignment shortens the rank-1 plateau of MPS-4 by orders of magnitude** — *empirical* (single
+   sigma, pilot grid: values below ~1 time unit are resolution-limited; the sigma law is item 4): median
    t_2 - t_1 (t_2 = first time max_e s_2^e > 1e-2) is 539 / 38 / 4.2 / 1.2 / 0.3 at theta = 0 / 10 / 20 /
    30 / 45 (alpha = 1; similar for alpha = 0.5: 327 / 168 / 34 / 3.3 / 0.9). On binary-4 it shrinks
    only by a factor ~7 (75 -> 10). Interpretation (*derived*, theory_teachers.md R4/R7 via Fact B):
@@ -282,7 +295,10 @@ figure `results/e3_correlated_summary.png`; predictions `results/rank1_predictio
    them at rho = 0.5), i.e. it blends both components and contains the non-teacher cross terms
    e1 e1 (x) e2 e2 that the shared factor makes correlated with f*. The first saddle is no longer a
    partial fit of the teacher.
-3. **MPS-4: same saddle, much shorter second plateau** — *empirical*: the rank-1 saddle stays the pure
+3. **MPS-4: same saddle, much shorter second plateau** — *empirical* (durations below ~1 time unit are
+   at the resolution of the 2000-point output grid of these pilot-integrator runs; the law in sigma was
+   not measured for step 3 because the library's Problem has no non-product metric — that it is
+   logarithmic, as in 2 and 4a, is a *conjecture* based on the same mechanism): the rank-1 saddle stays the pure
    component (|cos| 1.000 with e1^(x)4; level 0.329 -> 0.312 L(0)), but the rank-1 plateau duration
    drops from 137 (rho = 0) to 46 / 1.4 / 0.6 / 0.3 / 0.14 at rho = 0.1 / ... / 0.5 (medians): with
    non-orthogonal components in function space a cheap (2-core) escape route opens, as in steps 2 and
