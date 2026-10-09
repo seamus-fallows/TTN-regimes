@@ -484,3 +484,33 @@ def fig_implicit_bias(name: str = "implicit_bias_b4"):
     axes[1].set_title("dotted: dimension of the rank-(3,3) manifold (45)", fontsize=7)
     tp.savefig(fig, FIG / "implicit_bias_b4")
     return fig
+
+
+def fig_implicit_bias2(name: str = "implicit_bias2_b4"):
+    """Finite samples, several data draws: population loss of Adam vs GF on the same (data draw, init
+    seed), runs that reached the training tolerance (empirical loss < 1e-8 L0) only. Panels n = 45, 60."""
+    df = with_keys(collect(name))
+    df = df[df["meta_stop_reason"].astype(str).eq("converged")]
+    key = ["n_samples", "sigma", "data_seed", "seed"]
+    gf = df[df["optimizer"] == "gf"].set_index(key)["pop_loss_end"]
+    tp.set_style()
+    fig, axes = tp.subplots(1, 2, width=tp.TEXT_WIDTH, panel_aspect=0.9)
+    for ax, n in zip(axes, (45, 60)):
+        for m, mk in (("Adam, lr 0.001", "o"), ("Adam, lr 0.01", "^")):
+            g = df[(df["method"] == m) & (df["n_samples"] == n)].set_index(key)["pop_loss_end"]
+            common = g.index.intersection(gf.index)
+            ax.plot(np.maximum(gf.loc[common], 1e-9), np.maximum(g.loc[common], 1e-9), mk, ms=3.5,
+                    color=FAMILY_COLOR["adam"], mec="white", mew=0.5, alpha=0.8 if mk == "o" else 0.6,
+                    label=f"{m} ({len(common)} pairs)")
+        lim = (1e-9, 1e2)
+        ax.plot(lim, lim, color=tp.MUTED, lw=0.8, ls="--")
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlim(*lim)
+        ax.set_ylim(*lim)
+        ax.set_xlabel("population loss, GF")
+        ax.set_title(f"binary4, n = {n}: 4 data draws x 6 inits x sigma in {{0.01, 0.1}}", fontsize=7)
+        ax.legend(fontsize=6, loc="upper left")
+    axes[0].set_ylabel("population loss, Adam (same draw and init)")
+    tp.savefig(fig, FIG / "implicit_bias2_b4")
+    return fig

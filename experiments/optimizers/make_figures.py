@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 from experiments.optimizers.analysis import RESULTS, collect
-from experiments.optimizers.plots import fig_adam_escape, fig_implicit_bias, fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
+from experiments.optimizers.plots import fig_adam_escape, fig_implicit_bias, fig_implicit_bias2, fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
 
 # Riemannian GD and ALS / DMRG are left out: their events fall within the first 1-2 steps / micro-steps
 # at every sigma (unresolved); their time to convergence has p = 0 (scaling_b4_exponents.csv).
@@ -134,14 +134,18 @@ def order_agreement() -> pd.DataFrame:
         df["init"] = df["init"].fillna("fanin") if "init" in df else "fanin"
         key = ["tree", "n_sites", "teacher", "init", "sigma", "seed"]
         gf = df[df["optimizer"] == "gf"].set_index(key)["order"].astype(str)
-        for m, g in df[df["optimizer"] != "gf"].groupby("method"):
+        # the sigma-independent methods give one trajectory per seed: see order_independent_seeds()
+        sigma_free = ("als", "dmrg", "riemannian", "regauge")
+        for m, g in df[~df["optimizer"].isin(("gf",) + sigma_free)].groupby("method"):
             g = g.set_index(key)
+            g = g[g["order_resolved"].astype(bool)]  # orders with ties / events at the overshoot: no order
             common = g.index.intersection(gf.index)
             if len(common) == 0:
                 continue
             mine = g.loc[common, "order"].astype(str)
             ref = gf.loc[common]
             rows.append({"sweep": name, "method": m, "n_inits": len(common),
+                         "n_excluded_unresolved": int(len(df[(df["method"] == m)]) - len(g)),
                          "same_order": float(np.mean(mine.values == ref.values)),
                          "same_first": float(np.mean([a[1:2] == b[1:2] for a, b in zip(mine, ref)]))})
     out = pd.DataFrame(rows)
@@ -213,6 +217,7 @@ def bias2() -> pd.DataFrame:
                          "draws": len({i[2] for i in idx})})
     out = pd.DataFrame(rows)
     out.to_csv(RESULTS / "implicit_bias2_paired.csv", index=False)
+    fig_implicit_bias2()
     return out
 
 
@@ -254,7 +259,7 @@ def precond():
                                                                          index=False)
 
 
-FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "deep": deep, "bias": fig_implicit_bias, "later": later, "cost": cost_table,
+FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "deep": deep, "later": later, "cost": cost_table,
            "order": order_agreement, "order_seeds": order_independent_seeds, "eps": eps, "precond": precond, "bias2": bias2}
 
 if __name__ == "__main__":

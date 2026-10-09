@@ -111,20 +111,6 @@ def p6(sweep="scaling_b4") -> pd.DataFrame:
     return out
 
 
-if __name__ == "__main__":
-    torch.set_num_threads(1)
-    pd.set_option("display.width", 200)
-    import sys
-
-    print(p6_slope().round(4).to_string())
-    if "p6" in sys.argv:  # path form (needs |grad L| at the events, read off the GF output grid: coarse)
-        a = p6()
-        print(a.groupby(["sigma", "component"])[["dt_over_lr", "pred_over_lr"]].mean().round(2).to_string())
-    b = p1p2()
-    print(b.groupby(["tree", "n_sites", "init", "method"])[["ratio", "balance_end"]].agg(["mean", "min", "max"])
-          .round(3).to_string())
-
-
 def r12_route_ends(files: list, sweep_dir) -> pd.DataFrame:
     """Test of the conservation-law trap (notes/theory_saddles.md R12) at the two ends of MPS N=8.
 
@@ -176,3 +162,24 @@ def load_traj(path):
     from ttn.dynamics import Trajectory
 
     return Trajectory.load(path)
+
+
+if __name__ == "__main__":
+    torch.set_num_threads(1)
+    pd.set_option("display.width", 200)
+    import sys
+
+    print(p6_slope().round(4).to_string())
+    if "p6" in sys.argv:  # path form (needs |grad L| at the events, read off the GF output grid: coarse)
+        a = p6()
+        print(a.groupby(["sigma", "component"])[["dt_over_lr", "pred_over_lr"]].mean().round(2).to_string())
+    from experiments.optimizers.run import OUT_ROOT
+
+    deep = collect("deep")
+    sel = deep[(deep["optimizer"] == "gf") & (deep["tree"] == "mps") & (deep["teacher"] == "odeco")]
+    r12 = r12_route_ends(list(sel["file"]), OUT_ROOT / "deep")
+    r12.to_csv(RESULTS / "r12_route_ends_mps8.csv", index=False)
+    print(r12.groupby(["init", "converged"]).size().to_string())
+    b = p1p2()
+    print(b.groupby(["tree", "n_sites", "init", "method"])[["ratio", "balance_end"]].agg(["mean", "min", "max"])
+          .round(3).to_string())
