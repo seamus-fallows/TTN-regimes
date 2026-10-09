@@ -37,8 +37,8 @@ SETS = {
     ("midroot6", None): [[2, 3], [0, 2], [0, 3], [0, 5]],
 }
 # plateau ~ A sigma^-(k-2): keep the smallest sigma affordable; >= 1 decade wherever possible
-RANGE = {1: (0.1, 1e-3), 2: (0.1, 1e-4), 3: (0.1, 1e-3), 4: (0.2, 0.01), 5: (0.3, 0.03), 6: (0.5, 0.05),
-         7: (0.6, 0.08), 8: (0.6, 0.12)}
+RANGE = {1: (0.1, 1e-3), 2: (0.1, 1e-4), 3: (0.1, 1e-3), 4: (0.2, 0.01), 5: (0.3, 0.03), 6: (0.5, 0.08),
+         7: (0.6, 0.15), 8: (0.6, 0.2)}
 T1_MAX = 1e13  # first plateau ~ 3 sigma^-(K-2) (small init only)
 cases = []
 for (kind, n), sets in SETS.items():
@@ -57,8 +57,9 @@ for (kind, n), sets in SETS.items():
             if hi / lo < 2.5:
                 continue
             npts = 7 if hi / lo > 20 else 6
-            cases.append(dict(kind=kind, n=n, S=S, start=start, sigmas=logs(hi, lo, npts), seeds=SEEDS,
-                              cost=k))
+            extra = dict(seeds=SEEDS[:5], wall_limit=900) if k >= 6 else dict(seeds=SEEDS)
+            # cost < 0: the runner starts the cheap (low-k) cases first
+            cases.append(dict(kind=kind, n=n, S=S, start=start, sigmas=logs(hi, lo, npts), cost=-k, **extra))
 dump("twocomp.yaml", cases, "Step 1/2: two-component pattern teachers (1, 0.5), d = 2, chi = 2")
 
 # ---- step 3: multi-component teachers (theory_saddles.md section 5 + nested teachers) ----
@@ -107,3 +108,20 @@ for s2 in (0.25, 0.75):
     rob.append(dict(kind="mps", n=4, S=[1, 2], start="saddle", weights=[1.0, s2], sigmas=logs(0.1, 1e-4, 7),
                     seeds=SEEDS, cost=1))
 dump("robust.yaml", rob, "Step 5: chi = 4, 8, d = 4, weight ratio 0.25 / 0.75 (N = 4)")
+
+# ---- R12 check: gauge-balanced twins of the high-k two-component small-init cases ----
+bal = [dict(c, start="small_balanced") for c in cases if c["start"] == "small"
+       and steiner_k(get_tree(c["kind"], c["n"]), c["S"]) >= 4]
+dump("twocomp_balanced.yaml", bal, "R12 check: gauge-balanced init (Q_e = 0) for two-component cases with k >= 4")
+
+# ---- step 3 supplement: MPS (log plateaus) over more decades of sigma ----
+wide = []
+for name in ("B4", "N4", "TA", "TB"):
+    # B4 has a k* = 4 step: below sigma ~ 1e-3 its escape signal (~ eps^3) nears the float64 floor
+    lo, npts = (1e-3, 7) if name == "B4" else (1e-5, 9)
+    wide.append(dict(name=name, kind="mps", n=4, start="small", sigmas=logs(0.1, lo, npts), seeds=SEEDS,
+                     cost=3, **T[name]))
+for name in ("TC", "TD"):
+    wide.append(dict(name=name, kind="mps", n=8, start="saddle", sigmas=logs(0.1, 1e-4, 7), seeds=SEEDS,
+                     cost=5, **T[name]))
+dump("multicomp_wide.yaml", wide, "Step 3 supplement: MPS teachers with log plateaus, sigma over 4-5 decades")

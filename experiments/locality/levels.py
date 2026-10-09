@@ -54,12 +54,17 @@ def occupation(t, L, level, band=BAND):
 _SEQ: dict = {}
 
 
+SEQ_FILE = Path(__file__).parent / "results" / "route_sequences.json"
+
+
 def predicted(rec):
-    key = json.dumps([rec["kind"], rec.get("n"), rec["patterns"], rec["weights"], rec["d"]])
+    """Predicted sequence: from results/route_sequences.json (predict_sequences.py) if present."""
+    tree = get_tree(rec["kind"], rec.get("n"))
+    key = f"{rec.get('name')}_{tree.name}"
+    if not _SEQ and SEQ_FILE.exists():
+        _SEQ.update(json.loads(SEQ_FILE.read_text()))
     if key not in _SEQ:
-        tree = get_tree(rec["kind"], rec.get("n"))
-        _SEQ[key] = route_sequence(tree, rec["patterns"], rec["weights"], d=rec["d"],
-                                   chi_max=rec["chi"])
+        _SEQ[key] = route_sequence(tree, rec["patterns"], rec["weights"], d=rec["d"], chi_max=rec["chi"])
     return _SEQ[key]
 
 
@@ -75,6 +80,7 @@ def measure(rec):
         dur, visited = occupation(t, L, step["loss"])
         rows.append(dict(case=rec.get("name"), tree=get_tree(rec["kind"], rec.get("n")).name,
                          start=rec.get("start", "small"), sigma=rec["sigma"], seed=rec["seed"],
+                         order=">".join(str(r) for _, r in rec.get("events", [])),
                          level_j=j, level=step["loss"], k_star=step["k_star"], visited=visited,
                          duration=dur, L_final=float(L[-1])))
     return rows

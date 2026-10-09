@@ -110,22 +110,51 @@ exponent is fitted per seed and averaged.
 at the same time (they are all driven by the same product prod eps_v); all other edges stay rank 1,
 and their top singular value moves from s1 to sqrt(s1^2 + s2^2) at the same event.
 
-## 5. Several learned components: the rank rule (conjecture, derived for two components)
+## 5. Several learned components: the route rule at rank-constrained optima
 
 "The sites where the new component differs from what is learned" is ambiguous once two or more
-components are learned. The derivation above suggests the general rule:
+components are learned. Three candidate rules (all in `experiments/locality/rules.py`):
 
-  k(L, r) = number of cores incident to the edges whose bond rank increases when s_r U_r is added
-  to the learned W_L = sum_{j in L} s_j U_j (k = 1 if no bond rank increases),
+1. *Literal H2* (`naive_k`): Steiner size of the sites where the new component differs from the closest
+   learned component.
+2. *Exact rank rule* (`rank_rule`, my first generalization): k_ex = number of cores incident to the edges
+   whose bond rank must rise to represent the partial sum plus the new component. Correct when the
+   saddles are partial sums of components.
+3. **Route rule** (`route_rule`; = theory_saddles.md R1, which I implement numerically): at the actual
+   saddle W, for every connected core set C compute the local residual R_C = the residual W* - W with
+   every subtree hanging off C projected onto the bond subspace that the outside cores already carry;
+   k* = min |C| with R_C != 0 (k* = 1 means W is not critical). **Derived**: a route on C changes W
+   only inside that projected space and is first-order invisible, so its leading term is
+   -<R_C, .> at degree |C|; any descent needs some R_C != 0.
 
-computed exactly for pattern teachers from the small matrices of section 1
-(`experiments/locality/rules.py`). For two components it reduces to the Steiner rule (checked for
-every (tree, S) used here). For more components it can differ: a learned component that already
-"uses" a bond index on part of the path can force the new component to take a longer new-index
-route. Example (MPS, N = 8, U1 = 0^8, U2 differs on {3,4}, U3 differs on {0,1}): relative to U1
-alone both have k = 2, but after U1 and U2 are learned, adding U3 raises the rank on edges
-0|1, 1|2, 2|3, so k = 4 (sigma^-2 instead of log). The order of learning therefore changes the
-saddle types. To be tested in step 3 of the brief.
+The saddles are not always partial sums. If two learned components share their restriction on one
+side of an edge, that bond carries a superposition (e.g. s1 e00 + s2 e11 on sites {0,1} for
+U1 = 0000, U2 = 1100), and a third component whose restriction overlaps the superposition without being
+in it gets a non-zero gradient: for TA = {0000, 1100, 1110} the partial sum s1 U1 + s2 U2 has k* = 1 on
+every tree. The flow then slides, without a plateau, to the rank-constrained optimum of the current
+bond-rank profile (here the best approximation with rank 1 across {01|23}, partly fitting U3), and the
+next escape starts from there. **Sequence algorithm** (theory_saddles.md 5.1, implemented in
+`rules.route_sequence`): bond ranks 1 -> rank-constrained optimum (L-BFGS on a TTN with exactly those
+bond dimensions, several restarts) -> route rule there -> raise the rank on the internal edges of the
+minimal route -> repeat. It predicts the plateau levels L_j and degrees k*_j.
+
+For two components, rules 1-3 coincide (checked for every (tree, S) used; proven in section 2). For
+several components:
+
+| teacher | tree | literal H2 | exact rank rule | route sequence (L_j: k*_j) |
+|---|---|---|---|---|
+| TA {0000,1100,1110} | mps4 | 2, 1 | 2, 2 | 0.241: 2 -> 0.044: 2 |
+| | binary4 | 1 | 3 | 0.044: 3 (first escape already fits U1, U2 and part of U3) |
+| | ht4 | 3, 1 | 3, 4 | 0.241: 3 -> 0.044: 4 |
+| N4 {0000,1100,1111} | mps4 | | | 0.260: 2 -> 0.080: 2 -> 0.057: 2 (partial step) |
+| | binary4 | | | 0.057: 3 |
+| | ht4 | | | 0.260: 3 -> 0.080: 3 -> 0.057: 3 |
+| B4 {0000,0110,1001} | mps4 | | | 0.225: 2 (U2, s = 0.3) -> 0.180: 4 (U3, s = 0.6) |
+| | binary4 | | | 0.225: 3 -> 0.045: 3 |
+| | ht4 | | | 0.225: 5 -> 0.045: 5 |
+
+(N = 8 teachers: `experiments/locality/results/route_sequences.json`.) On B4 locality beats weight:
+the MPS learns the 0.3 component before the 0.6 one.
 
 ## 6. Relation to the literature (after `notes/literature.md` v1)
 

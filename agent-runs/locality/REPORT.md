@@ -1,6 +1,6 @@
 # locality: tree locality of saddle-to-saddle escapes (Q3, H2/H3)
 
-Status: working (interim report after step 1 on MPS/binary N = 4; **numbers below are from the pre-fix library and are being rerun**) - Branch: agent/locality - Updated: 2026-10-09 18:55 UTC
+Status: working (interim report after step 1 on MPS/binary N = 4; **numbers below are from the pre-fix library and are being rerun**) - Branch: agent/locality - Updated: 2026-10-09 19:33 UTC
 
 ## Summary
 Task: test H2 (after a component is learned, the next escape needs the k cores of the Steiner subtree of
@@ -89,13 +89,19 @@ Other observations (empirical):
   events; robustness (chi = 4, 8; d = 4; weight ratio).
 
 ## Log
-- 18:20 read brief, model, diagnostics, plan; merged origin/main (docs only); library modules
-  dynamics/diagnostics/runner not on main yet, so piloting with solve_ivp as instructed
-- 18:25 first pilot (solve_ivp, MPS/binary/HT N = 4): k = 1, 2, 3, 4 behave as H2 predicts
-- 18:30 theory note: Steiner rule derived; carry-over predicts log slope (1 - s2/s1)/lambda
-- 18:35 N = 4 sweep (8 seeds x 6 sigma): exponents 1.00 ± 0.01 (k = 3), 2.0 (k = 4), log slope 1.005 (pred 1.0)
-- 18:45 lead's message: merged literature v1; framed results vs Furman N, Rawal-DeWeese, Kumar-Haupt
-- 18:50 HT8 small-init infeasible (t1 > 1e14 below sigma 0.14); added saddle-start protocol
-- 18:55 launched all-trees two-component sweep (small + saddle start) and nested-teacher sweep (TA, TB)
-- 19:05 lead: core library fix (teacher/init random streams). Killed sweeps, merged 57d5262, tests pass,
-  teacher seed 1000; runner now writes each run immediately (resumable); relaunched both sweeps
+- 18:20 read brief, model, diagnostics, plan; library dynamics/diagnostics/runner not on main yet, so
+  piloting with solve_ivp as instructed
+- 18:27 first pilot (solve_ivp, MPS/binary/HT N = 4): k = 1, 2, 3, 4 behave as H2 predicts
+- 18:31 theory note: Steiner rule derived; carry-over predicts log slope (1 - s2/s1)/lambda
+- 18:36 N = 4 sweep (8 seeds x 6 sigma): exponents 1.00 (k = 3), 2.0 (k = 4), log slope 1.005 (pred 1.0)
+- 18:40 lead: literature v1 merged; results framed against Furman's N, Rawal-DeWeese, Kumar-Haupt
+- 18:42 HT8 small init infeasible (t1 > 1e14 below sigma 0.14); added saddle-start protocol
+- 18:45 interim report pushed
+- 18:46 lead: core fix (teacher/init random streams) -> killed sweeps, merged, teacher seed 1000, reran
+- 18:51 lead: draft theory_saddles.md merged; nested teachers TA/TB have non-partial-sum saddles
+  (k* = 1 at the partial sum); implemented the route rule and the route-sequence predictor
+- 19:17 lead: library v0 merged; new runner = library Problem + LSODA (exact-Hessian Jacobian) with event
+  root-finding; 35-60x faster than RK45, event times agree to 3e-8 (LSODA/Radau/RK45)
+- 19:25 multi-component results: B4, E8 exponents as predicted; TD supports the route rule over the exact
+  rank rule; B4 on HT4 reproduces the R12 trap with fan-in init, balanced init restores p = 3
+- 19:33 two-component sweep restarted cheap-first (k >= 6: 5 seeds, narrower sigma)
