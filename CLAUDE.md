@@ -99,6 +99,14 @@ Read this file first; it is how the lead and all agents recover context. Keep it
   components sharing a terminal core the saddle is strict iff rho(S) > s_q ("star" teachers: a larger learned
   component is forgotten and relearned); gradient flow can trap when ALL route ends are gauge-unfavourable.
   General machinery overlaps Kumar & Haupt 2025c, Rawal & DeWeese 2026, Furman 2026 (section 9 of the note).
+- Experiments (interim, pending review): order: on matrix-like pairs (binary4 = depth-3 DLN) P(wrong order) ~ sigma^gamma
+  with gamma = 0.42/0.25/0.10/0.04 vs (1-rho)/rho = 0.43/0.25/0.11/0.05, and the wrong order is corrected through a strict
+  saddle (slope 5.39 vs 5.386 predicted); on tensor-like trees (MPS4) P(greedy) is sigma-independent (0.815/0.605/0.51).
+  regime-map: lazy regime exists only when chi reaches the cut dimension; below it centred runs stall at the best fit.
+  optimizers: Adam/RMSProp keep weight-ordered sequential learning but REMOVE the sigma^-(K-2) plateau scaling (first
+  escape in a sigma-independent number of steps); re-gauged GD, Riemannian GD, Gram preconditioning, ALS, DMRG remove
+  plateaus altogether. data-teacher: any non-orthogonality (misaligned covariance, CP overlap, correlations, generic TTN
+  teachers) turns MPS later plateaus into strict log-time saddles (analysis under revision after review).
 - Experiments (interim): locality N=4 exponents match k = 1, 2, 3, 4 (incl. head-start log slope 1.005 vs 1.0);
   data-teacher: aligned covariance = race with weights Lambda s, landscape with sqrt(Lambda) s; optim-samples:
   eta_max = 2/(K s_1^(2-2/K)) exact, GD event shift predicted to 3 digits.
