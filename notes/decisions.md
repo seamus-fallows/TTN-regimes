@@ -60,3 +60,9 @@ here too.
   Stalls are a finding in their own right (regime-map studies them); experiments that need clean S2S on deep
   trees use balanced inits or spare bond channels, and must say so.
 - **Theory programme complete**: all six theory notes are at v2 after derive -> adversarial verify -> revise.
+
+## 2026-10-09 (late) — Report bookkeeping
+
+- Open check before the final report: theorem/lemma numbers cited from preprints with several arXiv versions
+  (e.g. "Thm 8" of Kumar & Haupt "Neuron Pursuit", whose v2 is twice the length of v1; Furman et al. 2026
+  lemma numbers) must be re-checked against the version listed in references.bib.
