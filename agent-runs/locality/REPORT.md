@@ -1,6 +1,6 @@
 # locality: tree locality of saddle-to-saddle escapes (Q3, H2/H3)
 
-Status: working (fix round 2 after review notes/reviews/locality_round1.md) - Branch: agent/locality - Updated: 2026-10-09 22:15 UTC
+Status: done (fix round 2 after review notes/reviews/locality_round1.md) - Branch: agent/locality - Updated: 2026-10-09 23:20 UTC
 
 ## Summary
 Asked: test H2 (the escape after a learned component needs the k cores of the Steiner subtree of the sites
@@ -137,6 +137,10 @@ Round 2 (this fix round):
 - The midpoint Hessian is not representative for balanced-init mps8 {2,5}, {1,5} (route in a sign-correction
   phase at the minimum-speed point).
 - Wrong-order and star saddles (H3's other strict cases) were not tested.
+- Of the 11 slow runs dropped in round 1, 5 finished in round 2 (2-hour limit per run); 6 remain unfinished
+  (ht8 all-sites saddle start, seed 3, σ = 0.26 / 0.20 / 0.15; mps8 {0,7} χ = 4, seeds 0 / 4, σ = 0.25 / 0.20).
+  They belong to rows already reported as not measured (k = 8) or as spanning 0.6 decades (ht8 k = 7); rerunning
+  `run.py configs/finish_twocomp*.yaml` resumes them.
 
 ## Log
 - 18:20-21:10 round 1 (see git history and the round-1 report in commit 562d92e)
@@ -148,3 +152,6 @@ Round 2 (this fix round):
 - 22:02 first stall diagnosis invalid (t_max too small); redone with long patience and partial trajectories
 - 22:05 library gauge fix merged; Hessians recomputed with it
 - 22:10 corrected tables, level analysis with detected plateaus, notes sections 7-9, README
+- 22:45 stall diagnosis complete (170 runs): fan-in stalls dead, balanced stalls pinned; R12 criterion
+  associated but not deterministic; conservation-drift statement corrected
+- 23:20 stopped the 6 remaining slow runs (documented); final tables, report
