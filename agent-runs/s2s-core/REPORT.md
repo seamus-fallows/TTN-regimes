@@ -41,3 +41,8 @@ theory and piloting with scipy.
 - 18:50 K sweep (fixed lib, 17 trees, K=3..15, 30 seeds): P3 within 0.94-2.1x of T; Kumar-Haupt
   formula with delta=||theta_0|| off by 3x..3e7x. Gaps pilot (BDF, 5 trees x 6 sigmas x 5 seeds)
   running to test gap exponents and the conservation-law trap (theory_saddles R12) at K=7,8.
+- 19:20 Library v0 landed and merged; experiment code on the library: `experiments/s2s_core/s2s.py`
+  (setup, fan-in / gauge-balanced / aligned inits, run with event zoom + plateau Hessians + dormant
+  diagnostics, correlation-flow prediction), `run.py` (YAML sweep driver until ttn.runner lands).
+- 19:45 Step 1 done: aligned balanced init vs ttn.theory on binary4/8, mps4/8, ht4: max |a_GF - a_th|
+  2e-10..3e-9 (dopri5, rtol 1e-10), event times equal to 1e-11 relative (same grid).
