@@ -230,10 +230,8 @@ def main():
     df = pd.concat([load(Path(r)) for r in args.raw if Path(r).exists()], ignore_index=True)
     # Hessians recomputed after the library's gauge-projection fix (recompute_hessians.py) replace
     # the values stored by the runs; raw (unprojected) lambda_min is kept next to them.
-    for h in args.hess:
-        if not Path(h).exists():
-            continue
-        hs = pd.read_csv(h)
+    hfiles = [pd.read_csv(h) for h in args.hess if Path(h).exists()]
+    for hs in ([pd.concat(hfiles, ignore_index=True)] if hfiles else []):
         keys = ["sweep", "tree", "chi", "teacher", "init", "sigma", "seed"]
         for i in (1, 2):
             hi = hs[hs.plateau == i][keys + ["lam_min_proj", "lam_min_raw", "lam_max_proj"]].rename(columns={

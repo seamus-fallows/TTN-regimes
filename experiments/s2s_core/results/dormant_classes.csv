@@ -1,10 +1,18 @@
 label,tree,chi,init,n,sweep,complete,trapped,stalled,unresolved,order
 binary4 $\chi$=3 fan-in,binary4,3,fanin,80,main,1.0,0.0,0.0,0.0,6
+binary4 $\chi$=3 bal.,binary4,3,balanced,30,balanced,1.0,0.0,0.0,0.0,7
 binary4 $\chi$=6 fan-in,binary4,6,fanin,80,main,1.0,0.0,0.0,0.0,12
+binary4 $\chi$=6 bal.,binary4,6,balanced,30,balanced,1.0,0.0,0.0,0.0,13
 mps4 $\chi$=3 fan-in,mps4,3,fanin,80,main,0.6,0.4,0.0,0.0,106
+mps4 $\chi$=3 bal.,mps4,3,balanced,30,balanced,1.0,0.0,0.0,0.0,107
 mps4 $\chi$=6 fan-in,mps4,6,fanin,80,main,1.0,0.0,0.0,0.0,112
-binary8 $\chi$=3 fan-in,binary8,3,fanin,79,main,0.05063291139240506,0.26582278481012656,0.189873417721519,0.4936708860759494,206
-binary8 $\chi$=6 fan-in,binary8,6,fanin,22,main,0.22727272727272727,0.0,0.0,0.7727272727272727,212
-ht4 $\chi$=3 fan-in,ht4,3,fanin,60,main,0.1,0.8166666666666667,0.06666666666666667,0.016666666666666666,306
-mps8 $\chi$=3 fan-in,mps8,3,fanin,70,main,0.0,0.3,0.17142857142857143,0.5285714285714286,406
-mps8 $\chi$=6 fan-in,mps8,6,fanin,18,main,0.0,0.0,0.0,1.0,412
+mps4 $\chi$=6 bal.,mps4,6,balanced,30,balanced,1.0,0.0,0.0,0.0,113
+binary8 $\chi$=3 fan-in,binary8,3,fanin,30,k78,0.06666666666666667,0.3,0.6,0.03333333333333333,206
+binary8 $\chi$=3 bal.,binary8,3,balanced,30,k78,0.1,0.0,0.9,0.0,207
+binary8 $\chi$=6 fan-in,binary8,6,fanin,50,large,1.0,0.0,0.0,0.0,212
+ht4 $\chi$=3 fan-in,ht4,3,fanin,30,k78,0.1,0.8,0.1,0.0,306
+ht4 $\chi$=3 bal.,ht4,3,balanced,30,k78,0.5666666666666667,0.0,0.4,0.03333333333333333,307
+ht4 $\chi$=6 fan-in,ht4,6,fanin,50,large,0.9,0.1,0.0,0.0,312
+mps8 $\chi$=3 fan-in,mps8,3,fanin,30,k78,0.0,0.4666666666666667,0.5333333333333333,0.0,406
+mps8 $\chi$=3 bal.,mps8,3,balanced,30,k78,0.0,0.0,1.0,0.0,407
+mps8 $\chi$=6 fan-in,mps8,6,fanin,50,large,0.0,0.14,0.68,0.18,412
