@@ -1,20 +1,25 @@
 # sigma x K: binary N = 4, 8, 16 (K = 3, 7, 15) and MPS N = 4..12 (K = N); d = 3, odeco [3, 2, 1].
-# PLAIN model (target W*): with chi < cut dimension the centred target is unrealizable and floored
+# PLAIN model (target W*): below the cut dimension the centred target is unrealizable and floored
 # above sigma_floor ~ 0.74-0.87 for K >= 7, right where sigma_c(K) is expected (theory_regimes P4,
-# P15). chi = 6 = 2 x teacher rank gives spare bond channels (no stalls expected, P14); chi = 3
-# (= teacher rank) maps the stalled fraction vs K (dead routes, R10). Gradient flow: LSODA for
-# sigma < 0.7, dopri5 above. sigma_min = 10^(-8/K) keeps initial component amplitudes ~sigma^K
-# above ~1e-8 (float64 floor of dormant routes).
+# P15). chi = 6 = 2 x teacher rank gives spare bond channels (P14); chi = 3 (= teacher rank) maps the
+# stalled fraction vs K (dead routes, R10). sigma_min = 10^(-8/K) keeps the initial component
+# amplitudes ~sigma^K above ~1e-8 (float64 floor of dormant routes).
+# Cost control (measured under full load: binary16 chi = 6 gradient 0.2 s, Hessian 330 s): LSODA
+# (exact Hessian) only where P <= ~700; for K >= 10 at chi = 6, dopri5 on a sigma window around the
+# predicted boundary (sigma_c ~ 0.6-0.9), where the later plateaus are <~ 1e3 time units.
 exp: sigma_K
-base: {d: 3, cap: true, model: plain, method: auto, l_floor: 1.0e-6}
-grid: {seed: [0, 1, 2, 3, 4, 5], chi: [3, 6]}
+base: {d: 3, cap: true, model: plain, l_floor: 1.0e-6, max_steps: 30000}
+grid: {seed: [0, 1, 2, 3, 4, 5]}
 variants:
-  - {kind: binary, n: 4, sigmas: {geomspace: [0.02, 2, 13]}}
-  - {kind: mps, n: 4, sigmas: {geomspace: [0.02, 2, 13]}}
-  - {kind: mps, n: 5, sigmas: {geomspace: [0.025, 2, 13]}}
-  - {kind: mps, n: 6, sigmas: {geomspace: [0.05, 2, 12]}}
-  - {kind: binary, n: 8, sigmas: {geomspace: [0.07, 2, 12]}}
-  - {kind: mps, n: 8, sigmas: {geomspace: [0.1, 2, 11]}}
-  - {kind: mps, n: 10, sigmas: {geomspace: [0.16, 2, 11]}}
-  - {kind: mps, n: 12, sigmas: {geomspace: [0.22, 2, 10]}}
-  - {kind: binary, n: 16, sigmas: {geomspace: [0.29, 2, 10]}}
+  - {kind: binary, n: 4, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.02, 2, 13]}}
+  - {kind: mps, n: 4, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.02, 2, 13]}}
+  - {kind: mps, n: 5, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.025, 2, 13]}}
+  - {kind: mps, n: 6, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.05, 2, 12]}}
+  - {kind: binary, n: 8, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.1, 2, 11]}}
+  - {kind: mps, n: 8, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.12, 2, 11]}}
+  - {kind: mps, n: 10, method: auto, chi: 3, sigmas: {geomspace: [0.2, 2, 10]}}
+  - {kind: mps, n: 10, method: dopri5, chi: 6, sigmas: {geomspace: [0.4, 1.6, 9]}}
+  - {kind: mps, n: 12, method: auto, chi: 3, sigmas: {geomspace: [0.25, 2, 9]}}
+  - {kind: mps, n: 12, method: dopri5, chi: 6, max_steps: 15000, sigmas: {geomspace: [0.45, 1.6, 9]}}
+  - {kind: binary, n: 16, method: auto, chi: 3, sigmas: {geomspace: [0.3, 2, 9]}}
+  - {kind: binary, n: 16, method: dopri5, chi: 6, max_steps: 10000, sigmas: [0.6, 0.7, 0.8, 0.92, 1.06, 1.22, 1.4]}

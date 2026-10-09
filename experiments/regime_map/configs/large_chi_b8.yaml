@@ -1,7 +1,7 @@
-# Large bond dimension, binary N = 8 (K = 7), d = 3, uncapped chi = 4..32 (internal cores chi^3),
-# sp / ntk / mup, plain model (the centred model doubles every bond), sigma = 1.0, dopri5.
+# Large bond dimension at K = 7: binary N = 8, d = 2, odeco [3, 2], uncapped chi = 4..32 (internal
+# cores chi^3), sp / ntk / mup, plain model (theory_regimes P17 setting), sigma = 1.0, dopri5.
 exp: large_chi_b8
-base: {kind: binary, n: 8, d: 3, cap: false, model: plain, sigma: 1.0, l_floor: 1.0e-6}
+base: {kind: binary, n: 8, d: 2, cap: false, model: plain, sigma: 1.0, weights: [3.0, 2.0], l_floor: 1.0e-6, max_steps: 30000}
 grid:
   chi: [4, 8, 16, 32]
   lr: [sp, ntk, mup]

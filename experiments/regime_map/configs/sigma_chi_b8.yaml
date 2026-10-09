@@ -1,11 +1,10 @@
-# sigma x chi, binary N = 8 (K = 7), d = 3, odeco [3, 2, 1], gradient flow.
-# Centred model at every chi: chi <= 81 capped (bottom bonds <= 9; chi = 81: every bond full, square
-# cores); chi = 162 stands for bonds 18 (2 sites) / 162 (4 sites) = twice the cut dimension. For chi < 81
-# the centred target is unrealizable (floor above sigma ~ 0.75, theory_regimes P4), so the plain model
-# is added at chi = 3..24 up to sigma = 1.5 (realizable for chi >= teacher rank 3; chi = 3 has no
-# spare channels: dead routes expected, P14). LSODA for sigma < 0.7 where P is small, dopri5 otherwise;
-# large-P runs start at sigma = 0.3-0.4 (later plateaus ~1e2-1e3 time units, stiff for explicit
-# steps); max_steps 3e4 bounds the stiff lazy fit at square cores (chi = 81, P9).
+# sigma x chi, binary N = 8 (K = 7), d = 3, odeco [3, 2, 1], gradient flow; deficient bonds only
+# (the top cut has dimension 81). Centred model (main family) and plain model (realizable for
+# chi >= teacher rank; theory_regimes section 3.4): the centred target is unrealizable for chi < 81
+# and floored above sigma ~ 0.75 (P4). chi = 3 has no spare channels (dead routes expected, P14).
+# The lazy regime at K = 7 needs full bonds; it is mapped at d = 2 (`sigma_chi_b8_d2.yaml`), because
+# full bonds at d = 3 (chi = 81, square cores) need tau ~ 1e5 for the lazy fit (P9) and the 2x
+# overparameterized version (bonds 18 / 162, 1.3e5 parameters) costs ~1 s per gradient under load.
 exp: sigma_chi_b8
 base: {kind: binary, n: 8, d: 3, cap: true, l_floor: 1.0e-6, max_steps: 30000}
 grid: {seed: [0, 1, 2, 3, 4, 5]}
@@ -13,10 +12,8 @@ variants:
   - {model: centred, chi: 3, method: auto, sigmas: {geomspace: [0.15, 4, 12]}}
   - {model: centred, chi: 6, method: auto, sigmas: {geomspace: [0.15, 4, 12]}}
   - {model: centred, chi: 12, method: auto, sigmas: {geomspace: [0.25, 4, 10]}}
-  - {model: centred, chi: 24, method: dopri5, sigmas: {geomspace: [0.3, 4, 9]}}
-  - {model: centred, chi: 81, method: dopri5, sigmas: {geomspace: [0.4, 30, 11]}}
-  - {model: centred, chi: 162, cap: false, bonds: {2: 18, 4: 162}, method: dopri5, sigmas: {geomspace: [0.4, 30, 11]}}
+  - {model: centred, chi: 24, method: dopri5, sigmas: {geomspace: [0.45, 4, 8]}}
   - {model: plain, chi: 3, method: auto, sigmas: {geomspace: [0.25, 1.5, 8]}}
   - {model: plain, chi: 6, method: auto, sigmas: {geomspace: [0.25, 1.5, 8]}}
   - {model: plain, chi: 12, method: auto, sigmas: {geomspace: [0.25, 1.5, 8]}}
-  - {model: plain, chi: 24, method: dopri5, sigmas: {geomspace: [0.3, 1.5, 7]}}
+  - {model: plain, chi: 24, method: dopri5, sigmas: {geomspace: [0.45, 1.5, 6]}}

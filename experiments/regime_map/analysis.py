@@ -254,7 +254,8 @@ def per_seed_table(df: pd.DataFrame, by: list[str], K: int | None = None) -> pd.
     for key, g in df.groupby(by + ["seed"]):
         k = K or int(g.K.iloc[0])
         sc, status = seed_s2s_boundary(g)
-        pred, _ = aligned_sigma_c(g, k)
+        w = g.weights.iloc[0] if "weights" in g.columns and isinstance(g.weights.iloc[0], list) else (3.0, 2.0, 1.0)
+        pred, _ = aligned_sigma_c(g, k, weights=tuple(w))
         s2s = g[g.label == "s2s"]
         slope, _ = seed_power_fit(s2s.sigma, s2s.min_rho) if len(s2s) >= 3 else (np.nan, np.nan)
         row = dict(zip(by + ["seed"], key if isinstance(key, tuple) else (key,)))
