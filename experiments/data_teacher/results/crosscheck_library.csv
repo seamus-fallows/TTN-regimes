@@ -1,0 +1,185 @@
+run,event,t_pilot,t_lib,rel_diff
+e1_order: binary T1_clean_reversal sigma seed0,a_0=1/2,55.89282495096314,55.892824894259945,-1.014498610539968e-09
+e1_order: binary T1_clean_reversal sigma seed0,a_1=1/2,25.670019709260064,25.67001970104637,-3.199722060994825e-10
+e1_order: binary T1_clean_reversal sigma seed0,s_1^0=half,25.667003644437393,25.667003636244814,-3.1918720132225255e-10
+e1_order: binary T1_clean_reversal sigma seed0,s_2^0=half,55.89113145393286,55.89113139732355,-1.0128495839610773e-09
+e1_order: binary T1_clean_reversal sigma seed0,s_1^1=half,25.667003644437393,25.667003636244814,-3.1918720132225255e-10
+e1_order: binary T1_clean_reversal sigma seed0,s_2^1=half,55.89113145393286,55.89113139732355,-1.0128495839610773e-09
+e1_order: binary T1_clean_reversal sigma seed0,max rel loss diff (L > 1e-3 L0),,,2.639021859962983e-07
+e1_order: failed,"BadZipFile(""Bad CRC-32 for file 'spectra.npy'"")",,,
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed0,a_0=1/2,57.85175060667428,57.851750583987034,-3.9216178632155845e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed0,a_1=1/2,32.43251998052324,32.432519976017915,-1.3891378519106572e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed0,s_1^0=half,32.41335629336078,32.413356288897965,-1.3768436386246563e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed0,s_2^0=half,57.850207869905624,57.85020784723629,-3.918626036461839e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed0,s_1^1=half,32.413356293360785,32.413356288897965,-1.3768458307541266e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed0,s_2^1=half,57.850207869905624,57.85020784723629,-3.918626036461839e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed0,max rel loss diff (L > 1e-3 L0),,,1.318308580695446e-07
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed1,a_0=1/2,22.051563161078857,22.05156315866051,-1.0966779970875771e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed1,a_1=1/2,31.49314265507214,31.49314265168563,-1.075316828355153e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed1,s_1^0=half,22.08651804053828,22.086518038017484,-1.1413279412096733e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed1,s_2^0=half,52.74826757949049,52.74826756302239,-3.1220171824449524e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed1,s_1^1=half,22.08651804053828,22.086518038017484,-1.1413279412096733e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed1,s_2^1=half,52.74826757949049,52.74826756302239,-3.1220171824449524e-10
+e1_order: binary T1_clean_reversal white_sqrtLs_mapped seed1,max rel loss diff (L > 1e-3 L0),,,7.916445014280754e-08
+e1_order: binary T2_race_vs_greedy sigma seed0,a_0=1/2,48.23458026774173,48.234580264492394,-6.736522281061698e-11
+e1_order: binary T2_race_vs_greedy sigma seed0,a_1=1/2,33.945683585209295,33.945683582059004,-9.280386671453113e-11
+e1_order: binary T2_race_vs_greedy sigma seed0,s_1^0=half,34.06582975209758,34.06582974893181,-9.293084415668272e-11
+e1_order: binary T2_race_vs_greedy sigma seed0,s_2^0=half,55.04736220053713,55.04736219692071,-6.56965346916017e-11
+e1_order: binary T2_race_vs_greedy sigma seed0,s_1^1=half,34.06582975209758,34.06582974893181,-9.293084415668272e-11
+e1_order: binary T2_race_vs_greedy sigma seed0,s_2^1=half,55.04736220053713,55.04736219692071,-6.56965346916017e-11
+e1_order: binary T2_race_vs_greedy sigma seed0,max rel loss diff (L > 1e-3 L0),,,1.9903301071223552e-08
+e1_order: binary T2_race_vs_greedy sigma seed1,a_0=1/2,21.70407612069315,21.704076118996745,-7.816057263278103e-11
+e1_order: binary T2_race_vs_greedy sigma seed1,a_1=1/2,49.721149481264725,49.72114947621818,-1.0149693979841301e-10
+e1_order: binary T2_race_vs_greedy sigma seed1,s_1^0=half,21.627812474739038,21.627812472644454,-9.684678301136052e-11
+e1_order: binary T2_race_vs_greedy sigma seed1,s_2^0=half,49.719559645916924,49.71955964087686,-1.0136985125674959e-10
+e1_order: binary T2_race_vs_greedy sigma seed1,s_1^1=half,21.627812474739038,21.627812472644454,-9.684678301136052e-11
+e1_order: binary T2_race_vs_greedy sigma seed1,s_2^1=half,49.719559645916924,49.71955964087686,-1.0136985125674959e-10
+e1_order: binary T2_race_vs_greedy sigma seed1,max rel loss diff (L > 1e-3 L0),,,2.202386662936502e-08
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed0,a_0=1/2,47.44136980700711,47.441369822981294,3.367141434956842e-10
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed0,a_1=1/2,42.48136630143494,42.48136629724909,-9.853378677195479e-11
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed0,s_1^0=half,42.40180005304241,42.40180004911746,-9.256554431352549e-11
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed0,s_2^0=half,60.93371592925893,60.93371593192948,4.382707356540146e-11
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed0,s_1^1=half,42.40180005304241,42.40180004911747,-9.256537673980577e-11
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed0,s_2^1=half,60.93371592925893,60.93371593192948,4.382707356540146e-11
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed0,max rel loss diff (L > 1e-3 L0),,,1.4853977494798268e-08
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed1,a_0=1/2,22.231181088375557,22.23118108464208,-1.6793870446811592e-10
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed1,a_1=1/2,64.33535622892485,64.33535617067507,-9.054085545057487e-10
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed1,s_1^0=half,22.216529660576658,22.216529656962116,-1.6269604705034954e-10
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed1,s_2^0=half,64.33346158876321,64.33346153049904,-9.056589843573171e-10
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed1,s_1^1=half,22.216529660576658,22.216529656962116,-1.6269604705034954e-10
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed1,s_2^1=half,64.33346158876321,64.33346153049904,-9.056589843573171e-10
+e1_order: binary T2_race_vs_greedy white_sqrtLs_mapped seed1,max rel loss diff (L > 1e-3 L0),,,2.6039825048740566e-07
+e1_order: mps T1_clean_reversal sigma seed0,a_0=1/2,159.4227156511594,159.42271566025155,5.703178278621288e-11
+e1_order: mps T1_clean_reversal sigma seed0,a_1=1/2,129.12712255264114,129.12712252798224,-1.909660959527793e-10
+e1_order: mps T1_clean_reversal sigma seed0,s_1^0=half,129.1173183685577,129.1173183444433,-1.8676347736244926e-10
+e1_order: mps T1_clean_reversal sigma seed0,s_2^0=half,159.40750035728067,159.40750036620824,5.600471465197203e-11
+e1_order: mps T1_clean_reversal sigma seed0,s_1^1=half,129.11699088227007,129.11699085816554,-1.866875681375865e-10
+e1_order: mps T1_clean_reversal sigma seed0,s_2^1=half,159.4102182410131,159.4102182499536,5.608488306042763e-11
+e1_order: mps T1_clean_reversal sigma seed0,s_1^2=half,129.11700658859397,129.11700656448892,-1.866915076542139e-10
+e1_order: mps T1_clean_reversal sigma seed0,s_2^2=half,159.4147458175217,159.4147458265492,5.662902923412432e-11
+e1_order: mps T1_clean_reversal sigma seed0,max rel loss diff (L > 1e-3 L0),,,3.890801053827539e-08
+e1_order: mps T1_clean_reversal sigma seed1,a_0=1/2,105.57404185780382,105.57404185758365,-2.085444189009708e-12
+e1_order: mps T1_clean_reversal sigma seed1,a_1=1/2,101.8450146509396,101.84501464170967,-9.06272728056781e-11
+e1_order: mps T1_clean_reversal sigma seed1,s_1^0=half,101.82661589897788,101.82661588961001,-9.199821087866252e-11
+e1_order: mps T1_clean_reversal sigma seed1,s_2^0=half,105.53464222264095,105.5346422222459,-3.743297384706049e-12
+e1_order: mps T1_clean_reversal sigma seed1,s_1^1=half,101.82371599171248,101.82371598234073,-9.203893174194077e-11
+e1_order: mps T1_clean_reversal sigma seed1,s_2^1=half,105.55826145193151,105.5582614516005,-3.135836402837453e-12
+e1_order: mps T1_clean_reversal sigma seed1,s_1^2=half,101.82467749548687,101.82467748612154,-9.197498062250981e-11
+e1_order: mps T1_clean_reversal sigma seed1,s_2^2=half,105.55836795198996,105.55836795166857,-3.0446917328731748e-12
+e1_order: mps T1_clean_reversal sigma seed1,max rel loss diff (L > 1e-3 L0),,,9.146957735730196e-09
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,a_0=1/2,147.12110339148012,147.12110336144906,-2.041247626132902e-10
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,a_1=1/2,164.55767133816076,164.55767133447654,-2.2388630675041723e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,s_1^0=half,147.24746314745127,147.24746312013988,-1.8547950739529314e-10
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,s_2^0=half,164.4964296705885,164.496429667711,-1.7492775579535156e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,s_1^1=half,147.24677863366176,147.2467786063323,-1.856031309519314e-10
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,s_2^1=half,164.5074329647983,164.50743296184237,-1.7968446729837596e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,s_1^2=half,147.24691495979266,147.24691493246675,-1.855788315210299e-10
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,s_2^2=half,164.5054687127454,164.5054687098362,-1.7684453633314977e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed0,max rel loss diff (L > 1e-3 L0),,,4.8960968836741974e-08
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,a_0=1/2,106.17209836249033,106.17209835162373,-1.0234892435786948e-10
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,a_1=1/2,131.30904949222636,131.3090494834472,-6.68587080494235e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,s_1^0=half,106.27112714954588,106.27112713907158,-9.856200352718e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,s_2^0=half,131.20272796512816,131.20272795747388,-5.833932805456555e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,s_1^1=half,106.27104586929134,106.27104585881679,-9.856448592045513e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,s_2^1=half,131.21391138394833,131.2139113763265,-5.8086991812473365e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,s_1^2=half,106.27114908981224,106.27114907933806,-9.856091339768272e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,s_2^2=half,131.20190664664617,131.20190663899652,-5.830438326156689e-11
+e1_order: mps T1_clean_reversal white_sqrtLs_mapped seed1,max rel loss diff (L > 1e-3 L0),,,6.208262137258727e-08
+e1_order: mps T2_race_vs_greedy sigma seed0,a_0=1/2,144.64018466132217,144.64018461745053,-3.0331568708004765e-10
+e1_order: mps T2_race_vs_greedy sigma seed0,a_1=1/2,199.63235254758058,199.63235254246666,-2.561668042555245e-11
+e1_order: mps T2_race_vs_greedy sigma seed0,s_1^0=half,144.62390590473342,144.62390585974626,-3.1106310109617527e-10
+e1_order: mps T2_race_vs_greedy sigma seed0,s_2^0=half,199.62375547527657,199.62375547013403,-2.5761156666777136e-11
+e1_order: mps T2_race_vs_greedy sigma seed0,s_1^1=half,144.62376637204378,144.62376632705133,-3.11099954246656e-10
+e1_order: mps T2_race_vs_greedy sigma seed0,s_2^1=half,199.62391678262844,199.62391677748056,-2.5787902589785783e-11
+e1_order: mps T2_race_vs_greedy sigma seed0,s_1^2=half,144.62379053619213,144.62379049120057,-3.1109381009530653e-10
+e1_order: mps T2_race_vs_greedy sigma seed0,s_2^2=half,199.62628918279512,199.6262891776734,-2.5656469131210703e-11
+e1_order: mps T2_race_vs_greedy sigma seed0,max rel loss diff (L > 1e-3 L0),,,2.8672435474488842e-08
+e1_order: mps T2_race_vs_greedy sigma seed1,a_0=1/2,104.40512535814378,104.40512533896633,-1.8368302223092177e-10
+e1_order: mps T2_race_vs_greedy sigma seed1,a_1=1/2,155.03375425967596,155.03375422402306,-2.2996864794048151e-10
+e1_order: mps T2_race_vs_greedy sigma seed1,s_1^0=half,104.40288846874971,104.40288844953864,-1.840090070897665e-10
+e1_order: mps T2_race_vs_greedy sigma seed1,s_2^0=half,155.0278056884058,155.0278056526688,-2.305199543510781e-10
+e1_order: mps T2_race_vs_greedy sigma seed1,s_1^1=half,104.40286502715087,104.40286500793965,-1.8401040956097685e-10
+e1_order: mps T2_race_vs_greedy sigma seed1,s_2^1=half,155.02684670394686,155.02684666811646,-2.311238162255364e-10
+e1_order: mps T2_race_vs_greedy sigma seed1,s_1^2=half,104.40291198653355,104.40291196732264,-1.8400746836941028e-10
+e1_order: mps T2_race_vs_greedy sigma seed1,s_2^2=half,155.02602507938528,155.02602504362937,-2.306445199049679e-10
+e1_order: mps T2_race_vs_greedy sigma seed1,max rel loss diff (L > 1e-3 L0),,,2.0656387191038697e-07
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,a_0=1/2,147.05071464542482,147.05071457437185,-4.831868131256775e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,a_1=1/2,265.9982422479494,265.9982421967084,-1.9263656747604188e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,s_1^0=half,147.036799322624,147.03679925011448,-4.93138603916202e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,s_2^0=half,265.9898609727158,265.98986092195884,-1.9082293755141406e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,s_1^1=half,147.03673384534494,147.03673377283155,-4.931651118625811e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,s_2^1=half,265.9894468868821,265.98944683613263,-1.9079502548835543e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,s_1^2=half,147.0367420538809,147.03674198136798,-4.931617982879122e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,s_2^2=half,265.99127270034654,265.99127264951306,-1.9110957045857347e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed0,max rel loss diff (L > 1e-3 L0),,,3.689135780066189e-07
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,a_0=1/2,106.16540861146468,106.1654085900698,-2.0152404243581819e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,a_1=1/2,201.49659424632446,201.49659414778276,-4.89048983396479e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,s_1^0=half,106.16366793344963,106.16366791202205,-2.0183535388363452e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,s_2^0=half,201.49101580569248,201.49101570752785,-4.871911204699544e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,s_1^1=half,106.16366122500352,106.1636612035759,-2.0183576821152441e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,s_2^1=half,201.48906404669856,201.48906394863394,-4.866994554939759e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,s_1^2=half,106.163687395954,106.16368737452659,-2.0183371058654943e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,s_2^2=half,201.48815637019874,201.4881562722764,-4.859955068634183e-10
+e1_order: mps T2_race_vs_greedy white_sqrtLs_mapped seed1,max rel loss diff (L > 1e-3 L0),,,7.110105292320585e-07
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed0,s_1^0=half,19.5492081673532,19.54920816422044,-1.6025005099264636e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed0,s_2^0=half,58.43983356376644,58.439833550751835,-2.2270094707503787e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed0,s_1^1=half,19.54897890567531,19.548978902537865,-1.6049145571495958e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed0,s_2^1=half,58.333843240044516,58.33384322624875,-2.3649672279655174e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed0,s_1^2=half,19.549206107951733,19.54920610481893,-1.602522486564849e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed0,s_2^2=half,58.51645628346813,58.516456270183156,-2.2702972363170382e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed0,max rel loss diff (L > 1e-3 L0),,,3.981240820319999e-08
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed1,s_1^0=half,14.177792970329936,14.177792969309522,-7.197269544520738e-11
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed1,s_2^0=half,42.610676772998694,42.610676760491025,-2.935336989215839e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed1,s_1^1=half,14.177615154813921,14.177615153794498,-7.190368459650526e-11
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed1,s_2^1=half,42.4963527805516,42.49635277109622,-2.2249855122151075e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed1,s_1^2=half,14.177792127367695,14.177792126347285,-7.197244914145411e-11
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed1,s_2^2=half,42.71027801334633,42.710278002961836,-2.431381227432088e-10
+e2_misaligned: alpha1.0_theta_deg20_variantsigma mps seed1,max rel loss diff (L > 1e-3 L0),,,2.551702642565076e-08
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed0,s_1^0=half,7.1335810325099045,7.133581031356472,-1.616905870259302e-10
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed0,s_2^0=half,15.511886025534588,15.511886017836462,-4.962727657979931e-10
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed0,s_1^1=half,7.1335810325099045,7.133581031356472,-1.616905870259302e-10
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed0,s_2^1=half,15.511886025534588,15.511886017836462,-4.962727657979931e-10
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed0,max rel loss diff (L > 1e-3 L0),,,5.262041343936439e-08
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed1,s_1^0=half,4.9125795205415725,4.912579520282893,-5.265651153752419e-11
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed1,s_2^0=half,26.25366631947311,26.253666306484895,-4.947199760059732e-10
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed1,s_1^1=half,4.9125795205415725,4.912579520282893,-5.265651153752419e-11
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed1,s_2^1=half,26.25366631947311,26.253666306484895,-4.947199760059732e-10
+e2_misaligned: alpha1.0_theta_deg45_variantsigma binary seed1,max rel loss diff (L > 1e-3 L0),,,9.856531010082106e-08
+e4a_nonorth: s20.7_overlap0.35 mps seed0,s_1^0=half,238.82858522806762,238.82858504857097,-7.515710568606794e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed0,s_2^0=half,272.62543986052884,272.6254398327246,-1.0198688495667638e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed0,s_1^1=half,238.75835493357488,238.75835475972826,-7.281278821592119e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed0,s_2^1=half,272.8080945964377,272.80809456002515,-1.334730552407019e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed0,s_1^2=half,238.82826022428955,238.82826004481888,-7.51463309230804e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed0,s_2^2=half,272.5851356789486,272.58513565288723,-9.560808677521921e-11
+e4a_nonorth: s20.7_overlap0.35 mps seed0,max rel loss diff (L > 1e-3 L0),,,6.745204807034069e-08
+e4a_nonorth: s20.7_overlap0.35 mps seed1,s_1^0=half,138.72256663069268,138.72256660028862,-2.1917174370553247e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed1,s_2^0=half,146.74573393656607,146.74573396912461,2.218704776487219e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed1,s_1^1=half,138.67139204935398,138.67139201758997,-2.2905962596081983e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed1,s_2^1=half,146.84404553325783,146.84404555401153,1.413315921729847e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed1,s_1^2=half,138.719099424608,138.7190993942122,-2.191175997277238e-10
+e4a_nonorth: s20.7_overlap0.35 mps seed1,s_2^2=half,147.1722687771072,147.17226878577586,5.890138047074171e-11
+e4a_nonorth: s20.7_overlap0.35 mps seed1,max rel loss diff (L > 1e-3 L0),,,2.4916637996642247e-08
+e4a_nonorth: s20.7_overlap0.65 binary seed0,s_1^0=half,37.90654503094313,37.90654502803417,-7.674036127078486e-11
+e4a_nonorth: s20.7_overlap0.65 binary seed0,s_2^0=half,89.51010526754945,89.51010507577402,-2.1425003016699334e-09
+e4a_nonorth: s20.7_overlap0.65 binary seed0,s_1^1=half,37.90654503094313,37.90654502803417,-7.674036127078486e-11
+e4a_nonorth: s20.7_overlap0.65 binary seed0,s_2^1=half,89.51010526754945,89.51010507577402,-2.1425003016699334e-09
+e4a_nonorth: s20.7_overlap0.65 binary seed0,max rel loss diff (L > 1e-3 L0),,,3.12218461229942e-07
+e4a_nonorth: s20.7_overlap0.65 binary seed1,s_1^0=half,36.44834735558158,36.448347352597786,-8.186369307839619e-11
+e4a_nonorth: s20.7_overlap0.65 binary seed1,s_2^0=half,125.9523182110591,125.95231774499763,-3.7003008090374106e-09
+e4a_nonorth: s20.7_overlap0.65 binary seed1,s_1^1=half,36.44834735558158,36.448347352597786,-8.186369307839619e-11
+e4a_nonorth: s20.7_overlap0.65 binary seed1,s_2^1=half,125.9523182110591,125.95231774499763,-3.7003008090374106e-09
+e4a_nonorth: s20.7_overlap0.65 binary seed1,max rel loss diff (L > 1e-3 L0),,,7.331502701968101e-07
+e4b_ttn: teacher_seed103 mps seed0,s_1^0=half,1200.3494604771156,1200.349460363642,-9.453377116439636e-11
+e4b_ttn: teacher_seed103 mps seed0,s_2^0=half,1204.2737104677178,1204.2737090973962,-1.1378821592486527e-09
+e4b_ttn: teacher_seed103 mps seed0,s_1^1=half,1200.8444421383801,1200.844441923675,-1.7879509521335639e-10
+e4b_ttn: teacher_seed103 mps seed0,s_2^1=half,1224.4935207670326,1224.4935202875477,-3.9157816396881235e-10
+e4b_ttn: teacher_seed103 mps seed0,s_1^2=half,1200.996649252752,1200.996649032072,-1.837474084121414e-10
+e4b_ttn: teacher_seed103 mps seed0,s_2^2=half,1588.0017637237854,1588.0017634627607,-1.6437308698138022e-10
+e4b_ttn: teacher_seed103 mps seed0,max rel loss diff (L > 1e-3 L0),,,2.3510645014751908e-07
+e4b_ttn: teacher_seed103 mps seed1,s_1^0=half,1183.5484871387364,1183.5484863994498,-6.246356965702813e-10
+e4b_ttn: teacher_seed103 mps seed1,s_2^0=half,1191.5113756699284,1191.5113755969508,-6.124794860271693e-11
+e4b_ttn: teacher_seed103 mps seed1,s_1^1=half,1184.8309056055252,1184.830904734909,-7.348021563782759e-10
+e4b_ttn: teacher_seed103 mps seed1,s_2^1=half,1220.050499839603,1220.0504998013953,-3.131644555108853e-11
+e4b_ttn: teacher_seed103 mps seed1,s_1^2=half,1185.0702810679247,1185.0702801727946,-7.553392881023741e-10
+e4b_ttn: teacher_seed103 mps seed1,s_2^2=half,1508.3948061163503,1508.3948063408927,1.4886183479691245e-10
+e4b_ttn: teacher_seed103 mps seed1,max rel loss diff (L > 1e-3 L0),,,7.865856056057112e-08
