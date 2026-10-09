@@ -95,6 +95,35 @@ def main():
     fig.legend(h, lab, loc="outside lower center", ncols=4, fontsize=6.5)
     tp.savefig(fig, out / "fig_e_chi")
 
+    if (res / "lo_K.csv").exists():
+        dk = pd.read_csv(res / "lo_K.csv")
+        rows = []
+        for (tree, N, K), g in dk.groupby(["tree", "N", "K"]):
+            m, lo, hi = median_ci(g["T"])
+            rows.append({"tree": tree, "family": tree.rstrip("0123456789"), "N": N, "K": K, "n": len(g),
+                         "T_median": m, "T_ci_lo": lo, "T_ci_hi": hi, "P3": g.P3.iloc[0],
+                         "tKH_median": np.median(g.t_KH), "T_over_P3": m / g.P3.iloc[0],
+                         "T_over_tKH_median": np.median(g["T"] / g.t_KH),
+                         "frac_dev_max": g.frac_dev_max.max()})
+        kt = pd.DataFrame(rows).sort_values(["family", "K"])
+        kt.to_csv(out / "lo_K_table.csv", index=False)
+        print(kt.round(4).to_string())
+        fig, ax = plt.subplots(figsize=(tp.TEXT_WIDTH / 2, 2.6), layout="constrained")
+        for j, (fam, g) in enumerate(kt.groupby("family")):
+            c = tp.palette(3)[j]
+            ax.errorbar(g.K, g.T_median, yerr=[g.T_median - g.T_ci_lo, g.T_ci_hi - g.T_median], color=c,
+                        marker="o", ms=3, lw=1.2, capsize=1.5, label=f"{fam}: median $\\hat t_1$")
+            ax.plot(g.K, g.P3, color=c, lw=0.8, ls=":")
+            ax.plot(g.K, g.tKH_median, color=c, lw=0.8, ls="--")
+        ax.set_yscale("log")
+        ax.set_xlabel("number of cores $K$")
+        ax.set_ylabel(r"$\hat t_1$ ($\chi=3$, $d=4$, $s=(3,2,1)$)")
+        h, lab = ax.get_legend_handles_labels()
+        h += [plt.Line2D([], [], color="k", lw=0.8, ls=":"), plt.Line2D([], [], color="k", lw=0.8, ls="--")]
+        lab += ["RMS-overlap P3", "Kumar-Haupt $t_{KH}$ (median)"]
+        ax.legend(h, lab, fontsize=6)
+        tp.savefig(fig, out / "fig_e2_K")
+
 
 if __name__ == "__main__":
     main()
