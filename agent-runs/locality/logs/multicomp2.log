@@ -1,0 +1,215 @@
+E8 None mps 8 small 0 0s
+E8 None mps 8 small 2 0s
+E8 None mps 8 small 4 0s
+E8 None mps 8 small 3 0s
+E8 None mps 8 small 5 0s
+E8 None mps 8 small 7 0s
+E8 None mps 8 small 6 0s
+E8 None binary 8 small 0 0s
+E8 None binary 8 small 1 0s
+E8 None binary 8 small 2 0s
+E8 None binary 8 small 4 0s
+E8 None binary 8 small 3 0s
+E8 None binary 8 small 6 0s
+E8 None binary 8 small 5 0s
+E8 None binary 8 small 7 0s
+TC None mps 8 small 1 0s
+TC None mps 8 small 0 0s
+TC None mps 8 small 2 0s
+TC None mps 8 small 4 0s
+TC None mps 8 small 3 0s
+TC None mps 8 small 5 0s
+TC None mps 8 small 7 0s
+TC None binary 8 small 0 0s
+TC None binary 8 small 1 0s
+TC None binary 8 small 3 0s
+TC None binary 8 small 2 0s
+TC None binary 8 small 4 0s
+TC None binary 8 small 5 0s
+TC None binary 8 small 6 0s
+TC None binary 8 small 7 0s
+TD None mps 8 small 0 0s
+TD None mps 8 small 1 0s
+TD None mps 8 small 2 0s
+B4 None mps 4 small 5 0s
+TD None mps 8 small 4 0s
+TD None mps 8 small 5 0s
+TD None mps 8 small 6 0s
+TD None mps 8 small 7 0s
+B4 None mps 4 small 0 0s
+B4 None mps 4 small 3 0s
+B4 None mps 4 small 4 0s
+TD None mps 8 small 3 0s
+B4 None mps 4 small 7 0s
+B4 None binary 4 small 0 0s
+B4 None binary 4 small 1 0s
+B4 None binary 4 small 2 0s
+B4 None binary 4 small 3 0s
+B4 None binary 4 small 4 0s
+B4 None binary 4 small 5 0s
+B4 None binary 4 small 6 0s
+B4 None binary 4 small 7 0s
+B4 None ht 4 small 1 0s
+B4 None ht 4 small 3 0s
+B4 None ht 4 small 5 0s
+B4 None ht 4 small 7 0s
+B4 None ht 4 small_balanced 0 0s
+B4 None ht 4 small_balanced 2 0s
+B4 None ht 4 small_balanced 1 0s
+B4 None ht 4 small_balanced 3 0s
+B4 None ht 4 small_balanced 4 0s
+B4 None ht 4 small_balanced 5 0s
+B4 None ht 4 small_balanced 6 0s
+B4 None ht 4 small_balanced 7 0s
+N4 None mps 4 small 0 0s
+N4 None mps 4 small 2 0s
+N4 None mps 4 small 1 0s
+N4 None mps 4 small 3 0s
+N4 None mps 4 small 6 0s
+N4 None mps 4 small 7 0s
+N4 None mps 4 small 4 0s
+N4 None mps 4 small 5 0s
+N4 None binary 4 small 0 0s
+N4 None binary 4 small 1 0s
+N4 None binary 4 small 2 0s
+N4 None binary 4 small 3 0s
+N4 None binary 4 small 4 0s
+N4 None binary 4 small 5 0s
+N4 None binary 4 small 6 0s
+N4 None binary 4 small 7 0s
+N4 None ht 4 small 0 0s
+N4 None ht 4 small 1 0s
+N4 None ht 4 small 2 0s
+N4 None ht 4 small 3 0s
+N4 None ht 4 small 4 0s
+N4 None ht 4 small 5 0s
+N4 None ht 4 small 7 0s
+N4 None ht 4 small 6 0s
+N4 None ht 4 small_balanced 0 0s
+N4 None ht 4 small_balanced 1 0s
+N4 None ht 4 small_balanced 2 0s
+N4 None ht 4 small_balanced 3 0s
+N4 None ht 4 small_balanced 4 0s
+N4 None ht 4 small_balanced 5 0s
+N4 None ht 4 small_balanced 6 0s
+N4 None ht 4 small_balanced 7 0s
+TA None mps 4 small 0 0s
+TA None mps 4 small 1 0s
+TA None mps 4 small 2 0s
+TA None mps 4 small 3 0s
+TA None mps 4 small 4 0s
+TA None mps 4 small 5 0s
+TA None mps 4 small 6 0s
+TA None mps 4 small 7 0s
+TA None binary 4 small 0 0s
+TA None binary 4 small 1 0s
+TA None binary 4 small 2 0s
+TA None binary 4 small 3 0s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+TA None binary 4 small 6 23s
+TA None binary 4 small 4 24s
+TA None binary 4 small 5 27s
+TA None binary 4 small 7 31s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TA None ht 4 small 0 152s
+TA None ht 4 small 1 131s
+TA None ht 4 small 2 134s
+TA None ht 4 small 3 148s
+TA None ht 4 small 4 152s
+TA None ht 4 small 5 63s
+TA None ht 4 small 6 99s
+TA None ht 4 small 7 97s
+TA None ht 4 small_balanced 0 96s
+TA None ht 4 small_balanced 1 103s
+TA None ht 4 small_balanced 2 91s
+TA None ht 4 small_balanced 4 95s
+TA None ht 4 small_balanced 3 105s
+TA None ht 4 small_balanced 5 96s
+TA None ht 4 small_balanced 6 99s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TA None ht 4 small_balanced 7 108s
+TB None mps 4 small 3 46s
+TB None mps 4 small 2 64s
+TB None mps 4 small 0 80s
+TB None mps 4 small 1 75s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TB None mps 4 small 6 28s
+TB None mps 4 small 5 31s
+TB None mps 4 small 7 30s
+TB None mps 4 small 4 53s
+TB None binary 4 small 0 53s
+TB None binary 4 small 1 41s
+TB None binary 4 small 3 40s
+TB None binary 4 small 2 47s
+TB None binary 4 small 4 42s
+TB None binary 4 small 5 26s
+TB None binary 4 small 6 26s
+TB None binary 4 small 7 28s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/_inductor/lowering.py:2487: FutureWarning: `torch._prims_common.check` is deprecated and will be removed in the future. Please use `torch._check*` functions instead.
+  check(
+TB None ht 4 small 0 139s
+TB None ht 4 small 1 137s
+TB None ht 4 small 2 136s
+TB None ht 4 small 4 122s
+TB None ht 4 small 3 126s
+TB None ht 4 small 5 25s
+TB None ht 4 small 6 35s
+TB None ht 4 small 7 34s
+TB None ht 4 small_balanced 1 39s
+TB None ht 4 small_balanced 0 43s
+TB None ht 4 small_balanced 2 43s
+TB None ht 4 small_balanced 4 42s
+TB None ht 4 small_balanced 3 45s
+TB None ht 4 small_balanced 5 40s
+TB None ht 4 small_balanced 6 41s
+TB None ht 4 small_balanced 7 42s

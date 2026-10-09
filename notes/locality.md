@@ -198,4 +198,50 @@ the MPS learns the 0.3 component before the 0.6 one.
 
 ## 7. Results
 
-(filled in as experiments finish; see `experiments/locality/README.md`)
+All runs: gradient flow (scipy LSODA with the exact-Hessian Jacobian, rtol 1e-9, atol 1e-14, event
+root-finding; Radau fallback in < 1% of runs), library v0 model, float64, teacher seed 1000, init seeds
+0-7 (0-4 for k >= 6). Integrator check on one k = 6 run: LSODA (rtol 1e-9, 1e-10), Radau (1e-9, 1e-10)
+and RK45 agree on t2 - t1 to 3e-8 relative. Conservation-law drift < 7e-8 (max over all runs) against
+|Q| ~ 1e-2..1. Tables and figures: `experiments/locality/results/` (regenerate with `finalize.sh`).
+
+### 7.1 Two-component teachers: the exponent table (steps 1, 2) — **empirical, matches derived**
+
+`results/twocomp_table.md` (one row per tree, S, protocol). Summary (fitted exponent of t2 - t1 vs
+sigma, per seed, mean ± SE; "local" = three smallest sigma):
+
+| k (Steiner) | rows (trees) | predicted | measured |
+|---|---|---|---|
+| 1 | binary4 {0,1},{2,3}; binary8 {0,1}; star3 {0,1} | no plateau | t2 - t1 = 4e-4..1e-3 (small init), 0.6 (saddle start); separation ratio << 1 |
+| 2 | mps4/6/8, midroot6 adjacent pairs | log law, slope (1 - s2/s1)/λ2 = 1.00 (small init), 1/λ2 = 2.00 (saddle start) | slopes 0.98-1.01 (small init), 2.00-2.07 (saddle start) |
+| 3 | 26 rows: mps4/6/8, binary4/8, ht4/8, star3, midroot6 | 1 | 0.98-1.03 (local 0.97-1.01) |
+| 4 | mps4/6/8, star3, midroot6 | 2 | 1.81-2.39 (local 1.94-2.47; all but mps6 within 0.1 of 2) |
+| 5 | ht4 {0,2},{0,3},{1,2}; mps6 {1,3,5}; binary8, ht8, mps8 rows (pending) | 3 | ht4: 2.88-3.13; mps6 {1,3,5}: 2.86 (saddle), 3.76 ± 0.27 (small; see 7.5) |
+| 6-8 | (pending; sigma range < 1 decade) | 4-6 | ht4/ht8 all-sites (k = 7): 5.8 ± 0.6, 6.7 ± 0.8 over sigma in [0.08, 0.6] |
+
+- The Steiner count k decides the exponent on every tree, whatever the number of sites in S
+  (e.g. binary4: S = {1,2}, {0,3}, {0,2}, {0,1,2}, all four sites all give k = 3 and p = 1.00), and
+  regardless of where the root is (midroot6 = mps6 rerooted: same exponents).
+- The k = 2 slope distinguishes the head start: small init 1.00, saddle start 2.00, exactly as
+  derived in section 2 (= theory_saddles.md P2). The naive H2 slope 1/λ is refuted for small init.
+
+### 7.2 Saddle type (H3) — **empirical, matches derived**
+
+`results/twocomp_hessian.png`: gauge-projected Hessian at the plateau midpoint.
+- k = 2: λ_min = -0.49..-0.50 at the smallest sigma (predicted -λ2 = -s2 s1^((K-2)/K) = -0.5), flat in
+  sigma (fitted exponent 0.00 ± 0.00 from the saddle start); one negative eigenvalue (chi - 1 = 1).
+- k >= 3: λ_min ∝ sigma^x with x = 1.00-1.04 (k = 3), 1.8-2.2 (k = 4), 2.9-3.1 (k = 5), 6.0-6.8 (k = 7),
+  i.e. x ≈ k - 2: the negative curvature vanishes as sigma -> 0 (higher-order saddle).
+- So "strict iff k = 2" holds for these saddles, classified by the sigma-scaling of λ_min (the fixed
+  1e-3 relative threshold would call k = 3 plateaus strict at sigma >~ 0.03).
+
+### 7.3 Single-run escape degree and dormant amplitudes — **empirical**
+
+- Growth exponent γ = d log(da/dt)/d log a on the plateau (theory P4: 2 - 2/k): 1.000 (k = 2, saddle
+  start), 1.30-1.33 (k = 3), 1.70-1.71 (k = 7), 1.77 (k = 8); k is readable from one run.
+- Dormant-norm test (lead's refinement iii): the remaining plateau time from the midpoint scales with
+  the overlap of the escaping component there, a_mid: slope 0.98-1.01 vs ln(1/a_mid) for k = 2
+  (predicted 1/(2λ) = 1), exponent -0.25..-0.31 for k = 3 (predicted -(k-2)/k = -0.33), -0.67..-0.77
+  for k = 7 (predicted -0.71). Plateau lengths are set by the dormant route amplitude entering the
+  plateau; sigma enters only through it.
+
+

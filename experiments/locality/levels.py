@@ -32,17 +32,21 @@ from ttn.teachers import pattern_teacher  # noqa: E402
 BAND = 0.02
 
 
-def loss_trajectory(rec, raw_dir=RAW / "pilot3"):
+def loss_trajectory(rec, raw_dir=RAW / "pilot3", max_points: int = 1500):
     tree = get_tree(rec["kind"], rec.get("n"))
     spec = TTNSpec.uniform(tree, rec["d"], rec["chi"])
     teacher = pattern_teacher(rec["weights"], rec["patterns"], d=rec["d"],
                               seed=rec.get("teacher_seed", 1000))
     t2 = teacher.norm2()
     data = np.load(npz_path(rec, raw_dir))
-    ys = torch.from_numpy(data["y"])
+    t, y = data["t"], data["y"]
+    if len(t) > max_points:  # accepted steps are dense where L changes fast: uniform-in-step subsample
+        idx = np.unique(np.linspace(0, len(t) - 1, max_points).astype(int))
+        t, y = t[idx], y[:, idx]
+    ys = torch.from_numpy(y)
     L = np.array([population_loss(spec, spec.unflatten(ys[:, i]), teacher, teacher_norm2=t2).item()
                   for i in range(ys.shape[1])])
-    return data["t"], L
+    return t, L
 
 
 def occupation(t, L, level, band=BAND):

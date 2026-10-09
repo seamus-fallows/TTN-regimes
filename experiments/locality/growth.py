@@ -3,8 +3,8 @@
 On a plateau the overlap a of the next component grows like a k-core mode: eps' = lam eps^(k-1),
 a ∝ eps^k, so da/dt ∝ a^(2 - 2/k). The local exponent g = d log(da/dt) / d log a is therefore 1 (k = 2,
 exponential growth), 4/3, 3/2, 8/5 (k = 3, 4, 5), ... and k = 2 / (2 - g). We fit g by least squares on
-the saved trajectory between the plateau midpoint and the point where a reaches `a_hi` (before
-saturation), using only points where a and da/dt are positive.
+the saved trajectory on the plateau, in the window a in [1e-4, 1e-2] (theory_saddles.md P4: the
+saturation term -a/(1-a) is below 0.01 there), using only points where da/dt > 0.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ def overlaps_trajectory(rec, raw_dir=RAW / "pilot3"):
     return data["t"], a
 
 
-def growth_exponents(rec, raw_dir=RAW / "pilot3", a_hi=0.05, min_points=8):
+def growth_exponents(rec, raw_dir=RAW / "pilot3", a_lo=1e-4, a_hi=1e-2, min_points=6):
     """Per plateau: (g, k_est = 2/(2-g), number of points used, a range)."""
     t, a = overlaps_trajectory(rec, raw_dir)
     out = []
@@ -55,7 +55,8 @@ def growth_exponents(rec, raw_dir=RAW / "pilot3", a_hi=0.05, min_points=8):
             out.append(None)
             continue
         da = np.gradient(aa, tt)
-        ok = (aa > 0) & (da > 0)
+        # theory_saddles.md P4: gamma(a) = 2 - 2/k - a/(1-a), read in the window a in [1e-4, 1e-2]
+        ok = (aa > a_lo) & (da > 0)
         if ok.sum() < min_points:
             out.append(None)
             continue
