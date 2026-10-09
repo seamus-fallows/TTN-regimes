@@ -139,6 +139,39 @@ def main():
                  "5 seeds). Dashed: predicted MPS slope 1/|lambda_min|. Fits per seed in log space.", fontsize=10)
     fig.tight_layout()
     fig.savefig(RESULTS / "r2_saddle_law.png", dpi=100)
+    # collapse figure: MPS |lambda_min| t_esc vs ln(1/eps) (linear axes: a log law is a line of slope 1
+    # after this rescaling); binary / HT eps * t_esc vs eps (flat for p = 1)
+    fig, axes = plt.subplots(1, 3, figsize=(16, 4.8))
+    lam = hes.set_index(["teacher", "tree"])["lambda_min"]
+    for i, tname in enumerate(teachers):
+        for j, tree in enumerate(TREES):
+            g = ok[(ok.teacher == tname) & (ok.tree == tree)]
+            if not len(g) or (tname, tree) not in lam.index:
+                continue
+            m = g.groupby("sigma")["gap"].mean()
+            if tree == "mps":
+                # misaligned8_20 is degenerate (second component's function-space weight ~0.002 L(0);
+                # no escape law), see configs/r2_saddle_b.yaml; kept in the tables, not in this panel
+                if lam[(tname, tree)] >= -1e-8 or tname == "misaligned8_20":
+                    continue
+                y = abs(lam[(tname, tree)]) * m.values
+                axes[0].plot(np.log(1 / m.index.values), y - y[np.argmax(m.index.values)], "o-", ms=3,
+                             label=tname)
+            else:
+                z = m.index.values * m.values
+                axes[j].plot(m.index, z / z.mean(), "o-", ms=3,
+                             label=tname)
+    x = np.linspace(0, np.log(1 / ok.sigma.min()) - np.log(1 / ok.sigma.max()), 10) + np.log(1 / ok.sigma.max())
+    axes[0].plot(x, x - x[0], "k--", lw=1, label="slope 1 (prediction)")
+    axes[0].set(xlabel="ln(1/eps)", ylabel="|lambda_min| (t_esc - t_esc(eps_max))",
+                title="MPS students: log law with slope 1/|lambda_min|")
+    for j, tree in ((1, "binary"), (2, "ht")):
+        axes[j].set(xscale="log", xlabel="eps", ylabel="eps t_esc / mean", ylim=(0, 2),
+                    title=f"{tree} students: flat = sigma^-1 (k = 3)")
+    for ax in axes:
+        ax.legend(fontsize=5.5, ncol=2)
+    fig.tight_layout()
+    fig.savefig(RESULTS / "r2_saddle_collapse.png", dpi=100)
 
 
 if __name__ == "__main__":
