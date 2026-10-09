@@ -7,14 +7,15 @@ prediction of the event shift (from predict_shift.py, if present).
 Events are persistent (last upward crossing of a_r = 1/2, `common.record_events`).
 Outcome classes (fix round 1: the final loss is compared with GF's; checked in this order):
   diverged     loss non-finite or > 1e6 L(0)
-  gf_like      final loss <= 2 L_GF(T) + 1e-3 L(0) (GF's level) and monotone loss (no step raises
+  gf_like      final loss <= 1.05 L_GF(T) + 1e-3 L(0) (GF's level) and monotone loss (no step raises
                the loss by more than 1e-3 L(0))
   catapult     final loss at GF's level as above, but the loss rose by more than 1e-3 L(0) on the way
                (loss spike then convergence: catapult / edge-of-stability selection)
   reentry      not at GF's level and, after the first event, the loss returned above 0.9 L(0)
                (thrown back to the origin)
   oscillating  over the last 20% of steps (<= 2000) the total variation of the loss exceeds 10 x its
-               net change (+1e-9 L(0)), or the final point is linearly unstable (sharpness eta/2 > 1.001)
+               net change (+1e-9 L(0)) and the tail reaches above GF's level, or the final point is
+               linearly unstable (sharpness eta/2 > 1.001)
   other        none of the above (ends monotonically at a loss level different from GF's)
 
 Run: uv run python experiments/optim_samples/analyze_gd.py  -> results/gd_sweep.csv, gd_summary.csv
@@ -113,7 +114,11 @@ def main():
             osc, tv, net = tail_class(p.with_suffix(".npz"), d["loss0"])
             # A converged GD run must sit at a linearly stable point: sharpness * eta / 2 <= 1.
             unstable = d.get("sharp_end", 0.0) * d["eta"] / 2 > 1.001
-            gf_level = d["loss_end"] <= 2 * ref["loss_end"] + 1e-3 * d["loss0"]
+            level = 1.05 * ref["loss_end"] + 1e-3 * d["loss0"]  # GF's loss at T, 5% + 1e-3 L(0)
+            gf_level = d["loss_end"] <= level
+            # An oscillation only counts if it reaches above GF's level (damped EoS oscillations of
+            # ~1e-11 on a converged run are not a different outcome).
+            osc = osc and d["loss_tail_max"] > level
             monotone = d.get("max_rise", 0.0) <= 1e-3
             if gf_level and not (osc or unstable):
                 cls = "gf_like" if monotone else "catapult"

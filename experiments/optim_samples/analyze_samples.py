@@ -55,7 +55,8 @@ def label(row):
     if row.method == "lazy limit":
         return "lazy limit (kernel regression, exact)"
     if row.centred:
-        return f"centred, σ = {row.sigma:g} (GD)"
+        steps = " 300k steps" if str(row.block).endswith("_long") else ""
+        return f"centred, σ = {row.sigma:g} (GD{steps})"
     return f"small init, σ = {row.sigma:g} (GD)"
 
 

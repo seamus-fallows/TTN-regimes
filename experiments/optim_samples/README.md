@@ -13,7 +13,8 @@ Whitened Gaussian inputs, odeco teacher [3, 2, 1] (d = 3) with **teacher seed 10
 of init seeds 0-4), student chi = 3, fan-in init. Trees: binary N=4 (K=3), binary N=8 (K=7),
 MPS N=8 (K=8). eta_max = 2 / (K s_1^{2-2/K}). Step 3 uses binary N=8, d = 2, teacher [3, 2],
 student chi = 4. All float64 on CPU. The GD/SGD loops here are minimal and were written before
-`ttn.dynamics` landed; GF references use `scipy` DOP853 (rtol 1e-10, atol 1e-14).
+`ttn.dynamics` landed; GF references use `scipy` DOP853 (rtol 1e-10, atol 1e-14); the chi = 9 runs use LSODA
+(`ttn.dynamics.integrate_gf`), stopped at loss 1e-8.
 
 ## How to run
 
@@ -67,18 +68,27 @@ event location, persistent events `record_events`), `plot_style.py`. Order to re
 `analyze_samples.py`. Cost on 30 vCPUs (shared): GD sweeps ~40 min, chi = 9 centred ~1.5 h, SGD sweep
 ~3 h, samples ~1 h, P9 ~40 min.
 
-## Results summary (details, tags and numbers in `notes/optim_samples.md`)
+## Results summary (details, tags and numbers in `notes/optim_samples.md`; fix round 1)
 - Sharpness at the balanced global minimum is exactly K s_1^{2-2/K} (proven; checked to 1e-15), the
   balanced minimum is the flattest aligned one, so eta_max = 2/(K s_1^{2-2/K}).
-- Small init: GD converges like GF for every eta <= 0.95 eta_max and never for eta >= 1.05 eta_max
-  (binary N=4, 5 init scales x 5 seeds). Event-time shifts are predicted exactly at O(eta) by the
-  backward-error variational equation; relative errors vanish as sigma -> 0.
+- Small init: GD below eta_max keeps the GF saddle sequence in every checked case (persistent
+  events: 765/765 runs); it converges like GF for every eta <= 0.95 eta_max and never for
+  eta >= 1.05 eta_max (binary N=4, 5 init scales x 5 seeds). Event-time shifts are eta c_e + O(eta^2)
+  with c_e from the backward-error variational equation (Richardson limit agrees to ~1e-5); measured
+  shifts agree with c_e within 0.3% / 1% / 5% in 66% / 90% / 97% of 526 comparisons at
+  eta <= 0.1 eta_max, worse where c_e ~ 0.
 - Above eta_max: bounded oscillation of the top component(s) (1.05-1.3), divergence, and a regime
-  in which learned components are thrown back to the origin saddle and re-learned (2 eta_max).
+  in which learned components are thrown back to the origin saddle and re-learned (2 eta_max). The
+  time-averaged excess loss equals s_1^2 x the 1D-map attractor loss (within 0.9%, binary N=4).
 - Imbalanced init: GD selects minima with sharpness min(lambda_GF, 2/eta) and reduced imbalance.
-- Above eta_max the time-averaged excess loss equals s_1^2 x the 1D-map attractor loss (3-4 digits).
-- Across the lazy transition the GD limit is 2/lambda_GF(sigma) ~ sigma^{-2(K-1)} (centred model).
-- SGD: the first plateau keeps its GF law (spread ~ sqrt(eta/B)); later k = 3 plateaus are lengthened
-  and trapped as in the theory note's P9 (c_gamma ~ 34-45, only eta/B matters).
-- Finite samples: small init recovers W* with bond rank 2 from n ~ 256 (d = 2, N = 8); the exact lazy
-  limit at chi = 4 never generalizes (tangent space too small), at full chi it needs n = d^N.
+- Across init scales (centred model, chi = 9, converged GF): 2/lambda_GF(sigma) (= eta_max at small
+  init, ~ sigma^{3.97} beyond sigma ~ 1.4) is the end of monotone GF-like GD; above it, small init
+  oscillates then diverges, larger init catapults to GF's loss at a flatter minimum up to
+  ~1.5-3 x 2/lambda_GF.
+- SGD: the first escape keeps its GF law (spread ~ (eta/B)^{0.43-0.52}, no shortening); later k = 3
+  plateaus are lengthened and trapped; the P9 shape fits better than pole/linear laws (c_gamma ~ 33),
+  with residual curvature near the trap; only eta/B matters (independent noise at B = 16 and 64);
+  learned components are erased at >= ~0.25 eta*_ms on long plateaus.
+- Finite samples (one teacher, capped GD steps): small init recovers W* with bond rank 2 from
+  n ~ 256 (d = 2, N = 8); the exact lazy limit fails as dimension counting predicts (chi = 4: tangent
+  space of dimension 112 < 256; full chi: needs n = d^N).

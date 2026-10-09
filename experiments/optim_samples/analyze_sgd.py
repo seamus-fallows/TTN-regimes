@@ -1,9 +1,11 @@
 """Step-2 analysis: SGD event times vs batch size B and step size eta, compared with GF and theory.
 
 Events are persistent (last upward crossing of a_r = 1/2; runs continue past the second GF event).
-For each init the components are ordered by their GF events (c1 = first, c2 = second); "event 1"
-and "event 2" of an SGD run are the persistent events of c1 and c2, and a run whose persistent order
-differs from GF's is classified "flipped" (reported, kept out of the plateau statistics).
+For each init the components are ordered by their GF events (c1 = first, c2 = second). Classified per
+run before pooling: the first escape from the origin, t_esc = the first time any component reaches 1/2
+(the P7 quantity, for every run); "forgot" = the learned component c1 later falls below 1/2 again
+(P10 erasure; such runs re-learn later); "flipped" = the persistent order differs from GF's. The
+second plateau (P9) uses only same-order runs that never forgot.
 
 Per (block, sigma, init, B, eta): mean and std over noise seeds of the events, the shift of the mean
 relative to GF (fan-in init: the GF reference of gd_sweep.py; aligned init: exact 1D integral), the
@@ -74,7 +76,9 @@ def gf_reference():
         c1, c2 = order[0], order[1]
         width = t90 - t10
         rho = (t50[c2] - t50[c1]) / np.nanmax(width[[c1, c2]])
-        ref[(tk["sigma"], tk["seed"])] = dict(t50=t50, c1=c1, c2=c2, rho=rho)
+        first = np.array([nan if v is None else v for v in d["t50_first"]], float)
+        ref[(tk["sigma"], tk["seed"])] = dict(t50=t50, c1=c1, c2=c2, rho=rho,
+                                              t_esc=float(np.nanmin(first)))
     return ref
 
 
@@ -88,17 +92,22 @@ def load_runs(ref):
             if tk["init"] == "aligned":
                 c1, c2 = 0, 1
                 gf_t = [aligned_theory(r, tk["sigma"], 1.0, 1.0)[0] for r in range(3)]
-                rho = np.inf
+                rho, t_esc_gf = np.inf, gf_t[0]
             else:
                 g = ref.get((tk["sigma"], tk["seed"]))
                 if g is None:
                     continue
-                c1, c2, gf_t, rho = g["c1"], g["c2"], g["t50"], g["rho"]
+                c1, c2, gf_t, rho, t_esc_gf = g["c1"], g["c2"], g["t50"], g["rho"], g["t_esc"]
+            first = np.array([np.nan if v is None else v for v in d["t50_first"]], float)
+            a1_min = d["a_min_after_learned"][c1]
             row = dict(block=tk["block"], init=tk["init"], sigma=tk["sigma"], seed=tk["seed"],
                        noise_seed=tk["noise_seed"], B=tk["B"], eta=tk["eta"], diverged=d["diverged"],
-                       t1=t50[c1], t2=t50[c2], t1_gf=gf_t[c1], t2_gf=gf_t[c2], rho_gf=rho,
-                       t1_first=d["t50_first"][c1] if d["t50_first"][c1] is not None else np.nan,
-                       n_cross=str(d["n_cross"]), t_end=d["steps"] * tk["eta"])
+                       # escape from the origin: first time any component reaches 1/2
+                       t_esc=np.nanmin(first) if np.any(np.isfinite(first)) else np.nan,
+                       t_esc_gf=t_esc_gf, t1=t50[c1], t2=t50[c2], t1_gf=gf_t[c1],
+                       t2_gf=gf_t[c2], rho_gf=rho, n_cross=str(d["n_cross"]),
+                       t_end=d["steps"] * tk["eta"],
+                       forgot=bool(a1_min is not None and a1_min < 0.5))
             if np.isfinite(row["t1"]) and np.isfinite(row["t2"]):
                 row["run_class"] = "flipped" if row["t2"] < row["t1"] else "same_order"
             else:
@@ -132,20 +141,25 @@ def main():
     df = load_runs(ref)
     df.to_csv(OUT / "sgd_runs.csv", index=False)
     keys = ["block", "init", "sigma", "seed", "B", "eta"]
-    ok = df[df.run_class != "unresolved"]
+    ok = df[~df.diverged & df.t_esc.notna()]
     per_init = df.groupby(keys).agg(
         n_runs=("noise_seed", "size"), frac_div=("diverged", "mean"),
+        frac_forgot=("forgot", "mean"),
         frac_flipped=("run_class", lambda c: np.mean(c == "flipped")),
         frac_unresolved=("run_class", lambda c: np.mean(c == "unresolved")),
+        t_esc_gf=("t_esc_gf", "first"),
         t1_gf=("t1_gf", "first"), t2_gf=("t2_gf", "first"), rho_gf=("rho_gf", "first"),
         trq_change=("trq_change", "mean"), q_drift=("q_drift", "mean"),
         a1_min_after=("a1_min_after", "min"))
-    stats = ok.groupby(keys).agg(t1_mean=("t1", "mean"), t1_std=("t1", "std"), t1_n=("t1", "count"))
-    seq = ok[ok.run_class == "same_order"].assign(T=lambda d: d.t2 - d.t1)
+    # P7 (first plateau): escape time from the origin, all runs; later forgetting does not matter.
+    stats = ok.groupby(keys).agg(t1_mean=("t_esc", "mean"), t1_std=("t_esc", "std"),
+                                 t1_n=("t_esc", "count"))
+    # Second plateau: same persistent order as GF and the learned component never forgotten.
+    seq = df[(df.run_class == "same_order") & ~df.forgot & ~df.diverged].assign(T=lambda d: d.t2 - d.t1)
     stats2 = seq.groupby(keys).agg(t2_mean=("t2", "mean"), t2_std=("t2", "std"),
                                    t2_n=("t2", "count"), T_mean=("T", "mean"), T_std=("T", "std"))
     per_init = per_init.join(stats).join(stats2).reset_index()
-    per_init["shift1"] = per_init.t1_mean - per_init.t1_gf
+    per_init["shift1"] = per_init.t1_mean - per_init.t_esc_gf
     per_init["shift1_se_noise"] = per_init.t1_std / np.sqrt(per_init.t1_n)
     per_init["shift2"] = per_init.t2_mean - per_init.t2_gf
     per_init["T_gf"] = per_init.t2_gf - per_init.t1_gf
@@ -165,7 +179,7 @@ def main():
             c1 = ref[(row.sigma, row.seed)]["c1"]
             s = WEIGHTS[c1]
             v = s**2 * (3**4 - 1) + sum(w**2 for w in WEIGHTS if w != s)
-            out["pred_std1"] = np.sqrt(row.t1_gf * row.eta * v / row.B) / s
+            out["pred_std1"] = np.sqrt(row.t_esc_gf * row.eta * v / row.B) / s
             sel = shifts[(shifts.sigma == row.sigma) & (shifts.seed == row.seed) & (shifts.comp == c1)]
             if len(sel):
                 out["pred_shift1"] = p7_estimate(row, sel.pred_shift_over_eta.iloc[0])
@@ -176,7 +190,8 @@ def main():
     # Pooled over inits: mean of per-init values, s.e. ACROSS inits.
     pooled = per_init.groupby(["block", "init", "sigma", "B", "eta"]).agg(
         n_inits=("seed", "nunique"), shift1=("shift1", "mean"), shift1_se=("shift1", "sem"),
-        pred_shift1=("pred_shift1", "mean"), t1_gf=("t1_gf", "mean"),
+        pred_shift1=("pred_shift1", "mean"), t1_gf=("t_esc_gf", "mean"),
+        frac_forgot=("frac_forgot", "mean"),
         frac_flipped=("frac_flipped", "mean"), frac_unresolved=("frac_unresolved", "mean"),
         std1_over_pred_min=("std1_over_pred", "min"), std1_over_pred_max=("std1_over_pred", "max"),
         trq_change=("trq_change", "mean"), trq_change_se=("trq_change", "sem"),
