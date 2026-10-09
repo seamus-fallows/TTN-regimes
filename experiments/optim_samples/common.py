@@ -6,6 +6,7 @@ stores raw trajectories in /root/outputs/optim_samples/ and a small JSON summary
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
 from pathlib import Path
@@ -26,8 +27,20 @@ from ttn.teachers import odeco_teacher
 from ttn.tree import make_tree
 
 torch.set_default_dtype(torch.float64)
-RAW = Path("/root/outputs/optim_samples")
-RESULTS = Path(__file__).parent / "results"
+def _path_option(flag: str, default: Path) -> Path:
+    """`flag PATH` from the command line, parsed leniently so that scripts keep their own options."""
+    ap = argparse.ArgumentParser(add_help=False)
+    ap.add_argument(flag, type=Path, default=default)
+    ns, _ = ap.parse_known_args()
+    return getattr(ns, flag.lstrip("-").replace("-", "_"))
+
+
+# Every script takes --raw-dir (raw per-run outputs) and --out-dir (summary tables and figures). The
+# default output directory is outside git, so re-running never overwrites the committed results; pass
+# --out-dir experiments/optim_samples/results to regenerate them.
+RAW = _path_option("--raw-dir", Path("/root/outputs/optim_samples"))
+RESULTS = _path_option("--out-dir", Path("/root/outputs/optim_samples/results"))
+RESULTS.mkdir(parents=True, exist_ok=True)
 
 
 TEACHER_SEED = 101  # independent of init seeds (0-4) and data seeds

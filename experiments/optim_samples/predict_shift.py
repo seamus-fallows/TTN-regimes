@@ -24,8 +24,10 @@ from scipy.integrate import solve_ivp
 
 from gd_sweep import make_problem
 
-RAW = Path("/root/outputs/optim_samples/gd")
-OUT = Path(__file__).parent / "results"
+from common import RAW as RAW_ROOT
+from common import RESULTS as OUT
+
+RAW = RAW_ROOT / "gd"
 
 
 def predict(path):
@@ -79,7 +81,7 @@ def predict(path):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=8)
-    args = ap.parse_args()
+    args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
     paths = sorted(str(p) for p in RAW.glob("*_gf.json"))
     with Pool(args.workers) as pool:
         rows = [r for res in pool.imap_unordered(predict, paths) for r in res]

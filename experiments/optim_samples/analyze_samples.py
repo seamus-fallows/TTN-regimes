@@ -9,7 +9,6 @@ Writes results/samples_runs.csv, samples_summary.csv, fig_samples.png.
 """
 
 import json
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,8 +16,10 @@ import pandas as pd
 
 import plot_style as ps
 
-RAW = Path("/root/outputs/optim_samples/samples")
-OUT = Path(__file__).parent / "results"
+from common import RAW as RAW_ROOT
+from common import RESULTS as OUT
+
+RAW = RAW_ROOT / "samples"
 
 
 def load():

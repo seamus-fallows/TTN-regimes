@@ -10,12 +10,11 @@ Writes results/map1d_attractor.csv (per h/h_c and K) and results/map1d_points.cs
 attractor points for the bifurcation figure).
 """
 
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-OUT = Path(__file__).parent / "results"
+from common import RESULTS as OUT  # noqa: E402
 
 
 def attractor(k, ratio, x0=0.3, n_iter=60000, keep=2000):

@@ -7,9 +7,9 @@ generator seeds) and compares event times (a_r = 1/2) and final losses with the 
 Run: uv run python experiments/optim_samples/validate_library.py  -> results/validate_library.csv
 """
 
+import argparse
 import json
 from multiprocessing import Pool
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -19,7 +19,7 @@ from common import RAW, eta_max, setup
 from ttn.diagnostics import crossing_times
 from ttn.dynamics import Problem, Recorder, integrate_gf, run_gd, run_sgd
 
-OUT = Path(__file__).parent / "results"
+from common import RESULTS as OUT  # noqa: E402
 REC = dict(spectra=False, conservation=False)
 
 
@@ -88,7 +88,10 @@ def main():
     for r in sorted(sgd_rows, key=lambda r: (r["task"]["B"], r["task"]["sigma"])):
         pick.setdefault((r["task"]["sigma"], r["task"]["B"]), r)
     sgd = list(pick.values())[:2]
-    with Pool(12) as pool:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--workers", type=int, default=12)
+    workers = ap.parse_known_args()[0].workers
+    with Pool(workers) as pool:
         res = pool.map(gd_case, gd) + pool.map(gf_case, gf) + pool.map(sgd_case, sgd)
     df = pd.DataFrame(res)
     df.to_csv(OUT / "validate_library.csv", index=False)

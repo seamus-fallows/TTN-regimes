@@ -4,7 +4,6 @@ Reads results/*.csv written by analyze_gd.py, predict_shift.py and map1d.py.
 Run: uv run python experiments/optim_samples/plot_gd.py -> results/fig_*.png
 """
 
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +11,7 @@ import pandas as pd
 
 import plot_style as ps
 
-RES = Path(__file__).parent / "results"
+from common import RESULTS as RES  # noqa: E402
 CLASSES = [("gf_like", "converges (GF-like)"), ("oscillating", "bounded oscillation"),
            ("reentry", "thrown back to origin"), ("diverged", "diverges")]
 

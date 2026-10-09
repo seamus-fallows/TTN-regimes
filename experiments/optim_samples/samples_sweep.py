@@ -26,7 +26,6 @@ import time
 from multiprocessing import Pool
 from pathlib import Path
 
-import numpy as np
 import torch
 import yaml
 
@@ -228,7 +227,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
     ap.add_argument("--workers", type=int, default=30)
-    args = ap.parse_args()
+    args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
     cfg = yaml.safe_load(Path(args.config).read_text())
     OUT.mkdir(parents=True, exist_ok=True)
     tasks = tasks_from_config(cfg)

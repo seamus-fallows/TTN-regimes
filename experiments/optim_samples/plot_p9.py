@@ -5,7 +5,6 @@ trapped runs (no escape by 4 T_GF or t = 1600) give the bound c_gamma >= 1/((eta
 Run: uv run python experiments/optim_samples/plot_p9.py -> results/fig_p9.png, p9_fit.csv
 """
 
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +13,7 @@ from scipy.optimize import brentq
 
 import plot_style as ps
 
-RES = Path(__file__).parent / "results"
+from common import RESULTS as RES  # noqa: E402
 
 
 def law(x):

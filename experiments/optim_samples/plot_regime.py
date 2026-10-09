@@ -8,7 +8,6 @@ gradient flow reaches, measured) and the SGD mean-square limits for several batc
 Run: uv run python experiments/optim_samples/plot_regime.py -> results/fig_lr_regime_map.png
 """
 
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,7 +15,7 @@ import pandas as pd
 
 import plot_style as ps
 
-RES = Path(__file__).parent / "results"
+from common import RESULTS as RES  # noqa: E402
 CLASSES = [("gf_like", "converges (GF-like)"), ("oscillating", "bounded oscillation"),
            ("reentry", "thrown back to origin"), ("diverged", "diverges")]
 

@@ -24,7 +24,6 @@ import itertools
 import json
 import os
 from multiprocessing import Pool
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -38,7 +37,7 @@ from ttn.teachers import pattern_teacher
 from ttn.tree import make_tree
 
 OUT = RAW / "collapse"
-RES = Path(__file__).parent / "results"
+from common import RESULTS as RES  # noqa: E402
 SIGMA, ETA, BATCH, T_MAX = 0.1, 5e-4, 1, 120.0
 
 
@@ -78,7 +77,7 @@ def run(task):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=15)
-    args = ap.parse_args()
+    args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
     s2s, zetas, seeds = [0.3], [0.0, 10.0, 20.0, 30.0], [0, 1, 2, 3, 4]
     tasks = [(s2, 0.0, -1) for s2 in s2s] + list(itertools.product(s2s, zetas, seeds))
     with Pool(args.workers) as pool:

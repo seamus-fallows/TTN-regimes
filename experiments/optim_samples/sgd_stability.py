@@ -15,8 +15,7 @@ Run: uv run python experiments/optim_samples/sgd_stability.py [tree N ...]
 Writes results/sgd_stability.csv. Dense method: feasible for d^N <= ~100.
 """
 
-import sys
-from pathlib import Path
+import argparse
 
 import pandas as pd
 import torch
@@ -26,7 +25,7 @@ from ttn.teachers import odeco_teacher
 from ttn.tree import make_tree
 
 torch.set_default_dtype(torch.float64)
-OUT = Path(__file__).parent / "results"
+from common import RESULTS as OUT  # noqa: E402
 WEIGHTS = [3.0, 2.0, 1.0]
 BATCHES = [1, 2, 4, 8, 16, 32, 64, 128, 256, 1024, 10**9]
 
@@ -70,7 +69,9 @@ def spectral_radius(eta, batch, a1, a2, a3):
 
 
 def main():
-    args = sys.argv[1:] or ["binary", "4", "mps", "4"]
+    ap = argparse.ArgumentParser()
+    ap.add_argument("trees", nargs="*", default=["binary", "4", "mps", "4"])
+    args = ap.parse_known_args()[0].trees
     rows = []
     for kind, n in zip(args[::2], map(int, args[1::2])):
         spec, lam, a1, a2, a3 = operator_pieces(kind, n)

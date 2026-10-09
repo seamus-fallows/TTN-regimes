@@ -155,7 +155,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
     ap.add_argument("--workers", type=int, default=30)
-    args = ap.parse_args()
+    args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
     cfg = yaml.safe_load(Path(args.config).read_text())
     tasks = tasks_from_config(cfg)
     OUT.mkdir(parents=True, exist_ok=True)

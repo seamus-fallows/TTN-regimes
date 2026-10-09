@@ -14,14 +14,13 @@ Writes results/sgd_runs.csv, sgd_summary.csv, sgd_fits.csv and prints the fits.
 """
 
 import json
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from scipy.integrate import quad
 
-RAW = Path("/root/outputs/optim_samples")
-OUT = Path(__file__).parent / "results"
+from common import RAW
+from common import RESULTS as OUT
 WEIGHTS = [3.0, 2.0, 1.0]
 
 
@@ -99,16 +98,23 @@ def main():
             aligned_theory(r, s, 1.0, 1.0)[0]
             for s, sd, i in zip(df.sigma, df.seed, df.init)]
     df.to_csv(OUT / "sgd_runs.csv", index=False)
+    # Classify runs before pooling event-2 statistics: "joint" = component 2 learned together with
+    # component 1 (a near-tied race flipped by the noise, no second plateau), "sequential" = a second
+    # plateau as in GF, "unresolved" = no event 2 within the run.
+    gap, gap_gf = df.t2 - df.t1, df.t2_gf - df.t1_gf
+    df["run_class"] = np.where(df.t2.isna(), "unresolved",
+                               np.where(gap < 0.5 * gap_gf, "joint", "sequential"))
+    df.to_csv(OUT / "sgd_runs.csv", index=False)
     keys = ["block", "init", "sigma", "seed", "B", "eta"]
-    agg = {}
-    for r in (1, 2):
-        agg[f"t{r}_mean"] = (f"t{r}", "mean")
-        agg[f"t{r}_std"] = (f"t{r}", "std")
-        agg[f"t{r}_n"] = (f"t{r}", "count")
-        agg[f"t{r}_gf"] = (f"t{r}_gf", "first")
-    agg.update(n_runs=("noise_seed", "size"), frac_div=("diverged", "mean"),
-               trq_change=("trq_change", "mean"), q_drift=("q_drift", "mean"))
-    per_init = df.groupby(keys).agg(**agg).reset_index()
+    seq = df[df.run_class == "sequential"]
+    per_init = df.groupby(keys).agg(
+        n_runs=("noise_seed", "size"), frac_div=("diverged", "mean"),
+        frac_joint=("run_class", lambda c: np.mean(c == "joint")),
+        frac_unresolved=("run_class", lambda c: np.mean(c == "unresolved")),
+        t1_mean=("t1", "mean"), t1_std=("t1", "std"), t1_n=("t1", "count"), t1_gf=("t1_gf", "first"),
+        t2_gf=("t2_gf", "first"), trq_change=("trq_change", "mean"), q_drift=("q_drift", "mean"))
+    per_init = per_init.join(seq.groupby(keys).agg(t2_mean=("t2", "mean"), t2_std=("t2", "std"),
+                                                    t2_n=("t2", "count"))).reset_index()
     for r in (1, 2):
         per_init[f"shift{r}"] = per_init[f"t{r}_mean"] - per_init[f"t{r}_gf"]
         per_init[f"shift{r}_se"] = per_init[f"t{r}_std"] / np.sqrt(per_init[f"t{r}_n"])
@@ -129,44 +135,52 @@ def main():
         th.append(out)
     per_init = pd.concat([per_init, pd.DataFrame(th)], axis=1)
     per_init.to_csv(OUT / "sgd_summary.csv", index=False)
-    # Scaling fits: std and shift vs eta/B, per (block, sigma), pooled over inits.
+    # Scaling fits per init seed (the same init direction is reused at every eta/B), then
+    # mean +- s.e. over seeds. Sweeps: B at eta = 5e-4; eta at B = 4 and at B = 64 (each including
+    # the B-sweep point at eta = 5e-4).
+    sweeps = {"B": per_init[(per_init.block == "B_sweep")],
+              "eta|B=4": per_init[((per_init.block == "eta_sweep_B4") | (per_init.block == "B_sweep"))
+                                  & (per_init.B == 4)],
+              "eta|B=64": per_init[((per_init.block == "eta_sweep_B64") | (per_init.block == "B_sweep"))
+                                   & (per_init.B == 64)]}
     fits = []
-    for (block, sigma), g in per_init.groupby(["block", "sigma"]):
-        g = g.assign(x=g.eta / g.B)
-        for r in (1, 2):
-            gg = g[np.isfinite(g[f"t{r}_std"]) & (g[f"t{r}_n"] >= 5)]
-            if gg.x.nunique() < 5:
-                continue
-            m = gg.groupby("x")
-            ystd = m[f"t{r}_std"].mean() / np.sqrt(m[f"t{r}_gf"].mean())
-            p, pe = fit_power(ystd.index, ystd.values)
-            fits.append(dict(block=block, sigma=sigma, event=r, quantity="std/sqrt(t_gf)",
-                             exponent=p, se=pe, n_x=len(ystd), x_min=ystd.index.min(),
-                             x_max=ystd.index.max(), predicted=0.5))
-            trq = m.trq_change.mean()
-            p, pe = fit_power(trq.index, trq.values)
-            fits.append(dict(block=block, sigma=sigma, event=0, quantity="|tr Q_e change|",
-                             exponent=p, se=pe, n_x=len(trq), x_min=trq.index.min(),
-                             x_max=trq.index.max(), predicted=1.0))
-    fits = pd.DataFrame(fits).drop_duplicates(subset=["block", "sigma", "quantity", "event"])
+    for name, g0 in sweeps.items():
+        for (init, sigma), g in g0.groupby(["init", "sigma"]):
+            for quantity, col, pred, min_n in (("std(t1)", "t1_std", 0.5, 5),
+                                               ("std(t2), sequential runs", "t2_std", 0.5, 5),
+                                               ("|tr Q_e change|", "trq_change", 1.0, 1)):
+                exps = []
+                for seed, gs in g.groupby("seed"):
+                    nn = gs["t1_n"] if col != "t2_std" else gs["t2_n"]
+                    gs = gs[np.isfinite(gs[col]) & (gs[col] > 0) & (nn >= min_n)]
+                    xs = gs.eta / gs.B
+                    if xs.nunique() >= 5 and xs.max() / xs.min() >= 10:
+                        exps.append(fit_power(xs, gs[col])[0])
+                if exps:
+                    fits.append(dict(sweep=name, init=init, sigma=sigma, quantity=quantity,
+                                     exponent_mean=np.mean(exps),
+                                     exponent_se=np.std(exps, ddof=1) / np.sqrt(len(exps))
+                                     if len(exps) > 1 else np.nan,
+                                     n_seeds=len(exps), predicted=pred))
+    fits = pd.DataFrame(fits)
     # Second plateau (P9 of notes/theory_optimizer.md): T = t2 - t1 per run vs GF, excluding
     # near-tie inits (GF: the eventual second component peaks at 0.15-0.6 during the first event).
     ties = pd.read_csv(OUT / "order_flips.csv").groupby(["sigma", "seed"]).rival_peak.first()
-    r = df[(df.init == "fanin") & ~df.diverged].copy()
+    r = df[(df.init == "fanin") & ~df.diverged & (df.run_class != "joint")].copy()
     r["near_tie"] = [0.15 <= ties.get((s, sd), 0.0) < 0.6 for s, sd in zip(r.sigma, r.seed)]
     r["T"] = r.t2 - r.t1
     r["T_gf"] = r.t2_gf - r.t1_gf
     r["T_ratio"] = r["T"] / r["T_gf"]
     sec = (r.groupby(["near_tie", "block", "sigma", "B", "eta"])
            .agg(n=("T_ratio", "count"), T_gf=("T_gf", "mean"), T_ratio=("T_ratio", "mean"),
-                T_ratio_se=("T_ratio", "sem"), missed=("t2", lambda v: int(v.isna().sum())))
+                T_ratio_se=("T_ratio", "sem"), unresolved=("t2", lambda v: int(v.isna().sum())))
            .reset_index())
     x = 35.0 * sec.eta / sec.B * sec.T_gf
     sec["pred_P9_c35"] = np.where(x < 1, -np.log1p(-np.minimum(x, 0.999)) / x, np.inf)
     sec.to_csv(OUT / "sgd_second_plateau.csv", index=False)
     fits.to_csv(OUT / "sgd_fits.csv", index=False)
     with pd.option_context("display.width", 250, "display.max_rows", 400):
-        cols = ["block", "init", "sigma", "B", "eta", "n_runs", "frac_div", "t1_gf", "shift1",
+        cols = ["block", "init", "sigma", "B", "eta", "n_runs", "frac_div", "frac_joint", "t1_gf", "shift1",
                 "shift1_se", "t1_std", "pred_std1", "t2_gf", "shift2", "shift2_se", "t2_std",
                 "pred_std2", "trq_change"]
         cols += [c for c in ["pred_shift1", "pred_shift2"] if c in per_init]

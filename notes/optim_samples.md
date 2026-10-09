@@ -237,6 +237,24 @@ components 2 and 3 at per-core amplitude b0), so the GF second plateau is exact:
   residual noise grows like s^2 while eta*_ms shrinks only like s^{-4/3}, so larger teachers need a
   smaller fraction of eta*_ms (conjecture).
 
+### 4.2 Stochastic collapse of a k = 2 route (empirical; `collapse_test.py`, `check_k2_saddle.py`)
+
+MPS N=4 (K = 4), d = chi = 3, pattern teacher [3, 0.3] with patterns [[0,0,0,0],[1,1,0,0]] (component 2
+needs a second channel on the bond between cores 0 and 1 only). **Hessian check:** at the GF
+second-plateau midpoint (t = 36.15, a_2 = 0.015; sigma = 0.1, seed 0) the gauge-projected Hessian has 2
+negative eigenvalues, lambda_min = -0.478, vs the predicted -s2 s1^{(K-2)/K} = -0.520: a strict saddle
+(`results/k2_saddle_hessian.json`). Online SGD, B = 1, eta = 5e-4 (0.47 eta*_ms), 5 noise seeds,
+label noise zeta in {0, 10, 20, 30}:
+- zeta = 0: component 2 learned in 5/5 runs, second plateau 5.11 +- 0.25 vs GF 4.73 (+8 +- 5%): no
+  collapse, as predicted (collapse would need s2 > ~30 here).
+- zeta = 10, 20, 30: the learned component 1 is erased in 15/15 runs (min a_1 after learning <= 0.05)
+  and the overlaps wander (a_2 up to 2-8): label-noise SGD at this step does not hold the learned
+  block, so collapse of the route cannot be assessed. **Inconclusive** for the label-noise
+  prediction (collapse for s2 < ~eta q zeta^2/2); a test would need a much smaller eta with
+  correspondingly larger zeta, i.e. components far below the label-noise level.
+- A first version of this test used binary N=4, where this pattern lies inside one core (k = 1;
+  both components learned together at t ~ 5); kept in `/root/outputs/optim_samples/collapse_binary4_k1/`.
+
 ## 5. SGD stability limit (derived)
 
 At an interpolating minimum (realizable teacher, no label noise) the noise vanishes; linear

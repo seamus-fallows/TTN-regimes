@@ -9,7 +9,6 @@ Run: uv run python experiments/optim_samples/check_sharpness.py
 Writes results/sharpness_check.csv.
 """
 
-from pathlib import Path
 
 import pandas as pd
 import torch
@@ -20,7 +19,7 @@ from ttn.teachers import odeco_teacher
 from ttn.tree import make_tree
 
 torch.set_default_dtype(torch.float64)
-OUT = Path(__file__).parent / "results"
+from common import RESULTS as OUT  # noqa: E402
 
 
 def hessian_top(spec, cores, teacher):

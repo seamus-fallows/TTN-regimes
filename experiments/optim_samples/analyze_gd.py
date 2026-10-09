@@ -16,13 +16,14 @@ Run: uv run python experiments/optim_samples/analyze_gd.py  -> results/gd_sweep.
 
 import json
 import math
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-RAW = Path("/root/outputs/optim_samples/gd")
-OUT = Path(__file__).parent / "results"
+from common import RAW as RAW_ROOT
+from common import RESULTS as OUT
+
+RAW = RAW_ROOT / "gd"
 
 
 def load(path):

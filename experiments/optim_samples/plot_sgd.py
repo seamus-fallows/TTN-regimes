@@ -4,7 +4,6 @@ Reads results/sgd_summary.csv (analyze_sgd.py) and results/sgd_stability.csv (sg
 Run: uv run python experiments/optim_samples/plot_sgd.py -> results/fig_sgd.png
 """
 
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +11,7 @@ import pandas as pd
 
 import plot_style as ps
 
-RES = Path(__file__).parent / "results"
+from common import RESULTS as RES  # noqa: E402
 
 
 def pooled(g, col):

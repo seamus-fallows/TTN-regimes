@@ -17,7 +17,6 @@ import argparse
 import json
 import os
 from multiprocessing import Pool
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -30,7 +29,7 @@ from ttn.dynamics import Problem, Recorder, integrate_gf, run_sgd
 from ttn.network import aligned_init
 
 OUT = RAW / "p9"
-RES = Path(__file__).parent / "results"
+from common import RESULTS as RES  # noqa: E402
 B0S = [0.01, 0.003, 0.001]
 ETA_OVER_B = [6.25e-5, 1.25e-4, 2.5e-4]
 S_NEW, K = 2.0, 3
@@ -83,7 +82,7 @@ def run(task):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=15)
-    args = ap.parse_args()
+    args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
     tasks = [(b0, 64, 0.0, -1) for b0 in B0S]
     for b0 in B0S:
         for r in ETA_OVER_B:

@@ -10,7 +10,6 @@ Run after analyze_gd.py: uv run python experiments/optim_samples/analyze_order.p
 """
 
 import json
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,8 +17,10 @@ import pandas as pd
 
 import plot_style as ps
 
-RAW = Path("/root/outputs/optim_samples/gd")
-RES = Path(__file__).parent / "results"
+from common import RAW as RAW_ROOT
+from common import RESULTS as RES
+
+RAW = RAW_ROOT / "gd"
 
 
 def near_tie(sigma, seed):

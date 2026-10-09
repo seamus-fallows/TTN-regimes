@@ -331,3 +331,14 @@
 [54/90] chi4_centred_large n=64 sigma=1.5 max_steps test_rel=2.02 236s
 [55/90] d3_small n=128 sigma=0.5 max_steps test_rel=0.86 77s
 [56/90] d3_small n=128 sigma=0.5 max_steps test_rel=3.31 68s
+[57/90] chi4_centred_large n=64 sigma=2.0 max_steps test_rel=2.12 208s
+[58/90] chi4_centred_large n=64 sigma=2.0 max_steps test_rel=8.01 223s
+[59/90] chi4_centred_large n=64 sigma=2.0 max_steps test_rel=2.82 218s
+[60/90] chi4_centred_large n=64 sigma=2.0 max_steps test_rel=2.66 249s
+[61/90] d3_small n=96 sigma=0.5 max_steps test_rel=1.23 74s
+[62/90] d3_small n=96 sigma=0.5 max_steps test_rel=1.5 63s
+[63/90] d3_small n=96 sigma=0.5 max_steps test_rel=3.03 71s
+[64/90] d3_small n=96 sigma=0.5 max_steps test_rel=1.59 68s
+[65/90] d3_small n=96 sigma=0.5 max_steps test_rel=2.91 66s
+[66/90] d3_small n=64 sigma=0.5 max_steps test_rel=1.74 69s
+[67/90] d3_small n=64 sigma=0.5 max_steps test_rel=0.885 64s
