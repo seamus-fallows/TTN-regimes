@@ -23,8 +23,13 @@ here too.
     dynamics when orthonormal, so not a separate model.
   - *Leaf cores on every site (HT format)* as the default: adds N cores that are redundant when
     the leaf bond dimension >= d and changes K. Supported as the `ht` topology, not the default.
-- **Lazy regime construction: antisymmetric doubling** (W_0 = 0 exactly at any init scale) rather
-  than Chizat's centred model f - f_0, because it stays a genuine TTN.
+- **Lazy regime construction: centred model** (train on target W* + W_0, i.e. f_theta - f_theta0 as
+  in Chizat et al.; `ttn.teachers.ShiftedTeacher`) as the main one-knob family, with Woodworth's
+  two-copy model as a cross-check. *Corrected the same day*: I first chose antisymmetric doubling
+  (a doubled-bond block-diagonal TTN with W_0 = 0) believing gradient flow preserves its blocks; a
+  test showed it does not (the root's mixed blocks get gradient), so the two-copy model needs a
+  gradient mask (`antisymmetric_double` returns one). The centred model keeps the plain TTN
+  parameterization, so it is the primary construction.
 
 ## 2026-10-09 — Launch remote agents before the library is finished
 
