@@ -59,7 +59,9 @@ x -> x - h x^{K-1} (x^K - 1), h = eta s^{2-2/K}, with h_c = 2/K (`map1d.py`,
 2-cycle straddling x = 1 for 1 < h/h_c < 1.245 (supercritical flip; loss on the cycle grows
 continuously from 0); period 4 at 1.245-1.25, period 8 at ~1.31, chaos from ~1.33 with periodic
 windows (period 3 at ~1.49); the orbit falls back to the plateau near x = 0 ("re-entry") from
-h/h_c = 1.84 / 1.99 / 2.23 / 2.29 and diverges from 2.16 / 2.41 / 2.72 / 2.86 for K = 3 / 4 / 7 / 8.
+h/h_c = 1.84 / 1.99 / 2.23 / 2.29 and diverges from 2.16 / 2.41 / 2.72 / 2.86 for K = 3 / 4 / 7 / 8
+(first occurrence on a grid of step 0.005; the regimes interleave: above the first divergence, 30
+grid points (K = 3) and 45 (K = 7) still end in re-entry rather than divergence).
 The flip and cascade thresholds are K-independent in units of h_c; re-entry and divergence move
 up with K.
 
@@ -279,33 +281,43 @@ and sigma = 0.03 (B in {1, 4, 16, 64, 256}); eta sweeps at B = 4 (eta = 1e-4 ...
   gauge orbits, ~0.6-0.9 in tr Q at B = 1 (cores have |G|^2 ~ 4).
 - No divergence in any run (all eta <= 0.47 eta*_ms).
 
-### 4.1 Test of the theory note's P9/P10 (empirical; `p9_sgd.py`, `plot_p9.py`, `results/p9_fit.csv`)
+### 4.1 Test of the theory note's P9/P10 (empirical; `p9_sgd.py`, `plot_p9.py`, `results/p9_*.csv`)
 
 Binary N=4, d = chi = 3, teacher [3, 2, 1]; start on the aligned route (component 1 learned,
-components 2 and 3 at per-core amplitude b0), so the GF second plateau is exact: T_GF = 49.7, 166.3,
-499.6 for b0 = 0.01, 0.003, 0.001 (exact 1D integral = `integrate_gf` lsoda to 1e-8). Online SGD
-(`ttn.dynamics.run_sgd`), 4 noise seeds per point, eta/B = 6.25e-5, 1.25e-4, 2.5e-4 at B = 64
-(eta = 0.004-0.016 = 0.08-0.3 eta*_ms) and B = 16 (b0 = 0.01). Event: a_2 = 1/2.
+components 2 and 3 at per-core amplitude b0), so the GF second plateau is exact: T_GF = 49.7, 99.7,
+166.3, 249.7 for b0 = 0.01, 0.005, 0.003, 0.002 (exact 1D integral = `integrate_gf` lsoda to 1e-8).
+Online SGD (`ttn.dynamics.run_sgd`), **6 independent noise seeds per point** (fix round 1: round-1
+runs at B = 16 and 64 shared generator seeds and were pathwise coupled; they are kept in
+`results/p9_sgd_round1.csv`), eta/B = 3.125e-5 ... 2.5e-4 at B = 64 (eta = 0.002-0.016 = 0.04-0.30
+eta*_ms), and at B = 16 for b0 = 0.01, 0.003. Event: persistent crossing of a_2 = 1/2; runs up to
+4 T_GF (cap 1600). R = T_SGD/T_GF, mean +- s.e. over the escaped seeds; z = (eta/B) T_GF.
 
-| b0 (T_GF) | eta/B = 6.25e-5 | 1.25e-4 | 2.5e-4 |
-|---|---|---|---|
-| 0.01 (50), B=64 / B=16 | 1.056 / 1.056 (c 33.6 / 33.5) | 1.130 / 1.129 (35.6 / 35.3) | 1.386 / 1.380 (40.1 / 39.7) |
-| 0.003 (166), B=64 | 1.267 (37.5) | 3.06 +- 0.26 (45.1) | trapped (4/4) |
-| 0.001 (500), B=64 | trapped (4/4) | trapped (4/4) | trapped (2/2) |
+| b0 (T_GF) | eta/B = 3.1e-5 | 6.25e-5 | 1.25e-4 | 2.5e-4 |
+|---|---|---|---|---|
+| 0.01 (50), B = 64 / 16 | 1.027 +- 0.001 / 1.024 +- 0.003 | 1.048 +- 0.003 / 1.052 +- 0.004 | 1.131 +- 0.017 / 1.124 +- 0.005 | 1.45 +- 0.07 / 1.38 +- 0.03 |
+| 0.005 (100) | 1.048 +- 0.002 | 1.118 +- 0.006 | 1.372 +- 0.011 | trapped 6/6 |
+| 0.003 (166), B = 64 / 16 | 1.090 +- 0.001 / 1.087 +- 0.001 | 1.250 +- 0.008 / 1.237 +- 0.004 | 2.69 +- 0.15 / 2.45 +- 0.17 | trapped 12/12 |
+| 0.002 (250) | 1.153 +- 0.003 | 1.547 +- 0.015 | trapped 6/6 | trapped 6/6 |
 
-(T_SGD/T_GF, mean over seeds; c = c_gamma from inverting -ln(1-x)/x.) Findings:
-- **Lengthening and trapping confirmed** (P9 (i)): no SGD run escaped faster than GF (P9 (iv)); the
-  route amplitude sigma_2^{1/3} of trapped runs decays (0.001 -> 5e-4, 3e-5, 1e-6 by t = 1600 at the
-  three eta/B).
-- **Only eta/B matters** (P9 (ii)): B = 16 and B = 64 at equal eta/B agree to 0.5%.
-- **c_gamma = 34-45** for this teacher (heuristic of the note: 26), increasing with x: the law's
-  shape -ln(1-x)/x underestimates the lengthening near the trap; the trapping threshold
-  (x = c (eta/B) T_GF ~ 1) is consistent with all trapped runs (c >= 32).
-- **P10 safety rule fails for long plateaus with this teacher:** at eta/B = 2.5e-4 (0.25-0.3 eta*_ms)
-  the learned component dips below 1/2 within T ~ 70 (min a_1 = 0.44-0.46); over 1600 time units it is
-  erased even at 0.15 eta*_ms (min a_1 = 0.04, -0.07). Excursions accumulate with run length, and the
-  residual noise grows like s^2 while eta*_ms shrinks only like s^{-4/3}, so larger teachers need a
-  smaller fraction of eta*_ms (conjecture).
+- **Lengthening and trapping (P9 (i), (iv)):** every escaped run is slower than GF; 30/30 runs at
+  z >= 0.025 are trapped (no escape by 4 T_GF).
+- **Only eta/B matters (P9 (ii)), now with independent noise:** B = 16 and B = 64 agree within their
+  standard errors at all 8 matched points (largest gap 2.69 +- 0.15 vs 2.45 +- 0.17).
+- **Shape of the law:** one c_gamma for all 19 escaped conditions, weighted least squares in R:
+  P9 (-ln(1-x)/x) c_gamma = 32.6, chi^2 = 379 (18 dof); pole law 1/(1-x): c = 16.9, chi^2 = 535; linear
+  1 + x/2: chi^2 = 929. The P9 shape fits best and its threshold x = 1 classifies 23/24 conditions
+  correctly (all 19 escaped; 4/5 trapped; b0 = 0.005 at eta/B = 2.5e-4 traps at x = c z = 0.81), but
+  chi^2/dof ~ 21: the measured lengthening rises more steeply near the trap than -ln(1-x)/x (fitted
+  c_gamma grows from ~30 at small x to ~45 near x = 1). So the law is right qualitatively and to ~10%
+  for R <~ 1.5, not exact. c_gamma ~ 33 vs the theory note's heuristic 26.
+- **P10 (learned component under noise), counts per step-size fraction:** min a_1 < 1/2 in 0/72 runs
+  at <= 0.076 eta*_ms, 1/36 at 0.12-0.15 eta*_ms (a 1000-time-unit run), 20/36 at 0.25-0.30 eta*_ms
+  (6/12 at 0.25, B = 16; 14/24 at 0.30, B = 64). Excursions grow with run length; most components are
+  relearned (a_1 ~ 1 at the end). So P10's "safe at <= 0.25 eta*_ms" fails for this teacher on long
+  plateaus; ~0.1 eta*_ms was safe over <= 1000 time units. The trapped conditions at eta/B = 2.5e-4
+  overlap with these erasures (19/24 runs dip: 6/6, 10/12, 3/6 for b0 = 0.002, 0.003, 0.005), so the
+  clean trapping evidence is b0 = 0.002 at
+  1.25e-4 (6/6 trapped, 1/6 dips) and b0 = 0.005, 0.003 at 2.5e-4 only partly.
 
 ### 4.2 Stochastic collapse of a k = 2 route (empirical; `collapse_test.py`, `check_k2_saddle.py`)
 

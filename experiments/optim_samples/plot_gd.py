@@ -59,7 +59,7 @@ def fig_gd_vs_gf(df):
 def fig_stability(df):
     att = pd.read_csv(RES / "map1d_points.csv")
     trees = [("binary", 4, "binary N=4 (K=3), σ ≤ 0.1", 3), ("binary", 8, "binary N=8 (K=7), σ=0.9", 7),
-             ("mps", 8, "MPS N=8 (K=8), σ=0.9", 8)]
+             ("mps", 8, "MPS N=8 (K=8), σ=0.9 (seed 3: GF never learns comp. 1)", 8)]
     fig, axes = plt.subplots(2, 3, figsize=(10.5, 4.6), sharex=True,
                              gridspec_kw=dict(height_ratios=[1, 1.1]))
     plain = df[df.root_scale.isna()]
