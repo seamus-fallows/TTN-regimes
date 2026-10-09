@@ -319,3 +319,64 @@ def fig_balance(examples: list[tuple[str, dict, list[str]]], scatter: list[tuple
     ax.legend(fontsize=6)
     tp.savefig(fig, FIG / f"balance{tag}")
     return fig
+
+
+def fig_adam_escape(tag=""):
+    """Adam's first escape. Left: binary4, sign-flow time lr n_1 vs sigma for several lr, with GF's t_1
+    (GF time) for contrast. Right: mps8, steps to the first escape vs sigma for eps = 1e-8 and ~0, with the
+    prediction n_1 = (eps / lr) T_GF(sigma) + n_sign: T_GF from each seed's GF escape time at sigma = 0.3
+    (deep sweep, balanced init) scaled by (0.3 / sigma)^(K-2), n_sign = the eps ~ 0 median at that lr."""
+    tp.set_style()
+    fig, axes = tp.subplots(1, 2, width=tp.TEXT_WIDTH, panel_aspect=0.8)
+    ax = axes[0]
+    df = with_keys(collect("scaling_b4"))
+    gf = df[df["optimizer"] == "gf"]
+    st = gf.groupby("sigma")["t_first"].agg(["median", "count"])
+    ax.plot(st.index, st["median"], "o-", color=FAMILY_COLOR["gf"], ms=3.5, lw=1.0, mec="white", mew=0.5,
+            label="GF: $t_1$ (GF time)")
+    ad = df[(df["optimizer"] == "adam") & (df["beta2"].isna() | (df["beta2"] == 0.999))]
+    shades = tp.ordinal_colors(4)
+    for c, lr in zip(shades, sorted(ad["lr"].unique())):
+        g = ad[ad["lr"] == lr]
+        st = (g["t_first"] * lr).groupby(g["sigma"]).median()
+        ax.plot(st.index, st.values, "s-", color=c, ms=3.0, lw=1.0, mec="white", mew=0.5,
+                label=f"Adam lr {lr:g}: lr $n_1$")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"init scale $\sigma$")
+    ax.set_ylabel("first-escape time")
+    ax.set_title("binary4 odeco (K = 3)", fontsize=7)
+    ax.legend(fontsize=6)
+    ax = axes[1]
+    eps = with_keys(collect("eps_mps8"))
+    deep = collect("deep")
+    ref = deep[(deep["optimizer"] == "gf") & (deep["tree"] == "mps") & (deep["teacher"] == "odeco")
+               & (deep["init"] == "balanced") & (deep["sigma"] == 0.3)].set_index("seed")["t_first"]
+    k_minus_2 = 6
+    colors = {1e-3: tp.palette(2)[1], 1e-2: tp.palette(7)[6]}
+    for lr in sorted(eps["lr"].unique()):
+        for e, mk, ls in ((1e-8, "o", "-"), (1e-30, "s", ":")):
+            g = eps[(eps["lr"] == lr) & (eps["eps"] == e)]
+            if g.empty:
+                continue
+            t1 = g["t_first"].where(np.isfinite(g["t_first"]), np.nan)
+            st = t1.groupby(g["sigma"]).median()
+            lower = g[~np.isfinite(g["t_first"])].groupby("sigma")["meta_n_steps"].max()
+            ax.plot(st.index, st.values, mk + ls, color=colors.get(lr, tp.INK), ms=3.0, lw=1.0, mec="white",
+                    mew=0.5, label=f"Adam lr {lr:g}, eps {e:g}")
+            if len(lower):
+                ax.plot(lower.index, lower.values, "^", color=colors.get(lr, tp.INK), ms=4, mfc="none",
+                        label=f"  (no escape within budget)")
+            if e == 1e-8 and len(ref):
+                n_sign = eps[(eps["lr"] == lr) & (eps["eps"] == 1e-30)]["t_first"].median()
+                sig = np.geomspace(eps["sigma"].min(), eps["sigma"].max(), 60)
+                pred = (e / lr) * np.median(ref.values) * (0.3 / sig) ** k_minus_2 + n_sign
+                ax.plot(sig, pred, color=colors.get(lr, tp.INK), lw=0.8, ls="--")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"init scale $\sigma$")
+    ax.set_ylabel("steps to the first escape")
+    ax.set_title("mps8 odeco (K = 8); dashed: eps prediction", fontsize=7)
+    ax.legend(fontsize=5.5)
+    tp.savefig(fig, FIG / f"adam_escape{tag}")
+    return fig

@@ -252,3 +252,55 @@ lr / P is then ~2-5 GF-time units per step, close to 38 / lambda_max (lambda_max
   method is GD with step lr / floor^(#bond legs) = 10-1e5 GF-time units per step, and the GF escape time
   (~10-1000 units at these sigma) is crossed in a few steps. The plateau would reappear only once
   T_GF(sigma) floor^(#legs) / lr >> 1, far below sigma = 0.002.
+
+### 2.4 Consistency with `notes/theory_optimizer.md` v2 (P1, P2, P6)
+
+`experiments/optimizers/consistency.py` -> `results/theory_optimizer_P1P2.csv`, `..._P6.csv`.
+
+- **P1 / A1 (sharpness at the GF minimum = K s_1^(2-2/K)): confirmed.** Hessian lambda_max at the end of
+  converged runs / pattern-rule value (12.98 binary4, 46.03 binary8, 54.71 mps8; chi = 4 here, the extra
+  bond label has gain 0): GF, GD and heavy ball 1.000-1.002 from balanced inits (binary4 fan-in too, where
+  the imbalance is O(sigma^2)); 1.04 (1.00-1.09) for fan-in binary8 GF, whose minimum keeps the fan-in
+  imbalance (balance index 0.19), consistent with P1's conserved-quantity correction.
+- **P2 / A2 (every other minimum is at least as sharp): confirmed, and Adam lands on those.** Adam / RMSProp
+  end at imbalanced minima (balance index 0.3-0.8) with lambda_max / pattern rule = 1.06-1.37 (lr 1e-3) and
+  1.3-6.1 (lr 1e-2, means 1.3-2.5 by tree). The larger Adam's step, the sharper the minimum, the opposite of
+  GD's edge-of-stability selection (P3): Adam's stability constrains lambda_max(P^-1 H) < 38 / lr, not
+  lambda_max(H) < 2 / lr.
+- **P6 (GD event shift): consistent in magnitude only.** binary4, GD lr 0.02 vs GF, same seeds: measured
+  shifts Delta t / lr = 2.7-5.4 against (1/2) ln(|grad L(t_r)| / |grad L(0)|) = 2.2-4.2 for sigma >= 0.016
+  (measured 0.4-1.3 lr larger); at smaller sigma the shift (~0.1 time units) is below the resolution of my
+  GF output grid. Not a precise test (that is `optim-samples`' job); nothing contradicts P6.
+- P5, P7, P9 concern GD above eta_c and SGD, which this experiment does not run.
+
+## 3. Synthesis (for practitioners and the report)
+
+**Why GF has plateaus that scale with the init, and what removes them (derived).** Near the origin the
+gradient is ~sigma^(K-1) while the displacement needed to learn a component is O(1) (relative to the
+init: O(sigma) to leave the saddle neighbourhood, then O(1)). Any method whose step is invariant under a
+rescaling of the gradient near the origin escapes in a sigma-independent number of steps:
+Adam / RMSProp (per-coordinate 1/sqrt(v), 1.2), Gauss-Newton / Riemannian GD (tangent projection, 1.5),
+per-core Gram preconditioning ((E^T E)^-1 ~ sigma^-2(K-1), 1.7), GD in a canonical gauge (the root holds the
+whole scale and sees an isometric environment, 1.4), ALS / DMRG (exactly scale-free, 1.6). An absolute floor
+in the preconditioner (Adam's eps, absolute damping) turns it back into GD with a rescaled step below the
+scale where the gradient (or Gram) falls under the floor, so the GF law returns for small enough sigma
+(Adam eps = 1e-8 on K = 7-8 trees: sigma < ~0.1).
+
+**Which S2S features survive which optimizer** (binary N = 4 complete; deep trees in section 2.5):
+
+| method | plateaus | first escape vs sigma | later plateaus | order | rank growth | balance |
+|---|---|---|---|---|---|---|
+| GF / GD (lr < eta_c) / heavy ball | yes (S2S) | sigma^-(K-2) | sigma^-(k-2) (k-rule) | weight x overlap | one singular value at a time, all edges together | conserved (GD: O(lr^2) drift) |
+| Adam / RMSProp | first: no; later: yes | sigma-independent (~0.17 / lr steps on binary4) unless sigma < sigma_eps | memory phase (log, beta2-dependent) then AEoS phase (GF-like time, ~lambda_max/38 steps per GF unit) | mostly weight order (86-98% binary4) | sequential | drifts to O(1) imbalance, sharper minima |
+| GD + re-gauging | no | O(1), sigma-free | none | projection on random frames | all at once | gauge-fixed |
+| Riemannian GD | no | O(1), sigma-free | none | not weight order | all at once | n/a |
+| Gram-preconditioned GD | no (overshoot instead, without absolute damping) | sigma-free | none | mixed | all at once | n/a |
+| ALS / DMRG | no | exactly sigma-free (proven) | none | not weight order (sweep position) | all at once per bond as the sweep passes | n/a |
+
+**Statement (empirical on binary N = 4, deep trees pending).** Gradient-flow results describe GD and
+momentum quantitatively. They describe Adam qualitatively for the order and the sequential nature of
+learning, but not for the time scales: Adam's first escape does not slow down as the init shrinks (until
+eps takes over), and its later plateaus are governed by its own second-moment memory and adaptive edge
+of stability. Methods that act on the tensor W rather than on the cores (Riemannian GD, ALS / DMRG) or
+that fix the gauge (canonical form) do not show saddle-to-saddle dynamics at all: they fit all teacher
+components together, in an order set by the random initial frames.

@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 from experiments.optimizers.analysis import RESULTS, collect
-from experiments.optimizers.plots import fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
+from experiments.optimizers.plots import fig_adam_escape, fig_balance, fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
 
 B4_SCALING = ["GF", "heavy ball, lr 0.002", "Adam, lr 0.001", "Adam, lr 0.001, b2 0.9", "RMSProp, lr 0.001",
               "GD + re-gauge, lr 0.02, every 1", "Riemannian GD, lr 1", "ALS (1-site)"]
@@ -44,7 +44,37 @@ def balance():
     fig_balance(ex, scatter)
 
 
-FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance}
+def summary_table(name: str, by=("tree", "teacher", "init", "sigma")) -> pd.DataFrame:
+    """Per problem and method: convergence, first escape and gaps (method clock), S2S fraction, orders,
+    rank-growth pattern, balance, cost."""
+    df = with_keys(collect(name))
+    df["T_first"] = df["t_first"] * df["clock"]
+    df["gap0"] = df["gap_0"] * df["clock"]
+    df["gap1"] = df["gap_1"] * df["clock"] if "gap_1" in df else np.nan
+    df["evals"] = df["meta_n_evals"].fillna(df.get("meta_nfev", np.nan)).fillna(df.get("meta_n_micro", np.nan))
+    out = df.groupby(list(by) + ["method"]).agg(
+        n=("seed", "count"), converged=("converged", "mean"),
+        T_first=("T_first", "median"), gap0=("gap0", "median"), gap1=("gap1", "median"),
+        s2s=("s2s", "mean"), orders=("order", lambda x: " ".join(f"{k[1:]}:{v}" for k, v in
+                                                                  x.astype(str).value_counts().items())),
+        rank_incremental=("spec_incremental", "mean"), edge_spread=("spec_edge_spread", "median"),
+        eff_ranks=("eff_ranks_end", lambda x: x.astype(str).value_counts().index[0]),
+        balance_end=("balance_end_max", "median"), wall_s=("meta_wall_seconds", "median"),
+        evals=("evals", "median")).reset_index()
+    out.to_csv(RESULTS / f"{name}_table.csv", index=False)
+    return out
+
+
+def deep():
+    summary_table("deep")
+    side = ["GF", "Adam, lr 0.001", "GD + re-gauge, lr 0.01, every 1", "Riemannian GD, lr 1", "DMRG (2-site)"]
+    for tree, teacher, edge in (("binary", "odeco", 2), ("mps", "odeco", 3), ("mps", "pattern", 3),
+                                ("binary", "pattern", 2)):
+        fig_side_by_side("deep", 0.3, 0, side, edge_index=edge, tag=f"{tree}_{teacher}_",
+                         extra_filter={"tree": tree, "teacher": teacher, "init": "balanced"})
+
+
+FIGURES = {"b4": b4, "probe": fig_probe, "balance": balance, "escape": fig_adam_escape, "deep": deep}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or FIGURES:
