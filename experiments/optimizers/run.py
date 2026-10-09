@@ -77,13 +77,12 @@ def work(args):
         return None
     p = make_problem(cfg)
     x0 = initial_point(p, cfg)
-    t0 = time.time()
-    arrays, info = run(p, x0, cfg)
-    info["wall_seconds"] = time.time() - t0
-    tmp = out_dir / f"{rid}.tmp.npz"
-    np.savez_compressed(tmp, cfg=np.array(json.dumps(cfg)), **arrays)
+    traj = run(p, x0, cfg)
+    tmp = traj.save(out_dir / f"{rid}.tmp.npz")
     tmp.rename(path)
-    return {"id": rid, **cfg, **info}
+    m = traj.meta
+    return {"id": rid, **cfg, "stop_reason": m.get("stop_reason"), "wall_seconds": m["wall_seconds"],
+            "cpu_seconds": m["cpu_seconds"]}
 
 
 def main():
@@ -109,7 +108,7 @@ def main():
                 f.write(json.dumps(res) + "\n")
                 f.flush()
                 print(f"[{i + 1}/{len(todo)}] {res['optimizer']} sigma={res.get('sigma')} "
-                      f"seed={res.get('seed')} {res['status']} {res['wall_seconds']:.1f}s", flush=True)
+                      f"seed={res.get('seed')} {res['stop_reason']} {res['wall_seconds']:.1f}s", flush=True)
 
 
 if __name__ == "__main__":

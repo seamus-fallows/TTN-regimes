@@ -1,9 +1,14 @@
-"""Optimizers compared in this experiment, all on the exact population loss (float64).
+"""Optimizers compared in this experiment, on the exact population loss (float64).
 
-Clock of each method (the `time` column of its trajectory):
-  gf            gradient-flow time t (scipy DOP853, pilot until ttn.dynamics lands)
-  gd, momentum, adam, rmsprop, regauge, precond, riemannian    steps n
-  als, dmrg     sweeps (fractional: one micro-step = one core / bond update)
+Every runner returns a `ttn.dynamics.Trajectory`: the library Recorder's diagnostics (plus the
+balance index and ||Q_e|| per edge) at scheduled points, and for the discrete methods a cheap fine
+trace `fine_t`, `fine_loss`, `fine_overlaps` (every `stride` steps) used for event times.
+
+Clock of each method (`t` in the trajectory):
+  gf                                         gradient-flow time (ttn.dynamics.integrate_gf, LSODA)
+  gd, momentum, adam, rmsprop, regauge,
+  precond, riemannian                         steps n (not lr * n)
+  als, dmrg                                   sweeps (one micro-step = one core / bond update)
 """
 
 from __future__ import annotations
@@ -12,9 +17,8 @@ import time as _time
 
 import numpy as np
 import torch
-from scipy.integrate import solve_ivp
 
-from experiments.optimizers.common import Problem, Recorder, record_schedule
+from experiments.optimizers.common import make_recorder, record_schedule, teacher_spectra
 from experiments.optimizers.gauge import (
     canonicalize,
     env_grams,
@@ -23,83 +27,103 @@ from experiments.optimizers.gauge import (
     leg_to,
     move_center,
 )
+from ttn.dynamics import Problem, Trajectory, integrate_gf
 from ttn.network import TTNSpec, apply_on_leg, to_dense
 
 
+class Log:
+    """Library Recorder at scheduled points plus a cheap fine trace for event timing."""
+
+    def __init__(self, problem: Problem, theta0: torch.Tensor):
+        self.p = problem
+        self.rec = make_recorder()
+        self.rec.start(problem, theta0)
+        self.fine: dict[str, list] = {"fine_t": [], "fine_loss": [], "fine_overlaps": []}
+
+    def full(self, theta: torch.Tensor, t: float, **info):
+        self.rec.record(self.p, theta.detach(), t, **info)
+
+    @torch.no_grad()
+    def cheap(self, theta: torch.Tensor, t: float, loss: float):
+        spec, cores = self.p.effective(theta.detach())
+        self.fine["fine_t"].append(t)
+        self.fine["fine_loss"].append(loss)
+        self.fine["fine_overlaps"].append(self.p.target.component_overlaps(spec, cores).numpy())
+
+    def trajectory(self, theta_end: torch.Tensor, meta: dict) -> Trajectory:
+        data = self.rec.arrays()
+        data.update({k: np.array(v) for k, v in self.fine.items() if v})
+        data["theta_end"] = theta_end.detach().numpy()
+        data["teacher_spectra"] = teacher_spectra(self.p)
+        return Trajectory(data, meta)
+
+
 class Stop:
-    """Convergence / divergence test shared by all methods."""
+    """Convergence (loss < tol L0) / divergence (non-finite or > 1e6 L0) test."""
 
     def __init__(self, loss0: float, tol: float, blowup: float = 1e6):
         self.loss0, self.tol, self.blowup = loss0, tol, blowup
-        self.status = "budget"
+        self.reason = "budget"
 
     def __call__(self, loss: float) -> bool:
         if not np.isfinite(loss) or loss > self.blowup * self.loss0:
-            self.status = "diverged"
+            self.reason = "diverged"
             return True
         if loss < self.tol * self.loss0:
-            self.status = "converged"
+            self.reason = "converged"
             return True
         return False
+
+
+def _fine_stride(n_max: int) -> int:
+    return max(1, n_max // 50_000)
 
 
 # ---- gradient flow (reference) ---------------------------------------------------------------
 
 
-def run_gf(p: Problem, x0: torch.Tensor, cfg: dict, rec: Recorder) -> dict:
-    t_max, rtol, atol = cfg["t_max"], cfg.get("rtol", 1e-9), cfg.get("atol", 1e-14)
+def run_gf(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
+    """Library integrator (LSODA: later plateaus are stiff), on a log + linear time grid."""
+    t_max = float(cfg["t_max"])
     loss0 = p.loss(x0).item()
-    stop = Stop(loss0, cfg.get("tol", 1e-6))
-    n_eval = [0]
-
-    def rhs(t, y):
-        n_eval[0] += 1
-        _, g = p.loss_grad(torch.from_numpy(y))
-        return -g.numpy()
-
-    def converged(t, y):
-        return p.loss(torch.from_numpy(y)).item() - stop.tol * loss0
-
-    converged.terminal = True
-    sol = solve_ivp(rhs, (0, t_max), x0.numpy(), method="DOP853", rtol=rtol, atol=atol,
-                    dense_output=True, events=converged)
-    t_end = sol.t[-1]
-    grid = np.unique(np.concatenate([
-        [0.0], np.geomspace(min(1e-3, t_end), t_end, 1500), np.linspace(0, t_end, 3001)]))
-    for i, t in enumerate(grid):
-        rec.record(float(t), torch.from_numpy(sol.sol(t)), force_heavy=(i % 3 == 0))
-    stop.status = "converged" if sol.status == 1 else ("budget" if sol.status == 0 else "failed")
-    return {"status": stop.status, "n_grad": n_eval[0], "t_end": t_end}
+    grid = np.unique(np.concatenate([np.geomspace(1e-3, t_max, 600), np.linspace(0, t_max, 1201)]))
+    rec = make_recorder()
+    traj = integrate_gf(p, x0, t_max, log_times=grid[grid > 0], rtol=cfg.get("rtol", 1e-9),
+                        atol=cfg.get("atol", 1e-14), loss_floor=cfg.get("tol", 1e-6) * loss0,
+                        recorder=rec, method=cfg.get("method", "lsoda"))
+    traj.data["teacher_spectra"] = teacher_spectra(p)
+    return traj
 
 
 # ---- first-order optimizers (torch.optim on the flat parameter vector) ------------------------
 
 
 def make_torch_opt(cfg: dict, x: torch.Tensor):
-    name, lr = cfg["optimizer"], cfg["lr"]
+    name, lr = cfg["optimizer"], float(cfg["lr"])
     if name in ("gd", "regauge"):
         return torch.optim.SGD([x], lr=lr)
     if name == "momentum":
         return torch.optim.SGD([x], lr=lr, momentum=cfg.get("beta", 0.9))
     if name == "adam":
         return torch.optim.Adam([x], lr=lr, betas=(cfg.get("beta1", 0.9), cfg.get("beta2", 0.999)),
-                                eps=cfg.get("eps", 1e-8))
+                                eps=float(cfg.get("eps", 1e-8)))
     if name == "rmsprop":
-        return torch.optim.RMSprop([x], lr=lr, alpha=cfg.get("alpha", 0.99), eps=cfg.get("eps", 1e-8))
+        return torch.optim.RMSprop([x], lr=lr, alpha=cfg.get("alpha", 0.99),
+                                   eps=float(cfg.get("eps", 1e-8)))
     raise ValueError(name)
 
 
-def run_first_order(p: Problem, x0: torch.Tensor, cfg: dict, rec: Recorder) -> dict:
-    """GD, heavy-ball momentum, Adam, RMSProp; 'regauge' = GD with the cores brought to the
-    root-centred canonical form every `period` steps (W unchanged, gradient changes)."""
+def run_first_order(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
+    """GD, heavy-ball momentum, Adam, RMSProp. 'regauge' = GD with the cores brought to the
+    root-centred canonical form every `period` steps (W unchanged, the gradient changes)."""
     n_max = int(cfg["n_steps"])
     sched = set(record_schedule(n_max).tolist())
+    stride = _fine_stride(n_max)
     x = x0.clone().requires_grad_(True)
     opt = make_torch_opt(cfg, x)
     period = int(cfg.get("period", 0)) if cfg["optimizer"] == "regauge" else 0
-    loss0 = p.loss(x0).item()
-    stop = Stop(loss0, cfg.get("tol", 1e-6))
-    k = 0
+    log = Log(p, x0)
+    stop = Stop(p.loss(x0).item(), cfg.get("tol", 1e-6))
     for n in range(n_max + 1):
         if period and n % period == 0:
             with torch.no_grad():
@@ -108,23 +132,24 @@ def run_first_order(p: Problem, x0: torch.Tensor, cfg: dict, rec: Recorder) -> d
         loss = p.loss(x)
         loss_v = loss.item()
         done = stop(loss_v) or n == n_max
+        if n % stride == 0 or done:
+            log.cheap(x, float(n), loss_v)
         if n in sched or done:
-            rec.record(float(n), x, loss_v, force_heavy=done or (k % 3 == 0))
-            k += 1
+            log.full(x, float(n), step=n)
         if done:
             break
         loss.backward()
         opt.step()
-    return {"status": stop.status, "n_grad": n + 1, "n_steps": n}
+    return log.trajectory(x, {"stop_reason": stop.reason, "n_steps": n, "n_evals": n + 1})
 
 
 # ---- per-core Gram preconditioning (block-diagonal Gauss-Newton, simultaneous) ---------------
 
 
 def precondition(spec: TTNSpec, cores, grads, damping: float):
-    """Apply the inverse of each core's exact Hessian block, the Kronecker product of the
-    environment Grams (as in ALS normal equations), damped by `damping` x (mean eigenvalue) per
-    Kronecker factor."""
+    """Apply the inverse of each core's exact Hessian block (the Kronecker product of the
+    environment Grams, as in the ALS normal equations), each Kronecker factor damped by
+    `damping` x its mean eigenvalue."""
     t = spec.tree
     below, above = env_grams(spec, cores)
     out = []
@@ -141,24 +166,26 @@ def precondition(spec: TTNSpec, cores, grads, damping: float):
     return out
 
 
-def run_precond(p: Problem, x0: torch.Tensor, cfg: dict, rec: Recorder) -> dict:
-    n_max, lr, damping = int(cfg["n_steps"]), cfg["lr"], cfg.get("damping", 1e-3)
+def run_precond(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
+    n_max, lr, damping = int(cfg["n_steps"]), float(cfg["lr"]), float(cfg.get("damping", 1e-3))
     sched = set(record_schedule(n_max).tolist())
+    stride = _fine_stride(n_max)
     x = x0.clone()
+    log = Log(p, x0)
     stop = Stop(p.loss(x0).item(), cfg.get("tol", 1e-6))
-    k = 0
     for n in range(n_max + 1):
-        loss_v, g = p.loss_grad(x)
+        loss, g = p.loss_and_grad(x)
+        loss_v = loss.item()
         done = stop(loss_v) or n == n_max
+        if n % stride == 0 or done:
+            log.cheap(x, float(n), loss_v)
         if n in sched or done:
-            rec.record(float(n), x, loss_v, force_heavy=done or (k % 3 == 0))
-            k += 1
+            log.full(x, float(n), step=n)
         if done:
             break
-        cores = p.spec.unflatten(x)
-        step = precondition(p.spec, cores, p.spec.unflatten(g), damping)
+        step = precondition(p.spec, p.spec.unflatten(x), p.spec.unflatten(g), damping)
         x = x - lr * p.spec.flatten(step)
-    return {"status": stop.status, "n_grad": n + 1, "n_steps": n}
+    return log.trajectory(x, {"stop_reason": stop.reason, "n_steps": n, "n_evals": n + 1})
 
 
 # ---- Riemannian GD on the fixed-bond-dimension manifold ----------------------------------------
@@ -177,27 +204,28 @@ def tangent_project(spec: TTNSpec, cores, z: torch.Tensor, rcond: float = 1e-12)
     return (jac @ coef).reshape(z.shape)
 
 
-def run_riemannian(p: Problem, x0: torch.Tensor, cfg: dict, rec: Recorder) -> dict:
-    """W <- HSVD_chi(W - lr P_T(W) (W - W*)): Riemannian gradient step plus HSVD retraction."""
-    n_max, lr = int(cfg["n_steps"]), cfg["lr"]
+def run_riemannian(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
+    """W <- HSVD_chi(W - lr P_T(W) (W - W*)): Riemannian gradient step, HSVD retraction.
+    Population loss only (needs the dense teacher)."""
+    n_max, lr = int(cfg["n_steps"]), float(cfg["lr"])
     spec = p.spec
     sched = set(record_schedule(n_max).tolist())
-    w_star = p.teacher.dense()
+    w_star = p.target.dense()
     cores = hsvd(spec, to_dense(spec, spec.unflatten(x0)))
+    log = Log(p, x0)
     stop = Stop(p.loss(x0).item(), cfg.get("tol", 1e-6))
-    k = 0
     for n in range(n_max + 1):
         w = to_dense(spec, cores)
         loss_v = 0.5 * (w - w_star).pow(2).sum().item()
+        x = spec.flatten(cores)
         done = stop(loss_v) or n == n_max
+        log.cheap(x, float(n), loss_v)
         if n in sched or done:
-            rec.record(float(n), spec.flatten(cores), loss_v, force_heavy=done or (k % 3 == 0))
-            k += 1
+            log.full(x, float(n), step=n)
         if done:
             break
-        w_new = w - lr * tangent_project(spec, cores, w - w_star)
-        cores = hsvd(spec, w_new)
-    return {"status": stop.status, "n_grad": n + 1, "n_steps": n}
+        cores = hsvd(spec, w - lr * tangent_project(spec, cores, w - w_star))
+    return log.trajectory(x, {"stop_reason": stop.reason, "n_steps": n, "n_evals": n + 1})
 
 
 # ---- ALS / DMRG sweeps ---------------------------------------------------------------------------
@@ -209,48 +237,50 @@ def _ls_core(p: Problem, cores, v: int) -> torch.Tensor:
     g = cores[v].detach().clone().requires_grad_(True)
     cs = list(cores)
     cs[v] = g
-    (grad,) = torch.autograd.grad(p.teacher.inner_ttn(p.spec, cs), g)
+    (grad,) = torch.autograd.grad(p.target.inner_ttn(p.spec, cs), g)
     return grad
 
 
 def _merged_ls(p: Problem, cores, v: int, u: int):
-    """Least-squares two-site tensor on the bond (v, u), centre on {v, u}: returned as a matrix
-    (legs of v except the bond) x (legs of u except the bond), with the leg shapes."""
+    """Least-squares two-site tensor on the bond (v, u) with the centre on {v, u}, as a matrix
+    (legs of v except the bond) x (legs of u except the bond), plus the two leg shapes.
+
+    Trick: widen the bond to f = size of u's other legs and make u the identity map, so that core
+    v holds the merged tensor and its gradient is the two-site least-squares solution."""
     spec = p.spec
     lv, lu = leg_to(spec, v, u), leg_to(spec, u, v)
-    gu = torch.movedim(cores[u], lu, 0)  # (bond, other legs of u)
-    other_u = gu.shape[1:]
+    other_u = torch.movedim(cores[u], lu, 0).shape[1:]
     f = int(np.prod(other_u))
-    # Widen the bond to f and let u be the identity map: core v then holds the merged tensor.
-    eye = torch.eye(f, dtype=gu.dtype).reshape(f, *other_u)
+    eye = torch.eye(f, dtype=torch.float64).reshape(f, *other_u)
     bonds = list(spec.bond_dims)
-    child = v if spec.tree.parent[v] == u else u
-    bonds[child] = f
+    bonds[v if spec.tree.parent[v] == u else u] = f
     wide = TTNSpec(spec.tree, spec.phys_dims, tuple(bonds))
-    gv = torch.movedim(cores[v], lv, -1)
-    merged = torch.tensordot(gv, gu, dims=([gv.ndim - 1], [0]))  # (other legs of v, other legs of u)
-    other_v = gv.shape[:-1]
-    x = merged.reshape(*other_v, f).clone().requires_grad_(True)
+    other_v = torch.movedim(cores[v], lv, -1).shape[:-1]
+    x = torch.zeros(*other_v, f, dtype=torch.float64, requires_grad=True)
     cs = list(cores)
     cs[v] = torch.movedim(x, -1, lv)
     cs[u] = torch.movedim(eye, 0, lu)
-    (grad,) = torch.autograd.grad(p.teacher.inner_ttn(wide, cs), x)
+    (grad,) = torch.autograd.grad(p.target.inner_ttn(wide, cs), x)
     return grad.reshape(-1, f), other_v, other_u
 
 
-def run_sweeps(p: Problem, x0: torch.Tensor, cfg: dict, rec: Recorder) -> dict:
-    """'als': one-site ALS (exact LS per core, centre moved by QR along a depth-first tour).
-    'dmrg': two-site updates with SVD truncation (relative cutoff, at most the spec's bond dim),
-    as in Stoudenmire & Schwab (2016) but with exact least squares instead of a gradient step."""
+def run_sweeps(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
+    """'als': one-site ALS (exact least squares per core; centre moved by QR along a depth-first
+    tour). 'dmrg': two-site updates with SVD truncation (relative cutoff, at most the spec's bond
+    dimension), as Stoudenmire & Schwab (2016) but with exact least squares instead of a gradient
+    step. Population loss only."""
     spec = p.spec
     two_site = cfg["optimizer"] == "dmrg"
-    cutoff = cfg.get("cutoff", 1e-12)
+    cutoff = float(cfg.get("cutoff", 1e-12))
     tour = euler_tour(spec)
     moves = list(zip(tour[:-1], tour[1:]))
     cores = canonicalize(spec, spec.unflatten(x0.clone()), tour[0])
+    log = Log(p, x0)
     stop = Stop(p.loss(x0).item(), cfg.get("tol", 1e-6))
-    rec.record(0.0, spec.flatten(cores), force_heavy=True)
-    n_micro = 0
+    x = spec.flatten(cores)
+    log.cheap(x, 0.0, p.loss(x).item())
+    log.full(x, 0.0, step=0)
+    n_micro, done = 0, False
     for sweep in range(int(cfg["n_sweeps"])):
         for i, (v, u) in enumerate(moves):
             if two_site:
@@ -271,10 +301,15 @@ def run_sweeps(p: Problem, x0: torch.Tensor, cfg: dict, rec: Recorder) -> dict:
             x = spec.flatten(cores)
             loss_v = p.loss(x).item()
             done = stop(loss_v)
-            rec.record(sweep + (i + 1) / len(moves), x, loss_v, force_heavy=True)
+            t = sweep + (i + 1) / len(moves)
+            log.cheap(x, t, loss_v)
+            log.full(x, t, step=n_micro)
             if done:
-                return {"status": stop.status, "n_micro": n_micro, "n_sweeps": sweep + 1}
-    return {"status": stop.status, "n_micro": n_micro, "n_sweeps": int(cfg["n_sweeps"])}
+                break
+        if done:
+            break
+    return log.trajectory(x, {"stop_reason": stop.reason, "n_micro": n_micro,
+                              "n_sweeps": sweep + 1, "micro_per_sweep": len(moves)})
 
 
 RUNNERS = {
@@ -291,11 +326,9 @@ RUNNERS = {
 }
 
 
-def run(p: Problem, x0: torch.Tensor, cfg: dict) -> dict:
-    rec = Recorder(p, x0)
-    t0 = _time.process_time()
-    info = RUNNERS[cfg["optimizer"]](p, x0, cfg, rec)
-    info["cpu_seconds"] = _time.process_time() - t0
-    out = rec.arrays()
-    out["info"] = np.array(repr(info))
-    return out, info
+def run(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
+    t0, c0 = _time.time(), _time.process_time()
+    traj = RUNNERS[cfg["optimizer"]](p, x0, cfg)
+    traj.meta.update({"cfg": cfg, "wall_seconds": _time.time() - t0,
+                      "cpu_seconds": _time.process_time() - c0, "problem": p.describe()})
+    return traj
