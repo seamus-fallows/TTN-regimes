@@ -161,6 +161,30 @@ def test_plot_bond_spectra(tmp_path):
     savefig(fig, tmp_path / "spectra_axes")
 
 
+def test_plot_bond_spectra_from_padded_recorder_array():
+    # MPS4 with d = 2, chi = 4 has bonds (2, 4, 2): a recorder pads edges 0 and 2 with NaN, which
+    # used to blank those panels (the per-time maximum was NaN, hiding every value).
+    spec = TTNSpec.uniform(mps_tree(4), 2, 4)
+    assert spec.bond_dims[:3] == (2, 4, 2)
+    t = np.geomspace(1e-2, 1e2, 12)
+    spectra = np.full((len(t), 3, 4), np.nan)
+    for i in range(len(t)):
+        values = bond_spectra(spec, spec.init(1.0 + i, seed=i))
+        for j, v in enumerate(spec.tree.edges):
+            spectra[i, j, : len(values[v])] = values[v].numpy()
+    fig = plt.figure(figsize=(TEXT_WIDTH, 2.0))
+    axes = plot_bond_spectra(fig, t, spectra, tree=spec.tree)
+    assert [ax.get_title(loc="left") for ax in axes] == [
+        edge_label(spec.tree, v) for v in (0, 1, 2)
+    ]
+    for ax, v in zip(axes, spec.tree.edges):
+        assert len(ax.lines) == spec.bond_dims[v]  # padding columns are not drawn
+        for line in ax.lines:
+            assert np.isfinite(line.get_ydata()).sum() == len(t)
+    stacked = stack_spectra(spectra, spec.tree)
+    assert sorted(stacked) == [0, 1, 2] and stacked[1].shape == (len(t), 4)
+
+
 def test_plot_scaling(tmp_path):
     sigma = np.geomspace(1e-3, 1e-1, 8)
     rng = np.random.default_rng(1)

@@ -1,0 +1,23 @@
+# Step 3: fixed training sets. Binary N=8, d=2 (W in R^256), odeco teacher [3, 2] (rank 2 on every
+# bond; teacher-rank TTN: 52 parameters, manifold dimension 28), teacher seed 101; data seed 500+seed,
+# init seed = seed. GD with eta = 1/lambda_max (power iteration every 200 steps), relative step <= 1%.
+# chi = 4: tangent space at a random point has dimension 112 < 256 (lazy cannot fit a generic W*).
+# chi = 16 (full bond dimension): tangent space = R^256.
+base: {tree: binary, N: 8, d: 2, chi: 4, weights: [3.0, 2.0], teacher_seed: 101, train_tol: 1.0e-8,
+       max_steps: 60000, eta_cap: 1.0e+6, rel_step: 0.01, t_max: 1.0e+7, centred: false}
+blocks:
+  - {name: chi4_small, sigmas: [0.3, 0.5], seeds: [0, 1, 2, 3, 4],
+     n_train: [16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512]}
+  - {name: chi4_centred, centred: true, lazy: true, sigmas: [1.0], seeds: [0, 1, 2, 3, 4],
+     n_train: [16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512]}
+  - {name: chi16_small, chi: 16, sigmas: [0.5], seeds: [0, 1, 2, 3, 4],
+     n_train: [16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512]}
+  - {name: chi16_centred, chi: 16, centred: true, lazy: true, sigmas: [1.0], seeds: [0, 1, 2, 3, 4],
+     n_train: [16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512]}
+  # Path from rich to lazy: larger centred init scales (GD is slow here: runs may stop at max_steps).
+  - {name: chi4_centred_large, centred: true, lazy: true, sigmas: [1.5, 2.0], seeds: [0, 1, 2, 3, 4],
+     n_train: [32, 64, 128, 256, 512]}
+  # d = 3, N = 6 (W in R^729): does the small-init sample advantage grow with d? (conjecture:
+  # small-init threshold ~ (1 + 2/d)^N = 21 x const, lazy needs d^N = 729 at full chi.)
+  - {name: d3_small, N: 6, d: 3, sigmas: [0.5], seeds: [0, 1, 2, 3, 4], lazy: true,
+     n_train: [32, 48, 64, 96, 128, 192, 256, 384]}
