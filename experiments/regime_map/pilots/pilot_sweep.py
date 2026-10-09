@@ -11,9 +11,9 @@ from pilot_gf import events, run  # noqa: E402
 
 
 def job(args):
-    kind, n, chi, sigma, seed = args
+    kind, n, chi, sigma, seed, construction = args
     try:
-        r = run(kind=kind, n=n, chi=chi, sigma=sigma, seed=seed, cap=(n > 4))
+        r = run(kind=kind, n=n, chi=chi, sigma=sigma, seed=seed, cap=(n > 4), construction=construction)
     except Exception as e:  # noqa: BLE001
         return args, None, repr(e)
     ev = sorted(events(r["t"], r["A"]))
@@ -29,7 +29,8 @@ if __name__ == "__main__":
     sigmas = [float(x) for x in sys.argv[4].split(",")]
     seeds = range(int(sys.argv[5]))
     out = sys.argv[6]
-    grid = list(itertools.product([kind], [n], chis, sigmas, seeds))
+    construction = sys.argv[7] if len(sys.argv) > 7 else "centred"
+    grid = list(itertools.product([kind], [n], chis, sigmas, seeds, [construction]))
     with Pool(min(len(grid), 300)) as p:
         res = p.map(job, grid, chunksize=1)
     pickle.dump(res, open(out, "wb"))

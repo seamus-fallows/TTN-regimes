@@ -101,6 +101,22 @@ B_1 B_1^T (x) B_2 B_2^T ~ sigma^4 chi^2/81, dominates the leaf terms (~ sigma^4/
 the model becomes linear in the root core (fixed random features B_1 (x) B_2) and lazy as chi grows,
 at any fixed sigma (**derived**; compare SP + MSE in wide nets where the readout dominates).
 
+### 1.6 Two-copy model: same lazy residual, kernel change second order
+
+Two-copy model W = W(theta+) - W(theta-), theta+ = theta- = theta_0 at t = 0 (masked doubled TTN).
+Its Jacobian is [J, -J], so the tangent space (hence the lazy residual of 1.1) is the same as the
+centred model's, and the kernel is 2 J J^T. The linearized solution is theta+- = theta_0 +- u/2, and
+the kernel Theta = J(theta+) J(theta+)^T + J(theta-) J(theta-)^T changes only at second order: the
+first-order terms D Theta[u/2] + D Theta[-u/2] cancel (**derived**). Hence
+
+    delta_K(two-copy) ~ kappa_2 / sigma^{2K}   versus   delta_K(centred) ~ kappa / sigma^K,
+
+so at equal sigma the two-copy model is much lazier, and its lazy boundary sits at
+sigma_lazy = (kappa_2/delta_thr)^{1/(2K)}. The S2S side is expected to agree qualitatively (both copies
+start at the same small scale). Pilot check (binary N = 4, chi = 24, 2 seeds): delta_K ratio between
+sigma = 3 and 10 is 1362 (two-copy) vs predicted (10/3)^6 = 1372, and 40.6 (centred) vs (10/3)^3 = 37.
+**Empirical (pilot).**
+
 ## 2. Results
 
 (in progress)

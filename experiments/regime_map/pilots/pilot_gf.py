@@ -9,7 +9,7 @@ import torch
 from scipy.integrate import solve_ivp
 
 from ttn.losses import population_loss
-from ttn.network import TTNSpec, forward
+from ttn.network import TTNSpec, antisymmetric_double, forward
 from ttn.teachers import ShiftedTeacher, odeco_teacher
 from ttn.tree import make_tree
 
@@ -17,13 +17,18 @@ torch.set_num_threads(1)
 
 
 def run(kind="binary", n=4, d=3, chi=3, sigma=0.1, seed=0, weights=(3.0, 2.0, 1.0), cap=True,
-        t_max=None, n_eval=400, rtol=1e-9, atol=1e-14, n_probe=128):
+        t_max=None, n_eval=400, rtol=1e-9, atol=1e-14, n_probe=128, construction="centred"):
     tree = make_tree(kind, n)
     spec = TTNSpec.uniform(tree, d, chi, cap=cap)
     K = spec.n_cores
     base = odeco_teacher(n, d, list(weights), seed=1000 + seed)
     cores0 = spec.init(sigma, seed=seed)
-    teacher = ShiftedTeacher(base, spec, [c.clone() for c in cores0])
+    mask = None
+    if construction == "centred":
+        teacher = ShiftedTeacher(base, spec, [c.clone() for c in cores0])
+    else:  # two-copy: W(theta+) - W(theta-), masked gradient, W_0 = 0
+        spec, cores0, mask = antisymmetric_double(spec, cores0)
+        teacher = base
     t2 = teacher.norm2()
     flat0 = spec.flatten(cores0).clone()
     # component directions: overlaps of W - W0 with each rank-one term
@@ -34,6 +39,8 @@ def run(kind="binary", n=4, d=3, chi=3, sigma=0.1, seed=0, weights=(3.0, 2.0, 1.
         flat = torch.from_numpy(flat_np).requires_grad_(True)
         L = population_loss(spec, spec.unflatten(flat), teacher, teacher_norm2=t2)
         (g,) = torch.autograd.grad(L, flat)
+        if mask is not None:
+            g = g * mask
         return L.item(), g.numpy()
 
     def rhs(t, y):
@@ -60,6 +67,8 @@ def run(kind="binary", n=4, d=3, chi=3, sigma=0.1, seed=0, weights=(3.0, 2.0, 1.
 
     def kernel(flat):
         J = torch.func.jacrev(lambda p: forward(spec, spec.unflatten(p), probes))(flat)
+        if mask is not None:
+            J = J * mask
         return J @ J.T
 
     th0 = flat0
