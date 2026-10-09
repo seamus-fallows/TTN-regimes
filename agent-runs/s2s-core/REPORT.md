@@ -136,3 +136,9 @@ single runs (to be quantified over the sweeps):
   gauge-balanced init of the same seed is also suppressed (binary8 chi = 3). chi = 6 keeps the
   dormant amplitude at ~1e-12 in the one test so far. Merged theory_saddles v2.
 - 20:45 Interim report 1 (step 1 done, first pass of step 2). Sweep A running.
+- 20:58 Sweep A restarted twice: (1) added a roundoff stop (all dormant amplitudes < 1e-15 for a whole
+  chunk) and tighter step/wall limits; (2) dropped sigma = 0.05, 0.03 for K = 7, 8 full runs (none of
+  ~50 completed; LSODA crawls to the step limit after 1-2 escapes). Per-seed exponents so far: t_1 and
+  both gaps 1.00 +- 0.01 (binary4) and 2.000 (mps4) vs K - 2. Trap decay rate ~ sigma^2 per seed.
+  Event windows now record bond spectra: every event raises the rank by one on all edges at the same
+  sample (mps4 test).
