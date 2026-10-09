@@ -8,7 +8,7 @@ the rest.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import cached_property
 
 
@@ -16,9 +16,12 @@ from functools import cached_property
 class Tree:
     parent: tuple[int, ...]
     sites: tuple[tuple[int, ...], ...]
-    name: str = "custom"
+    name: str = field(default="custom", compare=False)  # equality and hash are structural
 
     def __post_init__(self):
+        # Accept lists (e.g. from YAML); tuples keep the dataclass hashable and concatenations valid.
+        object.__setattr__(self, "parent", tuple(int(p) for p in self.parent))
+        object.__setattr__(self, "sites", tuple(tuple(int(s) for s in ss) for ss in self.sites))
         if len(self.parent) != len(self.sites):
             raise ValueError("parent and sites must have one entry per node")
         if sum(p == -1 for p in self.parent) != 1:
@@ -138,7 +141,11 @@ class Tree:
 
 
 def binary_tree(n_sites: int) -> Tree:
-    """Balanced binary tree; each bottom node carries up to two adjacent sites (no leaf cores)."""
+    """Balanced binary tree with N - 1 cores; every core has two inputs (sites or children).
+
+    Bottom nodes carry two adjacent sites; when a split leaves a single site, that site is attached
+    to the parent core instead of getting its own (redundant d x d) leaf core.
+    """
     if n_sites < 2:
         raise ValueError("need at least 2 sites")
     parent: list[int] = []
@@ -150,11 +157,17 @@ def binary_tree(n_sites: int) -> Tree:
             sites.append(tuple(group))
             return len(parent) - 1
         half = (len(group) + 1) // 2
-        left, right = build(group[:half]), build(group[half:])
+        own, kids = [], []
+        for part in (group[:half], group[half:]):
+            if len(part) == 1:
+                own.append(part[0])
+            else:
+                kids.append(build(part))
         parent.append(-1)
-        sites.append(())
+        sites.append(tuple(own))
         v = len(parent) - 1
-        parent[left] = parent[right] = v
+        for c in kids:
+            parent[c] = v
         return v
 
     build(list(range(n_sites)))

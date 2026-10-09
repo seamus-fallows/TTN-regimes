@@ -12,11 +12,13 @@ and the root's parent leg has dimension 1 (the scalar output). W is the contract
 
 from __future__ import annotations
 
+import itertools
 import math
 import string
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cached_property, lru_cache
 
+import opt_einsum
 import torch
 
 from ttn.tree import Tree
@@ -33,6 +35,8 @@ class TTNSpec:
     bond_dims: tuple[int, ...]  # one per node: dimension of the edge to its parent (root: 1)
 
     def __post_init__(self):
+        object.__setattr__(self, "phys_dims", tuple(int(d) for d in self.phys_dims))
+        object.__setattr__(self, "bond_dims", tuple(int(b) for b in self.bond_dims))
         if len(self.phys_dims) != self.tree.n_sites:
             raise ValueError("need one physical dimension per site")
         if len(self.bond_dims) != self.tree.n_nodes or self.bond_dims[self.tree.root] != 1:
@@ -116,6 +120,8 @@ class TTNSpec:
         if generator is None:
             generator = torch.Generator().manual_seed(0 if seed is None else seed)
         scales = core_scales if core_scales is not None else [1.0] * self.n_cores
+        if len(scales) != self.n_cores:
+            raise ValueError(f"need one core scale per core ({self.n_cores}), got {len(scales)}")
         cores = []
         for shape, fan_in, s in zip(self.shapes, self.fan_in, scales):
             z = torch.randn(shape, generator=generator, dtype=dtype)
@@ -129,6 +135,19 @@ class TTNSpec:
 def apply_on_leg(t: torch.Tensor, m: torch.Tensor, leg: int) -> torch.Tensor:
     """t'[..., a, ...] = sum_b m[a, b] t[..., b, ...] on axis `leg`."""
     return torch.movedim(torch.tensordot(t, m, dims=([leg], [1])), -1, leg)
+
+
+@lru_cache(maxsize=4096)
+def _contraction(eq: str, shapes: tuple[tuple[int, ...], ...]):
+    return opt_einsum.contract_expression(eq, *shapes, optimize="auto")
+
+
+def _einsum(eq: str, *ops: torch.Tensor) -> torch.Tensor:
+    """einsum whose contraction path is computed once per (equation, shapes) and cached.
+
+    torch.einsum re-runs opt_einsum's path search on every call, which is about half of a
+    population-loss + gradient evaluation at the core sizes used here."""
+    return _contraction(eq, tuple(tuple(o.shape) for o in ops))(*ops, backend="torch")
 
 
 def _sqrt_psd(m: torch.Tensor) -> torch.Tensor:
@@ -156,7 +175,7 @@ def forward(spec: TTNSpec, cores: Cores, x: torch.Tensor | list[torch.Tensor]) -
         legs = string.ascii_lowercase[: n_phys + n_kids + 1]
         terms = [legs] + [_BATCH + legs[k] for k in range(n_phys + n_kids)]
         ops = [cores[v]] + [vecs[s] for s in t.sites[v]] + [msgs[c] for c in t.children[v]]
-        msgs[v] = torch.einsum(",".join(terms) + f"->{_BATCH}{legs[-1]}", *ops)
+        msgs[v] = _einsum(",".join(terms) + f"->{_BATCH}{legs[-1]}", *ops)
     return msgs[t.root][:, 0]
 
 
@@ -210,7 +229,7 @@ def inner(
             j = n_phys + k
             terms.append(la[j] + lb[j])
             ops.append(env[c])
-        env[v] = torch.einsum(",".join(terms) + f"->{la[-1]}{lb[-1]}", *ops)
+        env[v] = _einsum(",".join(terms) + f"->{la[-1]}{lb[-1]}", *ops)
     return env[t.root][0, 0]
 
 
@@ -279,22 +298,33 @@ def bond_spectra(
 
 
 def conserved_quantities(
-    spec: TTNSpec, cores: Cores, lr_multipliers: list[float] | None = None
+    spec: TTNSpec, cores: Cores, lr_multipliers: list[float] | None = None, n_copies: int = 1
 ) -> dict[int, torch.Tensor]:
     """Q_v = G_v^T G_v / eta_v - G_p,(v) G_p,(v)^T / eta_p for every edge v with parent p.
 
     G_v is matricized as (fan-in x chi_v); G_p,(v) is the parent core with its v-leg as rows.
     Exactly conserved by gradient flow with per-core learning rates eta (default 1).
+    For the masked two-copy flow of `antisymmetric_double` pass n_copies=2: there only each copy's
+    own Q_v (the diagonal blocks) is conserved; off-diagonal blocks of edges into a core without a
+    block index on the other side (a leaf, a root with one child) drift, so they are returned as 0.
     """
     t = spec.tree
     eta = lr_multipliers if lr_multipliers is not None else [1.0] * t.n_nodes
+    if min(eta) <= 0:
+        raise ValueError("Q_v is defined for positive learning-rate multipliers only")
     out = {}
     for v in t.edges:
         p = t.parent[v]
         gv = cores[v].reshape(-1, cores[v].shape[-1])
         leg = len(t.sites[p]) + t.children[p].index(v)
         gp = torch.movedim(cores[p], leg, 0).reshape(cores[p].shape[leg], -1)
-        out[v] = gv.T @ gv / eta[v] - gp @ gp.T / eta[p]
+        q = gv.T @ gv / eta[v] - gp @ gp.T / eta[p]
+        if n_copies > 1:
+            chi = q.shape[0] // n_copies
+            q = torch.block_diag(
+                *(q[i * chi : (i + 1) * chi, i * chi : (i + 1) * chi] for i in range(n_copies))
+            )
+        out[v] = q
     return out
 
 
@@ -308,9 +338,15 @@ def antisymmetric_double(spec: TTNSpec, cores: Cores) -> tuple[TTNSpec, Cores, t
     holds G_v on its "+" and "-" blocks, the root holds +G and -G, so W = 0 exactly at any scale.
     Returns (spec, cores, mask). Gradient flow does NOT preserve the block structure by itself (the
     root's mixed blocks couple the + subtree of one child to the - subtree of another), so the
-    gradient must be multiplied by `mask` (a flat 0/1 vector) to train the two copies.
+    gradient must be multiplied by `mask` (a flat 0/1 vector) to train the two copies. The masked
+    flow conserves only each copy's Q_v: use conserved_quantities(..., n_copies=2). Evaluate the
+    loss with `sum_difference_cores` when ||W(theta+)|| >> 1 (cancellation).
     """
     t = spec.tree
+    if t.n_nodes == 1:
+        raise ValueError(
+            "a single-core TTN is linear in its core: W(theta) - W(theta) needs a bond"
+        )
     bonds = tuple(1 if v == t.root else 2 * spec.bond_dims[v] for v in range(t.n_nodes))
     new_spec = TTNSpec(t, spec.phys_dims, bonds)
     new, masks = [], []
@@ -337,24 +373,101 @@ def antisymmetric_double(spec: TTNSpec, cores: Cores) -> tuple[TTNSpec, Cores, t
     return new_spec, new, new_spec.flatten(masks)
 
 
+def two_copy_cores(spec: TTNSpec, plus: Cores, minus: Cores) -> tuple[TTNSpec, Cores]:
+    """Doubled TTN for W(plus) - W(minus), in the block layout of `antisymmetric_double`.
+
+    Differentiable in both arguments; with minus = theta0 held fixed,
+    population_loss(spec2, sum_difference_cores(spec2, cores2), base) is the centred-model
+    (`ShiftedTeacher`) loss without its cancellation.
+    """
+    t = spec.tree
+    bonds = tuple(1 if v == t.root else 2 * spec.bond_dims[v] for v in range(t.n_nodes))
+    spec2 = TTNSpec(t, spec.phys_dims, bonds)
+    out = []
+    for v in range(t.n_nodes):
+        kids = [spec.bond_dims[c] for c in t.children[v]]
+        own = None if v == t.root else spec.bond_dims[v]
+        n_phys = len(t.sites[v])
+        g = plus[v].new_zeros(spec2.shapes[v])
+        g[_block_index(n_phys, kids, [0] * len(kids), own, 0)] = plus[v]
+        g[_block_index(n_phys, kids, [1] * len(kids), own, 1)] = (
+            -minus[v] if own is None else minus[v]
+        )
+        out.append(g)
+    return spec2, out
+
+
+def _block_index(n_phys, child_dims, child_labels, own_dim, own_label) -> tuple:
+    """Index of one block of a doubled core; own_dim None means the root's size-1 leg."""
+    idx = [slice(None)] * n_phys
+    idx += [slice(b * chi, (b + 1) * chi) for b, chi in zip(child_labels, child_dims)]
+    if own_dim is None:
+        idx.append(slice(None))
+    else:
+        idx.append(slice(own_label * own_dim, (own_label + 1) * own_dim))
+    return tuple(idx)
+
+
+def sum_difference_cores(spec2: TTNSpec, cores2: Cores) -> Cores:
+    """Exact, cancellation-free form of an `antisymmetric_double` TTN, W(theta+) - W(theta-).
+
+    Every doubled bond is rewritten in the basis (B+ + B-)/2, (B+ - B-)/2 of its two copies, so a
+    core holds Gs = (G+ + G-)/2 and Gd = (G+ - G-)/2: G'[x, y] = Gs if the number of "difference"
+    labels among its child legs x and parent leg y is even, Gd otherwise; the root outputs twice the
+    odd part. The contraction gives the same W, but no term of size ||W(theta+)||^2 cancels, so
+    `population_loss(spec2, sum_difference_cores(spec2, cores2), teacher)` and its gradient are
+    accurate at any init scale (contracting cores2 directly loses ~eps ||W(theta+)||^2 in the loss).
+    Only the diagonal blocks of cores2 are read: autograd through this gives the masked gradient.
+    """
+    t = spec2.tree
+    out = []
+    for v in range(t.n_nodes):
+        g2, n_phys = cores2[v], len(t.sites[v])
+        kids = [spec2.bond_dims[c] // 2 for c in t.children[v]]
+        own = None if v == t.root else spec2.bond_dims[v] // 2
+        g_plus = g2[_block_index(n_phys, kids, [0] * len(kids), own, 0)]
+        g_minus = g2[_block_index(n_phys, kids, [1] * len(kids), own, 1)]
+        if own is None:
+            g_minus = -g_minus  # the root stores -G- on its "-" block
+        g_s, g_d = (g_plus + g_minus) / 2, (g_plus - g_minus) / 2
+        new = torch.zeros_like(g2)
+        for labels in itertools.product((0, 1), repeat=len(kids)):  # 0: sum, 1: difference
+            odd = sum(labels) % 2
+            if own is None:
+                new[_block_index(n_phys, kids, labels, None, 0)] = 2 * (g_s if odd else g_d)
+            else:
+                for y in (0, 1):
+                    new[_block_index(n_phys, kids, labels, own, y)] = g_d if (odd + y) % 2 else g_s
+        out.append(new)
+    return out
+
+
 def aligned_init(spec: TTNSpec, factors: torch.Tensor, amplitudes: torch.Tensor) -> Cores:
     """Cores diagonal in a CP teacher's basis ("decoupled" Saxe-type init).
 
     factors: (R, N, d) unit vectors u_r^(i); amplitudes: (K, R) per-core, per-component scalars a_{v,r}.
     Requires every bond dimension >= R. The represented tensor is
-    sum_r (prod_v a_{v,r}) u_r^(1) (x) ... (x) u_r^(N). For orthonormal factors (odeco teacher) the
-    gradient flow stays on this diagonal family and reduces to one scalar ODE per component.
+    sum_r (prod_v a_{v,r}) u_r^(1) (x) ... (x) u_r^(N). For orthonormal factors (odeco teacher) and
+    whitened inputs the gradient flow stays on this diagonal family and reduces to one scalar ODE
+    per component, provided every edge has sites on both sides (true for binary / mps / ht; a
+    site-less root with a single child breaks it).
     """
     t = spec.tree
     n_comp = factors.shape[0]
+    if tuple(factors.shape[1:]) != (t.n_sites, spec.phys_dims[0]) or len(set(spec.phys_dims)) != 1:
+        raise ValueError("factors must be (R, N, d) with the spec's N and (uniform) d")
+    if tuple(amplitudes.shape) != (t.n_nodes, n_comp):
+        raise ValueError(f"amplitudes must be (K, R) = ({t.n_nodes}, {n_comp})")
+    if any(spec.bond_dims[v] < n_comp for v in t.edges):
+        raise ValueError(f"aligned_init needs every bond dimension >= R = {n_comp}")
     cores = []
     for v in range(t.n_nodes):
-        g = torch.zeros(spec.shapes[v], dtype=factors.dtype)
+        g = torch.zeros(spec.shapes[v], dtype=factors.dtype, device=factors.device)
         for r in range(n_comp):
             vectors = [factors[r, s] for s in t.sites[v]]
             for c in t.children[v]:
-                vectors.append(_onehot(spec.bond_dims[c], r, factors.dtype))
-            vectors.append(_onehot(spec.bond_dims[v], 0 if v == t.root else r, factors.dtype))
+                vectors.append(_onehot(spec.bond_dims[c], r, factors))
+            vectors.append(_onehot(spec.bond_dims[v], 0 if v == t.root else r, factors))
             term = amplitudes[v, r]
             for vec in vectors:
                 term = term.unsqueeze(-1) * vec
@@ -363,7 +476,7 @@ def aligned_init(spec: TTNSpec, factors: torch.Tensor, amplitudes: torch.Tensor)
     return cores
 
 
-def _onehot(n: int, i: int, dtype: torch.dtype) -> torch.Tensor:
-    e = torch.zeros(n, dtype=dtype)
+def _onehot(n: int, i: int, like: torch.Tensor) -> torch.Tensor:
+    e = torch.zeros(n, dtype=like.dtype, device=like.device)
     e[i] = 1.0
     return e
