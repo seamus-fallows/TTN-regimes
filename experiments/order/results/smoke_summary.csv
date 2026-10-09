@@ -1,0 +1,3 @@
+tree,K,d,chi,bonds,rho,sigma,n,p_greedy,se,ci_lo,ci_hi,race_pred_seedwise,race_agree,race_curve,failed,sd_log_tau,lognormal_pred
+binary4,3,2,2,2-2,0.8,0.01,4,1,0,0.5101,1,0.75,0.75,0.73214,0,0.24119,0.74351
+mps4,4,2,2,2-2-2,0.8,0.01,4,1,0,0.5101,1,1,1,0.625,0,0.46196,0.63366
