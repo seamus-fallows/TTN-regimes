@@ -186,6 +186,37 @@ matter:
 So the escape direction (top of Sigma W*) and the saddle it must reach (critical point in the
 Sigma^{1/2} frame) are different tensors: after the escape the state must rotate. *Derived*.
 
+### 2.1 Results (step 2) — gradient flow as in step 1; 20 seeds per point
+
+Setup (`configs/e2_misaligned.yaml`): odeco teacher on e1, e2 (weights 1, 0.8), site covariance
+R(theta) diag(power law alpha) R(theta)^T, theta in {0, 10, 20, 30, 45} degrees, alpha in {0.5, 1};
+binary-4 at sigma = 0.05, MPS-4 at sigma = 0.1; variants (Sigma, s) and the absorbed white problem
+from the mapped init. Predictions: `predict_rank1.py` (rank-1 critical values and states of the
+Sigma-loss; "race" tensor = best bond-rank-1 approximation of Sigma W*). Results
+`results/e2_misaligned_plateaus.csv`, figure `results/e2_misaligned_summary.png`.
+
+1. **Plateau = rank-1 critical point of the Sigma-loss** — *empirical*: the first-plateau level matches
+   the predicted critical value with median relative error 1e-6 to 1e-3 at every theta, in both
+   variants (same landscape, Fact B), and the plateau state has |cos| >= 0.998 with the predicted
+   critical tensor (theta <= 30). Exception: MPS-4, theta = 45: the "plateau" lasts < 1 time unit and is
+   not resolved (errors up to 6%).
+2. **Early alignment with Sigma W*, then realignment** — *empirical; TTN analogue of Atanasov et al.
+   2022*: when W has grown to 20% of its plateau norm, it is aligned with the race tensor (top
+   bond-rank-1 approximation of Sigma W*; median |cos| 0.90-0.997) more than with the saddle it
+   reaches (|cos| down to 0.44-0.88 at theta = 45); on the plateau |cos| with the saddle is 0.998-1.
+   At theta = 0 the two tensors coincide.
+3. **Misalignment shortens the rank-1 plateau of MPS-4 by orders of magnitude** — *empirical*: median
+   t_2 - t_1 (t_2 = first time max_e s_2^e > 1e-2) is 539 / 38 / 4.2 / 1.2 / 0.3 at theta = 0 / 10 / 20 /
+   30 / 45 (alpha = 1; similar for alpha = 0.5: 327 / 168 / 34 / 3.3 / 0.9). On binary-4 it shrinks
+   only by a factor ~7 (75 -> 10). Interpretation (*derived*, theory_teachers.md R4/R7 via Fact B):
+   in the whitened frame the teacher components become non-orthogonal, which opens a 2-core
+   strict-saddle route on every MPS edge (log(1/sigma) escape) where the aligned case needs all 4 cores
+   (sigma^-2); binary-4 is a depth-3 DLN whose second escape is always a 3-core route. The sigma-scaling
+   check is `configs/e2_sigma.yaml` (queued).
+4. **Gradient-flow metric**: the absorbed white problem from the mapped init has the same plateau
+   levels and durations within ~20% (`white_mapped` rows), so the landscape transfer is exact and
+   the metric changes only timing.
+
 ## 4(a). Non-orthogonal CP teacher — theory
 
 W* = s_1 U_1 + s_2 U_2, per-site overlap c = <u_1^(i), u_2^(i)>, whitened.
