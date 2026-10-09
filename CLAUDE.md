@@ -20,6 +20,7 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 - Status tags for claims: **proven**, **derived** (under stated assumptions), **empirical**,
   **conjecture**. The report marks new vs known results.
 - Write large files in small pieces and keep final answers short (two agents died hitting the 64k output-token limit).
+- Never kill processes by name (`taskkill /IM python.exe`, `pkill python`): several agents share machines. Kill only PIDs you started.
 - Call `torch.set_num_threads(1)` in every experiment process (small linear algebra is 100-1000x slower with many threads on a loaded machine).
 - Later plateaus are stiff (learned directions have O(1) Hessian eigenvalues): use `integrate_gf(..., method="lsoda")` once a component is learned.
 - float64 floor: a dormant component whose escape signal falls below ~1e-15 is seeded by roundoff, not by the init; flag such runs.
@@ -63,9 +64,11 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 | `notes/prior_knowledge.md` | what the lead knew before the literature review; hypotheses H1–H6 |
 | `notes/literature.md` | literature review v1.1 (7 verified clusters + completeness critique): what is known, hypothesis status, ranked open problems |
 | `notes/theory_saddles.md` | v2 (verified + revised): saddles after the first escape, Steiner route rule, piggyback-graph strictness criterion, escape times with head start, trap mechanism, predictions P1-P14 (section 12), literature mapping (section 9) |
-| `notes/theory_regimes.md` | DRAFT (under verification): lazy/S2S boundaries, large-chi parameterizations, imbalance |
-| `notes/theory_teachers.md` | DRAFT (under verification): saddles for non-odeco and TTN teachers |
-| `notes/theory_escape.md`, `theory_covariance.md`, `theory_optimizer.md` | in progress |
+| `notes/theory_regimes.md` | DRAFT (being revised after verification): lazy/S2S boundaries, large-chi parameterizations, imbalance |
+| `notes/theory_teachers.md` | v2 (verified, revised): saddles for non-odeco and TTN teachers; origin vs rank-one plateaus; second-escape slopes; race model (derived as sigma -> 0, heuristic at accessible sigma) |
+| `notes/theory_covariance.md` | v2 (verified, revised): aligned covariance (exact clocks), misalignment, cross-site correlations (MPS route rates ~c^(N-2), two-stage MPS4 plateau law, crossover c* = O(sigma)) |
+| `notes/theory_optimizer.md` | v2 (verified, revised): sharpness and eta_max, EoS, GD event shift, SGD stability; SGD noise LENGTHENS later plateaus and can trap routes (stochastic collapse) |
+| `notes/theory_escape.md` | in progress |
 | `notes/decisions.md` | decision log (incl. dropped directions, corrections) |
 | `notes/spend.md` | Vast.ai spend log |
 

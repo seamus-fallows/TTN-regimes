@@ -63,3 +63,26 @@ example of an experiment folder using the library).
 - **Be skeptical of your own results**: check integrator accuracy (conservation-law drift, a
   tighter-tolerance rerun), check seeds, look for bugs before interpreting surprises, and
   reproduce surprising results before reporting them.
+
+## Analysis standards (added after the first independent review)
+
+The first review of an agent's results (`notes/reviews/data_teacher_round1.md`) found the runs correct
+but several headline numbers unsupported by the analysis. Avoid these pitfalls:
+
+1. **Resolve every duration you report.** Use dense output around events (the library integrator with
+   a dense grid, or explicit extra points); a duration equal to one output interval is not a
+   measurement. Report unresolved cases as unresolved, never silently drop them.
+2. **Event rules**: use the definitions in `notes/diagnostics.md` and, for generic teachers,
+   thresholds relative to the target (f x teacher sigma_2, f ~ 0.03-0.1, `notes/theory_teachers.md` §3.3),
+   not fixed absolute thresholds like s_2 > 1e-2. Check the event rule on the baseline case.
+3. **Classify runs before pooling**: runs that visit different saddles (or no resolved plateau) must
+   be separated, not averaged together.
+4. **Per-seed statistics**: when sigma rescales the same init direction per seed, fit each seed
+   separately and take mean +- SE over seeds; errors from residuals of per-sigma means are too small.
+5. **Compare competing laws fairly**: fit log and power laws in the same space with the same weighting,
+   report both scores, and span enough range (>= 1.5-2 decades in sigma, or use a saddle-start protocol
+   with a perturbation eps over several decades) to discriminate them.
+6. **Claims no broader than the evidence**: state N, tree, sigma range and seed counts with every claim;
+   "strict saddle" needs a Hessian; "matches theory" needs the comparison number.
+7. **Reproducibility**: scripts must take an output directory (do not overwrite committed results when
+   re-run) and a process count; document the order in which scripts must run.
