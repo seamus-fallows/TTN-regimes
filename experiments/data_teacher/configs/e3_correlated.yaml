@@ -1,0 +1,17 @@
+# Step 3: cross-site correlated inputs (shared latent factor): x^(i) = sqrt(1-rho) z^(i) + sqrt(rho) xi,
+# same xi in R^d at every site, so marginals stay whitened and Cov(x^(i), x^(j)) = rho I (i != j).
+# Exact population gradient flow through the dense moment matrix M = E[Phi Phi^T] (Isserlis; N = 4,
+# d = 4: 256 x 256; correlated.py). Odeco teacher on e1, e2 (weights 1, 0.7). rho = 0 is the baseline.
+# Bond spectra are Frobenius (unweighted); overlaps are the Euclidean dual overlaps (1 at W = W*).
+name: e3_correlated
+base: {kind: correlated, n_sites: 4, d: 4, chi: 4, weights: [1.0, 0.7], rho: 0.0}
+sweep:
+  rho: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
+trees: [binary, mps]
+sigmas: {binary: [0.05], mps: [0.1]}
+seeds: [0, 20]
+t_max: {binary: 1.0e+5, mps: 1.0e+6}
+n_rec: 2000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-6

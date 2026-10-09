@@ -1,0 +1,20 @@
+# Step 2: misaligned product covariance. Odeco teacher on e1, e2 at every site (weights 1, 0.8);
+# Sigma_i = R diag(lambda) R^T, R = rotation by theta in the (e1, e2) plane, lambda = power law
+# (ttn.losses.power_law_cov(d, alpha)). theta = 0 is the aligned case of step 1.
+# variant "sigma": the problem itself; "white_mapped": the absorbed white problem
+# (teacher (x) Sigma_i^{1/2} W*, non-orthogonal CP) from the mapped init G x Sigma^{1/2}: same
+# landscape and same start, different gradient-flow metric (notes/data_teacher.md, Fact B).
+name: e2_misaligned
+base: {kind: misaligned, n_sites: 4, d: 4, chi: 4, weights: [1.0, 0.8], alpha: 1.0, theta_deg: 0}
+sweep:
+  alpha: [0.5, 1.0]
+  theta_deg: [0, 10, 20, 30, 45]
+  variant: [sigma, white_mapped]
+trees: [binary, mps]
+sigmas: {binary: [0.05], mps: [0.1]}
+seeds: [0, 20]
+t_max: {binary: 1.0e+5, mps: 1.0e+6}
+n_rec: 2000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-6

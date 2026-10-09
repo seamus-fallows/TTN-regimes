@@ -20,6 +20,7 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 - Status tags for claims: **proven**, **derived** (under stated assumptions), **empirical**,
   **conjecture**. The report marks new vs known results.
 - Write large files in small pieces and keep final answers short (two agents died hitting the 64k output-token limit).
+- Never kill processes by name (`taskkill /IM python.exe`, `pkill python`): several agents share machines. Kill only PIDs you started.
 - Call `torch.set_num_threads(1)` in every experiment process (small linear algebra is 100-1000x slower with many threads on a loaded machine).
 - Later plateaus are stiff (learned directions have O(1) Hessian eigenvalues): use `integrate_gf(..., method="lsoda")` once a component is learned.
 - float64 floor: a dormant component whose escape signal falls below ~1e-15 is seeded by roundoff, not by the init; flag such runs.
@@ -62,10 +63,12 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 | `notes/diagnostics.md` | regime and event definitions (thresholds, reading of the rules) |
 | `notes/prior_knowledge.md` | what the lead knew before the literature review; hypotheses H1–H6 |
 | `notes/literature.md` | literature review v1.1 (7 verified clusters + completeness critique): what is known, hypothesis status, ranked open problems |
-| `notes/theory_saddles.md` | DRAFT (under verification): saddles after the first escape, Steiner/locality rule, escape times, stuck mechanism |
-| `notes/theory_regimes.md` | DRAFT (under verification): lazy/S2S boundaries, large-chi parameterizations, imbalance |
-| `notes/theory_teachers.md` | DRAFT (under verification): saddles for non-odeco and TTN teachers |
-| `notes/theory_escape.md`, `theory_covariance.md`, `theory_optimizer.md` | in progress |
+| `notes/theory_saddles.md` | v2 (verified + revised): saddles after the first escape, Steiner route rule, piggyback-graph strictness criterion, escape times with head start, trap mechanism, predictions P1-P14 (section 12), literature mapping (section 9) |
+| `notes/theory_regimes.md` | DRAFT (being revised after verification): lazy/S2S boundaries, large-chi parameterizations, imbalance |
+| `notes/theory_teachers.md` | v2 (verified, revised): saddles for non-odeco and TTN teachers; origin vs rank-one plateaus; second-escape slopes; race model (derived as sigma -> 0, heuristic at accessible sigma) |
+| `notes/theory_covariance.md` | v2 (verified, revised): aligned covariance (exact clocks), misalignment, cross-site correlations (MPS route rates ~c^(N-2), two-stage MPS4 plateau law, crossover c* = O(sigma)) |
+| `notes/theory_optimizer.md` | v2 (verified, revised): sharpness and eta_max, EoS, GD event shift, SGD stability; SGD noise LENGTHENS later plateaus and can trap routes (stochastic collapse) |
+| `notes/theory_escape.md` | in progress |
 | `notes/decisions.md` | decision log (incl. dropped directions, corrections) |
 | `notes/spend.md` | Vast.ai spend log |
 
@@ -75,7 +78,7 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 |---|---|---|---|---|
 | Q1 | saddle sequence from small init | open | `s2s-core` | running |
 | Q2 | plateau scaling with sigma, K, chi | partly known | `s2s-core` | running |
-| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | running; theory draft says Steiner rule proven for one learned component |
+| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | running; N=4 interim matches k=1..4 predictions; theory: Steiner identity proven, saddle order = k* derived (upper bound proven), several residuals: strict iff rho(S) > s_q |
 | Q4 | learning order | analogues known, TTN open | `order` | running |
 | Q5 | regime map | analogues known, TTN open | `regime-map` | running |
 | Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | running |
@@ -89,10 +92,16 @@ Read this file first; it is how the lead and all agents recover context. Keep it
   the top open problem; near-origin escape is a corollary of Kumar & Haupt 2025; Furman et al. 2026 treat
   exactly our model's landscape (no spurious minima for realizable targets along balanced trajectories;
   descent order bounded by the rank-deficient core size).
-- Theory (draft, under verification): after the first escape the next escape takes the route with the
-  fewest cores k* (Steiner subtree of the differing sites), not the largest component; k* = 2 strict saddle
-  with lambda = s_r s_q^((K-2)/K), k* >= 3 higher-order; escape times carry a head-start factor
-  (1 - s_r/s_q); on a plateau d log(da/dt)/d log a -> 2 - 2/k; fan-in imbalance can make gradient flow stall.
+- Theory (theory_saddles.md v2, verified): after the first escape the next escape takes the route with the
+  fewest cores k* (Steiner subtree of the cores carrying the differing sites; identity proven, saddle order = k*
+  derived), not the largest component; k* = 2 strict with lambda = s_r s_q^((K-2)/K) (to 6 digits), k* >= 3
+  higher-order; escape times carry a head start (1 - s_r/s_q) (k >= 3 head start new); with several residual
+  components sharing a terminal core the saddle is strict iff rho(S) > s_q ("star" teachers: a larger learned
+  component is forgotten and relearned); gradient flow can trap when ALL route ends are gauge-unfavourable.
+  General machinery overlaps Kumar & Haupt 2025c, Rawal & DeWeese 2026, Furman 2026 (section 9 of the note).
+- Experiments (interim): locality N=4 exponents match k = 1, 2, 3, 4 (incl. head-start log slope 1.005 vs 1.0);
+  data-teacher: aligned covariance = race with weights Lambda s, landscape with sqrt(Lambda) s; optim-samples:
+  eta_max = 2/(K s_1^(2-2/K)) exact, GD event shift predicted to 3 digits.
 - Theory (derived, re-checked): every KKT point of g = <W, W*> on the unit sphere with g* > 0 is exactly
   balanced on every bond with core norms 1/K, so the near-origin escape direction is balanced and min-norm.
 - Lazy regime: the tangent kernel of a random TTN is isotropic only on average; a single draw is strongly

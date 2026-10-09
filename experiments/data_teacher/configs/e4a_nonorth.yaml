@@ -1,0 +1,17 @@
+# Step 4(a): non-orthogonal CP teacher, whitened inputs. Component 1 = e1 at every site,
+# component 2 = c e1 + sqrt(1 - c^2) e2 at every site (per-site overlap c = `overlap`), weights (1, s2).
+# Prediction (notes 4a): MPS-4 has two rank-1 saddles for c < c*(s2) (c* = 1/2 at s2 = 1) and one
+# blended saddle above; binary-4 (matrix-like) has a single blended rank-1 saddle for every c > 0.
+name: e4a_nonorth
+base: {kind: nonorth, n_sites: 4, d: 4, chi: 4, s2: 1.0, overlap: 0.0}
+sweep:
+  s2: [1.0, 0.7]
+  overlap: [0.0, 0.2, 0.35, 0.45, 0.55, 0.65, 0.8]
+trees: [binary, mps]
+sigmas: {binary: [0.05], mps: [0.1]}
+seeds: [0, 20]
+t_max: {binary: 1.0e+5, mps: 1.0e+6}
+n_rec: 2000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-6
