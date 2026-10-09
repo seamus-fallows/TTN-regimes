@@ -1,0 +1,33 @@
+# GD and heavy ball (controls; GD = GF on binary N=4) only at sigma = 0.8: at sigma = 0.3 GF plateaus last
+# 1e4-1e6 time units, beyond any affordable GD budget.
+# Main comparison on the deep trees (step 1-4 of the brief): binary N=8 (K=7) and MPS N=8 (K=8), odeco
+# teacher (3, 2, 1) (d=3, chi=4) and the locality pattern teacher E8 of notes/theory_saddles.md 5.4
+# (d=2, chi=3). Inits: gauge-balanced (clean GF baseline; fan-in GF stalls, see pilot_trap) and fan-in
+# (practitioners' default) for the gauge-dependent methods. Gauge-invariant methods (re-gauged GD,
+# Riemannian GD, ALS, DMRG) depend only on W_0 and run once.
+name: deep
+blocks:
+  - base: {n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
+    grid: {tree: [binary, mps], init: [balanced, fanin], sigma: [0.3, 0.8], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers: &gauge_dependent
+      - {optimizer: gf, t_max: 2.0e6}
+      - {optimizer: gd, lr: 0.01, budget_c: 2.0e4, budget_power: 0.0, max_steps: 500000, when: {sigma: 0.8}}
+      - {optimizer: momentum, lr: 0.001, beta: 0.9, budget_c: 2.0e4, budget_power: 0.0, max_steps: 500000, when: {sigma: 0.8}}
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 300000}
+      - {optimizer: rmsprop, lr: 1.0e-3, n_steps: 300000}
+      - {optimizer: precond, lr: 0.1, damping: 1.0e-3, n_steps: 100000, blowup: 1.0e300}
+  - base: {n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100, init: balanced}
+    grid: {tree: [binary, mps], sigma: [0.3, 0.8], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers: &gauge_invariant
+      - {optimizer: regauge, lr: 0.01, period: [1, 50], n_steps: 100000}
+      - {optimizer: riemannian, lr: [0.1, 1.0], n_steps: 2000}
+      - {optimizer: als, n_sweeps: 50}
+      - {optimizer: dmrg, n_sweeps: 50}
+  - base: {n_sites: 8, d: 2, chi: 3, teacher: pattern, weights: [1.0, 0.4, 0.7], teacher_seed: 100,
+           patterns: [[0,0,0,0,0,0,0,0], [0,0,0,1,1,0,0,0], [0,1,0,0,0,0,1,0]]}
+    grid: {tree: [binary, mps], init: [balanced, fanin], sigma: [0.3, 0.8], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers: *gauge_dependent
+  - base: {n_sites: 8, d: 2, chi: 3, teacher: pattern, weights: [1.0, 0.4, 0.7], teacher_seed: 100, init: balanced,
+           patterns: [[0,0,0,0,0,0,0,0], [0,0,0,1,1,0,0,0], [0,1,0,0,0,0,1,0]]}
+    grid: {tree: [binary, mps], sigma: [0.3, 0.8], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers: *gauge_invariant
