@@ -1,6 +1,6 @@
 # optim-samples: learning rate, SGD noise and finite samples (Q8)
 
-Status: done - Branch: agent/optim-samples - Updated: 2026-10-09 21:30 UTC
+Status: done - Branch: agent/optim-samples - Updated: 2026-10-09 21:24 UTC
 
 ## Summary
 Asked: how discrete-step GD, SGD noise and a finite training set change the gradient-flow (GF)
@@ -37,7 +37,7 @@ project. Every figure is produced by a script in `experiments/optim_samples/` fr
 | 9 | SGD first plateau (binary N=4, 1930 runs): mean never shorter than GF (shift +0.2-0.3 +- 0.2-0.4 at B = 1); spread ~ (eta/B)^p, per-seed p = 0.50-0.55 (pred. 1/2); gauge balance drifts ~ (eta/B)^p, p = 0.90-1.03 (pred. 1) | derived + empirical | `fig_sgd.png`, `sgd_fits.csv` |
 | 10 | SGD later plateau (theory note P9), aligned-route test, 51 runs: T_SGD/T_GF = 1.06-3.06, trapped for (eta/B) T_GF >~ 0.03; B = 16 and 64 at equal eta/B agree to 0.5%; c_gamma = 34-45 (heuristic 26); random-init runs with resolved plateaus: +28 +- 5% at sigma = 0.03, B = 1 | empirical | `fig_p9.png`, `p9_fit.csv`, `sgd_second_plateau.csv` |
 | 11 | SGD stability: exact mean-square limit eta*_ms(B) = 0.00107 B (B <= 16), 0.053 (64), 0.112 (256), GD 0.154; empirically SGD converges up to 1.5 eta*_ms and diverges from 2.5 eta*_ms (B = 1, 16), as the theory note's almost-sure limit (~1.9 eta*_ms) predicts | derived + empirical | `sgd_stability.py`, `sgd_limit_test.csv`, `fig_sgd_stability.png` |
-| 12 | Stochastic collapse: no collapse of a k = 2 route without label noise (MPS N=4, 5/5 learned, plateau +8 +- 5%; strict saddle checked with gauge-projected Hessians over a sigma sweep); with label noise zeta >= 10 at eta = 5e-4 the learned component itself is erased, so collapse is not testable there | empirical | `collapse_test.csv`, `k2_saddle_sweep.csv` |
+| 12 | Stochastic collapse: no collapse of a k = 2 route without label noise (MPS N=4, 5/5 learned, plateau +8 +- 5%); the route is a strict saddle by the sweep-level rule (gauge-projected lambda_min -> -0.50 +- 0.005 as sigma -> 0, predicted -0.52; 6 sigma over a decade x 5 seeds, 2/30 points unresolved); with label noise zeta >= 10 at eta = 5e-4 the learned component itself is erased (15/15), so collapse is not testable there | empirical | `collapse_test.csv`, `k2_saddle_sweep.csv` |
 | 13 | Finite samples (binary N=8, d = 2, teacher [3, 2], 5 seeds): small init recovers W* (test < 1e-2) in 5/5 seeds from n = 256 (chi = 4) / 384 (chi = 16) with bond rank exactly 2; exact lazy limit: never at chi = 4 (test error 1.7-30x the zero predictor; tangent space 112 < 256), at n >= 256 = d^N at chi = 16; at n = 512 test error 2.5e-5 / 0.010 / 0.53 / 1.51 / 1.74 and rank 2.0 / 2.4 / 5.0 / 5.1 / 5.3 from small init to centred sigma = 1, 1.5, 2 to the lazy limit | empirical | `fig_samples.png`, `samples_summary.csv` |
 | 14 | Second setting d = 3, N = 6 (W in R^729): small init recovers in 5/5 at n = 384 (2/5 at 192), the lazy limit is worse than zero at every n <= 384 | empirical | `fig_samples.png` |
 
@@ -137,4 +137,5 @@ CSVs in git suffice); needed only to recompute summaries from scratch:
 - 20:35 Finite-sample follow-ups (d = 3, rich-to-lazy path): small-init threshold conjecture refuted.
 - 20:45 Empirical SGD stability limit ~2 eta*_ms (matches eta_as).
 - 21:05 SGD sweep done (1930 runs); lead: diagnostics changes (saddle type by sigma scaling); k = 2 Hessian sigma sweep.
-- 21:30 Final report.
+- 21:20 k = 2 saddle confirmed strict by sigma sweep; SGD stability table regenerated (binary4, mps4; matches the theory note).
+- 21:30 All committed results regenerated from raw data with the final scripts; final report.
