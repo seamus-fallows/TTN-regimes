@@ -29,7 +29,7 @@ from common import RESULTS, OUT_ROOT
 from run_dense import two_stage
 
 from ttn.diagnostics import gauge_directions, hessian, project_out_gauge, saddle_type
-from ttn.dynamics import Problem, Recorder, integrate_gf
+from ttn.dynamics import Problem, Recorder, integrate_gf, merged_rows
 from ttn.network import TTNSpec, aligned_init
 from ttn.teachers import pattern_teacher
 from ttn.tree import make_tree
@@ -122,7 +122,8 @@ def random_job(args):
     teacher = star(n, 2.0, w, w)
     prob = Problem(spec, teacher)
     tr = two_stage(prob, spec.flatten(spec.init(sigma, seed=seed)), 1e8, 3000, 1e-6)
-    t, loss, ov = tr.data["t"], tr.data["loss"], tr.data["overlaps"]
+    m = merged_rows(tr.data)  # log + fine rows (event resolution, final library)
+    t, loss, ov = m["t"], m["loss"], m["overlaps"]
     s = dict(tree=f"{tree}{n}", w=w, sigma=sigma, seed=seed, **summarize(t, ov, loss),
              time_at_q_level=level_time(t, loss, w * w), time_at_forgot_level=level_time(t, loss, 2.0),
              max_drift=float(np.nanmax(tr.data["conservation_drift"])))
@@ -150,8 +151,9 @@ def saddle_job(args):
     while True:
         tr = integrate_gf(prob, theta, t_max=chunk, n_log=400, rtol=1e-9, atol=1e-14,
                           method="lsoda", recorder=Recorder(spectra=False, overlaps=True))
-        parts.append((tr.data["t"] + t_off, tr.data["loss"], tr.data["overlaps"]))
-        ov = tr.data["overlaps"]
+        m = merged_rows(tr.data)
+        parts.append((m["t"] + t_off, m["loss"], m["overlaps"]))
+        ov = m["overlaps"]
         theta = torch.as_tensor(tr.data["theta_end"])
         t_off += chunk
         if (ov[:, 0] < 0.1).any() or (ov[:, 1:] > 0.5).any() or t_off > 1e9:
