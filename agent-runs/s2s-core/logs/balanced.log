@@ -1,0 +1,5 @@
+balanced: 120 runs to do -> /root/outputs/s2s_core/balanced
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))

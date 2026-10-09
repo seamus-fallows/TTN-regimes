@@ -1,0 +1,54 @@
+k78: 180 runs to do -> /root/outputs/s2s_core/k78
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[1/180 105s] binary8_chi3_w3-2-1_fanin_s0.15_seed4: stop_fn (104s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[2/180 133s] binary8_chi3_w3-2-1_fanin_s0.15_seed7: completed (132s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[3/180 140s] binary8_chi3_w3-2-1_fanin_s0.15_seed9: completed (139s)
+[4/180 140s] mps8_chi3_w3-2-1_fanin_s0.15_seed6: completed (140s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[5/180 141s] binary8_chi3_w3-2-1_fanin_s0.15_seed8: completed (140s)

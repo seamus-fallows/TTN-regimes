@@ -83,21 +83,35 @@ decay at a rate proportional to sigma^2 per seed (rate / sigma^2 constant within
 chi = 3, fan-in vs gauge-balanced; large: chi = 6).
 
 ## Decisions
-- **d = 4** at every site (odeco needs d >= 3; d = 4 leaves one physical direction outside the teacher).
-- **Teacher seed 1000**, init seeds 0-9 (independent streams after the library fix).
-- **Integrator: LSODA with the exact Hessian** for every random-init run (later plateaus are stiff;
-  DP5 would need ~sigma^-(K-2) steps); DP5 as the reference for the aligned runs. Tolerances rtol 1e-8,
-  atol 1e-11 sigma: a K = 7 run at rtol 1e-9 / atol 1e-12 sigma gave the same event times to 1e-8.
-- **Event = final rise of a_r** (last upward crossing of 1/2; first crossings and relearning are
-  recorded too), refined by re-integrating windows on linear grids until the 0.1-0.9 rise holds >= 40
-  samples (`s2s.zoom_rise`). No duration is read off the log grid.
-- **Run budget**: t_max = 1e3 x the RMS-overlap escape time of the weakest component, wall limit
-  400-600 s, and a stop when every dormant amplitude has stayed below 1e-15 for a whole chunk (the
-  rest of such a run is roundoff-driven). These end stalled runs; they are reported as a class, not
-  dropped.
-- **sigma grids**: K = 3, 4: 0.1 .. 0.003 (1.5 decades); K = 7, 8: 0.4 .. 0.03 for full runs (smaller
-  sigma is floor-limited after the first escape), 0.4 .. 0.01 for the first escape.
-- **Own sweep driver** (`run.py`) until `ttn.runner` lands; resumable, one process per run.
+- **d = 4** at every site (odeco needs d >= 3; d = 4 leaves one physical direction outside the
+  teacher). **Teacher seed 1000**, init seeds 0-9 (independent streams after the library fix).
+- **Integrator: LSODA with the exact Hessian** for random-init runs (later plateaus are stiff: DP5 would
+  need ~sigma^-(K-2) steps); DP5 as reference for aligned runs. Radau was tried on a K = 7 run and did
+  not finish in 25 min (rejected). Tolerances: rtol 1e-8, atol 1e-11 sigma (main, first, balanced);
+  rtol 1e-6, atol 1e-9 sigma for the long K = 7, 8 runs (large, k78) after checking on binary8 chi = 6
+  sigma = 0.07 that event times agree with rtol 1e-8 to 7e-7 relative (975 s vs 1499 s).
+- **Events = final rise of a_r** (last upward crossing of 1/2), widths 0.1 -> 0.9 of the final rise,
+  both refined by re-integrating the window on linear grids until the rise holds >= 40 samples. No
+  duration is read off the log grid.
+- **Run budgets**: t_max = 1e3 x the RMS-overlap escape time of the weakest component; wall limits
+  300-2400 s; a stop when a never-learned component has a dead route end (slice < 1e-8 sigma for a
+  whole output chunk: conservation-law trap, nothing after it is physics). Stalled / unresolved runs
+  are reported as classes, never dropped.
+- **Corrected mid-course**: (1) an amplitude-based roundoff criterion (|<W,U_r>| < 1e-15 -> stop;
+  < 1e-14 -> "floor") turned out too strict at K >= 7 (the amplitude is a product of K per-core
+  amplitudes): replaced by the per-core dead-end criterion; K = 7, 8 runs affected are re-run (k78).
+  (2) The gauge projection of the Hessian was fixed in the library: all lambda_min values recomputed
+  from the saved midpoint parameters (raw and projected reported).
+- **Cuts for compute** (each documented in the configs): K = 7, 8 full runs at sigma >= 0.07 only (at
+  0.05, 0.03 none of ~50 runs completed); chi = 6 at K = 7, 8 only with the separated teacher (large);
+  first-escape sweep at K = 7, 8 only with the separated teacher and fan-in init; k78 at sigma =
+  0.3-0.15. Finished runs of the larger grids are kept and reported.
+- **sigma grids**: K = 3, 4: 0.1 .. 0.003 (1.5 decades) for full runs, 0.1 .. 0.002 for the first
+  escape; K = 7, 8: first escape 0.4 .. 0.01 (1.6 decades), full runs 0.4 .. 0.07 (later gaps at
+  smaller sigma are not reachable in float64 within budget; reported as such).
+- **Own sweep driver** (`run.py`) and analysis code in the experiment folder (the library runner landed
+  after the sweeps had started); the library's integrator, Recorder, diagnostics and theory are used
+  throughout.
 
 ## Files left on the machine
 - `/root/outputs/s2s_core/main/` (per-run .npz + .json; ~100 kB per run), `/root/outputs/s2s_core/aligned/`.
