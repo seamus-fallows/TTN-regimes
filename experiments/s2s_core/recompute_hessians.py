@@ -51,7 +51,7 @@ def job(path: Path):
         proj = proj.numpy()
         rows.append({"sweep": path.parent.name, "tree": f"{s['tree']}{s['N']}", "K": s["K"], "chi": s["chi"],
                      "teacher": s["teacher"], "init": s["init"], "sigma": s["sigma"], "seed": s["seed"],
-                     "plateau": i + 1, "order": "".join(map(str, s["order"])),
+                     "plateau": i + 1, "order": "-".join(str(r + 1) for r in s["order"]),
                      "lam_min_raw": float(raw[0]), "lam_max_raw": float(raw[-1]),
                      "lam_min_proj": float(proj[0]), "lam_max_proj": float(proj[-1]),
                      "n_neg_raw_1e-3": int(np.sum(raw < -1e-3 * raw[-1])),

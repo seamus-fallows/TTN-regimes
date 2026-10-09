@@ -81,7 +81,7 @@ def load(raw: Path) -> pd.DataFrame:
             "sweep": raw.name,
             "tree": f"{s['tree']}{s['N']}", "K": s["K"], "chi": s["chi"], "teacher": s["teacher"],
             "sigma": s["sigma"], "seed": s["seed"], "init": s["init"], "class": cls,
-            "stop": s["stop_reason"], "n_learned": len(order), "order": "".join(map(str, order)),
+            "stop": s["stop_reason"], "n_learned": len(order), "order": "-".join(str(r + 1) for r in order),  # 1-based, survives CSV round trips
             "greedy": order == sorted(order) and len(order) == R,
             "t1": t_sorted[0], "t2": t_sorted[1], "t3": t_sorted[2] if R > 2 else np.nan,
             "w_max": np.nanmax(w) if np.isfinite(w).any() else np.nan,
@@ -173,10 +173,10 @@ def order_table(df: pd.DataFrame) -> pd.DataFrame:
     greedy fraction, and the fraction of seeds whose first component is the same at every sigma."""
     rows = []
     for key, g in df[df.n_learned >= 1].groupby(["sweep", "tree", "K", "chi", "teacher", "init"]):
-        first = g.order.astype(str).str[0]
+        first = g.order.astype(str).str.split("-").str[0]
         same = g.assign(first=first).groupby("seed")["first"].nunique()
         row = dict(zip(["sweep", "tree", "K", "chi", "teacher", "init"], key))
-        row.update({"n_runs": len(g), **{f"P_first_{c}": float((first == c).mean()) for c in "012"},
+        row.update({"n_runs": len(g), **{f"P_first_{c}": float((first == c).mean()) for c in "123"},
                     "P_greedy_complete": float(g[g["class"] == "complete"].greedy.mean()) if (g["class"] == "complete").any() else np.nan,
                     "seeds_same_first_all_sigma": f"{int((same == 1).sum())}/{len(same)}"})
         rows.append(row)
