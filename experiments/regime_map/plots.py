@@ -412,7 +412,9 @@ def fig_sigma_K(exp="sigma_K", chi=6):
     df = df[df.chi == chi].copy()
     df["tree"] = [tree_label(k, n, K) for k, n, K in zip(df.kind, df.n, df.K)]
     df["alpha"] = df.sigma ** df.K
-    df["u0"] = df.alpha / np.sqrt(3.0 ** df.n)  # RMS overlap of W_0 with a unit rank-one tensor
+    df["u0"] = df.alpha / np.sqrt(df.d.astype(float) ** df.n)  # RMS overlap of W_0 with a unit rank-one tensor
+    d = int(df.d.iloc[0])
+    weights = tuple(df.weights.iloc[0]) if "weights" in df.columns and isinstance(df.weights.iloc[0], list) else (3.0, 2.0, 1.0)
     order = df.drop_duplicates("tree").sort_values(["K", "kind"]).tree.tolist()
     Ks = {t: int(df[df.tree == t].K.iloc[0]) for t in order}
     Ns = {t: int(df[df.tree == t].n.iloc[0]) for t in order}
@@ -423,9 +425,9 @@ def fig_sigma_K(exp="sigma_K", chi=6):
         phase_rows(ax, df, "tree", xcol, order)
         med = [np.nanmedian(tab[tab.tree == t].sigma_c) for t in order]
         pred = [np.nanmedian(tab[tab.tree == t].sigma_c_pred) for t in order]
-        a0c = [aligned_boundary_a0(Ks[t]) for t in order]
+        a0c = [aligned_boundary_a0(Ks[t], weights) for t in order]
         f = {"sigma": lambda s, t: s, "alpha": lambda s, t: s ** Ks[t],
-             "u0": lambda s, t: s ** Ks[t] / 3.0 ** (Ns[t] / 2)}[xcol]
+             "u0": lambda s, t: s ** Ks[t] / float(d) ** (Ns[t] / 2)}[xcol]
         ys = np.arange(len(order))
         ax.plot([f(m, t) for m, t in zip(med, order)], ys, "o", color=INK, ms=4, label="per-seed S2S boundary (median)")
         ax.plot([f(m, t) for m, t in zip(pred, order)], ys, "x", color=INK, ms=5,
@@ -436,7 +438,7 @@ def fig_sigma_K(exp="sigma_K", chi=6):
                        "u0": r"per-component amplitude $\sigma^K/\sqrt{D}$"}[xcol])
     axes[0].legend(handles=legend_handles(False) + axes[0].get_legend_handles_labels()[0], fontsize=6.5,
                    loc="upper left", bbox_to_anchor=(0, -0.15), ncol=2, frameon=False)
-    axes[0].set_title(f"{exp}: plain model, chi = {chi}, d = 3, teacher (3,2,1)", fontsize=9, loc="left")
+    axes[0].set_title(f"{exp}: plain model, chi = {chi}, d = {d}, teacher {weights}", fontsize=9, loc="left")
     fig.tight_layout()
     save_fig(fig, f"phase_{exp}_chi{chi}.png")
     return tab
@@ -445,16 +447,19 @@ def fig_sigma_K(exp="sigma_K", chi=6):
 # ---- N = 8: centred and plain rows --------------------------------------------------------------
 
 
-def fig_sigma_chi_b8(exp="sigma_chi_b8", lazy_csv=None):
+def fig_sigma_chi_b8(exp="sigma_chi_b8", lazy_csv=None, full_label=None, floor=0.75):
     """Rows (model, chi): centred at every chi (chi = 162 means bonds 18 / 162, twice the cut
     dimension), plain at deficient chi. Overlays: centred floor sigma_floor ~ 0.74-0.78 (theory P4),
     per-seed S2S boundaries, first-order lazy boundary (kappa/0.1)^(1/7) for full bonds."""
     from analysis import load, per_seed_table
 
     df = load(exp)
-    df["row"] = [f"{m} chi={'18/162' if c == 162 else c}" for m, c in zip(df.model, df.chi)]
-    order = [f"centred chi={c}" for c in (3, 6, 12, 24, 81, "18/162")] + [f"plain chi={c}" for c in (3, 6, 12, 24)]
+    full_label = full_label or {162: "18/162"}
+    df["row"] = [f"{m} chi={full_label.get(c, c)}" for m, c in zip(df.model, df.chi)]
+    chis = sorted(df.chi.unique())
+    order = [f"{m} chi={full_label.get(c, c)}" for m in ("centred", "plain") for c in chis]
     order = [r for r in order if r in set(df.row)]
+    d = int(df.d.iloc[0])
     tab = per_seed_table(df, ["row"], 7)
     save_csv(tab, f"boundaries_per_seed_{exp}.csv")
     fig, ax = plt.subplots(figsize=(8.5, 4.6))
@@ -464,10 +469,11 @@ def fig_sigma_chi_b8(exp="sigma_chi_b8", lazy_csv=None):
     pred = [np.nanmedian(tab[tab.row == r].sigma_c_pred) for r in order]
     ax.plot(med, ys, "o", color=INK, ms=4, label="per-seed S2S boundary (median)")
     ax.plot(pred, ys, "x", color=INK, ms=5, label="predicted from deepest run (aligned extrapolation)")
-    for j, r in enumerate(order):
-        if r.startswith("centred") and not (r.endswith("81") or r.endswith("18/162")):
-            ax.plot([0.75, 0.75], [j - 0.45, j + 0.45], color=MUTED, lw=2)
-    ax.plot([], [], color=MUTED, lw=2, label=r"centred floor $\sigma_{\rm floor}\approx0.75$ (theory P4)")
+    if floor is not None:
+        for j, r in enumerate(order):
+            if r.startswith("centred") and int(str(r.split("=")[1]).split("/")[-1]) < d ** 4:
+                ax.plot([floor, floor], [j - 0.45, j + 0.45], color=MUTED, lw=2)
+        ax.plot([], [], color=MUTED, lw=2, label=rf"centred floor $\sigma_{{\rm floor}}\approx{floor}$ (theory P4)")
     if lazy_csv:
         lp = pd.read_csv(lazy_csv)
         for j, r in enumerate(order):
@@ -477,7 +483,7 @@ def fig_sigma_chi_b8(exp="sigma_chi_b8", lazy_csv=None):
                 ax.plot((k / 0.1) ** (1 / 7), j, "s", color=INK, ms=4, mfc="none")
         ax.plot([], [], "s", color=INK, ms=4, mfc="none", label=r"lazy boundary, first order $(\kappa/0.1)^{1/7}$")
     ax.set_xlabel(r"per-core init scale $\sigma$")
-    ax.set_title(f"{exp}: binary N = 8 (K = 7), d = 3, teacher (3,2,1), 6 seeds", fontsize=9, loc="left")
+    ax.set_title(f"{exp}: binary N = 8 (K = 7), d = {d}, 6 seeds", fontsize=9, loc="left")
     ax.legend(handles=legend_handles() + ax.get_legend_handles_labels()[0], fontsize=6.5, loc="upper left",
               bbox_to_anchor=(1.01, 1), frameon=False)
     fig.tight_layout()

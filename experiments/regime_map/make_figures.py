@@ -27,7 +27,9 @@ FIGURES = {
     + [plots.fig_sensitivity("sigma_chi_b4", m) for m in ("centred", "plain", "twocopy")],
     "chi_b4": lambda: plots.fig_chi_b4("chi_b4", f"{RES}/lazy_pred_b4.csv"),
     "sigma_chi_b8": lambda: plots.fig_sigma_chi_b8("sigma_chi_b8", f"{RES}/lazy_pred_b8.csv"),
+    "sigma_chi_b8_d2": lambda: plots.fig_sigma_chi_b8("sigma_chi_b8_d2", None, {32: "8/32"}, floor=None),
     "sigma_K": lambda: [plots.fig_sigma_K("sigma_K", chi) for chi in (6, 3)],
+    "sigma_K_d2": lambda: [plots.fig_sigma_K("sigma_K_d2", chi) for chi in (4, 2)],
     "imbalance_b4": lambda: plots.fig_imbalance("imbalance_b4"),
     "examples": lambda: plots.fig_examples("sigma_chi_b4", [
         ("saddle-to-saddle: chi=24, sigma=0.016", dict(model="centred", kind="binary", n=4, d=3, chi=24, sigma=0.01585, seed=0, linear_inset=True)),
