@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import itertools
+import json
 import math
 import os
 import time
@@ -25,7 +26,7 @@ import numpy as np
 import torch
 import yaml
 
-from common import RAW, Problem, crossing_times, eta_max, gradient_flow, save_json, setup
+from common import RAW, Problem, eta_max, gradient_flow, record_events, save_json, setup
 from ttn.network import conserved_quantities
 
 OUT = RAW / "gd"
@@ -37,6 +38,10 @@ def tag_of(task):
         base += f"_root{task['root_scale']}"
     if task.get("centred"):
         base += "_centred"
+    if task.get("chi", 3) != 3:
+        base += f"_chi{task['chi']}"
+    if task.get("ratio_ref", "teacher") == "gf" and task["ratio"] != "gf":
+        base += "_relgf"
     return base + ("_gf" if task["ratio"] == "gf" else f"_r{task['ratio']}")
 
 
@@ -49,7 +54,7 @@ def init_params(spec, task):
 
 
 def make_problem(task):
-    spec, teacher = setup(task["tree"], task["n"])
+    spec, teacher = setup(task["tree"], task["n"], chi=task.get("chi", 3))
     theta0 = init_params(spec, task)
     cores0 = spec.unflatten(theta0) if task.get("centred") else None
     return spec, teacher, Problem(spec, teacher, cores0), theta0
@@ -59,7 +64,8 @@ def run_gf(task):
     spec, teacher, prob, theta0 = make_problem(task)
     q0 = conserved_quantities(spec, spec.unflatten(theta0))
     t0 = time.time()
-    sol, ev = gradient_flow(prob, theta0, task["T"])
+    sol, ev = gradient_flow(prob, theta0, task.get("T_gf", task["T"]),
+                            loss_floor=task.get("gf_loss_floor"))
     a = np.array([prob.overlaps(torch.from_numpy(y)) for y in sol.y.T])
     loss = np.array([prob.loss(torch.from_numpy(y)).item() for y in sol.y.T])
     p_end = torch.from_numpy(sol.y[:, -1])
@@ -76,7 +82,14 @@ def run_gd(task):
     spec, teacher, prob, p = make_problem(task)
     q0 = conserved_quantities(spec, spec.unflatten(p))
     em = eta_max(spec, teacher)
-    eta = task["ratio"] * em
+    lam_gf = None
+    if task.get("ratio_ref", "teacher") == "gf":
+        # Step relative to this init's own GF state: eta = ratio x 2/lambda_GF.
+        ref = json.loads((OUT / f"{tag_of(dict(task, ratio='gf'))}.json").read_text())
+        lam_gf = ref["sharp_end"]
+        eta = task["ratio"] * 2.0 / lam_gf
+    else:
+        eta = task["ratio"] * em
     steps = int(math.ceil(task["T"] / eta))
     checkpoints = set(np.linspace(0, steps, 41).astype(int).tolist())
     losses = np.empty(steps + 1)
@@ -103,17 +116,15 @@ def run_gd(task):
             p = p - eta * g
     losses, ovl = losses[: k_last + 1], ovl[: k_last + 1]
     ts = eta * np.arange(k_last + 1)
-    ev50 = crossing_times(ts, ovl, 0.5)
-    ev10 = crossing_times(ts, ovl, 0.1)
-    ev90 = crossing_times(ts, ovl, 0.9)
-    # Count upward crossings of 1/2 per component (re-learning after a kick back to the saddle).
-    n_cross = [int(np.sum((ovl[1:, r] > 0.5) & (ovl[:-1, r] <= 0.5))) for r in range(ovl.shape[1])]
-    first = np.nanmin(ev50) if np.any(np.isfinite(ev50)) else float("inf")
+    ev = record_events(ts, ovl)  # last-crossing events, final-rise widths (diagnostics.md)
+    first = np.nanmin(ev["t50_first"]) if np.any(np.isfinite(ev["t50_first"])) else float("inf")
     reentry = bool(np.any((ts > first) & (losses > 0.9 * loss0))) if math.isfinite(first) else False
     tail = losses[-max(10, len(losses) // 20):]
-    summary = dict(task=task, eta=eta, eta_max=em, K=spec.n_cores, steps=k_last,
-                   diverged=diverged, t50=ev50, t10=ev10, t90=ev90, n_cross=n_cross,
-                   reentry=reentry, loss0=loss0, loss_end=float(losses[-1]),
+    finite = losses[np.isfinite(losses)]
+    max_rise = float(np.max(np.diff(finite)) / loss0) if len(finite) > 1 else 0.0
+    summary = dict(task=task, eta=eta, eta_max=em, lam_gf=lam_gf, K=spec.n_cores, steps=k_last,
+                   diverged=diverged, **ev, reentry=reentry, max_rise=max_rise,
+                   loss0=loss0, loss_end=float(losses[-1]),
                    loss_tail_mean=float(np.mean(tail)), loss_tail_min=float(np.min(tail)),
                    loss_tail_max=float(np.max(tail)), a_end=ovl[-1].tolist(), probe=probe,
                    wall=time.time() - t0)
@@ -144,17 +155,21 @@ def tasks_from_config(cfg):
     for block in cfg["blocks"]:
         for sigma, seed, ratio in itertools.product(block["sigmas"], block["seeds"],
                                                     ["gf"] + list(block["ratios"])):
-            out.append(dict(tree=block["tree"], n=block["n"], sigma=sigma, seed=seed, ratio=ratio,
-                            T=block["T"][sigma] if isinstance(block["T"], dict) else block["T"],
-                            root_scale=block.get("root_scale"),
-                            centred=block.get("centred", False)))
+            task = dict(tree=block["tree"], n=block["n"], sigma=sigma, seed=seed, ratio=ratio,
+                        T=block["T"][sigma] if isinstance(block["T"], dict) else block["T"],
+                        root_scale=block.get("root_scale"), centred=block.get("centred", False))
+            for key in ("chi", "ratio_ref", "gf_loss_floor", "T_gf"):  # optional block options
+                if key in block:
+                    val = block[key]
+                    task[key] = val[sigma] if isinstance(val, dict) else val
+            out.append(task)
     return out
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
-    ap.add_argument("--workers", type=int, default=30)
+    ap.add_argument("--workers", type=int, default=min(30, os.cpu_count() or 1))
     args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
     cfg = yaml.safe_load(Path(args.config).read_text())
     tasks = tasks_from_config(cfg)
@@ -162,9 +177,14 @@ def main():
     # Longest runs first (smallest ratio, largest T) so the pool drains evenly.
     tasks.sort(key=lambda t: -(t["T"] / (1e-9 if t["ratio"] == "gf" else t["ratio"])))
     print(f"{len(tasks)} tasks", flush=True)
+    # Two phases: GF references first (steps relative to lambda_GF need them), then GD.
+    phases = [[t for t in tasks if t["ratio"] == "gf"], [t for t in tasks if t["ratio"] != "gf"]]
+    i = 0
     with Pool(args.workers) as pool:
-        for i, (tag, status) in enumerate(pool.imap_unordered(run, tasks)):
-            print(f"[{i + 1}/{len(tasks)}] {tag} {status}", flush=True)
+        for phase in phases:
+            for tag, status in pool.imap_unordered(run, phase):
+                i += 1
+                print(f"[{i}/{len(tasks)}] {tag} {status}", flush=True)
 
 
 if __name__ == "__main__":
