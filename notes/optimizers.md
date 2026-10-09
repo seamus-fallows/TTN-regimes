@@ -59,23 +59,31 @@ origin theta(tau) = sigma psi(tau / sigma) solves it whenever psi does, so leavi
 costs tau = O(sigma), and growing every learned core entry to its final size c_* costs tau ~ c_*.
 Hence **n_1 lr -> A (a constant ~ the learned entry size, O(0.1-1)) as sigma -> 0**: the first-escape
 time in steps is ~A / lr, independent of sigma. When gradients grow quickly (an escape),
-|mhat / sqrt(vhat)| can exceed 1, up to (1 - beta1) / sqrt(1 - beta2) = 3.2 for default betas, so
-A is only defined up to this factor.
+|mhat / sqrt(vhat)| can exceed 1: a single spike gives (1 - beta1) / sqrt(1 - beta2) = 3.2 for default
+betas, and the general bound (Cauchy-Schwarz over the gradient history, ignoring bias correction) is
+(1 - beta1) / sqrt((1 - beta2)(1 - beta1^2 / beta2)) = 7.3; A is only defined up to such a factor.
+(Corrected after review round 1: v1 quoted 3.2 as the bound.)
 
 **(d) eps restores GF below a crossover scale.** If |g_i| << eps, u ~ mhat / eps: Adam is GD
 (EMA momentum) with learning rate lr / eps, i.e. GF with t = lr n / eps. The gradient at the init
 has rms c_g sigma^(K-1) (measured: c_g = 0.22 binary4, 0.011 binary8, 0.031 mps8, d = 3, chi = 4,
-odeco (3, 2, 1)), so for
+odeco (3, 2, 1)), so Adam enters this GD-like regime for
 
-  sigma < sigma_eps = (eps / c_g)^(1/(K-1))   (eps = 1e-8: 2e-4 binary4, 0.10 binary8, 0.12 mps8)
+  sigma < sigma_g = (eps / c_g)^(1/(K-1))   (eps = 1e-8: 2e-4 binary4, 0.10 binary8, 0.12 mps8),
 
-Adam first crawls along the GF path until the gradient reaches ~eps:
+and then first crawls along the GF path until the gradient reaches ~eps:
 
-  n_1 lr ~ eps T_GF(sigma -> sigma_eps) + A,   i.e. n_1 lr ~ eps C sigma^-(K-2) for sigma << sigma_eps.
+  n_1 ~ (eps / lr) T_GF(sigma) + n_sign(lr),
 
-**The sigma^-(K-2) plateau law comes back under Adam, with prefactor eps / lr**, for inits below
-sigma_eps. With the default eps = 1e-8 this crossover (~0.1 per core) sits inside the range of
-small inits used in practice for K >= 7.
+with n_sign the sign-phase escape (n_sign lr = tau_sign, 0.17-0.30 here). **The sigma^-(K-2) plateau
+law comes back under Adam, with prefactor eps / lr.** It dominates the first escape only once
+eps T_GF(sigma) > lr n_sign(lr) = tau_sign, i.e. below the crossover sigma_x defined by
+eps T_GF(sigma_x) = tau_sign(lr), which is much smaller than sigma_g when T_GF grows slowly: binary4
+(T_GF ~ 0.67 / sigma): sigma_x ~ 4 eps / tau_sign ~ 1e-7 to 1e-8; MPS8 (T_GF = T_0 (0.3 / sigma)^6,
+T_0 ~ 1e3-7e3): sigma_x ~ 0.08 (tested, 2.7). sigma_x depends on lr only through tau_sign(lr) = lr n_sign,
+which is lr-independent in the sign-flow limit and grows at large lr (0.17 -> 0.30 from lr 1e-4 to 1e-2 on
+binary4). Only K = 8 (MPS8) was tested. (Corrected after review round 1: v1 equated the crossover with
+sigma_g and quoted "~0.1 for K = 7-8".)
 
 **(e) Order and incremental learning (heuristic).** Each coordinate moves at the same speed lr,
 with the sign of the *total* gradient, which is dominated by the component with the largest
@@ -95,18 +103,21 @@ stops when the preconditioned sharpness lambda_max(P^-1 H) reaches the adaptive-
 threshold 2 (1 + beta1) / ((1 - beta1) lr) (= 38 / lr for beta1 = 0.9; Cohen et al. 2022, cited
 from memory): oscillations along the stiff learned directions then keep v from decaying further.
 From then on Adam is GD with an **lr-independent** step of ~2 (1 + beta1) / ((1 - beta1) lambda_max)
-GF-time units per step (lambda_max ~ K s^(2 - 2/K) of the learned components). A plateau that
-needs GF time T (from the dormant amplitudes Adam has at its start) therefore lasts
+GF-time units per step (lambda_max ~ K s^(2 - 2/K) of the learned components). Which phase a given
+plateau ends in must be checked with the probe: on binary8 (seed 0, sigma = 0.3) the preconditioned
+sharpness stays at 0.05-0.4 of the threshold during the second plateau and reaches it only on the last
+one (2.2; review round 1). A plateau that needs GF time T (from the dormant amplitudes Adam has at its
+start) therefore lasts
 
   n(T) ~ (2 / (1 - beta2)) ln(1 + T P_0 (1 - beta2) / (2 lr))           while P is still decaying,
   n(T) ~ n_AEoS + (T - T_AEoS) (1 - beta1) lambda_max / (2 (1 + beta1))  once P is held at the AEoS.
 
 Short GF plateaus (binary N = 4) end in the first, logarithmic phase: weak dependence on sigma and
-on lr, a strong one on beta2. Long ones (deep trees) end in the second, linear phase: the GF time
-scale is back, converted at a fixed rate of ~lambda_max / 38 steps per GF-time unit. Whether the
-sigma^-(k-2) law also comes back depends on whether the dormant amplitudes at the start of the
-plateau still remember sigma: Adam's sign phase during the first escape moves every coordinate by
-~lr per step, so they need not.
+on lr, a strong one on beta2. Long ones may end in the second, linear phase, where the GF time scale is
+back, converted at a fixed rate of ~lambda_max / 38 steps per GF-time unit. Whether the sigma^-(k-2) law
+also comes back depends on whether the dormant amplitudes at the start of the plateau still remember
+sigma (on MPS8 at small sigma they stay at their init level, 2.7). This model is heuristic; it was not
+fitted per seed, and its sigma dependence was not resolved (2.5).
 
 **(f) Balance (heuristic).** Under the sign flow every active core entry grows at the same rate, so
 at the end of an escape entries have similar magnitudes in every core, and ||G_v||^2 is roughly
@@ -135,7 +146,9 @@ grown they rotate on an O(1 / ||R||^2) time scale; periodic re-gauging keeps the
 Re-gauging at t = 0 alone is GF from a maximally imbalanced init (all scale in the root), the
 "small root" case of `notes/theory_regimes.md` R11, which is lazy-like for the root. Prediction:
 first event at t = O(1) (lr n), all components rising together, order set by the projections of the
-components onto the random initial frames (not by weight), balance index near 1 on every edge.
+components onto the random initial frames, balance index near 1 on every edge. (Review round 1: on binary4
+the largest component comes strictly first in 6/6 seeds and the events are spread over 38-112 steps, so the
+projections follow the weights there and "together" is too strong.)
 
 **Correction for deep trees (derived after the binary8 / mps8 data, section 2.5).** The O(1) statement
 assumes that the projection E^T W* of the teacher onto the random initial frames is O(1). A random
@@ -187,8 +200,10 @@ is ~sigma^-(K-1) times larger than the core. In the aligned scalar model (b_v = 
 W = b^K), b' = b + lr (s - b^K) / b^(K-1): from b = sigma the first step overshoots to
 W ~ (lr s)^K sigma^(-K(K-1)), after which W decays by (1 - lr)^K per step. Steps to come back:
 n ~ (K - 1) ln(1/sigma) / lr. **Plateau replaced by an overshoot of the loss followed by a
-geometric return lasting ~ln(1/sigma)/lr steps**; events (a_r = 1/2) are crossed at step 1 by the
-overshoot and are not meaningful. Damping (here: each Kronecker factor + damping x mean eigenvalue)
+geometric return lasting ~ln(1/sigma)/lr steps** (W overshoots as sigma^-K(K-1), the loss as
+sigma^-2K(K-1) = sigma^-12 at K = 3); events (a_r = 1/2) are crossed at step 1 by the overshoot and are not
+meaningful, so events are only defined after the loss has returned below L0 (analysis). The return-time
+law fails in kind (2.3). Damping (here: each Kronecker factor + damping x mean eigenvalue)
 caps the overshoot. Near the global minimum (b^K = s) the update is stable for lr < 2/K.
 
 ## 2. Results

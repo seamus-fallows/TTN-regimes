@@ -5,7 +5,7 @@ balance index and ||Q_e|| per edge) at scheduled points, and for the discrete me
 trace `fine_t`, `fine_loss`, `fine_overlaps` (every `stride` steps) used for event times.
 
 Clock of each method (`t` in the trajectory):
-  gf                                         gradient-flow time (ttn.dynamics.integrate_gf, LSODA)
+  gf                                         gradient-flow time (scipy LSODA, exact event location)
   gd, momentum, adam, rmsprop, regauge,
   precond, riemannian                         steps n (not lr * n)
   als, dmrg                                   sweeps (one micro-step = one core / bond update)
@@ -27,7 +27,7 @@ from experiments.optimizers.gauge import (
     leg_to,
     move_center,
 )
-from ttn.dynamics import Problem, Trajectory, integrate_gf
+from ttn.dynamics import Problem, Trajectory
 from ttn.network import TTNSpec, apply_on_leg, to_dense
 
 
@@ -101,18 +101,101 @@ def _fine_stride(n_max: int) -> int:
     return max(1, n_max // 50_000)
 
 
+def _fine_due(n: int, stride: int) -> bool:
+    """Fine-trace sample at step n: every step for the first 2000 steps (fast escapes, e.g. Adam's
+    ~20-step first escape at lr 1e-2), then every `stride` steps."""
+    return n < 2000 or n % stride == 0
+
+
 # ---- gradient flow (reference) ---------------------------------------------------------------
 
 
+LEVELS = (0.1, 0.5, 0.9)
+
+
 def run_gf(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
-    """Library integrator (LSODA: later plateaus are stiff), on a log + linear time grid."""
+    """Gradient flow with exact event location (analysis standard 1).
+
+    scipy LSODA (the solver behind the library's integrate_gf(method="lsoda")) on the library's
+    velocity and exact Hessian, with root-finding of every crossing of a_r = 0.1, 0.5, 0.9
+    (`xing_<r>_<level>` arrays in the trajectory) and a terminal event at L = tol L0. If scipy's root
+    finder fails on LSODA's interpolant, the run is repeated with Radau (as in experiments/locality).
+    Diagnostics on a log + linear grid come from the dense output."""
+    import time as _t
+
+    from scipy.integrate import solve_ivp
+
     t_max = float(cfg["t_max"])
+    rtol, atol = cfg.get("rtol", 1e-9), cfg.get("atol", 1e-14)
     loss0 = p.loss(x0).item()
-    grid = np.unique(np.concatenate([np.geomspace(1e-3, t_max, 600), np.linspace(0, t_max, 1201)]))
+    floor = cfg.get("tol", 1e-6) * loss0
+    n_comp = p.target.n_components
+    memo = {}
+
+    def overlaps(y):
+        key = y.tobytes()
+        if key not in memo:
+            memo.clear()
+            with torch.no_grad():
+                spec, cores = p.effective(torch.from_numpy(y))
+                memo[key] = p.target.component_overlaps(spec, cores).numpy()
+        return memo[key]
+
+    events = [(lambda r, lev: lambda t, y: overlaps(y)[r] - lev)(r, lev)
+              for r in range(n_comp) for lev in LEVELS]
+
+    def converged(t, y):
+        with torch.no_grad():
+            return p.loss(torch.from_numpy(y)).item() - floor
+
+    converged.terminal = True
+    events.append(converged)
+    wall0 = _t.time()
+    wall_limit = cfg.get("wall_limit", 3600)
+
+    def fun(t, y):
+        if _t.time() - wall0 > wall_limit:
+            raise TimeoutError
+        return p.velocity(torch.from_numpy(y)).numpy()
+
+    def jac(t, y):
+        return p.jacobian(torch.from_numpy(y)).numpy()
+
+    method, status = "LSODA", "ok"
+    try:
+        try:
+            sol = solve_ivp(fun, (0, t_max), x0.numpy().copy(), method="LSODA", jac=jac, rtol=rtol,
+                            atol=atol, events=events, dense_output=True)
+        except ValueError:
+            memo.clear()
+            method = "Radau"
+            sol = solve_ivp(fun, (0, t_max), x0.numpy().copy(), method="Radau", jac=jac, rtol=rtol,
+                            atol=atol, events=events, dense_output=True)
+    except TimeoutError:
+        status = "timeout"
+        sol = None
     rec = make_recorder()
-    traj = integrate_gf(p, x0, t_max, log_times=grid[grid > 0], rtol=cfg.get("rtol", 1e-9),
-                        atol=cfg.get("atol", 1e-14), loss_floor=cfg.get("tol", 1e-6) * loss0,
-                        recorder=rec, method=cfg.get("method", "lsoda"))
+    rec.start(p, x0)
+    data_extra = {}
+    if sol is None:
+        rec.record(p, x0, 0.0, step=0)
+        t_end, stop = 0.0, "timeout"
+    else:
+        t_end = float(sol.t[-1])
+        grid = np.unique(np.concatenate([[0.0], np.geomspace(1e-3, t_end, 600), np.linspace(0, t_end, 1201),
+                                         [t_end]]))
+        grid = grid[grid <= t_end]
+        for k, t in enumerate(grid):
+            rec.record(p, torch.from_numpy(sol.sol(t)), float(t), step=k)
+        for i, (r, lev) in enumerate((r, lev) for r in range(n_comp) for lev in LEVELS):
+            data_extra[f"xing_{r}_{lev}"] = np.asarray(sol.t_events[i], dtype=float)
+        stop = {1: "converged", 0: "completed", -1: "failed"}[sol.status]
+    traj = Trajectory(rec.arrays(), {"stop_reason": stop, "integrator": method, "rtol": rtol, "atol": atol,
+                                     "t_end": t_end, "nfev": int(sol.nfev) if sol else 0,
+                                     "njev": int(sol.njev) if sol else 0, "event_location": "exact",
+                                     "status": status})
+    traj.data.update(data_extra)
+    traj.data["theta_end"] = (sol.y[:, -1] if sol is not None else x0.numpy()).copy()
     traj.data["teacher_spectra"] = teacher_spectra(p)
     return traj
 
@@ -156,7 +239,7 @@ def run_first_order(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
         done = stop(loss_v) or n == n_max
         if n in sched or done:
             log.full(x, float(n), step=n)
-        if n % stride == 0 or done:
+        if _fine_due(n, stride) or done:
             log.cheap(x, float(n), loss_v, step=n)
         if done:
             break
@@ -204,7 +287,7 @@ def run_precond(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
         done = stop(loss_v) or n == n_max
         if n in sched or done:
             log.full(x, float(n), step=n)
-        if n % stride == 0 or done:
+        if _fine_due(n, stride) or done:
             log.cheap(x, float(n), loss_v, step=n)
         if done:
             break
