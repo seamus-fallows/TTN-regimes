@@ -3,8 +3,9 @@ resumable sweep loop (until ttn.runner lands).
 
 cfg keys: exp, kind, n, d, chi, cap, sigma, seed, model (centred | plain | twocopy); optional
 weights (default [3, 2, 1]), root_scale (root init multiplier, imbalance), lr (sp | ntk | mup),
-bonds ({subtree size: bond dim}), method (dopri5 | lsoda), tau_max (kernel-time budget, default
-1e4), l_floor (stop when L < l_floor L(0), default 1e-6), rtol (1e-8), atol (1e-12).
+bonds ({subtree size: bond dim}), method (dopri5 | lsoda | auto = lsoda for sigma < 0.7), tau_max
+(kernel-time budget, default 1e4), l_floor (stop when L < l_floor L(0), default 1e-6), max_steps
+(default 1e5; a run stopped there is labelled from its state at that time), rtol (1e-8), atol (1e-12).
 
 Time budget: T = 50 t_esc + tau_max / max(lambda_bar, 1), t_esc = (0.3 sigma)^-(K-2) / ((K-2) s_min)
 (aligned escape-time estimate for the smallest component) and lambda_bar = tr Theta(0) / D
@@ -103,7 +104,7 @@ def kernel_weights(problem: Problem) -> torch.Tensor | None:
     return problem.precond
 
 
-def refine_events(problem: Problem, t, A, params, kw, n_dense=200):
+def refine_events(problem: Problem, t, A, params, kw, n_dense=200, max_steps=100_000):
     """Event times and final-rise widths resolved in linear time.
 
     The log-time grid cannot resolve O(1)-wide events at late times (spacing ~1% of t). For each
@@ -127,7 +128,7 @@ def refine_events(problem: Problem, t, A, params, kw, n_dense=200):
             continue
         span = t[i1] - t[i0]
         grid = np.linspace(0.0, span, n_dense + 1)[1:]
-        sub = integrate_gf(problem, torch.from_numpy(params[i0]), span, log_times=grid,
+        sub = integrate_gf(problem, torch.from_numpy(params[i0]), span, log_times=grid, max_steps=max_steps,
                            recorder=Recorder(spectra=False, conservation=False), **kw)
         ts, a = sub["t"] + t[i0], sub["overlaps"][:, r]
         w = dg.event_widths(ts, a)
@@ -151,15 +152,27 @@ def run_point(cfg: dict) -> dict:
     t_esc = (0.3 * sigma) ** (-(K - 2)) / ((K - 2) * s_min) if K > 2 else math.log(1 / (0.3 * sigma)) / s_min
     t_max = cfg.get("t_max") or (50 * t_esc + cfg.get("tau_max", 1e4) / max(info["lam_bar"], 1.0))
     L0 = problem.loss(theta0).item()
-    kw = dict(rtol=cfg.get("rtol", 1e-8), atol=cfg.get("atol", 1e-12), method=cfg.get("method", "dopri5"))
-    traj = integrate_gf(
-        problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=cfg.get("l_floor", 1e-6) * L0,
-        recorder=Recorder(save_params=True), **kw,
-    )
+    method = cfg.get("method", "dopri5")
+    if method == "auto":  # LSODA for the stiff later plateaus at small sigma, dopri5 otherwise
+        method = "lsoda" if sigma < 0.7 else "dopri5"
+    kw = dict(rtol=cfg.get("rtol", 1e-8), atol=cfg.get("atol", 1e-12), method=method)
+    floor = cfg.get("l_floor", 1e-6) * L0
+
+    def integrate(kw):
+        return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
+                            max_steps=cfg.get("max_steps", 100_000), recorder=Recorder(save_params=True),
+                            **kw)
+
+    traj = integrate(kw)
+    if traj.meta["stop_reason"] == "failed" and method == "lsoda":  # fall back to the reference
+        kw["method"] = "dopri5"
+        traj = integrate(kw)
+    if traj.meta["stop_reason"] in ("failed", "nonfinite", "step_size_underflow"):
+        raise RuntimeError(f"integration failed: {traj.meta['stop_reason']} {traj.meta.get('message')}")
     params = traj.data.pop("params")  # (n_log, P); used for the event refinement only, not saved
     theta_end = torch.from_numpy(traj["theta_end"])
     t, A = traj["t"], traj["overlaps"]
-    times, widths, refined = refine_events(problem, t, A, params, kw)
+    times, widths, refined = refine_events(problem, t, A, params, kw, max_steps=cfg.get("max_steps", 100_000))
     rhos = dg.separation_ratios(times, widths)
 
     probes = torch.randn(N_PROBE, cfg["n"], cfg["d"], generator=torch.Generator().manual_seed(PROBE_SEED),
@@ -194,6 +207,7 @@ def run_point(cfg: dict) -> dict:
     row = {k: v for k, v in cfg.items()}
     row.update(
         K=K, P=problem.spec.n_params, alpha=info["alpha"], lam_bar=info["lam_bar"], t_max=t_max,
+        integrator=kw["method"],
         t_end=float(traj.meta["t_end"]), stop=traj.meta["stop_reason"], stiff_at=traj.meta.get("stiff_at"),
         n_steps=traj.meta["n_steps"], L0=L0, l_end=l_end, l_best=l_best, dK=dK, dK_dir=dK_dir,
         dth=float(traj["rel_dist_from_init"][-1]), dth_core=dth_core,

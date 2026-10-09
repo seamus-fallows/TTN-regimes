@@ -1,17 +1,18 @@
 # sigma x K: binary N = 4, 8, 16 (K = 3, 7, 15) and MPS N = 4..12 (K = N); d = 3, chi = 3
 # (teacher rank), odeco [3, 2, 1], centred model, gradient flow with LSODA (P <= ~400).
 # sigma_min = 10^(-8/K) keeps the initial component amplitudes ~sigma^K above ~1e-8, far from the
-# float64 floor of the gradient (lead's note on dormant components).
+# float64 floor of the gradient (lead's note on dormant components). sigma_max = 3-4: above it the
+# deficient-bond centred runs only stall at the unrealizable best fit and cost ~1e5+ stiff steps.
 exp: sigma_K
-base: {d: 3, chi: 3, cap: true, model: centred, method: lsoda, l_floor: 1.0e-6}
+base: {d: 3, chi: 3, cap: true, model: centred, method: auto, l_floor: 1.0e-6}
 grid: {seed: [0, 1, 2, 3, 4, 5]}
 variants:
-  - {kind: binary, n: 4, sigmas: {geomspace: [0.02, 10, 18]}}
-  - {kind: mps, n: 4, sigmas: {geomspace: [0.02, 10, 18]}}
-  - {kind: mps, n: 5, sigmas: {geomspace: [0.025, 10, 17]}}
-  - {kind: mps, n: 6, sigmas: {geomspace: [0.05, 10, 15]}}
-  - {kind: binary, n: 8, sigmas: {geomspace: [0.07, 10, 14]}}
-  - {kind: mps, n: 8, sigmas: {geomspace: [0.1, 10, 13]}}
-  - {kind: mps, n: 10, sigmas: {geomspace: [0.16, 10, 12]}}
-  - {kind: mps, n: 12, sigmas: {geomspace: [0.22, 10, 11]}}
-  - {kind: binary, n: 16, sigmas: {geomspace: [0.29, 10, 10]}}
+  - {kind: binary, n: 4, sigmas: {geomspace: [0.02, 4, 16]}}
+  - {kind: mps, n: 4, sigmas: {geomspace: [0.02, 4, 16]}}
+  - {kind: mps, n: 5, sigmas: {geomspace: [0.025, 3, 15]}}
+  - {kind: mps, n: 6, sigmas: {geomspace: [0.05, 3, 13]}}
+  - {kind: binary, n: 8, sigmas: {geomspace: [0.07, 3, 12]}}
+  - {kind: mps, n: 8, sigmas: {geomspace: [0.1, 3, 11]}}
+  - {kind: mps, n: 10, sigmas: {geomspace: [0.16, 3, 10]}}
+  - {kind: mps, n: 12, sigmas: {geomspace: [0.22, 3, 9]}}
+  - {kind: binary, n: 16, sigmas: {geomspace: [0.29, 3, 9]}}

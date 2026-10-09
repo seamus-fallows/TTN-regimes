@@ -1,14 +1,68 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-09 19:56 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-09 20:15 UTC
 
 ## Summary
-In progress. Task: phase diagrams of saddle-to-saddle / rich non-incremental / lazy dynamics over
-init scale sigma, bond dimension chi, number of cores K and core imbalance, with predicted
-boundaries and threshold sensitivity (brief `notes/briefs/regime-map.md`).
+Task: phase diagrams of saddle-to-saddle (S2S) / rich / lazy dynamics over init scale sigma, bond
+dimension chi, number of cores K and root imbalance, with predicted boundaries and threshold
+sensitivity. **Interim (first sigma x chi diagram, binary N = 4):** all three boundaries are
+predicted quantitatively. (i) The S2S boundary sigma_c(chi) is predicted per seed, to within one grid
+step, by extrapolating each seed's deepest run with the aligned-mode theory; sigma_c falls from 0.25
+(chi = 3) to 0.045 (chi = 36). (ii) The lazy boundary exists only at full bonds (chi >= 9 = cut
+dimension); the first-order kernel-change law delta_K = kappa / sigma^K computed at init predicts it at
+chi = 9-18 and underestimates it at chi >= 24, where x = ||W*|| / sigma^K is not small. (iii) Below the
+cut dimension the centred target is unrealizable and runs stall exactly at the best fit of W* + W_0
+(exact SVD), so no lazy regime exists there. Threshold sensitivity follows the predicted laws (S2S
+boundary x2.5 for rho 2 -> 5 at K = 3). Production sweeps (library integrator, N = 8, K = 3..15,
+imbalance, large chi) are running.
 
 ## Results
-(none yet)
+**Interim, binary N = 4 (K = 3), d = 3, teacher [3, 2, 1], 6 seeds per point, 8 chi x 19 sigma,
+centred model.** Dynamics: gradient flow, scipy RK45 rtol 1e-9 / atol 1e-14 (interim driver
+`experiments/regime_map/pilots/interim.py`; conservation drift <= 4e-11); raw runs in
+`/root/outputs/regime_map/b4_sigma_chi/`. Figure: `experiments/regime_map/results/phase_b4_sigma_chi_centred.png`
+(also `_plain`, `_twocopy`, and `sensitivity_b4_sigma_chi_centred.png`). Produced by
+`uv run python experiments/regime_map/plots.py sigma_chi b4_sigma_chi centred experiments/regime_map/results/lazy_pred_b4.csv`.
+
+![interim N=4 map](../../experiments/regime_map/results/phase_b4_sigma_chi_centred.png)
+
+| chi | S2S boundary sigma_c (S2S fraction = 1/2) | predicted (aligned extrapolation from deepest run, median of seeds) | lazy boundary sigma_lazy (lazy fraction = 1/2) | predicted, first order (kappa/0.1)^(1/3) |
+|---|---|---|---|---|
+| 3 | 0.25 | 0.34 | none (stalled; lazy residual 0.45) | - |
+| 4 | 0.13 | 0.13 | none (stalled) | - |
+| 6 | 0.14 | 0.13 | none (stalled) | - |
+| 9 (cut dim.) | 0.13 | 0.14 | 3.0 | 3.8 |
+| 12 | 0.10 | 0.10 | 2.1 | 2.4 |
+| 18 | 0.071 | 0.075 | 1.59 | 1.45 |
+| 24 | 0.076 | 0.074 | 1.26 | 0.98 |
+| 36 | 0.045 | 0.043 | 1.13 | 0.59 |
+
+Threshold sensitivity (boundaries in sigma; grid step x1.585):
+
+| chi | S2S rho>2 / >3 / >5 | ratio 2->5 (pred. 2.5) | lazy dK<0.05 / <0.1 / <0.2 | ratio (pred. 4^(1/3) = 1.59) |
+|---|---|---|---|---|
+| 3 | 0.34 / 0.25 / 0.16 | 2.2 | - | - |
+| 9 | 0.19 / 0.13 / 0.074 | 2.5 | 4.7 / 3.0 / 2.0 | 2.4 |
+| 18 | 0.11 / 0.071 / 0.045 | 2.5 | 2.0 / 1.59 / 1.26 | 1.6 |
+| 36 | 0.056 / 0.045 / 0.022 | 2.5 | 1.26 / 1.13 / 0.83 | 1.5 |
+
+Other interim findings (N = 4):
+- **Realizability (derived + empirical).** For chi < 9 the centred final loss equals the best
+  rank-chi fit of W_0 + W* (exact SVD, all runs to 3 digits), and the stall onset (triangles) is where
+  that fit reaches 1e-3 L_0 (sigma ~ 0.8-1.3). At large sigma the final loss equals the lazy residual
+  ||P_perp W*||^2 / ||W*||^2 computed at init (0.486 vs 0.488, 0.254 vs 0.253).
+- **Lazy law.** At sigma >= 3 and chi >= 24 the measured delta_K equals kappa / sigma^3 (kappa from
+  linear response at init) to < 1% (`results/lazy_pred_b4.csv`). kappa falls like chi^-3 under SP
+  (fan-in, unit rates) and chi^-1 under NTK-type rates, as `notes/theory_regimes.md` R10 predicts.
+- **Plain vs centred** (same grid): labels agree in 96.5% of runs; they differ where predicted: plain
+  is not lazy at chi = 12 (its large-sigma kernel change kappa_plain = 0.24 > 0.1) and plain converges
+  where the centred target is unrealizable (chi < 9, sigma ~ 1.6).
+- **Two-copy cross-check.** Lazy side agrees in mechanism but delta_K ~ sigma^-2K (second order,
+  measured ratio 1362 vs predicted 1372 between sigma = 3 and 10), so its lazy boundary is lower
+  (0.80 vs 1.13 at chi = 36). S2S side differs: the two mirror copies escape at the same time and each
+  learns half of components 1 *and* 2, merging events 1-2 at every sigma for chi >= 18 (S2S boundary
+  0.015 vs 0.075 at chi = 24). The two-copy model is therefore not a faithful cross-check of the S2S
+  boundary at large chi (empirical; `pilots/twocopy_mechanism.py`).
 
 ## What was done
 1. Read brief, model, diagnostics, plan; merged `origin/main`.
@@ -53,7 +107,13 @@ boundaries and threshold sensitivity (brief `notes/briefs/regime-map.md`).
 - `/root/outputs/regime_map/` raw outputs (none yet).
 
 ## Caveats and next steps
-(none yet)
+- Interim numbers come from the scipy driver with a log-time recording grid; deep-S2S widths there are
+  grid-limited (overestimated by up to ~0.5 at t ~ 20, so rho is underestimated far from the
+  boundary; near the boundary events occur at t <= 5 where the grid is fine). The production rerun
+  uses the library integrator with linear-time event refinement.
+- Running: sigma x chi for N = 8 (incl. full bonds chi = 81 and 2x-overparameterized 18/162),
+  sigma x K (binary N = 4, 8, 16; MPS N = 4..12), then imbalance (alpha x lambda), large chi
+  (sp / ntk / muP-TTN, N = 4 to chi = 128, N = 8 to chi = 32).
 
 ## Log
 - 18:18 started; read brief and notes; merged origin/main; machine has ~368 CPUs (cgroup quota), 125 GB RAM
@@ -64,3 +124,5 @@ boundaries and threshold sensitivity (brief `notes/briefs/regime-map.md`).
 - 19:10 interim N=4 map: S2S / rich / lazy (chi >= 12) / stalled (chi < 9, unrealizable); per-seed S2S boundary predicted within one grid step by aligned-mode extrapolation from the deepest run; two-copy merges events 1-2 (mirror copies escape together)
 - 19:20 merged library v0; wrote run_regime.py + sweep.py + YAML configs; found log-grid width resolution problem, added linear-time event refinement
 - 19:54 launched production sweeps (library): sigma_chi_b8 (462), sigma_K (768), sigma_chi_b4 (2736); queued imbalance_b4, large_chi_b4, large_chi_b8
+- 20:05 LSODA fails at huge sigma^K (K = 15, sigma = 10); added auto method (LSODA below sigma 0.7) with dopri5 fallback, max_steps caps, trimmed sigma ranges where deficient-bond runs only stall; relaunched (390 + 666 + 2736 runs)
+- 20:15 interim report: N = 4 sigma x chi map with predicted S2S, lazy and realizability boundaries

@@ -94,6 +94,17 @@ def scaling_sigma_c(df, ycol, K, rho_thr=3.0):
     return out
 
 
+def aligned_boundaries(df, ycol, K):
+    """Median over seeds of the per-seed S2S boundary predicted from each seed's deepest run."""
+    from analysis import aligned_sigma_c
+
+    out = {}
+    for y, sub in df.groupby(ycol):
+        vals = [aligned_sigma_c(rows, K)[0] for _, rows in sub.groupby("seed")]
+        out[y] = float(np.nanmedian(vals)) if np.isfinite(vals).any() else np.nan
+    return out
+
+
 def fig_sigma_chi(exp, model, lazy_csv=None, title=""):
     df = load(exp)
     df = df[df.model == model]
@@ -104,9 +115,19 @@ def fig_sigma_chi(exp, model, lazy_csv=None, title=""):
     ax.set_ylabel(r"bond dimension $\chi$")
     # predicted boundaries
     yi = {y: j for j, y in enumerate(ys)}
-    sc = scaling_sigma_c(df, "chi", K)
+    sc = aligned_boundaries(df, "chi", K)
     ax.plot([sc[y] for y in ys], range(len(ys)), "k--", lw=1.2, marker="o", ms=3,
-            label=r"S2S boundary from fit $\rho=R\sigma^{-(K-2)}+c$")
+            label="S2S boundary predicted from the deepest run\n(aligned-mode extrapolation, median of seeds)")
+    if "l_best" in df.columns and df.l_best.notna().any():
+        rb = {}
+        for y, sub in df.groupby("chi"):
+            sig = np.sort(sub.sigma.unique())
+            med = np.array([np.nanmedian(sub[sub.sigma == s].l_best.astype(float)) for s in sig])
+            rb[y] = boundary(sig, (med >= 1e-3).astype(float)) if np.nanmax(med) >= 1e-3 else np.nan
+        pts = [(yi[y], rb[y]) for y in ys if np.isfinite(rb.get(y, np.nan))]
+        if pts:
+            ax.plot([p[1] for p in pts], [p[0] for p in pts], ls="none", marker="v", ms=5, color=INK,
+                    label=r"realizability: best fit of $W^*+W_0$ reaches $10^{-3}L_0$")
     if lazy_csv is not None and model in ("centred", "twocopy"):
         lp = pd.read_csv(lazy_csv)
         lp = lp[lp.residual < 1e-6]
