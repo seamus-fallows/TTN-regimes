@@ -285,13 +285,16 @@ lr / P is then ~2-5 GF-time units per step, close to 38 / lambda_max (lambda_max
 - **P1 / A1 (sharpness at the GF minimum = K s_1^(2-2/K)): confirmed.** Hessian lambda_max at the end of
   converged runs / pattern-rule value (12.98 binary4, 46.03 binary8, 54.71 mps8; chi = 4 here, the extra
   bond label has gain 0): GF, GD and heavy ball 1.000-1.002 from balanced inits (binary4 fan-in too, where
-  the imbalance is O(sigma^2)); 1.04 (1.00-1.09) for fan-in binary8 GF, whose minimum keeps the fan-in
-  imbalance (balance index 0.19), consistent with P1's conserved-quantity correction.
+  the imbalance is O(sigma^2)); fan-in binary8 at sigma = 0.3-0.8: GF 1.04 (1.00-1.09), GD 1.08, heavy ball
+  1.10, whose minima keep the fan-in imbalance (balance index 0.19-0.32), consistent with P1's
+  conserved-quantity correction.
 - **P2 / A2 (every other minimum is at least as sharp): confirmed, and Adam lands on those.** Adam / RMSProp
-  end at imbalanced minima (balance index 0.3-0.8) with lambda_max / pattern rule = 1.06-1.37 (lr 1e-3) and
-  1.3-6.1 (lr 1e-2, means 1.3-2.5 by tree). The larger Adam's step, the sharper the minimum, the opposite of
-  GD's edge-of-stability selection (P3): Adam's stability constrains lambda_max(P^-1 H) < 38 / lr, not
-  lambda_max(H) < 2 / lr.
+  end at imbalanced minima (balance index 0.21-0.96) with lambda_max / pattern rule = 1.03-1.94 (Adam
+  lr <= 1e-3, means 1.15-1.38 per tree and init), 1.07-6.1 (lr 1e-2, means 1.31-2.78) and 1.01-1.59
+  (RMSProp); never below 1, as A2 requires. The larger Adam's step, the sharper the minimum, the opposite
+  of GD's edge-of-stability selection (P3): Adam's stability constrains lambda_max(P^-1 H) < 38 / lr, not
+  lambda_max(H) < 2 / lr. (Hessians of 3 converged runs per tree, init, sigma and method;
+  `theory_optimizer_P1P2.csv`.)
 - **P6 (GD event shift): consistent in magnitude only.** binary4, GD lr 0.02 vs GF, same seeds: measured
   shifts Delta t / lr = 2.7-5.4 against (1/2) ln(|grad L(t_r)| / |grad L(0)|) = 2.2-4.2 for sigma >= 0.016
   (measured 0.4-1.3 lr larger); at smaller sigma the shift (~0.1 time units) is below the resolution of my
