@@ -39,16 +39,31 @@ class Log:
         self.rec = make_recorder()
         self.rec.start(problem, theta0)
         self.fine: dict[str, list] = {"fine_t": [], "fine_loss": [], "fine_overlaps": []}
+        self.last_full = None
 
-    def full(self, theta: torch.Tensor, t: float, **info):
-        self.rec.record(self.p, theta.detach(), t, **info)
-
-    @torch.no_grad()
-    def cheap(self, theta: torch.Tensor, t: float, loss: float):
-        spec, cores = self.p.effective(theta.detach())
+    def cheap(self, theta: torch.Tensor, t: float, loss: float, **info):
+        """Fine-trace point; also a full record when the loss moved by > 2% or an overlap by > 0.02
+        since the last full record (resolves events whatever the step budget)."""
+        with torch.no_grad():
+            spec, cores = self.p.effective(theta.detach())
+            a = self.p.target.component_overlaps(spec, cores).numpy()
         self.fine["fine_t"].append(t)
         self.fine["fine_loss"].append(loss)
-        self.fine["fine_overlaps"].append(self.p.target.component_overlaps(spec, cores).numpy())
+        self.fine["fine_overlaps"].append(a)
+        last = self.last_full
+        if last is not None and (abs(np.log(max(loss, 1e-300) / max(last[0], 1e-300))) > 0.02
+                                 or np.max(np.abs(a - last[1])) > 0.02):
+            self.full(theta, t, **info)
+
+    def full(self, theta: torch.Tensor, t: float, **info):
+        rows = self.rec.rows
+        if rows.get("t") and rows["t"][-1] == t:
+            return
+        self.rec.record(self.p, theta.detach(), t, **info)
+        spec, cores = self.p.effective(theta.detach())
+        with torch.no_grad():
+            self.last_full = (self.rec.rows["loss"][-1],
+                              self.p.target.component_overlaps(spec, cores).numpy())
 
     def trajectory(self, theta_end: torch.Tensor, meta: dict) -> Trajectory:
         data = self.rec.arrays()
@@ -132,10 +147,10 @@ def run_first_order(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
         loss = p.loss(x)
         loss_v = loss.item()
         done = stop(loss_v) or n == n_max
-        if n % stride == 0 or done:
-            log.cheap(x, float(n), loss_v)
         if n in sched or done:
             log.full(x, float(n), step=n)
+        if n % stride == 0 or done:
+            log.cheap(x, float(n), loss_v, step=n)
         if done:
             break
         loss.backward()
@@ -180,10 +195,10 @@ def run_precond(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
         loss, g = p.loss_and_grad(x)
         loss_v = loss.item()
         done = stop(loss_v) or n == n_max
-        if n % stride == 0 or done:
-            log.cheap(x, float(n), loss_v)
         if n in sched or done:
             log.full(x, float(n), step=n)
+        if n % stride == 0 or done:
+            log.cheap(x, float(n), loss_v, step=n)
         if done:
             break
         step = precondition(p.spec, p.spec.unflatten(x), p.spec.unflatten(g), damping, damping_abs)
@@ -222,9 +237,9 @@ def run_riemannian(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
         loss_v = 0.5 * (w - w_star).pow(2).sum().item()
         x = spec.flatten(cores)
         done = stop(loss_v) or n == n_max
-        log.cheap(x, float(n), loss_v)
         if n in sched or done:
             log.full(x, float(n), step=n)
+        log.cheap(x, float(n), loss_v, step=n)
         if done:
             break
         cores = hsvd(spec, w - lr * tangent_project(spec, cores, w - w_star))
@@ -281,7 +296,7 @@ def run_sweeps(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
     log = Log(p, x0)
     stop = Stop(p.loss(x0).item(), cfg.get("tol", 1e-6))
     x = spec.flatten(cores)
-    log.cheap(x, 0.0, p.loss(x).item())
+    log.cheap(x, 0.0, p.loss(x).item(), step=0)
     log.full(x, 0.0, step=0)
     n_micro, done = 0, False
     for sweep in range(int(cfg["n_sweeps"])):
@@ -305,7 +320,7 @@ def run_sweeps(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
             loss_v = p.loss(x).item()
             done = stop(loss_v)
             t = sweep + (i + 1) / len(moves)
-            log.cheap(x, t, loss_v)
+            log.cheap(x, t, loss_v, step=n_micro)
             log.full(x, t, step=n_micro)
             if done:
                 break

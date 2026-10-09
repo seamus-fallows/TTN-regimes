@@ -48,6 +48,38 @@ def effective_ranks(spectra: np.ndarray, teacher_spectra: np.ndarray) -> np.ndar
     return np.array(out)
 
 
+def spectral_events(t: np.ndarray, spectra: np.ndarray, teacher: np.ndarray) -> dict:
+    """Rank-growth pattern from the bond spectra (notes/diagnostics.md, general-teacher events):
+    event (e, k) when s_k^e first reaches half its teacher value, width 10% -> 90% of it.
+
+    Returns: incremental = fraction of edges whose events come in the order k = 1, 2, ... with every
+    separation ratio > 3 (one singular value at a time); rho_min = median over edges of the smallest
+    separation ratio between consecutive k; edge_spread = median over k of
+    (latest - earliest edge time) / latest edge time (0: all edges at once; ~1: edge by edge)."""
+    n_edges = spectra.shape[1]
+    times = np.full((n_edges, spectra.shape[2]), np.nan)
+    inc, rho_mins = [], []
+    for e in range(n_edges):
+        ts = teacher[e][np.isfinite(teacher[e])]
+        ranks = int(np.sum(ts > 1e-8 * ts.max()))
+        curves = spectra[:, e, :ranks] / ts[:ranks]
+        te = crossing_times(t, curves, 0.5)
+        we = event_widths(t, curves)
+        times[e, :ranks] = te
+        if ranks >= 2 and np.all(np.isfinite(te)):
+            rho = separation_ratios(te, we)
+            inc.append(bool(np.all(np.diff(te) > 0) and np.all(rho > 3)))
+            rho_mins.append(float(np.nanmin(rho)))
+    spread = []
+    for k in range(times.shape[1]):
+        col = times[:, k][np.isfinite(times[:, k])]
+        if len(col) >= 2 and col.max() > 0:
+            spread.append((col.max() - col.min()) / col.max())
+    return {"incremental": float(np.mean(inc)) if inc else np.nan,
+            "rho_min": float(np.median(rho_mins)) if rho_mins else np.nan,
+            "edge_spread": float(np.median(spread)) if spread else np.nan}
+
+
 def summarize(path: Path) -> dict:
     traj = Trajectory.load(path)
     d, meta = traj.data, traj.meta
@@ -83,6 +115,8 @@ def summarize(path: Path) -> dict:
         row[f"rho_{i}"] = rho[i]
     row["t_first"] = sorted_t[0] if ok.any() else np.nan
     row["s2s"] = bool(ok.sum() >= 2 and np.all(rho > 3))
+    for k, v in spectral_events(d["t"], d["spectra"], d["teacher_spectra"]).items():
+        row[f"spec_{k}"] = v
     sp_end = d["spectra"][-1]
     row["eff_ranks_end"] = "".join(map(str, effective_ranks(sp_end, d["teacher_spectra"])))
     row["entropy_rank_mean_end"] = float(np.mean(entropy_rank(sp_end)))
