@@ -447,10 +447,10 @@ def fig_adam_escape(tag=""):
 
 
 def fig_implicit_bias(name: str = "implicit_bias_b4"):
-    """Finite samples (binary4, chi = 4 > teacher rank 3): fraction of runs recovering the teacher
-    (population loss < 1e-2 L0... here < 1e-2 absolute, L0 = 7) and fraction ending with a full-chi
-    interpolant (effective rank 4 on an edge), against the number of samples. Only runs that reached
-    the training tolerance are counted for the rank panel (GF: the long t_max = 1e6 runs)."""
+    """Round 1 (superseded by fig_implicit_bias2: one data draw per init seed). Finite samples (binary4,
+    chi = 4 > teacher rank 3): fraction of runs recovering the teacher (population loss < 1e-2, L0 = 7) and
+    fraction ending with a rank-4 edge, against n. All runs are counted, including runs that did not reach
+    the training tolerance (GF: the long t_max = 1e6 runs)."""
     df = with_keys(collect(name))
     gf_long = (df["optimizer"] == "gf") & (df["t_max"] == 1e6)
     df = df[(df["optimizer"] != "gf") | gf_long].copy()

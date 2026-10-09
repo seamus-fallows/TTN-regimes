@@ -45,16 +45,20 @@ uv run python -m experiments.optimizers.adam_probe experiments/optimizers/config
 uv run python -m experiments.optimizers.make_figures            # all figures and tables
 ```
 (`PYTHONPATH=.` may be needed so that `experiments` is importable.) Raw trajectories go to
-`/root/outputs/optimizers/<sweep>/` (override with `OPTIMIZERS_OUT`), one `.npz` per run (`Trajectory`
-format, cfg in meta), not in git; summaries and figures in `results/`.
+`/root/outputs/optimizers/<sweep>/` (override with `OPTIMIZERS_OUT` / `--out`), one `.npz` per run
+(`Trajectory` format, cfg in meta), not in git; summaries and figures in `results/`. Runs replaced in the fix
+round after review round 1 (GF without exact event location, Gram runs with the loss guard, binary8 Adam with
+the coarse trace) are in `<sweep>/superseded/` and are ignored by the analysis.
 
 | config | runs | what |
 |---|---|---|
-| `scaling_b4.yaml` | 672 | every optimizer, binary4 odeco, sigma 0.002-0.128, 6 seeds |
+| `scaling_b4.yaml` | 798 | every optimizer, binary4 odeco, sigma 0.002-0.128, 6 seeds |
 | `precond_b4.yaml` | 210 | Gram preconditioning: scale-free vs absolute damping |
 | `deep.yaml` | 864 | binary8 / mps8, odeco and E8, balanced and fan-in, sigma 0.3 and 0.8 |
+| `later_b8.yaml` | 168 | binary8 odeco, 7 sigma in [0.25, 0.8]: GF, Adam, re-gauged GD |
 | `eps_mps8.yaml` | 192 | Adam eps crossover, mps8, sigma 0.01-0.3 |
-| `implicit_bias_b4.yaml` | 240 | finite samples (n = 30-90): which interpolant |
+| `implicit_bias_b4.yaml` | 288 | finite samples, one data draw per init (round 1; superseded by `implicit_bias2_b4`) |
+| `implicit_bias2_b4.yaml` | 288 | finite samples n = 45, 60 with 4 independent data draws, paired GF / Adam |
 | `adam_probe.yaml` | 9 | Adam internals |
 | `pilot_calib.yaml`, `pilot_trap.yaml` | - | pilots (cost, fan-in trap) |
 
@@ -70,19 +74,22 @@ Any key of a config row can be swept: optimizer hyperparameters (`lr`, `beta`, `
 2. `adam_probe.py configs/adam_probe.yaml` (Adam internals).
 3. `make_figures.py --results-dir experiments/optimizers/results` (summaries are built on demand from the
    raw runs, cached as `<sweep>_summary.csv`; delete them to rebuild).
-4. `consistency.py p6` with `OPTIMIZERS_RESULTS=experiments/optimizers/results` (theory_optimizer checks;
-   needs the summaries of step 3).
+4. `consistency.py` with `OPTIMIZERS_RESULTS=experiments/optimizers/results` (theory_optimizer P1/P2/P6 and the
+   R12 route-end check; needs the summaries of step 3; `p6` adds the coarse path-form P6 table).
 Default output of steps 3-4 is `/root/outputs/optimizers/results` (outside git), so re-running never
 overwrites the committed results unless asked to.
 
-## Results (details, numbers and caveats in `notes/optimizers.md` section 2)
+## Results (details, numbers and caveats in `notes/optimizers.md` section 2; claims changed after review round 1 in its section 5)
 | figure / table | shows |
 |---|---|
-| `scaling_b4_scaling.png`, `scaling_b4_exponents.csv` | binary4: event times vs sigma for every optimizer (per-seed exponents): GF/GD/heavy ball p = 1.01, Adam/RMSProp first escape p = 0.01, gauge-aware methods p = 0 |
+| `scaling_b4_scaling.png`, `scaling_b4_exponents.csv` | binary4: event times vs sigma (per-seed exponents): GF/GD p = 1.007, heavy ball 0.970, Adam/RMSProp first escape p = 0.01, re-gauged GD p = 0 |
 | `scaling_b4_side_sigma0.008_seed0.png`, `deep_side_*.png` | loss, overlaps and bond spectrum per optimizer from the same init |
-| `later_b8_scaling.png`, `later_b8_exponents.csv` | binary8: GF p = 4.7 (theory 5); Adam first escape sigma-free, later plateaus p ~ 2.2-3.0; re-gauged GD sigma-free |
-| `adam_escape.png`, `eps_mps8_*.csv` | Adam's first escape: sign-flow limit (binary4) and eps crossover on mps8 with the parameter-free prediction (per seed within 0.97-1.05) |
-| `adam_probe.png` | Adam's preconditioner: memory decay, then adaptive edge of stability |
+| `later_b8_scaling.png`, `later_b8_exponents.csv` | binary8: GF p = 4.74 (4.99 on sigma <= 0.4; theory 5); Adam first escape sigma-free; later plateaus grow, no law; re-gauged GD sigma-free |
+| `adam_escape.png`, `eps_mps8_*.csv` | Adam's first escape: sign-flow limit (binary4) and the eps crossover on mps8 with the parameter-free prediction (per seed within 0.1%) |
+| `adam_probe.png` | Adam's preconditioner along four single runs (memory decay; AEoS reached on the last plateaus) |
 | `balance.png` | conservation-law drift (GF 1e-11, GD 1e-5, Adam O(1)) and Adam's final balance vs the entry-count heuristic |
-| `implicit_bias_b4.png` | finite samples: GF keeps bond rank 3, Adam/RMSProp more often fill chi = 4 and generalize worse |
-| `deep_table.csv`, `order_agreement_with_gf.csv`, `cost_table.csv`, `precond_b4_*.csv`, `theory_optimizer_P*.csv` | summary tables |
+| `implicit_bias2_b4.png`, `implicit_bias2_*.csv` | finite samples, 4 data draws: no population-loss difference between GF and Adam |
+| `order_agreement_with_gf.csv`, `order_independent_seeds.csv` | learning order vs GF (resolved orders only); sigma-free methods per independent seed (ties, weakest last, largest first) |
+| `r12_route_ends_mps8.csv` | conservation-law trap verified at the MPS8 route ends |
+| `theory_optimizer_P1P2.csv`, `theory_optimizer_P6_slope.csv` | sharpness at the minima (P1, P2); GD event shift slope (P6) |
+| `deep_table.csv`, `cost_table.csv`, `precond_b4_*.csv` | summary tables |
