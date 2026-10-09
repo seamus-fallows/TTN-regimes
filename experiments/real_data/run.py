@@ -43,6 +43,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).parent))
 from data import DenseHessianProblem, GNProblem, Task, build, function_spectra  # noqa: E402
 
+from ttn.diagnostics import kernel_change, tangent_kernel  # noqa: E402
 from ttn.dynamics import Recorder, integrate_gf, log_time_grid  # noqa: E402
 from ttn.network import forward  # noqa: E402
 
@@ -50,7 +51,8 @@ TASK_KEYS = ("dataset", "size", "pos", "neg", "n_train", "n_test", "data_seed")
 DEFAULTS = dict(dataset="mnist", size=4, pos=[3], neg=[5], n_train=4000, n_test=1600, data_seed=0,
                 tree="binary", ordering="quadtree", chi=4, features="raw", centred=False,
                 t2=1e4, n_per_decade=60, n_linear=1000, rtol=1e-8, atol=1e-14,
-                hessian="gn", escape_drop=0.01, wall_limit=3600, tag="")
+                hessian="gn", escape_drop=0.01, wall_limit=3600, tag="", kernel_probe=0,
+                t2_units="abs", t2_kernel=1000.0)
 
 
 def case_name(c: dict) -> str:
@@ -79,9 +81,18 @@ class RealRecorder(Recorder):
     and `fspectra` (data-weighted bond spectra on the training set, `data.function_spectra`), and
     `fine_fspectra` on fine rows (so `merged_rows(data, keys=("loss", "fspectra"))` resolves events)."""
 
-    def __init__(self, rp):
-        super().__init__(overlaps=False, extra=[("test", self._test), ("fspectra", self._fspec)])
-        self.rp = rp
+    def __init__(self, rp, kernel0=None, n_probe=0):
+        extra = [("test", self._test), ("fspectra", self._fspec)]
+        if kernel0 is not None:
+            extra.append(("delta_K", self._delta_k))
+        super().__init__(overlaps=False, extra=extra)
+        self.rp, self.kernel0, self.n_probe = rp, kernel0, n_probe
+
+    def _delta_k(self, prob, theta, t):
+        """delta_K = |Theta_t - Theta_0|_F / |Theta_0|_F on the first n_probe test images, and the
+        kernel scale tr(Theta_t) / n_probe."""
+        k = tangent_kernel(prob.spec, theta, self.rp.x_test[: self.n_probe])
+        return np.array([kernel_change(k, self.kernel0), k.trace().item() / self.n_probe])
 
     def _test(self, prob, theta, t):
         spec, cores = prob.effective(theta)
@@ -126,7 +137,9 @@ def run_case(c: dict, out_dir: Path) -> dict:
     loss0 = problem.loss(theta0).item()
     tau0 = theta0.norm().item() / problem.velocity(theta0).norm().item()
     grid1 = log_time_grid(1e-3 * tau0, 1e6 * tau0, int(c["n_per_decade"] * 9))
-    rec1 = RealRecorder(rp)
+    n_probe = c["kernel_probe"]
+    kernel0 = tangent_kernel(spec, theta0, rp.x_test[:n_probe]) if n_probe else None
+    rec1 = RealRecorder(rp, kernel0, n_probe)
     tr1 = integrate_gf(problem, theta0, 1e6 * tau0, log_times=grid1, rtol=c["rtol"], atol=c["atol"],
                        recorder=rec1, method="dopri5", loss_floor=(1 - c["escape_drop"]) * loss0,
                        max_wall_time=c["wall_limit"])
@@ -136,11 +149,23 @@ def run_case(c: dict, out_dir: Path) -> dict:
     if stop is None:
         # phase 2: LSODA on its own clock tau = t - t_a
         meta["t_a"] = tr1.meta["t_end"]
-        n_log = int(c["n_per_decade"] * np.log10(c["t2"] / 1e-2))
-        grid2 = np.union1d(log_time_grid(1e-2, c["t2"], n_log),
-                           np.linspace(0, c["t2"], c["n_linear"] + 1))
-        rec2 = RealRecorder(rp)
-        tr2 = integrate_gf(problem, torch.as_tensor(tr1["theta_end"]), c["t2"], log_times=grid2, rtol=c["rtol"],
+        theta_a = torch.as_tensor(tr1["theta_end"])
+        unit = 1.0
+        if c["t2_units"] == "kernel":
+            # 1 / mean per-sample |d f / d theta|^2 at theta_a (probe images): the time over which
+            # a linearized fit moves by O(1); lazy runs at large sigma have unit << 1
+            k_a = tangent_kernel(spec, theta_a, rp.x_test[:128])
+            unit = 128 / k_a.trace().item()
+        meta["t2_unit"] = unit
+        # horizon: t2 (absolute), or for t2_units = kernel min(t2, t2_kernel kernel units)
+        t2 = c["t2"] if c["t2_units"] == "abs" else min(c["t2"], c["t2_kernel"] * unit)
+        meta["t2"] = t2
+        t_lo = 1e-2 * min(1.0, unit)
+        n_log = int(c["n_per_decade"] * np.log10(t2 / t_lo))
+        grid2 = np.union1d(log_time_grid(t_lo, t2, n_log),
+                           np.linspace(0, t2, c["n_linear"] + 1))
+        rec2 = RealRecorder(rp, kernel0, n_probe)
+        tr2 = integrate_gf(problem, theta_a, t2, log_times=grid2, rtol=c["rtol"],
                            atol=c["atol"], recorder=rec2, method="lsoda",
                            max_wall_time=max(60.0, c["wall_limit"] - (time.time() - wall0)))
         meta["phase2"] = {k: v for k, v in tr2.meta.items() if k != "problem"}

@@ -134,3 +134,90 @@ def time_to_loss(t: np.ndarray, loss: np.ndarray, level: float) -> float:
 
 def runs_in(directory) -> list[dict]:
     return [load(p) for p in sorted(Path(directory).glob("*.npz"))]
+
+
+def loss_steps(run: dict, **kw) -> dict:
+    """Plateaus and drops of the training loss after the first escape (phase-2 clock, merged rows),
+    `ttn.diagnostics.find_plateaus` (judged in linear time; separation ratio > 3 for a plateau)."""
+    from ttn.diagnostics import find_plateaus
+
+    p2 = run["p2"]
+    plateaus, drops = find_plateaus(p2["t"], p2["loss"], **kw)
+    return {"plateaus": plateaus, "drops": drops}
+
+
+def first_rank_growth(ev: dict) -> tuple[float, list[int]]:
+    """Time of the first k >= 2 event (any edge, phase-2 clock) and the edges whose s_2 crosses within
+    the first event's width window of it."""
+    later = [r for r in ev["later"] if r[1] == 1]
+    if not later:
+        return np.nan, []
+    t0 = later[0][2]
+    return t0, sorted(r[0] for r in later if r[2] <= t0 + max(1.0, 0.1 * t0))
+
+
+def loss_drops(t: np.ndarray, loss: np.ndarray, valley_factor: float = 3.0,
+               min_drop: float = 0.01, rel_height: float = 0.5) -> list[dict]:
+    """Drops of a (creeping) loss curve, judged in linear time.
+
+    On real data the loss keeps decreasing slowly between learning events (ill-conditioned directions
+    inside the current bond-rank profile), so `find_plateaus`' progress-based widths (10% -> 90% of a
+    drop whose end is the next flattest point) measure that tail. Here a drop is a peak of the rate
+    r = -dL/dt that stands out by `valley_factor` against the lowest rate between it and its
+    neighbouring peaks (in both directions) and lowers L by at least `min_drop` x L(start) between those
+    minima. Its time is the rate peak, its width the full width at `rel_height` of the peak rate
+    (linear interpolation between samples), its size the loss change between the bracketing minima.
+    Separation ratios rho_i = gap / max(width_i, width_i+1) as in notes/diagnostics.md.
+    Returns one dict per drop: t, width, loss_before, loss_after, n_samples (inside the width).
+    """
+    t, loss = np.asarray(t, float), np.minimum.accumulate(np.asarray(loss, float))
+    keep = np.concatenate([[True], np.diff(t) > 0])
+    t, loss = t[keep], loss[keep]
+    tm = 0.5 * (t[1:] + t[:-1])
+    r = np.maximum(-(np.diff(loss) / np.diff(t)), 0.0)
+    if r.max() <= 0:
+        return []
+    # candidate peaks: local maxima of r
+    cand = [i for i in range(len(r)) if (i == 0 or r[i] >= r[i - 1]) and (i == len(r) - 1 or r[i] > r[i + 1])]
+    # keep peaks that rise by valley_factor above the minima separating them from higher neighbours
+    peaks = []
+    for i in cand:
+        left = [j for j in cand if j < i and r[j] >= r[i]]
+        right = [j for j in cand if j > i and r[j] >= r[i]]
+        lo_l = r[left[-1]:i + 1].min() if left else r[: i + 1].min()
+        lo_r = r[i:right[0] + 1].min() if right else r[i:].min()
+        if r[i] >= valley_factor * max(lo_l, lo_r, 1e-300):
+            peaks.append(i)
+    # bracketing minima and sizes; merge drops that are too small into the larger neighbour
+    def brackets(pk):
+        b = [0] + [a + int(np.argmin(r[a:c + 1])) for a, c in zip(pk[:-1], pk[1:])] + [len(r) - 1]
+        return b
+    while peaks:
+        b = brackets(peaks)
+        sizes = [loss[b[j]] - loss[b[j + 1] + 1 if j + 1 == len(peaks) else b[j + 1]] for j in range(len(peaks))]
+        j = int(np.argmin(sizes))
+        if sizes[j] >= min_drop * loss[0]:
+            break
+        del peaks[j]
+    out = []
+    b = brackets(peaks)
+    for j, i in enumerate(peaks):
+        half = rel_height * r[i]
+        a = i
+        while a > 0 and r[a - 1] > half:
+            a -= 1
+        c = i
+        while c < len(r) - 1 and r[c + 1] > half:
+            c += 1
+        def cross(k_in, k_out):
+            # time where r crosses `half` between tm[k_in] (above) and tm[k_out] (below)
+            if k_out < 0 or k_out >= len(r):
+                return tm[k_in]
+            f = (r[k_in] - half) / (r[k_in] - r[k_out])
+            return tm[k_in] + f * (tm[k_out] - tm[k_in])
+        t_lo, t_hi = cross(a, a - 1), cross(c, c + 1)
+        end = b[j + 1] + 1 if j + 1 == len(peaks) else b[j + 1]
+        out.append({"t": float(tm[i]), "width": float(t_hi - t_lo), "t_lo": float(t_lo),
+                    "t_hi": float(t_hi), "loss_before": float(loss[b[j]]),
+                    "loss_after": float(loss[end]), "n_samples": int(c - a + 1)})
+    return out
