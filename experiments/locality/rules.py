@@ -165,3 +165,87 @@ def naive_k(tree: Tree, patterns, learned, r) -> int:
         k = steiner_k(tree, S) if S else 0
         best = k if best is None else min(best, k)
     return best
+
+
+# ---- route rule (theory_saddles.md R1): lowest degree of a route with non-zero local residual ----
+
+def connected_subsets(tree: Tree, max_size: int):
+    """All connected node sets of size <= max_size (as frozensets)."""
+    nbrs = {v: set(tree.children[v]) | ({tree.parent[v]} if tree.parent[v] >= 0 else set())
+            for v in range(tree.n_nodes)}
+    found = {frozenset([v]) for v in range(tree.n_nodes)}
+    frontier = set(found)
+    for _ in range(max_size - 1):
+        new = set()
+        for c in frontier:
+            for v in c:
+                for u in nbrs[v] - c:
+                    new.add(c | {u})
+        new -= found
+        found |= new
+        frontier = new
+    return found
+
+
+def dense_pattern(patterns, weights, members, d: int) -> np.ndarray:
+    n = len(patterns[0])
+    w = np.zeros((d,) * n)
+    for r in members:
+        w[tuple(patterns[r])] += weights[r]
+    return w
+
+
+def _project_sites(t: np.ndarray, sites, basis: np.ndarray) -> np.ndarray:
+    """Project the axes `sites` of t onto span(columns of basis) (basis over the grouped sites)."""
+    n = t.ndim
+    rest = [i for i in range(n) if i not in sites]
+    perm = list(sites) + rest
+    m = np.transpose(t, perm).reshape(int(np.prod([t.shape[i] for i in sites])), -1)
+    m = basis @ (basis.T @ m)
+    out = m.reshape([t.shape[i] for i in perm])
+    return np.transpose(out, np.argsort(perm))
+
+
+def learned_subspace(w: np.ndarray, sites, tol=1e-10) -> np.ndarray:
+    """Orthonormal basis of the span of w's matricization restricted to the given sites (rows)."""
+    rest = [i for i in range(w.ndim) if i not in sites]
+    m = np.transpose(w, list(sites) + rest).reshape(int(np.prod([w.shape[i] for i in sites])), -1)
+    u, s, _ = np.linalg.svd(m, full_matrices=False)
+    if s.size == 0 or s[0] == 0:
+        return u[:, :0]
+    return u[:, s > tol * s[0]]
+
+
+def route_rule(tree: Tree, w_saddle: np.ndarray, w_star: np.ndarray, max_size: int | None = None,
+               tol: float = 1e-9):
+    """k* = smallest connected core set C whose local residual R_C is non-zero.
+
+    R_C is the residual R = W* - W projected, on every subtree hanging off C, onto the subspace
+    that the (fixed) outside cores already represent (the learned bond subspace of the saddle). A
+    route on C (new entries inside C, new bond indices on its internal edges) changes W only inside
+    that space, so its leading term is <R_C, .> of degree |C|. k* = 1 means a non-zero gradient.
+    Returns (k*, list of minimal C with their ||R_C|| / ||R||)."""
+    R = w_star - w_saddle
+    nR = np.linalg.norm(R)
+    if nR == 0:
+        return 0, []
+    max_size = max_size or tree.n_nodes
+    subsets = sorted(connected_subsets(tree, max_size), key=len)
+    best, hits = None, []
+    for C in subsets:
+        if best is not None and len(C) > best:
+            break
+        rc = R
+        for v in tree.edges:
+            p = tree.parent[v]
+            if (v in C) == (p in C):
+                continue
+            far = list(tree.subtree_sites[v]) if v not in C else \
+                [i for i in range(tree.n_sites) if i not in tree.subtree_sites[v]]
+            far = sorted(far)
+            rc = _project_sites(rc, far, learned_subspace(w_saddle, far))
+        norm = np.linalg.norm(rc) / nR
+        if norm > tol:
+            best = len(C)
+            hits.append((sorted(C), norm))
+    return best, hits
