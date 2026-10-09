@@ -22,7 +22,7 @@ import torch
 
 torch.set_num_threads(1)
 sys.path.insert(0, str(Path(__file__).parent))
-from analysis import load_records, mean_se, slope_se  # noqa: E402
+from analysis import law_rms, load_records, mean_se, slope_se  # noqa: E402
 from bond_events import RAW, npz_path  # noqa: E402
 from rules import get_tree, route_sequence  # noqa: E402
 from ttn.losses import population_loss  # noqa: E402
@@ -129,13 +129,17 @@ def main():
     # saddles; fit each event order separately (orders seen in < 3 seeds are listed, not fitted)
     for (case, tree, start, order, j), g in df.groupby(["case", "tree", "start", "order", "level_j"]):
         k = int(g["k_star"].iloc[0])
-        p, lg = [], []
+        p, lg, rl, rp = [], [], [], []
         for _, gs in g.groupby("seed"):
-            gs = gs[(gs["duration"] > 0) & gs["resolved"]]
+            gs = gs[(gs["duration"] > 0) & gs["resolved"]].sort_values("sigma", ascending=False)
             if gs["sigma"].nunique() >= 3:
                 x = np.log(1 / gs["sigma"].values)
                 p.append(slope_se(x, np.log(gs["duration"].values))[0])
                 lg.append(slope_se(x, gs["duration"].values)[0])
+            if gs["sigma"].nunique() >= 4:  # fair log-vs-power comparison (analysis standard 5)
+                x = np.log(1 / gs["sigma"].values)
+                rl.append(law_rms(x, gs["duration"].values, "log"))
+                rp.append(law_rms(x, gs["duration"].values, "power"))
         pm, pse = mean_se(p)
         lm, lse = mean_se(lg)
         summ.append(dict(case=case, tree=tree, start=start, order=order, level_j=j, level=g["level"].iloc[0],
@@ -143,6 +147,8 @@ def main():
                          unresolved=int((~g["resolved"]).sum()), seeds=g["seed"].nunique(),
                          fit_seeds=len(p), p_pred=max(k - 2, 0), p_fit=pm, p_se=pse,
                          logslope=lm, logslope_se=lse,
+                         rms_log_law=float(np.median(rl)) if rl else np.nan,
+                         rms_power_law=float(np.median(rp)) if rp else np.nan,
                          median_duration_smallest_sigma=g[g["sigma"] == g["sigma"].min()]["duration"].median()))
     s = pd.DataFrame(summ)
     s.to_csv(args.out + "_summary.csv", index=False, float_format="%.5g")
