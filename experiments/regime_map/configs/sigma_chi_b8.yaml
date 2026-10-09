@@ -2,18 +2,16 @@
 # (the top cut has dimension 81). Centred model (main family) and plain model (realizable for
 # chi >= teacher rank; theory_regimes section 3.4): the centred target is unrealizable for chi < 81
 # and floored above sigma ~ 0.75 (P4). chi = 3 has no spare channels (dead routes expected, P14).
-# The lazy regime at K = 7 needs full bonds; it is mapped at d = 2 (`sigma_chi_b8_d2.yaml`), because
-# full bonds at d = 3 (chi = 81, square cores) need tau ~ 1e5 for the lazy fit (P9) and the 2x
-# overparameterized version (bonds 18 / 162, 1.3e5 parameters) costs ~1 s per gradient under load.
+# Cost control (measured: K = 7 LSODA runs 10-30 min at P = 171 under full load, Hessian cost ~P^2):
+# sigma starts at 0.3 (rho ~ 3 (0.7/0.3)^5 ~ 200 there: deep S2S needs no further points), chi = 12
+# is dropped, chi = 24 uses dopri5. The lazy regime at K = 7 needs full bonds: `sigma_chi_b8_d2.yaml`.
 exp: sigma_chi_b8
-base: {kind: binary, n: 8, d: 3, cap: true, l_floor: 1.0e-6, max_steps: 30000}
+base: {kind: binary, n: 8, d: 3, cap: true, l_floor: 1.0e-6, max_steps: 20000}
 grid: {seed: [0, 1, 2, 3, 4, 5]}
 variants:
-  - {model: centred, chi: 3, method: auto, sigmas: {geomspace: [0.15, 4, 12]}}
-  - {model: centred, chi: 6, method: auto, sigmas: {geomspace: [0.15, 4, 12]}}
-  - {model: centred, chi: 12, method: auto, sigmas: {geomspace: [0.25, 4, 10]}}
-  - {model: centred, chi: 24, method: dopri5, sigmas: {geomspace: [0.45, 4, 8]}}
-  - {model: plain, chi: 3, method: auto, sigmas: {geomspace: [0.25, 1.5, 8]}}
-  - {model: plain, chi: 6, method: auto, sigmas: {geomspace: [0.25, 1.5, 8]}}
-  - {model: plain, chi: 12, method: auto, sigmas: {geomspace: [0.25, 1.5, 8]}}
-  - {model: plain, chi: 24, method: dopri5, sigmas: {geomspace: [0.45, 1.5, 6]}}
+  - {model: centred, chi: 3, method: auto, sigmas: {geomspace: [0.3, 4, 8]}}
+  - {model: centred, chi: 6, method: auto, sigmas: {geomspace: [0.3, 4, 8]}}
+  - {model: centred, chi: 24, method: dopri5, sigmas: {geomspace: [0.45, 4, 7]}}
+  - {model: plain, chi: 3, method: auto, sigmas: {geomspace: [0.3, 1.5, 6]}}
+  - {model: plain, chi: 6, method: auto, sigmas: {geomspace: [0.3, 1.5, 6]}}
+  - {model: plain, chi: 24, method: dopri5, sigmas: {geomspace: [0.45, 1.5, 5]}}

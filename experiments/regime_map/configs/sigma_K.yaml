@@ -15,8 +15,8 @@ variants:
   - {kind: mps, n: 4, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.02, 2, 13]}}
   - {kind: mps, n: 5, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.025, 2, 13]}}
   - {kind: mps, n: 6, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.05, 2, 12]}}
-  - {kind: binary, n: 8, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.1, 2, 11]}}
-  - {kind: mps, n: 8, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.12, 2, 11]}}
+  - {kind: binary, n: 8, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.2, 2, 9]}}
+  - {kind: mps, n: 8, method: auto, grid: {chi: [3, 6]}, sigmas: {geomspace: [0.2, 2, 9]}}
   - {kind: mps, n: 10, method: auto, chi: 3, sigmas: {geomspace: [0.2, 2, 10]}}
   - {kind: mps, n: 12, method: auto, chi: 3, sigmas: {geomspace: [0.25, 2, 9]}}
   - {kind: binary, n: 16, method: auto, chi: 3, sigmas: {geomspace: [0.3, 2, 9]}}

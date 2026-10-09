@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-09 22:12 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-09 22:40 UTC
 
 ## Summary
 Task: phase diagrams of saddle-to-saddle (S2S) / rich / lazy dynamics over init scale sigma, bond
@@ -160,3 +160,5 @@ Other interim findings (N = 4):
 - 21:45 library N = 4 data: per-seed rho exponent on the S2S side -1.03 (seed sd 0.001-0.09) vs predicted -(K-2) = -1 (interim log-grid data had given -0.5..-0.7); continuous per-seed threshold sensitivity
 - 21:55 heavy runs infeasible under load (binary16 chi = 6 Hessian 330 s, N = 8 chi = 81 gradient 0.2 s); stopped and restructured (decisions 13-14); relaunched 5749 runs
 - 22:10 d = 3 K >= 10 runs at chi = 6 stopped at step caps mid-plateau; moved the K sweep to d = 2 (sigma_K_d2, 1428 runs, P <= 600, LSODA); relaunched
+- 22:15 added full-bond K subset at d = 2 (sigma_K_full_d2); README rewritten
+- 22:38 N = 8 runs 10-30+ min each and N = 4 studies queued behind them: restarted as two pools (N = 4: 140 procs; heavy: 215 procs) with trimmed N = 8 grids (sigma >= 0.3 at K = 7, chi = 12 dropped at d = 3, MPS 10 dropped from the full-bond set)
