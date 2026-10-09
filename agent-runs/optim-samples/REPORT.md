@@ -1,6 +1,6 @@
 # optim-samples: learning rate, SGD noise and finite samples (Q8)
 
-Status: working (interim report after step 1) - Branch: agent/optim-samples - Updated: 2026-10-09 19:20 UTC
+Status: working (step 1 done; steps 2-3 in progress) - Branch: agent/optim-samples - Updated: 2026-10-09 20:10 UTC
 
 ## Summary
 Question: how do discrete-step GD, SGD noise and a finite training set change the gradient-flow
@@ -33,6 +33,29 @@ Setup: odeco teacher [3, 2, 1], d = 3, chi = 3, teacher seed 101, init seeds 0-4
 Figures (in `experiments/optim_samples/results/`): `fig_gd_vs_gf.png` (GD/GF agreement and
 prediction), `fig_stability.png` (eta_max vs prediction, outcome classes, 1D bifurcation diagram),
 `fig_eos_example.png` (EoS example: loss, overlaps, sharpness x eta/2), `fig_min_selection.png`.
+
+**Step 3 (finite samples; done for d = 2, N = 8; empirical, 5 seeds; `fig_samples.png`,
+`notes/optim_samples.md` section 6):** small init (sigma = 0.3, 0.5) recovers W* from n ~ 256 samples
+(test error 1.5e-3 at 256, ~1e-4 at 384, bond rank exactly 2), the exact lazy limit at chi = 4 never
+does (test error 1.7-30x worse than predicting zero, rank 4-5.3; its tangent space has dimension
+112 < 256), at full chi = 16 it needs n = d^N = 256 and is worse than zero below; the centred
+sigma = 1 model is intermediate (rich, 0.01-0.04 at n = 384-512). Small init is therefore the most
+sample-efficient and the only one that lands on the teacher's bond ranks, but here it needs ~7-9x
+the 28-dimensional teacher manifold (conjecture: heavy tails of product features, (1 + 2/d)^N = d^N
+for d = 2; a d = 3, N = 6 test is queued).
+
+**Theory-note predictions (`notes/theory_optimizer.md` v2, section 9), tested so far:**
+- P5 (oscillation loss above eta_max): confirmed and refined: the time-averaged excess loss equals
+  s_1^2 x (1D map attractor loss) to 3-4 digits on binary N=4 (0.1306 vs 0.1306 at 1.05 eta_max; 0.4496
+  vs 0.4496 at 1.2), a few % on N = 8 trees; the linear formula is its small-excess limit.
+- P6/P7: my backward-error and SGD first-plateau formulas are the same as the note's (P6 exact
+  variational version matches GD to 3 digits; P7 being tested in the running SGD sweep).
+- P9 (SGD lengthens/traps later k = 3 plateaus): dedicated aligned-route test running (`p9_sgd.py`;
+  first run: T_SGD/T_GF = 1.45 at eta/B = 2.5e-4, T_GF = 50, i.e. c_gamma ~ 48 vs heuristic 26). Also
+  found: in random-init SGD runs, near-tie seeds flip the race under noise and the second plateau
+  disappears (ratio 0.82 on average at sigma = 0.1); a mechanism outside P9.
+- Correction to my notes: I had argued that k >= 3 routes cannot stochastically collapse; the
+  theory note's O(1) zero-mean coupling to mixed bond entries shows they can (fixed in section 4).
 
 **Pilots for steps 2-3 (provisional; pilot SGD numbers were computed before the teacher-RNG fix
 and are being redone in the full sweep):**
@@ -105,3 +128,5 @@ final losses; GF to ~1e-5 relative; SGD trajectories are identical (events to 2e
 - 19:20 Interim report (step 1).
 - 19:25 Lead: library v0 on main; merged (126 tests pass). Float64-floor check: only never-learned components of N=8 runs collapse below 1e-14 (not used for any reported time).
 - 19:33 Library cross-check passed (GD/GF/SGD); SGD sweep and finite-sample sweep running (15 workers each).
+- 19:55 Finite-sample sweep done (275 runs). Lead: theory_optimizer v2; merged; P5 confirmed from GD data.
+- 20:05 P9 aligned-route SGD test, GD order-flip (40 seeds) and centred-model GD blocks running; d = 3 samples block queued.

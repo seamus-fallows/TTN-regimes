@@ -108,7 +108,7 @@ def dense_spectra(w, tree):
     for v in tree.edges:
         below = list(tree.subtree_sites[v])
         rest = [i for i in range(w.ndim) if i not in below]
-        m = w.permute(below + rest).reshape(2 ** len(below), -1)
+        m = w.permute(below + rest).reshape(math.prod(w.shape[i] for i in below), -1)
         out[v] = torch.linalg.svdvals(m)
     return out
 

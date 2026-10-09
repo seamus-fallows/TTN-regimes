@@ -17,3 +17,7 @@ blocks:
   # Path from rich to lazy: larger centred init scales (GD is slow here: runs may stop at max_steps).
   - {name: chi4_centred_large, centred: true, lazy: true, sigmas: [1.5, 2.0], seeds: [0, 1, 2, 3, 4],
      n_train: [32, 64, 128, 256, 512]}
+  # d = 3, N = 6 (W in R^729): does the small-init sample advantage grow with d? (conjecture:
+  # small-init threshold ~ (1 + 2/d)^N = 21 x const, lazy needs d^N = 729 at full chi.)
+  - {name: d3_small, N: 6, d: 3, sigmas: [0.5], seeds: [0, 1, 2, 3, 4], lazy: true,
+     n_train: [32, 48, 64, 96, 128, 192, 256, 384]}
