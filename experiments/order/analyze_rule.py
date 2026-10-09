@@ -25,7 +25,7 @@ import style  # noqa: E402
 from analyze_main import load  # noqa: E402
 from ttn.theory import escape_time_asymptotic, product_gaussian_sampler, winner_probability  # noqa: E402
 
-RES = Path(__file__).parent / "results"
+from common import RAW, RES  # noqa: E402
 PROXIES = {"slice_norm": "slice norm", "amp0": "|T_r(theta0)|", "grad2": "|grad T_r|^2",
            "kkt_proj": "KKT projection", "core_prod": "prod. per-core overlaps"}
 

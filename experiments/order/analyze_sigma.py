@@ -21,14 +21,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 import style  # noqa: E402
 from analyze_main import wilson  # noqa: E402
 
-RES = Path(__file__).parent / "results"
+from common import RAW, RES  # noqa: E402
 M_OF = {"b4_pilot": 2, "b4_sigma": 2, "m4_sigma": 4, "b8_sigma": 4, "pat_mps6_m2end": 2, "pat_mps6_m2adj": 2,
         "pat_mps6_m3": 3, "pat_mps6_m4": 4}
 
 
 def load(name):
     rows = []
-    for line in open(f"/root/outputs/order/{name}/runs.jsonl"):
+    for line in open(RAW / name / "runs.jsonl"):
         r = json.loads(line)
         for run in r["runs"]:
             rows.append(dict(sweep=name, tree=f"{r['kind']}{r['n']}", d=r["d"], chi=r["chi"],
@@ -61,7 +61,7 @@ def fit_power(sig, k, n):
 
 def main():
     names = sys.argv[1:] or list(M_OF)
-    df = pd.concat([load(n) for n in names if Path(f"/root/outputs/order/{n}/runs.jsonl").exists()])
+    df = pd.concat([load(n) for n in names if (RAW / n / "runs.jsonl").exists()])
     keys = ["sweep", "tree", "d", "chi", "rho"]
     tab = df.groupby(keys + ["sigma"]).wrong.agg(["sum", "count"]).reset_index()
     tab["p_wrong"] = tab["sum"] / tab["count"]
@@ -77,7 +77,18 @@ def main():
                    seed_stable_frac=same)
         if g["sum"].sum() >= 5:
             gam, se, c = fit_power(g.sigma.values, g["sum"].values, g["count"].values)
-            rec.update(gamma=gam, gamma_se=se, C=c)
+            # the same seeds are reused at every sigma, so the binomial SE (independent points) is
+            # too small: bootstrap over seeds instead
+            wide = stab.pivot_table(index="seed", columns="sigma", values="wrong")
+            sig = wide.columns.values
+            rng = np.random.default_rng(0)
+            boot = []
+            for _ in range(200):
+                w = wide.values[rng.integers(0, len(wide), len(wide))]
+                k = w.sum(0)
+                if k.sum() >= 5:
+                    boot.append(fit_power(sig, k, np.full(len(sig), len(w)))[0])
+            rec.update(gamma=gam, gamma_se_binomial=se, gamma_se=np.std(boot, ddof=1), C=c)
         fits.append(rec)
     fits = pd.DataFrame(fits)
     fits.to_csv(RES / "sigma_fits.csv", index=False, float_format="%.4g")

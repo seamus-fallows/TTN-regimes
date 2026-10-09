@@ -19,14 +19,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 import style  # noqa: E402
 
 HERE = Path(__file__).parent
-RES = HERE / "results"
+from common import RAW, RES  # noqa: E402
 TREE_ORDER = ["binary4", "mps4", "mps6", "binary8", "mps8"]
 K_OF = {"binary4": 3, "mps4": 4, "mps6": 6, "binary8": 7, "mps8": 8}
 
 
 def load(name: str):
     seeds, runs = [], []
-    for line in open(f"/root/outputs/order/{name}/runs.jsonl"):
+    for line in open(RAW / name / "runs.jsonl"):
         r = json.loads(line)
         tree = f"{r['kind']}{r['n']}"
         base = dict(tree=tree, K=K_OF.get(tree), d=r["d"], chi=r["chi"],

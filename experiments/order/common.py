@@ -19,6 +19,9 @@ torch autograd gradients, float64; to be replaced by `ttn.dynamics` once it land
 from __future__ import annotations
 
 import math
+import os
+import sys
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -30,6 +33,22 @@ from ttn.teachers import CPTeacher, odeco_teacher, pattern_teacher
 from ttn.tree import make_tree
 
 RTOL, ATOL = 1e-9, 1e-14
+
+
+def _dir_option(flag: str, env: str, default: Path) -> Path:
+    """Output directories: `--raw DIR` / `--res DIR` on any script's command line (removed from
+    sys.argv here), else the environment variable, else the default."""
+    if flag in sys.argv:
+        i = sys.argv.index(flag)
+        value = sys.argv[i + 1]
+        del sys.argv[i : i + 2]
+        return Path(value)
+    return Path(os.environ.get(env, default))
+
+
+RAW = _dir_option("--raw", "ORDER_RAW", Path("/root/outputs/order"))  # raw outputs (not in git)
+RES = _dir_option("--res", "ORDER_RES", Path(__file__).parent / "results")  # summaries, figures
+RES.mkdir(parents=True, exist_ok=True)
 
 
 def make_spec(kind: str, n: int, d: int, chi: int, cap: bool = True) -> TTNSpec:

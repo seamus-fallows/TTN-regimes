@@ -28,11 +28,10 @@ import torch
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import lo_blowup, make_spec, make_teacher, single_component, unit_init  # noqa: E402
+from common import RAW as OUT, lo_blowup, make_spec, make_teacher, single_component, unit_init  # noqa: E402
 from ttn.diagnostics import crossing_times  # noqa: E402
 from ttn.dynamics import Problem, Recorder, integrate_gf, log_time_grid  # noqa: E402
 
-OUT = Path("/root/outputs/order")
 
 
 def job(args):

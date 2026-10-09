@@ -29,6 +29,8 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (  # noqa: E402
+    RAW as OUT,
+    RES,
     gf_first_event,
     init_proxies,
     lo_blowup,
@@ -38,7 +40,6 @@ from common import (  # noqa: E402
     unit_init,
 )
 
-OUT = Path("/root/outputs/order")
 
 
 def settings(cfg):

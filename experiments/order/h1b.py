@@ -33,6 +33,8 @@ from scipy.optimize import brentq, minimize_scalar
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (  # noqa: E402
+    RAW as OUT,
+    RES,
     crossings,
     gf_trajectory,
     loss_grad_fn,
@@ -44,8 +46,6 @@ from common import (  # noqa: E402
 )
 from ttn.network import aligned_init, bond_spectra  # noqa: E402
 
-OUT = Path("/root/outputs/order")
-RES = Path(__file__).parent / "results"
 
 
 def wrong_seeds(sweep: str, kind, n, d, chi, rho, sigma, limit):

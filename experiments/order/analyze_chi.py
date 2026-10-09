@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import style  # noqa: E402
 from analyze_main import K_OF, load, race_curve, wilson  # noqa: E402
 
-RES = Path(__file__).parent / "results"
+from common import RAW, RES  # noqa: E402
 RHOS = [0.5, 0.7, 0.8, 0.9, 0.95, 0.99]
 
 
@@ -34,7 +34,7 @@ def main():
             rec[f"race_{rho}"] = p
         rows.append(rec)
     df = pd.DataFrame(rows)
-    gf_path = Path("/root/outputs/order/chi_gf/runs.jsonl")
+    gf_path = RAW / "chi_gf" / "runs.jsonl"
     gf = None
     if gf_path.exists():
         gseeds, gruns = load("chi_gf")

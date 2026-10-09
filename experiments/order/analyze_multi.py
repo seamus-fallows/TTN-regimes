@@ -24,13 +24,13 @@ from scipy.stats import kendalltau
 sys.path.insert(0, str(Path(__file__).parent))
 import style  # noqa: E402
 
-RES = Path(__file__).parent / "results"
+from common import RAW, RES  # noqa: E402
 FLOOR = 1e-14
 
 
 def load(name):
     rows = []
-    for line in open(f"/root/outputs/order/{name}/runs.jsonl"):
+    for line in open(RAW / name / "runs.jsonl"):
         r = json.loads(line)
         times = np.array([np.inf if x is None else x for x in r["times"]])
         weights = r["rho"] ** np.arange(r["R"])
@@ -38,8 +38,19 @@ def load(name):
                          times=times, tau=np.array(r["tau"]), weights=weights,
                          stalled=bool(np.any(~np.isfinite(times))),
                          floor=bool(np.nanmin(r["min_dormant"]) < FLOOR),
+                         tie=bool(unresolved(times)),
                          drift=r["drift"]))
     return pd.DataFrame(rows)
+
+
+# records are log-spaced with 1500 points over [1e-2, 1e9]: one interval is a factor 1.017 in t;
+# events closer than two intervals cannot be ordered reliably
+TIE = 2 * np.log(10 ** (11 / 1500))
+
+
+def unresolved(times):
+    t = np.sort(times[np.isfinite(times)])
+    return len(t) > 1 and np.any(np.diff(np.log(t)) < TIE)
 
 
 def perm(x):
@@ -60,7 +71,7 @@ def main():
     df = load(name)
     summary, perms = [], []
     for (tree, n_comp, rho), g in df.groupby(["tree", "R", "rho"]):
-        ok = g[~g.stalled & ~g.floor]
+        ok = g[~g.stalled & ~g.floor & ~g.tie]
         greedy = tuple(range(n_comp))
         gf_perm = [perm(t) for t in ok.times]
         race_perm = [perm(tau / w) for tau, w in zip(ok.tau, ok.weights)]
@@ -74,6 +85,7 @@ def main():
         first = Counter(p[0] for p in gf_perm)
         rec = dict(tree=tree, R=n_comp, rho=rho, n=len(g), n_used=len(ok),
                    stalled=int(g.stalled.sum()), floor=int(g.floor.sum()),
+                   unresolved_ties=int(g.tie.sum()),
                    p_greedy_order=np.mean([p == greedy for p in gf_perm]),
                    p_greedy_order_model=model[greedy] / n_mod,
                    kendall_greedy=np.mean(ktau), kendall_greedy_se=np.std(ktau) / np.sqrt(len(ktau)),

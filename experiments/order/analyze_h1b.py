@@ -22,8 +22,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent))
 import style  # noqa: E402
 
-RES = Path(__file__).parent / "results"
-OUT = Path("/root/outputs/order")
+from common import RAW, RES  # noqa: E402
+OUT = RAW
 
 
 def lam_pred(rho, k_cores=3):
@@ -31,18 +31,39 @@ def lam_pred(rho, k_cores=3):
 
 
 def saddle_fits(df):
+    """Per-seed fits of t_corr against sigma (the same seed = the same perturbation direction at
+    every sigma), mean +- SE over seeds. Log law t = a + b ln(1/sigma) vs power law t = c sigma^-p,
+    both least squares in t (same space, same weights); runs that did not rotate are excluded and
+    counted."""
     rows = []
     for rho, g in df.groupby("rho"):
-        x, y = np.log(1 / g.sigma.values), g.t1.values
-        ok = np.isfinite(y)
-        a, b = np.polyfit(x[ok], y[ok], 1, cov=False), None
-        res = y[ok] - np.polyval(a, x[ok])
-        n = ok.sum()
-        se = np.sqrt(res @ res / (n - 2) / np.sum((x[ok] - x[ok].mean()) ** 2))
-        rows.append(dict(rho=rho, n_runs=int(n), slope=a[0], slope_se=se,
-                         slope_pred=1 / lam_pred(rho), intercept=a[1],
-                         a2_min_after_t1_max=g.a2_min_after_t1.max(),
-                         lam_min_mean=g.lam_min.mean(), lam_pred=-lam_pred(rho)))
+        rotated = g[g.a2_min_after_t1 < 0.1]
+        per_seed = []
+        for seed, gs in rotated.groupby("seed"):
+            if gs.sigma.nunique() < 5:
+                continue
+            x, y = np.log(1 / gs.sigma.values), gs.t1.values
+            b, a = np.polyfit(x, y, 1)
+            rms_log = np.sqrt(np.mean((y - (a + b * x)) ** 2))
+            p_pow, lc = np.polyfit(x, np.log(y), 1)  # start for the power law
+            from scipy.optimize import curve_fit
+
+            (c, p_pow), _ = curve_fit(lambda xx, c, p: c * np.exp(p * xx), x, y,
+                                      p0=(np.exp(lc), p_pow), maxfev=20000)
+            rms_pow = np.sqrt(np.mean((y - c * np.exp(p_pow * x)) ** 2))
+            per_seed.append(dict(slope=b, intercept=a, rms_log=rms_log, p_power=p_pow,
+                                 rms_power=rms_pow))
+        ps = pd.DataFrame(per_seed)
+        n = len(ps)
+        rows.append(dict(rho=rho, n_runs=len(g), n_rotated=len(rotated), n_seeds_fit=n,
+                         sigma_min=g.sigma.min(), sigma_max=g.sigma.max(),
+                         slope=ps.slope.mean(), slope_se=ps.slope.std(ddof=1) / np.sqrt(n),
+                         slope_pred=1 / lam_pred(rho), intercept=ps.intercept.mean(),
+                         rms_log=ps.rms_log.mean(), rms_power=ps.rms_power.mean(),
+                         p_power=ps.p_power.mean(),
+                         a2_min_after_t1_max=rotated.a2_min_after_t1.max(),
+                         lam_min_mean=g.lam_min.mean(), lam_min_sd=g.lam_min.std(),
+                         lam_pred=-lam_pred(rho)))
     return pd.DataFrame(rows)
 
 
