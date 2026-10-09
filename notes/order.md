@@ -1,122 +1,111 @@
-# Order of learning (Q4, hypotheses H1, H1b) — agent `order`
+# Order of learning (Q4; hypotheses H1, H1b) — agent `order`
 
-Status: **in progress** (theory derived, experiments running). Experiment folder:
-`experiments/order/`. Status tags: **proven**, **derived** (assumptions stated), **empirical**,
-**conjecture**.
+Status: **in progress** (steps 1 done; steps 2-4 running). Experiment folder `experiments/order/`
+(README there: configs, commands, cost). Tags: **proven**, **derived** (assumptions stated),
+**empirical**, **conjecture**. Companion theory notes: `notes/theory_escape.md` (v2; sections 3, 5 cover
+the same ground from the escape side) and `notes/theory_saddles.md` (v2; section 4, H1b).
+
+## 0. Results at a glance
+
+| # | claim | status | evidence |
+|---|---|---|---|
+| O1 | Near the origin the order is decided by the leading-order (LO) flow of g = <W, W*>, whose outcome does not depend on sigma (exact scaling symmetry) | derived (corollary of Kumar & Haupt 2025a) | per-seed GF = LO on 180/180 seeds (pilot); MPS4 P(greedy) identical for sigma 0.003-0.1 |
+| O2 | m >= 3 (cores carrying the differing sites): every component is a local max of g on the sphere, order random (H1) | derived | P(larger first) = 0.60-0.88 at rho = 0.5 on MPS4-8 and binary8 (400 seeds per setting) |
+| O3 | Odeco teacher on an MPS: the LO flow decouples into one independent chain per component; winner = argmin tau_r/s_r | derived (exact at leading order) | 40800/40800 MPS GF runs agree with the per-seed race |
+| O4 | P(greedy) falls toward 1/2 with K and rises slowly with chi; d enters only through bond caps (MPS) | empirical (+ derived for d) | sd log tau table, d-pairs chi^2 |
+| O5 | Selection rule: argmax_r s_r X_r^(K-2), X_r = projection of the init on component r's KKT orbit, predicts 76-92% of winners; fitted exponent ~K-2 | empirical | `results/main_rules.csv` |
+| O6 | m = 2 (binary4 = depth-3 DLN; matrix-like pattern pairs): greedy as sigma -> 0, P(smaller first) ~ sigma^(n(1-rho)/rho) | derived (heuristic for the exponent) | binary4 sigma scan (pilot): gamma within 1 SE of (1-rho)/rho for rho = 0.7-0.9 |
+| O7 | H1b: a wrong order is corrected through a strict saddle (lambda_min = -(s_1-s_2) s_2^((K-2)/K)) only for m = 2; the rotation takes ln(1/delta)/|lambda_min| | derived; Hessian checked | saddle-start slope 5.39 vs 5.386 (pilot) |
 
 ## 1. Setting
 
-Odeco teacher W* = sum_r s_r u_r^(1) (x) ... (x) u_r^(N), whitened inputs, so
-L = 1/2 ||W - W*||^2. Two components with weights (s_1, s_2) = (1, rho), rho < 1, unless stated.
-"Greedy order" = component 1 (the larger) has the earlier learning event (first time its overlap
-a_r = <W, U_r>/s_r crosses 1/2, `notes/diagnostics.md`). P_g = P(greedy) over the random init.
+Odeco teacher W* = sum_r s_r u_r^(1) (x) ... (x) u_r^(N), whitened inputs, L = 1/2 ||W - W*||^2, fan-in
+Gaussian init at per-core scale sigma. Two components with weights (1, rho), rho < 1, unless stated.
+"Greedy" = the larger component has the earlier learning event (first time a_r = <W, U_r>/s_r crosses
+1/2, `notes/diagnostics.md`). P_g = P(greedy) over the init.
 
-Fan-in Gaussian init is invariant under orthogonal rotations of any physical leg, so the teacher's
-site bases can be taken to be the standard basis (u_r^(i) = e_r) without changing the distribution
-of anything below. Then the TTN evaluated on component r,
-T_r(theta) = <W(theta), e_r (x) ... (x) e_r>, is the contraction of the "slices" G_v[r, ..., r, :] of
-the cores that carry physical legs with the full (shared) cores that carry none.
+The init is invariant in law under orthogonal rotations of any physical leg, so the teacher bases can be
+taken to be standard (u_r^(i) = e_r) without changing any order statistic (all runs here do this). Then
+T_r(theta) = <W(theta), e_r (x) ... (x) e_r> contracts the "slices" G_v[r, ..., r, :] of the cores with
+physical legs and the full cores without physical legs (shared by all components).
 
 ## 2. Leading-order dynamics and its scale invariance  [derived]
 
-L = 1/2 ||W||^2 - g(theta) + const with g = <W, W*> = sum_r s_r T_r(theta), a homogeneous polynomial
-of degree K (number of cores). Near the origin the ||W||^2 term is O(|theta|^{2K}) and
-dtheta/dt = grad g + O(|theta|^{2K-1}). The leading-order flow F_t of grad g has the exact scaling
-symmetry F_t(sigma n) = sigma F_{sigma^{K-2} t}(n). Consequences:
+L = 1/2 ||W||^2 - g(theta) + const, g = sum_r s_r T_r, homogeneous of degree K. Near the origin
+dtheta/dt = grad g + O(|theta|^(2K-1)). The LO flow F_t of grad g satisfies F_t(sigma n) = sigma
+F_(sigma^(K-2) t)(n). Hence:
+1. from sigma n_0 the trajectory in direction space is the same for every sigma;
+2. with theta = R n, d tau = R^(K-2) dt: dn/dtau = grad_S g(n), d ln R/d tau = K g(n); blow-up happens at
+   tau = infinity, so the direction converges to a critical point of g on the sphere (Kumar & Haupt
+   2025a: KKT point);
+3. GF leaves the LO flow at R = O(1), i.e. at tau_1 ~ ln(1/sigma)/(K g): as sigma -> 0 the first
+   component is the local maximum whose basin contains n_0; at finite sigma the direction may be in
+   transit.
 
-1. Starting from sigma n_0, the trajectory in *direction* space n(t) = theta/|theta| is the same for
-   every sigma; only the radius at which a given direction is reached changes.
-2. Writing theta = R n and d tau = R^{K-2} dt: dn/dtau = grad_S g(n) (spherical gradient flow) and
-   d ln R / d tau = K g(n). The leading-order flow blows up at finite t but at tau = infinity, so
-   the direction converges to a critical point of g on the sphere with g > 0, generically a local
-   maximum (Kumar & Haupt's directional convergence in this setting).
-3. The real dynamics leaves the leading-order flow when |W| ~ s, i.e. at R = O(1), which is reached
-   at tau_1 ~ ln(1/sigma)/(K g). So as sigma -> 0 the first component learned is the local maximum of
-   g on the sphere whose basin (under the spherical flow) contains n_0 ("basin picture"); at
-   finite sigma the direction at R = O(1) may still be in transit.
+Check (`balance_check.py`, `results/balance_check.csv`): at |theta| = 1e4 |theta_0| on the LO flow, every
+core's share of ||theta||^2 equals 1/K to < 5e-5 and per-bond imbalance |Q_e|/|theta|^2 < 3e-5 (5 trees x
+5 seeds): the escape direction is balanced, as the critic's derivation says (lead message, item 3).
 
-## 3. Which states are local maxima: the count m  [derived]
+## 3. Which components are local maxima: the count m  [derived]
 
-Let m = number of cores that carry sites on which the two components differ (for an odeco teacher:
-the number of cores with physical legs). At the state B where only component 2 is present
-(rank-one, balanced), consider perturbations toward component 1. Component 1's contribution
-s_1 T_1 is a product of the m component-1 slices (all zero at B) and of shared cores. So the gain is
-O(eps^m) for slices of size eps, while the spherical constraint (and, after escape, the mixed
-entries of W) costs O(eps^2).
+m = number of cores carrying sites where the two components differ (odeco: cores with physical legs).
+At B (only component 2, balanced rank-one), component 1's term s_1 T_1 is a product of m slices that
+vanish at B: the gain along the perturbation is O(eps^m), the spherical constraint costs O(eps^2).
+- m >= 3 (odeco on MPS N >= 3, binary N >= 8, HT): every component is a local max: random order (H1).
+- m = 2 (odeco on binary4, which is exactly a depth-3 DLN A R B^T; pattern teachers differing on two
+  cores): the gain is bilinear, s_1 x^T S y; the spherical Hessian at B has the eigenvalue
+  (s_1 - s_2) K^(-(K-2)/2) > 0 (n of them, n = chi_e for two adjacent cores sharing bond e, else 1,
+  `notes/theory_escape.md` 3.3): only the largest component is a local max (DLN: Jacot et al. 2021 Thm 2).
+- m = 1: the components form one rank-one TTN component and are learned together.
+Same classification: `notes/theory_saddles.md` R6 (piggyback graph; for >2 components the criterion is
+rho(S) > s_q, which for odeco teachers reduces to "some larger component has m = 2").
 
-- **m >= 3** (odeco on `mps` N >= 3, `binary` N >= 8, `ht`): every component is a local maximum of g
-  on the sphere. The first component learned is decided by the init's basin: **random order** (H1).
-- **m = 2** (odeco on `binary` N = 4, which *is* a 3-layer deep linear network A R B^T; any teacher
-  whose components differ on sites carried by exactly two cores): at B the gain is bilinear,
-  s_1 x^T S y, with S the shared cores. On the unit sphere, balanced rank-one B has
-  |S| = K^{-(K-2)/2}, g(B) = s_2 K^{-K/2}, and the spherical Hessian has one positive eigenvalue
-  lambda_u = (s_1 - s_2) K^{-(K-2)/2} > 0. So B is a saddle of the spherical flow and **only the
-  largest component is a local maximum**: greedy order as sigma -> 0 (as in deep linear networks).
-- **m = 1**: components differing only on sites of one core form a single rank-one TTN component;
-  they are learned together (one event), so there is no order.
+## 4. m >= 3 on an MPS: an exact race  [derived; verified]
 
-## 4. m >= 3, MPS: an exact race  [derived]
+On an MPS every core carries one site, so T_1 and T_2 depend on disjoint parameters and the LO flow
+splits into independent chain flows d theta^(r)/dt = s_r grad T(theta^(r)) (scalar-output chain DLNs
+with widths = bond dimensions). Component r blows up at sigma^-(K-2) tau_r / s_r, tau_1, tau_2 iid, so
 
-For an odeco teacher on an MPS every core carries one site, so T_1 and T_2 depend on disjoint
-parameter sets (slices r = 1 and r = 2 of every core). The leading-order flow decouples into two
-independent flows, d theta^(r)/dt = s_r grad T(theta^(r)) (a scalar-output chain "deep linear
-network" with widths = bond dimensions). Each blows up at t_r = sigma^{-(K-2)} tau_r / s_r, with
-tau_r the blow-up time of the unit flow from the normalized slice init; tau_1, tau_2 are iid. Hence
+    P_g(rho) = P(tau_2 / tau_1 > rho)   (independent of sigma at leading order).
 
-    P_g(rho) = P(tau_2 / tau_1 > rho),       independent of sigma at leading order,
+With a log-normal tau, P_g = Phi(ln(1/rho)/(sqrt 2 sd ln tau)). The same race appears as
+`notes/theory_escape.md` 5.1. For binary8 the internal cores are shared; the race built from
+single-component blow-up times is then an approximation.
 
-with P_g(1) = 1/2 and P_g -> 1 as rho -> 0. The whole curve follows from the distribution of
-log tau (spread s_tau): for a lognormal tau, P_g = Phi(ln(1/rho) / (sqrt(2) s_tau)). d enters only
-through the capped bond dimensions (and a common scale factor that cancels).
+## 5. m = 2 at finite sigma: wrong order with probability ~ sigma^(n(1-rho)/rho)  [derived, heuristic]
 
-For `binary` N = 8 the four leaf cores carry component-specific slices but the three internal cores
-are shared, so the race is coupled; the outcome is still sigma-independent at leading order
-(scale invariance) but not given by independent blow-up times. The "independent-race
-approximation" (each component's blow-up time computed with the other component's weight set to 0,
-from the same init) is tested against the coupled leading-order flow and full gradient flow.
+Near B the distance from B's stable manifold grows like exp(lambda_u tau) while ln R grows at rate
+K g(B); lambda_u / (K g(B)) = (s_1 - s_2)/s_2 = (1 - rho)/rho. A trajectory entering at distance delta_0
+leaves at radius R_0 delta_0^(-rho/(1-rho)); the smaller component wins iff R reaches O(1) first, i.e.
+delta_0 < sigma^((1-rho)/rho) in each of the n unstable directions. With a bounded density of delta_0:
+P(wrong) ~ C sigma^(n (1-rho)/rho). Corollary: conditioned on a wrong order, the residual deviation
+delta_1 = delta_0 sigma^(-(1-rho)/rho) is O(1)-distributed (roughly uniform), so the subsequent correction
+takes O(1/|lambda|), not ln(1/sigma) (section 6).
 
-## 5. m = 2 at finite sigma: wrong order with probability ~ sigma^((1-rho)/rho)  [derived]
+## 6. H1b: correction of a wrong order through a strict saddle  [derived; Hessian checked]
 
-Near the saddle B of the spherical flow, the distance delta from B's stable manifold grows as
-exp(lambda_u tau) while ln R grows at rate K g(B) = s_2 K^{-(K-2)/2}. The ratio is
-lambda_u / (K g(B)) = (s_1 - s_2)/s_2 = (1 - rho)/rho. A trajectory entering the neighbourhood of B
-at distance delta_0 from the stable manifold at radius R_0 ~ sigma leaves it at radius
-R_0 delta_0^{-rho/(1-rho)}. The smaller component is learned first iff R reaches O(1) before
-leaving, i.e. delta_0 < R_0^{(1-rho)/rho}. The stable manifold has codimension one, so delta_0 has a
-bounded density near 0 and
-
-    P(wrong order) ~ C(rho) sigma^{gamma},   gamma = (1 - rho)/rho      (m = 2, sigma -> 0).
-
-For rho = 0.5, 0.8, 0.9, 0.99: gamma = 1, 0.25, 0.11, 0.01, so near-degenerate weights stay
-essentially random over any accessible range of sigma.
-
-## 6. H1b: correction of a wrong order through a strict saddle  [derived]
-
-After the smaller component is learned (state B: W = s_2 U_2, balanced amplitude q = s_2^{1/K} per
-core), add x e_1 and y e_1 to the two component-specific slices in the learned bond index
-(m = 2). W gains q^{K-1} (x, y) on two mixed entries (teacher 0 there) and q^{K-2} x y on the
-component-1 entry, so
-
-    L - L_B = 1/2 q^{2(K-1)} (x^2 + y^2) - s_1 q^{K-2} x y + O(4)
-    Hessian = q^{K-2} [[s_2, -s_1], [-s_1, s_2]],   lambda_min = -q^{K-2} (s_1 - s_2)
-
-(for `binary` N = 4, K = 3: lambda_min = -s_2^{1/3}(s_1 - s_2)). B is a **strict saddle**; the
-unstable direction rotates the learned component into the larger one while keeping the bond index,
-in time t_corr ~ ln(1/delta_1)/|lambda_min|, where delta_1 is the piggyback amplitude on arrival at B.
-Afterwards the smaller component has to be learned again in a new bond index (a full K-core escape,
-time ~ sigma^{-(K-2)}). Predicted loss levels: 1/2 s_1^2 (wrong plateau) -> 1/2 s_2^2 -> 0.
-
-Two predictions for t_corr:
-- **Controlled start** (W at B, all other directions random at scale sigma): delta_1 ~ sigma and
-  t_corr = ln(1/sigma)/|lambda_min| + O(1) (slope 1/|lambda_min| vs ln(1/sigma)).
-- **Wrong-order runs from random init**: by Section 5, conditioned on a wrong order, delta_1 is
-  approximately uniform on (0, O(1)), so |lambda_min| t_corr ~ ln(1/U) + c is exponentially
-  distributed with a **sigma-independent** mean; it does *not* grow like log(1/sigma).
-
-For m >= 3 the same computation gives no quadratic gain (gain O(eps^m), cost O(eps^2)): the
-wrong-order plateau is not a strict saddle in any direction toward the larger component, the order
-is not corrected, and the larger component is learned by a new K-core escape.
+At B (component 2 learned, amplitude q = s_2^(1/K) per core), adding x e_1 and y e_1 to the two
+component-specific slices in the learned bond index gives
+L - L_B = 1/2 q^(2(K-1)) (x^2 + y^2) - s_1 q^(K-2) x y + O(4), Hessian q^(K-2) [[s_2, -s_1], [-s_1, s_2]],
+lambda_min = -(s_1 - s_2) s_2^((K-2)/K) (binary4: -(1-rho) rho^(1/3)). Exact gauge-projected Hessian at
+B (library `ttn.diagnostics`): binary4, s = (0.8, 1): -0.18566 (prediction -0.18566); s = (0.5, 1):
+-0.39685 (-0.39685); MPS4 odeco (m = 4): no negative eigenvalue (`notes/theory_saddles.md` 4.1 has the
+same block). Predicted sequence for m = 2: L_0 -> s_1^2/2 (wrong plateau) -> rotation of the learned bond
+index to component 1 after ln(1/delta_1)/|lambda_min| -> plateau s_2^2/2 with a_2 ~ 0 (the smaller
+component is forgotten) -> relearning of component 2 by a k-core route (binary4: k = 3, time ~ sigma^-1)
+-> 0. For m >= 3 no rotation: the larger component is added in a new bond index.
 
 ## 7. Results
 
-(to be filled)
+### 7.1 Step 1: order statistics (complete)
+See `agent-runs/order/REPORT.md` (Results, step 1) for the table and numbers; data
+`experiments/order/results/main_summary.csv`, figure `results/main_pg_vs_rho.png`. Full GF, sigma = 0.01,
+400 seeds x 6 rho x 28 settings.
+
+### 7.2-7.5 (sigma scans, controls, chi scan, H1b, R >= 3): pending
+
+## 8. Status of H1 and H1b (to be finalized)
+
+## 9. What is new relative to the literature (to be finalized)
+
+## 10. Open issues (to be finalized)
