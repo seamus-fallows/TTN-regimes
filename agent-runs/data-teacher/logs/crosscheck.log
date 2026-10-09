@@ -1,0 +1,31 @@
+binary T1_clean_reversal white_sqrtLs_mapped seed0 1.318308580695446e-07
+binary T2_race_vs_greedy white_sqrtLs_mapped seed0 1.4853977494798268e-08
+binary T1_clean_reversal white_sqrtLs_mapped seed1 7.916445014280754e-08
+binary T2_race_vs_greedy white_sqrtLs_mapped seed1 2.6039825048740566e-07
+binary T2_race_vs_greedy sigma seed1 2.202386662936502e-08
+binary T2_race_vs_greedy sigma seed0 1.9903301071223552e-08
+FAILED e1_order BadZipFile("Bad CRC-32 for file 'spectra.npy'")
+binary T1_clean_reversal sigma seed0 2.639021859962983e-07
+mps T1_clean_reversal white_sqrtLs_mapped seed0 4.8960968836741974e-08
+mps T1_clean_reversal white_sqrtLs_mapped seed1 6.208262137258727e-08
+mps T2_race_vs_greedy white_sqrtLs_mapped seed0 3.689135780066189e-07
+mps T2_race_vs_greedy white_sqrtLs_mapped seed1 7.110105292320585e-07
+mps T1_clean_reversal sigma seed1 9.146957735730196e-09
+mps T1_clean_reversal sigma seed0 3.890801053827539e-08
+mps T2_race_vs_greedy sigma seed0 2.8672435474488842e-08
+mps T2_race_vs_greedy sigma seed1 2.0656387191038697e-07
+alpha1.0_theta_deg45_variantsigma binary seed0 5.262041343936439e-08
+alpha1.0_theta_deg20_variantsigma mps seed0 3.981240820319999e-08
+alpha1.0_theta_deg20_variantsigma mps seed1 2.551702642565076e-08
+alpha1.0_theta_deg45_variantsigma binary seed1 9.856531010082106e-08
+s20.7_overlap0.65 binary seed0 3.12218461229942e-07
+s20.7_overlap0.35 mps seed1 2.4916637996642247e-08
+s20.7_overlap0.35 mps seed0 6.745204807034069e-08
+s20.7_overlap0.65 binary seed1 7.331502701968101e-07
+teacher_seed103 mps seed0 2.3510645014751908e-07
+teacher_seed103 mps seed1 7.865856056057112e-08
+run
+e1_order         7.110105e-07
+e2_misaligned    9.856531e-08
+e4a_nonorth      7.331503e-07
+e4b_ttn          2.351065e-07
