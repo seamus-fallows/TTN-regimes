@@ -55,20 +55,21 @@ def main():
     print(summ.to_string())
     fig, axes = plt.subplots(1, 2, figsize=(8.6, 3.2))
     ax = axes[0]
-    for i, sig in enumerate(sorted(df.sigma.unique())):
-        g = summ.loc[sig]
-        ax.errorbar(g.index, g.p_flip, yerr=g.p_flip_se, fmt="o-", color=ps.BLUES[2 * i % 6 + 1],
-                    ms=3.5, lw=1, label=f"σ = {sig:g} (n = {int(g.n.iloc[-1])} seeds)")
+    big = summ[summ.n >= 45].reset_index()
+    for i, sig in enumerate(sorted(big.sigma.unique())):
+        g = big[big.sigma == sig]
+        ax.errorbar(g.ratio, g.p_flip, yerr=g.p_flip_se, fmt="o-", color=ps.BLUES[2 * i + 1],
+                    ms=3.5, lw=1, label=f"σ = {sig:g} ({int(g.n.iloc[0])} seeds)")
     ax.set(xscale="log", xlabel="η / η_max", ylabel="P(learning order differs from GF)",
-           title="(a) order changes below η_max")
-    ax.legend(fontsize=6.5)
+           title="(a) order changes below η_max (mean ± s.e.)")
+    ax.legend(fontsize=6.5, loc="upper left")
     ax = axes[1]
     per_seed = df[np.isclose(df.ratio, 0.9)].groupby(["sigma", "seed"]).agg(
         flip=("flip", "max"), rival=("rival_peak", "first"))
     for i, sig in enumerate(sorted(df.sigma.unique())):
         g = per_seed.loc[sig]
         ax.scatter(g.rival, g.flip.astype(float) + np.random.default_rng(i).uniform(-0.04, 0.04, len(g)),
-                   s=14, color=ps.BLUES[2 * i % 6 + 1], label=f"σ = {sig:g}")
+                   s=14, color=ps.BLUES[i + 1], label=f"σ = {sig:g}")
     ax.set(xlabel="GF: peak overlap of the eventual second component during the first event",
            ylabel="order flipped at 0.9 η_max", yticks=[0, 1], yticklabels=["no", "yes"],
            title="(b) flips happen at near-ties")
