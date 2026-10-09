@@ -199,3 +199,4 @@ None [0, 5] mps 6 small 2 607s
 None [0, 5] mps 6 small 3 597s
 None [0, 5] mps 6 small 0 618s
 None [0, 5] mps 6 small 3 639s
+None [2, 5] mps 8 small_balanced 0 2402s

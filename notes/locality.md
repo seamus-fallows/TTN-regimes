@@ -343,11 +343,11 @@ consecutive evaluations (the loss sits at the partial fit, e.g. L = 0.125 = s2^2
   midroot6 {0,3} saddle (1.49 -> 1.81), ht8 {1,2} (2.74 -> 3.10), ht8 {3,4} (5.74 -> 4.74), mps8 {1,5} small
   (3.27 -> 2.98): the off-target saddle-start k = 4 and ht8 rows are carried by seeds that stall at some sigma.
 - **Dead vs slow** (`configs/stall_diagnosis.yaml`: 22 (case, sigma) pairs covering stalled runs and their
-  escaped controls, 169 runs, stall patience 300,000 evaluations (60x), trajectories saved; `r12.py`,
+  escaped controls, 170 runs, stall patience 300,000 evaluations (60x), trajectories saved; `r12.py`,
   `results/r12.csv`): every fan-in and saddle-start run that the 5,000-evaluation detector had flagged (37) is
   dead: no escape within the longer budget (up to t ~ 1e10) and route-end amplitudes at roundoff (1e-17 to
-  1e-13). With balanced init the flagged runs are not dead: 6 of 9 escaped very late (gaps 2e9-5e10, about 1e5 x
-  the normal plateau) and 3 remained pinned (route ends 3e-10 to 4e-8, finite). So "stalled" = dead under fan-in
+  1e-13). With balanced init the flagged runs are not dead: 6 of 10 escaped very late (gaps 2e9-5e10, about 1e5 x
+  the normal plateau) and 4 remained pinned (route ends 3e-10 to 4e-8, finite). So "stalled" = dead under fan-in
   init and saddle start, but = pinned (extremely slow) under balanced init.
 - **R12's criterion** (theory_saddles.md 8: a route end decays iff c = Q_end + |y_route|^2 < 0, evaluated here
   at the plateau start a1 = 0.99; the route dies iff every end has c < 0): over the 122 fan-in and saddle-start
