@@ -42,7 +42,7 @@ def fourth_moment(m: torch.Tensor, n: int, d: int) -> torch.Tensor:
 
 def operator_pieces(kind: str, n: int, d: int = 3):
     spec = TTNSpec.uniform(make_tree(kind, n), d, len(WEIGHTS))
-    teacher = odeco_teacher(n, d, WEIGHTS, seed=1)
+    teacher = odeco_teacher(n, d, WEIGHTS, seed=101)
     k = spec.n_cores
     amps = teacher.weights.unsqueeze(0).expand(k, len(WEIGHTS)) ** (1.0 / k)
     flat = spec.flatten(aligned_init(spec, teacher.factors, amps.clone()))

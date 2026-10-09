@@ -24,7 +24,11 @@ RAW = Path("/root/outputs/optim_samples")
 RESULTS = Path(__file__).parent / "results"
 
 
-def setup(tree: str, n: int, d: int = 3, chi: int = 3, weights=(3.0, 2.0, 1.0), teacher_seed=1):
+TEACHER_SEED = 101  # independent of init seeds (0-4) and data seeds
+
+
+def setup(tree: str, n: int, d: int = 3, chi: int = 3, weights=(3.0, 2.0, 1.0),
+          teacher_seed=TEACHER_SEED):
     spec = TTNSpec.uniform(make_tree(tree, n), d, chi)
     teacher = odeco_teacher(n, d, list(weights), seed=teacher_seed)
     return spec, teacher

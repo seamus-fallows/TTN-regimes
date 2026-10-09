@@ -62,7 +62,7 @@ def main():
     for kind, n in [("binary", 4), ("binary", 8), ("mps", 4), ("mps", 8), ("ht", 4)]:
         for chi in (3, 5):
             spec = TTNSpec.uniform(make_tree(kind, n), 3, chi)
-            teacher = odeco_teacher(n, 3, weights, seed=1)
+            teacher = odeco_teacher(n, 3, weights, seed=101)
             k = spec.n_cores
             pred = k * weights[0] ** (2 - 2 / k)
             cores = balanced_min(spec, teacher)
