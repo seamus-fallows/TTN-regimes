@@ -32,49 +32,58 @@ subtree of the sites where the new component differs; plateau ~ sigma^-(k-2) (k 
 ## How to run
 Order: (1) `run.py` for each config, (2) `predict_sequences.py`, (3) `finalize.sh <out_dir> [workers]`.
 ```
-uv run python experiments/locality/run.py experiments/locality/configs/twocomp.yaml /root/outputs/locality/twocomp 36
-uv run python experiments/locality/run.py experiments/locality/configs/twocomp_balanced.yaml /root/outputs/locality/twocomp_balanced 16
-uv run python experiments/locality/run.py experiments/locality/configs/multicomp.yaml /root/outputs/locality/multicomp 16
-uv run python experiments/locality/run.py experiments/locality/configs/multicomp_wide.yaml /root/outputs/locality/multicomp_wide 8
-uv run python experiments/locality/run.py experiments/locality/configs/robust.yaml /root/outputs/locality/robust 22
-uv run python experiments/locality/run.py experiments/locality/configs/k5_extension.yaml /root/outputs/locality/k5ext 16
-uv run python experiments/locality/predict_sequences.py        # route-rule predictions -> results/route_sequences.json
-experiments/locality/finalize.sh /tmp/locality_results 8       # all tables and figures into a fresh directory
+X=experiments/locality; O=${LOCALITY_OUT:-/root/outputs/locality}
+uv run python $X/make_configs.py                                   # writes every configs/*.yaml below
+for c in twocomp twocomp_balanced twocomp_chi4 robust k5_extension khigh_extension lambda2_K \
+         multicomp multicomp_wide stall_diagnosis; do
+  uv run python $X/run.py $X/configs/$c.yaml $O/<prefix> <workers>   # prefixes: see finalize.sh
+done
+uv run python $X/run.py $X/configs/finish_twocomp.yaml $O/twocomp 6          # slow runs, longer wall limit
+uv run python $X/run.py $X/configs/finish_twocomp_chi4.yaml $O/twocomp_chi4 6
+uv run python $X/predict_sequences.py      # route-rule predictions -> results/route_sequences.json
+$X/finalize.sh /tmp/locality_results 8     # every table and figure, into a fresh directory
 ```
-`run.py <config> <out_prefix> <workers>` is resumable (finished runs are skipped, errors and timeouts are
-retried) and appends one JSON line per run to `<out_prefix>.part<pid>`; every accepted integrator step is
-saved to `/root/outputs/locality/traj/*.npz`. Configs are written by `make_configs.py`.
-
-Variants: case keys `kind`, `n`, `S` (two-component teacher) or `name` + `patterns` + `weights`, `d`, `chi`,
-`start` (small | saddle | small_balanced), `sigmas`, `seeds`, `teacher_seed` (default 1000), `rtol`, `atol`,
-`t_max`, `wall_limit`.
+- `run.py <config> <out_prefix> <workers>` is resumable (finished runs are skipped; errors and timeouts are
+  retried) and appends one JSON line per run to `<out_prefix>.part<pid>`; every accepted integrator step is saved
+  to `$LOCALITY_OUT/traj/*.npz`.
+- Portability: `LOCALITY_OUT` sets the raw-output directory (default `/root/outputs/locality`);
+  `LOCALITY_EAGER=1` disables `torch.compile` (identical numbers; needed without a C++ compiler, e.g. on
+  Windows).
+- `finalize.sh` never writes into `results/` unless that directory is passed; tables are restricted to the runs
+  of the committed configs (`--config`), so they are regenerable.
+- Case keys: `kind`, `n`, `S` (two-component teacher) or `name` + `patterns` + `weights`, `d`, `chi`, `start`
+  (small | saddle | small_balanced), `sigmas`, `seeds`, `teacher_seed` (default 1000), `rtol`, `atol`, `t_max`,
+  `wall_limit`, `stall_detect`, `stall_patience` (evaluations at |v| < 1e-12 before a run is called stalled;
+  default 5000), `save_partial` (keep the trajectory of stalled / timed-out runs).
 
 ## Files
 | file | role |
 |---|---|
-| `rules.py` | trees, Steiner rule, bond-rank rule, route rule k* (projected local residual), Furman's N, literal H2 |
+| `rules.py` | trees, Steiner rule, bond-rank rule, route rule k* (projected local residual), route sequence at rank-constrained optima, Furman's N, literal H2 |
 | `run.py` | runner (library model + LSODA, events, plateau Hessians, stall detection, balanced init) |
 | `make_configs.py`, `configs/*.yaml` | sweep definitions |
-| `predict_sequences.py` | route-rule predictions for the multi-component teachers |
-| `levels.py` | step 3: time at each predicted plateau level |
-| `make_figures.py` | exponent tables, exponents and Hessian figures |
-| `plot_bonds.py` | step 4 figure |
+| `analysis.py` | plateau table, run classes, per-seed fits, fair log-vs-power comparison, stall dropout |
+| `make_figures.py` | exponent tables (`*_table.md/.csv`), exponents and Hessian figures |
+| `hess_recompute.py` | Hessians at the stored plateau midpoints: raw and fixed gauge projection |
+| `growth.py` | single-run escape degree from the growth exponent |
+| `levels.py`, `predict_sequences.py`, `plot_trees.py` | step 3: predicted levels, detected plateaus, trees figures |
+| `bond_events2.py`, `plot_bonds.py` | step 4: rank changes at events, per-saddle rank profiles, figure |
+| `route_amps.py`, `logcorr.py` | route-entry amplitudes at plateau midpoints; log-correction test |
+| `r12.py` | stall diagnosis: dead vs slow, theory R12's criterion at the route ends |
 | `finalize.sh` | regenerate all results into a given directory |
-| `pilot/pilot3.py` | RK45 runner used before library v0 (superseded) |
-| `analysis.py` | plateau table, per-seed exponent fits, log-law slopes, Hessian scaling, dormant-norm test |
-| `growth.py` | single-run escape degree from d log(da/dt) / d log a = 2 - 2/k |
-| `bond_events.py` | which bonds gain rank at each event vs prediction |
-| `plot_trees.py` | step 3 figure; `plot_escape.py`: pilot figure (superseded) |
-| `pilot/pilot2.py`, `fit.py` | first pilot (pre-fix library; superseded) |
+| `bond_events.py`, `pilot/`, `fit.py`, `plot_escape.py` | round-1 / pilot code (superseded) |
 
-## Results (details: `notes/locality.md` sections 7-8)
-- Two components: the plateau after the first component scales as predicted by the Steiner count k on all
-  9 trees: no plateau (k = 1), log law with slope (1 - s2/s1)/λ2 (k = 2; 1/λ2 from the saddle start),
-  σ^-(k-2) for k = 3 (0.98-1.03), 4 (1.9-2.1), 5 (2.9-3.1 except two MPS rows), 6-8 (within errors).
-  `results/twocomp_table.md`, `twocomp_exponents.png`.
-- Hessian at plateau midpoints: λ_min = -λ2 (k = 2), ∝ σ^(k-2) (k >= 3). `results/twocomp_hessian.png`.
-- Several components: route rule at rank-constrained optima predicts all sequences tested (TA, TB, N4, B4,
-  E8, TC, TD); literal H2 fails. `results/trees_*.png`, `levels_summary.csv`.
-- Bond spectra: rank rises on exactly the Steiner edges in 98.7% of events. `results/bond_spectra.png`.
-- Fan-in init kills k >= 4 routes in a sizeable fraction of runs; gauge-balanced init does not.
-- Robust to χ, d and the weight ratio. `results/robust_table.md`.
+## Results (details: `notes/locality.md` sections 7-9; round 2 after review notes/reviews/locality_round1.md)
+- Two components: plateau exponent k - 2 (k = Steiner subtree size) for k = 1-5 on all 9 trees (no plateau for
+  k = 1; log law with head-start slope for k = 2), except MPS k = 5 rows at chi = 2 and saddle-start k = 4 rows
+  with partially stalling seeds; k = 6-7 = k - 2 on binary8 and ht4 with balanced init over one decade; k = 8 not
+  measured. `results/twocomp_table.md`, `extensions_table.md`, `twocomp_exponents.png`.
+- Hessian at plateau midpoints (fixed gauge projection and raw): λ_min = -λ2 = -s2 s1^((K-2)/K) for k = 2,
+  ∝ sigma^(k-2) for k >= 3. `results/twocomp_hessian.png`, `hessians.csv`.
+- Several components: the route rule at rank-constrained optima predicts every k* >= 3 plateau (detected
+  plateaus, exponents within 0.2) and the rank profiles at the predicted saddles; TD and TC separate it from
+  the literal H2 rule and the bond-rank rule. `results/trees_*.png`, `levels_summary.csv`, `bond_profiles_multicomp.csv`.
+- Bond spectra: rank rises at each event on exactly the Steiner edges (99.75% of resolved events), together,
+  other edges stay at noise level. `results/bond_events2_twocomp.csv`, `bond_spectra.png`.
+- Dead routes (fan-in init, chi = 2, k >= 4 only): 397 / 5,682 runs; balanced init 16 / 1,008; chi = 4 103 / 1,002.
+  `results/run_classes_by_sweep.csv`, `stall_dropout*.csv`, `r12.csv`.

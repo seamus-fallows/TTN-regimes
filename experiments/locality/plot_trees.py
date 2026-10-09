@@ -110,11 +110,16 @@ def main():
         for j, gj in g.groupby("level_j"):
             k = int(gj["k_star"].iloc[0])
             c = LEVEL_COLORS[int(j) % len(LEVEL_COLORS)]
-            med = gj[gj["duration"] > 0].groupby("sigma")["duration"].agg(["median", "min", "max"])
+            # detected plateau durations (ttn.diagnostics.find_plateaus, matched to the level); levels that are
+            # too short to be detected (log-time k* = 2) fall back to the time spent within 2% of the level
+            col = "detected_duration" if gj["detected_duration"].notna().sum() >= 3 * gj["sigma"].nunique() // 2 \
+                else "duration"
+            med = gj[gj[col] > 0].groupby("sigma")[col].agg(["median", "min", "max"])
             if med.empty:
                 continue
             xs = 1 / med.index.values
-            ax.plot(xs, med["median"], "o-", ms=3.5, lw=1.2, color=c, label=f"L{j}: k* = {k}")
+            ax.plot(xs, med["median"], "o-" if col == "detected_duration" else "o:", ms=3.5, lw=1.2, color=c,
+                    label=f"L{j}: k* = {k}" + ("" if col == "detected_duration" else " (time in 2% band)"))
             ax.fill_between(xs, med["min"], med["max"], color=c, alpha=0.12, lw=0)
             if k >= 3:
                 ref = med["median"].iloc[-1]
@@ -126,7 +131,7 @@ def main():
         ax.grid(alpha=0.25, lw=0.5)
         ax.legend(fontsize=7, frameon=False)
         if col == 0:
-            ax.set_ylabel("time at level L_j (dashed: slope k* − 2)")
+            ax.set_ylabel("plateau duration at L_j (detected)\n(dashed: slope k* − 2)")
     fig.suptitle(f"Teacher {args.teacher}: weights {rec['weights']}, patterns {rec['patterns']}", fontsize=9)
     fig.tight_layout()
     fig.savefig(args.out, dpi=150)

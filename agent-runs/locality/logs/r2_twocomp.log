@@ -1,0 +1,12 @@
+None [0, 1, 2, 3] ht 8 saddle 0 0s
+None [0, 1, 2, 3] ht 8 saddle 1 0s
+None [0, 1, 2, 3] ht 8 saddle 2 0s
+None [0, 1, 2, 3] ht 8 saddle 4 0s
+None [0, 7] mps 8 saddle 1 0s
+None [0, 7] mps 8 saddle 2 0s
+None [0, 7] mps 8 saddle 3 0s
+None [0, 7] mps 8 saddle 4 0s
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(

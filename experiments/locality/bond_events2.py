@@ -109,9 +109,13 @@ def run_rows(rec):
             C = set(max(hits, key=lambda h: h[1])[0]) if hits else set()
             predicted = sorted(v for v in tree.edges if v in C and tree.parent[v] in C)
         s_mid, s_hi = spectra_at(i_mid), spectra_at(i_hi)
+        t_prev = events[j - 1][0]
         row = dict(tree=tree.name, case=rec.get("name") or "S=" + "".join(map(str, rec["S"])),
                    start=rec["start"], chi=rec["chi"], sigma=rec["sigma"], seed=rec["seed"], event=j,
-                   component=r, k_star=k_star, width=w, predicted=str(predicted))
+                   component=r, k_star=k_star, width=w, predicted=str(predicted), key=rec.get("_key"),
+                   # separation ratio of the plateau before the event (< 3: no resolved plateau, the
+                   # "before" state is already part of the escape)
+                   rho=(t_half - t_prev) / w)
         for f in FS:
             def rank(s, v):
                 ts = tsp[v]
@@ -145,8 +149,8 @@ def run_rows(rec):
             if m < len(s_mid[v]):
                 leak = max(leak, max(spectra_at(i)[v][m] for i in idx[:: max(1, len(idx) // 200)]) / s_r)
         row["leak_window"] = leak
-        if two:  # whole run: the non-Steiner edges never reach rank 2
-            sub = np.unique(np.linspace(0, len(t) - 1, min(len(t), 400)).astype(int))
+        if two:  # rest of the run from the plateau midpoint (after the initial noise has relaxed)
+            sub = np.unique(np.linspace(i_mid, len(t) - 1, min(len(t) - i_mid, 400)).astype(int))
             row["leak_run"] = max((spectra_at(i)[v][1] / s_r for i in sub for v in tree.edges if v not in predicted),
                                   default=0.0)
         rows.append(row)

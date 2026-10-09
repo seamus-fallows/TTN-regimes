@@ -155,7 +155,8 @@ def plateau_table(paths, config=None, hessians=None) -> pd.DataFrame:
                 row[key] = p.get(key, np.nan)
             h = hess.get((rec.get("_key"), j))
             if h is not None:  # recomputed: raw Hessian and well-conditioned gauge projection
-                for key in ("hess_raw_min", "hess_wc_min", "hess_wc_neg", "hess_raw_neg", "hess_raw_max"):
+                for key in ("hess_raw_min", "hess_wc_min", "hess_wc_neg", "hess_raw_neg", "hess_raw_max",
+                            "hess_lib_min"):
                     row[key] = h.get(key, np.nan)
             row["a_mid"] = p["a_mid"][rb] if "a_mid" in p else np.nan
             row["L_mid"] = p.get("L_mid", np.nan)
@@ -269,7 +270,9 @@ def summarize(df: pd.DataFrame, group=("tree", "case", "start", "d", "chi", "w",
         row["decades"] = float(np.log10(max(sig) / min(sig)))
         row["seeds"] = g["seed"].nunique()
         row["runs"] = len(g)
-        hcol = "hess_wc_min" if "hess_wc_min" in g and g["hess_wc_min"].notna().any() else "hess_min"
+        # projected lambda_min: ttn.diagnostics.project_out_gauge after its fix (rtol 1e-3), recomputed by
+        # hess_recompute.py; the round-1 values (hess_min, rtol 1e-10) are biased and only a fallback
+        hcol = next((c for c in ("hess_lib_min", "hess_wc_min") if c in g and g[c].notna().any()), "hess_min")
         p, lg, hp, hp_raw, ploc, rl, rp, dslope = [], [], [], [], [], [], [], []
         for _, gs in g.groupby("seed"):
             gs = gs[gs["gap"] > 0].sort_values("sigma")
