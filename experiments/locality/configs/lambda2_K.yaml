@@ -1,0 +1,26 @@
+# K-dependence of lambda_2 = s2 s1^((K-2)/K): weights (2, 1), saddle start, k = 2
+cases:
+- kind: mps
+  n: 4
+  S: [1, 2]
+  start: saddle
+  weights: [2.0, 1.0]
+  sigmas: [0.1, 0.03162, 0.01, 0.003162, 0.001, 0.0003162, 0.0001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+- kind: mps
+  n: 6
+  S: [2, 3]
+  start: saddle
+  weights: [2.0, 1.0]
+  sigmas: [0.1, 0.03162, 0.01, 0.003162, 0.001, 0.0003162, 0.0001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1
+- kind: mps
+  n: 8
+  S: [3, 4]
+  start: saddle
+  weights: [2.0, 1.0]
+  sigmas: [0.1, 0.03162, 0.01, 0.003162, 0.001, 0.0003162, 0.0001]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  cost: 1

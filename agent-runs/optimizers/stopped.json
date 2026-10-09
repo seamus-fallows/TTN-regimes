@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791585598,
+  "reason": "done",
+  "outputs": {
+    "files": 3283,
+    "bytes": 2290436683,
+    "sample": [
+      "optimizers/pilot_calib/index.jsonl",
+      "optimizers/pilot_calib/2f119b021d840040.npz",
+      "optimizers/pilot_calib/914d03277511ccd1.npz",
+      "optimizers/pilot_calib/b96f5594d3a31a50.npz",
+      "optimizers/pilot_calib/992823ea00daef7c.npz"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}

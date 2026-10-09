@@ -168,7 +168,8 @@ the MPS learns the 0.3 component before the 0.6 one.
 - For several learned components N and the rank-rule k differ: the deficient set is the union of what
   *all* remaining components need, while the escape takes the cheapest single component. Then
   k = min_r k(L, r) <= N (`rules.furman_N`). Examples (section 5 teachers): TA on `ht4`, second escape
-  k = 3 vs N = 6; TC on `mps8`, k = 2, 3, 5 vs N = 8, 7, 5. This is the lead's refinement (ii)
+  k = 3 vs N = 6; TC on `mps8`, exact-rank-rule degrees k_ex = 2, 3, 5 for U2, U3, U4 vs N = 8, 7, 5
+  (the route-rule sequence, which includes partial steps, has k* = 2, 2, 2, 4, 2). This is the lead's refinement (ii)
   ("lowest degree with non-zero residual correlation"), computed per case by the rank rule.
 - **Dynamics analogues.** [RawalDeWeese2026] Thm 4.2 (DLNs): escape Theta(1/Gamma),
   Theta(log(1/eps)/Gamma), Theta(eps^-(r-2)/Gamma) for r = 1, 2, >= 3 small layers: the same
@@ -192,246 +193,325 @@ the MPS learns the 0.3 component before the 0.6 one.
   curvature: the index-0 / piggyback route, with eigenvalue q^(K-2)(s_learned - s_new) for m = 2,
   negative only when the learned component is the smaller one (wrong order, H1b). For pattern
   teachers this gives the tree analogue of [Achour2024]'s "tightened" (derived): **a saddle visited in
-  greedy order is non-strict iff no unlearned component can be added by raising the rank of a single
-  bond** (all k(L, r) >= 3); it is strict if some k(L, r) = 2, or if a wrong-order component can be
-  corrected through two S-nodes. Measured in section 7 via lambda_min vs sigma at plateau midpoints.
+  greedy order and without stars is non-strict iff no unlearned component can be added by raising the
+  rank of a single bond** (all k(L, r) >= 3); it is strict if some k(L, r) = 2, if a wrong-order
+  component can be corrected through two S-nodes, or if the piggyback graph has spectral radius
+  ρ(S) > s_q (stars: theory_saddles.md v2 section 4.6; not tested here). Measured in section 7 via the
+  sigma-scaling of lambda_min at plateau midpoints.
 
-## 7. Results
+## 7. Results (round 2, after review notes/reviews/locality_round1.md)
 
-All runs: gradient flow (scipy LSODA with the exact-Hessian Jacobian, rtol 1e-9, atol 1e-14, event
-root-finding; Radau fallback in < 1% of runs), library v0 model, float64, teacher seed 1000, init seeds
-0-7 (0-4 for k >= 6). Integrator check on one k = 6 run: LSODA (rtol 1e-9, 1e-10), Radau (1e-9, 1e-10)
-and RK45 agree on t2 - t1 to 3e-8 relative. Conservation-law drift < 7e-8 (max over all runs) against
-|Q| ~ 1e-2..1. Tables and figures: `experiments/locality/results/` (regenerate with `finalize.sh`).
+Scope: orthogonal pattern teachers, d = 2, chi = 2 unless stated, whitened Gaussian inputs, exact population
+loss. Dynamics: gradient flow, scipy LSODA with the exact-Hessian Jacobian (rtol 1e-9, atol 1e-14), event
+times by root-finding (Radau fallback < 1% of runs), library v0 model, float64, teacher seed 1000, init seeds
+0-7 (0-4 for the round-1 k >= 6 rows). Every table is restricted to the runs of its committed config
+(`analysis.load_records(config=...)`), rotation runs are excluded from fits (counted separately), exponents
+are per-seed least-squares fits with mean ± SE and the median over seeds. Conservation-law drift
+max_e |Q_e(T) - Q_e(0)|: <= 1e-6 in every run (99.9% < 3.5e-8, median 1.2e-9), against Gram entries of order 1
+after learning. Relative to the initial imbalance |Q(0)| ~ sigma^2 (fan-in small init) the drift is <= 1.6e-4 in
+every k >= 4 run (where the imbalance matters: dead routes, 7.5), but up to 0.5 at k <= 3 and sigma <= 1e-3, where
+sigma^2 is below the integrator's absolute error (those runs never stall, and their gaps agree with the reviewer's
+independent dense/Radau integration to 1e-7-1e-9). With balanced init Q(0) = 0 to roundoff. Regenerate with
+`finalize.sh <dir>`.
 
-### 7.1 Two-component teachers: the exponent table (steps 1, 2) — **empirical, matches derived**
+### 7.1 Two-component exponent table (step 1) — **empirical**
 
-`results/twocomp_table.md` (one row per tree, S, protocol). Summary (fitted exponent of t2 - t1 vs
-sigma, per seed, mean ± SE; "local" = three smallest sigma):
+`results/twocomp_table.md` (115 rows), `twocomp_balanced_table.md`, `twocomp_chi4_table.md`,
+`extensions_table.md` (k >= 6 over one decade, lambda2(K), k = 5 extension); figure
+`results/twocomp_exponents.png`. Ranges over rows (per-seed mean; medians over seeds in brackets):
 
-| k (Steiner) | rows (trees) | predicted | measured |
+| k | rows (trees) | predicted | measured |
 |---|---|---|---|
-| 1 | binary4 {0,1},{2,3}; binary8 {0,1}; star3 {0,1} | no plateau | t2 - t1 = 4e-4..1e-3 (small init), 0.6 (saddle start); separation ratio << 1 |
-| 2 | mps4/6/8, midroot6 adjacent pairs | log law, slope (1 - s2/s1)/λ2 = 1.00 (small init), 1/λ2 = 2.00 (saddle start) | slopes 0.98-1.01 (small init), 2.00-2.07 (saddle start) |
-| 3 | 26 rows: mps4/6/8, binary4/8, ht4/8, star3, midroot6 | 1 | 0.98-1.03 (local 0.97-1.01) |
-| 4 | mps4/6/8, star3, midroot6 | 2 | 1.81-2.39 (local 1.94-2.47; all but mps6 within 0.1 of 2) |
-| 5 | ht4 {0,2},{0,3},{1,2}; mps6 {1,3,5}; binary8, ht8, mps8 rows (pending) | 3 | ht4: 2.88-3.13; mps6 {1,3,5}: 2.86 (saddle), 3.76 ± 0.27 (small; see 7.5) |
-| 6-8 | (pending; sigma range < 1 decade) | 4-6 | ht4/ht8 all-sites (k = 7): 5.8 ± 0.6, 6.7 ± 0.8 over sigma in [0.08, 0.6] |
+| 1 | binary4 ×2, binary8, star3 | no plateau | small init: t2 - t1 <= 8e-4, ρ <= 4e-4; saddle start: 0.63-0.65, ρ = 0.34 |
+| 2 | mps4/6/8, midroot6 (7) | log, slope (1 - s2/s1)/λ2 (small init) or 1/λ2 (saddle start) | slopes 0.980-1.009 (pred. 1.000) and 2.002-2.071 (pred. 2.000); the fair comparison picks the log law in 14/14 rows (mps8 {3,4} small init nearly tied, 0.004 vs 0.005) |
+| 3 | 22 + 20 rows on all 9 trees | 1 | 0.98-1.04 (medians 0.99-1.03); power law picked in 42/42 |
+| 4 | mps4/6/8, star3, midroot6 (8) | 2 | small init 1.95-2.05; saddle start 1.48-2.39 (medians 1.86-2.06); balanced 1.94-2.02; chi = 4 1.99-2.03 |
+| 5 | binary8 ×3, ht4 ×3 | 3 | 2.89-3.13, all protocols |
+| 5 | ht8 {1,2} (saddle) | 3 | 2.74 ± 0.37 (median 2.96; 3.10 ± 0.11 without the seed that stalls at some sigma) |
+| 5 | mps6 {1,3,5}, mps8 {1,5} | 3 | chi = 2: 2.86-3.76 (7.9); chi = 4: 3.00 ± 0.04, 3.19 ± 0.15 (medians 2.99, 3.01) |
+| 6 | binary8 {0,2,4}, ht4 {0,1,2} (balanced, 1.0 decade, 8 seeds) | 4 | 4.007 ± 0.021, 4.061 ± 0.048 (local 4.00, 4.01) |
+| 6 | mps8 {1,6} (balanced, 1.0 decade) | 4 | 4.51 ± 0.19 (local 4.26) |
+| 6 | round-1 rows (0.8 decades, 2-5 seeds) | 4 | 3.4-5.1 (fan-in), not a measurement of the exponent |
+| 7 | ht4 all sites (balanced, 1.0 decade, 8 seeds) | 5 | 4.957 ± 0.061 (median 5.01) |
+| 7 | ht4/ht8 round-1 rows (0.6 decades, 3-5 seeds) | 5 | 5.3-6.3 (medians 5.0-5.7); ht8 {3,4}: 5.74 ± 1.06, median 5.01, one pinned seed (4.74 ± 0.44 without it); the sigma >= 0.45 points start below a1 = 1/2 |
+| 8 | mps8 {0,7} only, sigma in [0.2, 0.6] | 6 | not measured (fan-in 2 seeds; balanced 5.54 ± 0.19, 2 seeds; chi = 4 7.29, 2 seeds; saddle start: no escaping run) |
 
-- The Steiner count k decides the exponent on every tree, whatever the number of sites in S
-  (e.g. binary4: S = {1,2}, {0,3}, {0,2}, {0,1,2}, all four sites all give k = 3 and p = 1.00), and
-  regardless of where the root is (midroot6 = mps6 rerooted: same exponents).
-- The k = 2 slope distinguishes the head start: small init 1.00, saddle start 2.00, exactly as
-  derived in section 2 (= theory_saddles.md P2). The naive H2 slope 1/λ is refuted for small init.
+- **Status (empirical)**: the exponent equals k - 2 for k = 1-5 on all 9 trees, with the exceptions of the
+  MPS k = 5 rows at chi = 2 (7.9) and of saddle-start k = 4 rows whose fits include seeds that stall at some
+  sigma (7.5); for k = 6-7 it equals k - 2 on binary8 and ht4 with balanced init over one decade, but not on
+  the MPS (mps8 {1,6}: 4.5); k = 8 is not measured.
+- The k = 2 law is distinguished from a power law by a fair comparison (same space and weights, 2-3 decades;
+  analysis standard 5). Its slope carries the head start: small init (1 - s2/s1)/λ2, saddle start 1/λ2.
+- **K-dependence of λ2** (s1 != 1; `configs/lambda2_K.yaml`, weights (2, 1), saddle start, 8 seeds):
+  λ_min = -1.4142, -1.5874, -1.6818 for K = 4, 6, 8 (predicted s2 s1^((K-2)/K) = 1.4142, 1.5874, 1.6818);
+  log slopes 0.712 ± 0.007, 0.649 ± 0.016, 0.595 ± 0.003 (predicted 1/λ2 = 0.707, 0.630, 0.595).
+- The same-teacher contrast on N = 8, S = {3,4} (log / k = 5 / k = 7 on mps8 / binary8 / ht8) mixes protocols
+  (binary8 small init, mps8 and ht8 saddle start); the ht8 value (k = 7) is consistent with 5 but does not
+  discriminate k = 6, 7, 8.
 
-### 7.2 Saddle type (H3) — **empirical, matches derived**
+### 7.2 Saddle type (H3) — **empirical**
 
-`results/twocomp_hessian.png`: gauge-projected Hessian at the plateau midpoint.
-- k = 2: λ_min = -0.49..-0.50 at the smallest sigma (predicted -λ2 = -s2 s1^((K-2)/K) = -0.5), flat in
-  sigma (fitted exponent 0.00 ± 0.00 from the saddle start); one negative eigenvalue (chi - 1 = 1).
-- k >= 3: λ_min ∝ sigma^x with x = 1.00-1.04 (k = 3), 1.8-2.2 (k = 4), 2.9-3.1 (k = 5), 6.0-6.8 (k = 7),
-  i.e. x ≈ k - 2: the negative curvature vanishes as sigma -> 0 (higher-order saddle).
-- So "strict iff k = 2" holds for these saddles, classified by the primary rule of notes/diagnostics.md
-  (sweep-level sigma-scaling of λ_min). The negative-eigenvalue counts in the tables (`hess_neg`) use the
-  fixed 1e-3 threshold and are a single-sigma fallback only (that rule would call k = 3 plateaus strict at
-  sigma >~ 0.03).
+`results/twocomp_hessian.png`; Hessians recomputed at the stored plateau midpoints (`hess_recompute.py`,
+`results/hessians.csv`) with the fixed `ttn.diagnostics.project_out_gauge` (rtol 1e-3, commit 6c42d85) and
+raw (unprojected) eigenvalues side by side. Classification by the primary rule of notes/diagnostics.md
+(sweep-level sigma-scaling of λ_min); the counts of negative eigenvalues (fixed 1e-3 threshold) are a
+single-sigma fallback only.
+- k = 2: saddle start λ_min = -0.5000 (projected and raw, every row; predicted -λ2 = -0.5), independent of
+  sigma; s2 = 0.25 / 0.75: -0.2500 / -0.7500. Small init: -0.49 to -0.50 at sigma <= 1e-3 (-0.41 projected,
+  -0.44 raw for mps8 {3,4} at sigma = 0.008, where the log plateau is too short to reach the saddle; -0.50 /
+  -0.58 for s2 = 0.75). One negative eigenvalue per active route, also at chi = 4, 8 (theory R10).
+  Round-1 values -0.44..-0.46 (saddle start) were biased by the old projection (review issue 3).
+- k >= 3: λ_min ∝ sigma^x with x = 0.93-1.04 (k = 3; 0.81 for mps6 {2,3,4} small init), 1.94-2.05 (k = 4 small init / balanced), 2.87-3.44
+  (k = 5), 4.00-4.04 (k = 6, balanced), 5.01 (k = 7, balanced), i.e. x ≈ k - 2: no sigma-independent
+  negative curvature. Raw and projected exponents agree to 0.01. Exception: balanced-init mps8 {2,5} and
+  {1,5}, whose midpoint λ_min is ~1e-13-1e-10 (exponents 6-9): there the minimum-speed point falls where the
+  route amplitudes are tiny (a sign-correction phase, theory_saddles.md 8), so the midpoint Hessian is not
+  representative.
 
-### 7.3 Single-run escape degree and dormant amplitudes — **empirical**
+### 7.3 Dormant amplitudes and single-run k — **empirical**
 
-- Growth exponent γ = d log(da/dt)/d log a on the plateau, fitted in the window a in [1e-4, 1e-2]
-  (theory P4: 2 - 2/k; `results/growth_summary.csv`, median per (tree, S, protocol), 1-22 rows per k):
-  k = 2: 0.996-0.999 (saddle start); 3: 1.331-1.340; 4: 1.498-1.511; 5: 1.605-1.624; 6: 1.664-1.677;
-  7: 1.712-1.741; 8: 1.739-1.747, i.e. k = 2/(2 - γ) = 2.0, 3.0, 4.0, 5.1, 6.0, 7.0-7.7, 7.7-7.9. The escape
-  degree is readable from a single run and equals the Steiner count for every k = 2..8 tested, including
-  the two MPS k = 5 rows whose sigma-exponent is too high (7.9): there the route degree is 5, and the
-  excess sigma-exponent comes from the dormant amplitude entering the plateau, not from the degree.
-- Dormant-norm test (lead's refinement iii): the remaining plateau time from the midpoint scales with
-  the overlap of the escaping component there, a_mid: slope 0.98-1.01 vs ln(1/a_mid) for k = 2
-  (predicted 1/(2λ) = 1), exponent -0.25..-0.31 for k = 3 (predicted -(k-2)/k = -0.33), -0.67..-0.77
-  for k = 7 (predicted -0.71). Plateau lengths are set by the dormant route amplitude entering the
-  plateau; sigma enters only through it.
+- Dormant-amplitude test (per-seed fits): remaining time from the plateau midpoint vs the overlap a_mid
+  there: k = 2 slope vs ln(1/a_mid) 0.999-1.004 (saddle start) and 1.010-1.043 (small init), predicted
+  1/(2λ2) = 1; k = 3, 4, 5, 7 exponents -0.29..-0.41, -0.39..-0.52, -0.51..-0.61, -0.69..-0.79, predicted
+  -(k-2)/k = -0.33, -0.50, -0.60, -0.71. This is partly circular: it follows from the growth law of the
+  route mode alone, so it confirms that plateau lengths are set by the dormant amplitude, not the degree.
+- Growth exponent γ = d log ȧ / d log a in a in [1e-4, 1e-2] (theory P4): medians per row give
+  k = 2/(2 - γ) = 2.00 (k = 2, saddle start), 3.0, 4.0, 5.1-5.3, 6.0, 7.0-7.7, 7.7-7.9. **Validity range**:
+  saddle start, or small init when the plateau is long enough that the window lies after the escape
+  transient; it fails for small-init k = 2 on mps6/mps8 (k estimate 2.4-3.3, the plateau is shorter than the
+  transient), is biased high for k >= 5 (ht8: 5.3 for k = 5, 7.7 for k = 7), and cannot separate k = 7 from 8
+  (dk/dγ = k^2/2; per-run 5-95% ranges ±1 at k = 7).
 
-
-
-### 7.4 Several components: same teacher, different saddle sequences (step 3) — **empirical, matches the route rule**
+### 7.4 Several components: same teacher, different saddle sequences (step 3) — **empirical**
 
 Predicted sequences: route rule at rank-constrained optima (section 5; `results/route_sequences.json`).
-Measured: time spent within 2% of each predicted plateau level L_j, fitted against sigma per seed
-(`results/levels_summary.csv`; figures `results/trees_TA.png`, `trees_B4.png`, `trees_B4_ht_balanced.png`,
-`trees_E8.png`). Exponents p (mean ± SE over 5-8 seeds; "log" = k* = 2, durations grow additively):
+Measured (`levels.py`, `results/levels_summary.csv`; figures `results/trees_TA.png`, `trees_B4.png`,
+`trees_B4_ht_balanced.png`, `trees_E8.png`), runs pooled by event order (standard 3), per-seed fits:
+- **detected plateaus**: `ttn.diagnostics.find_plateaus` on L(t) (linear time, separation ratio > 3),
+  matched to a predicted level when their levels agree within 5% (`detected_frac` = fraction of runs with a
+  matching plateau; replaces round 1's meaningless "visited" fraction); `p_det` = exponent of the matched
+  plateau's duration vs 1/sigma;
+- **fair law label** from the occupation time within 2% of the level (log law vs power law, same space;
+  "log" only where the log law has the smaller residual over >= 4 sigmas).
 
-Runs are pooled by event order (analysis standard 3); durations resting on < 3 stored integrator steps
-are counted as unresolved and not fitted (only the first, very short log-time levels on mps4/mps8 have
-unresolved cases: up to 24 of 45 runs). "log" = k* = 2: durations grow additively (fitted power < 1 and a
-positive slope against ln(1/sigma)).
+| teacher | tree (protocol, sigma) | predicted k* per level | p_det (detected fraction) | law (occupation, fair) |
+|---|---|---|---|---|
+| TA {0000,1100,1110} | mps4 (small, 0.2-1e-5) | 2, 2 | too short to detect (0.06), 0.14 (0.49) | power / log |
+| | binary4 (small) | 3 | 1.02 (1.00) | power |
+| | ht4 (small; balanced) | 3, 4 | 1.09, 2.08 (0.93, 1.00); 1.13, 2.04 | power |
+| B4 {0000,0110,1001} | mps4 (small, 0.2-1e-3) | 2 (0.3 component first), 4 | not detected (0.00), 2.02 (1.00) | log (0.22 vs 0.25) / power |
+| | binary4 (small) | 3, 3 | 1.05, 1.03 (0.92, 1.00) | power |
+| | ht4 (balanced) | 5, 5 | 3.00, 3.17 (0.88, 1.00) | power |
+| E8 (N = 8) | mps8 (small) | 2, 6 | not detected (0.00), 4.05 (1.00) | power (0.024 vs 0.112), power |
+| | binary8 (small) | 5, 5 | 3.06, 2.97 (1.00) | power |
+| TC (4 components) | mps8 (saddle, 0.1-1e-4) | 2, 2, 2, 4, 2 | 0.17, 0.16, 0.18, 2.02, – (0.68, 0.57, 0.81, 1.00, 0.00) | log, log, log, power, log |
+| | binary8 (small) | 3, 3, 3 | 1.12, 1.10, 1.08 (0.96, 0.35, 0.65) | power |
+| TD (N = 8) | mps8 (saddle, 0.1-1e-4) | 2, 2, 3 | 0.15, 0.10, **1.00** (0.51, 0.06, 1.00) | log, **power** (0.16 vs 0.39), power |
+| | mps8 (small) | 2, 2, 3 | –, –, 1.05 (0.06, 0.03, 1.00) | power, power, power |
+| N4 {0000,1100,1111} | mps4 (small, 0.2-1e-5) | 2, 2, 2 | 0.09, 0.15, 0.16 (0.09, 0.46, 0.74) | power, log, log |
+| | binary4 (small) | 3 | 1.04 (0.96) | power |
+| | ht4 (small; balanced) | 3, 3, 3 | 1.12, 1.15, 1.11 (0.89-1.00); 1.12, 1.15, 1.09 | power |
 
-| teacher | tree (protocol, sigma range) | predicted k* per plateau | measured p ± SE (seeds) |
-|---|---|---|---|
-| TA {0000,1100,1110} (1, .6, .35) | mps4 (0.2-1e-5) | 2, 2 | log, log |
-| | binary4 (0.1-0.002) | 3 (first escape already at L = 0.044) | 1.05 ± 0.01 (8) |
-| | ht4 (0.25-0.02) | 3, 4 | 1.26 ± 0.11, 2.11 ± 0.04 (7); balanced init 1.51 ± 0.21, 2.05 ± 0.04 (8) |
-| B4 {0000,0110,1001} (1, .3, .6) | mps4 (0.2-1e-3) | 2 (the 0.3 component first), 4 | log, 2.06 ± 0.03 (5) |
-| | binary4 (0.1-0.002) | 3, 3 | 1.24 ± 0.12, 1.06 ± 0.01 (8) |
-| | ht4, balanced init (0.3-0.05) | 5, 5 | 3.02 ± 0.02, 3.17 ± 0.10 (8) |
-| E8 (N = 8; 1, .4, .7) | mps8 (0.3-0.06) | 2, 6 | log, 4.05 ± 0.10 (7) |
-| | binary8 (0.3-0.04) | 5, 5 | 3.09 ± 0.04, 2.97 ± 0.08 (6, order 0>2>1) |
-| TC (N = 8, 4 components) | mps8, saddle start (0.1-1e-4) | 2, 2, 2, 4, 2 | log, log, log, 2.02 ± 0.02, log (7) |
-| | binary8 (0.25-0.03) | 3, 3, 3 | 1.33 ± 0.11, 1.26 ± 0.14, 1.19 ± 0.08 (5) |
-| TD (N = 8; 1, .6, .35) | mps8, saddle start (0.1-1e-4) | 2, 2, 3 | log, log, **1.02 ± 0.01** (7) |
-| | mps8 (0.2-0.02) | 2, 2, 3 | log, log, 1.12 ± 0.08 (6) |
-| N4 {0000,1100,1111} (1, .6, .4) | mps4 (0.2-1e-5) | 2, 2, 2 (one partial step) | log, log, log |
-| | binary4 (0.1-0.002) | 3 | 1.12 ± 0.03 (8) |
-| | ht4 (0.25-0.02) | 3, 3, 3 | 1.42 ± 0.14, 1.32 ± 0.13, 1.17 ± 0.04 (8) |
+- **Every k* >= 3 level** is detected as a plateau in 88-100% of runs (35-65% for some k* = 3 levels whose
+  level differs from the next by < 10%, e.g. TB ht4 levels 1-2, TC binary8 level 1) with exponent
+  k* - 2 within 0.2 (1.02-1.19 for k* = 3; 2.02-2.08 for k* = 4; 2.97-3.17 for k* = 5; 4.05 for k* = 6).
+  Round 1's band-occupation exponents for k* = 3 (1.2-1.6) were biased by the approach to the level.
+- **k* = 2 levels** are short; where measured over 3 decades from the saddle start (TC levels 0-2 and 4,
+  TD level 0) the fair comparison picks the log law; TD level 1 (a partial step, 12/55 durations
+  unresolved) and the small-init MPS8 first levels prefer a power law < 1, i.e. their law is not
+  determined; round 1's "log" labels there are withdrawn.
+- **Route rule vs alternatives**: TD's last level (1.012 ± 0.010, 8 seeds, saddle start; detected-plateau
+  exponent 1.00) and TC's k* = 4 level (2.018 ± 0.017) separate the route rule from the literal H2 rule and
+  from the exact bond-rank rule; TA separates the literal rule only. B4 on mps4: the 0.3 component is
+  learned before the 0.6 one in every escaping run.
 
-- Locality beats weight (B4 on mps4): the 0.3 component is learned (log time) before the 0.6 one
-  (sigma^-2), in every run that escapes.
-- TD separates the candidate rules: literal H2 and the exact rank rule predict k = 2 and 4 for the last
-  plateau; the route rule predicts 3 (a partial step first); measured 1.02 ± 0.01 over 3 decades of sigma
-  (saddle start) and 1.12 ± 0.08 with small init: k = 3.
-- TA, N4, TB: the first escape on binary4 already fits U1, U2 and part of U3 (a superposition in one
-  core); the MPS learns the same teacher in short log-time steps; HT needs sigma^-1 and sigma^-2 plateaus.
-- Plateau levels: every predicted level is visited (visited fraction 0.89-1.00; misses are seeds that
-  took the other branch of a k* tie, e.g. E8 on binary8).
-- Exponents of k* = 3 levels are biased upward (1.1-1.4) at the larger sigma, where the 2% band also
-  catches the approach to the level; the k* >= 4 levels and the wide-sigma rows are on target.
+### 7.5 Stalled runs: counts, dead vs slow, theory R12 — **empirical**
 
-### 7.5 Dead routes under fan-in init (theory_saddles.md R12) — **empirical**
+A run is "stalled" when, after a component has been learned, the gradient stays below 1e-12 for 5,000
+consecutive evaluations (the loss sits at the partial fit, e.g. L = 0.125 = s2^2/2).
 
-A run is "stalled" when, after a component has been learned, the gradient stays at roundoff (|v| < 1e-12
-for 5000 consecutive evaluations): the route of the next component is dead and gradient flow never
-leaves the plateau (L stays at the partial fit, e.g. 0.125 = s2^2/2).
+- **Counts** (`results/run_classes_by_sweep.csv`; runs of the committed configs): fan-in chi = 2: 397 of
+  5,682 two-component runs, all with k >= 4 (none of 5,112 runs with k <= 3 in the two-component and robustness
+  sweeps); gauge-balanced init (same k >= 4 cases): 16 of 1,008 (fan-in on the same cases and sigma grids: 169
+  of 1,008, a 10x reduction), all on MPS routes (mps8 {2,5}, {1,5}, {1,6}, {0,7}; mps6 {1,3,5}); chi = 4: 103 of
+  1,002 (7.10); k = 5 extension (sigma <= 0.03): 34 of 96; k >= 6 extension (balanced): 10 of 256 (mps8 {1,6}).
+- **Sigma-dependent dropout** (`results/stall_dropout*.csv`): a stalling seed does not stall at every sigma in
+  20 of 33 fan-in rows with stalls (49 seeds stall at every sigma, 34 at some sigmas only); all balanced-init
+  stalls are of the second kind. Fits use the seeds that escape at >= 3 sigmas, so partially stalling seeds enter
+  with fewer sigmas. Restricting each row to seeds that never stall (`results/stall_dropout_bias.csv`) changes the
+  exponent by 0 in 24 of 40 rows, but by -0.47 / +0.33 / +0.36 / -1.00 / -0.30 in mps6 {0,3} saddle (2.39 -> 1.92),
+  midroot6 {0,3} saddle (1.49 -> 1.81), ht8 {1,2} (2.74 -> 3.10), ht8 {3,4} (5.74 -> 4.74), mps8 {1,5} small
+  (3.27 -> 2.98): the off-target saddle-start k = 4 and ht8 rows are carried by seeds that stall at some sigma.
+- **Dead vs slow** (`configs/stall_diagnosis.yaml`: 22 (case, sigma) pairs covering stalled runs and their
+  escaped controls, 170 runs, stall patience 300,000 evaluations (60x), trajectories saved; `r12.py`,
+  `results/r12.csv`): every fan-in and saddle-start run that the 5,000-evaluation detector had flagged (37) is
+  dead: no escape within the longer budget (up to t ~ 1e10) and route-end amplitudes at roundoff (1e-17 to
+  1e-13). With balanced init the flagged runs are not dead: 6 of 10 escaped very late (gaps 2e9-5e10, about 1e5 x
+  the normal plateau) and 4 remained pinned (route ends 3e-10 to 4e-8, finite). So "stalled" = dead under fan-in
+  init and saddle start, but = pinned (extremely slow) under balanced init.
+- **R12's criterion** (theory_saddles.md 8: a route end decays iff c = Q_end + |y_route|^2 < 0, evaluated here
+  at the plateau start a1 = 0.99; the route dies iff every end has c < 0): over the 122 fan-in and saddle-start
+  runs, 30 of 55 runs with both ends unfavourable died, against 7 of 67 with a favourable end; 30 of the 37 dead
+  runs had both ends unfavourable. The criterion is strongly associated with death (55% vs 10%) but is neither
+  sufficient (25 predicted-dead runs escaped, e.g. 7 of 9 on ht4 {1,2} from the saddle start) nor necessary (7
+  dead runs had a favourable end). For mps4 {0,3} at chi = 2 it classifies 14 of 16 runs correctly (all 10 dead
+  runs predicted; 2 false alarms with weakly negative c).
+- **Conflicts with theory_saddles.md** (to be resolved by the theory side):
+  (i) R12 says exactly balanced init removes the trap and that with Q = 0 the leaf column does not shrink. We find
+  no dead route with balanced init (consistent), but route ends do shrink to 1e-10-1e-8 on MPS8 routes and the
+  escape is delayed by ~1e5 or beyond the budget (inconsistent with "no shrink").
+  (ii) P12's heuristics (about 0.5 dead per two-ended HT route under fan-in init; MPS with chi = d stalling less
+  often) are contradicted: ht4 k = 5 routes: 0 of 144 fan-in small-init runs stalled, against 30 of 48 on mps4
+  {0,3}, 17 of 48 on mps6 {0,3}; stalls concentrate on MPS routes, especially those ending at the chain ends.
+  (iii) The joint criterion is a strong but not a deterministic predictor (above).
 
-- Fan-in init: stalls occur **only for k >= 4**: k = 4: 6-30 of 48 runs per (tree, S) (mps4 S = {0,3}: 30/48,
-  5 of 8 seeds); k = 5: 6-17/48; k = 6-8: 7-23 of 24-30. **No stall in any k <= 3 run** (about 3000 runs),
-  and none on star3 (k = 4). A stalling seed stalls at every sigma (the imbalance pattern Q/sigma^2 is
-  fixed by the init direction).
-- Gauge-balanced init of the same W_0 (all Q_e = 0, `run.balance_gauge`): 2 stalls in 580 runs on the
-  same k >= 4 cases (mps4 S = {0,3}: 0/48). B4 on ht4: fan-in 23/48 stalled, balanced 0/48.
-- The saddle-start protocol also stalls (its noise has Q ~ sigma^2 of random sign).
-- Consequence: for k >= 4 the exponent table uses the runs that escape; gauge-balanced runs give the same
-  exponents (`results/twocomp_balanced_table.md`).
+### 7.6 Bond spectra at events (step 4) — **empirical**
 
-### 7.6 Bond spectra at events (step 4) — **empirical, matches derived**
-
-`results/bond_spectra.png` (mps8 S = {2,5}, binary8 S = {3,4}, ht8 S = {1,2}) and
-`results/bond_events.csv`: on the plateau the second singular value of every Steiner edge stays at the
-dormant level (1e-8..1e-3, set by sigma); at the second event all Steiner edges rise together to s2,
-the others stay at the noise level. The edges whose effective rank (s_k^e > f x smallest nonzero teacher
-Schmidt value) is higher on the plateau after the second event than before it equal the predicted Steiner
-edge set in 98.7% of 5,132 events for f = 0.1 (every (tree, S) >= 91%), and in 97.7% / 96.5% for
-f = 0.05 / 0.03 (1,500-run subsample; worst (tree, S) 80%): `results/bond_events*.csv`.
+Redone (review issue 2; `bond_events2.py`): ranks right after each event (at the a = 0.9 crossing), not at the
+end of the run; effective rank = #{s_k^e > f x teacher s_k^{e,*}}, f = 0.05 (notes/diagnostics.md), with
+f = 0.03 and 0.1 as sensitivity.
+- **Two components** (`results/bond_events2_twocomp.csv`, 5,130 events; 4,447 with a resolved preceding plateau,
+  ρ >= 3; the other 683 are mostly small-init k = 2 runs whose "before" state is already part of the escape):
+  the edges whose rank is higher at a = 0.9 than at the plateau midpoint equal the Steiner edges in **99.75%**
+  of resolved events (99.6% / 99.9% for f = 0.03 / 0.1; 86.8% of the unresolved ones). The new singular values
+  of the Steiner edges cross f x teacher value together: spread of the crossing times / event width, median
+  5e-5, 95th percentile 0.25 (k >= 3). Non-Steiner edges never gain rank: from the plateau midpoint to the end
+  of the run their second singular value stays at the init-noise level, ∝ sigma^2.07 (at most 4 sigma^2 x s2;
+  < 3e-3 x s2 for sigma <= 0.03), never at the event. (The reviewer's dense-SVD check: same conclusion.)
+- **Several components** (`results/bond_profiles_multicomp.csv`): at every predicted saddle the observed rank
+  profile of all bonds (middle of the time spent within 2% of the predicted level) equals the route rule's
+  predicted profile in 93.9% of 3,114 resolved (run, level) pairs: k* = 3: 99.6-100%; k* = 4: 92% (fan-in),
+  100% (balanced, saddle start); k* = 5: 95% / 100%; k* = 6: 100%; k* = 2: 97% from the saddle start, 86% with
+  small init (short log levels on mps8, where the level band is crossed during the next escape).
+  Per-event comparisons for several components (`bond_events2_multicomp_events.csv`) are less clean because one
+  component event can span a partial step and its completion; the per-saddle profile is the right test.
 
 ### 7.7 Robustness (step 5) — **empirical**
 
-N = 4, 8 seeds, small init unless stated (`results/robust_table.md`):
-- Weight ratio: k = 2 log slope 3.02 ± 0.01 for s2 = 0.25 (predicted (1 - s2/s1)/λ2 = 3.00; saddle start
-  4.04 ± 0.05 vs 1/λ2 = 4.00) and 0.40 ± 0.05 for s2 = 0.75 (predicted 0.33; saddle start 1.345 ± 0.016 vs
-  1.333). λ_min = -0.25, -0.50, -0.64..-0.69 for s2 = 0.25, 0.5, 0.75 (predicted -s2). k = 3, 4 exponents
-  unchanged (0.99-1.06, 1.87-2.05).
-- Overparameterization (chi = 4 at d = 2; d = 4 with chi = 2, 4, 8): k = 2 slopes 1.00-1.01, k = 3
-  exponents 0.99-1.05, k = 4 exponents 1.90-2.01. At plateau points the k = 2 Hessian has one eigenvalue
-  near -λ2 and the next ones O(1e-4) (one negative mode per active route, theory R10), also at chi = 8.
-- Dead routes become rarer with spare dimensions: mps4 S = {0,3}: 30/48 stalled at (d, chi) = (2, 2),
-  6/48 at (2, 4), 0/48 at d = 4.
+N = 4, 8 seeds, small init unless stated (`results/robust_table.md`; rotation runs excluded).
+- Weight ratio: k = 2 log slope 3.023 ± 0.010 (s2 = 0.25; predicted 3.000; saddle start 4.04 ± 0.05 vs 4.00)
+  and 0.367 ± 0.025 (s2 = 0.75; predicted 0.333; saddle start 1.345 ± 0.016 vs 1.333). λ_min from the saddle
+  start: -0.2500 and -0.7500 exactly (= -s2). k = 3 exponents 0.99-1.05, k = 4 1.87-1.99.
+- Spare dimensions (chi = 4 at d = 2; d = 4 with chi = 2, 4, 8): k = 2 slopes 0.999-1.009; k = 3 0.99-1.05;
+  k = 4 1.90-2.01. One negative eigenvalue per active route at k = 2 plateau points (also at chi = 8).
 
-### 7.8 Gauge-balanced init (R12 check) — **empirical**
+### 7.8 Gauge-balanced init — **empirical**
 
-`results/twocomp_balanced_table.md`: the same k >= 4 cases with Q_e = 0 at t = 0 give tighter exponents
-(k = 4: 1.94-2.01; k = 5: 2.96-2.99 on binary8 and ht4; k = 6: 3.5-4.1, medians 3.9-4.4; k = 7 on ht4:
-4.98 ± 0.08 instead of 5.8 ± 0.4 with fan-in) and almost no stalls. Two MPS k = 5 rows stay above 3
-with either init over sigma in [0.03, 0.3] (mps8 S = {1,5}: 3.9 ± 0.3, mps6 S = {1,3,5}: 3.3 ± 0.2);
-see 7.9 for a smaller-sigma check.
+`results/twocomp_balanced_table.md` (k >= 4 cases, Q_e = 0 at t = 0, same W_0): exponents k = 4: 1.94-2.02;
+k = 5: 2.95-3.06 on binary8 and ht4, 3.33 and 3.60 on mps6 {1,3,5} and mps8 {1,5}; k = 6: 3.49-4.54 over
+0.8 decades (with one decade, 7.1: 4.01, 4.06 on binary8, ht4; 4.51 on mps8); k = 7 (ht4): 4.98 ± 0.08.
+Stalls: **16 of 1,008** runs (fan-in, same cases and sigma grids: 169 of 1,008), about a 10x reduction, not removal; all 16
+on MPS8 and MPS6 routes (mps8 {2,5} 2/48, {1,5} 4/48, {1,6} 5/30, {0,7} 4/30; mps6 {1,3,5} 1/48), and all
+sigma-dependent (a stalling seed stalls at some sigmas only). k = 5 extension (sigma <= 0.03): 34 of 96
+(balanced and saddle start) stall on the same two MPS routes.
 
-### 7.9 Open deviation: two MPS k = 5 rows — **empirical, unexplained**
+### 7.9 MPS routes with steep exponents — **empirical; mechanism open**
 
-Smaller-sigma check (`configs/k5_extension.yaml`, sigma = 0.012-0.03, 8 seeds; local exponent over the
-three smallest sigma): mps6 S = {1,3,5}: 3.05 ± 0.06 (saddle start), 3.43 ± 0.19 (balanced init);
-mps8 S = {1,5}: 3.72 ± 0.16 (saddle start), 3.68 ± 0.31 (balanced init). Predicted 3. The binary8, ht4 and
-ht8 k = 5 rows give 2.9-3.1. Candidate mechanism (conjecture, untested): noise entries in flat directions
-next to the route (e.g. a new-index-to-old-index entry on a core adjacent to a route end) form degree-2
-sub-routes orthogonal to the residual whose quartic penalty shrinks the route amplitudes algebraically
-during a long plateau; the effect would grow with the plateau length (k) and depend on how many such
-entries the tree offers. Testing it needs the route amplitudes measured along the plateau. Supporting
-observations: the growth exponent on these plateaus is that of a degree-5 route (γ = 1.61, 7.3), and at
-sigma <= 0.03 these two cases stall even with gauge-balanced init (mps6 S = {1,3,5}: 5/24, mps8 S = {1,5}:
-10/24 runs; saddle start 9/24 and 7/21), so a route-killing mechanism other than the R12 gauge trap acts
-here.
+At chi = 2 the MPS k = 5 rows exceed 3 (mps6 {1,3,5} small 3.76 ± 0.27, balanced 3.33 ± 0.20; mps8 {1,5}
+small 3.27 ± 0.30, saddle start 3.39 ± 0.12, balanced 3.60 ± 0.26), and at sigma <= 0.03 mps8 {1,5} gives
+3.72 ± 0.16 (saddle start) and 3.68 ± 0.31 (balanced): **theory_regimes P14(ii) (a steeper exponent at
+chi = 2 that persists at small sigma) is met.** At chi = 4 both rows return to 3 (3.00 ± 0.04, 3.19 ± 0.15,
+medians 2.99, 3.01), consistent with P14; the mps6 whole-chain k = 6 routes stay steep at chi = 4 (5.0-5.1).
+- **Route-end amplitudes** (`route_amps.py`, `results/route_amps*.csv`): at the plateau midpoint the route
+  ends scale as sigma^α with α = 1.24-1.91 in the steep MPS rows (interior entries ∝ sigma), and they shrink
+  during the plateau (median ratio midpoint / first event 0.53-0.78, single runs to 1e-4-1e-7), against
+  0.85-1.03 in rows with on-target exponents. But α > 1 also occurs in rows with on-target exponents
+  (binary8 {0,7} balanced: α = 1.34, p = 2.99; binary8 saddle 1.28; ht4 {1,2} saddle 1.31; mps4 k = 3 saddle
+  1.29), so the steep exponents are **associated with** shrinking route ends, not shown to be caused by them.
+- **Log-correction test** (review issue 5; `logcorr.py`, `results/logcorr.csv`): if small ends catch up
+  through the conservation laws, T ~ sigma^-(k-2) [(α - 1) ln(1/sigma) + 1/(k-2)] / λ (a log correction, not a
+  power shift). Per seed, over the measured sigma ranges, this form fits the steep rows much worse than a free
+  power law (median RMS log residual 0.25-0.62 vs 0.05-0.12, both with a = α - 1 fixed and with a free a, which
+  runs off to ~1e3), and it is indistinguishable from the power law in the on-target rows (a ≈ 0). So the
+  data prefer a steeper power over this log correction; the end amplitudes do not catch up in these runs,
+  which is what one expects if the ends are pinned (decaying) rather than merely small.
+- The pilot's conjecture sigma^-(2k-6) (α = 2 at both ends) is not what is measured: α is seed-dependent and
+  between 1 and 2.
 
-**Route-end amplitudes (lead's request (c); `route_amps.py`, `results/route_amps*.csv`).** At the plateau
-midpoint the route entry of every core of T_S (core projected onto component 2's site vectors and the
-new-index complement of the learned bond directions) was measured; per seed, log(amplitude) was fitted
-against log(sigma):
+### 7.10 Spare bond channels (chi = 4) — **empirical** (theory_regimes P14)
 
-| case | protocol | route ends ∝ sigma^α | interior ∝ sigma^β | gap exponent (pred.) | (k-2)(2α+k-2)/k |
-|---|---|---|---|---|---|
-| mps6 {1,3,5}, k = 5 | small | 1.43 ± 0.17 | 1.10 ± 0.06 | 3.76 ± 0.27 (3) | 3.5 |
-| | balanced | 1.24 ± 0.10 | 1.09 ± 0.04 | 3.36 ± 0.19 | 3.3 |
-| | saddle | 1.02 ± 0.03 | 1.02 ± 0.08 | 2.92 ± 0.07 | 3.0 |
-| mps8 {1,5}, k = 5 | balanced | 1.91 ± 0.40 | 1.02 ± 0.01 | 3.86 ± 0.33 (3) | 4.1 |
-| mps6 all sites, k = 6 | small | 1.76 ± 0.08 | 1.01 ± 0.05 | 4.84 ± 0.16 (4) | 5.0 |
-| mps6 {0,5}, k = 6 | small | 1.40 ± 0.25 | 0.96 ± 0.04 | 4.54 ± 0.57 (4) | 4.5 |
-| normal rows (mps4 {0,3}, mps8 {2,5}, mps6 {1,4}, ht4 k = 5, ...) | all | 0.95-1.14 | 0.94-1.21 | on target | - |
+`results/twocomp_chi4_table.md` (24 cases with k >= 4, small init, d = 2, chi = 4): exponents k = 4: 1.99-2.03;
+k = 5: 2.96-3.19 on every tree; k = 6: 3.91-4.17 (binary8, ht4, mps8) but 5.0-5.1 for the mps6 whole-chain
+routes; k = 7 (ht4) 5.07 ± 0.39; k = 8 (mps8 {0,7}) 7.29 ± 0.68 (2 seeds, 0.5 decades). Stalls: **103 of
+1,002** runs (round 1 said 75: the case midroot6 {0,5}, 30/30 stalled, had dropped out of the table), against
+397 of 5,682 at chi = 2. They remain only for routes whose two ends both sit on bonds capped at d (MPS chain
+ends, HT leaves): mps4 {0,3} 6/48, mps4 all 12/48, mps6 {0,5} 18/30, mps6 all 10/30, mps8 {0,7} 15/25,
+midroot6 {0,5} 30/30, ht4 all 11/29, ht4 {0,1,2} 1/30; every route with at least one end on an uncapped bond
+escapes (15/15 cases). midroot6 and mps6 (the same graph) share exponents but not trap rates (midroot6 {0,5}
+30/30 vs mps6 {0,5} 18/30 at chi = 4): rooting changes the fan-in init statistics, hence Q.
 
-The interior of the route always scales like sigma; the steep exponents occur exactly where the route
-**ends** scale faster than sigma, and a balanced product-of-amplitudes estimate of the escape time,
-gap ∝ (prod eps)^-(k-2)/k with ends ∝ sigma^α, reproduces them ((k-2)(2α+k-2)/k, last column). At the
-first event the ends are 0.3-0.5 sigma in every case; in the steep rows they then **shrink during the
-plateau** (median ratio midpoint/first event 0.53-0.78, single runs down to 1e-4-1e-7: pinned or dying
-ends), against 0.9-1.0 in the normal rows. This shrinking also happens with balanced init (mps8 {1,5}:
-0.53), so it is not only the Q-driven R12 trap. So: **the steeper MPS exponents come from route ends that
-decay during the plateau** (empirical); why they decay on these MPS routes and not on binary/HT routes of
-the same k is open (candidates above). The pilot's conjecture sigma^-(2k-6) corresponds to α = 2 at both
-ends (k = 5: exponent 4.2 by the estimate); the measured α is seed-dependent and between 1 and 2.
+## 8. Verdict (round 2)
 
-### 7.10 Spare bond channels (chi = 4) — **empirical** (lead's request (b); theory_regimes P14)
+Scope of every statement: orthogonal pattern teachers, whitened inputs, exact population loss, gradient
+flow, d = 2 and chi = 2 unless stated.
 
-`configs/twocomp_chi4.yaml`, `results/twocomp_chi4_table.md`: all 24 two-component cases with k >= 4, small
-init, d = 2, chi = 4, 5-8 seeds. Exponents: k = 4: 1.99-2.03; k = 5: 2.96-3.03 on every tree, **including the
-two anomalous MPS rows** (mps8 {1,5}: 3.00 ± 0.04; mps6 {1,3,5}: 3.19 ± 0.15, median 3.01); k = 6: 3.95-4.17
-(binary8, ht4, mps8), but 5.0-5.1 for the two mps6 whole-chain routes; k = 7 (ht4): 5.07 ± 0.39.
-Stalls: 75 of 1002 runs (chi = 2: 376 of 5732). They remain only where **both route ends sit on bonds capped
-at d** (an MPS chain end, i.e. core 0 or the root, or an HT leaf): mps4 {0,3} 6/48, mps4 all 12/48, mps6
-{0,5} 18/30, mps6 all 10/30, mps8 {0,7} 15/25, midroot6 {0,5} 30/30, ht4 all 11/29, ht4 {0,1,2} 1/30. Every
-route with at least one end on an uncapped bond escapes (0 stalls in 15 cases, e.g. mps6 {0,3}, mps8 {1,5}).
-Two capped ends are necessary but not sufficient (ht4 k = 5 routes, both ends on leaves, 0 stalls). This
-is consistent with theory_saddles R12 (a route dies only if every end is unfavourable) and with spare
-channels removing the trap (P14) wherever the bond cap allows them.
+**H2, two-component teachers: confirmed for k = 1-5** (empirical; derived in section 2; the Steiner
+identity is proven, theory_saddles.md): no plateau for k = 1; a log law for k = 2 with the head-start slope
+(1 - s2/s1)/λ2 from small init and 1/λ2 from the saddle (fair comparison over 2-3 decades); exponent k - 2
+for k = 3 (42 rows, 0.98-1.04), k = 4 (1.95-2.05 with small init, balanced init and chi = 4) and k = 5 (2.9-3.1
+on binary8 and ht4). Exceptions: (i) the MPS k = 5 rows at chi = 2 (3.3-3.8; theory_regimes P14(ii) is met
+there), which return to 3 at chi = 4; (ii) saddle-start k = 4 rows (1.48-2.39), where the fits include seeds
+that stall at some sigma; restricted to never-stalling seeds they are 1.81-2.19. **For k = 6-7** the exponent
+equals k - 2 on binary8 and ht4 with gauge-balanced init over one decade (4.01, 4.06, 4.96; 7-8 seeds), but
+not on the MPS (mps8 {1,6}: 4.51 ± 0.19), and the round-1 k >= 6 rows (0.5-0.8 decades, 2-5 seeds) only show
+that the exponent grows with k. **k = 8** is not measured. λ2 = s2 s1^((K-2)/K) is confirmed including its
+K-dependence (s1 = 2, K = 4, 6, 8: λ_min = -1.4142, -1.5874, -1.6818 exactly; log slopes match). Refinement
+of H2: plateau lengths are set by the dormant route amplitude entering the plateau, which equals sigma times
+an O(1) factor only when nothing rescales the route (head start for k = 2; shrinking route ends on some MPS
+routes).
 
-## 8. Verdict
-
-**H2 (exponent set by locality), two-component teachers: supported** — derived (section 2; = Steiner
-identity proven in theory_saddles.md) and empirical on 9 tree types (mps 4/6/8, binary 4/8, ht 4/8, star3,
-midroot6), k = 1..8, two protocols, 5-8 seeds, sigma over 1-3 decades: no plateau for k = 1; log law for
-k = 2 (log law beats a power law by a factor ~5-20 in RMS log residual); exponent k - 2 for k = 3 (26 rows,
-0.98-1.03), k = 4 (1.9-2.1), k = 5 (2.9-3.1, two MPS rows higher, 7.8), k = 6-8 (within the larger errors of
-< 1 decade of sigma, best with balanced init). **Refinement**: the k = 2 slope is (1 - s2/s1)/λ2, not 1/λ2
-(the dormant route grows during the previous plateau; the saddle start, which has no previous plateau,
-gives 1/λ2), and more generally plateau lengths are set by the dormant route amplitude entering the
-plateau (remaining time ∝ a_mid^-(k-2)/k for k >= 3, ∝ ln(1/a_mid)/(2λ) for k = 2), which equals sigma times
-a factor only when the previous phases do not rescale the route.
-
-**H2 with several learned components: the literal statement fails; the supported rule is the route rule
-at rank-constrained optima** (section 5; derived at leading order, empirical on B4, E8, N4, TA, TB, TC,
-TD): the next plateau's exponent is k* - 2 with k* the smallest connected set of cores whose projected
-local residual is non-zero, evaluated at the actual saddle, which is the best fit for the current bond-rank
-profile and need not be a partial sum of components. Counter-examples to the literal rule: TA on all
-three trees and TD on mps8 (literal H2 / exact rank rule: k = 2 / 4; measured 3). Furman's N (nodes of
-the rank-deficient component) is an upper bound and is often much larger than k* (e.g. TC on mps8:
-N = 8, 7, 5 vs k* = 2, 2, 4).
+**H2 with several learned components: the literal statement fails; the route rule at rank-constrained
+optima holds where tested** (derived at leading order; empirical): every k* >= 3 plateau of TA, TB, N4, B4,
+E8, TC, TD is detected with exponent k* - 2 (within 0.2), and the bond-rank profile at each predicted saddle
+matches the prediction (99.6-100% for k* = 3, 92-100% for k* = 4-6). TD (last plateau 1.012 ± 0.010, 8 seeds)
+and TC (k* = 4 plateau 2.018 ± 0.017) separate the route rule from both the literal rule and the exact
+bond-rank rule; TA separates it from the literal rule only. The k* = 2 levels are log-time where measured
+over 3 decades from the saddle start; elsewhere their law is not determined.
 
 **Same teacher, different sequences: demonstrated** (`results/trees_TA.png`, `trees_B4*.png`,
-`trees_E8.png`): e.g. TA is learned by mps4 in two log-time steps, by binary4 in one first escape plus a
-sigma^-1 plateau, by ht4 through sigma^-1 and sigma^-2 plateaus; B4's 0.3 component comes before its
-0.6 component on the MPS only.
+`trees_E8.png`): TA is learned by mps4 through two short (log-time) plateaus, by binary4 through one sigma^-1
+plateau, by ht4 through sigma^-1 and sigma^-2 plateaus; on mps4 the 0.3 component of B4 is learned before its
+0.6 component.
 
-**H3 (strict iff k = 2): supported for saddles visited in greedy order** (Hessians at 6000+ plateau
-midpoints): λ_min -> -λ2 = -s2 s1^((K-2)/K) independent of sigma for k = 2; λ_min ∝ sigma^(k-2) -> 0 for
-k = 3..8. Not tested here: wrong-order and star saddles, which theory_saddles.md shows can be strict
-with k* >= 3 (so "only if" needs "visited in greedy order, no stars").
+**Bond spectra**: rank rises at each event on exactly the predicted edges (99.75% of resolved two-component
+events; f = 0.03-0.1), the Steiner edges rise together (median spread 5e-5 event widths), other edges stay at
+the init-noise level (∝ sigma^2); at the predicted saddles of multi-component runs the rank profile matches
+in 94% of (run, level) pairs (99-100% for k* = 3).
 
-**New (empirical)**: under the default fan-in init with chi = d = 2, a large fraction of k >= 4 escapes
-never happen (dead routes; 7.5), never for k <= 3; gauge-balanced init or spare bond channels (chi = 4)
-remove nearly all of them, except routes whose two ends both sit on bonds capped at d (7.10). Where the
-sigma-exponent of a k >= 4 escape is too steep (two MPS k = 5 rows, mps6 k = 6), the route ends shrink
-during the plateau (pinned ends, 7.9); with spare channels these exponents return to k - 2. Bond spectra: the second singular
-value rises at the event on exactly the Steiner edges in 98.7% of 5132 events (7.6).
+**H3 (strict iff k = 2) for saddles visited in greedy order: supported**, by the primary rule (sigma-scaling
+of the gauge-projected λ_min, raw alongside): k = 2: λ_min = -λ2 exactly (-0.5000; -0.2500 / -0.7500 for
+s2 = 0.25 / 0.75), sigma-independent; k = 3-7: λ_min ∝ sigma^(k-2) (exponents 0.93-1.04, 1.94-2.05,
+2.87-3.44, 4.00-4.04, 5.01). Not tested: wrong-order and star saddles, which theory_saddles.md shows can be
+strict at k* >= 3.
+
+**Dead routes** (empirical; 7.5): with fan-in init at chi = 2, 397 of 5,682 two-component runs stall, all
+with k >= 4 (none of 5,112 runs with k <= 3); the stalls checked with a 60x longer budget are dead (route ends at
+roundoff). Gauge-balanced init leaves no dead route in the checked sample but 16 of 1,008 runs stall at the
+default patience (pinned, extremely slow escapes on MPS routes); chi = 4 leaves 103 of 1,002 (routes whose two
+ends sit on bonds capped at d). Stalls are partly sigma-dependent, which biases five rows by 0.3-1.0. Theory R12's
+joint criterion is associated with death but is not a deterministic predictor; balanced-init end shrinkage and
+the HT-vs-MPS stall rates conflict with theory_saddles.md (7.5).
+
+## 9. Changes after review round 1 (notes/reviews/locality_round1.md)
+
+| claim (round 1) | round 2 |
+|---|---|
+| H2 confirmed for k = 1..8, ±0.05 for k <= 4 | confirmed for k = 1-5 except MPS k = 5 at chi = 2 and saddle-start k = 4 rows; ±0.05 holds for small-init, balanced and chi = 4 k = 4 rows only; k = 6-7 pinned to k - 2 only on binary8/ht4 with balanced init over one decade (new runs); k = 8 not measured |
+| ht8 k = 5: 3.1-3.8 | 2.74 ± 0.37 (median 2.96; 3.10 ± 0.11 without the seed that stalls at some sigma) |
+| ht8 {3,4}: p = 5.7 | 5.74 ± 1.06, median 5.01, one pinned seed (4.74 ± 0.44 without it); large-sigma points start below a1 = 1/2; does not discriminate k = 6-8 |
+| rank rises on the Steiner edges in 98.7% of events | the old statistic compared midpoint with end-of-run ranks (near-tautological); redone: ranks right after each event, 99.75% of resolved events, crossing-time spread, leakage, and per-saddle profiles for several components (7.6) |
+| k = 2 λ_min = -0.49..-0.50 (projected) | saddle start was biased (-0.44..-0.46) by the old gauge projection; recomputed with the fixed projection and raw: -0.5000 exactly (7.2) |
+| balanced init: 2/1,008 stalls | 16/1,008 (10x fewer than fan-in, not 85x); all on MPS routes |
+| chi = 4: 75/1,002 stalls | 103/1,002 (a zero-escape case had dropped out of the table; `make_figures` now keeps such cases) |
+| fan-in: 376/5,732 stalls | 397/5,682 (runs restricted to the committed config; the extra sigma points of three k = 7-8 rows were dropped) |
+| a stalling seed stalls at every sigma | false in 20 of 33 fan-in rows (34 seeds stall at some sigma only); effect on fits quantified (7.5, `results/stall_dropout_bias.csv`) |
+| "stalled" = dead | true for fan-in and saddle-start stalls (60x longer runs: route ends at roundoff); balanced-init stalls are pinned slow escapes; R12's criterion is associated with death but not deterministic; conflicts with R12 / P12 stated (7.5) |
+| steep MPS exponents come from shrinking route ends | associated with, not shown to be caused by; the reviewer's log-correction form is rejected by the data; P14(ii) met at chi = 2 (7.9) |
+| TD last level 1.02 (7 seeds) | 1.012 ± 0.010 (8 seeds) |
+| "visited fraction" of predicted levels | replaced by detected plateaus (`find_plateaus`) matched to the predicted levels, and their duration exponents (7.4) |
+| "log" labels for k* = 2 levels | only where the fair comparison picks the log law (TC, TD level 0 from the saddle start; N4, TA, TB mps4 level 1); TD level 1 and the small-init mps8 first levels prefer a power law < 1 (law undetermined) |
+| single-run k estimate | validity range stated (saddle start, or small init with the window after the transient) (7.3) |
+| rotation runs pooled into fits | excluded (counted per row) |
+| k = 1 "ρ < 3" (hard-coded) | computed: ρ <= 4e-4 (small init), 0.34 (saddle start) |
+| λ2's K-dependence untested | tested with s1 = 2 on mps4/6/8 (7.1) |
+

@@ -1,0 +1,6 @@
+events 2838 errors 0
+f = 0.03: match 0.7692
+f = 0.05: match 0.7558
+f = 0.1: match 0.7389
+spread/width median 1.8278323013889244e-10 95% 0.5335800035892951
+leak_window max 1.6847156595708987 leak_run max nan
