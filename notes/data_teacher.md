@@ -3,6 +3,20 @@
 Status tags: **proven**, **derived** (under stated assumptions), **empirical**, **conjecture**.
 Experiments: `experiments/data_teacher/`. Raw outputs: `/root/outputs/data_teacher/`.
 
+## Summary table (deliverable)
+
+Baseline: whitened inputs, odeco teacher, fan-in init, gradient flow; N = 4 (binary-4 = depth-3 DLN,
+MPS-4 = genuinely tensorial), 20-40 seeds per setting. Details and numbers in the sections below.
+
+| complication | why checked | what changed | baseline theory (with substitution) predicts it? |
+|---|---|---|---|
+| 1. Aligned anisotropic product covariance (power-law site spectra, teacher on eigenvectors) | H5; the simplest non-white data; Saxe-type reweighting expected | **Quantitative only.** Order and escape times follow Lambda_r s_r (reversals of the s-order observed: 78-98% of runs); plateau levels 1/2 sum Lambda_r s_r^2; exponents in sigma unchanged (-1.01, -2.00). New event when the orderings by Lambda s and Lambda s^2 disagree: on binary-4 the first-learned component is unlearned and replaced (strict-saddle swap, P -> 1 as sigma -> 0); never on MPS-4 | **Yes, with two substitutions**: race = whitened with weights Lambda s (paired runs agree to < 1%); landscape (levels, stable saddles, swaps) = whitened with sqrt(Lambda) s (absorb Sigma^{1/2} into the cores; exact). Aligned init solved exactly (per-component clock Lambda_r t); "weight Lambda s" gets widths wrong by up to 45% |
+| 2. Misaligned product covariance (rotation theta between eigenvectors and teacher factors) | non-commuting covariance is where linear-net theory breaks (Atanasov 2022) | Escape aligns first with the top rank-1 part of Sigma W*, then rotates to the saddle (realignment). Saddles are rank-1 critical points of the Sigma-loss (blends, not components). **Qualitative on MPS-4**: the later plateau becomes logarithmic in sigma (theta = 20: Dt_2 = 15.0 log(1/sigma) + B) instead of sigma^-2; it shrinks from ~540 to < 1 time unit as theta goes 0 -> 45 deg. Binary-4: same law, shorter plateau | **Yes, through the absorbed white problem** (exact landscape map to a whitened non-orthogonal CP teacher, Fact B) plus the non-orthogonal-teacher theory (2-core strict-saddle routes, theory_teachers.md). Levels match to 1e-5 - 1e-3. Timing differs from the white problem by the GF metric (preconditioning), ~20% |
+| 3. Cross-site correlated inputs (shared latent factor, rho) | breaks the product structure of the loss (no whitening substitution exists) | S2S survives (exact population GF; online SGD with sampled data agrees). Plateaus = rank-1 critical points of the non-product loss (levels to <= 0.5%). **binary-4: the first saddle changes content** (blends both components plus non-teacher pairing features; level 0.33 -> 0.10 L(0) at rho = 0.5). MPS-4: first saddle stays the component, later plateau collapses (137 -> 0.14). First escape faster (t_1 / 14) | **Partly**: no substitution maps it to the baseline; the general rule "plateaus are critical points of the bond-rank-constrained loss" holds, with the non-product metric, and the collapse on MPS-4 follows the non-orthogonality mechanism |
+| 4a. Non-orthogonal CP components (overlap c) | generic teachers are not odeco; theory_teachers.md predictions | First plateau is a blend (never a component); number of rank-1 saddles on MPS-4 drops from 2 to 1 above c* = 1/2 (equal weights) / fold ~0.4 (s2 = 0.7); on binary-4 always 1. **Qualitative on MPS-4**: later plateau logarithmic, Dt_2 = A log(1/sigma) with A = 31.9 +- 1.6 (pred 34.1) at c = 0.2, 4.7-5.6 (pred 5.68) at c = 0.45; sigma^-1.97 at c = 0. Binary-4 plateau gets longer with c (DLN) | **Yes** (theory_teachers.md R4, R6, R7), quantitatively |
+| 4b. Random TTN teacher on the student's tree | are saddles HSVD truncations? order of bond-rank growth | (pending) | (pending) |
+| 4c. Teacher on a different tree | which student bonds grow first | (pending) | (pending) |
+
 ## 0. Notation and two structural facts used throughout
 
 - Teacher components U_r = (x)_i u_r^(i) (unit vectors), W* = sum_r s_r U_r.
@@ -154,7 +168,14 @@ landscape AND same start, so only the gradient-flow metric differs). Files:
    leading order (the binary deviation is the O(1) saturation time, relatively larger at K = 3; the
    paired (I, Lambda s) runs give the same -0.952 +- 0.007). The second-learning time follows the
    same exponents (binary -1.05 +- 0.01, MPS -2.002 +- 0.001).
-9. **Escape degree** (theory_saddles R5) — *empirical*: the local growth exponent
+9. **Swap criterion checked on the exact saddle** (`e1_hessian_check.py`, `results/e1_hessian_check.csv`)
+   — *empirical confirmation of the derived Hessian (1.3)*: at the exact critical point "component a
+   learned, b not" (aligned init), the library's gauge-projected Hessian has lambda_min equal to the
+   formula s_a sqrt(Lambda_b)(s_a sqrt(Lambda_a) - s_b sqrt(Lambda_b))/q^2 to 1e-15 in all 6 strict
+   binary-4 cases (e.g. -0.198631 both), strictness is predicted correctly in 12/12 binary-4 cases
+   (strict iff Lambda_b s_b^2 > Lambda_a s_a^2, for every variant), and MPS-4 has no negative
+   eigenvalue in 12/12 (higher-order saddle: the swap needs 4 cores).
+10. **Escape degree** (theory_saddles R5) — *empirical*: the local growth exponent
    d log(da/dt)/d log a of the first-learned component is the same for all four variants
    (binary 1.26-1.28, MPS 1.32-1.35 averaged over the window a in [1e-4, 1e-2]; up to 1.30 and 1.44 in
    the cleanest windows, vs 2 - 2/K = 1.33 and 1.5; limited by the output grid on the steep escape).
@@ -338,6 +359,3 @@ changes the *law* of the later plateau on an MPS student from polynomial (sigma^
 with the slope the 2-core strict-saddle theory predicts to within the statistical error (c = 0.2) or
 ~20% (c = 0.45). The first plateau keeps its sigma^-(K-2) law (it is the escape from the origin).
 
-## Results
-
-(filled in as experiments finish)
