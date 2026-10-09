@@ -173,6 +173,14 @@ std/t ~ sqrt(eta V / (B t s_r^2)) -> 0 as sigma -> 0 (t ~ sigma^{-(K-2)}). Scali
 std(t) ~ (eta/B)^{1/2} t^{1/2}, mean shift ~ eta/B (when V/B >> s^2), both in units t = eta x steps; in
 steps and samples the plateau costs t/eta steps and B t/eta samples.
 
+**Relation to "SGD lowers the effective init" (Pesme et al. 2021; derived).** The drag can be read as
+a smaller effective initialization. For a k >= 3 (higher-order) escape the extra time is additive,
+O(eta (V/B) ln(1/a0)), so a0_eff^{-(K-2)} = a0^{-(K-2)} + O(eta (V/B) ln(1/a0)): a negligible change at small
+sigma. For a k = 2 (strict-saddle, exponential) escape with rate lambda the log-growth rate drops to
+lambda - eta lambda^2 (1 + V/B)/2, i.e. a0_eff = a0^{1 + eta lambda (1 + V/B)/2}: a power-law reduction, the
+form found for diagonal networks. So noise matters more for the k = 2 (log-time) plateaus than for
+the long k >= 3 plateaus.
+
 **Conservation laws under SGD (derived).** Q_e changes per step by eta^2 (g_v^T g_v - g_p g_p^T); the
 expectation of this includes the noise covariance, Cov/B, which differs between the cores on the two
 sides of a bond. Q therefore drifts systematically (not as a random walk) by ~ eta t Cov/B: the
