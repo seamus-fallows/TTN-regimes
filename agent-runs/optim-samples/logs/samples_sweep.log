@@ -365,3 +365,4 @@
 [88/90] d3_small n=32 sigma=0.5 max_steps test_rel=1.83 58s
 [89/90] d3_small n=32 sigma=0.5 max_steps test_rel=1.77 55s
 [90/90] d3_small n=32 sigma=0.5 max_steps test_rel=1.18 55s
+385 tasks, 20 to run

@@ -1,0 +1,6 @@
+model,sigma,ratio,gf_like
+centred,1.0,0.5,5
+centred,2.0,0.5,5
+centred,4.0,0.5,3
+centred,8.0,0.5,1
+plain,0.1,0.5,2

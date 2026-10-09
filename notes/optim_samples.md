@@ -86,14 +86,26 @@ approximation (path curvature ignored): c_e ~ (1/2) ln(|g(t_e)| / |g(0)|) ~ (1/2
 first event; good for the first event at small sigma (6.13 vs exact 6.42 at sigma = 0.003), wrong
 for later events (it misses negative shifts).
 
-**Empirical check (all trees, 5 seeds, every event):** at eta <= 0.1 eta_max the measured shift/eta
-equals c_e to 3 significant digits per seed, including negative shifts (e.g. binary N=4, sigma = 0.003,
-event 1: measured 6.183-6.495 vs predicted 6.196-6.504; MPS N=8 seed 2: -32.40 vs -32.48);
-measured/predicted stays within 2% up to 0.9 eta_max (`fig_gd_vs_gf.png` b, c).
+**Empirical check (fix round 1; persistent events, `analyze_shift.py`, `results/shift_accuracy*.csv`,
+`fig_shift_accuracy.png`).** Over all runs at eta <= 0.1 eta_max (binary N=4 with 5-45 seeds per
+point, binary N=8 and MPS N=8 with 5 seeds; 526 event comparisons), the measured shift/eta agrees with
+c_e within 0.3% in 66%, within 1% in 90% and within 5% in 97% of the comparisons.
+- First events: all 202 within 1% (max 0.69%); median relative deviation 3e-4 at 0.01 eta_max, 3e-3
+  at 0.1 eta_max, 1-3% at 0.9 eta_max (max 9%). The deviation is linear in eta, as an O(eta^2)
+  correction must be.
+- Later events: mostly as accurate, but the relative deviation is large where c_e ~ 0 (the O(eta^2)
+  term then dominates): e.g. binary N=4, sigma = 0.03, seed 1, event 2: -0.050 measured at 0.1 eta_max
+  vs c_e = -0.147 (-0.119 at 0.03 eta_max); 14 of 526 comparisons deviate by more than 5%.
+- **c_e is the exact eta -> 0 limit:** a Richardson extrapolation from the 0.01 and 0.03 eta_max runs
+  agrees with c_e to median 1.2e-5 and max 1.8e-4 relative (57 events; the review found median 4e-5
+  with independent code).
+- The round-1 statement "3 digits per seed for every event at eta <= 0.1 eta_max, within 2% up to
+  0.9 eta_max" was too strong; the numbers above replace it. (The round-1 figure plotted medians with
+  a clipped y-range; `fig_shift_accuracy.png` shows every run.)
 **Scaling (derived + empirical):** relative error of t_1 = eta c_1 / t_1 with c_1 ~ ln(1/sigma) and
 t_1 ~ sigma^{-(K-2)}: binary N=4 at 0.9 eta_max gives 0.111, 0.056, 0.023, 0.0099, 0.0036 for
-sigma = 0.3, 0.1, 0.03, 0.01, 0.003 (fig a). So **every stable step size reproduces the GF event
-times to within a few percent at small init, and the agreement improves as sigma -> 0.**
+sigma = 0.3, 0.1, 0.03, 0.01, 0.003 (`fig_gd_vs_gf.png` a). So **every stable step size reproduces the
+GF event times to within a few percent at small init, and the agreement improves as sigma -> 0.**
 
 ### 3.2 Saddle sequence below eta_max (empirical)
 
