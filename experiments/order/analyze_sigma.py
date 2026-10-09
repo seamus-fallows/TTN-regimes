@@ -23,7 +23,10 @@ from analyze_main import wilson  # noqa: E402
 
 from common import RAW, RES  # noqa: E402
 M_OF = {"b4_pilot": 2, "b4_sigma": 2, "m4_sigma": 4, "b8_sigma": 4, "pat_mps6_m2end": 2, "pat_mps6_m2adj": 2,
-        "pat_mps6_m3": 3, "pat_mps6_m4": 4}
+        "pat_mps6_m3": 3, "pat_mps6_m4": 4, "pat_mps4_adj": 2, "pat_mps4_sep": 2}
+# number of unstable directions at the smaller component (notes/theory_escape.md 3.3): chi_e for
+# two adjacent differing cores sharing bond e, else 1
+N_OF = {"pat_mps6_m2adj": 4, "pat_mps4_adj": 4}
 
 
 def load(name):
@@ -73,7 +76,9 @@ def main():
         m = M_OF.get(key[0])
         stab = df[(df[keys] == pd.Series(dict(zip(keys, key)))).all(axis=1)]
         same = stab.groupby("seed").wrong.nunique().eq(1).mean()
-        rec = dict(zip(keys, key), m=m, gamma_pred=(1 - rho) / rho if m == 2 else 0.0,
+        n_unst = N_OF.get(key[0], 1)
+        rec = dict(zip(keys, key), m=m, n=n_unst if m == 2 else 0,
+                   gamma_pred=n_unst * (1 - rho) / rho if m == 2 else 0.0,
                    seed_stable_frac=same)
         if g["sum"].sum() >= 5:
             gam, se, c = fit_power(g.sigma.values, g["sum"].values, g["count"].values)
