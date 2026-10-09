@@ -110,16 +110,20 @@ def plot_pg_vs_rho(summ, seeds, name):
                             fmt=mk, color=col, mfc=col if fill else "white", mec=col, ms=4,
                             lw=0, elinewidth=0.8, label=f"chi={chi}, d={d} ({g.bonds.iloc[0]})")
                 sd = seeds[(seeds.tree == tree) & (seeds.chi == chi) & (seeds.d == d)]
+                # m = 2 (binary4): the independent race is not the theory (unique local max);
+                # drawn faintly for reference only
                 ax.plot(rr, race_curve(sd.tau1.values, sd.tau2.values, rr), color=col,
-                        lw=0.9, ls="-" if fill else "--")
+                        lw=0.9, ls="-" if fill else "--", alpha=0.3 if tree == "binary4" else 1)
         ax.axhline(0.5, color=style.MUTED, lw=0.6)
-        ax.set_title(f"{tree} (K={K_OF[tree]})")
+        m = 2 if tree == "binary4" else (4 if tree == "binary8" else K_OF[tree])
+        ax.set_title(f"{tree} (K={K_OF[tree]}, m={m})", fontsize=8)
         ax.set_xlabel("rho = s2/s1")
         ax.set_xlim(0.45, 1.01)
         ax.set_ylim(0.45, 1.02)
-        ax.legend(fontsize=5.5, loc="upper right")
+        ax.legend(fontsize=5, loc="upper right", handletextpad=0.2, borderaxespad=0.2)
     axes[0].set_ylabel("P(larger component first)")
-    fig.suptitle("Full GF (markers, 95% Wilson CI) vs independent-race model (lines)", fontsize=9)
+    fig.suptitle("Full GF, sigma = 0.01 (markers, 95% Wilson CI) vs independent-race model "
+                 "(lines; filled/solid d = 2, open/dashed d = 4)", fontsize=8, y=1.03)
     fig.savefig(RES / f"{name}_pg_vs_rho.png")
     plt.close(fig)
 

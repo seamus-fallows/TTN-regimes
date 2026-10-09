@@ -88,7 +88,8 @@ def analyse(spec, teacher, sol, rho):
     traj = np.array(rows)  # t, L, a1, a2, |grad|, s1(edge), s2(edge)
     a1x, a2x = crossings(traj[:, 0], traj[:, 2]), crossings(traj[:, 0], traj[:, 3])
     t1 = next((t for t, s in a1x if s > 0), np.inf)
-    t2 = next((t for t, s in a2x if s > 0), np.inf)
+    # saddle starts begin with a_2 ~ 1 (component 2 learned at t = 0)
+    t2 = traj[0, 0] if traj[0, 3] >= 0.5 else next((t for t, s in a2x if s > 0), np.inf)
     rec = dict(t1=t1, t2=t2, wrong=bool(t2 < t1), final_loss=traj[-1, 1], t_end=t_end,
                a2_down=next((t for t, s in a2x if s < 0 and t > t2), np.nan),
                a2_reup=next((t for t, s in a2x if s > 0 and t > t2 + 1e-9 and t > t1), np.nan))
@@ -108,6 +109,7 @@ def analyse(spec, teacher, sol, rho):
             tm = res.x
             ev, gauge_rank = projected_hessian(spec, teacher, sol.sol(tm))
             q = rho ** (1.0 / spec.n_cores)
+            rec["eigs"] = ev.tolist()
             rec.update(t_mid=tm, loss_mid=loss(torch.from_numpy(sol.sol(tm))).item(),
                        a_mid=overlaps(spec, teacher, sol.sol(tm)).tolist(),
                        grad_mid=res.fun, lam_min=ev[0], lam_2=ev[1], lam_max=ev[-1],
@@ -135,7 +137,8 @@ def job(args):
     rec.update(kind=cfg["kind"], n=cfg["n"], d=cfg["d"], chi=cfg["chi"], rho=rho, sigma=sigma,
                seed=seed, mode=cfg["mode"], status=sol.status, wall=time.time() - t0)
     out = OUT / cfg["name"]
-    np.savez_compressed(out / f"rho{rho}_s{sigma:g}_seed{seed}.npz", traj=traj)
+    np.savez_compressed(out / f"rho{rho}_s{sigma:g}_seed{seed}.npz", traj=traj,
+                        eigs=np.array(rec.pop("eigs", [])))
     return rec
 
 
