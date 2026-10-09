@@ -64,5 +64,25 @@ Any key of a config row can be swept: optimizer hyperparameters (`lr`, `beta`, `
 `teacher`, `weights`, `patterns`), init (`sigma`, `seed`, `init`), data (`n_samples`, `data_seed`), budgets
 (`t_max`, `n_steps`, or `budget_c` x sigma^-`budget_power` GF-time units), stop tolerance `tol` (loss / L0).
 
-## Results
-See `notes/optimizers.md` (section 2) and `agent-runs/optimizers/REPORT.md`; figures in `results/figures/`.
+## Order of the scripts
+1. Sweeps: `run.py` with each config (any order; `deep` before `eps_mps8`'s figure, which uses the
+   GF times of `deep` as the reference). Process count: `--workers` (one thread per process).
+2. `adam_probe.py configs/adam_probe.yaml` (Adam internals).
+3. `make_figures.py --results-dir experiments/optimizers/results` (summaries are built on demand from the
+   raw runs, cached as `<sweep>_summary.csv`; delete them to rebuild).
+4. `consistency.py p6` with `OPTIMIZERS_RESULTS=experiments/optimizers/results` (theory_optimizer checks;
+   needs the summaries of step 3).
+Default output of steps 3-4 is `/root/outputs/optimizers/results` (outside git), so re-running never
+overwrites the committed results unless asked to.
+
+## Results (details, numbers and caveats in `notes/optimizers.md` section 2)
+| figure / table | shows |
+|---|---|
+| `scaling_b4_scaling.png`, `scaling_b4_exponents.csv` | binary4: event times vs sigma for every optimizer (per-seed exponents): GF/GD/heavy ball p = 1.01, Adam/RMSProp first escape p = 0.01, gauge-aware methods p = 0 |
+| `scaling_b4_side_sigma0.008_seed0.png`, `deep_side_*.png` | loss, overlaps and bond spectrum per optimizer from the same init |
+| `later_b8_scaling.png`, `later_b8_exponents.csv` | binary8: GF p = 4.7 (theory 5); Adam first escape sigma-free, later plateaus p ~ 2.2-3.0; re-gauged GD sigma-free |
+| `adam_escape.png`, `eps_mps8_*.csv` | Adam's first escape: sign-flow limit (binary4) and eps crossover on mps8 with the parameter-free prediction (per seed within 0.97-1.05) |
+| `adam_probe.png` | Adam's preconditioner: memory decay, then adaptive edge of stability |
+| `balance.png` | conservation-law drift (GF 1e-11, GD 1e-5, Adam O(1)) and Adam's final balance vs the entry-count heuristic |
+| `implicit_bias_b4.png` | finite samples: GF keeps bond rank 3, Adam/RMSProp more often fill chi = 4 and generalize worse |
+| `deep_table.csv`, `order_agreement_with_gf.csv`, `cost_table.csv`, `precond_b4_*.csv`, `theory_optimizer_P*.csv` | summary tables |
