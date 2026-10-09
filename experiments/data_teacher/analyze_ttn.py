@@ -63,6 +63,34 @@ def hsvd(w_star, tree, ranks):
     return w
 
 
+def ttsvd(w, ranks_by_cut, reverse=False):
+    """TT-SVD truncation of a dense tensor (sites in order 0..N-1) to the given ranks across the cuts
+    {0..j} | {j+1..}, sweeping left-to-right, or right-to-left if reverse (review of round 1: the two
+    sweep directions are different SVD-type truncations)."""
+    n = w.ndim
+    if reverse:
+        w = w.permute(list(range(n - 1, -1, -1)))
+        ranks_by_cut = {n - 2 - j: r for j, r in ranks_by_cut.items()}
+    dims = list(w.shape)
+    rest = w.reshape(dims[0], -1)
+    cores = []
+    r_prev = 1
+    for j in range(n - 1):
+        mat = rest.reshape(r_prev * dims[j], -1)
+        u, sv, vt = torch.linalg.svd(mat, full_matrices=False)
+        r = min(ranks_by_cut[j], len(sv))
+        cores.append(u[:, :r].reshape(r_prev, dims[j], r))
+        rest = sv[:r, None] * vt[:r]
+        r_prev = r
+    out = rest.reshape(r_prev, dims[-1])
+    for core in reversed(cores):
+        out = torch.tensordot(core, out, dims=([2], [0]))
+    out = out.reshape(dims)
+    if reverse:
+        out = out.permute(list(range(n - 1, -1, -1)))
+    return out
+
+
 def plateaus(t, loss, speed=None):
     """Plateau midpoints (diagnostics.md: minima of the parameter speed |d theta/dt| between
     events): local minima of the speed after the first escape (L < 0.9 L(0)) and before L < 1e-4 L(0)
@@ -114,7 +142,18 @@ def analyze(name, case, tree, sigma, seed, spec, teacher, cache):
         dists = [float((w_pl - mm["W"]).norm()) for mm in mins]
         jc = int(np.argmin(dists))
         nrm = float(w_star.norm())
-        rows.append(dict(tag=case["tag"], tree=tree, sigma=sigma, seed=seed, plateau=i,
+        extra = {}
+        if spec.tree.name.startswith("mps"):
+            # cut {0..j}|rest is the MPS edge j (node j's subtree = sites 0..j)
+            rk = {j: ranks[v] for j, v in enumerate(edges)}
+            d_lr = float((w_pl - ttsvd(w_star, rk)).norm()) / float(w_star.norm())
+            d_rl = float((w_pl - ttsvd(w_star, rk, reverse=True)).norm()) / float(w_star.norm())
+            c_lr = float((mins[jc]["W"] - ttsvd(w_star, rk)).norm()) / float(w_star.norm())
+            c_rl = float((mins[jc]["W"] - ttsvd(w_star, rk, reverse=True)).norm()) / float(w_star.norm())
+            extra = dict(dist_ttsvd_lr=d_lr, dist_ttsvd_rl=d_rl,
+                         dist_nearest_trunc=min(d_lr, d_rl, float((w_pl - w_h).norm()) / float(w_star.norm())),
+                         crit_to_nearest_trunc=min(c_lr, c_rl, float((mins[jc]["W"] - w_h).norm()) / float(w_star.norm())))
+        rows.append(dict(**extra, tag=case["tag"], tree=tree, sigma=sigma, seed=seed, plateau=i,
                          t=t[m], loss=loss[m], ranks=str([ranks[v] for v in edges]),
                          dist_crit=dists[jc] / nrm, dist_hsvd=float((w_pl - w_h).norm()) / nrm,
                          dist_crit_hsvd=float((mins[jc]["W"] - w_h).norm()) / nrm,
