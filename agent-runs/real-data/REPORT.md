@@ -8,7 +8,15 @@ downsampled MNIST with cos/sin site features, and test plateaus, stepwise bond g
 rule and the regime map.
 
 ## Results
-(pending)
+Interim (pilot, seed 0 only; main sweep relaunched):
+- Quadtree binary, raw features, sigma = 0.2: loss drops at tau = 15, 84, 225, 369 (rho = 7, 15, 16):
+  saddle-to-saddle staircase; first rank growth on the sibling bottom edges (3, 4) (a k = 3 route) in all
+  three sigma; gap to the 2nd drop 29, 45, 69 for sigma = 0.5, 0.3, 0.2 (~ A/sigma + B, k = 3).
+- Scrambled binary: same mechanism (first rank growth on sibling edges 10, 11), but after it the loss
+  stalls at ~0.29-0.33 for thousands of time units (test acc 0.81 vs 0.95 for the quadtree at sigma = 0.2).
+- MPS (snake): one edge (5) gains rank during the first escape itself; later decrease smooth (rho <= 3.5).
+- Route amplitudes predict the first sibling pair to grow in 6/6 binary pilot runs; the largest amplitudes
+  belong to longer routes (k = 5, 7), which escape later: degree beats amplitude on real data.
 
 ## What was done
 1. Reverted the launch commit b622158 (in-progress library edits), `uv sync`, pushed (98042d5).
@@ -34,6 +42,20 @@ rule and the regime map.
   LSODA's Newton matrix: Gauss-Newton part J^T J / n (per-sample Jacobians via vmap, 0.1-1 s) instead of
   autograd's exact Hessian (20 s). The error control is unchanged; GN was faster in wall time than the
   exact Hessian (also implemented, dense residual tensor, 1.2 s) on the probe.
+- **Loss drops on real data = peaks of the loss rate -dL/dt** (FWHM width, valley factor 3, min size 1% of
+  L(0); `analysis.loss_drops`), not `find_plateaus`' progress widths. Reason: between learning events the
+  loss keeps creeping down (ill-conditioned directions within the current bond-rank profile), so a
+  10%->90%-of-drop width measures the tail (widths of ~900 for a drop whose rate peak is ~17 wide).
+  Separation ratios rho and the S2S rule (i)-(ii) are then applied as in notes/diagnostics.md.
+- **Spectral events = s_k/s_1 on an edge crossing 0.05** (log-interpolated), used for *which* edges gain
+  rank in each loss drop; widths from final-value references are not used (the references creep).
+- **Phase 1 restarts its clock in chunks** (adaptive, ~0.3 x the remaining time estimated from the speed's
+  growth): at sigma <= 0.1 the escape happens at t ~ 1e15-1e19 where O(1) steps underflow (all 41 runs at
+  sigma <= 0.1 of the first main launch failed this way; relaunched).
+- **Route amplitudes** (`route_amplitudes.py`): at the bond-rank-1 plateau of a binary run,
+  lambda_uw = |P_u M_uw P_w| with M_uw = (1/n) sum_j r_j h_uw(x_j) Phi_u Phi_w^T, for every pair of bottom
+  cores; the route degree is the Steiner size of (u, w). Used to test "lowest k first, then largest
+  amplitude" and to see where locality enters.
 - **Merged main (34c76ad) at the lead's request**; event times use `merged_rows` (log + fine rows; fine rows
   also carry the data-weighted spectra).
 
@@ -46,3 +68,4 @@ rule and the regime map.
 ## Log
 - 21:19 reverted launch commit, read brief/notes/library, downloaded data, launched cost pilot
 - 21:37 cost probes: post-escape stiffness (lambda_max ~ 57); LSODA + Gauss-Newton Jacobian chosen; function-space spectra added; merged main; pilot (18 runs) launched
+- 22:08 pilot analysed (staircases on quadtree binary, route amplitudes predict first route); main sweep failed at sigma <= 0.1 (clock underflow) -> chunked phase 1; merged main 6c42d85 (gauge fix; no lambda_min reported yet)

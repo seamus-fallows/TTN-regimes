@@ -1,0 +1,19 @@
+18 cases -> /root/outputs/real_data/pilot
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.5_seed0", "status": "completed", "wall": 613.7}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.2_seed0", "status": "completed", "wall": 659.1}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.3_seed0", "status": "completed", "wall": 689.6}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.2_seed0", "status": "completed", "wall": 707.3}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi4_s0.5_seed0", "status": "completed", "wall": 709.8}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi4_s0.3_seed0", "status": "completed", "wall": 732.2}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.3_seed0", "status": "completed", "wall": 734.0}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi4_s0.2_seed0", "status": "completed", "wall": 736.4}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.5_seed0", "status": "completed", "wall": 753.1}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.2_seed0", "status": "completed", "wall": 761.3}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.5_seed0", "status": "completed", "wall": 763.0}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.5_seed0", "status": "completed", "wall": 772.7}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.3_seed0", "status": "completed", "wall": 797.0}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.5_seed0", "status": "completed", "wall": 797.4}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.2_seed0", "status": "completed", "wall": 800.2}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.2_seed0", "status": "completed", "wall": 802.2}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.3_seed0", "status": "completed", "wall": 1112.5}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.3_seed0", "status": "completed", "wall": 1439.9}

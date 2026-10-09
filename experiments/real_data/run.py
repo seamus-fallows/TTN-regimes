@@ -45,7 +45,7 @@ from data import DenseHessianProblem, GNProblem, Task, build, function_spectra  
 
 from ttn.diagnostics import kernel_change, tangent_kernel  # noqa: E402
 from ttn.dynamics import Recorder, integrate_gf, log_time_grid  # noqa: E402
-from ttn.network import forward  # noqa: E402
+from ttn.network import conserved_quantities, forward  # noqa: E402
 
 TASK_KEYS = ("dataset", "size", "pos", "neg", "n_train", "n_test", "data_seed")
 DEFAULTS = dict(dataset="mnist", size=4, pos=[3], neg=[5], n_train=4000, n_test=1600, data_seed=0,
@@ -115,6 +115,14 @@ class RealRecorder(Recorder):
         self.fine_rows.setdefault("fine_fspectra", []).append(self._fspec(problem, theta, t))
 
 
+def conservation_drift(spec, q0, theta) -> float:
+    """max_v |Q_v(theta) - Q_v(theta_0)|_max / max_u |G_u|_F^2 (cumulative, across restarts)."""
+    cores = spec.unflatten(theta)
+    q = conserved_quantities(spec, cores)
+    gram = max(g.pow(2).sum().item() for g in cores)
+    return max((q[v] - q0[v]).abs().max().item() for v in q) / gram
+
+
 def run_case(c: dict, out_dir: Path) -> dict:
     torch.set_num_threads(1)
     name = case_name(c)
@@ -133,23 +141,57 @@ def run_case(c: dict, out_dir: Path) -> dict:
     meta = {"case": c, "name": name, "order": rp.order.tolist()}
     data = {"theta0": theta0.numpy()}
 
-    # phase 1: first plateau, DP5 until the loss has dropped by escape_drop
-    loss0 = problem.loss(theta0).item()
-    tau0 = theta0.norm().item() / problem.velocity(theta0).norm().item()
-    grid1 = log_time_grid(1e-3 * tau0, 1e6 * tau0, int(c["n_per_decade"] * 9))
+    # phase 1: first plateau, DP5 until the loss has dropped by escape_drop. The clock is restarted
+    # in chunks of tau_theta / (2K) (tau_theta = |theta| / |v|, which is ~(K-2) x the remaining time to
+    # the escape during power-law growth), so that steps of O(1) near the escape stay representable
+    # when the escape happens at t ~ 1e15-1e20 (small sigma).
     n_probe = c["kernel_probe"]
     kernel0 = tangent_kernel(spec, theta0, rp.x_test[:n_probe]) if n_probe else None
-    rec1 = RealRecorder(rp, kernel0, n_probe)
-    tr1 = integrate_gf(problem, theta0, 1e6 * tau0, log_times=grid1, rtol=c["rtol"], atol=c["atol"],
-                       recorder=rec1, method="dopri5", loss_floor=(1 - c["escape_drop"]) * loss0,
-                       max_wall_time=c["wall_limit"])
-    meta["phase1"] = {k: v for k, v in tr1.meta.items() if k != "problem"}
-    data |= {f"p1_{k}": v for k, v in tr1.data.items()}
-    stop = None if tr1.meta["stop_reason"] == "converged" else f"phase1_{tr1.meta['stop_reason']}"
+    loss0 = problem.loss(theta0).item()
+    tau0 = theta0.norm().item() / problem.velocity(theta0).norm().item()
+    floor = (1 - c["escape_drop"]) * loss0
+    theta, offset, chunks, stop, rate = theta0, 0.0, [], None, 0.0
+    while stop is None:
+        speed = problem.velocity(theta).norm().item()
+        tau_theta = theta.norm().item() / speed
+        # remaining time to the escape ~ 1 / (d ln|v| / dt) (|v| ~ (t1 - t)^-(K-1)/(K-2)); before
+        # any growth has been measured, a conservative fraction of tau_theta
+        dur = 0.3 / rate if rate > 0 else tau_theta / (20 * spec.n_cores)
+        dur = min(dur, tau_theta / (2 * spec.n_cores))
+        grid = np.geomspace(1e-2 * dur, dur, 6)
+        rec1 = RealRecorder(rp, kernel0, n_probe)
+        tr1 = integrate_gf(problem, theta, dur, log_times=grid, rtol=c["rtol"], atol=c["atol"],
+                           recorder=rec1, method="dopri5", loss_floor=floor,
+                           max_wall_time=max(60.0, c["wall_limit"] - (time.time() - wall0)))
+        part = dict(tr1.data)
+        if chunks:  # the first log row repeats the previous chunk's last state
+            for k in [k for k in part if not k.startswith("fine_") and k != "theta_end"]:
+                part[k] = part[k][1:]
+        part["t"] = part["t"] + offset
+        if "fine_t" in part:
+            part["fine_t"] = part["fine_t"] + offset
+        chunks.append(part)
+        offset += tr1.meta["t_end"]
+        theta = torch.as_tensor(tr1["theta_end"])
+        speed_end = problem.velocity(theta).norm().item()
+        rate = max(np.log(speed_end / speed), 0.0) / tr1.meta["t_end"]
+        if tr1.meta["stop_reason"] == "converged":
+            stop = "escaped"
+        elif tr1.meta["stop_reason"] != "completed":
+            stop = f"phase1_{tr1.meta['stop_reason']}"
+        elif len(chunks) >= 5000:
+            stop = "phase1_too_many_chunks"
+    keys = [k for k in chunks[0] if k != "theta_end"]
+    data |= {f"p1_{k}": np.concatenate([ch[k] for ch in chunks if k in ch]) for k in keys}
+    data["p1_theta_end"] = theta.numpy()
+    q0 = conserved_quantities(spec, spec.unflatten(theta0))
+    meta["phase1"] = {"n_chunks": len(chunks), "t_end": offset, "stop": stop,
+                      "drift": conservation_drift(spec, q0, theta)}
+    stop = None if stop == "escaped" else stop
     if stop is None:
         # phase 2: LSODA on its own clock tau = t - t_a
-        meta["t_a"] = tr1.meta["t_end"]
-        theta_a = torch.as_tensor(tr1["theta_end"])
+        meta["t_a"] = offset
+        theta_a = theta
         unit = 1.0
         if c["t2_units"] == "kernel":
             # 1 / mean per-sample |d f / d theta|^2 at theta_a (probe images): the time over which
@@ -169,6 +211,7 @@ def run_case(c: dict, out_dir: Path) -> dict:
                            atol=c["atol"], recorder=rec2, method="lsoda",
                            max_wall_time=max(60.0, c["wall_limit"] - (time.time() - wall0)))
         meta["phase2"] = {k: v for k, v in tr2.meta.items() if k != "problem"}
+        meta["phase2"]["drift_total"] = conservation_drift(spec, q0, torch.as_tensor(tr2["theta_end"]))
         data |= {f"p2_{k}": v for k, v in tr2.data.items()}
         stop = tr2.meta["stop_reason"]
     meta.update(stop=stop, loss0=loss0, tau0=tau0, wall_total=time.time() - wall0,
