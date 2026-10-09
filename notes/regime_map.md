@@ -199,3 +199,15 @@ library rerun with linear-time event refinement, `sigma_chi_b4`).*
   rich at every sigma in the grid for chi >= 18 (S2S boundary 0.015 vs 0.075 centred at chi = 24).
   So the two-copy model is a faithful cross-check of the lazy boundary (up to the predicted shift) but
   **not of the S2S boundary at large chi**: its incremental structure is changed by the mirror copy.
+
+### 2.y Integrator and diagnostic checks
+
+- **Two independent integrators agree** (binary N = 4, 1937 matched runs of the sigma x chi grid,
+  centred / plain / two-copy): scipy RK45 (rtol 1e-9, atol 1e-14, log-time recording) vs the library's
+  DP5 (rtol 1e-8, atol 1e-12) with linear-time event refinement. Labels agree in 98.1% of runs; all 37
+  differences are rich (scipy) -> S2S (library) or the reverse near rho = 3, explained by the
+  grid-limited widths of the scipy runs (which overestimate widths and so underestimate rho); delta_K
+  agrees to 0.08% (median relative difference over lazy runs). Conservation-law drift (library
+  Recorder): max 1e-9 over all runs.
+- **Event widths** in deep S2S match the aligned-mode theory: 0.466, 0.798, 2.010 for s = 3, 2, 1
+  (theory 0.46, 0.80, 2.01; K = 3, chi = 36, sigma = 0.01).
