@@ -5,11 +5,13 @@
 Writes <out>/main_runs.csv (one row per run) and <out>/main_summary.csv (per tree, chi, teacher,
 sigma: run counts by class, S2S fraction, plateau-level errors, Hessian summary). Classes:
   complete    all components learned, every event resolved
-  floor       not complete, and some dormant amplitude |<W,U_r>| fell below 1e-14 after the first
-              escape (its later escape would be seeded by float64 roundoff: not physics)
-  stalled     not complete, dormant amplitudes stayed above 1e-14, and the run reached t_max
-              (1e3 x the RMS-overlap escape time of the weakest component)
-  unresolved  not complete, above the floor, stopped by the step or wall budget (still evolving)
+  trapped     not complete; a never-learned component's slice on some core fell below 1e-10 sigma
+              after the first escape (dead route end, the conservation-law trap; any later escape
+              would be seeded by float64 roundoff, so it is not reported as physics)
+  stalled     not complete, all slices alive, and the run reached t_max (1e3 x the RMS-overlap
+              escape time of the weakest component)
+  unresolved  not complete, all slices alive, stopped by the step / wall budget or by the
+              amplitude-based roundoff stop of main.yaml (that stop is too strict at K >= 7)
 """
 
 from __future__ import annotations
@@ -28,6 +30,8 @@ FLOOR = 1e-14
 def load(raw: Path) -> pd.DataFrame:
     rows = []
     for f in sorted(raw.glob("*.json")):
+        if f.name == "summary.json":
+            continue
         s = json.loads(f.read_text())
         R = len(s["weights"])
         ev = np.array([np.nan if x is None else x for x in s["events"]], dtype=float)
@@ -39,14 +43,24 @@ def load(raw: Path) -> pd.DataFrame:
         # still dormant then.
         after = [v for row in s["dormant_min_between_events"][1:] for v in row.values()]
         min_after = min(after) if after else np.nan
+        # Dead route end: a never-learned component whose slice on some core (cores with sites,
+        # which include every route end) fell below 1e-10 sigma after the first escape: the
+        # conservation-law trap; any later escape of it is seeded by float64 roundoff.
+        min_slice = np.nan
+        if not complete and order:
+            d = np.load(f.with_suffix(".npz"))
+            after = d["t"] > 1.2 * ev[order[0]]
+            never = [r for r in range(R) if r not in order]
+            if after.any() and never:
+                min_slice = float(np.nanmin(d["slice_norms"][after][:, :, never])) / s["sigma"]
         if complete:
             cls = "complete"
-        elif np.isfinite(min_after) and min_after < FLOOR:
-            cls = "floor"
+        elif np.isfinite(min_slice) and min_slice < 1e-10:
+            cls = "trapped"
         elif s["stop_reason"] == "completed":
             cls = "stalled"
         else:
-            cls = "unresolved"  # stopped by the step / wall budget while still above the floor
+            cls = "unresolved"  # stopped by the step / wall budget or the amplitude stop while alive
         plateaus = s["plateaus"]
         rel_level = [abs(p["loss"] - p["partial_fit_level"]) / p["partial_fit_level"] for p in plateaus]
         lam_min = [p["saddle"]["lambda_min"] for p in plateaus if "saddle" in p]
@@ -64,6 +78,7 @@ def load(raw: Path) -> pd.DataFrame:
         transient = [r for r in range(R) if np.isfinite(ev[r]) and s["first_crossings"][r] is not None
                      and s["first_crossings"][r] < ev[r] * (1 - 1e-6)]
         row = {
+            "sweep": raw.name,
             "tree": f"{s['tree']}{s['N']}", "K": s["K"], "chi": s["chi"], "teacher": s["teacher"],
             "sigma": s["sigma"], "seed": s["seed"], "init": s["init"], "class": cls,
             "stop": s["stop_reason"], "n_learned": len(order), "order": "".join(map(str, order)),
@@ -81,6 +96,7 @@ def load(raw: Path) -> pd.DataFrame:
             "plateau1_n_neg": n_neg[0] if n_neg else np.nan,
             "plateau2_n_neg": n_neg[1] if len(n_neg) > 1 else np.nan,
             "min_dormant_after_first": min_after,
+            "min_dormant_slice_over_sigma": min_slice,
             # Spread over edges of the time each edge's rank steps up, relative to the event width
             # (runs with event-window spectra only), and whether every edge gained exactly one value.
             "edge_spread_over_width_max": max(
@@ -95,11 +111,11 @@ def load(raw: Path) -> pd.DataFrame:
 
 
 def summarize(df: pd.DataFrame) -> pd.DataFrame:
-    g = df.groupby(["tree", "K", "chi", "teacher", "sigma"])
+    g = df.groupby(["sweep", "tree", "K", "chi", "teacher", "init", "sigma"])
     return g.agg(
         n=("seed", "size"),
         complete=("class", lambda c: int((c == "complete").sum())),
-        floor=("class", lambda c: int((c == "floor").sum())),
+        trapped=("class", lambda c: int((c == "trapped").sum())),
         stalled=("class", lambda c: int((c == "stalled").sum())),
         unresolved=("class", lambda c: int((c == "unresolved").sum())),
         s2s=("s2s", "sum"),
@@ -118,7 +134,7 @@ def gap_fits(df: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
     gap ~ sigma^-p; at least `min_sigmas` sigmas per fit.
     """
     rows = []
-    keys = ["tree", "K", "chi", "teacher", "init", "seed"]
+    keys = ["sweep", "tree", "K", "chi", "teacher", "init", "seed"]
     comp = df[df["class"] == "complete"]
     for key, g in comp.groupby(keys):
         modal = g.order.mode().iloc[0]
@@ -151,10 +167,10 @@ def order_table(df: pd.DataFrame) -> pd.DataFrame:
     """Learning order: per (tree, chi, teacher), the fraction of runs with each first component, the
     greedy fraction, and the fraction of seeds whose first component is the same at every sigma."""
     rows = []
-    for key, g in df[df.n_learned >= 1].groupby(["tree", "K", "chi", "teacher"]):
+    for key, g in df[df.n_learned >= 1].groupby(["sweep", "tree", "K", "chi", "teacher", "init"]):
         first = g.order.astype(str).str[0]
         same = g.assign(first=first).groupby("seed")["first"].nunique()
-        row = dict(zip(["tree", "K", "chi", "teacher"], key))
+        row = dict(zip(["sweep", "tree", "K", "chi", "teacher", "init"], key))
         row.update({"n_runs": len(g), **{f"P_first_{c}": float((first == c).mean()) for c in "012"},
                     "P_greedy_complete": float(g[g["class"] == "complete"].greedy.mean()) if (g["class"] == "complete").any() else np.nan,
                     "seeds_same_first_all_sigma": f"{int((same == 1).sum())}/{len(same)}"})
@@ -168,7 +184,7 @@ def fit_summary(fits: pd.DataFrame) -> pd.DataFrame:
         x = x.dropna()
         return x.std(ddof=1) / np.sqrt(len(x)) if len(x) > 1 else np.nan
 
-    g = fits.groupby(["tree", "K", "chi", "teacher", "init"])
+    g = fits.groupby(["sweep", "tree", "K", "chi", "teacher", "init"])
     out = g.agg(n_seeds=("seed", "size"),
                 p_t1=("p_t1", "mean"), p_t1_se=("p_t1", se),
                 p_gap1=("p_gap1", "mean"), p_gap1_se=("p_gap1", se), n_gap1=("p_gap1", "count"),
@@ -183,13 +199,13 @@ def fit_summary(fits: pd.DataFrame) -> pd.DataFrame:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--raw", default="/root/outputs/s2s_core/main")
+    ap.add_argument("--raw", nargs="+", default=["/root/outputs/s2s_core/main"])
     ap.add_argument("--out", default=str(HERE / "results"))
     ap.add_argument("--tag", default="main")
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    df = load(Path(args.raw))
+    df = pd.concat([load(Path(r)) for r in args.raw if Path(r).exists()], ignore_index=True)
     df.to_csv(out / f"{args.tag}_runs.csv", index=False)
     summ = summarize(df)
     summ.to_csv(out / f"{args.tag}_summary.csv", index=False)

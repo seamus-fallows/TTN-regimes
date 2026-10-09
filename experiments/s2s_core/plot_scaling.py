@@ -21,8 +21,30 @@ import pandas as pd  # noqa: E402
 from ttn import plotting as tp  # noqa: E402
 
 HERE = Path(__file__).parent
+
+
+def log_axes(ax):
+    """Log-log axes with labelled major ticks only (minor labels collide on short ranges)."""
+    from matplotlib.ticker import LogLocator, NullFormatter
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.yaxis.set_minor_formatter(NullFormatter())
+    ax.xaxis.set_major_locator(LogLocator(base=10, subs=(1.0, 2.0, 5.0)))
 TREES = ["binary4", "mps4", "binary8", "ht4", "mps8"]
 KS = {"binary4": 3, "mps4": 4, "binary8": 7, "ht4": 7, "mps8": 8}
+
+
+def pick_sweep(runs: pd.DataFrame, tree: str, chi: int, teacher: str, init: str = "fanin") -> str | None:
+    """The sweep that carries a cell: K = 7, 8 cells are taken from the dedicated sweeps (k78 at
+    chi = 3, large at chi = 6; no amplitude-based roundoff stop, longer budgets) when they have it."""
+    prefs = (["k78"] if chi == 3 else ["large"]) + ["main"] if KS[tree] >= 7 else ["main"]
+    for sw in prefs:
+        if len(runs[(runs.sweep == sw) & (runs.tree == tree) & (runs.chi == chi) & (runs.teacher == teacher)
+                    & (runs.init == init)]):
+            return sw
+    return None
 
 
 def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teacher: str):
@@ -34,7 +56,9 @@ def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teache
     names = [("t1", "$t_1$"), ("gap1", "$t_2-t_1$"), ("gap2", "$t_3-t_2$")]
     for ax, tree in zip(axes[0], trees):
         K = KS[tree]
-        d = runs[(runs.tree == tree) & (runs.chi == chi) & (runs.teacher == teacher)].copy()
+        sw = pick_sweep(runs, tree, chi, teacher)
+        d = runs[(runs.sweep == sw) & (runs.tree == tree) & (runs.chi == chi) & (runs.teacher == teacher)
+                 & (runs.init == "fanin")].copy()
         d["gap1"], d["gap2"] = d.t2 - d.t1, d.t3 - d.t2
         comp = d[d["class"] == "complete"]
         for seed, g in comp.groupby("seed"):
@@ -42,8 +66,9 @@ def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teache
             g = g[g.order == modal].sort_values("sigma")
             for (col, _), c in zip(names, colors):
                 ax.plot(g.sigma, g[col], color=c, lw=0.7, alpha=0.7, marker="o", ms=1.8)
-        f = fits[(fits.tree == tree) & (fits.chi == chi) & (fits.teacher == teacher)]
-        lab = []
+        f = fits[(fits.sweep == sw) & (fits.tree == tree) & (fits.chi == chi) & (fits.teacher == teacher)
+                 & (fits.init == "fanin")]
+        lab = [f"[{sw}]"]
         for (col, nm), c in zip(names, colors):
             p = f[f"p_{col}"].dropna()
             if len(p):
@@ -55,12 +80,11 @@ def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teache
             xs = np.array([comp.sigma.min(), s0])
             ax.plot(xs, y0 * (xs / s0) ** (-(K - 2)), color="k", lw=0.8, ls="--")
         n_inc = (d["class"] != "complete").groupby(d.sigma).sum()
-        ax.set_xscale("log")
-        ax.set_yscale("log")
+        log_axes(ax)
         ax.set_xlabel(r"$\sigma$")
-        ax.set_title(f"{tree} (K={K})\n" + "\n".join(lab), fontsize=6.5)
-        txt = " ".join(f"{int(v)}" for v in n_inc.values)
-        ax.text(0.02, 0.02, f"incomplete/10: {txt}", transform=ax.transAxes, fontsize=5.5, color=tp.MUTED)
+        ax.set_title(f"{tree} (K={K}) " + "\n".join(lab), fontsize=6.5)
+        n_tot = d.groupby("sigma").size()
+        ax.set_xlabel(r"$\sigma$" + f"  (complete {int(n_tot.sum() - n_inc.sum())}/{int(n_tot.sum())})")
     axes[0][0].set_ylabel("time")
     handles = [plt.Line2D([], [], color=c, lw=1.2, label=nm) for (_, nm), c in zip(names, colors)]
     handles.append(plt.Line2D([], [], color="k", lw=0.8, ls="--", label=r"$\sigma^{-(K-2)}$"))
@@ -68,39 +92,40 @@ def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teache
     tp.savefig(fig, out / f"fig_d_gaps_chi{chi}_{teacher}")
 
 
-def fig_hessian(runs: pd.DataFrame, out: Path):
-    """(f): lambda_min / lambda_max of the gauge-projected Hessian at the first and second plateau
-    midpoints vs sigma (complete and incomplete runs)."""
-    has = runs[np.isfinite(runs.plateau1_lam_min) & (runs.plateau1_lam_min < 0)]
-    trees = [t for t in TREES if t in set(has.tree)]
-    fig, axes = plt.subplots(1, len(trees), figsize=(tp.TEXT_WIDTH, 2.2), layout="constrained", squeeze=False,
-                             sharey=True)
-    colors = tp.palette(4)
+def fig_hessian(runs: pd.DataFrame, fits: pd.DataFrame, out: Path):
+    """(f): most negative gauge-projected Hessian eigenvalue at the first and second plateau midpoints
+    vs sigma, one line per seed (complete runs at the seed's modal order), against the route
+    prediction -(K-2) slope; the per-seed slope (mean +- SE) is the saddle-type rule of
+    notes/diagnostics.md (0: strict, k-2: higher order)."""
+    comp = runs[(runs["class"] == "complete") & (runs.init == "fanin")]
+    comp = comp[[pick_sweep(runs, r.tree, r.chi, r.teacher) == r.sweep for r in comp.itertuples()]]
+    trees = [t for t in TREES if t in set(comp.tree) and comp[comp.tree == t].sigma.nunique() >= 4]
+    fig, axes = plt.subplots(1, len(trees), figsize=(tp.TEXT_WIDTH, 2.3), layout="constrained", squeeze=False)
+    colors = tp.palette(2)
     for ax, tree in zip(axes[0], trees):
         K = KS[tree]
-        d = runs[runs.tree == tree]
-        for j, (chi, teacher) in enumerate([(3, "separated"), (6, "separated"), (3, "close"), (6, "close")]):
-            g = d[(d.chi == chi) & (d.teacher == teacher)]
-            for col, mk in (("plateau1_lam_min", "o"), ("plateau2_lam_min", "s")):
-                v = -g[col] / g.plateau1_lam_max
+        d = comp[(comp.tree == tree) & (comp.teacher == "separated")]
+        for seed, g in d.groupby(["chi", "seed"]):
+            modal = g.order.mode().iloc[0]
+            g = g[g.order == modal].sort_values("sigma")
+            for i, c in ((1, colors[0]), (2, colors[1])):
+                v = -g[f"plateau{i}_lam_min"]
                 ok = v > 0
-                ax.scatter(g.sigma[ok], v[ok], s=5, color=colors[j], marker=mk, alpha=0.6,
-                           label=f"$\\chi$={chi}, {teacher}" if col == "plateau1_lam_min" else None)
-        xs = np.array([d.sigma.min(), d.sigma.max()])
-        ref = (-(d.plateau1_lam_min) / d.plateau1_lam_max).clip(lower=1e-300).median()
-        ax.plot(xs, ref * (xs / np.median(d.sigma)) ** (K - 2), color="k", lw=0.8, ls="--")
-        ax.axhline(1e-3, color=tp.MUTED, lw=0.7, ls=":")
-        ax.set_xscale("log")
-        ax.set_yscale("log")
+                ax.plot(g.sigma[ok], v[ok], color=c, lw=0.6, alpha=0.7, marker="o", ms=1.6)
+        f = fits[(fits.tree == tree) & (fits.teacher == "separated") & (fits.init == "fanin")
+                 & fits.sweep.isin(set(d.sweep))]
+        lab = []
+        for i in (1, 2):
+            sl = f[f"lam{i}_slope"].dropna()
+            if len(sl) > 1:
+                lab.append(f"plateau {i}: slope {sl.mean():.2f}$\\pm${sl.std(ddof=1) / np.sqrt(len(sl)):.2f}")
+        log_axes(ax)
         ax.set_xlabel(r"$\sigma$")
-        ax.set_title(f"{tree} (K={K})", fontsize=8)
-    axes[0][0].set_ylabel(r"$-\lambda_{\min}/\lambda_{\max}$ (gauge-projected)")
-    handles, labels = axes[0][0].get_legend_handles_labels()
-    handles.append(plt.Line2D([], [], color="k", lw=0.8, ls="--"))
-    labels.append(r"$\propto\sigma^{K-2}$")
-    handles.append(plt.Line2D([], [], color=tp.MUTED, lw=0.7, ls=":"))
-    labels.append("strict threshold $10^{-3}$")
-    fig.legend(handles, labels, loc="outside lower center", ncols=3, fontsize=6.5)
+        ax.set_title(f"{tree} (K={K}), predicted slope {K - 2}\n" + "\n".join(lab), fontsize=6.5)
+    axes[0][0].set_ylabel(r"$-\lambda_{\min}$ (gauge-projected Hessian)")
+    handles = [plt.Line2D([], [], color=colors[0], lw=1, label="first plateau"),
+               plt.Line2D([], [], color=colors[1], lw=1, label="second plateau")]
+    fig.legend(handles=handles, loc="outside lower center", ncols=2, fontsize=7)
     tp.savefig(fig, out / "fig_f_hessian")
 
 
@@ -151,7 +176,7 @@ def main():
     for chi in (3, 6):
         for teacher in ("separated", "close"):
             fig_gaps(runs, fits, out, chi, teacher)
-    fig_hessian(runs, out)
+    fig_hessian(runs, fits, out)
     if (res / "first_runs.csv").exists():
         first = pd.read_csv(res / "first_runs.csv")
         for chi in (3, 6):
