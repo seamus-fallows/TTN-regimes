@@ -252,3 +252,70 @@ def fig_probe(name: str = "adam_probe"):
     fig.align_ylabels(axes[:, 0])
     tp.savefig(fig, FIG / "adam_probe")
     return fig
+
+
+def entry_count_prediction(cfg: dict) -> np.ndarray:
+    """Heuristic balance index of a sign-flow solution per edge: |n_v - n_p| / (n_v + n_p), n = number
+    of entries of the core (notes/optimizers.md 1.2 f)."""
+    from experiments.optimizers.common import make_problem
+
+    spec = make_problem(cfg).spec
+    t = spec.tree
+    return np.array([abs(spec.sizes[v] - spec.sizes[t.parent[v]]) / (spec.sizes[v] + spec.sizes[t.parent[v]])
+                     for v in t.edges])
+
+
+def fig_balance(examples: list[tuple[str, dict, list[str]]], scatter: list[tuple[str, dict]], tag=""):
+    """Left panels: conservation-law drift of the library recorder (max_e |Q_e(t) - Q_e(0)| relative) for
+    several methods from one init, against the fraction of the run. Right: final balance index per edge
+    of Adam / RMSProp runs against the entry-count heuristic."""
+    tp.set_style()
+    n = len(examples)
+    fig, axes = tp.subplots(1, n + 1, width=tp.TEXT_WIDTH, panel_aspect=0.9)
+    for ax, (name, flt, methods) in zip(axes[:n], examples):
+        df = with_keys(collect(name))
+        for k, v in flt.items():
+            df = df[df[k] == v]
+        for m in methods:
+            rows = df[df["method"] == m]
+            if rows.empty:
+                continue
+            d = load(name, rows.iloc[0]["file"]).data
+            t = d["t"] / d["t"][-1]
+            fam = rows.iloc[0]["optimizer"]
+            ax.plot(np.maximum(t, 1e-6), np.maximum(d["conservation_drift"], 1e-17), color=FAMILY_COLOR[fam],
+                    lw=1.0, ls="--" if fam in ("gd", "dmrg") else "-", label=m)
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlabel("fraction of the run (own clock)")
+        ax.set_title(f"{flt.get('tree', '')}{rows.iloc[0]['n_sites'] if not rows.empty else ''}, "
+                     f"sigma {flt.get('sigma', '')}", fontsize=7)
+        ax.legend(fontsize=6)
+    axes[0].set_ylabel(r"drift of $Q_e$ (relative)")
+    ax = axes[-1]
+    markers = ["o", "s", "^", "D"]
+    for i, (name, flt) in enumerate(scatter):
+        df = collect(name)
+        for k, v in flt.items():
+            df = df[df[k] == v]
+        df = df[df["optimizer"].isin(["adam", "rmsprop"]) & df["converged"]]
+        if df.empty:
+            continue
+        r0 = df.iloc[0]
+        cfg0 = {"tree": str(r0["tree"]), "teacher": str(r0["teacher"]), **{k: int(r0[k]) for k in
+                ("n_sites", "d", "chi", "teacher_seed")}}
+        cfg0["weights"] = json.loads(df.iloc[0]["weights"])
+        if cfg0["teacher"] == "pattern":
+            cfg0["patterns"] = json.loads(df.iloc[0]["patterns"])
+        pred = entry_count_prediction(cfg0)
+        meas = np.array([load(name, f).data["balance"][-1] for f in df["file"]])
+        ax.errorbar(pred, meas.mean(0), yerr=meas.std(0), fmt=markers[i % 4], ms=3.5, color=tp.palette(4)[i],
+                    mec="white", mew=0.5, elinewidth=0.7, label=f"{cfg0['tree']}{cfg0['n_sites']} {cfg0['teacher']}")
+    ax.plot([0, 1], [0, 1], color=tp.MUTED, lw=0.8, ls="--")
+    ax.set_xlim(-0.03, 0.8)
+    ax.set_ylim(-0.03, 1.0)
+    ax.set_xlabel(r"entry-count heuristic $|n_v-n_p|/(n_v+n_p)$")
+    ax.set_ylabel("balance index at the end (Adam, RMSProp)")
+    ax.legend(fontsize=6)
+    tp.savefig(fig, FIG / f"balance{tag}")
+    return fig
