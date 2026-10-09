@@ -275,7 +275,8 @@ def crossings(t, x, level=0.5):
 
 
 def projected_hessian(spec, teacher, y):
-    """Gauge-projected Hessian spectrum at y (library: ttn.diagnostics), plus the gauge rank."""
+    """Gauge-projected Hessian spectrum at y (library `ttn.diagnostics`, default rtol 1e-3 since
+    commit 6c42d85), the number of gauge directions removed, and the raw (unprojected) spectrum."""
     from ttn.diagnostics import gauge_complement, gauge_directions, project_out_gauge
 
     loss, _ = loss_grad_fn(spec, teacher)
@@ -283,4 +284,5 @@ def projected_hessian(spec, teacher, y):
     h = torch.autograd.functional.hessian(loss, flat)
     u = gauge_directions(spec, flat)
     _, eigs = project_out_gauge(h, u)
-    return eigs.numpy(), spec.n_params - gauge_complement(u).shape[1]
+    raw = torch.linalg.eigvalsh(0.5 * (h + h.T))
+    return eigs.numpy(), spec.n_params - gauge_complement(u).shape[1], raw.numpy()

@@ -129,12 +129,13 @@ def analyse(spec, teacher, sol, rho):
             res = minimize_scalar(speed, bounds=(lo, hi), method="bounded",
                                   options={"xatol": 1e-9 * max(hi, 1.0)})
             tm = res.x
-            ev, gauge_rank = projected_hessian(spec, teacher, sol.sol(tm))
+            ev, gauge_rank, raw = projected_hessian(spec, teacher, sol.sol(tm))
             q = rho ** (1.0 / spec.n_cores)
             rec["eigs"] = ev.tolist()
             rec.update(t_mid=tm, loss_mid=loss(torch.from_numpy(sol.sol(tm))).item(),
                        a_mid=overlaps(spec, teacher, sol.sol(tm)).tolist(),
                        grad_mid=res.fun, lam_min=ev[0], lam_2=ev[1], lam_max=ev[-1],
+                       lam_min_raw=raw[0], lam_2_raw=raw[1], lam_max_raw=raw[-1],
                        n_neg=int((ev < -1e-3 * ev[-1]).sum()), gauge_rank=gauge_rank,
                        lam_pred=-(1 - rho) * q ** (spec.n_cores - 2))
             # loss on the plateau after the rotation (if any): minimum speed between t1 and re-up
