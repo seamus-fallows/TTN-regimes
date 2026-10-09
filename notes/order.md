@@ -180,7 +180,33 @@ All lambda_min values above were computed with the fixed gauge projection (libra
 rtol 1e-3) and are reported with the raw (unprojected) value in `results/h1b_*.csv`
 (`lam_min_raw`); for binary4 the two agree to 6 digits at sigma <= 1e-3.
 
-### 7.4-7.5 (controls, chi scan, R >= 3): pending
+### 7.4 Control: "matrix-like" (m = 2) versus tensor-like pattern teachers on one tree (complete)
+
+MPS6, d = 2, chi = 4 (bonds 2-4-4-4-2), pattern teachers (component 1 = e_0 at every site, component 2
+differs from it on the sites listed, weight rho), full GF to the first event, 400 seeds, sigma 0.003-0.1
+(`configs/pat_mps6_*.yaml`, `analyze_sigma.py`, `results/sigma_table.csv`, `results/sigma_fits.csv`).
+P(smaller first) at sigma = 0.01 (Wilson 95% CI half-width <= 0.05):
+
+| differing sites (cores) | m | rho = 0.7 | 0.8 | 0.9 | sigma dependence |
+|---|---|---|---|---|---|
+| 2, 3 (adjacent, share a bond of dim 4) | 2 | 0.000 | 0.045 | 0.20 | gamma = 0.67 +- 0.09 (rho 0.8), 0.22 +- 0.03 (0.9) |
+| 0, 5 (the two ends) | 2 | 0.065 | 0.17 | 0.33 | gamma = 0.46 +- 0.06, 0.249 +- 0.029, 0.101 +- 0.014 |
+| 0, 1, 2 | 3 | 0.22 | 0.32 | 0.45 | constant for sigma <= 0.03 (+0.01-0.015 at sigma = 0.1) |
+| 0, 1, 2, 3 | 4 | 0.33 | 0.41 | 0.47 | identical at every sigma (100% of seeds) |
+| all six (odeco, main sweep) | 6 | 0.40 | 0.46 | 0.49 | sigma-independent (section 7.2) |
+
+- **The control behaves as predicted** [empirical, derived]: the non-adjacent m = 2 pair follows
+  sigma^((1-rho)/rho) (0.429 / 0.25 / 0.111 predicted) in full GF on a K = 6 tree, i.e. it is greedy as
+  sigma -> 0; m >= 3 pairs are random and sigma-independent.
+- **P(smaller first) increases monotonically with m** at fixed tree, sigma and rho [empirical]: the more
+  cores the components differ on, the more random the order (m = 3 already far from greedy).
+- **Adjacent m = 2 pairs are more greedy than non-adjacent ones**: their measured exponents (0.67, 0.22)
+  are 2.7x and 2.0x the non-adjacent ones, below the asymptotic prediction n (1-rho)/rho with n = chi_e
+  = 4 (1.0, 0.44) of `notes/theory_escape.md` 5.3 over this sigma range (their LO emulation shows the
+  same slow approach: local slope 0.24 at sigma ~ 10^-1.5 rising to ~0.45 at 1e-4 for n = 4, rho = 0.9).
+  A full-GF test down to sigma = 1e-5 on MPS4 is in 7.4b.
+
+### 7.4b-7.5 (MPS4 multiplicity test, chi scan, R >= 3): pending
 
 ## 8. Status of H1 and H1b (to be finalized)
 
