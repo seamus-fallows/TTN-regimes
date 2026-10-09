@@ -14,8 +14,14 @@ import numpy as np
 import torch
 from scipy.integrate import solve_ivp
 
-from ttn.losses import population_loss
-from ttn.network import TTNSpec, bond_spectra, conserved_quantities
+from ttn.losses import centred_population_loss, population_loss
+from ttn.network import (
+    TTNSpec,
+    bond_spectra,
+    conserved_quantities,
+    sum_difference_cores,
+    two_copy_cores,
+)
 from ttn.teachers import odeco_teacher
 from ttn.tree import make_tree
 
@@ -41,13 +47,28 @@ def eta_max(spec, teacher) -> float:
 
 
 class Problem:
-    """Population loss, its gradient and recorded diagnostics for one (spec, teacher)."""
+    """Population loss, its gradient and recorded diagnostics for one (spec, teacher).
 
-    def __init__(self, spec, teacher):
+    With `cores0` given, the centred model is used: loss 1/2 ||W(theta) - W(theta0) - W*||^2
+    (cancellation-free), and overlaps / bond spectra refer to the learned function W - W_0.
+    """
+
+    def __init__(self, spec, teacher, cores0=None):
         self.spec, self.teacher = spec, teacher
         self.t2 = teacher.norm2()
+        self.cores0 = None if cores0 is None else [c.detach() for c in cores0]
+
+    def learned(self, p):
+        """(spec, cores) of the learned function: W(theta), or W(theta) - W(theta0)."""
+        if self.cores0 is None:
+            return self.spec, self.spec.unflatten(p)
+        spec2, c2 = two_copy_cores(self.spec, self.spec.unflatten(p), self.cores0)
+        return spec2, sum_difference_cores(spec2, c2)
 
     def loss(self, p):
+        if self.cores0 is not None:
+            return centred_population_loss(self.spec, self.spec.unflatten(p), self.cores0,
+                                           self.teacher, base_norm2=self.t2)
         return population_loss(self.spec, self.spec.unflatten(p), self.teacher, teacher_norm2=self.t2)
 
     def loss_grad(self, p):
@@ -58,7 +79,7 @@ class Problem:
 
     def overlaps(self, p) -> np.ndarray:
         with torch.no_grad():
-            return self.teacher.component_overlaps(self.spec, self.spec.unflatten(p)).numpy()
+            return self.teacher.component_overlaps(*self.learned(p)).numpy()
 
     def sharpness(self, p) -> float:
         h = torch.autograd.functional.hessian(self.loss, p.detach())
@@ -77,7 +98,7 @@ class Problem:
 
     def spectra(self, p) -> dict[int, list[float]]:
         with torch.no_grad():
-            sp = bond_spectra(self.spec, self.spec.unflatten(p))
+            sp = bond_spectra(*self.learned(p))
         return {int(v): s.tolist() for v, s in sp.items()}
 
     def eff_ranks(self, p, thresh_frac=0.1) -> list[int]:

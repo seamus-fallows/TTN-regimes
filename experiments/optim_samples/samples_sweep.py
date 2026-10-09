@@ -209,16 +209,17 @@ def key_of(task):
 
 
 def tasks_from_config(cfg):
+    """One task per (n_train, sigma, seed) of every block; block keys override `base`."""
     base = cfg["base"]
+    grid_keys = ("name", "n_train", "sigmas", "seeds")
     out = []
     for block in cfg["blocks"]:
+        extra = {k: v for k, v in block.items() if k not in grid_keys}
         for n_train, sigma, seed in itertools.product(block["n_train"], block["sigmas"],
                                                       block["seeds"]):
-            t = dict(base, block=block["name"], n_train=n_train, sigma=sigma, seed=seed,
-                     centred=block["centred"], t_max=block["t_max"],
-                     eta_cap=block.get("eta_cap", base["eta_cap"]),
-                     rel_step=block.get("rel_step", base["rel_step"]),
-                     lazy=block.get("lazy", False))
+            t = dict(base, **extra)
+            t.update(block=block["name"], n_train=n_train, sigma=sigma, seed=seed)
+            t.setdefault("lazy", False)
             out.append(t)
     return out
 
@@ -236,7 +237,7 @@ def main():
         for line in f.read_text().splitlines():
             done.add(key_of(json.loads(line)["task"]))
     todo = [t for t in tasks if key_of(t) not in done]
-    todo.sort(key=lambda t: -t["n_train"] * (1 + 10 * (t["sigma"] < 0.4)))
+    todo.sort(key=lambda t: -t["n_train"] * t["chi"] * (1 + 2 * t["centred"]))
     print(f"{len(tasks)} tasks, {len(todo)} to run", flush=True)
     files = {}
     with Pool(args.workers) as pool:

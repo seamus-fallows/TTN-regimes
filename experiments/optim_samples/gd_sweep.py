@@ -35,6 +35,8 @@ def tag_of(task):
     base = f"{task['tree']}{task['n']}_sig{task['sigma']}_seed{task['seed']}"
     if task.get("root_scale"):
         base += f"_root{task['root_scale']}"
+    if task.get("centred"):
+        base += "_centred"
     return base + ("_gf" if task["ratio"] == "gf" else f"_r{task['ratio']}")
 
 
@@ -46,10 +48,15 @@ def init_params(spec, task):
     return spec.flatten(spec.init(task["sigma"], seed=task["seed"], core_scales=scales))
 
 
-def run_gf(task):
+def make_problem(task):
     spec, teacher = setup(task["tree"], task["n"])
-    prob = Problem(spec, teacher)
     theta0 = init_params(spec, task)
+    cores0 = spec.unflatten(theta0) if task.get("centred") else None
+    return spec, teacher, Problem(spec, teacher, cores0), theta0
+
+
+def run_gf(task):
+    spec, teacher, prob, theta0 = make_problem(task)
     q0 = conserved_quantities(spec, spec.unflatten(theta0))
     t0 = time.time()
     sol, ev = gradient_flow(prob, theta0, task["T"])
@@ -66,9 +73,7 @@ def run_gf(task):
 
 
 def run_gd(task):
-    spec, teacher = setup(task["tree"], task["n"])
-    prob = Problem(spec, teacher)
-    p = init_params(spec, task)
+    spec, teacher, prob, p = make_problem(task)
     q0 = conserved_quantities(spec, spec.unflatten(p))
     em = eta_max(spec, teacher)
     eta = task["ratio"] * em
@@ -141,7 +146,8 @@ def tasks_from_config(cfg):
                                                     ["gf"] + list(block["ratios"])):
             out.append(dict(tree=block["tree"], n=block["n"], sigma=sigma, seed=seed, ratio=ratio,
                             T=block["T"][sigma] if isinstance(block["T"], dict) else block["T"],
-                            root_scale=block.get("root_scale")))
+                            root_scale=block.get("root_scale"),
+                            centred=block.get("centred", False)))
     return out
 
 

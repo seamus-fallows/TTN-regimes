@@ -1,5 +1,0 @@
-base: {tree: binary, N: 8, d: 2, chi: 4, weights: [3.0, 2.0], teacher_seed: 101, train_tol: 1.0e-8,
-       max_steps: 100000, eta_cap: 1.0e+6, rel_step: 0.01}
-blocks:
-  - {name: test_small, centred: false, sigmas: [0.5], seeds: [0], n_train: [32, 128], t_max: 1.0e+6}
-  - {name: test_centred, centred: true, sigmas: [2.0], seeds: [0], n_train: [32, 128], t_max: 1.0e+6, lazy: true}

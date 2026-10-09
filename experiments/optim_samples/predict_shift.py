@@ -22,8 +22,7 @@ import pandas as pd
 import torch
 from scipy.integrate import solve_ivp
 
-from common import Problem, setup
-from gd_sweep import init_params
+from gd_sweep import make_problem
 
 RAW = Path("/root/outputs/optim_samples/gd")
 OUT = Path(__file__).parent / "results"
@@ -33,9 +32,7 @@ def predict(path):
     torch.set_num_threads(1)
     ref = json.loads(Path(path).read_text())
     task = ref["task"]
-    spec, teacher = setup(task["tree"], task["n"])
-    prob = Problem(spec, teacher)
-    theta0 = init_params(spec, task)
+    spec, teacher, prob, theta0 = make_problem(task)
     n_par = theta0.numel()
 
     def grad_and_hvp(theta, v):
@@ -67,7 +64,7 @@ def predict(path):
         th = torch.from_numpy(sol.y[:n_par, i])
         de = torch.from_numpy(sol.y[n_par:, i])
         p = th.detach().requires_grad_(True)
-        a = teacher.component_overlaps(spec, spec.unflatten(p))[comp]
+        a = teacher.component_overlaps(*prob.learned(p))[comp]
         (grad_a,) = torch.autograd.grad(a, p)
         g = prob.loss_grad(th)[1]
         rate = -(grad_a @ g).item()
