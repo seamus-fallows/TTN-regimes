@@ -40,3 +40,168 @@ nonorth_c0.45 mps 0.001 3 t_esc=42.9
 nonorth_c0.45 mps 0.001 1 t_esc=41.76
 nonorth_c0.45 mps 0.001 0 t_esc=41.5
 nonorth_c0.45 mps 0.001 4 t_esc=42.1
+nonorth_c0.2 mps 0.001 4 t_esc=227.8
+nonorth_c0.2 mps 0.001 3 t_esc=229.7
+nonorth_c0.2 mps 0.001 0 t_esc=244.5
+nonorth_c0.2 mps 0.001 1 t_esc=227.8
+nonorth_c0.2 mps 0.001 2 t_esc=256.5
+           teacher  n    tree  l_saddle  n_rank1_minima     grad_norm    lambda_min  n_negative        type  lambda_max
+0     nonorth_c0.2  4     mps  0.244934               2  1.301933e-10 -2.845795e-02           5      strict    4.007115
+1     nonorth_c0.2  4  binary  0.242425               2  3.237665e-09 -4.646867e-17           0  non-strict    3.014761
+2     nonorth_c0.2  4      ht  0.244934               2  1.623220e-09 -4.395654e-16           0  non-strict    7.014232
+3    nonorth_c0.45  4     mps  0.234463               1  4.653449e-10 -1.508901e-01           5      strict    4.233210
+4    nonorth_c0.45  4  binary  0.194511               1  3.565641e-10 -1.809002e-16           0  non-strict    3.308951
+5    nonorth_c0.45  4      ht  0.234463               1  2.866698e-09 -5.185626e-16           0  non-strict    7.468331
+6    misaligned_20  4     mps  0.098346               1  1.227353e-10 -1.888785e-02           5      strict   10.284416
+7    misaligned_20  4  binary  0.097734               1  1.787681e-09 -1.167696e-16           0  non-strict    7.830706
+8    misaligned_20  4      ht  0.098346               1  6.699664e-10 -2.338615e-16           0  non-strict   17.725674
+9      randbin_302  4     mps  0.048541               1  1.133817e-09 -7.637289e-02           2      strict    3.705069
+10     randbin_302  4  binary  0.044888               1  1.010180e-09 -2.066777e-16           0  non-strict    2.817647
+11     randbin_302  4      ht  0.048541               1  1.726088e-09 -1.332039e-15           0  non-strict    6.413312
+12     randbin_303  4     mps  0.258875               1  1.048979e-10 -3.598482e-01           5      strict    2.314803
+13     randbin_303  4  binary  0.149020               1  7.106454e-10 -9.189658e-18           0  non-strict    2.369534
+14     randbin_303  4      ht  0.258875               1  2.366592e-10 -1.663427e-16           0  non-strict    3.746424
+15     randmps_301  4     mps  0.137283               1  4.134203e-09 -3.762128e-01           5      strict    3.144189
+16     randmps_301  4  binary  0.129196               1  2.274459e-09  0.000000e+00           0  non-strict    2.457940
+17     randmps_301  4      ht  0.137283               1  2.014463e-09 -3.723944e-16           0  non-strict    5.316316
+18  nonorth8_c0.45  8     mps  0.244977               2  9.755624e-10 -4.768738e-03           0  non-strict    8.016802
+19  nonorth8_c0.45  8  binary  0.244929               3  7.500211e-10 -5.329645e-16           0  non-strict    7.014979
+20  nonorth8_c0.45  8      ht  0.244977               3  2.915675e-09 -5.834900e-16           0  non-strict   15.033606
+21   nonorth8_c0.7  8     mps  0.234397               3  3.639296e-10 -5.744473e-02          17      strict    8.709008
+22   nonorth8_c0.7  8  binary  0.226892               3  1.493494e-09 -3.563847e-16           0  non-strict    7.695928
+23   nonorth8_c0.7  8      ht  0.234397               1  1.972784e-09 -6.073333e-16           0  non-strict   16.422094
+24  misaligned8_20  8     mps  0.002326               1  8.125233e-10 -5.063764e-04           0  non-strict  176.757794
+25  misaligned8_20  8  binary  0.002326               1  1.495301e-09 -1.066073e-15           0  non-strict  156.688471
+26  misaligned8_20  8      ht  0.002326               2  3.348484e-09 -2.172589e-14           0  non-strict  320.794384
+27    randbin8_302  8     mps  0.292803               2  1.232816e-09 -3.706467e-01          17      strict    3.701063
+28    randbin8_302  8  binary  0.129478               2  1.024582e-09 -2.723446e-16           0  non-strict    5.414221
+29    randbin8_302  8      ht  0.292803               1  5.846466e-09 -1.461071e-16           0  non-strict    6.591893
+30    randbin8_303  8     mps  0.374138               2  1.158372e-09 -1.897155e-01          13      strict    2.392765
+31    randbin8_303  8  binary  0.229205               4  4.578144e-10 -2.535977e-16           0  non-strict    4.138238
+32    randbin8_303  8      ht  0.374138               2  1.478392e-09 -2.183305e-16           0  non-strict    4.139571
+33    randmps8_303  8     mps  0.220628               2  1.586214e-09 -1.642441e-01          17      strict    4.807294
+34    randmps8_303  8  binary  0.170511               2  6.700247e-10 -2.989345e-16           0  non-strict    4.896035
+35    randmps8_303  8      ht  0.220628               1  1.768315e-09 -3.597427e-16           0  non-strict    8.712765
+nonorth_c0.2 binary 0.001 1 t_esc=2194
+nonorth_c0.2 binary 0.001 0 t_esc=2144
+nonorth_c0.2 binary 0.001 2 t_esc=2632
+nonorth_c0.45 binary 0.001 1 t_esc=3368
+nonorth_c0.45 binary 0.001 2 t_esc=3743
+nonorth_c0.2 binary 0.001 3 t_esc=3564
+nonorth_c0.2 binary 0.001 4 t_esc=3341
+nonorth_c0.45 binary 0.001 4 t_esc=3688
+nonorth_c0.45 binary 0.001 0 t_esc=2762
+misaligned_20 mps 0.001 2 t_esc=388
+misaligned_20 mps 0.001 4 t_esc=388.3
+misaligned_20 mps 0.001 3 t_esc=443.1
+misaligned_20 mps 0.001 0 t_esc=437.6
+misaligned_20 mps 0.001 1 t_esc=422.3
+nonorth_c0.45 binary 0.001 3 t_esc=5326
+misaligned_20 binary 0.001 1 t_esc=5733
+misaligned_20 binary 0.001 2 t_esc=6659
+misaligned_20 binary 0.001 0 t_esc=5181
+randbin_302 mps 0.001 0 t_esc=90.62
+randbin_302 mps 0.001 1 t_esc=122.5
+randbin_302 mps 0.001 2 t_esc=100.2
+randbin_302 mps 0.001 3 t_esc=104.3
+randbin_302 binary 0.001 0 t_esc=4839
+randbin_302 mps 0.001 4 t_esc=113.7
+randbin_302 binary 0.001 1 t_esc=5789
+randbin_302 binary 0.001 2 t_esc=6204
+randbin_303 mps 0.001 1 t_esc=16.39
+randbin_303 mps 0.001 2 t_esc=16.58
+randbin_303 mps 0.001 0 t_esc=20.72
+randbin_303 mps 0.001 3 t_esc=19.63
+misaligned_20 binary 0.001 3 t_esc=9403
+randbin_303 mps 0.001 4 t_esc=18.38
+nonorth_c0.45 ht 0.001 4 t_esc=1.129e+04
+misaligned_20 binary 0.001 4 t_esc=8916
+nonorth_c0.45 ht 0.001 0 t_esc=1.219e+04
+randbin_302 binary 0.001 3 t_esc=6685
+randbin_302 binary 0.001 4 t_esc=6389
+nonorth_c0.45 ht 0.001 3 t_esc=1.176e+04
+randbin_303 binary 0.001 0 t_esc=2259
+randbin_303 binary 0.001 1 t_esc=2025
+randmps_301 mps 0.001 0 t_esc=16.91
+nonorth_c0.45 ht 0.001 1 t_esc=1.275e+04
+randmps_301 mps 0.001 1 t_esc=17.64
+randmps_301 mps 0.001 2 t_esc=15.51
+randmps_301 mps 0.001 3 t_esc=16.22
+randbin_303 binary 0.001 2 t_esc=4097
+randbin_303 binary 0.001 3 t_esc=4067
+nonorth_c0.2 ht 0.001 1 t_esc=8.615e+04
+randmps_301 mps 0.001 4 t_esc=16.08
+randbin_303 binary 0.001 4 t_esc=5551
+nonorth_c0.45 ht 0.001 2 t_esc=1.021e+04
+nonorth_c0.2 ht 0.001 3 t_esc=2.222e+05
+nonorth_c0.2 ht 0.001 4 t_esc=1.92e+05
+nonorth_c0.2 ht 0.001 0 t_esc=1.994e+05
+nonorth_c0.2 ht 0.001 2 t_esc=5.529e+05
+randmps_301 binary 0.001 0 t_esc=3587
+randmps_301 binary 0.001 4 t_esc=2518
+randmps_301 binary 0.001 1 t_esc=4202
+randmps_301 binary 0.001 3 t_esc=4022
+randmps_301 binary 0.001 2 t_esc=3900
+randbin_303 ht 0.001 4 t_esc=5003
+randbin_303 ht 0.001 1 t_esc=8972
+randbin_303 ht 0.001 0 t_esc=5290
+randbin_303 ht 0.001 3 t_esc=1.351e+04
+randbin_303 ht 0.001 2 t_esc=1.043e+04
+randbin_302 ht 0.001 1 t_esc=4.667e+04
+randbin_302 ht 0.001 4 t_esc=9.772e+04
+misaligned_20 ht 0.001 0 t_esc=3.243e+05
+randbin_302 ht 0.001 3 t_esc=2.786e+04
+randbin_302 ht 0.001 0 t_esc=2.602e+04
+randbin_302 ht 0.001 2 t_esc=7.125e+04
+misaligned_20 ht 0.001 3 t_esc=5.059e+05
+misaligned_20 ht 0.001 4 t_esc=5.059e+05
+misaligned_20 ht 0.001 1 t_esc=7.044e+05
+misaligned_20 ht 0.001 2 t_esc=1.297e+06
+nonorth8_c0.7 mps 0.001 0 t_esc=119.2
+nonorth8_c0.7 mps 0.001 1 t_esc=108.6
+nonorth8_c0.45 mps 0.001 0 t_esc=3190
+nonorth8_c0.45 mps 0.001 1 t_esc=3085
+nonorth8_c0.7 mps 0.001 2 t_esc=118.8
+randmps_301 ht 0.001 0 t_esc=1.72e+04
+nonorth8_c0.45 mps 0.001 2 t_esc=3096
+randmps_301 ht 0.001 1 t_esc=6.585e+04
+nonorth8_c0.7 mps 0.001 4 t_esc=109.9
+nonorth8_c0.7 mps 0.001 3 t_esc=117.1
+nonorth8_c0.45 mps 0.001 4 t_esc=3025
+nonorth8_c0.45 mps 0.001 3 t_esc=3078
+randmps_301 ht 0.001 3 t_esc=1.581e+04
+randmps_301 ht 0.001 4 t_esc=1.72e+04
+randmps_301 ht 0.001 2 t_esc=1.41e+04
+nonorth8_c0.45 binary 0.001 2 t_esc=7.721e+04
+nonorth8_c0.45 binary 0.001 0 t_esc=5.784e+04
+nonorth8_c0.45 binary 0.001 1 t_esc=7.357e+04
+nonorth8_c0.7 binary 0.001 0 t_esc=9126
+nonorth8_c0.45 binary 0.001 3 t_esc=8.605e+04
+nonorth8_c0.45 binary 0.001 4 t_esc=6.135e+04
+nonorth8_c0.7 binary 0.001 2 t_esc=1.332e+04
+nonorth8_c0.7 binary 0.001 1 t_esc=8740
+randbin8_302 mps 0.001 0 t_esc=17.38
+nonorth8_c0.7 binary 0.001 4 t_esc=8972
+nonorth8_c0.7 binary 0.001 3 t_esc=1.092e+04
+randbin8_302 mps 0.001 1 t_esc=16.15
+randbin8_302 mps 0.001 3 t_esc=17.85
+randbin8_302 mps 0.001 4 t_esc=17.22
+randbin8_302 mps 0.001 2 t_esc=18.96
+randbin8_302 binary 0.001 0 t_esc=9806
+randbin8_302 binary 0.001 1 t_esc=6498
+randbin8_302 binary 0.001 2 t_esc=9342
+randbin8_302 binary 0.001 3 t_esc=9493
+randbin8_302 binary 0.001 4 t_esc=1.375e+04
+nonorth8_c0.7 ht 0.001 1 t_esc=1.873e+04
+nonorth8_c0.7 ht 0.001 2 t_esc=5.741e+04
+nonorth8_c0.7 ht 0.001 0 t_esc=3.51e+04
+nonorth8_c0.7 ht 0.001 3 t_esc=3.671e+04
+nonorth8_c0.7 ht 0.001 4 t_esc=3.367e+04
+randbin8_303 mps 0.001 0 t_esc=39.26
+randbin8_303 mps 0.001 1 t_esc=34.22
+randbin8_303 mps 0.001 2 t_esc=40.25
+randbin8_303 mps 0.001 3 t_esc=33.06
+misaligned8_20 mps 0.001 0 t_esc=2.679e+05
+misaligned8_20 mps 0.001 3 t_esc=2.834e+05
+nonorth8_c0.45 ht 0.001 0 t_esc=1.016e+07
+randbin8_303 mps 0.001 4 t_esc=34.13
