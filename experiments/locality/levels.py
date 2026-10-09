@@ -32,7 +32,7 @@ from ttn.teachers import pattern_teacher  # noqa: E402
 BAND = 0.02
 
 
-def loss_trajectory(rec, raw_dir=RAW / "pilot3", max_points: int = 1500):
+def loss_trajectory(rec, raw_dir=RAW / "pilot3", max_points: int = 10**9):
     tree = get_tree(rec["kind"], rec.get("n"))
     spec = TTNSpec.uniform(tree, rec["d"], rec["chi"])
     teacher = pattern_teacher(rec["weights"], rec["patterns"], d=rec["d"],
@@ -50,9 +50,27 @@ def loss_trajectory(rec, raw_dir=RAW / "pilot3", max_points: int = 1500):
 
 
 def occupation(t, L, level, band=BAND):
-    inside = np.abs(L / level - 1) < band
-    both = inside[:-1] & inside[1:]
-    return float(np.sum(np.diff(t)[both])), bool(inside.any())
+    """Time spent with |L/level - 1| < band, with the band entry and exit times interpolated linearly in
+    log L between stored integrator steps (every accepted LSODA step is stored). Returns (duration,
+    visited, n_inside): n_inside = stored steps inside the band; durations resting on fewer than 3 steps
+    are not resolved (analysis standard 1) and are reported as unresolved."""
+    x = np.log(L / level)
+    lo, hi = np.log(1 - band), np.log(1 + band)
+    inside = (x > lo) & (x < hi)
+    dur = 0.0
+    for i in range(len(t) - 1):
+        a, b = x[i], x[i + 1]
+        if inside[i] and inside[i + 1]:
+            dur += t[i + 1] - t[i]
+            continue
+        # partial interval: the segment from a to b crosses one or both band edges
+        if a == b:
+            continue
+        lo_s, hi_s = sorted((a, b))
+        overlap = max(0.0, min(hi_s, hi) - max(lo_s, lo))
+        dur += (t[i + 1] - t[i]) * overlap / (hi_s - lo_s)
+    n_in = int(inside.sum())
+    return float(dur), bool(dur > 0), n_in
 
 
 _SEQ: dict = {}
@@ -81,8 +99,9 @@ def measure(rec):
     for j, step in enumerate(predicted(rec)):
         if step["k_star"] == 0:
             continue
-        dur, visited = occupation(t, L, step["loss"])
+        dur, visited, n_in = occupation(t, L, step["loss"])
         rows.append(dict(case=rec.get("name"), tree=get_tree(rec["kind"], rec.get("n")).name,
+                         n_inside=n_in, resolved=n_in >= 3,
                          start=rec.get("start", "small"), sigma=rec["sigma"], seed=rec["seed"],
                          order=">".join(str(r) for _, r in rec.get("events", [])),
                          level_j=j, level=step["loss"], k_star=step["k_star"], visited=visited,
@@ -96,7 +115,8 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()
-    recs = [r for r in load_records(args.inputs) if r.get("status") != "timeout" and r.get("name")]
+    recs = [r for r in load_records(args.inputs) if r.get("status") not in ("timeout", "error", "stalled")
+            and r.get("name") and r.get("traj")]
     # warm the prediction cache once per (teacher, tree) before forking
     for r in recs:
         predicted(r)
@@ -105,19 +125,22 @@ def main():
     df = pd.DataFrame(rows)
     df.to_csv(args.out + "_runs.csv", index=False)
     summ = []
-    for (case, tree, start, j), g in df.groupby(["case", "tree", "start", "level_j"]):
+    # analysis standard 3: runs that learned the components in a different order visited different
+    # saddles; fit each event order separately (orders seen in < 3 seeds are listed, not fitted)
+    for (case, tree, start, order, j), g in df.groupby(["case", "tree", "start", "order", "level_j"]):
         k = int(g["k_star"].iloc[0])
         p, lg = [], []
         for _, gs in g.groupby("seed"):
-            gs = gs[gs["duration"] > 0]
+            gs = gs[(gs["duration"] > 0) & gs["resolved"]]
             if gs["sigma"].nunique() >= 3:
                 x = np.log(1 / gs["sigma"].values)
                 p.append(slope_se(x, np.log(gs["duration"].values))[0])
                 lg.append(slope_se(x, gs["duration"].values)[0])
         pm, pse = mean_se(p)
         lm, lse = mean_se(lg)
-        summ.append(dict(case=case, tree=tree, start=start, level_j=j, level=g["level"].iloc[0],
-                         k_star=k, visited_frac=g["visited"].mean(), seeds=g["seed"].nunique(),
+        summ.append(dict(case=case, tree=tree, start=start, order=order, level_j=j, level=g["level"].iloc[0],
+                         k_star=k, visited_frac=g["visited"].mean(), runs=len(g),
+                         unresolved=int((~g["resolved"]).sum()), seeds=g["seed"].nunique(),
                          fit_seeds=len(p), p_pred=max(k - 2, 0), p_fit=pm, p_se=pse,
                          logslope=lm, logslope_se=lse,
                          median_duration_smallest_sigma=g[g["sigma"] == g["sigma"].min()]["duration"].median()))

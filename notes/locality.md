@@ -245,3 +245,62 @@ sigma, per seed, mean ± SE; "local" = three smallest sigma):
   plateau; sigma enters only through it.
 
 
+
+### 7.4 Several components: same teacher, different saddle sequences (step 3) — **empirical, matches the route rule**
+
+Predicted sequences: route rule at rank-constrained optima (section 5; `results/route_sequences.json`).
+Measured: time spent within 2% of each predicted plateau level L_j, fitted against sigma per seed
+(`results/levels_summary.csv`; figures `results/trees_TA.png`, `trees_B4.png`, `trees_B4_ht_balanced.png`,
+`trees_E8.png`). Exponents p (mean ± SE over 5-8 seeds; "log" = k* = 2, durations grow additively):
+
+| teacher | tree | predicted k* per plateau | measured |
+|---|---|---|---|
+| TA {0000,1100,1110} | mps4 | 2, 2 | log, log |
+| | binary4 | 3 (first escape already at L = 0.044) | 1.10 ± 0.03 |
+| | ht4 | 3, 4 | 1.26 ± 0.12, 2.10 ± 0.04 (balanced init: 1.52 ± 0.22, 2.09 ± 0.07) |
+| B4 {0000,0110,1001} | mps4 | 2 (the 0.3 component first), 4 | log, 2.06 ± 0.03 |
+| | binary4 | 3, 3 | 1.26 ± 0.13, 1.06 ± 0.01 |
+| | ht4 (balanced init) | 5, 5 | 3.02 ± 0.03, 3.18 ± 0.10 |
+| E8 (N = 8) | mps8 | 2, 6 | log, 4.05 ± 0.10 |
+| | binary8 | 5, 5 (tie, seed-dependent order) | 3.07 ± 0.03, 2.97 ± 0.08 |
+| TC (N = 8, 4 components) | mps8 (saddle start, sigma 1e-4..0.1) | 2, 2, 2, 4, 2 | log, log, log, 2.02 ± 0.02, log |
+| | binary8 | 3, 3, 3 | 1.42 ± 0.18, 1.25 ± 0.08, 1.19 ± 0.04 |
+| TD (N = 8) | mps8 | 2, 2, 3 | log, log, 1.11 ± 0.07 |
+| N4 {0000,1100,1111} | mps4 | 2, 2, 2 (one partial step) | log, log, log |
+| | binary4 | 3 | 1.13 ± 0.03 |
+| | ht4 | 3, 3, 3 | 1.44 ± 0.15, 1.32 ± 0.13, 1.17 ± 0.04 |
+
+- Locality beats weight (B4 on mps4): the 0.3 component is learned (log time) before the 0.6 one
+  (sigma^-2), in every run that escapes.
+- TD separates the candidate rules: literal H2 and the exact rank rule predict k = 2 and 4 for the last
+  plateau; the route rule predicts 3 (a partial step first); measured 1.11 ± 0.07 (k = 3).
+- TA, N4, TB: the first escape on binary4 already fits U1, U2 and part of U3 (a superposition in one
+  core); the MPS learns the same teacher in short log-time steps; HT needs sigma^-1 and sigma^-2 plateaus.
+- Plateau levels: every predicted level is visited (visited fraction 0.89-1.00; misses are seeds that
+  took the other branch of a k* tie, e.g. E8 on binary8).
+- Exponents of k* = 3 levels are biased upward (1.1-1.4) at the larger sigma, where the 2% band also
+  catches the approach to the level; the k* >= 4 levels and the wide-sigma rows are on target.
+
+### 7.5 Dead routes under fan-in init (theory_saddles.md R12) — **empirical**
+
+A run is "stalled" when, after a component has been learned, the gradient stays at roundoff (|v| < 1e-12
+for 5000 consecutive evaluations): the route of the next component is dead and gradient flow never
+leaves the plateau (L stays at the partial fit, e.g. 0.125 = s2^2/2).
+
+- Fan-in init: stalls occur **only for k >= 4**: k = 4: 6-30 of 48 runs per (tree, S) (mps4 S = {0,3}: 30/48,
+  5 of 8 seeds); k = 5: 6-17/48; k = 6-8: 7-23 of 24-30. **No stall in any k <= 3 run** (about 3000 runs),
+  and none on star3 (k = 4). A stalling seed stalls at every sigma (the imbalance pattern Q/sigma^2 is
+  fixed by the init direction).
+- Gauge-balanced init of the same W_0 (all Q_e = 0, `run.balance_gauge`): 2 stalls in 580 runs on the
+  same k >= 4 cases (mps4 S = {0,3}: 0/48). B4 on ht4: fan-in 23/48 stalled, balanced 0/48.
+- The saddle-start protocol also stalls (its noise has Q ~ sigma^2 of random sign).
+- Consequence: for k >= 4 the exponent table uses the runs that escape; gauge-balanced runs give the same
+  exponents (`results/twocomp_balanced_table.md`).
+
+### 7.6 Bond spectra at events (step 4) — **empirical, matches derived**
+
+`results/bond_spectra.png` (mps8 S = {2,5}, binary8 S = {3,4}, ht8 S = {1,2}) and
+`results/bond_events.csv`: on the plateau the second singular value of every Steiner edge stays at the
+dormant level (1e-8..1e-3, set by sigma); at the second event all Steiner edges rise together to s2,
+the others stay at the noise level. Effective-rank changes per event agree with the predicted edge set in
+the fraction of runs listed in `results/bond_events_summary.txt`.

@@ -18,7 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parent))
-from analysis import lambda2, plateau_table, summarize  # noqa: E402
+from analysis import lambda2, plateau_table, run_classes, summarize  # noqa: E402
 
 TREE_COLOR = {"mps": "#2a78d6", "binary": "#eb6834", "ht": "#1baf7a", "star3": "#4a3aa7",
               "midroot6": "#e87ba4"}
@@ -37,23 +37,27 @@ def main_rows(s):
 
 
 def table_md(t):
-    lines = ["| tree | S | protocol | d | chi | weights | k (Steiner) | σ range (n) | seeds | predicted | "
-             "measured p ± SE | p, 3 smallest σ | log-law slope ± SE (pred.) | λ_min at smallest σ | λ_min ∝ σ^x |",
-             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    lines = ["| tree | S | protocol | d | chi | weights | k (Steiner) | σ range (n) | seeds fitted | runs: greedy / "
+             "reversed / rotation / stalled / timeout | predicted | measured p ± SE | p, 3 smallest σ | "
+             "log-law slope ± SE (pred.) | RMS log-res.: log law / power law | λ_min at smallest σ | λ_min ∝ σ^x |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for _, r in t.iterrows():
         k = r["k_rank"]
         pred = {1: "no plateau", 2: "log"}.get(k, f"p = {k - 2}")
-        p = f"{r['p_fit']:.3f} ± {r['p_se']:.3f}" if np.isfinite(r["p_fit"]) else "–"
+        p = (f"{r['p_fit']:.3f} ± {r['p_se']:.3f} (median {r['p_median']:.2f})"
+             if np.isfinite(r["p_fit"]) else "–")
         pl = f"{r['p_local']:.2f} ± {r['p_local_se']:.2f}" if np.isfinite(r["p_local"]) and k >= 3 else "–"
         if k == 1:
             p = f"gap {r['gap_small_med']:.2g} (ρ<3)"
         ls = (f"{r['logslope']:.3f} ± {r['logslope_se']:.3f} ({r['logslope_pred']:.3f})"
               if k == 2 and np.isfinite(r.get("logslope_pred", np.nan)) else "–")
+        law = (f"{r['rms_log_law']:.3f} / {r['rms_power_law']:.3f}" if np.isfinite(r["rms_log_law"]) else "–")
         hm = f"{r['hess_min_small']:.3g}" if np.isfinite(r["hess_min_small"]) else "–"
         hx = (f"{r['hess_exp']:.2f} ± {r['hess_exp_se']:.2f}" if np.isfinite(r["hess_exp"]) else "–")
         lines.append(f"| {r['tree']} | {r['case'].replace('S=', '')} | {r['start']} | {r['d']} | {r['chi']} | "
                      f"{'/'.join(f'{x:g}' for x in r['w'])} | {k} | {r['sigma_range']} ({r['n_sigma']}) | "
-                     f"{r['fit_seeds']}/{r['seeds']} | {pred} | {p} | {pl} | {ls} | {hm} | {hx} |")
+                     f"{r['fit_seeds']}/{r['seeds']} | {r['greedy']} / {r['other_order']} / {r['rotation']} / {r['stalled']} / "
+                     f"{r['timeout']} | {pred} | {p} | {pl} | {ls} | {law} | {hm} | {hx} |")
     return "\n".join(lines)
 
 
@@ -66,6 +70,12 @@ def main():
     df = df[df["n_comp"] == 2]
     s = summarize(df)
     t = main_rows(s).sort_values(["d", "chi", "w", "start", "k_rank", "tree", "case"])
+    cls = run_classes(args.inputs).reset_index()
+    t = t.merge(cls, on=["tree", "case", "start", "d", "chi", "w"], how="left")
+    for c in ("greedy", "other_order", "rotation", "stalled", "timeout", "incomplete", "error"):
+        if c not in t:
+            t[c] = 0
+        t[c] = t[c].fillna(0).astype(int)
     t.to_csv(args.out + "_table.csv", index=False, float_format="%.5g")
     Path(args.out + "_table.md").write_text(table_md(t) + "\n")
 

@@ -117,6 +117,56 @@ def plateau_table(paths) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def law_rms(x, gap, law):
+    """RMS residual of log(gap) for the best fit of a log law (gap = a + b x) or a power law
+    (log gap = c + p x), x = ln(1/sigma). The log law is fitted by Gauss-Newton on log residuals."""
+    y = np.log(gap)
+    if law == "power":
+        A = np.vstack([x, np.ones_like(x)]).T
+        coef, *_ = np.linalg.lstsq(A, y, rcond=None)
+        return float(np.sqrt(np.mean((y - A @ coef) ** 2)))
+    from scipy.optimize import least_squares
+
+    b0 = max((gap[-1] - gap[0]) / (x[-1] - x[0]) if x[-1] != x[0] else 1.0, 1e-9)
+    a0 = gap.min() - b0 * x.min() * 0.5
+
+    def res(c):
+        m = c[0] + c[1] * x
+        return np.log(np.maximum(m, 1e-300)) - y
+
+    fit = least_squares(res, [a0, b0], bounds=([-np.inf, 0], [np.inf, np.inf]))
+    return float(np.sqrt(np.mean(fit.fun ** 2)))
+
+
+def run_classes(paths) -> pd.DataFrame:
+    """Per (tree, case, start, d, chi, w): how many runs escaped in greedy / reversed order, rotated
+    (a component was learned, lost and relearned), stalled (dead route) or timed out (analysis standard 3)."""
+    rows = []
+    for rec in load_records(paths):
+        if rec.get("patterns") is None and rec.get("S") is None:
+            continue
+        tree = get_tree(rec["kind"], rec.get("n")).name
+        case = rec.get("name") or "S=" + "".join(map(str, rec["S"]))
+        st = rec.get("status")
+        if st in ("stalled", "timeout", "error"):
+            cls = st
+        else:
+            ev = rec.get("events", [])
+            n05 = [len(c) for k, c in rec.get("crossings", {}).items() if k.endswith("_0.5")]
+            if len(ev) < len(rec["weights"]):
+                cls = "incomplete"
+            elif any(c > 1 for c in n05):
+                cls = "rotation"
+            elif [r for _, r in ev] == sorted(range(len(rec["weights"])), key=lambda r: -rec["weights"][r]):
+                cls = "greedy"
+            else:
+                cls = "other_order"
+        rows.append(dict(tree=tree, case=case, start=rec.get("start", "small"), d=rec.get("d", 2),
+                         chi=rec.get("chi", 2), w=tuple(rec.get("weights", [1.0, 0.5])), cls=cls))
+    df = pd.DataFrame(rows)
+    return df.groupby(["tree", "case", "start", "d", "chi", "w", "cls"]).size().unstack(fill_value=0)
+
+
 def lambda2(w, K, r_new=1, r_learned=0):
     """Hessian eigenvalue of the k = 2 route at the balanced two-component saddle."""
     return w[r_new] * w[r_learned] ** ((K - 2) / K)
@@ -149,8 +199,26 @@ def summarize(df: pd.DataFrame, group=("tree", "case", "start", "d", "chi", "w",
             gh = gs[gs["hess_min"] < 0]
             if gh["sigma"].nunique() >= 3:
                 hp.append(slope_se(np.log(gh["sigma"]), np.log(-gh["hess_min"]))[0])
+        # competing laws (analysis standard 5): per seed, fit gap = a + b ln(1/sigma) and
+        # gap = C sigma^-p, both scored by the RMS of log(gap) residuals (same space, same weights)
+        rl, rp, wins = [], [], []
+        for _, gs in g.groupby("seed"):
+            gs = gs[gs["gap"] > 0]
+            if gs["sigma"].nunique() < 4:
+                continue
+            x, yg = np.log(1 / gs["sigma"].values), gs["gap"].values
+            r_log = law_rms(x, yg, "log")
+            r_pow = law_rms(x, yg, "power")
+            rl.append(r_log)
+            rp.append(r_pow)
+            wins.append(r_log < r_pow)
+        row["rms_log_law"] = float(np.median(rl)) if rl else np.nan
+        row["rms_power_law"] = float(np.median(rp)) if rp else np.nan
+        row["log_law_wins"] = float(np.mean(wins)) if wins else np.nan
         row["fit_seeds"] = len(p)
         row["p_fit"], row["p_se"] = mean_se(p)
+        # median over seeds: robust to single seeds with a pinned route (theory_saddles.md P12)
+        row["p_median"] = float(np.median(p)) if p else np.nan
         row["p_pred"] = max(k - 2, 0)
         row["p_local"], row["p_local_se"] = mean_se(ploc)
         row["logslope"], row["logslope_se"] = mean_se(lg)
