@@ -1,0 +1,11 @@
+# Calibration: cost and asymptotics for the larger trees (one/two seeds, coarse sigma grid).
+out_dir: data/pilot_h2_locality/calib
+csv: calib_runs.csv
+method: LSODA
+rtol: 1.0e-10
+wall_limit: 600
+workers: 8
+seeds: [0, 1]
+groups:
+  - {tree: mps, n: 6, kinds: [local, far, global], sigmas: [0.3, 0.2, 0.1]}
+  - {tree: binary, n: 8, kinds: [local, far, global], sigmas: [0.3, 0.2, 0.15]}

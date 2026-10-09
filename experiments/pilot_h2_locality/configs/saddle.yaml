@@ -1,0 +1,16 @@
+# Second escape alone: start exactly at the rank-one saddle (component 1 learned, aligned balanced
+# cores) plus a fan-in perturbation of per-core scale sigma. H2: escape time ~ sigma^-(k-2) (k >= 3),
+# ~ log(1/sigma) (k = 2; coefficient 1/s2 = 2 from a balanced-mode estimate), O(1) (k = 1).
+out_dir: data/pilot_h2_locality/saddle
+csv: saddle_runs.csv
+method: LSODA
+rtol: 1.0e-10
+wall_limit: 150  # stuck saddle-start runs cannot use the collapse rule (no first escape); cap their cost
+t_max_factor: 1.0e+4
+workers: 8
+seeds: [0, 1, 2, 3]
+groups:
+  - {tree: mps, n: 4, kinds: [local, sites0-2, far, global], sigmas: [0.1, 0.05, 0.02, 0.01, 0.005], overrides: {start: saddle}}
+  - {tree: binary, n: 4, kinds: [local, far, global], sigmas: [0.1, 0.05, 0.02, 0.01, 0.005], overrides: {start: saddle}}
+  - {tree: mps, n: 6, kinds: [local, sites0-2, sites0-3, sites0-4, far, global], sigmas: [0.3, 0.2, 0.1, 0.05, 0.02], overrides: {start: saddle}}
+  - {tree: binary, n: 8, kinds: [local, sites0-2, far, global], sigmas: [0.3, 0.2, 0.1, 0.05, 0.02], overrides: {start: saddle}}

@@ -1,0 +1,9 @@
+done binary adam 0.001 0.008 0
+done binary adam 0.01 0.008 0
+done binary rmsprop 0.001 0.008 0
+done binary adam 0.001 0.008 0
+done binary adam 0.001 0.008 0
+done binary adam 0.01 0.3 0
+done mps adam 0.01 0.3 0
+done binary adam 0.001 0.3 0
+done mps adam 0.001 0.3 0
