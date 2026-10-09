@@ -127,6 +127,14 @@ stability limit), but only through near-ties.
   2.0 every run is thrown back to the origin saddle (as the 1D map predicts) and repeatedly
   re-learns and loses components (`fig_eos_example.png`). Conjecture: transverse (imbalance)
   directions are unstable on the chaotic set (cf. Hofmann 2026, imbalance factor 1 - a^2 r^2).
+- **Oscillation loss (P5 of the theory note; empirical, exact 1D comparison).** The time-averaged
+  excess loss of oscillating runs, L_tail - L_GF(T), equals s_1^2 x (mean loss of the 1D map attractor,
+  `map1d.py`) to 3-4 digits on binary N=4: 0.1306 vs 0.1306 (1.05 eta_max, 25 runs), 0.2472 vs 0.2479
+  (1.1), 0.4496 vs 0.4496 (1.2), 0.553 vs 0.557 (1.3); MPS N=8 and binary N=8 agree to a few % up to
+  1.1-1.2 (binary N=8 at 1.2-1.3: 0.26 vs 0.30-0.39, some seeds leave the 2-cycle). The theory note's
+  linear form 3K^2 s_1^2/(4(K-1)(5K-4)) (eta/eta_max - 1) is its small-excess limit (5% high at 1.05,
+  23% high at 1.2). So the full TTN above eta_max is the 1D balanced map of component 1 plus GF-like
+  learning of the rest.
 - Oscillation stays in the learned top component(s): at 1.05-1.3 eta_max component 1 oscillates
   (2- or 4-cycle) while components 2 and 3 are learned at GF-like times (fig_eos_example, middle).
   Component-wise threshold s_c(eta) (section 1) explains which components oscillate.
@@ -186,15 +194,20 @@ expectation of this includes the noise covariance, Cov/B, which differs between 
 sides of a bond. Q therefore drifts systematically (not as a random walk) by ~ eta t Cov/B: the
 noise-driven flow along gauge orbits of Ziyin 2024. Prediction: |Delta tr Q_e| ~ eta/B.
 
-**Stochastic collapse (derived, order of magnitude).** Chen, Kunin et al. (2023) find that SGD makes
-invariant sets (dead channels) attractive when the noise curvature beats the drift. For a TTN
-dormant direction with growth rate lambda = q s_new (strict, k = 2 escape) the per-step multiplier is
-1 + eta q xi with E xi = s_new, E xi^2 = s_new^2 + (V + zeta^2)/B (zeta = label-noise std), so it decays
-(collapses) iff s_new < eta q (V + zeta^2)/(2B) approximately. Without label noise V ~ s_new^2 (3^n - 1)
-(n = sites carrying the dormant feature), which needs eta q 3^n ~ 2B: beyond the SGD stability limit of
-the learned component (section 5). **Collapse in the realizable model therefore needs label noise**;
-with it, components weaker than ~eta q zeta^2 / (2B) are never learned. For k >= 3 escapes the drag is
-~a^{2k-3} against a drift ~a^{k-1}, so no collapse from small amplitude. Test: `collapse_test.py`.
+**Stochastic collapse.** *Correction (after `notes/theory_optimizer.md` v2, section 5.4):* my first
+version argued that k >= 3 routes cannot collapse because their noise is proportional to other
+dormant entries. That is wrong at later saddles: once a component is learned, a new-channel entry
+is coupled to a mixed bond entry by a **zero-mean per-sample coefficient of size O(1)** (built from
+the learned cores and the residual), so the pair is driven by multiplicative noise that is linear
+in the route, and its log-amplitude decays at a constant rate gamma_c ~ c_gamma eta/B while the GF
+growth rate is only s_new b. Hence db/dt = s_new b^2 - gamma_c b for a k = 3 route, plateaus are
+lengthened by -ln(1-x)/x and the route is trapped for x = c_gamma (eta/B) T_GF >= 1 (theory note P9).
+The first plateau is exempt (no learned cores, so every coupling is small). My estimate for
+strict (k = 2) escapes stands: the dormant multiplier 1 + eta q xi has Lyapunov exponent
+eta q s_new - eta^2 q^2 E xi^2/2, so collapse needs s_new < eta q (V + zeta^2)/(2B); without label noise
+(V ~ 3^n s_new^2) that requires eta q 3^n ~ 2B, beyond the SGD stability limit, so k = 2 escapes need
+label noise to collapse (components weaker than ~eta q zeta^2/(2B)). Tests: `p9_sgd.py` (k = 3,
+section 6), `collapse_test.py` (k = 2 with label noise).
 
 ## 5. SGD stability limit (derived)
 
