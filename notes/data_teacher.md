@@ -145,8 +145,9 @@ landscape AND same start, so only the gradient-flow metric differs). Files:
 2. **First escape = whitened problem with weights Lambda s** (1.2) — *empirical*, all 960 paired runs:
    the same component is learned first in 100% of MPS-4 pairs and 95-100% of binary-4 pairs; the
    first-escape times differ by 0.15% / 0.34% / 0.68% (binary, sigma = 0.02 / 0.05 / 0.1, max 1.3%)
-   and 0.02% / 0.04% / 0.1% (MPS, sigma = 0.05 / 0.1 / 0.2): the residual shrinks like 1/t_1, i.e. it is
-   the O(||W||/s) quadratic-term correction. Against the absorbed white problem (same landscape) the
+   and 0.02% / 0.04% / 0.1% (MPS, sigma = 0.05 / 0.1 / 0.2): the residual shrinks like 1/t_1 on binary-4
+   (proportional to sigma) and like sigma^1.1-1.5 on MPS-4 (not sigma^2; review L4); it is the
+   O(||W||/s) quadratic-term correction. Against the absorbed white problem (same landscape) the
    first component agrees in only 70-80% (MPS) / 40-80% (binary) of seeds and times differ by 20-36%.
 3. **Covariance reverses the order** — *empirical*. T1: the 0.8 component (high variance) is learned
    first in 90-98% of binary-4 runs and 78% of MPS-4 runs (whitened (I, s) baseline: the 1.0 component
@@ -154,8 +155,9 @@ landscape AND same start, so only the gradient-flow metric differs). Files:
    (identical seeds pick identical components).
 4. **Landscape decides the swaps** (1.3) — *empirical confirmation of the derived criterion*. On binary-4
    a wrongly-learned first component is later *unlearned* and replaced (a strict-saddle rotation) iff
-   the other component has the larger Lambda s^2: T2 under (Sigma, s): P(swap | 0.6 component first)
-   = 0.33 / 0.68 / 0.94 at sigma = 0.1 / 0.05 / 0.02 and P(swap | 1.0 component first) = 0 (0 of 30
+   the other component has the larger Lambda s^2 ("only if": necessity holds in all 24 binary settings,
+   sufficiency with probability 0.33-0.94): T2 under (Sigma, s): P(swap | 0.6 component first)
+   = 0.33 / 0.68 / 0.94 at sigma = 0.1 / 0.05 / 0.02 and P(swap | 1.0 component first) = 0 (0 of 27
    runs); T1: P(swap | 1.0 first) = 0.75 / 0.67 / 1.0, P(swap | 0.8 first) = 0. The same rule holds in
    all four variants with their own weights (e.g. (I, Lambda s) on T2 swaps only after learning the
    1.0 component). The swap probability rises toward 1 as sigma -> 0 because the swap is a strict
@@ -172,8 +174,11 @@ landscape AND same start, so only the gradient-flow metric differs). Files:
    swap is not reached (the slowest point lies 7-11% below that level), as expected for a strict saddle.
 7. **MPS-4 vs binary-4 order statistics vs sigma**: on MPS-4, P(first) is identical at sigma = 0.05,
    0.1, 0.2 (the init direction alone decides; tensorial teacher, several basins, H1); on binary-4 it
-   drifts toward the larger Lambda s as sigma decreases (matrix-like: unique maximum of g, greedy only
-   logarithmically slowly) — e.g. T1: 0.90 / 0.925 / 0.975.
+   drifts toward the larger Lambda s as sigma decreases — e.g. T1: 0.90 / 0.925 / 0.975. Compared with
+   the matrix-like wrong-order law P(smaller first) ~ sigma^(n (s_r - s_q)/s_q) (theory_saddles.md 4.5,
+   n = 1 here since the two bottom cores are not adjacent), with race weights Lambda s: predicted
+   exponents 0.60 (T1) and 0.20 (T2); measured 0.86 (T1: 4, 3, 1 of 40 runs at sigma = 0.1, 0.05, 0.02;
+   low counts) and 0.14 (T2: 0.25 -> 0.20) — consistent within the counting noise (review L5).
 
 8. **Escape-time scaling** — *empirical* (`results/e1_scaling_fits.csv`, `e1_scaling.png`; 10 seeds per
    point). t_1 vs sigma (6 values over one decade, teacher T1): binary-4 slopes -1.010 +- 0.002
