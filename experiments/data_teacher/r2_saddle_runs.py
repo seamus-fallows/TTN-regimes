@@ -3,7 +3,7 @@
 Saddle-start protocol (r2_common.py): exact balanced rank-1 saddle (the lowest-loss bond-rank-1
 critical point) + fan-in noise of scale sigma; gradient flow with the library integrator
 (`integrate_gf`, LSODA, rtol 1e-9, atol 1e-14), integrated in chunks of doubling length until
-max_e s_2^e >= 0.2 (the escape is over) or t = 1e7. Escape time t_esc = first time
+max_e s_2^e >= 0.2 (the escape is over) or t = t_cap (config; default 1e7). Escape time t_esc = first time
 max_e s_2^e >= 0.05 (log-interpolated). Also records the gauge-projected Hessian at the exact saddle
 (strict iff lambda_min < 0) once per (teacher, tree).
 
@@ -33,6 +33,7 @@ from ttn.dynamics import Problem, Recorder, integrate_gf
 
 HERE = Path(__file__).parent
 _SADDLES = {}
+T_CAP = 1e7  # set from the config's t_cap
 
 
 def saddle_for(tname, tcfg, n, tree):
@@ -77,7 +78,7 @@ def run(args):
         s2 = np.nan_to_num(d["spectra"])[:, :, 1].max(axis=1)
         theta = torch.as_tensor(d["theta_end"])
         t_off += chunk
-        if s2.max() >= 0.2 or t_off > 1e7:
+        if s2.max() >= 0.2 or t_off > T_CAP:
             break
         chunk *= 2
     t = np.concatenate([p[0] for p in parts])
@@ -124,8 +125,14 @@ if __name__ == "__main__":
     out_tag = cfg.get("out_tag", name)
     pd.DataFrame(hrows).to_csv(RESULTS / f"{out_tag}_hessian.csv", index=False)
     print(pd.DataFrame(hrows).to_string(), flush=True)
+    globals()["T_CAP"] = float(cfg.get("t_cap", 1e7))  # inherited by the forked workers
+
+    def sigmas_for(tree):
+        sig = cfg["sigmas"]
+        return sig[tree] if isinstance(sig, dict) else sig
+
     jobs = [(name, tname, tcfg, n, tree, sigma, seed) for tname, tcfg, n, tree in combos
-            for sigma in cfg["sigmas"] for seed in range(*cfg["seeds"])]
+            for sigma in sigmas_for(tree) for seed in range(*cfg["seeds"])]
     jobs.sort(key=lambda j: j[5])  # smallest sigma (longest runs) first
     with Pool(a.procs) as pool:
         rows = pool.map(run, jobs, chunksize=1)

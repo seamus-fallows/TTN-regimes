@@ -6,9 +6,9 @@ base: {kind: misaligned, n_sites: 4, d: 4, chi: 4, weights: [1.0, 0.8], alpha: 1
 sweep:
   theta_deg: [0, 5, 20]
 trees: [mps]
-sigmas: {mps: [0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]}
+sigmas: {mps: [0.0003, 0.001, 0.003, 0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]}
 seeds: [0, 10]
-t_max: {mps: 1.0e+6}
+t_max: {mps: 1.0e+9}
 n_rec: 3000
 rtol: 1.0e-9
 atol: 1.0e-14

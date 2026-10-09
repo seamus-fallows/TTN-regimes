@@ -12,10 +12,10 @@ cases:
   randmps_301: {kind: ttn_teacher, teacher_tree: mps, teacher_ranks: [2, 2, 2], decay: 1.5, teacher_seed: 301}
 trees: [mps, binary]
 sigmas:
-  mps: [0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]
-  binary: [0.01, 0.0158, 0.0251, 0.0398, 0.0631, 0.1]
+  mps: [0.0003, 0.001, 0.003, 0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]
+  binary: [0.0001, 0.0003, 0.001, 0.01, 0.0158, 0.0251, 0.0398, 0.0631, 0.1]
 seeds: [0, 5]
-t_max: {mps: 1.0e+7, binary: 1.0e+7}
+t_max: {mps: 1.0e+10, binary: 1.0e+10}
 n_dense: 3000
 rtol: 1.0e-9
 atol: 1.0e-14
