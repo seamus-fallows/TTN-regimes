@@ -10,6 +10,7 @@ Usage: uv run python experiments/data_teacher/predict_rank1.py [config names]
 Writes results/rank1_predictions_<names>.csv and /root/outputs/data_teacher/rank1_predictions_<names>.pt.
 """
 
+import os
 import sys
 from multiprocessing import Pool
 from pathlib import Path
@@ -72,7 +73,7 @@ if __name__ == "__main__":
         for case in expand(cfg):
             for tree in cfg["trees"]:
                 jobs.append((cfg["name"], case, tree))
-    with Pool(3) as pool:
+    with Pool(int(os.environ.get("PRED_PROCS", 3))) as pool:
         out = [x for res in pool.map(one, jobs) for x in res]
     df = pd.DataFrame([r for r, _ in out])
     tag = "_".join(names)
