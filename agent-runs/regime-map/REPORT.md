@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-09 18:56 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-09 19:56 UTC
 
 ## Summary
 In progress. Task: phase diagrams of saddle-to-saddle / rich non-incremental / lazy dynamics over
@@ -34,6 +34,20 @@ boundaries and threshold sensitivity (brief `notes/briefs/regime-map.md`).
    W* + W_0 is unrealizable (theory R6) and "stalled" otherwise mixes two different mechanisms.
 6. **Teacher seed = 1000 + init seed**, so seeds vary both; by the O(d) invariance of the init the
    teacher basis is statistically irrelevant, so this costs nothing and avoids any shared stream.
+7. **Event widths are re-measured in linear time.** A log-time recording grid (1% spacing) cannot
+   resolve O(1)-wide events at late times (at t ~ 4e5 on K = 7 the spacing is ~1e4), which made rho
+   come out 1000x too small. Each final rise is re-integrated from the saved parameters on a
+   200-point linear grid (`run_regime.refine_events`); deep-S2S widths then match the aligned theory
+   to 3 digits (0.466, 0.798, 2.010 vs 0.46, 0.80, 2.01 for s = 3, 2, 1, K = 3).
+8. **Integrators.** LSODA (exact Hessian) where P <= ~2500 (all of sigma x K; N = 8 with chi <= 12),
+   dopri5 otherwise; N = 8 runs with large P start at sigma = 0.3-0.4, where later plateaus are still
+   ~1e2-1e3 time units (deep S2S for K = 7: rho ~ 3 (0.9/sigma)^5).
+9. **sigma_min(K) = 10^(-8/K)** in the sigma x K sweep so that initial component amplitudes ~sigma^K
+   stay ~1e-8 or larger, far above the float64 floor of the gradient (lead's note); runs record the
+   smallest dormant overlap at the first event (`dormant_min`).
+10. **Interim scipy sweep superseded.** The first N = 4 sigma x chi map (2460 runs, scipy RK45) is
+    kept in /root/outputs/regime_map/b4_sigma_chi as an integrator cross-check; all reported numbers
+    come from the library runs (ttn.dynamics) with event refinement.
 
 ## Files left on the machine
 - `/root/outputs/regime_map/` raw outputs (none yet).
@@ -47,3 +61,6 @@ boundaries and threshold sensitivity (brief `notes/briefs/regime-map.md`).
 - 18:30 pilot (scipy RK45) binary N=4 sigma x chi, 2 seeds: S2S at small sigma, lazy at large sigma for chi >= 9; final loss = best rank-chi approx of W0+W* (exact); delta_K matches kappa/sigma^3 to <1% at sigma >= 3 when converged
 - 18:45 merged main (core fixes: teacher stream, cancellation-free centred loss); discarded old pilots; read literature.md (H4 corrections) and draft theory_regimes.md (agrees with my derivations; adds muP-TTN, exact aligned S2S boundary)
 - 18:52 launched interim sweep b4_sigma_chi (N=4, centred/plain/two-copy, 8 chi x 19 sigma x 6 seeds = 2736 runs)
+- 19:10 interim N=4 map: S2S / rich / lazy (chi >= 12) / stalled (chi < 9, unrealizable); per-seed S2S boundary predicted within one grid step by aligned-mode extrapolation from the deepest run; two-copy merges events 1-2 (mirror copies escape together)
+- 19:20 merged library v0; wrote run_regime.py + sweep.py + YAML configs; found log-grid width resolution problem, added linear-time event refinement
+- 19:54 launched production sweeps (library): sigma_chi_b8 (462), sigma_K (768), sigma_chi_b4 (2736); queued imbalance_b4, large_chi_b4, large_chi_b8
