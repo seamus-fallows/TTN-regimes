@@ -40,7 +40,11 @@ def b4():
 def balance():
     ex = [("scaling_b4", {"sigma": 0.008, "seed": 0},
            ["GF", "GD, lr 0.02", "heavy ball, lr 0.002", "Adam, lr 0.001", "RMSProp, lr 0.001"])]
-    scatter = [("scaling_b4", {})]
+    ex.append(("deep", {"tree": "mps", "teacher": "odeco", "init": "balanced", "sigma": 0.8, "seed": 0},
+               ["GF", "GD, lr 0.01", "heavy ball, lr 0.001", "Adam, lr 0.001", "RMSProp, lr 0.001"]))
+    scatter = [("scaling_b4", {}),
+               ("deep", {"tree": "binary", "teacher": "odeco", "init": "balanced"}),
+               ("deep", {"tree": "mps", "teacher": "odeco", "init": "balanced"})]
     fig_balance(ex, scatter)
 
 

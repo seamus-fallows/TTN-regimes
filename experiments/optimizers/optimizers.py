@@ -40,19 +40,24 @@ class Log:
         self.rec.start(problem, theta0)
         self.fine: dict[str, list] = {"fine_t": [], "fine_loss": [], "fine_overlaps": []}
         self.last_full = None
+        self.run_min, self.run_max = np.inf, None
 
     def cheap(self, theta: torch.Tensor, t: float, loss: float, **info):
-        """Fine-trace point; also a full record when the loss moved by > 2% or an overlap by > 0.02
-        since the last full record (resolves events whatever the step budget)."""
+        """Fine-trace point; also a full record when the running-minimum loss fell by > 2% or the
+        running maximum of an overlap rose by > 0.02 since the last full record. Running extrema
+        only move on real progress, so oscillations (Adam at its edge of stability) do not trigger
+        records, while events are resolved whatever the step budget."""
         with torch.no_grad():
             spec, cores = self.p.effective(theta.detach())
             a = self.p.target.component_overlaps(spec, cores).numpy()
         self.fine["fine_t"].append(t)
         self.fine["fine_loss"].append(loss)
         self.fine["fine_overlaps"].append(a)
+        self.run_min = min(self.run_min, loss)
+        self.run_max = a if self.run_max is None else np.maximum(self.run_max, a)
         last = self.last_full
-        if last is not None and (abs(np.log(max(loss, 1e-300) / max(last[0], 1e-300))) > 0.02
-                                 or np.max(np.abs(a - last[1])) > 0.02):
+        if last is not None and (np.log(max(last[0], 1e-300) / max(self.run_min, 1e-300)) > 0.02
+                                 or np.max(self.run_max - last[1]) > 0.02):
             self.full(theta, t, **info)
 
     def full(self, theta: torch.Tensor, t: float, **info):
@@ -62,8 +67,10 @@ class Log:
         self.rec.record(self.p, theta.detach(), t, **info)
         spec, cores = self.p.effective(theta.detach())
         with torch.no_grad():
-            self.last_full = (self.rec.rows["loss"][-1],
-                              self.p.target.component_overlaps(spec, cores).numpy())
+            a = self.p.target.component_overlaps(spec, cores).numpy()
+        self.run_min = min(self.run_min, self.rec.rows["loss"][-1])
+        self.run_max = a if self.run_max is None else np.maximum(self.run_max, a)
+        self.last_full = (self.run_min, self.run_max.copy())
 
     def trajectory(self, theta_end: torch.Tensor, meta: dict) -> Trajectory:
         data = self.rec.arrays()

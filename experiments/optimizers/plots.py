@@ -170,7 +170,8 @@ def fig_side_by_side(name: str, sigma: float, seed: int, methods: list[str], edg
         ax.set_title(m.replace(", lr", "\nlr").replace(", every", ", every"), fontsize=7)
         ax = axes[1, j]
         for r in range(a.shape[1]):
-            ax.plot(t_f, a[:, r], color=colors[r], lw=1.0, label=f"$a_{r + 1}$ (s={d['teacher_spectra'][0][r]:.0f})")
+            w = json.loads(row["weights"])[r]
+            ax.plot(t_f, a[:, r], color=colors[r], lw=1.0, label=f"$a_{r + 1}$ (s = {w:g})")
         ax.set_ylim(-0.1, 1.15)
         ax = axes[2, j]
         sp = d["spectra"][:, edge_index, :]
@@ -271,7 +272,7 @@ def fig_balance(examples: list[tuple[str, dict, list[str]]], scatter: list[tuple
     of Adam / RMSProp runs against the entry-count heuristic."""
     tp.set_style()
     n = len(examples)
-    fig, axes = tp.subplots(1, n + 1, width=tp.TEXT_WIDTH, panel_aspect=0.9)
+    fig, axes = tp.subplots(1, n + 1, width=tp.TEXT_WIDTH, panel_aspect=1.0)
     for ax, (name, flt, methods) in zip(axes[:n], examples):
         df = with_keys(collect(name))
         for k, v in flt.items():
@@ -288,8 +289,9 @@ def fig_balance(examples: list[tuple[str, dict, list[str]]], scatter: list[tuple
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_xlabel("fraction of the run (own clock)")
-        ax.set_title(f"{flt.get('tree', '')}{rows.iloc[0]['n_sites'] if not rows.empty else ''}, "
-                     f"sigma {flt.get('sigma', '')}", fontsize=7)
+        r0 = df.iloc[0]
+        ax.set_title(f"{r0['tree']}{int(r0['n_sites'])} {r0['teacher']}, sigma {r0['sigma']:g}, seed {int(r0['seed'])}",
+                     fontsize=7)
         ax.legend(fontsize=6)
     axes[0].set_ylabel(r"drift of $Q_e$ (relative)")
     ax = axes[-1]
