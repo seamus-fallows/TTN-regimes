@@ -20,12 +20,12 @@ import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import RAW, gf_first_event, make_spec, make_teacher, unit_init  # noqa: E402
+from common import RAW, single_thread, gf_first_event, make_spec, make_teacher, unit_init  # noqa: E402
 
 
 def fix(args):
     rec, cfg_pattern, n_comp = args
-    torch.set_num_threads(1)
+    single_thread()
     spec = make_spec(rec["kind"], rec["n"], rec["d"], rec["chi"])
     u0 = unit_init(spec, rec["seed"])
     for run in rec["runs"]:

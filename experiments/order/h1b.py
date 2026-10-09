@@ -33,6 +33,7 @@ from scipy.optimize import brentq, minimize_scalar
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (  # noqa: E402
+    single_thread,
     RAW as OUT,
     RES,
     crossings,
@@ -151,7 +152,7 @@ def analyse(spec, teacher, sol, rho):
 
 def job(args):
     cfg, seed, sigma, rho = args
-    torch.set_num_threads(1)
+    single_thread()
     t0 = time.time()
     spec = make_spec(cfg["kind"], cfg["n"], cfg["d"], cfg["chi"])
     teacher = make_teacher(cfg["n"], cfg["d"], [1.0, rho], cfg.get("pattern"))

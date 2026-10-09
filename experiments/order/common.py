@@ -46,6 +46,15 @@ def _dir_option(flag: str, env: str, default: Path) -> Path:
     return Path(os.environ.get(env, default))
 
 
+def single_thread():
+    """One thread per worker process for torch and BLAS (scipy's implicit solvers call LAPACK, and
+    OpenBLAS otherwise starts 64 threads per process: with 60 workers the load reached ~2000)."""
+    from threadpoolctl import threadpool_limits
+
+    torch.set_num_threads(1)
+    threadpool_limits(1)
+
+
 RAW = _dir_option("--raw", "ORDER_RAW", Path("/root/outputs/order"))  # raw outputs (not in git)
 RES = _dir_option("--res", "ORDER_RES", Path(__file__).parent / "results")  # summaries, figures
 RES.mkdir(parents=True, exist_ok=True)

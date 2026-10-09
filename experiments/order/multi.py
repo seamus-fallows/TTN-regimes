@@ -28,7 +28,7 @@ import torch
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import RAW as OUT, lo_blowup, make_spec, make_teacher, single_component, unit_init  # noqa: E402
+from common import RAW as OUT, single_thread, lo_blowup, make_spec, make_teacher, single_component, unit_init  # noqa: E402
 from ttn.diagnostics import crossing_times  # noqa: E402
 from ttn.dynamics import Problem, Recorder, integrate_gf, log_time_grid, merged_rows  # noqa: E402
 
@@ -36,7 +36,7 @@ from ttn.dynamics import Problem, Recorder, integrate_gf, log_time_grid, merged_
 
 def job(args):
     cfg, tree, d, chi, n_comp, rho, seed = args
-    torch.set_num_threads(1)
+    single_thread()
     t0 = time.time()
     kind, n = tree.split(":")
     n = int(n)

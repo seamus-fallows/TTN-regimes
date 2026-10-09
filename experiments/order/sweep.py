@@ -29,6 +29,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (  # noqa: E402
+    single_thread,
     RAW as OUT,
     RES,
     gf_first_event,
@@ -62,7 +63,7 @@ def weights_for(rho, n_comp):
 
 def job(args):
     cfg, st, seed = args
-    torch.set_num_threads(1)
+    single_thread()
     t0 = time.time()
     spec = make_spec(st["kind"], st["n"], st["d"], st["chi"], cap=cfg.get("cap", True))
     pattern = cfg.get("pattern")
