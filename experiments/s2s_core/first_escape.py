@@ -109,6 +109,7 @@ def main():
     ap.add_argument("config")
     ap.add_argument("--workers", type=int, default=60)
     ap.add_argument("--raw", default=str(s2s.OUT), help="parent directory of the raw outputs")
+    ap.add_argument("--reverse", action="store_true", help="take jobs in reverse order (second instance)")
     args = ap.parse_args()
     config = yaml.safe_load(Path(args.config).read_text())
     workers = args.workers
@@ -125,6 +126,8 @@ def main():
         cfg["name"] = f"{tree}{n}_chi{chi}_{tname}_{init}_seed{seed}"
         if not (out_dir / f"{cfg['name']}.json").exists():
             jobs.append((cfg, out_dir))
+    if args.reverse:
+        jobs = jobs[::-1]
     print(f"{config['name']}: {len(jobs)} jobs", flush=True)
     t0 = time.time()
     with Pool(workers, maxtasksperchild=10) as pool:
