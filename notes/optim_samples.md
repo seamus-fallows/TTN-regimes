@@ -272,8 +272,13 @@ Exact values at the balanced minimum, binary N=4, teacher [3, 2, 1] (`sgd_stabil
 
 eta_ms = 0.00107 B for B <= 16: **small-batch SGD on product features is ~150x less stable than GD
 per sample** (effective kurtosis ~145 = 1.8 x 3^4: other directions feed the noise). For B >~ 3^N
-the GD limit returns. Mean-square stability is conservative (heavy tails: almost-sure stability can
-hold beyond it); the empirical SGD limit is not yet measured.
+the GD limit returns.
+
+**Empirical limit (`sgd_limit_test.py`, `results/sgd_limit_test.csv`; 5 seeds per point, start 1e-5
+off the balanced minimum, run length 25 time units).** At B = 1 and at B = 16 alike: converged in 5/5
+runs up to 1.5 eta*_ms, 2/5 at 2.0 eta*_ms (the other 3 neither converge nor diverge), diverged (9/10)
+at 2.5 and 3.0 eta*_ms. Mean-square stability is conservative by a factor ~2, as the theory note's
+almost-sure threshold predicts (P8: eta_as / eta*_ms = 1.93 at B = 1, 1.87 at B = 16). **Empirical.**
 
 ## 6. Finite samples and implicit bias (step 3)
 
