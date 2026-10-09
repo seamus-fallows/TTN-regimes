@@ -124,6 +124,25 @@ factors 4 (K = 3) to ~5000 (K = 8, chi = 6) in pilots (section 2.1).
 
 ### 2.1 Pilots (throwaway scipy code, before the library landed; to be redone with the library)
 
+**Library fix 57d5262** (teacher and student shared random streams) changed every teacher draw. My
+pilots before it used teacher seed 100 and init seeds 0..39, so they were never correlated with the
+teacher, but their per-seed numbers are not comparable with later runs. Pilots marked [old lib] below
+will be redone; the K sweep is already on the fixed library.
+
+**t_1 vs K (fixed library; correlation flow, chi = 3, d = 4, weights [3, 2, 1], 30 seeds)**:
+geometric-mean T vs P3 (`d^{N(K-2)/(2K)}/((K-2) s_1)`) and vs the Kumar-Haupt formula
+`1/(K(K-2) s_1 K^{-K/2} ||theta_hat||^{K-2})`:
+
+| tree | K | T (geo. mean) | T / P3 | T / KH |
+|---|---|---|---|---|
+| mps 3..10 | 3..10 | 0.67 .. 17.6 | 0.96 .. 1.65 | 3.0 .. 2.5e4 |
+| binary 4, 6, 8, 12, 16 | 3, 5, 7, 11, 15 | 0.88 .. 814 | 0.94 .. 2.1 | 4.1 .. 3.1e7 |
+| ht 3, 4, 6, 8 | 5, 7, 11, 15 | 0.41 .. 5.4 | 1.06 .. 1.72 | 16 .. 2.1e5 |
+
+So the KH formula (init along the KKT point, delta = ||theta_0||) is a strict lower bound (B1) that
+misses by up to 7 orders of magnitude at K = 15, while the RMS-overlap heuristic P3 tracks the
+typical prefactor over a factor-1500 range within a factor 0.94-2.1 (the excess grows slowly with K).
+
 All gradient flow with scipy DOP853 / LSODA, rtol 1e-9, atol 1e-14 sigma; correlation flow
 DOP853 rtol 1e-10. d = 4, odeco teacher seed 100.
 

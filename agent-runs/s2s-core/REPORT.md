@@ -35,3 +35,9 @@ theory and piloting with scipy.
 - 18:34 Pilot, 40 seeds x 5 trees x chi {3,6} x 2 teachers, correlation flow only: prefactor of t_1 is
   ~ (sigma d^{-N/2K})^{-(K-2)}/((K-2)s) (RMS-overlap heuristic) within factor 1-1.75; the rho_0-based
   hypothesis in PLAN.md (aligned at start) underestimates by 4x-5600x; chi-dependence weak.
+- 18:45 Lead messages: merged main (literature review; core fixes 57d5262 incl. teacher/student
+  stream bug -> pilots before it marked [old lib], to be redone; draft theory notes). Read
+  literature.md 1.3-1.4, 2.1, 2.4, 3, 5 and theory_saddles.md.
+- 18:50 K sweep (fixed lib, 17 trees, K=3..15, 30 seeds): P3 within 0.94-2.1x of T; Kumar-Haupt
+  formula with delta=||theta_0|| off by 3x..3e7x. Gaps pilot (BDF, 5 trees x 6 sigmas x 5 seeds)
+  running to test gap exponents and the conservation-law trap (theory_saddles R12) at K=7,8.
