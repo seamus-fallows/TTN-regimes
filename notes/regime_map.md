@@ -196,9 +196,11 @@ where delta_K(T) drops below 0.1 (converged runs).
   0.05 -> 0.2 moves the kernel boundary by 1.89 (chi = 9) down to 1.33 (chi = 36): the local slope of
   delta_K vs x = ||W*|| / sigma^3 grows from ~1 to ~2 with chi, so the ratio goes from 4^(1/3) = 1.59
   toward 4^(1/6) = 1.26 (theory P7: 1.3-1.36 at chi >= 32). **Empirical.**
-- **Realizability.** For chi < 9 the final loss equals the Eckart-Young minimum of W_0 + W* across the
-  01|23 cut (`l_best`, exact) and the runs stall above sigma ~ 0.6-1.0 (theory P4: sigma_floor = 0.56,
-  0.60, 0.71 for chi = 3, 4, 6). **Empirical**, confirming theory R7.
+- **Realizability.** For chi < 9 every stalled run (44) ends at the Eckart-Young minimum of W_0 + W*
+  across the 01|23 cut (`l_end / l_best` = 1 to 1e-6). Stall onset (all 6 seeds stalled) at sigma = 1.0,
+  1.0, 1.59 for chi = 3, 4, 6 (first stalled seed at 0.63 for chi = 3); theory P4's small-sigma estimate
+  sigma_floor = 0.56, 0.60, 0.71 is lower, increasingly so at chi = 6 where the floor is reached only at
+  sigma ~ 1, outside the small-sigma expansion. **Empirical**, confirming theory R7 qualitatively.
 
 ### 2.x Two-copy cross-check (binary N = 4)
 
