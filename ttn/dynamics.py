@@ -13,13 +13,17 @@ Conventions
   gradient flow at equal t as lr -> 0. SGD uses the same update with a minibatch gradient.
 - Two-copy (`antisymmetric_double`) and centred (`ShiftedTeacher`) problems are evaluated without
   cancellation at any init scale (`Problem.effective`).
-- Every run returns a `Trajectory`: diagnostics at the log times (see `Recorder`), the final
-  parameters `theta_end`, and metadata (step counts, wall time, stop reason, problem description).
+- Every run returns a `Trajectory`: diagnostics at the log times (see `Recorder`), "fine rows"
+  (loss, overlaps, spectra) at the integrator steps where the state changed, which resolve learning
+  events in linear time (`merged_rows` joins both), the final parameters `theta_end`, and metadata
+  (step counts, wall time, stop reason, problem description).
 
 Gradient flow: `integrate_gf(method='dopri5')` is the reference; past the first escape the flow is
 stiff and method='lsoda' is far cheaper (see its docstring). All tensors are tiny, so run with
 torch.set_num_threads(1) (one process per core): multithreaded LAPACK calls (QR, Cholesky) are
-100-1000x slower on a loaded machine.
+100-1000x slower on a loaded machine. The scipy solvers (lsoda, radau) factorize P x P matrices
+with numpy/scipy's OpenBLAS, which ignores torch.set_num_threads: `integrate_gf` limits it to one
+thread itself (threadpoolctl).
 """
 
 from __future__ import annotations
@@ -36,6 +40,7 @@ from pathlib import Path
 import numpy as np
 import scipy.integrate
 import torch
+from threadpoolctl import threadpool_limits
 
 from ttn.losses import empirical_loss, population_loss, sample_inputs
 from ttn.network import (
@@ -155,7 +160,10 @@ class Problem:
         return -hess if self.precond is None else self._neg_precond[:, None] * hess
 
     def describe(self) -> dict:
-        """JSON-friendly summary stored in every Trajectory's meta."""
+        """JSON-friendly summary stored in every Trajectory's meta. For a CP target also
+        teacher_weights, component_targets (<W*, M U_r>, the denominators of the overlaps) and
+        orthogonal_components (Gram matrix <U_r, M U_r'> diagonal: then each overlap is one learning
+        event; otherwise one escape can raise several overlaps, see notes/diagnostics.md)."""
         t, teacher = self.spec.tree, self.teacher
         out = {
             "tree": t.name,
@@ -174,6 +182,12 @@ class Problem:
         }
         if isinstance(self.target, CPTeacher):
             out["teacher_weights"] = self.target.weights.tolist()
+            with torch.no_grad():
+                gram = self.target.gram(self.site_metrics)
+                off = gram - torch.diag(torch.diagonal(gram))
+                out["component_targets"] = (gram @ self.target.weights).tolist()
+                diagonal = off.abs().max() <= 1e-12 * torch.diagonal(gram).abs().max()
+                out["orthogonal_components"] = bool(diagonal)
         return out
 
 
@@ -239,6 +253,19 @@ class Recorder:
 
     Options: spectra / overlaps / conservation switch those diagnostics off; save_params stores
     theta at every log time as params (n, P); extra = [(name, fn(problem, theta, t) -> array)].
+
+    Fine rows (fine=True): a log grid cannot resolve learning events (an escape lasts 0.5-2 time
+    units at t ~ 10-1e4, where log points are 8% of t apart), so the integrators also call `step`
+    after every accepted step (GF), every step (GD, SGD), and a light row is kept whenever, since the
+    last kept row, |theta| changed by fine_tol relatively or the training loss by fine_tol in
+    log (below 1e-12 L(0) loss changes are ignored, they are roundoff; the loss trigger is not used
+    by SGD, whose step loss is a minibatch loss). Kept as
+      fine_t (m,), fine_loss (m,)   time and training loss
+      fine_overlaps (m, R)          as overlaps (if recorded)
+      fine_spectra (m, E, chi_max)  as spectra (if recorded)
+    Their cost is one forward pass per step plus the row's diagnostics; DP5 and LSODA take 20-200
+    steps per learning event, so events are sampled at least ~20 times. `merged_rows` joins log and
+    fine rows into one time series.
     """
 
     def __init__(
@@ -248,18 +275,23 @@ class Recorder:
         conservation: bool = True,
         save_params: bool = False,
         extra: list[tuple[str, Callable]] | tuple = (),
+        fine: bool = True,
+        fine_tol: float = 0.01,
     ):
         self.spectra = spectra
         self.overlaps = overlaps
         self.conservation = conservation
         self.save_params = save_params
         self.extra = list(extra)
+        self.fine = fine
+        self.fine_tol = fine_tol
 
     @torch.no_grad()
     def start(self, problem: Problem, theta0: torch.Tensor) -> None:
         """Reset the logs and store the reference quantities of the initial point."""
         spec = problem.spec
         self.rows: dict[str, list] = {}
+        self.fine_rows: dict[str, list] = {}
         self.theta0 = theta0.detach().clone()
         self.norm0 = float(self.theta0.norm())
         self.eta = problem.lr_multipliers or [1.0] * spec.n_cores
@@ -270,22 +302,76 @@ class Recorder:
             self.q0_scale = max(q.abs().max().item() for q in self.q0.values())
         spec_eff, _ = problem.effective(self.theta0)
         self.max_bond = max(spec_eff.bond_dims[v] for v in spec_eff.tree.edges)
+        if self.fine:
+            loss0 = problem.loss(self.theta0).item()
+            self._loss_clip = 1e-12 * loss0 if loss0 > 0 else np.finfo(float).tiny
+            self._fine_last = (self.theta0, self.norm0, self._log_loss(loss0))
 
-    def record(self, problem: Problem, theta: torch.Tensor, t: float, **info) -> None:
+    def record(
+        self,
+        problem: Problem,
+        theta: torch.Tensor,
+        t: float,
+        loss: float | None = None,
+        velocity: torch.Tensor | None = None,
+        **info,
+    ) -> None:
+        """Log row at time t. loss / velocity: the training loss and v(theta) if the caller has
+        them already (integrators pass theirs, which saves a gradient evaluation per row)."""
         theta = theta.detach()
-        row = self._builtin(problem, theta, t)
-        row["speed"] = problem.velocity(theta).norm().item()
+        row = self._builtin(problem, theta, t, loss)
+        if velocity is None:
+            velocity = problem.velocity(theta)
+        row["speed"] = velocity.norm().item()
         row.update(info)
         for name, fn in self.extra:
             row[name] = np.asarray(fn(problem, theta, t))
         for key, value in row.items():
             self.rows.setdefault(key, []).append(value)
 
+    def step(self, problem: Problem, theta: torch.Tensor, t: float, loss: float | None = None):
+        """Integrator step at time t: keep a fine row if the state moved enough (class docstring).
+        loss: the training loss at theta, if known (None: only the parameter trigger is used)."""
+        if not self.fine:
+            return
+        theta = theta.detach()
+        last_theta, last_norm, last_log_loss = self._fine_last
+        moved = (theta - last_theta).norm().item() >= self.fine_tol * last_norm
+        log_loss = None if loss is None else self._log_loss(loss)
+        if moved or (log_loss is not None and abs(log_loss - last_log_loss) >= self.fine_tol):
+            self._fine_row(problem, theta, t, loss)
+
+    def _log_loss(self, loss: float) -> float:
+        return math.log(max(loss, self._loss_clip))
+
     @torch.no_grad()
-    def _builtin(self, problem: Problem, theta: torch.Tensor, t: float) -> dict:
+    def _fine_row(self, problem: Problem, theta: torch.Tensor, t: float, loss: float | None):
+        if loss is None:
+            loss = problem.loss(theta).item()
+        row = {"fine_t": float(t), "fine_loss": loss}
+        spec_eff, cores_eff = problem.effective(theta)
+        if self.overlaps and isinstance(problem.target, CPTeacher):
+            row["fine_overlaps"] = problem.target.component_overlaps(
+                spec_eff, cores_eff, problem.site_metrics
+            ).numpy()
+        if self.spectra:
+            row["fine_spectra"] = self._padded_spectra(spec_eff, cores_eff, problem.site_metrics)
+        for key, value in row.items():
+            self.fine_rows.setdefault(key, []).append(value)
+        self._fine_last = (theta.clone(), theta.norm().item(), self._log_loss(loss))
+
+    def _padded_spectra(self, spec_eff: TTNSpec, cores_eff: Cores, metrics) -> np.ndarray:
+        spectra = bond_spectra(spec_eff, cores_eff, metrics)
+        padded = np.full((len(spec_eff.tree.edges), self.max_bond), np.nan)
+        for j, v in enumerate(spec_eff.tree.edges):
+            padded[j, : spectra[v].numel()] = spectra[v].numpy()
+        return padded
+
+    @torch.no_grad()
+    def _builtin(self, problem: Problem, theta: torch.Tensor, t: float, loss) -> dict:
         spec, metrics = problem.spec, problem.site_metrics
         cores = spec.unflatten(theta)
-        loss = problem.loss(theta).item()
+        loss = problem.loss(theta).item() if loss is None else float(loss)
         pop = loss if problem.dataset is None else problem.population_loss(theta).item()
         row = {
             "t": float(t),
@@ -297,11 +383,7 @@ class Recorder:
         }
         spec_eff, cores_eff = problem.effective(theta)
         if self.spectra:
-            spectra = bond_spectra(spec_eff, cores_eff, metrics)
-            padded = np.full((len(spec_eff.tree.edges), self.max_bond), np.nan)
-            for j, v in enumerate(spec_eff.tree.edges):
-                padded[j, : spectra[v].numel()] = spectra[v].numpy()
-            row["spectra"] = padded
+            row["spectra"] = self._padded_spectra(spec_eff, cores_eff, metrics)
         if self.overlaps and isinstance(problem.target, CPTeacher):
             row["overlaps"] = problem.target.component_overlaps(
                 spec_eff, cores_eff, metrics
@@ -316,7 +398,25 @@ class Recorder:
         return row
 
     def arrays(self) -> dict[str, np.ndarray]:
-        return {key: np.array(values) for key, values in self.rows.items()}
+        rows = self.rows | getattr(self, "fine_rows", {})
+        return {key: np.array(values) for key, values in rows.items()}
+
+
+def merged_rows(data: dict, keys=("loss", "overlaps", "spectra")) -> dict[str, np.ndarray]:
+    """Log rows and fine rows of a recorded trajectory (`Recorder`) as one time series sorted by
+    time: {"t": ..., key: ...} for each key recorded in both (a fine row at a log time is dropped).
+    Without fine rows (fine=False, or GD/SGD logged at every step), just the log rows."""
+    keys = [k for k in keys if k in data]
+    t = data["t"]
+    if "fine_t" not in data:
+        return {"t": t} | {k: data[k] for k in keys}
+    new = ~np.isin(data["fine_t"], t)
+    order = np.argsort(np.concatenate([t, data["fine_t"][new]]), kind="stable")
+    out = {"t": np.concatenate([t, data["fine_t"][new]])[order]}
+    for k in keys:
+        if f"fine_{k}" in data:
+            out[k] = np.concatenate([data[k], data[f"fine_{k}"][new]])[order]
+    return out
 
 
 # ---- trajectory --------------------------------------------------------------------------------
@@ -382,6 +482,32 @@ def log_time_grid(t_min: float, t_max: float, n_log: int = 200) -> np.ndarray:
     return np.concatenate([[0.0], np.geomspace(t_min, t_max, n_log)])
 
 
+def default_log_times(
+    problem: Problem, theta0: torch.Tensor | Cores, t_max: float, n_log: int = 200
+) -> np.ndarray:
+    """The default log grid of `integrate_gf`: log_time_grid(t_min, t_max, n_log) with
+    t_min = 1e-3 min(tau_0, tau_L, t_max).
+
+    tau_0 = |theta0| / |v(theta0)| is the time over which theta would move by its own size at the
+    initial speed, tau_L = L(theta0) / |dL/dt(theta0)| (dL/dt = grad L . v) the time over which
+    the loss would change by its own size. At small init tau_0 is the smaller one (the first log
+    point is ~1e-3 of the first plateau); at large init the function moves ~sigma^K times faster
+    than the parameters and tau_L is (the lazy fit is over long before tau_0). The grid always spans
+    at least three decades.
+    """
+    theta0 = _as_flat(problem.spec, theta0)
+    loss, grad = problem.loss_and_grad(theta0)
+    velocity = problem.direction(grad)
+    speed, rate = velocity.norm().item(), abs((grad * velocity).sum().item())
+    scales = [t_max]
+    if speed > 0:
+        scales.append(theta0.norm().item() / speed)
+    if rate > 0:
+        scales.append(loss.item() / rate)
+    scales = [s for s in scales if s > 0]
+    return log_time_grid(1e-3 * min(scales), t_max, n_log)
+
+
 def integrate_gf(
     problem: Problem,
     theta0: torch.Tensor | Cores,
@@ -394,6 +520,7 @@ def integrate_gf(
     loss_floor: float | None = None,
     recorder: Recorder | None = None,
     method: str = "dopri5",
+    max_wall_time: float | None = None,
 ) -> Trajectory:
     """Gradient flow d theta/dt = v(theta), recording diagnostics at the log times.
 
@@ -410,8 +537,9 @@ def integrate_gf(
     explicit step is stable only for h lambda < ~3.3, so DP5 needs ~T lambda / 3.3 steps for a later
     plateau of length T (and after convergence, until t_max: use loss_floor). Hairer's test
     (h |f(y_new) - f(y_6)| / |y_new - y_6| > 3.25 on 15 consecutive steps) detects this; the first
-    such time is stored in meta['stiff_at'], with a warning if reaching t_max at the current step
-    would take > 1e5 steps.
+    such time is stored in meta['stiff_at']. Without a loss_floor a warning is issued at once if
+    reaching t_max at the current step would take > 1e5 steps; with a loss_floor (which usually ends
+    the run much earlier) only at the end, if more than 1e5 steps were spent after stiff_at.
 
     method='lsoda' (recommended past the first escape, e.g. saddle-to-saddle runs at K >= 4):
     ODEPACK's LSODA through scipy, which switches between Adams (nonstiff) and BDF (stiff, with the
@@ -425,33 +553,37 @@ def integrate_gf(
     Log times are hit exactly by clamping the step (no interpolation): {0} + log_times + {t_max},
     restricted to [0, t_max]. The scipy solvers are not restarted at log times (their bound, and
     LSODA's TCRIT, are moved), so they keep step size, Jacobian and history. Default grid:
-    log_time_grid(t_min, t_max, n_log) with t_min = 1e-3 * min(tau_0, t_max) and
-    tau_0 = |theta0| / |v(theta0)|, the time over which theta would move by its own size at the
-    initial speed: the first log point is where theta has changed by ~1e-3 relative (about 1e-3 of
-    the first plateau at small init), and the grid always spans at least three decades.
+    `default_log_times(problem, theta0, t_max, n_log)`. Between log times the recorder keeps fine
+    rows at the accepted steps (`Recorder`), which resolve learning events.
 
     Stops at t_max ('completed'), when the training loss drops below loss_floor ('converged'), after
-    max_steps accepted steps ('max_steps'), or on failure: for dopri5, step-size underflow
-    ('nonfinite' if caused by non-finite values, which otherwise only lead to rejected steps; else
-    'step_size_underflow'); for the implicit methods, scipy's failure ('failed', see meta['message']).
-    An early stop records the final state as the last log entry.
+    max_steps accepted steps ('max_steps'), after max_wall_time seconds ('max_wall_time'), or on
+    failure: for dopri5, step-size underflow ('nonfinite' if caused by non-finite values, which
+    otherwise only lead to rejected steps; else 'step_size_underflow'); for the implicit methods,
+    scipy's failure ('failed', see meta['message']). An early stop records the final state as the
+    last log entry.
     """
     wall0 = time.perf_counter()
     rec = Recorder() if recorder is None else recorder
     y = _as_flat(problem.spec, theta0)
     loss, f = problem.loss_and_velocity(y)
     if log_times is None:
-        speed = f.norm().item()
-        tau0 = y.norm().item() / speed if speed > 0 else math.inf
-        t_min = 1e-3 * min(tau0, t_max) if tau0 > 0 else 1e-3 * t_max
-        log_times = log_time_grid(t_min, t_max, n_log)
+        log_times = default_log_times(problem, y, t_max, n_log)
     times = _merge_times(log_times, t_max)
+    deadline = math.inf if max_wall_time is None else wall0 + max_wall_time
     rec.start(problem, y)
-    rec.record(problem, y, 0.0, step=0)
+    rec.record(problem, y, 0.0, loss=loss.item(), velocity=f, step=0)
     if method == "dopri5":
-        y, t, info = _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec)
+        y, t, info = _dopri5(
+            problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec, deadline
+        )
     else:
-        y, t, info = _implicit(problem, y, times, method, rtol, atol, max_steps, loss_floor, rec)
+        # LU factorizations of P x P Jacobians go through scipy's OpenBLAS, whose default thread
+        # pool ignores torch.set_num_threads (a 688 x 688 LU: 0.8 s with 24 threads, 6 ms with one).
+        with threadpool_limits(limits=1, user_api="blas"):
+            y, t, info = _implicit(
+                problem, y, times, method, rtol, atol, max_steps, loss_floor, rec, deadline
+            )
     meta = {
         "integrator": method,
         "rtol": rtol,
@@ -465,7 +597,7 @@ def integrate_gf(
     return _trajectory(rec, y, meta)
 
 
-def _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec):
+def _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec, deadline):
     n = y.numel()
     k = torch.empty(7, n, dtype=y.dtype)
     k[0] = f
@@ -474,7 +606,7 @@ def _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec):
     inv_sqrt_n = 1.0 / math.sqrt(n)
     t, t_logged, i_log = 0.0, 0.0, 1
     n_steps, n_rejected, n_evals = 0, 0, 1
-    n_stiff, n_nonstiff, stiff_at = 0, 0, None
+    n_stiff, n_nonstiff, stiff_at, stiff_step = 0, 0, None, 0
     loss_val = loss.item()
     after_reject = False
     stop = None
@@ -505,9 +637,9 @@ def _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec):
             if h_lambda > 3.25:
                 n_stiff, n_nonstiff = n_stiff + 1, 0
                 if n_stiff == 15 and stiff_at is None:
-                    stiff_at = t
+                    stiff_at, stiff_step = t, n_steps
                     remaining = (times[-1] - t) / h
-                    if remaining > 1e5:
+                    if remaining > 1e5 and loss_floor is None:
                         warnings.warn(
                             f"gradient flow became stiff at t = {t:.4g}; at the stability-limited "
                             f"step, reaching t_max takes ~{remaining:.1e} more steps. Use "
@@ -532,8 +664,9 @@ def _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec):
             n_steps += 1
             after_reject = False
             t = t_next if hit else t + h_step
+            rec.step(problem, y, t, loss=loss_val)
             if hit:
-                rec.record(problem, y, t, step=n_steps)
+                rec.record(problem, y, t, loss=loss_val, velocity=k[0], step=n_steps)
                 t_logged = t
                 i_log += 1
                 if i_log == len(times):
@@ -543,6 +676,8 @@ def _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec):
                     stop = "converged"
                 elif n_steps >= max_steps:
                     stop = "max_steps"
+                elif time.perf_counter() > deadline:
+                    stop = "max_wall_time"
         else:
             n_rejected += 1
             after_reject = True
@@ -552,8 +687,14 @@ def _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec):
             if t + h == t:
                 stop = "step_size_underflow" if finite else "nonfinite"
         if stop is not None and t != t_logged:
-            rec.record(problem, y, t, step=n_steps)
+            rec.record(problem, y, t, loss=loss_val, velocity=k[0], step=n_steps)
 
+    if stiff_at is not None and loss_floor is not None and n_steps - stiff_step > 1e5:
+        warnings.warn(
+            f"gradient flow became stiff at t = {stiff_at:.4g} and DP5 then took "
+            f"{n_steps - stiff_step} stability-limited steps; method='lsoda' is much cheaper.",
+            stacklevel=3,
+        )
     info = {
         "loss_end": loss_val,
         "stop_reason": stop,
@@ -568,7 +709,7 @@ def _dopri5(problem, y, loss, f, times, rtol, atol, max_steps, loss_floor, rec):
 _SCIPY_SOLVERS = {"lsoda": scipy.integrate.LSODA, "radau": scipy.integrate.Radau}
 
 
-def _implicit(problem, y, times, method, rtol, atol, max_steps, loss_floor, rec):
+def _implicit(problem, y, times, method, rtol, atol, max_steps, loss_floor, rec, deadline):
     def fun(_, theta):
         return problem.velocity(torch.from_numpy(theta)).numpy()
 
@@ -590,6 +731,8 @@ def _implicit(problem, y, times, method, rtol, atol, max_steps, loss_floor, rec)
             break
         n_steps += 1
         y, t = torch.from_numpy(solver.y.copy()), solver.t
+        loss = _loss_value(problem, y)
+        rec.step(problem, y, t, loss=loss)
         # LSODA's IWORK(19) is the method of the last step: 1 = Adams (nonstiff), 2 = BDF (stiff).
         if (
             method == "lsoda"
@@ -598,7 +741,7 @@ def _implicit(problem, y, times, method, rtol, atol, max_steps, loss_floor, rec)
         ):
             stiff_at = t
         if solver.status == "finished":
-            rec.record(problem, y, t, step=n_steps)
+            rec.record(problem, y, t, loss=loss, step=n_steps)
             t_logged = t
             i_log += 1
             if i_log == len(times):
@@ -611,10 +754,12 @@ def _implicit(problem, y, times, method, rtol, atol, max_steps, loss_floor, rec)
                     # every call, so steps keep landing exactly on the bound.
                     solver._lsoda_solver._integrator.rwork[0] = times[i_log]
         if stop is None:
-            if loss_floor is not None and _loss_value(problem, y) < loss_floor:
+            if loss_floor is not None and loss < loss_floor:
                 stop = "converged"
             elif n_steps >= max_steps:
                 stop = "max_steps"
+            elif time.perf_counter() > deadline:
+                stop = "max_wall_time"
     if t != t_logged:
         rec.record(problem, y, t, step=n_steps)
     if len(times) > 1:
@@ -669,16 +814,19 @@ def run_gd(
     loss_floor: float | None = None,
     diverge_factor: float = 1e6,
     recorder: Recorder | None = None,
+    max_wall_time: float | None = None,
 ) -> Trajectory:
     """Gradient descent theta_{k+1} = theta_k + lr v(theta_k) on the training loss, logged at
-    t = lr * k.
+    t = lr * k (fine rows: see `Recorder`).
 
     Log steps: {0} + log_steps + {n_steps}; by default ~n_log log-spaced integers in [1, n_steps].
     Stops after n_steps ('completed'), when the loss drops below loss_floor ('converged'; the final
-    state is recorded), or when the loss becomes non-finite or exceeds diverge_factor * L(theta0)
-    ('diverged'; the diverged state is not recorded, meta holds its step and loss).
+    state is recorded), after max_wall_time seconds ('max_wall_time'; recorded), or when the loss
+    becomes non-finite or exceeds diverge_factor * L(theta0) ('diverged'; the diverged state is not
+    recorded, meta holds its step and loss).
     """
     wall0 = time.perf_counter()
+    deadline = math.inf if max_wall_time is None else wall0 + max_wall_time
     rec = Recorder() if recorder is None else recorder
     theta = _as_flat(problem.spec, theta0)
     steps = _merge_steps(log_steps, n_steps, n_log)
@@ -691,17 +839,21 @@ def run_gd(
         if not math.isfinite(loss) or loss > diverge_factor * loss0:
             stop = "diverged"
             break
+        if step > 0:
+            rec.step(problem, theta, lr * step, loss=loss)
         logged = steps[i_log] == step
         if logged:
-            rec.record(problem, theta, lr * step, step=step)
+            rec.record(problem, theta, lr * step, loss=loss, velocity=velocity, step=step)
             i_log += 1
         if loss_floor is not None and loss < loss_floor:
-            if not logged:
-                rec.record(problem, theta, lr * step, step=step)
             stop = "converged"
-            break
-        if step == n_steps:
+        elif step == n_steps:
             stop = "completed"
+        elif time.perf_counter() > deadline:
+            stop = "max_wall_time"
+        if stop is not None:
+            if not logged:
+                rec.record(problem, theta, lr * step, loss=loss, velocity=velocity, step=step)
             break
         theta = torch.add(theta, velocity, alpha=lr)
     meta = {
@@ -733,9 +885,11 @@ def run_sgd(
     loss_floor: float | None = None,
     diverge_factor: float = 1e6,
     recorder: Recorder | None = None,
+    max_wall_time: float | None = None,
 ) -> Trajectory:
     """Minibatch SGD theta_{k+1} = theta_k - lr (eta * m) grad L_B(theta_k) with
-    L_B = 1/(2B) sum_b (f(x_b) - y_b)^2 (`Problem.batch_loss`), logged at t = lr * k.
+    L_B = 1/(2B) sum_b (f(x_b) - y_b)^2 (`Problem.batch_loss`), logged at t = lr * k (fine rows:
+    see `Recorder`; the parameter trigger only).
 
     Online (no dataset, here or in the problem): fresh inputs x ~ N(0, site_metrics) every step
     (`sample_inputs` draws; Cholesky factors computed once) with labels y = f*(x) of the target.
@@ -747,10 +901,12 @@ def run_sgd(
     Logs, besides the Recorder set (where `loss` is the training loss and `pop_loss` the exact
     population loss): step, batch_loss (minibatch loss at the logged step, before its update) and
     batch_loss_avg (mean minibatch loss since the previous log step). Stops after n_steps
-    ('completed'), when the training loss at a log step is below loss_floor ('converged'), or when
-    the minibatch loss is non-finite or exceeds diverge_factor * L(theta0) ('diverged').
+    ('completed'), when the training loss at a log step is below loss_floor ('converged'), after
+    max_wall_time seconds ('max_wall_time', checked at log steps), or when the minibatch loss is
+    non-finite or exceeds diverge_factor * L(theta0) ('diverged').
     """
     wall0 = time.perf_counter()
+    deadline = math.inf if max_wall_time is None else wall0 + max_wall_time
     if dataset is not None:
         problem = dataclasses.replace(problem, dataset=dataset)
     rec = Recorder() if recorder is None else recorder
@@ -791,6 +947,8 @@ def run_sgd(
             stop = "diverged"
             break
         loss_sum, loss_count = loss_sum + batch_loss, loss_count + 1
+        if step > 0:
+            rec.step(problem, theta, lr * step)
         if steps[i_log] == step:
             avg = loss_sum / loss_count
             rec.record(
@@ -799,6 +957,9 @@ def run_sgd(
             i_log, loss_sum, loss_count = i_log + 1, 0.0, 0
             if loss_floor is not None and _loss_value(problem, theta) < loss_floor:
                 stop = "converged"
+                break
+            if time.perf_counter() > deadline:
+                stop = "max_wall_time"
                 break
         if step == n_steps:
             stop = "completed"
