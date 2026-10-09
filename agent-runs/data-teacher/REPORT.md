@@ -108,3 +108,12 @@ the full list are in `notes/data_teacher.md` (sections 0, 1).
   points; 99 step-1 runs missed their last event); fixed, affected runs rerun.
 - 19:00 Step-1 sweeps done (order 1920 runs, sigma scaling 360, Lambda scaling 520); analysis and
   interim report. Steps 2-4 sweeps queued.
+- 19:10 Steps 2 (800 runs), 4(a) (560), 3 (240) done and analyzed: plateaus = rank-1 critical points
+  of the (Sigma- or M-) loss in every case; misalignment / overlap / correlation collapse the MPS-4
+  rank-1 plateau (2-core strict-saddle route), not binary-4's.
+- 19:20 Library v0 merged. Cross-check pilot vs ttn.dynamics.integrate_gf (LSODA): max relative
+  difference 7e-7 in event times and losses (results/crosscheck_library.csv). Float64-floor scan
+  (lead's note): no dormant signal below 1e-11 in any CP run (results/float_floor_check.csv).
+- 19:25 Found that the 2000-point log grid cannot resolve the short (log-time) later plateaus of
+  generic teachers; new two-stage dense runner on the library integrator (run_dense.py); 4(b), 4(c)
+  and the sigma sweeps (e4a_sigma, e2_sigma) rerun with it (pilot versions discarded).

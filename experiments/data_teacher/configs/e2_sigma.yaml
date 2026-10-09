@@ -13,3 +13,4 @@ n_rec: 3000
 rtol: 1.0e-9
 atol: 1.0e-14
 stop_rel_loss: 1.0e-6
+n_dense: 3000

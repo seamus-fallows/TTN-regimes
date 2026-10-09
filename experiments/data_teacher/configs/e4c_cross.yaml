@@ -14,8 +14,9 @@ sweep:
 trees: [binary, mps]
 sigmas: {binary: [0.4], mps: [0.45]}
 seeds: [0, 8]
-t_max: {binary: 3.0e+4, mps: 3.0e+4}
+t_max: {binary: 1.0e+5, mps: 1.0e+5}
 n_rec: 2000
 rtol: 1.0e-9
 atol: 1.0e-14
 stop_rel_loss: 1.0e-4
+n_dense: 3000
