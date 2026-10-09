@@ -21,6 +21,7 @@ import numpy as np
 import torch
 
 from ttn.dynamics import Problem
+from ttn.network import forward
 from ttn.network import TTNSpec
 from ttn.teachers import CPTeacher, ShiftedTeacher
 from ttn.tree import Tree, binary_tree, mps_tree
@@ -138,5 +139,56 @@ def build(task: Task, tree_kind: str, ordering: str, chi: int, features: str = "
     if centred_cores0 is not None:
         teacher = ShiftedTeacher(teacher, spec, centred_cores0)
     t = lambda a: torch.as_tensor(a, dtype=torch.float64)  # noqa: E731
-    problem = Problem(spec, teacher, dataset=(t(phi_tr), t(y_tr)))
+    problem = GNProblem(spec, teacher, dataset=(t(phi_tr), t(y_tr)))
     return RealProblem(problem, t(phi_te), t(y_te), order)
+
+
+class GNProblem(Problem):
+    """`Problem` whose `jacobian` (used only by the implicit integrators, as the Newton matrix) is the
+    Gauss-Newton part -(1/n) J^T J of -Hessian, J = per-sample d f / d theta.
+
+    The exact Hessian costs ~P gradient evaluations (20-60 s here); J costs about one. LSODA's error
+    control does not depend on the Jacobian (it only sets how fast its Newton iterations converge), so
+    the trajectory has the same accuracy; the missing residual term sum_j r_j d^2 f_j / n makes LSODA
+    take somewhat smaller steps where it matters.
+    """
+
+    def per_sample_jacobian(self, theta: torch.Tensor) -> torch.Tensor:
+        x = self.dataset[0]
+
+        def f_one(th, xj):
+            return forward(*self.effective(th), xj[None])[0]
+
+        return torch.func.vmap(torch.func.grad(f_one), in_dims=(None, 0), chunk_size=2000)(
+            theta.detach(), x)
+
+    def jacobian(self, theta: torch.Tensor) -> torch.Tensor:
+        jac = self.per_sample_jacobian(theta)
+        return -(jac.T @ jac) / jac.shape[0]
+
+
+class DenseHessianProblem(GNProblem):
+    """Exact Hessian for small N (d^N entries): H = (1/n) J^T J + Hessian of <R, W(theta)>, with the
+    residual tensor R = (1/n) sum_j (f_j - y_j) Phi_j formed densely (two half-tensors and one
+    matmul). ~2 s at N = 16, chi = 4, against ~20 s for autograd's Hessian of the empirical loss."""
+
+    def residual_tensor(self, theta: torch.Tensor) -> torch.Tensor:
+        from ttn.diagnostics import product_features
+
+        x, y = self.dataset
+        with torch.no_grad():
+            r = forward(*self.effective(theta), x) - y
+        half = x.shape[1] // 2
+        left = product_features(x[:, :half])
+        right = product_features(x[:, half:])
+        return ((left * (r / x.shape[0])[:, None]).T @ right).reshape(-1)
+
+    def jacobian(self, theta: torch.Tensor) -> torch.Tensor:
+        from ttn.network import to_dense
+
+        theta = theta.detach()
+        res = self.residual_tensor(theta)
+        hres = torch.func.hessian(lambda th: (to_dense(*self.effective(th)).reshape(-1) * res).sum())(theta)
+        jac = self.per_sample_jacobian(theta)
+        hess = (jac.T @ jac) / jac.shape[0] + hres
+        return -hess

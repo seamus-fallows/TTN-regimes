@@ -2,12 +2,20 @@
 
 Usage: uv run python experiments/real_data/run.py <config.yaml> <out_dir> <workers>
 
-The config lists `cases` (each a dict; missing keys come from `defaults`), expanded over the lists
-`sigmas` and `seeds`. Keys: dataset, size, pos, neg, n_train, n_test, data_seed (the task); tree
-(binary | mps), ordering (quadtree | snake | scrambled<k> | rowmajor), chi, features (raw | white),
-centred (bool), sigma, seed (init), t_max, n_per_decade (log-grid density), rtol, atol, method
-(dopri5 | lsoda | two_phase: dopri5 until the speed has dropped back below 1e-3 x its peak, then
-lsoda), wall_limit (s). Finished cases are skipped (resumable). Every process uses one thread.
+Protocol (two phases, both `ttn.dynamics.integrate_gf`):
+1. First plateau: Dormand-Prince 5(4) from theta_0 until the training loss has dropped by 1%
+   (loss_floor = 0.99 L(0)); log grid from 1e-3 tau_0 (tau_0 = |theta_0| / |v(theta_0)|).
+2. Everything after: LSODA (stiff once a component is learned) from there for a time T2, on its
+   own clock tau = t - t_a (t_a = end of phase 1; t_a ~ sigma^-(K-2) is huge at small sigma, so
+   absolute times cannot resolve later gaps in float64). Newton matrix: the exact Hessian (dense
+   residual tensor, N <= 16) or its Gauss-Newton part (`hessian: gn`); LSODA's error control does
+   not depend on it. Grid: log in tau from 1e-2 plus a uniform grid of T2 / n_linear spacing.
+Saved arrays: t (absolute; phase 1 only meaningful), tau (NaN in phase 1), phase, loss, spectra
+(n, E, chi), test = (test loss, test acc, train acc, rms f on train), conservation_drift, speed,
+core_norms, theta at the end of each phase.
+
+The config lists `cases` (dicts; missing keys from `defaults`, then DEFAULTS), expanded over the
+lists `sigmas` and `seeds`. Finished cases are skipped (resumable); every process uses one thread.
 """
 
 from __future__ import annotations
@@ -30,7 +38,7 @@ import torch
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
-from data import Task, build  # noqa: E402
+from data import DenseHessianProblem, GNProblem, Task, build  # noqa: E402
 
 from ttn.dynamics import Recorder, integrate_gf, log_time_grid  # noqa: E402
 from ttn.network import forward  # noqa: E402
@@ -38,16 +46,21 @@ from ttn.network import forward  # noqa: E402
 TASK_KEYS = ("dataset", "size", "pos", "neg", "n_train", "n_test", "data_seed")
 DEFAULTS = dict(dataset="mnist", size=4, pos=[3], neg=[5], n_train=4000, n_test=1600, data_seed=0,
                 tree="binary", ordering="quadtree", chi=4, features="raw", centred=False,
-                t_max=1e12, n_per_decade=60, rtol=1e-8, atol=1e-14, method="dopri5",
-                wall_limit=3000)
+                t2=1e4, n_per_decade=60, n_linear=1000, rtol=1e-8, atol=1e-14,
+                hessian="dense", escape_drop=0.01, wall_limit=3600, tag="")
+
+
+class WallLimit(Exception):
+    pass
 
 
 def case_name(c: dict) -> str:
     pos = "".join(map(str, c["pos"]))
     neg = "".join(map(str, c["neg"]))
+    tag = f"_{c['tag']}" if c["tag"] else ""
     return (f"{c['dataset']}{c['size']}_{pos}v{neg}_n{c['n_train']}_{c['features']}_{c['tree']}_"
             f"{c['ordering']}_chi{c['chi']}{'_centred' if c['centred'] else ''}_"
-            f"s{c['sigma']:.4g}_seed{c['seed']}_{c['method']}")
+            f"s{c['sigma']:.4g}_seed{c['seed']}{tag}")
 
 
 def expand(config: dict) -> list[dict]:
@@ -62,11 +75,12 @@ def expand(config: dict) -> list[dict]:
     return out
 
 
-def extra_diagnostics(rp, cores0_problem):
-    """Test loss, train/test accuracy (sign of f), and the fitted function's norm on the train set."""
-    problem = rp.problem
+def make_recorder(rp, wall_deadline: float) -> Recorder:
+    """Default diagnostics plus test metrics; aborts the integration past the wall-clock deadline."""
 
     def test_metrics(prob, theta, t):
+        if time.time() > wall_deadline:
+            raise WallLimit
         spec, cores = prob.effective(theta)
         with torch.no_grad():
             f_te = forward(spec, cores, rp.x_test)
@@ -79,7 +93,7 @@ def extra_diagnostics(rp, cores0_problem):
             f_tr.pow(2).mean().sqrt().item(),
         ])
 
-    return [("test", test_metrics)]
+    return Recorder(overlaps=False, extra=[("test", test_metrics)])
 
 
 def run_case(c: dict, out_dir: Path) -> dict:
@@ -88,30 +102,72 @@ def run_case(c: dict, out_dir: Path) -> dict:
     path = out_dir / f"{name}.npz"
     if path.exists():
         return {"name": name, "status": "exists"}
+    wall0 = time.time()
     task = Task(**{k: (tuple(c[k]) if k in ("pos", "neg") else c[k]) for k in TASK_KEYS})
-    rp0 = build(task, c["tree"], c["ordering"], c["chi"], c["features"])
-    spec = rp0.problem.spec
+    spec = build(task, c["tree"], c["ordering"], c["chi"], c["features"]).problem.spec
     cores0 = spec.init(c["sigma"], seed=c["seed"])
     rp = build(task, c["tree"], c["ordering"], c["chi"], c["features"],
                centred_cores0=cores0 if c["centred"] else None)
-    problem = rp.problem
+    cls = DenseHessianProblem if c["hessian"] == "dense" else GNProblem
+    problem = cls(rp.problem.spec, rp.problem.teacher, dataset=rp.problem.dataset)
     theta0 = spec.flatten(cores0)
-    rec = Recorder(overlaps=False, extra=extra_diagnostics(rp, None))
-    # log grid from 1e-3 tau_0 (tau_0 = |theta_0| / |v(theta_0)|) to t_max
-    speed0 = problem.velocity(theta0).norm().item()
-    tau0 = theta0.norm().item() / speed0
-    t_min = 1e-3 * min(tau0, c["t_max"])
-    n_log = int(np.ceil(c["n_per_decade"] * np.log10(c["t_max"] / t_min)))
-    grid = log_time_grid(t_min, c["t_max"], n_log)
-    wall0 = time.time()
-    method = "dopri5" if c["method"] == "two_phase" else c["method"]
-    traj = integrate_gf(problem, theta0, c["t_max"], log_times=grid, rtol=c["rtol"],
-                        atol=c["atol"], recorder=rec, method=method,
-                        max_steps=c.get("max_steps", 10**7))
-    traj.meta.update(case=c, name=name, tau0=tau0, order=rp.order.tolist(),
-                     wall_total=time.time() - wall0)
-    traj.save(path)
-    return {"name": name, "status": traj.meta.get("stop_reason"), "wall": time.time() - wall0}
+    deadline = wall0 + c["wall_limit"]
+    meta = {"case": c, "name": name, "order": rp.order.tolist()}
+
+    # phase 1: first plateau
+    loss0 = problem.loss(theta0).item()
+    tau0 = theta0.norm().item() / problem.velocity(theta0).norm().item()
+    t_min = 1e-3 * tau0
+    grid1 = log_time_grid(t_min, 1e6 * tau0, int(c["n_per_decade"] * 9))
+    rec1 = make_recorder(rp, deadline)
+    stop = None
+    try:
+        tr1 = integrate_gf(problem, theta0, 1e6 * tau0, log_times=grid1, rtol=c["rtol"],
+                           atol=c["atol"], recorder=rec1, method="dopri5",
+                           loss_floor=(1 - c["escape_drop"]) * loss0)
+    except WallLimit:
+        stop = "wall_limit_phase1"
+    if stop is None and tr1.meta["stop_reason"] != "converged":
+        stop = f"phase1_{tr1.meta['stop_reason']}"
+    arrays = [rec1.arrays()]
+    phases = [np.ones(len(arrays[0]["t"]), dtype=int)]
+    taus = [np.full(len(arrays[0]["t"]), np.nan)]
+    if stop is None:
+        meta["phase1"] = {k: v for k, v in tr1.meta.items() if k != "problem"}
+        t_a = tr1.meta["t_end"]
+        theta_a = torch.as_tensor(tr1["theta_end"])
+        # phase 2: after the first escape, own clock
+        grid2 = np.union1d(log_time_grid(1e-2, c["t2"], int(c["n_per_decade"] * np.log10(c["t2"] / 1e-2))),
+                           np.linspace(0, c["t2"], c["n_linear"] + 1))
+        rec2 = make_recorder(rp, deadline)
+        try:
+            tr2 = integrate_gf(problem, theta_a, c["t2"], log_times=grid2, rtol=c["rtol"],
+                               atol=c["atol"], recorder=rec2, method="lsoda")
+            stop = tr2.meta["stop_reason"]
+            meta["phase2"] = {k: v for k, v in tr2.meta.items() if k != "problem"}
+            theta_end = tr2["theta_end"]
+        except WallLimit:
+            stop = "wall_limit_phase2"
+            theta_end = None
+        a2 = rec2.arrays()
+        arrays.append(a2)
+        phases.append(np.full(len(a2["t"]), 2))
+        taus.append(a2["t"].copy())
+        a2["t"] = t_a + a2["t"]
+        meta["t_a"] = t_a
+    data = {k: np.concatenate([a[k] for a in arrays]) for k in arrays[0] if k != "step"}
+    data["tau"] = np.concatenate(taus)
+    data["phase"] = np.concatenate(phases)
+    data["theta0"] = theta0.numpy()
+    if stop is not None and "phase2" in meta:
+        data["theta_a"] = theta_a.numpy()
+        data["theta_end"] = theta_end
+    meta.update(stop=stop, loss0=loss0, tau0=tau0, wall_total=time.time() - wall0,
+                n_params=spec.n_params, bond_dims=list(spec.bond_dims),
+                edges=list(spec.tree.edges), parent=list(spec.tree.parent),
+                sites=[list(s) for s in spec.tree.sites])
+    np.savez_compressed(path, __meta__=np.array(json.dumps(meta, default=str)), **data)
+    return {"name": name, "status": stop, "wall": round(time.time() - wall0, 1)}
 
 
 def _worker(args):

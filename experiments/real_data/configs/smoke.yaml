@@ -1,0 +1,6 @@
+# Smoke test of the two-phase runner (short horizon)
+defaults: {t2: 30, n_per_decade: 20, n_linear: 30, wall_limit: 600}
+cases:
+  - {tree: binary, ordering: quadtree, sigmas: [0.5], seeds: [0]}
+  - {tree: mps, ordering: snake, sigmas: [0.5], seeds: [0]}
+  - {tree: binary, ordering: quadtree, sigmas: [0.5], seeds: [0], hessian: gn}
