@@ -80,6 +80,8 @@ def main():
     marks = {4: [(28, "rank-2 manifold dim 28"), (52, "teacher-rank params 52"),
                  (112, "tangent dim 112")],
              16: [(28, "28"), (52, "52"), (256, "d^N = 256 = tangent dim")]}
+    floor = 1e-6
+    ticks = [16, 32, 64, 128, 256, 512]
     for j, chi in enumerate(chis):
         sub = summ[summ.chi == chi]
         ax = axes[0, j]
@@ -87,17 +89,24 @@ def main():
             g = sub[sub.label == lab]
             if g.empty:
                 continue
-            ax.errorbar(g.n, g.test_mean, yerr=g.test_se, fmt="o-", color=colors[lab], ms=3.5,
-                        lw=1.2, label=lab)
+            y = g.test_mean.clip(lower=floor)
+            ax.errorbar(g.n, y, yerr=np.where(g.test_mean > floor, g.test_se, 0), fmt="o-",
+                        color=colors[lab], ms=3.5, lw=1.2, label=lab)
         for x, txt in marks.get(chi, []):
             ax.axvline(x, color=ps.MUTED, lw=0.7, ls="--")
-            ax.text(x * 1.04, 1.02, txt, transform=ax.get_xaxis_transform(), fontsize=6.5,
-                    color=ps.INK2, rotation=90, va="bottom", ha="left")
+            ax.text(x * 1.05, 0.97, txt, transform=ax.get_xaxis_transform(), fontsize=6.3,
+                    color=ps.INK2, rotation=90, va="top", ha="left")
         ax.axhline(1, color=ps.INK2, lw=0.6)
-        ax.set(xscale="log", yscale="log", xlabel="training-set size n",
-               ylabel="test error / ||W*||² (mean ± s.e., 5 seeds)",
+        ax.text(0.99, 0.8, "zero predictor", transform=ax.get_yaxis_transform(), fontsize=6.3,
+                color=ps.INK2, ha="right", va="top")
+        if chi == 16:
+            ax.text(300, floor * 2, "lazy: exact\n(< 1e-20)", fontsize=6.3, color=ps.INK2)
+        ax.set(xscale="log", yscale="log", ylim=(floor / 2, 200), xlabel="training-set size n",
+               ylabel="test error / ||W*||²  (mean ± s.e., 5 seeds)",
                title=f"student χ = {chi}: generalization")
-        ax.legend(loc="lower left", fontsize=6.5)
+        ax.set_xticks(ticks, [str(t) for t in ticks])
+        ax.minorticks_off()
+        ax.legend(loc="lower left", fontsize=6.3)
         ax = axes[1, j]
         for lab in labels:
             g = sub[sub.label == lab]
@@ -111,6 +120,8 @@ def main():
         ax.set(xscale="log", xlabel="training-set size n",
                ylabel="effective bond rank (mean over edges)",
                title=f"student χ = {chi}: rank of the learned tensor")
+        ax.set_xticks(ticks, [str(t) for t in ticks])
+        ax.minorticks_off()
     fig.tight_layout()
     fig.savefig(OUT / "fig_samples.png")
     plt.close(fig)

@@ -229,4 +229,52 @@ per sample** (effective kurtosis ~145 = 1.8 x 3^4: other directions feed the noi
 the GD limit returns. Mean-square stability is conservative (heavy tails: almost-sure stability can
 hold beyond it); the empirical SGD limit is not yet measured.
 
-## 6. Finite samples (to do)
+## 6. Finite samples and implicit bias (step 3)
+
+Setup (`samples_sweep.py`, `configs/samples_sweep.yaml`): binary N=8, d = 2 (W in R^256), odeco
+teacher [3, 2] (rank 2 on every bond; the teacher-rank TTN has 52 parameters and its manifold has
+dimension 28 = 52 - 6 x 4 gauge), teacher seed 101; n Gaussian training inputs (data seed 500 + seed),
+noise-free labels; 5 seeds per point (seed = data and init). Students: chi = 4 (208 parameters;
+tangent space at a random point has dimension 112, measured rank of J) and chi = 16 (full bond
+dimension, 832 parameters, tangent space = R^256). Training: GD on the empirical loss with
+eta = 1/lambda_max (power iteration every 200 steps; relative step capped at 1% near the origin),
+60 000 steps (train loss then ~1e-6 to 1e-3 of its initial value; no run reached the 1e-8 target).
+Small init: plain model, sigma = 0.3, 0.5. Large init: centred model (W - W_0 fits W*), sigma = 1.
+**Lazy limit:** the exact minimum-norm solution of the model linearized at theta_0 (kernel regression
+with the initial tangent kernel, `lazy_limit`), which the centred model approaches as sigma -> inf.
+Test error = exact population loss, reported as ||W - W*||^2 / ||W*||^2 (1 = zero predictor).
+Effective bond rank = number of bond singular values > 0.1 x 2 = 0.2, averaged over the 6 edges.
+Results: `results/samples_summary.csv`, `fig_samples.png`.
+
+| n | small init sigma=0.3, chi=4 | small sigma=0.5, chi=4 | centred sigma=1, chi=4 | lazy limit chi=4 | small sigma=0.5, chi=16 | centred sigma=1, chi=16 | lazy limit chi=16 |
+|---|---|---|---|---|---|---|---|
+| 128 | 0.79 (median 0.014) | 0.81 (0.17) | 1.25 | 18.5 | 0.57 | 0.99 | 2.35 |
+| 192 | 0.13 (0.0063) | 0.35 (0.0040) | 0.098 | 3.4 | 0.55 (0.017) | 0.36 | 1.86 |
+| 256 | 1.9e-3 | 1.5e-3 | 0.20 | 3.05 | 0.089 (0.0016) | 0.13 | < 1e-20 (exact) |
+| 384 | 1.8e-4 | 1.6e-4 | 0.021 | 2.25 | 1.3e-4 | 0.020 | < 1e-22 |
+| 512 | 4.5e-5 | 2.5e-5 | 0.010 | 1.74 | 6.8e-5 | 0.037 | < 1e-22 |
+
+(mean over 5 seeds; standard errors in the CSV.) Findings (all **empirical**, 5 seeds):
+- **Small init generalizes from the fewest samples**: test error < 2e-3 at n = 256 and ~1e-4 at
+  n = 384 for chi = 4, with effective bond rank exactly 2 (the teacher's) on every edge from n = 256 on;
+  the remaining error is the unfinished training (train loss ~1e-6). Both sigma = 0.3 and 0.5 behave
+  the same. Below n ~ 128-192 small-init GD interpolates with the wrong low-rank tensor (rank 1.3-3,
+  test error ~1-4).
+- **The lazy limit cannot fit W* at finite chi** (chi = 4: tangent dimension 112 < 256): test error
+  > 1 (worse than predicting zero) for every n up to 512, with a double-descent peak of ~30 near
+  n ~ 112, and effective rank 4-5.3 (high-rank, not the teacher's). At full chi = 16 it needs
+  n = d^N = 256 samples and then interpolates W* exactly (unique interpolant); below that it is again
+  worse than zero (1.9-2.9) because a single draw of the tangent kernel is strongly anisotropic (cf.
+  CLAUDE.md, lazy-regime finding), with effective rank up to 6.9.
+- **Centred sigma = 1 is not lazy** (parameters move 30-70% relative): it is in between, error
+  ~0.01-0.04 at n = 384-512, rank 2.4-2.9: feature learning with a weaker low-rank bias.
+- **Sample complexity of the low-rank bias (conjecture):** small-init GD needs n ~ 200-256, about
+  7-9x the 28-dimensional teacher manifold and close to d^N = 256 here. Proposed reason: the first escape
+  follows the empirical correlation tensor (1/n) sum_j y_j Phi(x_j), whose noise per direction is set
+  by the heavy tails of product features, E[y^2 |Phi|^2] / ||W*||^2 = (1 + 2/d)^N = 256 for d = 2,
+  N = 8, so n must exceed ~(1 + 2/d)^N before the escape direction is right. For d = 2 this equals
+  d^N, so the advantage over the lazy regime is only a constant here; for d >= 3 it should grow
+  exponentially in N ((5/3)^N vs 3^N). Not yet tested.
+- **Effective ranks (the implicit bias, directly):** at every n the learned tensor's bond rank is
+  ordered small init (1.3-3.9) < centred sigma = 1 (2.4-5) < lazy limit (4-6.9); only small init lands
+  on rank 2 once the data determine W*.
