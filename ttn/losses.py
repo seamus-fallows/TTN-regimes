@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import torch
 
-from ttn.network import Cores, TTNSpec, forward, norm2
+from ttn.network import Cores, TTNSpec, forward, norm2, sum_difference_cores, two_copy_cores
 
 
 def population_loss(
@@ -16,11 +16,31 @@ def population_loss(
 ) -> torch.Tensor:
     """L = 1/2 E[(f - f*)^2] = 1/2 ||W - W*||_M^2 for x^(i) ~ N(0, M_i) independent across sites.
 
-    Exact (no sampling). Pass `teacher_norm2` to skip recomputing the constant ||W*||_M^2.
+    Exact (no sampling). Pass `teacher_norm2` to skip recomputing the constant ||W*||_M^2 (it must
+    be computed with the same site_metrics). Computed as 1/2 (||W||^2 - 2 <W, W*> + ||W*||^2), so the
+    absolute error is ~1e-16 (||W||^2 + ||W*||^2): fine unless ||W|| >> ||W - W*|| (two-copy or
+    shifted models at large init scale: see `sum_difference_cores`).
     """
     t2 = teacher.norm2(site_metrics) if teacher_norm2 is None else teacher_norm2
     return 0.5 * (
         norm2(spec, cores, site_metrics) - 2 * teacher.inner_ttn(spec, cores, site_metrics) + t2
+    )
+
+
+def centred_population_loss(
+    spec: TTNSpec,
+    cores: Cores,
+    cores0: Cores,
+    base,
+    site_metrics: list[torch.Tensor] | None = None,
+    base_norm2: torch.Tensor | None = None,
+) -> torch.Tensor:
+    """1/2 ||W(theta) - W(theta0) - W*||_M^2, the loss of ShiftedTeacher(base, spec, cores0),
+    computed without cancellation (accurate at any init scale; population_loss with a
+    ShiftedTeacher has absolute error ~1e-16 ||W(theta0)||^2)."""
+    spec2, cores2 = two_copy_cores(spec, cores, cores0)
+    return population_loss(
+        spec2, sum_difference_cores(spec2, cores2), base, site_metrics, base_norm2
     )
 
 
