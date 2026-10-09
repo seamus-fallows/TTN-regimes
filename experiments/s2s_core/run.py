@@ -8,10 +8,14 @@ Raw outputs (trajectory .npz + summary .json per run) go to /root/outputs/s2s_co
 
 from __future__ import annotations
 
+import os
+
+for _k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+    os.environ[_k] = "1"
+
 import argparse
 import itertools
 import json
-import os
 import sys
 import time
 import traceback
@@ -65,7 +69,6 @@ def main():
     # Longest runs first (large K, small sigma) so the pool drains evenly.
     runs.sort(key=lambda c: -(len(c["tree"]) + c["N"]) / c["sigma"])
     print(f"{config['name']}: {len(runs)} runs to do -> {out_dir}", flush=True)
-    os.environ["OMP_NUM_THREADS"] = "1"
     t0 = time.time()
     jobs = [(c, out_dir, config.get("hessians", True)) for c in runs]
     with Pool(args.workers, maxtasksperchild=20) as pool:

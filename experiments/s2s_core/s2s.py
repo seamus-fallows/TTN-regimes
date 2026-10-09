@@ -147,6 +147,56 @@ def zoom_rise(problem, theta, t0, t1, r, n=100, min_points=40, max_levels=10, **
     return t, a, tr["loss"]
 
 
+# ---- chunked integration with a wall-clock limit ----------------------------------------------
+
+
+class Run:
+    """Concatenated chunks of `integrate_gf` (data arrays with the log index first, plus meta)."""
+
+    def __init__(self, data, meta):
+        self.data, self.meta = data, meta
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+
+def integrate_chunked(problem, theta0, t_max, n_log=400, chunk=50, wall_limit=1200.0,
+                      loss_floor=None, extra=(), **gf):
+    """`integrate_gf` on the default log grid, in chunks of `chunk` log times, stopping early when
+    the loss floor is reached or the wall time exceeds wall_limit (stop_reason 'wall_limit').
+    Saves params at every log time. Conservation drift is measured per chunk (relative to the
+    chunk's start); 'conservation_drift' keeps the per-chunk values."""
+    wall0 = time.perf_counter()
+    theta = problem.spec.flatten(theta0) if isinstance(theta0, list) else theta0
+    speed = problem.velocity(theta).norm().item()
+    tau0 = theta.norm().item() / speed
+    grid = np.geomspace(1e-3 * min(tau0, t_max), t_max, n_log)
+    parts, t_off, stop, metas = [], 0.0, None, []
+    for i in range(0, n_log, chunk):
+        times = grid[i : i + chunk] - t_off
+        rec = Recorder(save_params=True, extra=list(extra))
+        tr = integrate_gf(problem, theta, float(times[-1]), log_times=times, recorder=rec,
+                          loss_floor=loss_floor, **gf)
+        d = dict(tr.data)
+        d["t"] = d["t"] + t_off
+        keep = slice(0, None) if not parts else slice(1, None)  # drop the repeated start point
+        parts.append({k: v[keep] for k, v in d.items() if k != "theta_end"})
+        metas.append(tr.meta)
+        theta, t_off = torch.as_tensor(tr.data["theta_end"]), float(d["t"][-1])
+        stop = tr.meta["stop_reason"]
+        if stop != "completed":
+            break
+        if time.perf_counter() - wall0 > wall_limit:
+            stop = "wall_limit"
+            break
+    data = {k: np.concatenate([p[k] for p in parts]) for k in parts[0]}
+    meta = {"stop_reason": stop, "t_end": t_off, "wall_time": time.perf_counter() - wall0,
+            "nfev": sum(m.get("nfev", 0) or 0 for m in metas), "chunks": len(metas),
+            "integrator": metas[-1].get("integrator"), "rtol": metas[-1].get("rtol"),
+            "atol": metas[-1].get("atol"), "problem": metas[-1].get("problem")}
+    return Run(data, meta)
+
+
 # ---- one run ----------------------------------------------------------------------------------
 
 
@@ -161,14 +211,19 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
     cores0 = make_init(spec, teacher, cfg["init"], sigma, cfg["seed"], cfg.get("a0"))
     problem = Problem(spec, teacher)
     theta0 = spec.flatten(cores0)
-    scale = theta0.abs().max().item()
-    gf = dict(method=cfg.get("method", "lsoda"), rtol=cfg.get("rtol", 1e-9),
-              atol=cfg.get("atol_rel", 1e-14) * scale)
+    # atol scales with sigma: parameters that matter for an escape are O(sigma) or larger; anything
+    # far below atol is at the float64 floor anyway (dormant amplitudes ~1e-14 relative to O(1)).
+    gf = dict(method=cfg.get("method", "lsoda"), rtol=cfg.get("rtol", 1e-8),
+              atol=cfg.get("atol_rel", 1e-11) * sigma)
     loss0 = problem.loss(theta0).item()
-    t_max = cfg.get("t_max") or 1e8 * sigma ** (-(K - 2))
-    rec = Recorder(save_params=True, extra=[slice_norm_recorder(teacher), balance_recorder()])
-    tr = integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 400), recorder=rec,
-                      loss_floor=cfg.get("loss_floor", 1e-9) * loss0, **gf)
+    # Budget: 1e3 x the RMS-overlap escape time of the weakest component (gaps are seed-dependent
+    # multiples of it), and a wall-clock limit for runs that stall (LSODA crawls on stalled plateaus).
+    s_min = min(cfg["weights"])
+    t_max = cfg.get("t_max") or 1e3 * p3_prefactor(cfg["d"], cfg["N"], K, s_min) * sigma ** (-(K - 2))
+    tr = integrate_chunked(problem, theta0, t_max, n_log=cfg.get("n_log", 400),
+                           wall_limit=cfg.get("wall_limit", 1200.0),
+                           loss_floor=cfg.get("loss_floor", 1e-9) * loss0,
+                           extra=[slice_norm_recorder(teacher), balance_recorder()], **gf)
     t, a, params = tr["t"], tr["overlaps"], tr["params"]
 
     # Events: final rise of every component, refined in linear time.
@@ -237,12 +292,28 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
                 "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
             }
 
+    # Smallest |<W, U_r>| of every not-yet-learned component between consecutive events. After the
+    # first escape the gradient carries O(1e-16) absolute roundoff, so a dormant amplitude below
+    # ~1e-14 means its later escape is seeded by roundoff (flagged in the analysis).
+    amps = np.abs(a) * np.asarray(cfg["weights"])
+    ev_sorted = [events[r] for r in order]
+    bounds = [0.0] + ev_sorted + [t[-1]]
+    dormant_min = []
+    for i in range(len(bounds) - 1):
+        inside = (t > bounds[i]) & (t < bounds[i + 1])
+        row = {}
+        for r in range(R):
+            if r in order[:i] or not inside.any():
+                continue
+            row[r] = float(amps[inside, r].min())
+        dormant_min.append(row)
+
     np.savez_compressed(
         out_dir / f"{cfg['name']}.npz",
         **{k: v for k, v in tr.data.items() if k not in ("params",)},
         **{f"fine_{k}": v for k, v in fine.items()},
         mid_params=np.array([params[int(np.flatnonzero(t == tm)[0])] for tm in mids if np.isfinite(tm)]),
-        meta=np.array(json.dumps(tr.meta, default=str)),
+        meta=np.array(json.dumps(tr.meta, default=_json)),
     )
     summary = {
         **cfg,
@@ -260,10 +331,12 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
         "s2s": bool(len(order) >= 2 and np.all(rho > 3)),
         "plateaus": plateaus,
         "dormant": dormant,
+        "dormant_min_between_events": dormant_min,
         "max_conservation_drift": float(np.nanmax(tr["conservation_drift"])),
         "q0_max": max(x.abs().max().item() for x in conserved_quantities(spec, cores0).values()),
         "wall_time": time.perf_counter() - wall0,
         "nfev": tr.meta.get("nfev"),
+        "t_max": t_max,
     }
     (out_dir / f"{cfg['name']}.json").write_text(json.dumps(summary, default=_json))
     return summary

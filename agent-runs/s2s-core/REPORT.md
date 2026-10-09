@@ -46,3 +46,10 @@ theory and piloting with scipy.
   diagnostics, correlation-flow prediction), `run.py` (YAML sweep driver until ttn.runner lands).
 - 19:45 Step 1 done: aligned balanced init vs ttn.theory on binary4/8, mps4/8, ht4: max |a_GF - a_th|
   2e-10..3e-9 (dopri5, rtol 1e-10), event times equal to 1e-11 relative (same grid).
+- 20:10 Lead: dormant-component suppression is now an explicit question. First observations
+  (binary8 / mps8, K = 7, 8, sigma = 0.1-0.2, seed 0, chi = 3): after one or two escapes a dormant
+  component's amplitude |<W,U_r>| collapses to 1e-17 .. 1e-41 (below the float64 floor), the loss
+  stalls at the partial-fit level, and LSODA crawls. It happens DURING another component's escape
+  (e.g. a_2: 2e-12 -> 1e-17 while component 3 escapes), and also slowly on plateaus; the
+  gauge-balanced init of the same seed is also suppressed (binary8 chi = 3). chi = 6 keeps the
+  dormant amplitude at ~1e-12 in the one test so far. Merged theory_saddles v2.
