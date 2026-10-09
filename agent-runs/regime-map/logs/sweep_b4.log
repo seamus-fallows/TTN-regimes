@@ -103,3 +103,64 @@
   return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
 /root/work/TTN-regimes/experiments/regime_map/run_regime.py:177: UserWarning: gradient flow became stiff at t = 107.4; at the stability-limited step, reaching t_max takes ~1.0e+05 more steps. Use method='lsoda' (or a loss_floor if training has converged).
   return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
+/root/work/TTN-regimes/experiments/regime_map/run_regime.py:177: UserWarning: gradient flow became stiff at t = 108.7; at the stability-limited step, reaching t_max takes ~1.0e+05 more steps. Use method='lsoda' (or a loss_floor if training has converged).
+  return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
+20/2736 done
+40/2736 done
+60/2736 done
+80/2736 done
+100/2736 done
+120/2736 done
+140/2736 done
+160/2736 done
+180/2736 done
+200/2736 done
+220/2736 done
+240/2736 done
+260/2736 done
+280/2736 done
+300/2736 done
+320/2736 done
+340/2736 done
+360/2736 done
+380/2736 done
+400/2736 done
+420/2736 done
+440/2736 done
+460/2736 done
+480/2736 done
+500/2736 done
+520/2736 done
+540/2736 done
+560/2736 done
+580/2736 done
+600/2736 done
+620/2736 done
+640/2736 done
+660/2736 done
+680/2736 done
+700/2736 done
+720/2736 done
+740/2736 done
+760/2736 done
+780/2736 done
+800/2736 done
+820/2736 done
+840/2736 done
+860/2736 done
+880/2736 done
+900/2736 done
+920/2736 done
+940/2736 done
+960/2736 done
+980/2736 done
+1000/2736 done
+1020/2736 done
+1040/2736 done
+1060/2736 done
+1080/2736 done
+1100/2736 done
+1120/2736 done
+1140/2736 done
+1160/2736 done
+1180/2736 done

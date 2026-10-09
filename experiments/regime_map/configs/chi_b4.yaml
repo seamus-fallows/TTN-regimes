@@ -1,0 +1,10 @@
+# Boundaries vs bond dimension over > 1 decade, binary N = 4 (K = 3), d = 3, odeco [3, 2, 1],
+# uncapped chi = 9..128 (full / overparameterized bonds). Centred model over sigma in [0.004, 4]
+# (S2S boundary ~0.3 -> 0.03, lazy boundary predicted 6.50 chi^-1/2, theory_regimes P5); two-copy over
+# [0.25, 4] (lazy boundary 5.16 chi^-1/2, P6). Per-seed boundaries for exponent fits and collapse tests.
+exp: chi_b4
+base: {kind: binary, n: 4, d: 3, cap: false, l_floor: 1.0e-6}
+grid: {seed: [0, 1, 2, 3, 4, 5]}
+variants:
+  - {model: centred, sigmas: {geomspace: [0.004, 4, 22]}, grid: {chi: [9, 12, 16, 24, 32, 48, 64, 96, 128]}}
+  - {model: twocopy, sigmas: {geomspace: [0.25, 4, 10]}, grid: {chi: [16, 32, 64, 128]}}
