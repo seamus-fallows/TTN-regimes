@@ -1,0 +1,48 @@
+% sections/A_derivations.tex -- Appendix A: derivations. SKELETON.
+% Each derivation: assumptions, statement, proof or derivation, status tag, and the testable
+% prediction it feeds into (with a pointer to the figure that tests it). Sources: the theory notes
+% notes/theory_escape.md, notes/theory_saddles.md, notes/theory_regimes.md and the agents' notes.
+\section{Derivations}\label{app:derivations}
+
+\placeholder{Skeleton. Full derivations behind the statements of the main text; the short proofs of
+\cref{sec:setup} are not repeated.}
+
+\subsection{Gradients and the tangent kernel of a TTN}\label{app:gradients}
+\placeholder{Environment formula for $\nabla_{\G{v}}\Loss$; the tangent kernel at initialization and
+its scale $\isc^{2(\Kc-1)}$.}
+% TODO: grad_{G_v} L = contraction of the residual Sigma(W - W*) with all cores except G_v (the
+% environment of v); expected kernel at fan-in init; needed for Sec. 5.1 (lazy time rescaling).
+
+\subsection{Escape from the origin}\label{app:escape}
+\placeholder{Spherical flow and radial growth for the degree-$\Kc$ homogeneous correlation
+$g(\params)=\ip{\W(\params)}{\Wt}$; alignment time; the first-escape formula of
+\cref{sec:s2s-escape}.}
+% TODO(theory_escape): near the origin, dynamics ~ gradient flow of g. With d tau = |theta|^{K-2} dt
+% the direction follows the spherical gradient flow of g and the radius grows like
+% exp(K int g). Result to state: t_1 ~ rho_0^{-(K-2)} [tau_align + K^{K/2-1}/((K-2) s_1)];
+% aligned limit a_0^{-(K-2)}/((K-2) s). State assumptions (separation of time scales, nondegenerate
+% local maxima of g on the sphere). Status: \derived.
+
+\subsection{Expansion around a learned-component saddle}\label{app:saddles}
+\placeholder{Second-order expansion of $\Loss$ in the directions that add a new component; the
+locality rule for $k$ and the saddle type.}
+% TODO(theory_saddles): lowest-degree escape route; reduced ODE for its amplitude; k-rule (H2) and
+% strict-iff-k=2 (H3); gauge projection of the Hessian (orbit tangents of eq:gauge).
+
+\subsection{Correction of a wrong learning order}\label{app:piggyback}
+\placeholder{The ``piggyback'' direction and its Hessian eigenvalue $q(\tw{\mathrm{learned}}-
+\tw{\mathrm{new}})$ (hypothesis H1b).}
+% TODO: hand derivation for the N = 4 binary tree with odeco teacher, balanced learned amplitudes
+% q = s^{1/K}; generalize.
+
+\subsection{Gradient-descent stability limit}\label{app:gd-stability}
+\placeholder{Sharpness at the balanced global minimum and the predicted $\lr_{\max}$.}
+% TODO: PLAN.md guess eta_max ~ 2 / (K s_1^{2 - 2/K}): verify (for one balanced mode the Hessian
+% of 1/2 (s - prod_v q_v)^2 at q_v = s^{1/K} is s^{2-2/K} 1 1^T, top eigenvalue K s^{2-2/K}) or
+% correct it for the full TTN.
+
+\subsection{Regime boundaries}\label{app:boundaries}
+\placeholder{Lazy criterion and saddle-to-saddle separation criterion as functions of $\isc$,
+$\chi$, $\Kc$ and imbalance; large-bond-dimension scalings.}
+% TODO(theory_regimes): Chizat-type criterion; S2S boundary from escape times with separation
+% ratio 3; muP-type per-core scalings from the spectral condition.

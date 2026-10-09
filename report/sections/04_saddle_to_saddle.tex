@@ -1,0 +1,68 @@
+% sections/04_saddle_to_saddle.tex -- The saddle-to-saddle regime (Q1-Q4, H1-H3). SKELETON.
+% Main section of the report. Sources: PLAN.md Q1-Q4; briefs s2s-core, order (and locality);
+% results in experiments/s2s_core/, experiments/locality/, experiments/order/ and the notes
+% notes/s2s_core.md, notes/locality.md, notes/order.md; theory in notes/theory_escape.md and
+% notes/theory_saddles.md; pilot experiments/pilot_h2_locality/.
+\section{The saddle-to-saddle regime}\label{sec:s2s}
+
+\placeholder{Skeleton. Theory and experiments for gradient flow from small initialization:
+plateau sequence, escape times and their dependence on each parameter, locality of later escapes,
+learning order, saddle types.}
+
+\subsection{Phenomenology}\label{sec:s2s-phenomenology}
+\placeholder{Representative runs: loss in linear and logarithmic time, overlaps, bond spectra on
+every edge, effective ranks; S2S signature (\cref{sec:setup-diagnostics}).}
+% TODO(Q1): fan-in init, odeco teachers with separated weights [3, 2, 1] and close weights
+% [1, 0.85, 0.7]; binary N = 4, 8, MPS N = 4, 8, HT N = 4; chi = R and 2R; 10 seeds.
+% Questions: are plateau levels the partial-fit levels L_k (eq:partial-fit)? Do bond spectra grow
+% one value at a time on every edge simultaneously? Are the plateaus near critical points of the
+% bond-rank-constrained problem? Status expected: \empirical. PLAN.md: "partly known" (Razin et al.
+% 2022 for hierarchical tensor factorization; Jacot et al. 2021 for DLNs).
+
+\subsection{An exactly solvable case: aligned initialization}\label{sec:s2s-aligned}
+\placeholder{\Cref{prop:aligned} in experiments: TTN gradient flow against the exact mode
+solutions for binary, MPS and HT trees.}
+% TODO: overlay figure, max deviation. This reproduces Saxe et al. (2014) in the TTN setting:
+% mark \knownresult[\citealp{saxe2014exact}]; it is a demonstration and integrator check, not a
+% new claim. Include the escape-time asymptotics eq:aligned-escape and the unbalanced reduction
+% (ttn/theory.py: m smallest cores give a depth-m mode).
+
+\subsection{Escape from the origin}\label{sec:s2s-escape}
+\placeholder{First escape time $t_1$ versus $\isc$, $\chi$ and $\Kc$, against the prediction.}
+% TODO(Q2): hypothesis t_1 ~ rho_0^{-(K-2)} [tau_align + K^{K/2-1} / ((K-2) s_1)], rho_0 = ||theta_0||
+% (spherical flow of the degree-K homogeneous g = <W, W*> plus radial growth; Kumar & Haupt-type
+% directional convergence). Consequences: t_1 ~ sigma^{-(K-2)}; at fixed sigma t_1 decreases with
+% chi through rho_0^2 ~ sigma^2 sum_v chi_v (Prop. init-norm). Figures: t_1 vs sigma per tree with
+% fits and theory; prefactor distribution over seeds vs theory; t_1 vs chi; t_1 vs K. Table of
+% fitted exponents (with s.e.) vs K - 2. Separate parameter-free predictions from fitted ones.
+% Status: \derived (theory, under the stated assumptions) + \empirical (fits); \newresult for TTNs.
+
+\subsection{Later saddles and locality}\label{sec:s2s-locality}
+\placeholder{Escape times after the first plateau depend on where the new component lives in the
+tree.}
+% TODO(Q3, H2): k = number of cores in the Steiner subtree of the sites where the new component
+% differs from what is learned (Prop. teacher-spectra (b)). Prediction: t_{i+1} - t_i ~
+% sigma^{-(k-2)} for k >= 3, ~ log(1/sigma)/lambda for k = 2, no plateau for k = 1. The same
+% teacher has different saddle sequences on an MPS and on a binary tree. Pattern teachers (local,
+% far, global) on MPS, binary, HT, custom trees, N = 4-8. Exponent table: measured vs predicted k.
+% (H3) strict saddle iff k = 2: gauge-projected Hessian at plateau midpoints (number of negative
+% eigenvalues, lambda_min/lambda_max). Pilot: experiments/pilot_h2_locality. Status: believed
+% open -> \newresult if confirmed; \conjecture until then.
+
+\subsection{Order of learning}\label{sec:s2s-order}
+\placeholder{Which component is learned first, how random the order is, and how a wrong order is
+corrected.}
+% TODO(Q4, H1, H1b): P(larger first) vs s2/s1 in {0.5, ..., 0.99}, K, chi, d with binomial error
+% bars (>= 200 seeds); race-model / basin prediction overlay; matrix-like teacher as control
+% (greedy). H1b: after the smaller component is learned first, a strict saddle with Hessian
+% eigenvalue q (s_learned - s_new) < 0 rotates the learned component in time O(log 1/sigma).
+% Three or more components: Kendall tau with the greedy order. Known ingredients: odeco components
+% are attracting fixed points of the tensor power method (anandkumar2014tensor); directional
+% convergence near small init (Kumar & Haupt).
+
+\subsection{Dependence on each parameter}\label{sec:s2s-parameters}
+\placeholder{Summary table: initialization scale, number of cores and tree shape, bond dimension,
+physical dimension, teacher spectrum, imbalance, learning rate; effect on plateau levels, durations
+and order; status of each statement.}
+% TODO: one row per parameter with: effect on the saddle sequence | on plateau durations | on the
+% order | evidence (figure) | status tag | new/known.

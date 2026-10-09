@@ -1,0 +1,41 @@
+% sections/06_covariance_teacher.tex -- Effects of input covariance and teacher structure (Q6,
+% Q7, H5). SKELETON.
+% Sources: PLAN.md Q6, Q7; brief notes/briefs/data-teacher.md; results in
+% experiments/data_teacher/ and notes/data_teacher.md.
+\section{Effects of input covariance and teacher structure}\label{sec:covariance-teacher}
+
+\placeholder{Skeleton. Starting from whitened inputs and an odeco teacher, one complication at a
+time: does it change the saddle-to-saddle picture qualitatively, quantitatively, or not at all?}
+
+\subsection{Anisotropic covariance aligned with the teacher}\label{sec:cov-aligned}
+\placeholder{Prediction: component $r$ behaves as if its weight were $\Lambda_r\tw{r}$,
+$\Lambda_r=\prod_i\lambda_{r,i}$.}
+% TODO(H5): power-law site spectra (Sec. 2.3); odeco teacher whose factors are covariance
+% eigenvectors with eigenvalues lambda_{r,i}. With aligned init the reduction of Prop. aligned holds
+% with L = 1/2 sum_r Lambda_r (s_r - Pi_r)^2, so escape times and order follow Lambda_r s_r
+% (\derived). Test quantitatively, including a case where the covariance reverses the order of two
+% components. PLAN.md: "partly known (Saxe-type reweighting)".
+
+\subsection{Misaligned covariance}\label{sec:cov-misaligned}
+\placeholder{Teacher factors that are not covariance eigenvectors.}
+
+\subsection{Cross-site correlations}\label{sec:cov-correlated}
+\placeholder{One correlated input model (shared latent factor), with sampled data and small steps.}
+% TODO: online SGD / large batches with small steps to approximate gradient flow; does S2S survive,
+% do the saddles change?
+
+\subsection{Non-orthogonal CP teachers}\label{sec:teacher-cp}
+\placeholder{Saddle sequence and plateau levels versus the overlap between components.}
+
+\subsection{Random TTN teachers}\label{sec:teacher-ttn}
+\placeholder{Are the visited saddles the hierarchical-SVD truncations of the teacher, and in which
+order do bond ranks grow?}
+% TODO: compare bond spectra at plateaus with the teacher's (grasedyck2010hierarchical for HSVD).
+
+\subsection{Teacher and student on different trees}\label{sec:teacher-mismatch}
+\placeholder{Which bonds grow first when the teacher's correlation structure does not match the
+student's tree; connection to locality (\cref{sec:s2s-locality}).}
+
+\subsection{Summary}\label{sec:cov-summary}
+\placeholder{Table: complication, why it was checked, what changed, and whether the baseline
+theory (possibly after a substitution such as effective weights) predicts it.}

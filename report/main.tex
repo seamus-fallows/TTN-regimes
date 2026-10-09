@@ -1,0 +1,169 @@
+% main.tex -- report: training dynamics of tree tensor networks.
+%
+% Build with ./build.sh (pdflatex, bibtex, pdflatex, pdflatex); see README.md.
+% One file per section in sections/; notation in macros.tex; TikZ sources in tikz/;
+% figures collected from experiments/*/results/ into figures/ by collect_figures.sh.
+
+\documentclass[11pt,letterpaper]{article}
+
+% ---- fonts and page ------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}      % 6.5in x 9in text block
+\usepackage{microtype}
+
+% ---- mathematics ---------------------------------------------------------------------------
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% ---- figures, tables, colour -----------------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{siunitx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{enumitem}
+\usepackage{xspace}
+\usepackage{aliascnt}
+% Uncomment when an algorithm is needed (must stay before hyperref):
+% \usepackage[ruled,vlined]{algorithm2e}
+
+\captionsetup{font=small,labelfont=bf}
+\captionsetup[sub]{font=small,labelfont=bf}
+\sisetup{separate-uncertainty=true}
+\setlist{itemsep=2pt,topsep=4pt}
+
+% ---- bibliography and links (hyperref, doi and cleveref come last) ----------------------------
+\usepackage[round,authoryear]{natbib}
+\bibliographystyle{plainnat}
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=OliveGreen,urlcolor=RoyalPurple,
+            bookmarksnumbered=true]{hyperref}
+\usepackage{doi}
+\usepackage[capitalise,noabbrev]{cleveref}
+\hypersetup{pdftitle={Training dynamics of tree tensor networks},
+            pdfsubject={Saddle-to-saddle, lazy and rich regimes of tree tensor network training}}
+
+% ---- theorem-like environments ------------------------------------------------------------------
+% One shared counter, numbered within sections. Each environment gets its own alias of the
+% "theorem" counter: with the current LaTeX kernel, cleveref (v0.21.4) would otherwise call every
+% environment that shares a counter a "Theorem". The environment "conjecture" is completed below,
+% after the status tags, because its name is shared with the \conjecture tag.
+\newcommand{\newsharedtheorem}[2]{% #1 environment, #2 printed name
+  \newaliascnt{#1}{theorem}\newtheorem{#1}[#1]{#2}\aliascntresetthe{#1}%
+  \crefname{#1}{#2}{#2s}}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\crefname{theorem}{Theorem}{Theorems}
+\newsharedtheorem{proposition}{Proposition}
+\newsharedtheorem{lemma}{Lemma}
+\newsharedtheorem{corollary}{Corollary}
+\crefname{corollary}{Corollary}{Corollaries}
+\newsharedtheorem{conjectureenv}{Conjecture}
+\theoremstyle{definition}
+\newsharedtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newsharedtheorem{remark}{Remark}
+
+% ---- status tags and new/known markers ---------------------------------------------------------
+% Every claim carries one status tag:
+%   \proven      complete proof given (or cited)
+%   \derived     derivation under stated assumptions (not a full proof)
+%   \empirical   supported by experiments only
+%   \conjecture  stated without derivation or sufficient evidence
+% Results are marked \newresult[qualifier] (believed new) or \knownresult[reference] (known).
+\definecolor{tagproven}{HTML}{1B7837}
+\definecolor{tagderived}{HTML}{2166AC}
+\definecolor{tagempirical}{HTML}{B35806}
+\definecolor{tagconjecture}{HTML}{762A83}
+\definecolor{tagnew}{HTML}{C51B7D}
+\definecolor{tagknown}{HTML}{525252}
+\definecolor{todocolor}{HTML}{B2182B}
+
+\newcommand{\statustag}[2]{% #1 colour, #2 label
+  {\setlength{\fboxsep}{1.1pt}\setlength{\fboxrule}{0.4pt}%
+   \fcolorbox{#1}{#1!7}{\textcolor{#1}{\sffamily\scriptsize\bfseries #2}}}}
+\newcommand{\tagnote}[1]{\if\relax\detokenize{#1}\relax\else\,{\upshape\small(#1)}\fi}
+\DeclareRobustCommand{\proven}{\statustag{tagproven}{proven}}
+\DeclareRobustCommand{\derived}{\statustag{tagderived}{derived}}
+\DeclareRobustCommand{\empirical}{\statustag{tagempirical}{empirical}}
+\DeclareRobustCommand{\conjecturetag}{\statustag{tagconjecture}{conjecture}}
+\DeclareRobustCommand{\newresult}[1][]{\statustag{tagnew}{new}\tagnote{#1}}
+\DeclareRobustCommand{\knownresult}[1][]{\statustag{tagknown}{known}\tagnote{#1}}
+\let\conjecture\conjecturetag
+
+% \begin{conjecture}[title] ... \end{conjecture} is the theorem-like environment; elsewhere
+% \conjecture is the status tag. The env/begin hook runs inside the environment's group just
+% before \begin calls \conjecture, so the redefinition below is local to the environment and the
+% tag is restored for the environment's body.
+\AddToHook{env/conjecture/begin}{%
+  \def\conjecture{\let\conjecture\conjecturetag\conjectureenv}%
+  \let\endconjecture\endconjectureenv}
+
+\pdfstringdefDisableCommands{%
+  \def\proven{[proven]}\def\derived{[derived]}\def\empirical{[empirical]}%
+  \def\conjecture{[conjecture]}\def\newresult{[new]}\def\knownresult{[known]}}
+
+% ---- drafting aids ---------------------------------------------------------------------------
+% \showtodosfalse hides all placeholders and TODO notes (for a final version).
+\newif\ifshowtodos
+\showtodostrue
+\newcommand{\placeholder}[1]{%
+  \ifshowtodos\par\noindent{\color{todocolor}\small\itshape[#1]}\par\fi}
+\newcommand{\TODO}[1]{\ifshowtodos{\color{todocolor}\sffamily\footnotesize[TODO: #1]}\fi}
+
+% ---- notation ---------------------------------------------------------------------------------
+\input{macros}
+
+% ---- front matter ---------------------------------------------------------------------------
+\title{Training dynamics of tree tensor networks:\\
+       saddle-to-saddle, lazy and rich regimes}
+\author{TTN regimes project\thanks{Working draft; authors to be added.}}
+\date{Draft of \today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  \placeholder{Abstract to be written last: question, model (TTN regression with exact
+  population loss), the regimes found and the parameters that select them, main new results with
+  their status.}
+  % TODO(abstract): 150-200 words. State: TTN regression f(x) = <W, phi_1 (x) ... (x) phi_N>,
+  % gradient flow from small/large init; which regimes occur (S2S, lazy, rich non-incremental);
+  % the main new results (escape-time scaling with K, locality of later escapes, random learning
+  % order) with their status; the regime map.
+\end{abstract}
+
+\tableofcontents
+
+\paragraph{Conventions.}
+Every claim carries a status tag: \proven{} (proof given or cited), \derived{} (derivation
+under stated assumptions), \empirical{} (supported by experiments only) or \conjecture{} (stated
+without sufficient derivation or evidence). Results we believe to be new are marked \newresult{},
+known results \knownresult{} with a reference; unmarked statements are definitions or standard
+background. Notation is defined in \cref{sec:setup} and collected in \texttt{macros.tex}.
+
+\input{sections/01_introduction}
+\input{sections/02_setup}
+\input{sections/03_regime_map}
+\input{sections/04_saddle_to_saddle}
+\input{sections/05_other_regimes}
+\input{sections/06_covariance_teacher}
+\input{sections/07_open_questions}
+
+\bibliography{references}
+
+\appendix
+\input{sections/A_derivations}
+\input{sections/B_experimental_details}
+\input{sections/C_reproducibility}
+
+\end{document}

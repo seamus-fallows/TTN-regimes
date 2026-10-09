@@ -37,7 +37,7 @@ A tree is given by a parent array and the list of sites attached to each node. B
 
 | name | description | K |
 |---|---|---|
-| `binary` | balanced binary tree; bottom nodes carry 2 sites each; internal nodes have 2 children | N - 1 |
+| `binary` | balanced binary tree; bottom nodes carry up to 2 sites; internal nodes have 2 children | N - 1 when N is a power of 2 (more otherwise) |
 | `mps` | chain (caterpillar): node k carries site k; the most unbalanced tree | N |
 | `ht` | hierarchical Tucker: balanced binary tree plus one leaf core per site | 2N - 1 |
 | custom | any parent array / site assignment | - |
@@ -71,11 +71,16 @@ report both sigma (per core) and alpha = sigma^K (function-space scale).
 
 Variants, all supported by the library:
 - **Imbalance**: per-core scales sigma_v (e.g. root vs rest, or by depth).
-- **Antisymmetric ("lazy-capable") init**: bond dimensions doubled, block-diagonal cores, the two
-  root blocks with opposite sign, so W = W(theta+) - W(theta-) with theta+ = theta- at t = 0 and
-  W_0 = 0 exactly at any sigma (Woodworth et al.'s construction applied to TTNs). It is still a TTN
-  (block-diagonal structure is preserved by gradient flow). Large sigma with time rescaled by
-  sigma^{2(K-1)} gives the lazy limit.
+- **Centred model** (main lazy-capable construction): train on the target W* + W_0, where W_0 is
+  the student's initial tensor (`ttn.teachers.ShiftedTeacher`); equivalently train f_theta - f_theta0
+  on W* (Chizat, Oyallon & Bach 2019). The initial function is removed exactly at any sigma without
+  changing the parameterization, so sigma alone moves the TTN from small-init dynamics to the lazy
+  limit (time rescaled by the tangent-kernel scale ~ sigma^{2(K-1)}).
+- **Two-copy model** (cross-check): W = W(theta+) - W(theta-) with theta+ = theta- at t = 0
+  (Woodworth et al. 2020), stored as a TTN with doubled bond dimensions and block-diagonal cores.
+  Gradient flow does NOT preserve the block structure on its own (the root's mixed blocks couple the
+  "+" subtree of one child to the "-" subtree of another), so the gradient is multiplied by a 0/1
+  mask (`ttn.network.antisymmetric_double` returns it).
 - **Aligned ("decoupled") init** for CP/odeco teachers: cores diagonal in the teacher's basis, giving
   exactly solvable Saxe-type dynamics (one scalar ODE per component).
 - **Per-core learning-rate multipliers** eta_v. A forward multiplier a_v on core v is equivalent to

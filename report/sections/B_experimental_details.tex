@@ -1,0 +1,29 @@
+% sections/B_experimental_details.tex -- Appendix B: experimental details. SKELETON.
+% One subsection per experiment folder. Pull the numbers from the experiment READMEs and configs
+% (experiments/<name>/configs/*.yaml); never retype them by hand if a script can print them.
+\section{Experimental details}\label{app:experiments}
+
+\placeholder{Skeleton. For every experiment: trees, dimensions, teachers, initialization, dynamics
+and tolerances, sweeps, seeds, time budgets, compute cost.}
+
+\subsection{Common settings}\label{app:exp-common}
+\placeholder{Double precision; Dormand--Prince 5(4) with relative and absolute tolerances
+$10^{-8}$ and $10^{-12}$ unless stated; recording grid; conservation-drift threshold $10^{-6}$;
+event detection; Hessian and kernel computations.}
+% TODO: how crossing times are located (interpolation on the log grid vs dense output / root
+% finding as in experiments/pilot_h2_locality/h2sim.py); Hessian by autodiff + gauge projection;
+% probe set seed; machines used (vCPU type), wall times, total cost from notes/spend.md.
+
+\subsection{Saddle-to-saddle experiments}\label{app:exp-s2s}
+\placeholder{Settings of the experiments of \cref{sec:s2s} (s2s-core, locality, order).}
+% TODO: table per experiment: trees, N, d, chi, teacher (type, weights), sigma grid, seeds, t_max,
+% loss floor, number of runs, cost.
+
+\subsection{Regime-map experiments}\label{app:exp-regimes}
+\placeholder{Grids, seeds and time budgets of the phase diagrams of \cref{sec:regime-map}.}
+
+\subsection{Covariance and teacher experiments}\label{app:exp-data-teacher}
+\placeholder{Settings of \cref{sec:covariance-teacher}.}
+
+\subsection{Optimizer and sample-size experiments}\label{app:exp-optim}
+\placeholder{Learning rates, batch sizes, training-set sizes and seeds of \cref{sec:other-optim}.}

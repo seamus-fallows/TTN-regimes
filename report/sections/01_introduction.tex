@@ -1,0 +1,67 @@
+% sections/01_introduction.tex -- Introduction and summary of findings. SKELETON.
+% Write last, from the results sections. Every finding listed here must point to the section,
+% figure and status tag that support it, and be marked \newresult or \knownresult.
+\section{Introduction and summary of findings}\label{sec:intro}
+
+\placeholder{Skeleton. To be written once the results sections exist; intended content is in the
+TODO comments of this file.}
+
+\subsection{Question and motivation}\label{sec:intro-question}
+\placeholder{Which training regimes do tree tensor networks show under gradient methods, which
+parameters select them, and how far theory predicts them; the main focus is saddle-to-saddle
+dynamics.}
+% TODO(intro): motivation in three steps.
+%  1. TTNs (MPS/tensor trains, HT, binary trees) are used as ML models (Stoudenmire & Schwab 2016;
+%     Novikov et al.; Cheng et al. 2019; Liu et al. 2019) and their training is delicate (init
+%     scale, barren plateaus: Liu et al. 2022; Miao & Barthel), but their training dynamics is not
+%     characterized.
+%  2. A TTN regression model is multilinear and degree-K homogeneous in the cores, like a deep linear
+%     network, where small init gives saddle-to-saddle / incremental learning (Saxe et al. 2014;
+%     Jacot et al. 2021) and large init gives lazy training (Chizat et al. 2019). What does the
+%     *tree* add? Locality of components relative to the tree, number of cores K vs depth, bond
+%     dimension as width, genuinely tensorial teachers (many local maxima of <W, W*> on the sphere).
+%  3. State the questions Q1-Q8 of PLAN.md compactly (S2S existence and saddles; plateau-time
+%     scaling; locality; order; regime map; covariance; teacher structure; LR/SGD/samples).
+
+\subsection{Summary of findings}\label{sec:intro-summary}
+\placeholder{One table with one row per question (Q1--Q8 of the research plan): finding, status
+tag, new or known, and where it is shown.}
+% TODO(intro): table columns: question | finding (one sentence) | status tag | new/known | section,
+% figure. Fill from sections 3-6 and the agents' notes (notes/s2s_core.md, notes/locality.md,
+% notes/order.md, notes/regime_map.md, notes/data_teacher.md, notes/optim_samples.md).
+% Expected rows (from PLAN.md hypotheses; replace by actual results):
+%  Q1 S2S from small fan-in init: plateaus at partial-fit levels L_k, bond spectra grow one value at
+%     a time, saddles = critical points of the bond-rank-constrained problem (H1).
+%  Q2 first escape t_1 ~ rho_0^{-(K-2)} [tau_align + K^{K/2-1}/((K-2) s_1)]; t_1 ~ sigma^{-(K-2)};
+%     decreases with chi at fixed sigma.
+%  Q3 later escapes: exponent set by k = cores in the Steiner subtree of the differing sites (H2);
+%     strict saddle iff k = 2 (H3); same teacher, different saddle sequences on MPS vs binary.
+%  Q4 learning order random for tensorial teachers; P(greedy) vs s2/s1, K, chi (H1); wrong order
+%     corrected through a strict saddle (H1b).
+%  Q5 regime map: sigma moves S2S -> rich -> lazy (centred model); boundary sigma_c(K) -> 1;
+%     imbalance as second knob; NTK vs muP at large chi (H4).
+%  Q6 aligned covariance acts through Lambda_r s_r (H5).
+%  Q7 teacher structure (non-orthogonal CP, random TTN teachers, tree mismatch).
+%  Q8 GD stability limit, EoS, SGD noise, finite samples.
+
+\subsection{Relation to prior work}\label{sec:intro-prior}
+\placeholder{What is known (deep linear networks, diagonal networks, tensor factorization, lazy
+versus rich, tensor networks for learning) and what is new here.}
+% TODO(lit): draw from notes/literature.md once final. Anchor papers (already in references.bib):
+%  - DLN exact dynamics and S2S: saxe2014exact, saxe2019mathematical, jacot2022saddletosaddle,
+%    gidel2019implicit, gissin2020implicit, arora2019implicit, li2021towards.
+%  - Diagonal networks / kernel-rich: woodworth2020kernel, pesme2023saddletosaddle, berthier2023incremental.
+%  - Lazy vs rich: chizat2019lazy, jacot2018neural, geiger2020disentangling, kunin2024get.
+%  - Tensor factorization: razin2021implicit, razin2022implicit, ge2021understanding,
+%    wang2020beyond, hariz2022implicit.
+%  - Homogeneous nets near small init: kumar2024directional, kumar2025early.
+%  - Tensor networks for ML: stoudenmire2016supervised, novikov2018exponential, cohen2016expressive,
+%    levine2018deep; barren plateaus: liu2022presence, miao2024isometric, barthel2025absence.
+%  State explicitly which of our results are new (mark \newresult) and which reproduce known
+%  results in the TTN setting (mark \knownresult with the reference).
+
+\subsection{Outline}\label{sec:intro-outline}
+\placeholder{Roadmap of the report.}
+% TODO(intro): Section 2 setup; Section 3 regime map; Section 4 saddle-to-saddle (main);
+% Section 5 other regimes; Section 6 covariance and teacher; Section 7 open questions; appendices:
+% derivations, experimental details, reproducibility.

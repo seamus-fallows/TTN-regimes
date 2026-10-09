@@ -1,0 +1,42 @@
+% sections/05_other_regimes.tex -- Other regimes (lazy, rich non-incremental, stalled; discrete
+% steps, SGD noise, finite samples). SKELETON.
+% Sources: PLAN.md Q5 (lazy/rich parts) and Q8; briefs regime-map and optim-samples; results in
+% experiments/regime_map/, experiments/optim_samples/ and their notes.
+\section{Other regimes}\label{sec:other-regimes}
+
+\placeholder{Skeleton. The regimes other than saddle-to-saddle, and how discrete steps, gradient
+noise and finite samples modify the gradient-flow picture.}
+
+\subsection{Lazy regime}\label{sec:other-lazy}
+\placeholder{Large initialization in the centred and two-copy models: linearized dynamics, kernel
+at initialization, time rescaling by $\isc^{2(\Kc-1)}$.}
+% TODO: tangent kernel at init (theory_regimes.md); relative kernel change vs sigma; known in
+% general (chizat2019lazy, jacot2018neural, woodworth2020kernel): mark \knownresult; the TTN kernel
+% itself (its spectrum vs tree) may be new.
+
+\subsection{Rich, non-incremental regime}\label{sec:other-rich}
+\placeholder{Intermediate scales where features move but transitions overlap; what sets the
+crossover.}
+% TODO: overlapping events (rho_i <= 3); compare with DLN lazy-to-rich exact solutions (Domine et
+% al.; kunin2024get; Tu, Aranguri & Jacot mixed regime).
+
+\subsection{Stalled runs}\label{sec:other-stalled}
+\placeholder{Runs that do not converge within the budget: long initial plateaus at small
+$\isc$ and large $\Kc$, and the relation to barren plateaus.}
+% TODO: escape time ~ sigma^{-(K-2)} makes small-init deep trees stall; contrast with barren
+% plateau results for TN learning (liu2022presence; miao2024isometric; barthel2025absence).
+
+\subsection{Large bond dimension: NTK versus \texorpdfstring{$\mu$P}{muP}}\label{sec:other-large-chi}
+\placeholder{Per-core scalings for an infinite-bond-dimension limit with and without feature
+learning.}
+% TODO: spectral condition per core (Yang, Simon & Bernstein 2023; Yang & Hu 2021 abc
+% parameterizations); express via per-core init scales and lr multipliers (Sec. 2.4 variant (e)).
+
+\subsection{Discrete steps, gradient noise and finite samples}\label{sec:other-optim}
+\placeholder{Gradient descent versus gradient flow, the stability limit and edge of stability;
+SGD noise and plateau durations; sample complexity of the saddle-to-saddle and lazy regimes.}
+% TODO(Q8, H6): GD stability limit eta_max ~ 2 / (K s_1^{2-2/K}) from the sharpness at the
+% balanced minimum (verify or correct); EoS behaviour near eta_max (cohen2021gradient,
+% lewkowycz2020large, even2023sgd); does a large step or SGD noise shorten plateaus at small sigma
+% (plateau time vs batch size B and eta)? Finite n: test error vs n for small vs large init; low
+% hierarchical rank bias of S2S vs min-norm tangent-space solution of lazy (razin2022implicit).

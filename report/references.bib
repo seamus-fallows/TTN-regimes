@@ -1,0 +1,772 @@
+% references.bib -- bibliography of the report (natbib + plainnat.bst, BibTeX). Pure ASCII.
+%
+% Every entry was checked against the publication itself (proceedings page, publisher page, Crossref
+% record or arXiv page); the "% verified:" line(s) above each entry name the sources. Fields that
+% could not be verified were left out. The archival version is cited when one exists, otherwise
+% the arXiv preprint (as a misc entry with howpublished). Never write an at-sign outside an
+% entry: BibTeX reads it as the start of an entry, even in a comment.
+%
+% Keys: <first author's last name><year><first title word other than a/an/the/on/of/in/from/to/
+% for/and/with>, lowercase ASCII letters only (e.g. saxe2014exact, pesme2023saddletosaddle).
+% Entries are grouped by topic; add new ones to the matching group, with a "% verified:" line.
+
+% ================================================================================================
+% Deep linear networks: exact dynamics, incremental learning, saddle-to-saddle
+% ================================================================================================
+
+% verified: https://www.iclr.cc/archive/2014/conference-proceedings ; https://arxiv.org/abs/1312.6120
+@inproceedings{saxe2014exact,
+  author    = {Saxe, Andrew M. and McClelland, James L. and Ganguli, Surya},
+  title     = {Exact solutions to the nonlinear dynamics of learning in deep linear neural networks},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2014}
+}
+
+% verified: https://api.crossref.org/works/10.1073/pnas.1820226116
+@article{saxe2019mathematical,
+  author  = {Saxe, Andrew M. and McClelland, James L. and Ganguli, Surya},
+  title   = {A mathematical theory of semantic development in deep neural networks},
+  journal = {Proceedings of the National Academy of Sciences},
+  volume  = {116},
+  number  = {23},
+  pages   = {11537--11546},
+  year    = {2019},
+  doi     = {10.1073/pnas.1820226116}
+}
+
+% verified: https://api.crossref.org/works/10.1016/j.neunet.2020.08.022 ; https://arxiv.org/abs/1710.03667
+@article{advani2020highdimensional,
+  author  = {Advani, Madhu S. and Saxe, Andrew M. and Sompolinsky, Haim},
+  title   = {High-dimensional dynamics of generalization error in neural networks},
+  journal = {Neural Networks},
+  volume  = {132},
+  pages   = {428--446},
+  year    = {2020},
+  doi     = {10.1016/j.neunet.2020.08.022}
+}
+
+% verified: https://iclr.cc/virtual/2019/poster/798 ; https://arxiv.org/abs/1809.10374 ; https://arxiv.org/pdf/1809.10374v2
+@inproceedings{lampinen2019analytic,
+  author    = {Lampinen, Andrew K. and Ganguli, Surya},
+  title     = {An analytic theory of generalization dynamics and transfer learning in deep linear networks},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2019}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2022/file/2b3bb2c95195130977a51b3bb251c40a-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2022/file/2b3bb2c95195130977a51b3bb251c40a-Paper-Conference.pdf ; https://api.crossref.org/works/10.52202/068431-0479
+@inproceedings{braun2022exact,
+  author    = {Braun, Lukas and Domin{\'e}, Cl{\'e}mentine C. J. and Fitzgerald, James E. and Saxe, Andrew M.},
+  title     = {Exact learning dynamics of deep linear networks with prior knowledge},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {35},
+  pages     = {6615--6629},
+  year      = {2022},
+  doi       = {10.52202/068431-0479}
+}
+
+% verified: https://proceedings.iclr.cc/paper_files/paper/2025/hash/fde1a69a5b6e554b2f1f727197d2651d-Abstract-Conference.html ; https://proceedings.iclr.cc/paper_files/paper/2025/file/fde1a69a5b6e554b2f1f727197d2651d-Paper-Conference.pdf ; https://arxiv.org/abs/2409.14623
+@inproceedings{domine2025lazy,
+  author    = {Domin{\'e}, Cl{\'e}mentine C. J. and Anguita, Nicolas and Proca, Alexandra M. and Braun, Lukas and Kunin, Daniel and Mediano, Pedro A. M. and Saxe, Andrew M.},
+  title     = {From Lazy to Rich: Exact Learning Dynamics in Deep Linear Networks},
+  booktitle = {International Conference on Learning Representations},
+  pages     = {102485--102536},
+  year      = {2025}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2024/file/94074dd5a072d28ff75a76dabed43767-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2024/file/94074dd5a072d28ff75a76dabed43767-Paper-Conference.pdf ; https://api.crossref.org/works/10.52202/079017-2580
+@inproceedings{kunin2024get,
+  author    = {Kunin, Daniel and Ravent{\'o}s, Allan and Domin{\'e}, Cl{\'e}mentine and Chen, Feng and Klindt, David and Saxe, Andrew and Ganguli, Surya},
+  title     = {Get rich quick: exact solutions reveal how unbalanced initializations promote rapid feature learning},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {37},
+  pages     = {81157--81203},
+  year      = {2024},
+  doi       = {10.52202/079017-2580}
+}
+
+% verified: https://papers.neurips.cc/paper_files/paper/2024/hash/bfa7d650ddfd7bd55866ee92f7a3393b-Abstract-Conference.html ; https://proceedings.neurips.cc/paper_files/paper/2024/file/bfa7d650ddfd7bd55866ee92f7a3393b-Bibtex.bib ; https://api.crossref.org/works/10.52202/079017-3365
+@inproceedings{tu2024mixed,
+  author    = {Tu, Zhenfeng and Aranguri, Santiago and Jacot, Arthur},
+  title     = {Mixed Dynamics In Linear Networks: Unifying the Lazy and Active Regimes},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {37},
+  pages     = {106059--106104},
+  year      = {2024},
+  doi       = {10.52202/079017-3365}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2016/hash/f2fc990265c712c49d51a18a32b39f0c-Abstract.html ; https://proceedings.neurips.cc/paper_files/paper/2016/file/f2fc990265c712c49d51a18a32b39f0c-Bibtex.bib
+@inproceedings{kawaguchi2016deep,
+  author    = {Kawaguchi, Kenji},
+  title     = {Deep Learning without Poor Local Minima},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {29},
+  year      = {2016}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2019/file/f39ae9ff3a81f499230c4126e01f421b-Bibtex.bib
+@inproceedings{gidel2019implicit,
+  author    = {Gidel, Gauthier and Bach, Francis and Lacoste-Julien, Simon},
+  title     = {Implicit Regularization of Discrete Gradient Dynamics in Linear Neural Networks},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {32},
+  year      = {2019}
+}
+
+% verified: https://iclr.cc/virtual_2020/poster_H1lj0nNFwB.html ; https://iclr.cc/virtual/2020/poster/1678 ; https://arxiv.org/abs/1909.12051
+@inproceedings{gissin2020implicit,
+  author    = {Gissin, Daniel and Shalev-Shwartz, Shai and Daniely, Amit},
+  title     = {The Implicit Bias of Depth: How Incremental Learning Drives Generalization},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2020}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2019/file/c0c783b5fc0d7d808f1d14a6e9c8280d-Bibtex.bib
+@inproceedings{arora2019implicit,
+  author    = {Arora, Sanjeev and Cohen, Nadav and Hu, Wei and Luo, Yuping},
+  title     = {Implicit Regularization in Deep Matrix Factorization},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {32},
+  year      = {2019}
+}
+
+% verified: https://iclr.cc/virtual/2021/poster/3291 ; https://arxiv.org/abs/2012.09839
+@inproceedings{li2021towards,
+  author    = {Li, Zhiyuan and Luo, Yuping and Lyu, Kaifeng},
+  title     = {Towards Resolving the Implicit Bias of Gradient Descent for Matrix Factorization: Greedy Low-Rank Learning},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2021}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2020/file/f21e255f89e0f258accbe4e984eef486-Bibtex.bib
+@inproceedings{razin2020implicit,
+  author    = {Razin, Noam and Cohen, Nadav},
+  title     = {Implicit Regularization in Deep Learning May Not Be Explainable by Norms},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {33},
+  pages     = {21174--21187},
+  year      = {2020}
+}
+
+% verified: https://arxiv.org/abs/2106.15933 ; https://arxiv.org/abs/2106.15933v1 ; https://sites.google.com/view/arthurjacot
+@misc{jacot2022saddletosaddle,
+  author       = {Jacot, Arthur and Ged, Fran{\c{c}}ois and {\c{S}}im{\c{s}}ek, Berfin and Hongler, Cl{\'e}ment and Gabriel, Franck},
+  title        = {Saddle-to-Saddle Dynamics in Deep Linear Networks: Small Initialization Training, Symmetry, and Sparsity},
+  howpublished = {arXiv preprint arXiv:2106.15933},
+  year         = {2022}
+}
+
+% ================================================================================================
+% Conservation laws and balancedness
+% ================================================================================================
+
+% verified: https://proceedings.mlr.press/v80/arora18a.html
+@inproceedings{arora2018optimization,
+  author    = {Arora, Sanjeev and Cohen, Nadav and Hazan, Elad},
+  title     = {On the Optimization of Deep Networks: Implicit Acceleration by Overparameterization},
+  booktitle = {Proceedings of the 35th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {80},
+  pages     = {244--253},
+  year      = {2018}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2018/file/fe131d7f5a6b38b23cc967316c13dae2-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2018/file/fe131d7f5a6b38b23cc967316c13dae2-Paper.pdf ; https://arxiv.org/abs/1806.00900
+@inproceedings{du2018algorithmic,
+  author    = {Du, Simon S. and Hu, Wei and Lee, Jason D.},
+  title     = {Algorithmic Regularization in Learning Deep Homogeneous Models: Layers are Automatically Balanced},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {31},
+  year      = {2018}
+}
+
+% verified: https://iclr.cc/virtual/2021/poster/2715 ; https://arxiv.org/abs/2012.04728
+@inproceedings{kunin2021neural,
+  author    = {Kunin, Daniel and Sagastuy-Brena, Javier and Ganguli, Surya and Yamins, Daniel L. K. and Tanaka, Hidenori},
+  title     = {Neural Mechanics: Symmetry and Broken Conservation Laws in Deep Learning Dynamics},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2021}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2023/file/c7bee9b76be21146fd592fc2b46614d5-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2023/file/c7bee9b76be21146fd592fc2b46614d5-Paper-Conference.pdf ; https://api.crossref.org/works/10.52202/075280-2760
+@inproceedings{marcotte2023abide,
+  author    = {Marcotte, Sibylle and Gribonval, R{\'e}mi and Peyr{\'e}, Gabriel},
+  title     = {Abide by the Law and Follow the Flow: Conservation Laws for Gradient Flows},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  pages     = {63210--63221},
+  year      = {2023},
+  doi       = {10.52202/075280-2760}
+}
+
+% verified: https://proceedings.mlr.press/v235/marcotte24a.html
+@inproceedings{marcotte2024keep,
+  author    = {Marcotte, Sibylle and Gribonval, R{\'e}mi and Peyr{\'e}, Gabriel},
+  title     = {Keep the Momentum: Conservation Laws beyond {Euclidean} Gradient Flows},
+  booktitle = {Proceedings of the 41st International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {235},
+  pages     = {34790--34821},
+  year      = {2024}
+}
+
+% verified: https://proceedings.mlr.press/v267/marcotte25a.html
+@inproceedings{marcotte2025transformative,
+  author    = {Marcotte, Sibylle and Gribonval, R{\'e}mi and Peyr{\'e}, Gabriel},
+  title     = {Transformative or Conservative? {C}onservation laws for {ResNets} and Transformers},
+  booktitle = {Proceedings of the 42nd International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {267},
+  pages     = {43140--43176},
+  year      = {2025}
+}
+
+% ================================================================================================
+% Lazy and rich regimes, tangent kernels, diagonal linear networks
+% ================================================================================================
+
+% verified: https://proceedings.mlr.press/v125/woodworth20a.html ; https://proceedings.mlr.press/v125/woodworth20a/woodworth20a.pdf
+@inproceedings{woodworth2020kernel,
+  author    = {Woodworth, Blake and Gunasekar, Suriya and Lee, Jason D. and Moroshko, Edward and Savarese, Pedro and Golan, Itay and Soudry, Daniel and Srebro, Nathan},
+  title     = {Kernel and Rich Regimes in Overparametrized Models},
+  booktitle = {Proceedings of the Thirty Third Conference on Learning Theory},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {125},
+  pages     = {3635--3673},
+  year      = {2020}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2019/file/ae614c557843b1df326cb29c57225459-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2019/file/ae614c557843b1df326cb29c57225459-Paper.pdf
+@inproceedings{chizat2019lazy,
+  author    = {Chizat, L{\'e}na{\"\i}c and Oyallon, Edouard and Bach, Francis},
+  title     = {On Lazy Training in Differentiable Programming},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {32},
+  year      = {2019}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2018/file/5a4be1fa34e62bb8a6ec6b91d2462f5a-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2018/file/5a4be1fa34e62bb8a6ec6b91d2462f5a-Paper.pdf
+@inproceedings{jacot2018neural,
+  author    = {Jacot, Arthur and Gabriel, Franck and Hongler, Cl{\'e}ment},
+  title     = {Neural Tangent Kernel: Convergence and Generalization in Neural Networks},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {31},
+  year      = {2018}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2019/file/0d1a9651497a38d8b1c3871c84528bd4-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2019/file/0d1a9651497a38d8b1c3871c84528bd4-Paper.pdf
+@inproceedings{lee2019wide,
+  author    = {Lee, Jaehoon and Xiao, Lechao and Schoenholz, Samuel S. and Bahri, Yasaman and Novak, Roman and Sohl-Dickstein, Jascha and Pennington, Jeffrey},
+  title     = {Wide Neural Networks of Any Depth Evolve as Linear Models Under Gradient Descent},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {32},
+  year      = {2019}
+}
+
+% verified: https://api.crossref.org/works/10.1088/1742-5468/abc4de
+@article{geiger2020disentangling,
+  author  = {Geiger, Mario and Spigler, Stefano and Jacot, Arthur and Wyart, Matthieu},
+  title   = {Disentangling feature and lazy training in deep neural networks},
+  journal = {Journal of Statistical Mechanics: Theory and Experiment},
+  volume  = {2020},
+  number  = {11},
+  pages   = {113301},
+  year    = {2020},
+  doi     = {10.1088/1742-5468/abc4de}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2019/hash/c133fb1bb634af68c5088f3438848bfd-Abstract.html ; https://proceedings.neurips.cc/paper_files/paper/2019/file/c133fb1bb634af68c5088f3438848bfd-Paper.pdf ; https://arxiv.org/abs/1906.08899
+@inproceedings{ghorbani2019limitations,
+  author    = {Ghorbani, Behrooz and Mei, Song and Misiakiewicz, Theodor and Montanari, Andrea},
+  title     = {Limitations of Lazy Training of Two-layers Neural Networks},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {32},
+  year      = {2019}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2023/file/17a9ab4190289f0e1504bbb98d1d111a-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2023/file/17a9ab4190289f0e1504bbb98d1d111a-Paper-Conference.pdf ; https://api.crossref.org/works/10.52202/075280-0329
+@inproceedings{pesme2023saddletosaddle,
+  author    = {Pesme, Scott and Flammarion, Nicolas},
+  title     = {Saddle-to-Saddle Dynamics in Diagonal Linear Networks},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  pages     = {7475--7505},
+  year      = {2023},
+  doi       = {10.52202/075280-0329}
+}
+
+% verified: https://jmlr.org/papers/v24/22-1395.html ; https://jmlr.org/papers/v24/22-1395.bib ; https://jmlr.org/papers/volume24/22-1395/22-1395.pdf
+@article{berthier2023incremental,
+  author  = {Berthier, Rapha{\"e}l},
+  title   = {Incremental Learning in Diagonal Linear Networks},
+  journal = {Journal of Machine Learning Research},
+  volume  = {24},
+  number  = {171},
+  pages   = {1--26},
+  year    = {2023}
+}
+
+% ================================================================================================
+% Mean-field limits and feature-learning parameterizations
+% ================================================================================================
+
+% verified: https://api.crossref.org/works/10.1073/pnas.1806579115 ; https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1073/pnas.1806579115&format=json&resultType=core (pages)
+@article{mei2018mean,
+  author  = {Mei, Song and Montanari, Andrea and Nguyen, Phan-Minh},
+  title   = {A mean field view of the landscape of two-layer neural networks},
+  journal = {Proceedings of the National Academy of Sciences},
+  volume  = {115},
+  number  = {33},
+  pages   = {E7665--E7671},
+  year    = {2018},
+  doi     = {10.1073/pnas.1806579115}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2018/hash/a1afc58c6ca9540d057299ec3016d726-Abstract.html ; https://proceedings.neurips.cc/paper_files/paper/2018/file/a1afc58c6ca9540d057299ec3016d726-Bibtex.bib
+@inproceedings{chizat2018global,
+  author    = {Chizat, L{\'e}na{\"\i}c and Bach, Francis},
+  title     = {On the Global Convergence of Gradient Descent for Over-parameterized Models using Optimal Transport},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {31},
+  year      = {2018}
+}
+
+% verified: https://api.crossref.org/works/10.1002/cpa.22074 ; https://arxiv.org/abs/1805.00915 (arXiv page links this DOI)
+@article{rotskoff2022trainability,
+  author  = {Rotskoff, Grant and Vanden-Eijnden, Eric},
+  title   = {Trainability and Accuracy of Artificial Neural Networks: An Interacting Particle System Approach},
+  journal = {Communications on Pure and Applied Mathematics},
+  volume  = {75},
+  number  = {9},
+  pages   = {1889--1935},
+  year    = {2022},
+  doi     = {10.1002/cpa.22074}
+}
+
+% verified: https://api.crossref.org/works/10.1137/18M1192184 ; https://doi.org/api/handles/10.1137/18M1192184
+@article{sirignano2020mean,
+  author  = {Sirignano, Justin and Spiliopoulos, Konstantinos},
+  title   = {Mean Field Analysis of Neural Networks: A Law of Large Numbers},
+  journal = {SIAM Journal on Applied Mathematics},
+  volume  = {80},
+  number  = {2},
+  pages   = {725--752},
+  year    = {2020},
+  doi     = {10.1137/18M1192184}
+}
+
+% verified: https://proceedings.mlr.press/v139/yang21c.html
+@inproceedings{yang2021tensor,
+  author    = {Yang, Greg and Hu, Edward J.},
+  title     = {Tensor Programs {IV}: Feature Learning in Infinite-Width Neural Networks},
+  booktitle = {Proceedings of the 38th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {139},
+  pages     = {11727--11737},
+  year      = {2021}
+}
+
+% verified: https://arxiv.org/abs/2310.17813 ; https://arxiv.org/bibtex/2310.17813 (no journal-ref; v1 26 Oct 2023, v2 14 May 2024)
+@misc{yang2024spectral,
+  author       = {Yang, Greg and Simon, James B. and Bernstein, Jeremy},
+  title        = {A Spectral Condition for Feature Learning},
+  howpublished = {arXiv preprint arXiv:2310.17813},
+  year         = {2024}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2022/hash/d027a5c93d484a4312cc486d399c62c1-Abstract-Conference.html ; https://api.crossref.org/works/10.52202/068431-2336
+@inproceedings{bordelon2022selfconsistent,
+  author    = {Bordelon, Blake and Pehlevan, Cengiz},
+  title     = {Self-Consistent Dynamical Field Theory of Kernel Evolution in Wide Neural Networks},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {35},
+  pages     = {32240--32256},
+  year      = {2022},
+  doi       = {10.52202/068431-2336}
+}
+
+% verified: https://proceedings.iclr.cc/paper_files/paper/2024/hash/f2ce452a4a7352feb7a9fb885267ff24-Abstract-Conference.html ; https://iclr.cc/virtual/2024/poster/19599
+@inproceedings{yang2024tensor,
+  author    = {Yang, Greg and Yu, Dingli and Zhu, Chen and Hayou, Soufiane},
+  title     = {Tensor Programs {VI}: Feature Learning in Infinite Depth Neural Networks},
+  booktitle = {International Conference on Learning Representations},
+  pages     = {55099--55150},
+  year      = {2024}
+}
+
+% verified: https://proceedings.iclr.cc/paper_files/paper/2024/hash/5f5f7b6080dcadced61cf5d96f7c6dde-Abstract-Conference.html ; https://iclr.cc/virtual/2024/poster/18897
+@inproceedings{bordelon2024depthwise,
+  author    = {Bordelon, Blake and Noci, Lorenzo and Li, Mufan and Hanin, Boris and Pehlevan, Cengiz},
+  title     = {Depthwise Hyperparameter Transfer in Residual Networks: Dynamics and Scaling Limit},
+  booktitle = {International Conference on Learning Representations},
+  pages     = {22088--22127},
+  year      = {2024}
+}
+
+% ================================================================================================
+% Homogeneous networks near small initialization; tensor decomposition and factorization
+% ================================================================================================
+
+% verified: https://jmlr.org/tmlr/papers/ ; https://jmlr.org/tmlr/papers/bib/hfrPag75Y0.bib ; https://arxiv.org/abs/2402.09226
+@article{kumar2024directional,
+  author  = {Kumar, Akshay and Haupt, Jarvis},
+  title   = {Directional Convergence Near Small Initializations and Saddles in Two-Homogeneous Neural Networks},
+  journal = {Transactions on Machine Learning Research},
+  year    = {2024}
+}
+
+% verified: https://jmlr.org/tmlr/papers/ ; https://jmlr.org/tmlr/papers/bib/VNM6V1gi3k.bib ; https://arxiv.org/abs/2403.08121 ; https://icml.cc/virtual/2026/poster/68797
+@article{kumar2025early,
+  author  = {Kumar, Akshay and Haupt, Jarvis},
+  title   = {Early Directional Convergence in Deep Homogeneous Neural Networks for Small Initializations},
+  journal = {Transactions on Machine Learning Research},
+  year    = {2025}
+}
+
+% verified: https://proceedings.mlr.press/v139/razin21a.html
+@inproceedings{razin2021implicit,
+  author    = {Razin, Noam and Maman, Asaf and Cohen, Nadav},
+  title     = {Implicit Regularization in Tensor Factorization},
+  booktitle = {Proceedings of the 38th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {139},
+  pages     = {8913--8924},
+  year      = {2021}
+}
+
+% verified: https://proceedings.mlr.press/v162/razin22a.html
+@inproceedings{razin2022implicit,
+  author    = {Razin, Noam and Maman, Asaf and Cohen, Nadav},
+  title     = {Implicit Regularization in Hierarchical Tensor Factorization and Deep Convolutional Neural Networks},
+  booktitle = {Proceedings of the 39th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {162},
+  pages     = {18422--18462},
+  year      = {2022}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2021/hash/09a630e07af043e4cae879dd60db1cac-Abstract.html ; https://proceedings.neurips.cc/paper_files/paper/2021/file/09a630e07af043e4cae879dd60db1cac-Bibtex.bib
+@inproceedings{ge2021understanding,
+  author    = {Ge, Rong and Ren, Yunwei and Wang, Xiang and Zhou, Mo},
+  title     = {Understanding Deflation Process in Over-parametrized Tensor Decomposition},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {34},
+  pages     = {1299--1311},
+  year      = {2021}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2020/hash/f9d3a954de63277730a1c66d8b38dee3-Abstract.html ; https://proceedings.neurips.cc/paper_files/paper/2020/file/f9d3a954de63277730a1c66d8b38dee3-Paper.pdf (byline)
+@inproceedings{wang2020beyond,
+  author    = {Wang, Xiang and Wu, Chenwei and Lee, Jason D. and Ma, Tengyu and Ge, Rong},
+  title     = {Beyond Lazy Training for Over-parameterized Tensor Decomposition},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {33},
+  pages     = {21934--21944},
+  year      = {2020}
+}
+
+% verified: https://proceedings.mlr.press/v162/hariz22a.html ; https://proceedings.mlr.press/v162/hariz22a/hariz22a.pdf (byline accents)
+@inproceedings{hariz2022implicit,
+  author    = {Hariz, Kais and Kadri, Hachem and Ayache, St{\'e}phane and Moakher, Maher and Arti{\`e}res, Thierry},
+  title     = {Implicit Regularization with Polynomial Growth in Deep Tensor Factorization},
+  booktitle = {Proceedings of the 39th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {162},
+  pages     = {8484--8501},
+  year      = {2022}
+}
+
+% verified: https://jmlr.org/papers/v15/anandkumar14b.html ; https://jmlr.org/papers/v15/anandkumar14b.bib
+@article{anandkumar2014tensor,
+  author  = {Anandkumar, Animashree and Ge, Rong and Hsu, Daniel and Kakade, Sham M. and Telgarsky, Matus},
+  title   = {Tensor Decompositions for Learning Latent Variable Models},
+  journal = {Journal of Machine Learning Research},
+  volume  = {15},
+  number  = {80},
+  pages   = {2773--2832},
+  year    = {2014}
+}
+
+% verified: https://jmlr.org/papers/v22/20-1288.html ; https://jmlr.org/papers/v22/20-1288.bib
+@article{benarous2021online,
+  author  = {Ben Arous, Gerard and Gheissari, Reza and Jagannath, Aukosh},
+  title   = {Online stochastic gradient descent on non-convex losses from high-dimensional inference},
+  journal = {Journal of Machine Learning Research},
+  volume  = {22},
+  number  = {106},
+  pages   = {1--51},
+  year    = {2021}
+}
+
+% ================================================================================================
+% Step size and gradient noise
+% ================================================================================================
+
+% verified: https://iclr.cc/virtual/2021/poster/2577 ; https://arxiv.org/abs/2103.00065 ; https://arxiv.org/pdf/2103.00065v1
+@inproceedings{cohen2021gradient,
+  author    = {Cohen, Jeremy and Kaur, Simran and Li, Yuanzhi and Kolter, J. Zico and Talwalkar, Ameet},
+  title     = {Gradient Descent on Neural Networks Typically Occurs at the Edge of Stability},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2021}
+}
+
+% verified: https://arxiv.org/abs/2003.02218 ; https://arxiv.org/pdf/2003.02218v1 ; https://research.google/pubs/the-large-learning-rate-phase-of-deep-learning/
+@misc{lewkowycz2020large,
+  author       = {Lewkowycz, Aitor and Bahri, Yasaman and Dyer, Ethan and Sohl-Dickstein, Jascha and Gur-Ari, Guy},
+  title        = {The large learning rate phase of deep learning: the catapult mechanism},
+  howpublished = {arXiv preprint arXiv:2003.02218},
+  year         = {2020}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2023/file/5da6ce80e97671b70c01a2e703b868b3-Bibtex.bib ; https://proceedings.neurips.cc/paper_files/paper/2023/file/5da6ce80e97671b70c01a2e703b868b3-Paper-Conference.pdf ; https://api.crossref.org/works/10.52202/075280-1279
+@inproceedings{even2023sgd,
+  author    = {Even, Mathieu and Pesme, Scott and Gunasekar, Suriya and Flammarion, Nicolas},
+  title     = {{(S)GD} over Diagonal Linear Networks: Implicit Bias, Large Stepsizes and Edge of Stability},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  pages     = {29406--29448},
+  year      = {2023},
+  doi       = {10.52202/075280-1279}
+}
+
+% ================================================================================================
+% Tensor networks for machine learning; barren plateaus
+% ================================================================================================
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2016/hash/5314b9674c86e3f9d1ba25ef9bb32895-Abstract.html ; https://proceedings.neurips.cc/paper_files/paper/2016/file/5314b9674c86e3f9d1ba25ef9bb32895-Metadata.json (pages) ; https://arxiv.org/abs/1605.05775
+@inproceedings{stoudenmire2016supervised,
+  author    = {Stoudenmire, Edwin and Schwab, David J.},
+  title     = {Supervised Learning with Tensor Networks},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {29},
+  pages     = {4799--4807},
+  year      = {2016}
+}
+
+% verified: https://journals.pan.pl/dlibra/publication/125926/edition/109868/content ; https://api.crossref.org/works/10.24425/bpas.2018.125926 ; https://arxiv.org/abs/1605.03795 (full given names; arXiv comment: ICLR-2017 workshop track paper)
+@article{novikov2018exponential,
+  author  = {Novikov, Alexander and Trofimov, Mikhail and Oseledets, Ivan},
+  title   = {Exponential machines},
+  journal = {Bulletin of the Polish Academy of Sciences: Technical Sciences},
+  volume  = {66},
+  number  = {6},
+  pages   = {789--797},
+  year    = {2018},
+  doi     = {10.24425/bpas.2018.125926}
+}
+
+% verified: https://iopscience.iop.org/article/10.1088/2058-9565/aaba1a ; https://api.crossref.org/works/10.1088/2058-9565/aaba1a ; https://arxiv.org/abs/1801.00315
+@article{stoudenmire2018learning,
+  author  = {Stoudenmire, E. Miles},
+  title   = {Learning relevant features of data with multi-scale tensor networks},
+  journal = {Quantum Science and Technology},
+  volume  = {3},
+  number  = {3},
+  pages   = {034003},
+  year    = {2018},
+  doi     = {10.1088/2058-9565/aaba1a}
+}
+
+% verified: https://api.crossref.org/works/10.1088/1367-2630/ab31ef ; https://arxiv.org/abs/1710.04833
+@article{liu2019machine,
+  author  = {Liu, Ding and Ran, Shi-Ju and Wittek, Peter and Peng, Cheng and Bl{\'a}zquez Garc{\'\i}a, Raul and Su, Gang and Lewenstein, Maciej},
+  title   = {Machine learning by unitary tensor network of hierarchical tree structure},
+  journal = {New Journal of Physics},
+  volume  = {21},
+  number  = {7},
+  pages   = {073059},
+  year    = {2019},
+  doi     = {10.1088/1367-2630/ab31ef}
+}
+
+% verified: https://journals.aps.org/prb/abstract/10.1103/PhysRevB.99.155131 ; https://api.crossref.org/works/10.1103/PhysRevB.99.155131 ; https://arxiv.org/abs/1901.02217
+@article{cheng2019tree,
+  author  = {Cheng, Song and Wang, Lei and Xiang, Tao and Zhang, Pan},
+  title   = {Tree tensor networks for generative modeling},
+  journal = {Physical Review B},
+  volume  = {99},
+  number  = {15},
+  pages   = {155131},
+  year    = {2019},
+  doi     = {10.1103/PhysRevB.99.155131}
+}
+
+% verified: https://journals.aps.org/prx/abstract/10.1103/PhysRevX.8.031012 ; https://api.crossref.org/works/10.1103/PhysRevX.8.031012 ; https://arxiv.org/abs/1709.01662
+@article{han2018unsupervised,
+  author  = {Han, Zhao-Yu and Wang, Jun and Fan, Heng and Wang, Lei and Zhang, Pan},
+  title   = {Unsupervised Generative Modeling Using Matrix Product States},
+  journal = {Physical Review X},
+  volume  = {8},
+  number  = {3},
+  pages   = {031012},
+  year    = {2018},
+  doi     = {10.1103/PhysRevX.8.031012}
+}
+
+% verified: https://proceedings.neurips.cc/paper_files/paper/2019/hash/b86e8d03fe992d1b0e19656875ee557c-Abstract.html ; https://proceedings.neurips.cc/paper_files/paper/2019/file/b86e8d03fe992d1b0e19656875ee557c-Metadata.json (pages, author names) ; https://arxiv.org/abs/1907.03741
+@inproceedings{glasser2019expressive,
+  author    = {Glasser, Ivan and Sweke, Ryan and Pancotti, Nicola and Eisert, Jens and Cirac, J. Ignacio},
+  title     = {Expressive power of tensor-network factorizations for probabilistic modeling},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {32},
+  pages     = {1498--1510},
+  year      = {2019}
+}
+
+% verified: https://proceedings.mlr.press/v49/cohen16.html ; https://arxiv.org/abs/1509.05009
+@inproceedings{cohen2016expressive,
+  author    = {Cohen, Nadav and Sharir, Or and Shashua, Amnon},
+  title     = {On the Expressive Power of Deep Learning: A Tensor Analysis},
+  booktitle = {29th Annual Conference on Learning Theory},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {49},
+  pages     = {698--728},
+  year      = {2016}
+}
+
+% verified: https://openreview.net/forum?id=SywXXwJAb (record read via OpenReview search API) ; https://iclr.cc/virtual/2018/poster/310 ; https://arxiv.org/abs/1704.01552
+@inproceedings{levine2018deep,
+  author    = {Levine, Yoav and Yakira, David and Cohen, Nadav and Shashua, Amnon},
+  title     = {Deep Learning and Quantum Entanglement: Fundamental Connections with Implications to Network Design},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2018}
+}
+
+% verified: https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.129.270501 ; https://api.crossref.org/works/10.1103/PhysRevLett.129.270501 ; https://arxiv.org/abs/2108.08312
+@article{liu2022presence,
+  author  = {Liu, Zidu and Yu, Li-Wei and Duan, L.-M. and Deng, Dong-Ling},
+  title   = {Presence and Absence of Barren Plateaus in Tensor-Network Based Machine Learning},
+  journal = {Physical Review Letters},
+  volume  = {129},
+  number  = {27},
+  pages   = {270501},
+  year    = {2022},
+  doi     = {10.1103/PhysRevLett.129.270501}
+}
+
+% verified: https://journals.aps.org/pra/abstract/10.1103/PhysRevA.109.L050402 ; https://api.crossref.org/works/10.1103/PhysRevA.109.L050402 ; https://arxiv.org/abs/2304.14320
+@article{miao2024isometric,
+  author  = {Miao, Qiang and Barthel, Thomas},
+  title   = {Isometric tensor network optimization for extensive {Hamiltonians} is free of barren plateaus},
+  journal = {Physical Review A},
+  volume  = {109},
+  number  = {5},
+  pages   = {L050402},
+  year    = {2024},
+  doi     = {10.1103/PhysRevA.109.L050402}
+}
+
+% verified: https://link.springer.com/article/10.1007/s00220-024-05217-x ; https://api.crossref.org/works/10.1007/s00220-024-05217-x ; https://arxiv.org/abs/2304.00161
+@article{barthel2025absence,
+  author  = {Barthel, Thomas and Miao, Qiang},
+  title   = {Absence of Barren Plateaus and Scaling of Gradients in the Energy Optimization of Isometric Tensor Network States},
+  journal = {Communications in Mathematical Physics},
+  volume  = {406},
+  number  = {4},
+  pages   = {86},
+  year    = {2025},
+  doi     = {10.1007/s00220-024-05217-x}
+}
+
+% ================================================================================================
+% Hierarchical tensor formats (numerical analysis)
+% ================================================================================================
+
+% verified: https://link.springer.com/article/10.1007/s00041-009-9094-9 ; https://api.crossref.org/works/10.1007/s00041-009-9094-9
+@article{hackbusch2009new,
+  author  = {Hackbusch, W. and K{\"u}hn, S.},
+  title   = {A New Scheme for the Tensor Representation},
+  journal = {Journal of Fourier Analysis and Applications},
+  volume  = {15},
+  number  = {5},
+  pages   = {706--722},
+  year    = {2009},
+  doi     = {10.1007/s00041-009-9094-9}
+}
+
+% verified: https://api.crossref.org/works/10.1137/090764189
+@article{grasedyck2010hierarchical,
+  author  = {Grasedyck, Lars},
+  title   = {Hierarchical Singular Value Decomposition of Tensors},
+  journal = {SIAM Journal on Matrix Analysis and Applications},
+  volume  = {31},
+  number  = {4},
+  pages   = {2029--2054},
+  year    = {2010},
+  doi     = {10.1137/090764189}
+}
+
+% verified: https://api.crossref.org/works/10.1137/090752286
+@article{oseledets2011tensor,
+  author  = {Oseledets, I. V.},
+  title   = {Tensor-Train Decomposition},
+  journal = {SIAM Journal on Scientific Computing},
+  volume  = {33},
+  number  = {5},
+  pages   = {2295--2317},
+  year    = {2011},
+  doi     = {10.1137/090752286}
+}
+
+% verified: https://api.crossref.org/works/10.1016/j.laa.2013.03.016
+@article{uschmajew2013geometry,
+  author  = {Uschmajew, Andr{\'e} and Vandereycken, Bart},
+  title   = {The geometry of algorithms using hierarchical tensors},
+  journal = {Linear Algebra and its Applications},
+  volume  = {439},
+  number  = {1},
+  pages   = {133--166},
+  year    = {2013},
+  doi     = {10.1016/j.laa.2013.03.016}
+}
+
+% verified: https://link.springer.com/article/10.1007/s00211-011-0419-7 ; https://api.crossref.org/works/10.1007/s00211-011-0419-7
+@article{holtz2012manifolds,
+  author  = {Holtz, Sebastian and Rohwedder, Thorsten and Schneider, Reinhold},
+  title   = {On manifolds of tensors of fixed {TT}-rank},
+  journal = {Numerische Mathematik},
+  volume  = {120},
+  number  = {4},
+  pages   = {701--731},
+  year    = {2012},
+  doi     = {10.1007/s00211-011-0419-7}
+}
+
+% verified: https://api.crossref.org/works/10.1137/120885723
+@article{lubich2013dynamical,
+  author  = {Lubich, Christian and Rohwedder, Thorsten and Schneider, Reinhold and Vandereycken, Bart},
+  title   = {Dynamical Approximation by Hierarchical {Tucker} and Tensor-Train Tensors},
+  journal = {SIAM Journal on Matrix Analysis and Applications},
+  volume  = {34},
+  number  = {2},
+  pages   = {470--494},
+  year    = {2013},
+  doi     = {10.1137/120885723}
+}
+
+% ================================================================================================
+% Numerical integration
+% ================================================================================================
+
+% verified: https://api.crossref.org/works/10.1016/0771-050X(80)90013-3
+@article{dormand1980family,
+  author  = {Dormand, J. R. and Prince, P. J.},
+  title   = {A family of embedded {Runge--Kutta} formulae},
+  journal = {Journal of Computational and Applied Mathematics},
+  volume  = {6},
+  number  = {1},
+  pages   = {19--26},
+  year    = {1980},
+  doi     = {10.1016/0771-050X(80)90013-3}
+}
+
+% verified: https://link.springer.com/book/10.1007/978-3-540-78862-1 ; https://link.springer.com/content/pdf/bfm:978-3-540-78862-1/1.pdf ; https://api.crossref.org/works/10.1007/978-3-540-78862-1
+@book{hairer1993solving,
+  author    = {Hairer, Ernst and N{\o}rsett, Syvert P. and Wanner, Gerhard},
+  title     = {Solving Ordinary Differential Equations {I}: Nonstiff Problems},
+  edition   = {Second Revised},
+  publisher = {Springer},
+  address   = {Berlin, Heidelberg},
+  year      = {1993},
+  doi       = {10.1007/978-3-540-78862-1}
+}

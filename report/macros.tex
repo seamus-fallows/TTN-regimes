@@ -1,0 +1,110 @@
+% macros.tex -- notation used throughout the report.
+%
+% Conventions follow notes/model.md and notes/diagnostics.md. Change a symbol here, not in the
+% sections. Symbols that clash with the notes are renamed here on purpose:
+%   - the tangent kernel is \TK (Theta), because K is the number of cores (the notes call it K_t);
+%   - aligned-init amplitudes are q_{v,r} (\amp), because a_r is the teacher-component overlap;
+%   - the gradient-flow preconditioner is D, because P is the size of the kernel probe set.
+
+% ---- general ---------------------------------------------------------------------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Normal}{\mathcal{N}}
+\newcommand{\T}{^{\top}}                          % transpose
+\newcommand{\Id}{I}                               % identity matrix
+\newcommand{\iid}{i.i.d.\@\xspace}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiterX{\ip}[2]{\langle}{\rangle}{#1,\,#2}
+\newcommand{\normF}[1]{\norm{#1}_{F}}             % Frobenius norm
+\newcommand{\normmax}[1]{\norm{#1}_{\max}}        % largest absolute entry
+\newcommand{\ipS}[2]{\ip{#1}{#2}_{\Sig}}          % Sigma-weighted inner product
+\newcommand{\normS}[1]{\norm{#1}_{\Sig}}          % Sigma-weighted norm
+\newcommand{\dd}{\mathrm{d}}                      % differential
+\newcommand{\ddt}{\frac{\dd}{\dd t}}
+
+% ---- inputs and data ---------------------------------------------------------------------------
+\newcommand{\Ns}{N}                               % number of sites
+\newcommand{\pd}[1][]{d_{#1}}                     % physical (local feature) dimension of site i
+\newcommand{\xs}[1]{x^{(#1)}}                     % input at site i
+\newcommand{\feat}[1]{\phi_{#1}}                  % local feature map of site i
+\newcommand{\Feat}{\Phi}                          % product feature tensor
+\newcommand{\Sig}{\Sigma}                         % product covariance Sigma_1 (x) ... (x) Sigma_N
+\newcommand{\Sigi}[1]{\Sigma_{#1}}                % covariance of site i
+\newcommand{\nsamp}{n}                            % training-set size
+\newcommand{\batch}{B}                            % minibatch size
+\newcommand{\nprobe}{P}                           % size of the kernel probe set
+
+% ---- tree and tensor network ---------------------------------------------------------------------
+\newcommand{\tree}{\mathcal{T}}                   % rooted tree
+\newcommand{\nodes}{\mathcal{V}}                  % its nodes (= cores)
+\newcommand{\edges}{\mathcal{E}}                  % its edges (= bonds)
+\newcommand{\Kc}{K}                               % number of cores
+\newcommand{\vroot}{\mathrm{root}}                % the root node
+\newcommand{\pa}[1]{p(#1)}                        % parent of node v
+\newcommand{\ch}[1]{\mathrm{ch}(#1)}              % children of node v
+\newcommand{\sites}[1]{S_{#1}}                    % sites attached to node v
+\newcommand{\below}[1]{A_{#1}}                    % sites in the subtree below node v
+\newcommand{\edge}[1]{e_{#1}}                     % edge between node v and its parent
+\newcommand{\G}[1]{G_{#1}}                        % core of node v
+\newcommand{\Gm}[2]{G_{#1,(#2)}}                  % core v matricized with its e-leg as rows
+\newcommand{\bd}[1]{\chi_{#1}}                    % bond dimension of edge e_v
+\newcommand{\fanin}[1]{F_{#1}}                    % fan-in of core v
+\newcommand{\params}{\theta}                      % all parameters (cores)
+\newcommand{\W}{W}                                % tensor represented by the TTN
+\newcommand{\Wt}{W^{*}}                           % teacher tensor
+\newcommand{\Wz}{W_{0}}                           % tensor at initialization
+\newcommand{\mat}[2]{#1^{\langle #2\rangle}}      % matricization of a tensor across edge e
+\newcommand{\Sub}[1]{T_{#1}}                      % contraction of the subtree below v
+
+% ---- initialization ------------------------------------------------------------------------------
+\newcommand{\isc}{\sigma}                         % per-core init scale
+\newcommand{\iscv}[1]{\sigma_{#1}}                % init scale of core v
+\newcommand{\fsc}{\alpha}                         % function-space init scale sigma^K
+\newcommand{\amp}[2]{q_{#1,#2}}                   % aligned-init amplitude of core v on component r
+\newcommand{\prodamp}[1]{\Pi_{#1}}                % product of amplitudes of component r
+
+% ---- teacher -------------------------------------------------------------------------------------
+\newcommand{\ncomp}{R}                            % number of CP components
+\newcommand{\tw}[1]{s_{#1}}                       % teacher weight of component r
+\newcommand{\fac}[2]{u_{#1}^{(#2)}}               % factor of component r at site i
+\newcommand{\U}[1]{U_{#1}}                        % rank-one term of component r (unit norm)
+\newcommand{\ov}[1]{a_{#1}}                       % overlap with teacher component r
+\newcommand{\Lpart}[1]{L_{#1}}                    % partial-fit loss level
+
+% ---- bond spectra --------------------------------------------------------------------------------
+\newcommand{\bs}[2]{s^{#1}_{#2}}                  % k-th singular value across edge e
+\newcommand{\bst}[2]{s^{#1,*}_{#2}}               % same for the teacher
+\newcommand{\rk}[1]{\operatorname{rk}_{#1}}       % effective bond rank of edge e
+\newcommand{\rkH}[1]{\operatorname{rk}^{H}_{#1}}  % entropy rank of edge e
+
+% ---- training ------------------------------------------------------------------------------------
+\newcommand{\Loss}{L}                             % population loss
+\newcommand{\lossn}{\ell}                         % normalized loss L(t)/L(0)
+\newcommand{\Lemp}{\hat{L}_{\nsamp}}              % empirical loss
+\newcommand{\lr}{\eta}                            % learning rate (step size) of GD/SGD
+\newcommand{\lrm}[1]{\eta_{#1}}                   % per-core learning-rate multiplier
+\newcommand{\mask}{m}                             % 0/1 gradient mask
+\newcommand{\Pre}{D}                              % diagonal preconditioner diag(eta * m)
+\newcommand{\tmax}{t_{\max}}
+
+% ---- symmetries ------------------------------------------------------------------------------
+\newcommand{\Q}[1]{Q_{#1}}                        % conserved quantity of bond e
+
+% ---- diagnostics ---------------------------------------------------------------------------------
+\newcommand{\TK}{\Theta}                          % tangent kernel on the probe set
+\newcommand{\dTK}{\delta_{\TK}}                   % relative kernel change
+\newcommand{\dth}{\delta_{\params}}               % relative parameter change
+\newcommand{\KTA}{\mathcal{A}}                    % kernel-target alignment
+\newcommand{\Jac}{J}                              % Jacobian of the probe outputs
+\newcommand{\Hess}{H}                             % Hessian of the loss
+\newcommand{\Hperp}{H_{\perp}}                    % gauge-projected Hessian
+\newcommand{\sep}[1]{\rho_{#1}}                   % separation ratio of consecutive events
+\newcommand{\tev}[1]{t_{#1}}                      % event time
+\newcommand{\wev}[1]{w_{#1}}                      % event width
+\newcommand{\tmid}[1]{t^{\mathrm{mid}}_{#1}}      % plateau midpoint

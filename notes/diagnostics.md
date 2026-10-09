@@ -14,9 +14,9 @@ delta_K threshold in {0.05, 0.1, 0.2}, separation threshold in {2, 3, 5}). Libra
 | s_k^{e,*} | the same for the teacher W* (for an odeco teacher: the weights s_r on every edge) |
 | a_r(t) | overlap with teacher component r (CP teachers): <W(t), U_r> / s_r with U_r the r-th rank-one term; a_r = 1 when learned |
 | delta_theta(t) | \|\|theta(t) - theta(0)\|\| / \|\|theta(0)\|\| (also per core) |
-| K_t | tangent kernel on a fixed probe set of P = 128 Gaussian inputs: K_t = J_t J_t^T, J_t = d f(probe)/d theta at time t (or the tensor-space operator J J^T for small N) |
-| delta_K(t) | \|\|K_t - K_0\|\|_F / \|\|K_0\|\|_F |
-| A(t) | kernel-target alignment y^T K_t y / (\|\|K_t\|\|_F \|\|y\|\|^2) on the probe set (y = teacher outputs) |
+| Theta_t | tangent kernel on a fixed probe set of P = 128 Gaussian inputs: Theta_t = J_t D J_t^T, J_t = d f(probe)/d theta at time t, D = diagonal per-parameter learning-rate multipliers times the gradient mask (D = I by default), so that df/dt = -Theta (f - f*) under gradient flow; for small N also the tensor-space operator J D J^T |
+| delta_K(t) | \|\|Theta_t - Theta_0\|\|_F / \|\|Theta_0\|\|_F (name kept for brevity; Theta is the kernel, K the number of cores) |
+| A(t) | kernel-target alignment y^T Theta_t y / (\|\|Theta_t\|\|_F \|\|y\|\|^2) on the probe set (y = teacher outputs) |
 | Q_e(t) | gauge conserved quantities; drift max_e \|\|Q_e(t) - Q_e(0)\|\| is an integrator-accuracy check (must stay < 1e-6 relative under gradient flow) |
 | H(t) | Hessian of L at theta(t), restricted to the complement of the gauge directions |
 
@@ -24,7 +24,8 @@ delta_K threshold in {0.05, 0.1, 0.2}, separation threshold in {2, 3, 5}). Libra
 
 - For CP teachers, event r occurs at t_r = first time a_r(t) crosses 1/2. Its width is
   w_r = t(a_r = 0.9) - t(a_r = 0.1).
-- For general teachers, event (e, k) occurs when s_k^e(t) first crosses half of its final value; the
+- For general teachers, event (e, k) occurs when s_k^e(t) first crosses half of its final value; its
+  width is the time between the 10% and 90% crossings of that final value (as for components). The
   event set is the distinct times after merging events closer than their widths (a single
   component typically raises several bond spectra at once).
 - The **effective bond rank** r_e(t) = #{k : s_k^e(t) > theta_r} with theta_r = 0.1 x (smallest
@@ -47,6 +48,12 @@ needing two cores takes ~log(1/sigma), which can be invisible on a log-time axis
 plateau.
 
 ## Regime assignment (one run)
+
+Reading of the rules: "converges" means L(T) < 1e-3 L(0); labels are checked in the order diverged,
+stalled, then the others; condition (iii) of the S2S signature is a sweep-level check, so a single
+run is labelled S2S on (i)-(ii) and the sweep confirms (iii); a converged run with a single event
+(e.g. a one-component teacher, or all components learned together) is "rich, non-incremental" if
+delta_K >= 0.1.
 
 | regime | rule |
 |---|---|

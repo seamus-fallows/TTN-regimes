@@ -1,0 +1,52 @@
+% sections/03_regime_map.tex -- Map of regimes (Q5, hypothesis H4). SKELETON.
+% Source: PLAN.md Q5; brief notes/briefs/regime-map.md; results in experiments/regime_map/ and
+% notes/regime_map.md; theory in notes/theory_regimes.md. Labels follow tab:regimes exactly.
+\section{Map of regimes}\label{sec:regime-map}
+
+\placeholder{Skeleton. Phase diagrams of the training regimes over initialization scale, bond
+dimension, number of cores and core imbalance, with predicted boundaries and threshold
+sensitivity. Waits for the regime-map results.}
+% TODO(status): PLAN.md tags Q5 as "known in DLNs/diagonal nets; open for TTNs". Mark the TTN
+% phase diagrams \newresult, and the reproduction of Chizat/Woodworth/Kunin effects \knownresult.
+
+\subsection{Protocol}\label{sec:regime-protocol}
+\placeholder{Centred model as the one-knob family; labels from \cref{tab:regimes}; seeds, sweeps,
+time budgets.}
+% TODO: centred model (target W* + W_0, Sec. 2.4 variant (b)) as the main family; two-copy model
+% with mask as cross-check; large sigma needs time rescaled by the kernel scale sigma^{2(K-1)}.
+% Per grid point >= 5 seeds: delta_Theta (P = 128 probes), delta_theta, separation ratios, label,
+% final loss. Report label fractions per point, not only the majority label.
+
+\subsection{Initialization scale and bond dimension}\label{sec:regime-sigma-chi}
+\placeholder{Phase diagram $\isc\times\chi$ for binary trees with $\Ns=4,8$.}
+% TODO: sigma over >= 3 decades (deep S2S to lazy), chi from the teacher rank to >= 8x it; odeco
+% teacher with 3 components, weights [3, 2, 1]. Figures: categorical phase diagram with predicted
+% boundaries overlaid; continuous heatmaps of delta_Theta(T) and min_i rho_i; representative runs of
+% each regime. Theory: lazy boundary from Chizat et al.'s criterion (relative weight change vs
+% function change); S2S boundary from the escape-time formulas with separation ratio rho = 3.
+
+\subsection{Number of cores and function-space scale}\label{sec:regime-K}
+\placeholder{Phase diagram $\isc\times\Kc$; boundaries in both $\isc$ and $\fsc=\isc^{\Kc}$.}
+% TODO: binary N = 4, 8, 16 and MPS N = 4..12 (K from 3 to ~15). Test the prediction that the S2S
+% boundary sigma_c(K) moves toward 1 as K grows (H4): plot vs sigma and vs alpha = sigma^K.
+
+\subsection{Imbalance between cores}\label{sec:regime-imbalance}
+\placeholder{Does the conserved imbalance $\Q{e}$ move the TTN between regimes, as in deep
+linear networks?}
+% TODO: per-core scales (root vs rest) at fixed function-space scale prod_v sigma_v; compare with
+% Kunin et al. 2024 (kunin2024get) and Domine et al. (lazy-to-rich exact solutions).
+
+\subsection{Large bond dimension}\label{sec:regime-large-chi}
+\placeholder{NTK-type versus $\mu$P-type parameterizations as $\chi$ grows.}
+% TODO: chi = 4..64; per-core init scales and lr multipliers from notes/theory_regimes.md (spectral
+% condition of Yang, Simon & Bernstein 2023 applied per core); delta_Theta and delta_theta vs chi;
+% does feature learning survive? Status: \derived for the scalings, \empirical for the curves.
+
+\subsection{Threshold sensitivity and cross-checks}\label{sec:regime-sensitivity}
+\placeholder{How the boundaries move with the kernel threshold $\{0.05,0.1,0.2\}$ and the
+separation threshold $\{2,3,5\}$; two-copy cross-check.}
+% TODO: one panel per threshold pair; state which boundaries are robust. Two-copy model at a few
+% grid points must give the same labels as the centred model (or explain why not).
+
+\subsection{Summary: which parameter moves which boundary}\label{sec:regime-summary}
+\placeholder{Table: parameter, boundary moved, direction, fitted versus predicted.}

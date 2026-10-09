@@ -1,0 +1,16 @@
+# figures.txt -- figures that report/collect_figures.sh copies into report/figures/.
+#
+# Format: one figure per line, two fields separated by whitespace:
+#
+#   <source>                                        <destination>
+#
+# <source>       path relative to the repository root; must lie in experiments/<name>/results/
+#                (figures are produced there by the experiment's own plotting script).
+# <destination>  path relative to report/figures/ (subfolders allowed); this is the name the
+#                .tex files pass to \includegraphics (the graphics path is figures/).
+#
+# Paths must not contain spaces. '#' starts a comment; blank lines are ignored. Keep one row per
+# figure in the table of Appendix C (sections/C_reproducibility.tex) in sync with this list.
+#
+# Example (not active):
+#   experiments/s2s_core/results/escape_vs_sigma.pdf   s2s/escape_vs_sigma.pdf

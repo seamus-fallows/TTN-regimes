@@ -1,0 +1,28 @@
+% sections/C_reproducibility.tex -- Appendix C: reproducibility. SKELETON (structure is final).
+% Keep the figure table in sync with report/figures.txt: every figure included in the report has
+% one row here and one line there.
+\section{Reproducibility}\label{app:reproducibility}
+
+\placeholder{Skeleton. How every number and figure in this report is regenerated.}
+
+\subsection{Software and data}\label{app:repro-software}
+\placeholder{Repository layout, environment and where raw outputs live.}
+% TODO: uv project, Python 3.13, PyTorch (version from uv.lock), double precision; shared library
+% ttn/ with tests (uv run pytest); one folder per experiment with README, configs/, code and
+% results/ (small summary data and figures, in git); raw trajectories in data/<experiment>/ (not in
+% git; each experiment README says how to regenerate them). Give the git commit of the report
+% build.
+
+\subsection{Figures}\label{app:repro-figures}
+\placeholder{Table: figure, experiment folder, script and command, config, raw data needed.}
+% TODO: one row per figure, e.g.
+%   Fig. x | experiments/s2s_core | uv run python experiments/s2s_core/plot_escape.py | configs/... |
+%   data/s2s_core/... (regenerate with ...).
+% Figures are copied into report/figures/ by report/collect_figures.sh from the list in
+% report/figures.txt; the TikZ figure of Sec. 2 is drawn from report/tikz/trees.tex.
+
+\subsection{Building the report}\label{app:repro-build}
+The report is built by \path{report/build.sh} (pdflatex, BibTeX, then pdflatex until the
+cross-references are stable), after \path{report/collect_figures.sh} has copied the figures listed
+in \path{report/figures.txt} from \path{experiments/*/results/} into \path{report/figures/}.
+\path{report/README.md} describes both scripts.
