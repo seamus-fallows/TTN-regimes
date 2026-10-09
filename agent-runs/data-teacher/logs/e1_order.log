@@ -1414,3 +1414,49 @@ binary 0.1 T1_clean_reversal sigma 3 10 0 wall 133s
 binary 0.1 T2_race_vs_greedy sigma 1 01 0 wall 109s
 mps 0.2 T2_race_vs_greedy white_sqrtLs 31 01 0 wall 444s
 binary 0.1 T1_clean_reversal sigma 16 10 0 wall 132s
+mps 0.2 T2_race_vs_greedy white_sqrtLs 23 01 0 wall 512s
+binary 0.1 T1_clean_reversal sigma 14 10 0 wall 178s
+binary 0.1 T1_clean_reversal sigma 7 10 0 wall 218s
+binary 0.1 T1_clean_reversal sigma 17 10 0 wall 222s
+binary 0.1 T1_clean_reversal sigma 13 10 0 wall 230s
+binary 0.1 T1_clean_reversal sigma 12 01 1 wall 232s
+mps 0.2 T2_race_vs_greedy white_sqrtLs 26 01 0 wall 570s
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ~~~~^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 48, in mapstar
+    return list(map(*args))
+  File "/root/work/TTN-regimes/experiments/data_teacher/run_e1_order.py", line 35, in job
+  File "/root/work/TTN-regimes/experiments/data_teacher/common.py", line 54, in run_and_save
+    from ttn.network import apply_on_leg
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/lib/_npyio_impl.py", line 471, in load
+    ret = NpzFile(fid, own_fid=own_fid, allow_pickle=allow_pickle,
+                  pickle_kwargs=pickle_kwargs,
+                  max_header_size=max_header_size)
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/lib/_npyio_impl.py", line 197, in __init__
+    _zip = zipfile_factory(fid)
+  File "/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/lib/_npyio_impl.py", line 112, in zipfile_factory
+    return zipfile.ZipFile(file, *args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/zipfile/__init__.py", line 1407, in __init__
+    self._RealGetContents()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/zipfile/__init__.py", line 1474, in _RealGetContents
+    raise BadZipFile("File is not a zip file")
+zipfile.BadZipFile: File is not a zip file
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/work/TTN-regimes/experiments/data_teacher/run_e1_order.py", line 56, in <module>
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 367, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 774, in get
+    raise self._value
+zipfile.BadZipFile: File is not a zip file

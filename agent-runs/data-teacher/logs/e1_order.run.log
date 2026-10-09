@@ -1915,3 +1915,7 @@ binary 0.02 T2_race_vs_greedy white_sqrtLs_mapped 33 10 1 wall 6s
 binary 0.02 T2_race_vs_greedy white_sqrtLs_mapped 31 01 0 wall 6s
 binary 0.02 T2_race_vs_greedy white_sqrtLs_mapped 34 01 0 wall 5s
 binary 0.02 T2_race_vs_greedy white_sqrtLs_mapped 17 01 0 wall 8s
+mps 0.05 T2_race_vs_greedy white_sqrtLs_mapped 34 10 0 wall 85s
+mps 0.05 T1_clean_reversal white_sqrtLs_mapped 34 10 0 wall 112s
+mps 0.05 T2_race_vs_greedy white_sqrtLs_mapped 31 01 0 wall 113s
+wrote /root/work/TTN-regimes/experiments/data_teacher/results/e1_order_summary.csv

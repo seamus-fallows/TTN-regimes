@@ -93,6 +93,57 @@ saddle: a wrong first choice is not corrected quickly.
 Three candidate orderings, which the experiments separate: by s_r (teacher weights), by
 Lambda_r s_r (race / escape rate, H5), by Lambda_r s_r^2 (loss-greedy / stable saddles).
 
+### 1.4 Results (step 1) — gradient flow, scipy DOP853, rtol 1e-9, atol 1e-14, float64
+
+Setup: N = 4, d = 4, chi = 4, site covariance `power_law_cov(4, alpha)` at every site, odeco teacher
+with component r on eigenvector eig_index[r] at every site. Teachers (alpha = 0.25, so
+Lambda(e1)/Lambda(e2) = 2): **T1** s = (1, 0.8) with the 0.8 component on the high-variance e1
+(Lambda s and Lambda s^2 both favour it: a clean reversal of the s-order); **T2** s = (1, 0.6)
+(Lambda s favours the 0.6 component, Lambda s^2 the 1.0 one: race and landscape disagree).
+40 seeds per setting; four variants from the same init: (Sigma, s); (I, Lambda s); (I, sqrt(Lambda) s)
+(the absorbed white problem = same landscape); the same from the mapped init G x Sigma^{1/2} (same
+landscape AND same start, so only the gradient-flow metric differs). Files:
+`results/e1_order_table.csv`, `e1_paired_agg.csv`, `e1_plateaus.csv`, figures `e1_order_probs.png`,
+`e1_paired_times.png`, `e1_examples.png`; exact check `e1_exact_aligned.{csv,png}`.
+
+1. **Exact aligned-init solution** (1.1) — *empirical confirmation of a derived result*. TTN GF vs the
+   scalar ODE: half-times agree to 1e-9 relative, widths to 1e-8 (both trees, all 3 components;
+   max |a_r - ODE| <= 1.2e-5 at the steepest point). The naive substitution s -> Lambda s gets the
+   half-times right to 0.1-2% but the 10-90% widths wrong by up to 45% (e.g. 0.73 vs 1.19 for
+   Lambda = 4.26 on binary-4), as predicted (widths ~ 1/(Lambda s^(2-2/K))).
+2. **First escape = whitened problem with weights Lambda s** (1.2) — *empirical*, all 960 paired runs:
+   the same component is learned first in 100% of MPS-4 pairs and 95-100% of binary-4 pairs; the
+   first-escape times differ by 0.15% / 0.34% / 0.68% (binary, sigma = 0.02 / 0.05 / 0.1, max 1.3%)
+   and 0.02% / 0.04% / 0.1% (MPS, sigma = 0.05 / 0.1 / 0.2): the residual shrinks like 1/t_1, i.e. it is
+   the O(||W||/s) quadratic-term correction. Against the absorbed white problem (same landscape) the
+   first component agrees in only 70-80% (MPS) / 40-80% (binary) of seeds and times differ by 20-36%.
+3. **Covariance reverses the order** — *empirical*. T1: the 0.8 component (high variance) is learned
+   first in 90-98% of binary-4 runs and 78% of MPS-4 runs (whitened (I, s) baseline: the 1.0 component
+   is favoured). P(first) under (Sigma, s) equals P(first) under (I, Lambda s) in every setting
+   (identical seeds pick identical components).
+4. **Landscape decides the swaps** (1.3) — *empirical confirmation of the derived criterion*. On binary-4
+   a wrongly-learned first component is later *unlearned* and replaced (a strict-saddle rotation) iff
+   the other component has the larger Lambda s^2: T2 under (Sigma, s): P(swap | 0.6 component first)
+   = 0.33 / 0.68 / 0.94 at sigma = 0.1 / 0.05 / 0.02 and P(swap | 1.0 component first) = 0 (0 of 30
+   runs); T1: P(swap | 1.0 first) = 0.75 / 0.67 / 1.0, P(swap | 0.8 first) = 0. The same rule holds in
+   all four variants with their own weights (e.g. (I, Lambda s) on T2 swaps only after learning the
+   1.0 component). The swap probability rises toward 1 as sigma -> 0 because the swap is a strict
+   saddle (log(1/sigma) time) racing the polynomial (sigma^-1) learning of the second component.
+   On MPS-4 no swap occurs in any of the 960 runs (the swap route needs all 4 cores: higher order).
+5. **Race is a property of the flow metric, not the landscape** — *empirical*. The mapped-init white
+   runs share landscape and starting point with (Sigma, s), yet pick a different first component in
+   10-15% (MPS) and 12-53% (binary) of seeds and escape 11-23% later: preconditioning by Sigma_i on the
+   physical legs speeds up the high-variance directions. So H5's "order follows Lambda s" is a
+   statement about the flow, while "plateau levels and stable saddles follow Lambda s^2" is a
+   statement about the landscape.
+6. **Plateau levels** — *empirical*: 1/2 sum_{unlearned} Lambda_r s_r^2 to relative 1e-7 (MPS,
+   sigma = 0.05) ... 1e-3 (MPS, sigma = 0.2) and 1e-4 (binary); the transient "wrong" plateau before a
+   swap is not reached (7-11% above the measured minimum), as expected for a strict saddle.
+7. **MPS-4 vs binary-4 order statistics vs sigma**: on MPS-4, P(first) is identical at sigma = 0.05,
+   0.1, 0.2 (the init direction alone decides; tensorial teacher, several basins, H1); on binary-4 it
+   drifts toward the larger Lambda s as sigma decreases (matrix-like: unique maximum of g, greedy only
+   logarithmically slowly) — e.g. T1: 0.90 / 0.925 / 0.975.
+
 ## 2. Misaligned covariance — theory
 
 Fact B maps a misaligned product covariance to a whitened problem with the **non-orthogonal** CP
