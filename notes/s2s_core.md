@@ -261,35 +261,65 @@ Caveat: the library's gauge projection was found to bias projected eigenvalues b
 rank-deficient saddles (fix pending); slopes are unaffected; values will be recomputed, raw values are
 reported next to them (`recompute_hessians.py`).
 
-### 2.7 Dormant-component suppression (in progress; sweep `configs/main.yaml`, LSODA rtol 1e-8, atol 1e-11 sigma)
+### 2.7 Dormant-component suppression (lead's question; empirical unless tagged)
 
-Question (from the lead): do dormant components shrink during earlier escapes and plateaus, by how
-much, vs sigma, K, chi, and does a gauge-balanced init avoid it?
+Question: do components that are not yet learned shrink during earlier escapes and plateaus, by how
+much (vs sigma, K, chi), does a gauge-balanced init avoid it, and are later plateau times physics or
+roundoff? Data: sweeps `main` (fan-in), `large` (K = 7, 8, chi = 6), `k78` (K = 7, 8, chi = 3, fan-in
+and gauge-balanced, no amplitude stop), `balanced` (K = 3, 4); `results/dormant_*.csv`,
+`results/main_runs.csv` (column `class`), figure g.
 
-- **Two mechanisms are seen.** (i) *Plateau decay (trap, theory_saddles R12)*: on a plateau after an
-  escape, the dormant component's slices on the route END cores decay exponentially while the inner
-  slices stay put; its amplitude falls to 1e-30 and below. (ii) *Collapse at an escape*: the dormant
-  amplitude drops by orders of magnitude while another component escapes, and its slices then stay
-  roughly constant (MPS8 floor runs: end-slice decay rate / sigma^2 ~ 1e-9; binary8 chi = 3 seed 0
-  with both fan-in and gauge-balanced init).
-- **Plateau-decay rate scales as sigma^2 per seed** (empirical, mps4, chi = 3, sigma = 0.003-0.02, 7
-  trapped seeds over both teachers): the end-core decay rate divided by sigma^2 is constant per seed
-  across 0.8 decade of sigma (e.g. 0.27-0.29, 0.49-0.82, 0.009-0.013, 0.012-0.016); the same seeds trap
-  at every sigma. **Derived (reduced model of theory_saddles section 8)**: with the learned components
-  balanced at amplitude q = s_q^(1/K) per core, the dead end's new column x and the parent's visible
-  slice y_vis obey x' = -q^(2(K-2)) |y_vis|^2 x, y_vis' = -q^(2(K-2)) |x|^2 y_vis, with
-  |x|^2 - |y_vis|^2 - |y_route|^2 = Q_nu nu conserved; if Q_nu nu + |y_route|^2 < 0 then
-  x ~ exp(-gamma t) with gamma = q^(2(K-2)) |Q_nu nu + |y_route|^2|. Fan-in init makes Q_e = O(sigma^2)
-  (sigma^2 times a seed-dependent O(1) matrix) and y_route = O(sigma), so gamma = sigma^2 x (seed
-  constant), as measured. Consequence (derived): the trap time 1/gamma ~ sigma^-2 competes with the
-  escape time ~ sigma^-(K-2): for K = 4 both scale alike, so whether a seed traps is sigma-independent
-  (as measured); for K >= 5 a trapped end dies long before the route can escape.
-- **Sign rule checked on two trapped runs** (empirical; mps4, chi = 3, sigma = 0.01, separated
-  teacher, seeds 5 and 6, re-run with the final state saved): with nu = the bond direction left free by
-  the two learned components at each end edge and Q from the init (conserved), Q_nu nu makes the END
-  core the light side at both route ends (child end core 0: Q_nu nu = -4.7e-5, -3.4e-5; root end core
-  3: +1.0e-4, +5.0e-5), i.e. every end is unfavourable, the condition of theory_saddles v2 section 8
-  for a dead route. Both ends then decay at the same rate (3.3e-5 / 3.1e-5 and 6.9e-6 / 6.7e-6): one
-  coupled route mode, 3-15x slower than the single-end estimate s_q |Q_nu nu| (which ignores the
-  |y_route|^2 term). So the reduced model gives the sign and the sigma^2 scaling, the magnitude only to
-  an order of magnitude.
+**(a) Change during the first escape.** Ratio of each dormant amplitude |<W, U_r>| across the refined
+rise window (0.1 -> 0.9) of the first escaping component, separated teacher: median factor x1.5-2
+(binary4: dormant components GROW, the head start of theory_saddles 3.3), x0.7 (mps4), x0.4-0.6
+(K = 7, 8, chi = 3), x0.6-0.8 (K = 7, 8, chi = 6), with no trend in sigma (0.003-0.4); a drop by more
+than 100x occurs in 0% (K = 3, 4; K = 7, 8 at chi = 6) and 2.5-6% (K = 7, 8 at chi = 3) of cases (tail
+down to 1e-6 .. 1e-10). Later escapes: same picture (`dormant_escape_drops.csv`). So escapes do not
+suppress dormant components appreciably except in a chi = R tail.
+
+**What does suppress them: the conservation-law trap on the following plateaus** (theory_saddles R12).
+On a plateau the dormant component's slices on the route END cores decay exponentially while the inner
+slices stay put; once an end is dead the component is never learned in float64. Run classes
+(separated teacher; trapped = a never-learned component has a slice < 1e-8 sigma, i.e. 7 decades below
+the init scale; class rules in `analyze_main.py`):
+
+| tree | K | chi | complete | trapped | stalled / unresolved | n |
+|---|---|---|---|---|---|---|
+| binary4 | 3 | 3, 6 | 1.00 | 0 | 0 | 160 |
+| mps4 | 4 | 3 | 0.60 | 0.40 | 0 | 80 |
+| mps4 | 4 | 6 | 1.00 | 0 | 0 | 80 |
+| ht4 | 7 | 3 | 0.10 | 0.82 | 0.08 | 60 |
+| binary8 | 7 | 3 | 0.05 | 0.27 | 0.68 | 79 |
+| mps8 | 8 | 3 | 0 | 0.30 | 0.70 | 70 |
+
+(`main` sweep; the K = 7, 8 "unresolved" runs hit the budget or the amplitude stop and are re-run in
+k78 / large, see below.) At K = 4, chi = 3 the SAME seeds trap at every sigma from 0.003 to 0.1
+(separated: 4/10 at all 8 sigmas): whether a seed traps is fixed by its init direction.
+
+**(c) Decay rate (derived; empirical check).** Reduced model (theory_saddles section 8): the dead end's
+new column x and the parent's visible slice y_vis obey x' = -q^{2(K-2)} |y_vis|^2 x,
+y_vis' = -q^{2(K-2)} |x|^2 y_vis with |x|^2 - |y_vis|^2 - |y_route|^2 = Q_nu nu conserved
+(q = s_q^{1/K}); if Q_nu nu + |y_route|^2 < 0 then x ~ exp(-gamma t), gamma = q^{2(K-2)}
+|Q_nu nu + |y_route|^2|. Fan-in init makes Q = O(sigma^2) and y_route = O(sigma), so gamma ~ sigma^2 per
+seed. Measured (mps4, chi = 3, end-core slices of the trapped component): gamma / sigma^2 is constant
+per seed within a factor ~1.4 over sigma = 0.003-0.1 for 5 of 7 trapped seed/teacher pairs (values
+0.0003 .. 1.0 across seeds); two pairs switch between two such levels (by 20-100x) at sigma ~ 0.02-0.03.
+On two re-run trapped seeds, Q_nu nu (from the init, conserved) makes the end core the light side at
+BOTH route ends, the joint condition of theory_saddles v2 for a dead route; both ends decay at the same
+rate, 3-15x below the single-end estimate s_q |Q_nu nu| (which ignores |y_route|^2): the reduced model
+gives the sign and the sigma^2 scaling, the magnitude to an order of magnitude.
+Consequence (derived): trap time ~ sigma^-2 vs escape time ~ sigma^-(K-2). K = 3: escape first, never
+trapped (0/320). K = 4: same order, a sigma-independent seed-dependent fraction traps (4/10 at chi = 3).
+K >= 5: the ends' fate is settled long before the route can escape.
+
+**(b) Gauge-balanced init.** [pending: balanced (K = 3, 4) and k78 (K = 7, 8) sweeps]
+
+**(d) Physics vs roundoff.** A dead end's slice decays exponentially until it reaches the integrator's
+absolute tolerance / float64 roundoff (~1e-12 .. 1e-15 absolute), where it stays; any later escape of
+that component would be seeded by roundoff, so trapped runs are reported as trapped and their later
+"plateau" is not reported as a time. An earlier criterion (dormant amplitude |<W, U_r>| < 1e-14) was
+too strict at K >= 7: the amplitude is a product of K per-core route amplitudes and can be 1e-15 while
+every per-core amplitude is O(1e-3) and the escape signal ~ s b^{K-1} is far above roundoff; runs
+stopped by that criterion are classed unresolved and re-run without it (k78). All reported event times
+come from runs in which every dormant per-core slice stayed far above roundoff.
+
