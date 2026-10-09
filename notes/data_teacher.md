@@ -138,11 +138,36 @@ landscape AND same start, so only the gradient-flow metric differs). Files:
    statement about the landscape.
 6. **Plateau levels** — *empirical*: 1/2 sum_{unlearned} Lambda_r s_r^2 to relative 1e-7 (MPS,
    sigma = 0.05) ... 1e-3 (MPS, sigma = 0.2) and 1e-4 (binary); the transient "wrong" plateau before a
-   swap is not reached (7-11% above the measured minimum), as expected for a strict saddle.
+   swap is not reached (the slowest point lies 7-11% below that level), as expected for a strict saddle.
 7. **MPS-4 vs binary-4 order statistics vs sigma**: on MPS-4, P(first) is identical at sigma = 0.05,
    0.1, 0.2 (the init direction alone decides; tensorial teacher, several basins, H1); on binary-4 it
    drifts toward the larger Lambda s as sigma decreases (matrix-like: unique maximum of g, greedy only
    logarithmically slowly) — e.g. T1: 0.90 / 0.925 / 0.975.
+
+8. **Escape-time scaling** — *empirical* (`results/e1_scaling_fits.csv`, `e1_scaling.png`; 10 seeds per
+   point). t_1 vs sigma (6 values over one decade, teacher T1): binary-4 slopes -1.010 +- 0.002
+   (Sigma), -1.012 +- 0.002 (I, s), -1.008 +- 0.001 (I, Lambda s); MPS-4 -1.999 +- 0.001, -2.001 +- 0.001,
+   -1.999 +- 0.001; prediction -(K-2) = -1, -2: **the covariance does not change the exponent**, only the
+   prefactor. Paired ratio t_1(Sigma, s) / t_1(I, Lambda s) = 0.994-0.9999 at every sigma (vs 0.65-0.70
+   for t_1(Sigma, s) / t_1(I, s)). One-component teachers with Lambda s from 0.008 to 33 (3.6 decades):
+   t_1 ~ (Lambda s)^p with p = -0.960 +- 0.007 (binary-4) and -1.009 +- 0.001 (MPS-4); prediction -1 at
+   leading order (the binary deviation is the O(1) saturation time, relatively larger at K = 3; the
+   paired (I, Lambda s) runs give the same -0.952 +- 0.007). The second-learning time follows the
+   same exponents (binary -1.05 +- 0.01, MPS -2.002 +- 0.001).
+9. **Escape degree** (theory_saddles R5) — *empirical*: the local growth exponent
+   d log(da/dt)/d log a of the first-learned component is the same for all four variants
+   (binary 1.26-1.28, MPS 1.32-1.35 averaged over the window a in [1e-4, 1e-2]; up to 1.30 and 1.44 in
+   the cleanest windows, vs 2 - 2/K = 1.33 and 1.5; limited by the output grid on the steep escape).
+   `results/e1_kexp.csv`.
+
+**Step 1 verdict.** Aligned covariance changes the picture *quantitatively* only, and in a way the
+baseline theory predicts after two different substitutions: the *race* (which component escapes
+first, and when) is the whitened problem with weights Lambda_r s_r (paired agreement to < 1%), while
+the *landscape* (plateau levels, which rank-1 saddles are stable, whether a wrongly learned component
+is swapped out) is the whitened problem with weights sqrt(Lambda_r) s_r (Fact B), with plateau levels
+1/2 sum Lambda_r s_r^2. When the two orderings disagree, binary-4 (where a 2-core correction route
+exists) shows a qualitatively visible extra event: learn the fast component, unlearn it, learn the
+other, relearn the first. The exponents of plateau durations in sigma are unchanged.
 
 ## 2. Misaligned covariance — theory
 
