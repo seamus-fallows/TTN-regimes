@@ -291,3 +291,21 @@ def stall_type(exp: str, row: dict, R: int = 3) -> dict:
     else:
         kind = "decaying"
     return dict(sR_end=float(end), stall_kind=kind)
+
+
+def aligned_boundary_a0(K: int, weights=(3.0, 2.0, 1.0), rho_thr: float = 3.0) -> float:
+    """Exact S2S boundary for aligned balanced init (theory_regimes section 3.1): the per-core
+    amplitude a0 at which min_i rho_i = rho_thr, every component starting from u0 = a0^K."""
+    from scipy.optimize import brentq
+
+    w = np.sort(np.asarray(weights, float))[::-1]
+    expo = 2 - 2 / K
+    omega = _I(K, 0.1, 0.9)
+
+    def min_rho(log_a0):
+        u0 = np.exp(K * log_a0)
+        t = [s ** -expo * _I(K, min(u0 / s, 0.4999), 0.5) for s in w]
+        wid = [s ** -expo * omega for s in w]
+        return min((t[i + 1] - t[i]) / max(wid[i], wid[i + 1]) for i in range(len(w) - 1))
+
+    return float(np.exp(brentq(lambda la: min_rho(la) - rho_thr, np.log(1e-4), np.log(0.999 * (0.5 * w[-1]) ** (1 / K)))))

@@ -180,11 +180,15 @@ def run_point(cfg: dict) -> dict:
     t_esc = (0.3 * sigma) ** (-(K - 2)) / ((K - 2) * s_min) if K > 2 else math.log(1 / (0.3 * sigma)) / s_min
     t_max = cfg.get("t_max") or (50 * t_esc + cfg.get("tau_max", 1e4) / max(info["lam_bar"], 1.0))
     L0 = problem.loss(theta0).item()
+    # Reference loss 1/2 ||W*||^2 (= L(0) for the centred and two-copy models). The plain model at
+    # large sigma has L(0) ~ 1/2 ||W_0||^2 >> 1/2 ||W*||^2, and "L < 1e-3 L(0)" would then count a run
+    # that merely shrank W_0 as converged (and the loss floor would stop it before W* is learned).
+    L_ref = 0.5 * float(problem.target_norm2)
     method = cfg.get("method", "dopri5")
     if method == "auto":  # LSODA for the stiff later plateaus at small sigma, dopri5 otherwise
         method = "lsoda" if sigma < 0.7 else "dopri5"
     kw = dict(rtol=cfg.get("rtol", 1e-8), atol=cfg.get("atol", 1e-12), method=method)
-    floor = cfg.get("l_floor", 1e-6) * L0
+    floor = cfg.get("l_floor", 1e-6) * L_ref
 
     extra = []
     if cfg["model"] == "centred":  # spectra of W itself (the Recorder's are of W - W_0): dead routes
@@ -215,8 +219,8 @@ def run_point(cfg: dict) -> dict:
     dK = dg.kernel_change(KT, K0)
     y = info["base"](probes)
     dK_dir = abs(float(y @ (KT - K0) @ y)) / float(y @ K0 @ y)
-    l_end = float(traj["loss"][-1] / L0)
-    label = dg.classify_regime(dK, rhos, traj["loss"][-1], L0)
+    l_end = float(traj["loss"][-1] / L_ref)
+    label = dg.classify_regime(dK, rhos, traj["loss"][-1], L_ref)
 
     sl = problem.spec.core_slices()
     dth_core = [float((theta_end[s] - theta0[s]).norm() / theta0[s].norm()) for s in sl]
@@ -234,14 +238,14 @@ def run_point(cfg: dict) -> dict:
         wmat = (to_dense(spec, info["cores0"]) + info["base"].dense()).reshape(d * d, d * d)
         sv = torch.linalg.svdvals(wmat)
         chi_min = min(spec.bond_dims[v] for v in spec.tree.edges)
-        l_best = float((sv[chi_min:] ** 2).sum() / (2 * L0))
+        l_best = float((sv[chi_min:] ** 2).sum() / (2 * L_ref))
 
     row = {k: v for k, v in cfg.items()}
     row.update(
         K=K, P=problem.spec.n_params, alpha_init=info["alpha"], lam_bar=info["lam_bar"], t_max=t_max,
         integrator=kw["method"],
         t_end=float(traj.meta["t_end"]), stop=traj.meta["stop_reason"], stiff_at=traj.meta.get("stiff_at"),
-        n_steps=traj.meta["n_steps"], L0=L0, l_end=l_end, l_best=l_best, dK=dK, dK_dir=dK_dir,
+        n_steps=traj.meta["n_steps"], L0=L0, L_ref=L_ref, l_end=l_end, l_best=l_best, dK=dK, dK_dir=dK_dir,
         dth=float(traj["rel_dist_from_init"][-1]), dth_core=dth_core,
         q_drift=float(np.nanmax(traj["conservation_drift"])), event_times=times.tolist(),
         event_widths=widths.tolist(), rhos=rhos.tolist(), label=label, dormant_min=dormant,

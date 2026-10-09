@@ -364,3 +364,72 @@ def fig_chi_b4(exp="chi_b4", lazy_csv=None):
     fig.tight_layout()
     save_fig(fig, f"boundaries_vs_chi_{exp}.png")
     return tab, out
+
+
+# ---- sigma x K ---------------------------------------------------------------------------------
+
+
+def tree_label(kind, n, K):
+    return f"{kind}{n} (K={K})"
+
+
+def phase_rows(ax, df, rowkey, xcol, rows, hatch_lazy_stall=True):
+    """Categorical map with one row per entry of `rows` (values of `rowkey`) and per-row log-x
+    cells (each row keeps its own x grid)."""
+    for j, rk in enumerate(rows):
+        sub_r = df[df[rowkey] == rk]
+        xs = np.sort(sub_r[xcol].unique())
+        if len(xs) == 0:
+            continue
+        xe = _edges(xs) if len(xs) > 1 else np.array([xs[0] / 1.2, xs[0] * 1.2])
+        for i, x in enumerate(xs):
+            sub = sub_r[sub_r[xcol] == x]
+            counts = sub.label.value_counts()
+            lab = counts.index[0]
+            hatch = "////" if (lab == "stalled" and hatch_lazy_stall and (sub.dK < 0.1).mean() > 0.5) else None
+            ax.add_patch(plt.Rectangle((xe[i], j - 0.5), xe[i + 1] - xe[i], 1, facecolor=COLORS[lab],
+                                       edgecolor="white", lw=0.8, hatch=hatch))
+            if counts.iloc[0] < len(sub):
+                ax.text(np.sqrt(xe[i] * xe[i + 1]), j, f"{counts.iloc[0]}/{len(sub)}", ha="center",
+                        va="center", fontsize=5.5, color=INK)
+    ax.set_xscale("log")
+    allx = df[xcol].values
+    ax.set_xlim(allx.min() / 1.3, allx.max() * 1.3)
+    ax.set_ylim(-0.5, len(rows) - 0.5)
+    ax.set_yticks(range(len(rows)), [str(r) for r in rows])
+
+
+def fig_sigma_K(exp="sigma_K", chi=6):
+    """Phase diagram over trees (rows, sorted by K) vs sigma and vs alpha = sigma^K, with per-seed
+    S2S boundaries, the aligned-extrapolation prediction and the exact aligned boundary a0c(K)."""
+    from analysis import aligned_boundary_a0, load, per_seed_table
+
+    df = load(exp)
+    df = df[df.chi == chi].copy()
+    df["tree"] = [tree_label(k, n, K) for k, n, K in zip(df.kind, df.n, df.K)]
+    df["alpha"] = df.sigma ** df.K
+    order = df.drop_duplicates("tree").sort_values(["K", "kind"]).tree.tolist()
+    Ks = {t: int(df[df.tree == t].K.iloc[0]) for t in order}
+    tab = per_seed_table(df, ["tree"])
+    save_csv(tab, f"boundaries_per_seed_{exp}_chi{chi}.csv")
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
+    for ax, xcol in zip(axes, ("sigma", "alpha")):
+        phase_rows(ax, df, "tree", xcol, order)
+        p = 1 if xcol == "sigma" else None
+        med = [np.nanmedian(tab[tab.tree == t].sigma_c) for t in order]
+        pred = [np.nanmedian(tab[tab.tree == t].sigma_c_pred) for t in order]
+        a0c = [aligned_boundary_a0(Ks[t]) for t in order]
+        f = (lambda s, t: s) if xcol == "sigma" else (lambda s, t: s ** Ks[t])
+        ys = np.arange(len(order))
+        ax.plot([f(m, t) for m, t in zip(med, order)], ys, "o", color=INK, ms=4, label="per-seed S2S boundary (median)")
+        ax.plot([f(m, t) for m, t in zip(pred, order)], ys, "x", color=INK, ms=5,
+                label="predicted from deepest run (aligned extrapolation)")
+        ax.plot([f(m, t) for m, t in zip(a0c, order)], ys, "--", color=MUTED, lw=1,
+                label=r"aligned-init boundary $a_{0c}(K)$ ($\kappa_K\to1$ limit)")
+        ax.set_xlabel(r"per-core init scale $\sigma$" if xcol == "sigma" else r"function-space scale $\alpha=\sigma^K$")
+    axes[0].legend(handles=legend_handles(False) + axes[0].get_legend_handles_labels()[0], fontsize=6.5,
+                   loc="upper left", bbox_to_anchor=(0, -0.15), ncol=2, frameon=False)
+    axes[0].set_title(f"{exp}: plain model, chi = {chi}, d = 3, teacher (3,2,1)", fontsize=9, loc="left")
+    fig.tight_layout()
+    save_fig(fig, f"phase_{exp}_chi{chi}.png")
+    return tab

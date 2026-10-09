@@ -15,8 +15,14 @@ Runs already present in <out>/<exp>/results.jsonl are skipped (resumable); nothi
 
 from __future__ import annotations
 
-import itertools
 import os
+
+# one thread per process (before numpy / torch are imported): LSODA's LU and the Hessians go through
+# numpy / scipy LAPACK, which would otherwise start one thread per CPU in every worker
+for _var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    os.environ.setdefault(_var, "1")
+
+import itertools
 import sys
 
 import numpy as np
