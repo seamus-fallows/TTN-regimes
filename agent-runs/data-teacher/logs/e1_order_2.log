@@ -1,0 +1,120 @@
+mps 0.05 T1_clean_reversal sigma 0 10 0 wall 30s
+mps 0.05 T1_clean_reversal sigma 2 10 0 mpswall 36s 
+0.05 T1_clean_reversal sigma 8 10 0 wall 39s
+mps 0.05 T1_clean_reversal sigma 22 10 0 wall 20s
+mps 0.05 T1_clean_reversal sigma 25 10 0 wall 29s
+mpsmpsmps   0.050.050.05mps    T1_clean_reversalT1_clean_reversalT1_clean_reversal0.05  mps  sigmasigma sigmaT1_clean_reversal  0.05  51 3sigma  T1_clean_reversal  1010 1012  sigma  0mps0 mps010   4   wall 42s0.05wall 30s 0.05wall 45s0
+ 
+10 
+ T1_clean_reversal T1_clean_reversalwall 27s 0 
+sigma sigma wall 38s 31
+30  0110  00  wall 33swall 32s
+
+mps 0.05 T1_clean_reversal sigma 34 10 0 wall 60s
+mpsmps  0.050.05  T1_clean_reversalT1_clean_reversal  sigmasigma  97  1010mps  mps 00 0.05  0.05 wall 47swall 31s T1_clean_reversal
+
+T1_clean_reversal  sigmasigma  1113  10mps10   00.050   mpswall 45sT1_clean_reversalwall 32s 
+mps 
+0.05 sigma 0.05 T1_clean_reversal 35 T1_clean_reversal sigma 01 mpssigma 18  0 mps0.0536 10   wall 20s 0.05T1_clean_reversal10
+0  mps  T1_clean_reversalsigma 0wall 42s  0.05 
+sigma14 mpswall 31s  T1_clean_reversal 
+39mps01 0.05mps   sigma  010.05mps0 T1_clean_reversal0.05    6  0 mpsT1_clean_reversal0.05wall 43s sigmaT1_clean_reversalwall 41s   
+10  
+0.05sigmaT1_clean_reversal 37white_Ls   0  T1_clean_reversal38white_Ls 102   wall 28s  white_Ls100
+010     10mps10wall 36s0   mps 
+ 10mpswall 31s0.05 0wall 29smps  
+ mps0.05 
+ 00.05T1_clean_reversal  wall 18s0.05   0.05T1_clean_reversal
+ wall 20sT1_clean_reversalsigma mps T1_clean_reversal
+  T1_clean_reversal sigma white_Lsmpsmps16 0.05 sigma    white_Ls 15 60.050.0510 T1_clean_reversal 17   mps 8 10 mps10T1_clean_reversalT1_clean_reversal 0 white_Ls 01    0.05 10 0 mps0.050white_Lswhite_Ls wall 39s 5 0     T1_clean_reversal
+0 mpswall 49smps 0.05T1_clean_reversalwall 18s97  10 mps
+ wall 27smps  
+  white_Lswall 28s 0.05 mpsmps0.05
+ T1_clean_reversalwhite_Lsmps1010 
+0 0.05   0.05     10 T1_clean_reversalmps 0.050.05T1_clean_reversal white_Ls30.05mps00   T1_clean_reversal   T1_clean_reversal      10sigma0.05 T1_clean_reversalT1_clean_reversalwhite_Ls 410T1_clean_reversal0.05wall 43swall 25s   white_Ls   white_Ls    
+
+010T1_clean_reversal white_Lswhite_Ls12 100white_LsT1_clean_reversal   14   11    wall 22s10white_Ls 151310 0wall 29s16sigma
+ mps 01   10 
+  0 17 10100 wall 28s1020 0.05 0mps   0
+  wall 34s 01  00wall 18s 001
+T1_clean_reversal wall 27s0.05  
+wall 35s   0
+ wall 37swall 24s
+mpswall 27s0white_Ls 
+ 
+  wall 18s0.05wall 34s18
+ 
+ mpsT1_clean_reversal10   0.05white_Ls0   T1_clean_reversal21wall 32s  
+white_Ls10mps  mps 230 0.05  0.05 10wall 22s T1_clean_reversal 
+T1_clean_reversal 0 white_Ls white_Ls wall 31s 24
+19 mps 01 01 0.05 0 0mps T1_clean_reversal  wall 25s wall 20s0.05
+white_Ls
+  T1_clean_reversal25  white_Ls10  mps220   0.0510wall 18s mps 
+T1_clean_reversal 0 0.05 white_Lsmps wall 13s  T1_clean_reversal
+27mps0.05    mpswhite_Ls010.05T1_clean_reversal     0.05mpsmps0mpsT1_clean_reversalwhite_Ls       T1_clean_reversal0.050.0526wall 22s0.05white_Ls29   
+    white_LsT1_clean_reversalT1_clean_reversal10T1_clean_reversal3210mps mps       31 white_Lswhite_Ls0white_Ls1000.05 mpsmps0.05       01mps   2830wall 23s350wall 24sT1_clean_reversal  0.050.05T1_clean_reversal  
+  
+ 00.05   101001wall 19swhite_Ls  T1_clean_reversalT1_clean_reversalwhite_Ls   mps
+ wall 24sT1_clean_reversal  mps 000 38
+ white_Lswhite_Ls 33   0.05 white_Ls  0.05 wall 28swall 24swall 14s 10 3436 10
+
+
+T1_clean_reversal 39  T1_clean_reversal  sigma  0110190   mps 00wall 30s01T1_clean_reversalwall 18s 
+ 0 
+   
+0.05wall 25s wall 20smps0white_Lswhite_sqrtLs 
+wall 24s
+    T1_clean_reversal
+0.05wall 30s201  
+  white_sqrtLsT1_clean_reversal0101    0white_Ls00    0137wall 20swall 15s  
+
+010  wall 16s0
+ wall 27s
+mps 0.05 T1_clean_reversalmps  sigma0.05  24T1_clean_reversal  01white_sqrtLs  04  wall 34s01
+ 0 wall 19s
+mps 0.05 T1_clean_reversal white_sqrtLs 9 10 0 wall 24s
+mpsmps  0.050.05  T1_clean_reversalT1_clean_reversal  mpswhite_sqrtLswhite_sqrtLs   0.0565   mpsT1_clean_reversalmps1010mps  mps    0.05white_sqrtLsmpsmps 0.05mpsmps000.05    0.05   mps   T1_clean_reversal140.050.05 T1_clean_reversal0.050.05 wall 15swall 21sT1_clean_reversal  mps  T1_clean_reversal  mps 0.05
+
+ mpswhite_sqrtLsmps01mps T1_clean_reversalT1_clean_reversal white_sqrtLsT1_clean_reversal T1_clean_reversal white_sqrtLs     0.05  white_sqrtLs  0.05 T1_clean_reversalmps 0.0520.0500.05 mpswhite_sqrtLswhite_sqrtLs 7white_sqrtLs white_sqrtLs  3     T1_clean_reversal   8  T1_clean_reversal white_sqrtLsmps0.05 T1_clean_reversal10T1_clean_reversalwall 30sT1_clean_reversal 0.051510 10mps13 11   01   
+ white_sqrtLs   10 mps  white_sqrtLs 120.05T1_clean_reversal white_sqrtLs0white_sqrtLswhite_sqrtLs T1_clean_reversal1001 0 0.0510 10   0 mps  mps 16   0 0.05  17 01T1_clean_reversalwhite_sqrtLs 19 wall 20s18 22 white_sqrtLs00mpsmps wall 18s T1_clean_reversal0 0   wall 22s 0.05
+ 0.05 10     wall 20s
+T1_clean_reversal  01 0sigma20
+01 10 01 23wall 25swall 20s0.050.05
+sigma wall 17s wall 23s    T1_clean_reversal T1_clean_reversal 0 
+
+   mpswhite_sqrtLs
+0
+wall 16s32010 0 0 10T1_clean_reversalT1_clean_reversal26   
+   white_sqrtLs sigma wall 18s    0.05mps21wall 17s100wall 18s wall 22s wall 11s21
+0white_sqrtLswhite_sqrtLs10   
+  
+1024
+
+    T1_clean_reversal0.05100wall 20s  10wall 20s260    
+001 
+  white_sqrtLsT1_clean_reversal0wall 28s  mps001wall 33s mps  
+wall 55s0   
+27  sigmawall 20s
+ 0.05mpswall 34s0mps mps0.0525 
+wall 22s  
+ mps  01mps  28
+T1_clean_reversal0.05wall 17s 010.05  0.05mpsT1_clean_reversalmps   
+0.05  00.05mps    10white_sqrtLsT1_clean_reversalmps 0T1_clean_reversal   T1_clean_reversal0.05sigmamps0.05    T1_clean_reversal  wall 22sT1_clean_reversal0.05     029white_sqrtLs0.05 wall 14swhite_sqrtLs
+  white_sqrtLsT1_clean_reversalmps270.05T1_clean_reversal    white_sqrtLs
+ white_sqrtLsT1_clean_reversal      wall 35s0132T1_clean_reversal 28  31white_sqrtLs0.0501T1_clean_reversalsigma
+   34 30white_sqrtLs      010white_sqrtLs 10  0133T1_clean_reversal0white_sqrtLs23   10 1036    mps  wall 21s10038 mps0  001white_sqrtLswall 35s 37
+   0  001   
+0.05 0wall 14s10 0.05wall 20s  wall 27s039 10 
+ wall 34s mps
+wall 17s0
+  T1_clean_reversal wall 41s0
+T1_clean_reversal 
+ wall 17s01 0
+  0.05wall 16s
+ sigma wall 16swhite_sqrtLs 
+0 wall 18s
+ T1_clean_reversal 33
+35 wall 25s  sigma
+1001   2900   10wall 26swall 12s 
+
+0 wall 37s

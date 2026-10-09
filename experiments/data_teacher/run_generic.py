@@ -16,7 +16,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT, component_events, crossings
+from common import OUT_ROOT, component_events, crossings, map_cores
 from pilots.pilot_gf import run_gf
 from setups import build
 
@@ -63,8 +63,10 @@ def job(args):
     if path.exists():
         return np.load(path, allow_pickle=True)["summary"].item()
     cfg = dict(case, tree=tree)
-    spec, teacher, metrics, loss_fn = build(cfg, seed)
+    spec, teacher, metrics, loss_fn, init_map = build(cfg, seed)
     cores0 = spec.init(sigma, seed=seed)
+    if init_map is not None:
+        cores0 = map_cores(spec, cores0, init_map)
     is_cp = hasattr(teacher, "factors")
     rec = run_gf(spec, cores0, teacher, metrics, t_max=float(icfg["t_max"][tree]),
                  n_rec=int(icfg["n_rec"]), rtol=float(icfg["rtol"]), atol=float(icfg["atol"]),

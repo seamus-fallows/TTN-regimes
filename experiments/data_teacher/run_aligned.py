@@ -13,7 +13,8 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT, aligned_setup, make_spec, run_and_save
+from common import OUT_ROOT, aligned_setup, make_spec, map_cores, run_and_save
+from ttn.losses import power_law_cov
 
 HERE = Path(__file__).parent
 
@@ -27,6 +28,11 @@ def job(args):
         cfg["n_sites"], cfg["d"], tcfg["weights"], tcfg["eig_index"], tcfg["alpha"], variant
     )
     cores0 = spec.init(sigma, seed=seed)
+    if variant == "white_sqrtLs_mapped":
+        # Same point in function space as the (Sigma, s) run after absorbing Sigma^{1/2}: the two
+        # runs share the landscape and the start, and differ only in the gradient-flow metric.
+        sqrt_cov = power_law_cov(cfg["d"], tcfg["alpha"]).sqrt()  # diagonal
+        cores0 = map_cores(spec, cores0, [sqrt_cov] * cfg["n_sites"])
     run_cfg = dict(cfg, t_max=cfg["t_max"][tree])
     meta = dict(tree=tree, sigma=sigma, teacher=tname, variant=variant, seed=seed,
                 **{f"Lambda_{r}": float(x) for r, x in enumerate(big_lam)},

@@ -630,3 +630,17 @@ mps 0.2 T2_race_vs_greedy sigma 1 01 0 wall 143s
 mps 0.2 T2_race_vs_greedy sigma 10 01 0 wall 138s
 mps 0.2 T2_race_vs_greedy sigma 11 10 0 wall 140s
 mps 0.2 T2_race_vs_greedy sigma 27 01 0 wall 106s
+mps 0.2 T2_race_vs_greedy sigma 21 10 0 wall 131s
+mps 0.2 T2_race_vs_greedy white_Ls 22 10 0 wall 3s
+mps 0.2 T2_race_vs_greedy white_Ls 19 01 0 wall 15s
+mps 0.2 T2_race_vs_greedy sigma 37 10 0 wall 69s
+mps 0.2 T2_race_vs_greedy sigma 30 10 0 wall 127s
+mps 0.2 T2_race_vs_greedy white_Ls 24 01 0 wall 14s
+mps 0.2 T2_race_vs_greedy white_Ls 15 10 0 wall 44s
+mps 0.2 T2_race_vs_greedy sigma 18 10 0 wall 159s
+mps 0.2 T2_race_vs_greedy sigma 2 10 0 wall 180s
+mps 0.2 T2_race_vs_greedy white_Ls 0 01 0 wall 78s
+mps 0.2 T2_race_vs_greedy white_Ls 3 01 0 wall 72s
+mps 0.2 T2_race_vs_greedy white_Ls 28 10 0 wall 12s
+mps 0.2 T2_race_vs_greedy sigma 12 01 0 wall 191s
+mps 0.2 T2_race_vs_greedy white_Ls 8 10 0 wall 73s

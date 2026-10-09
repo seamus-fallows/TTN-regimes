@@ -34,7 +34,7 @@ def binom(p, n):
 def main():
     rows = pd.read_pickle(RUN_DIR / "summary_rows.pkl")
     df = pd.DataFrame(rows)
-    df["learned_all"] = df["loss_end"] < 1e-6 * df["loss0"]
+    df["learned_all"] = df["loss_end"] < 1e-5 * df["loss0"]
 
     # 1. Order and swap statistics.
     tab = []

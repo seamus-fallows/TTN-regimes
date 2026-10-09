@@ -13,7 +13,7 @@ import torch
 
 from correlated import dense_metric_loss_fn, moment_matrix, site_cross_cov
 from ttn.losses import power_law_cov
-from ttn.network import TTNSpec
+from ttn.network import TTNSpec, _sqrt_psd
 from ttn.teachers import CPTeacher, TTNTeacher, random_ttn_teacher
 from ttn.tree import make_tree
 
@@ -42,21 +42,39 @@ def nonorth(cfg):
     """Step 4(a). Whitened inputs; component 1 = e1 at every site, component 2 = c e1 + sqrt(1-c^2)
     e2 at every site, so <U_1, U_2> = c^N."""
     n, d, c = cfg["n_sites"], cfg["d"], cfg["overlap"]
+    weights = [1.0, cfg["s2"]] if "s2" in cfg else cfg["weights"]
     u1 = torch.zeros(d, dtype=torch.float64)
     u1[0] = 1.0
     u2 = torch.zeros(d, dtype=torch.float64)
     u2[0], u2[1] = c, math.sqrt(1 - c * c)
-    factors = torch.stack([u1.expand(n, d), u2.expand(n, d)]).clone()
+    return CPTeacher(torch.as_tensor(weights, dtype=torch.float64), factors), None
     return CPTeacher(torch.as_tensor(cfg["weights"], dtype=torch.float64), factors), None
 
 
+def absorbed(teacher: CPTeacher, metrics):
+    """Fact B: the white problem with teacher (x)_i Sigma_i^{1/2} W* (a CP teacher with factors
+    Sigma_i^{1/2} u_r / norm) and the init map G -> G x Sigma_i^{1/2} on physical legs."""
+    roots = [_sqrt_psd(m) for m in metrics]
+    f = torch.stack([teacher.factors[:, i, :] @ roots[i] for i in range(teacher.n_sites)], dim=1)
+    norms = f.norm(dim=-1)
+    return CPTeacher(teacher.weights * norms.prod(-1), f / norms[..., None]), roots
+
+
 def build(cfg, seed):
-    """Dispatch on cfg['kind']; returns spec, teacher, metrics, loss_fn."""
+    """Dispatch on cfg['kind']; returns spec, teacher, metrics, loss_fn, init_map.
+
+    cfg['variant'] == 'white_mapped' (product covariances only) replaces the problem by the absorbed
+    white problem started from the mapped init: same landscape and same start, different GF metric.
+    """
     spec = TTNSpec.uniform(make_tree(cfg["tree"], cfg["n_sites"]), cfg["d"], cfg["chi"])
     kind = cfg["kind"]
     loss_fn = None
+    init_map = None
     if kind == "misaligned":
         teacher, metrics = misaligned(cfg)
+        if cfg.get("variant") == "white_mapped":
+            teacher, init_map = absorbed(teacher, metrics)
+            metrics = None
     elif kind == "nonorth":
         teacher, metrics = nonorth(cfg)
     elif kind == "correlated":
@@ -67,7 +85,7 @@ def build(cfg, seed):
         teacher, metrics = ttn_teacher(cfg), None
     else:
         raise ValueError(kind)
-    return spec, teacher, metrics, loss_fn
+    return spec, teacher, metrics, loss_fn, init_map
 
 
 def odeco_std(cfg):

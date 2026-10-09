@@ -39,13 +39,26 @@ def aligned_setup(n_sites, d, weights, eig_index, alpha, variant):
         w = s
     elif variant == "white_Ls":
         w = big_lam * s
-    elif variant == "white_sqrtLs":
+    elif variant in ("white_sqrtLs", "white_sqrtLs_mapped"):
         w = big_lam.sqrt() * s
     else:
         raise ValueError(variant)
     patterns = [[k] * n_sites for k in eig_index]
     teacher = pattern_teacher(w, patterns, d, basis="standard")
     return teacher, metrics, big_lam.numpy()
+
+
+def map_cores(spec, cores, site_mats):
+    """Apply site_mats[i] to the physical leg of site i (the reparameterization of Fact B:
+    G~ = G x Sigma_i^{1/2}, so that W~ = (x)_i Sigma_i^{1/2} W)."""
+    from ttn.network import apply_on_leg
+
+    out = []
+    for v, g in enumerate(cores):
+        for k, site in enumerate(spec.tree.sites[v]):
+            g = apply_on_leg(g, site_mats[site], k)
+        out.append(g)
+    return out
 
 
 def run_and_save(path: Path, spec, cores0, teacher, metrics, run_cfg, meta, loss_fn=None):
