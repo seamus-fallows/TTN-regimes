@@ -34,7 +34,7 @@ Pilot numbers so far (final numbers will come from the committed configs):
 ## What was done
 1. Read brief, repo, model, diagnostics, plan; merged origin/main repeatedly (literature, core fixes,
    theory drafts, library v0).
-2. Theory in notes/order.md (commit 3f1f0b0 and later).
+2. Theory in notes/order.md (54174e2 and later).
 3. Pilots (scratch scripts), then experiment code in experiments/order/ (22094ee, 7b440f4).
 
 ## Decisions
