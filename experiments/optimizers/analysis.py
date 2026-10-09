@@ -41,12 +41,36 @@ def local_spacing(t: np.ndarray, te: float) -> float:
 
 
 def component_events(t: np.ndarray, a: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Event time per component (a_r = 1/2; the last upward crossing if a transient above 1/2
-    fell back) and width of the final rise (0.1 -> 0.9)."""
-    first = crossing_times(t, a, 0.5)
-    last = crossing_times(t, a, 0.5, last=True)
-    times = np.where(np.isfinite(last), last, first)
-    return times, event_widths(t, a)
+    """Event time per component on a sampled trace: the last upward crossing of a_r = 1/2 after which
+    a_r stays >= 1/2 (NaN if the component ends below 1/2, so transient crossings are never events),
+    and the width of the final rise (0.1 -> 0.9)."""
+    return crossing_times(t, a, 0.5, last=True), event_widths(t, a)
+
+
+def exact_events(d: dict, n_comp: int) -> tuple[np.ndarray, np.ndarray]:
+    """Events from root-found crossings (GF runs with `xing_<r>_<level>`): a_r starts below every level,
+    so crossings alternate up / down; the event is the last crossing of 1/2 if their number is odd (ends
+    above), its width = (first crossing of 0.9 after it) - (last crossing of 0.1 before it)."""
+    times, widths = np.full(n_comp, np.nan), np.full(n_comp, np.nan)
+    for r in range(n_comp):
+        c10, c50, c90 = (np.asarray(d.get(f"xing_{r}_{lev}", np.array([])), dtype=float)
+                         for lev in (0.1, 0.5, 0.9))
+        if len(c50) % 2 == 0:
+            continue
+        te = c50[-1]
+        times[r] = te
+        lo = c10[c10 <= te]
+        hi = c90[c90 >= te]
+        if len(lo) and len(hi):
+            widths[r] = hi[0] - lo[-1]
+    return times, widths
+
+
+def overshoot_return(t: np.ndarray, loss: np.ndarray) -> int:
+    """Index of the first sample after the last one with L > L(0): events are only defined once a
+    loss overshoot (Gram-preconditioned GD's first step) has returned; 0 if there is none."""
+    over = np.flatnonzero(loss > loss[0] * (1 + 1e-9))
+    return int(over[-1] + 1) if over.size else 0
 
 
 def effective_ranks(spectra: np.ndarray, teacher_spectra: np.ndarray) -> np.ndarray:
@@ -110,18 +134,42 @@ def summarize(path: Path) -> dict:
         hit = np.flatnonzero(rel < q)
         row[f"t_loss_{q:g}"] = t[hit[0]] if hit.size else np.nan
     row["loss_max_rel"] = float(np.nanmax(rel))
-    times, widths = component_events(t, a)
+    n_comp = a.shape[1]
+    exact = "xing_0_0.5" in d
+    i0 = 0 if exact else overshoot_return(t, loss)
+    row["t_return"] = t[min(i0, len(t) - 1)] if i0 > 0 else 0.0
+    row["event_location"] = "exact" if exact else "trace"
+    if exact:
+        times, widths = exact_events(d, n_comp)
+        sample = np.full(n_comp, -1)
+    else:
+        tt, aa = t[i0:], a[i0:]
+        times, widths = component_events(tt, aa) if len(tt) > 1 else (np.full(n_comp, np.nan),) * 2
+        # sample from which a_r stays >= 1/2 (ties = several components in the same step / micro-step)
+        sample = np.full(n_comp, -1)
+        for r in range(n_comp):
+            below = np.flatnonzero(aa[:, r] < 0.5)
+            if np.isfinite(times[r]):
+                sample[r] = (below[-1] + 1 if below.size else 0) + i0
+        # learned already when the overshoot returned: no resolved event
+        row["n_events_at_return"] = int(np.sum([(sample[r] == i0) and i0 > 0 for r in range(n_comp)]))
     for r, (tr, wr) in enumerate(zip(times, widths)):
         row[f"t_{r}"], row[f"w_{r}"] = tr, wr
         row[f"a_end_{r}"] = a[-1, r]
         row[f"a_min_{r}"] = np.min(np.abs(a[:, r]))
+        row[f"sample_{r}"] = sample[r]
     ok = np.isfinite(times)
     order = np.argsort(np.where(ok, times, np.inf))[: ok.sum()]
     row["order"] = "o" + "".join(map(str, order))  # prefix keeps leading zeros through CSV
+    learned = sample[ok]
+    # the temporal order is resolved only if no two events fall into the same sample (step)
+    row["order_resolved"] = bool(exact or len(set(learned.tolist())) == len(learned))
+    if not exact and i0 > 0:
+        row["order_resolved"] = row["order_resolved"] and row["n_events_at_return"] == 0
     row["n_events"] = int(ok.sum())
     rho = separation_ratios(times, widths)
     sorted_t = np.sort(times[ok])
-    spacing = [local_spacing(t, te) for te in sorted_t]
+    spacing = [0.0 if exact else local_spacing(t, te) for te in sorted_t]
     for i in range(len(sorted_t) - 1):
         row[f"gap_{i}"] = sorted_t[i + 1] - sorted_t[i]
         row[f"rho_{i}"] = rho[i]
@@ -148,8 +196,8 @@ def summarize(path: Path) -> dict:
 def collect(name: str, refresh: bool = False) -> pd.DataFrame:
     out_dir = OUT_ROOT / name
     cache = RESULTS / f"{name}_summary.csv"
-    old = pd.read_csv(cache, dtype={"order": str}, keep_default_na=False, na_values=[""]) \
-        if (cache.exists() and not refresh) else pd.DataFrame()
+    old = pd.read_csv(cache, dtype={"order": str}, keep_default_na=False, na_values=[""],
+                      float_precision="round_trip") if (cache.exists() and not refresh) else pd.DataFrame()
     seen = set(old["file"]) if len(old) else set()
     rows = [summarize(p) for p in sorted(out_dir.glob("*.npz"))
             if not p.name.endswith(".tmp.npz") and p.name not in seen]

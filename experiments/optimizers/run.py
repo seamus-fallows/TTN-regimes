@@ -114,14 +114,15 @@ def main():
     a = ap.parse_args()
     name, jobs = jobs_from_config(a.config)
     out_dir = Path(a.out) / name
-    out_dir.mkdir(parents=True, exist_ok=True)
     todo = [j for j in jobs if not (out_dir / f"{run_id(j)}.npz").exists()]
     print(f"{name}: {len(jobs)} runs, {len(todo)} to do", flush=True)
     if a.dry:
         return
+    out_dir.mkdir(parents=True, exist_ok=True)
     # longest jobs first (rough: small sigma and many steps)
     todo.sort(key=lambda j: -(j.get("n_steps", 0) + j.get("t_max", 0)) / j.get("sigma", 1))
-    with mp.get_context("fork").Pool(min(a.workers, max(len(todo), 1)), maxtasksperchild=20) as pool:
+    # spawn works on every platform (fork does not exist on Windows); workers import this module
+    with mp.get_context("spawn").Pool(min(a.workers, max(len(todo), 1)), maxtasksperchild=20) as pool:
         with open(out_dir / "index.jsonl", "a") as f:
             for i, res in enumerate(pool.imap_unordered(work, [(j, out_dir) for j in todo])):
                 if res is None:
