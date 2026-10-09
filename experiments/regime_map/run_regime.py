@@ -119,6 +119,19 @@ def kernel_weights(problem: Problem) -> torch.Tensor | None:
     return problem.precond
 
 
+def _own_spectra(problem, theta, t):
+    """Bond spectra of W(theta) (NaN-padded to the largest bond), edges in tree order."""
+    from ttn.network import bond_spectra
+
+    spec = problem.spec
+    sp = bond_spectra(spec, spec.unflatten(theta))
+    chi = max(spec.bond_dims[v] for v in spec.tree.edges)
+    out = np.full((len(spec.tree.edges), chi), np.nan)
+    for j, v in enumerate(spec.tree.edges):
+        out[j, : sp[v].numel()] = sp[v].numpy()
+    return out
+
+
 def refine_events(problem: Problem, t, A, params, kw, n_dense=200, max_steps=100_000):
     """Event times and final-rise widths resolved in linear time.
 
@@ -173,10 +186,14 @@ def run_point(cfg: dict) -> dict:
     kw = dict(rtol=cfg.get("rtol", 1e-8), atol=cfg.get("atol", 1e-12), method=method)
     floor = cfg.get("l_floor", 1e-6) * L0
 
+    extra = []
+    if cfg["model"] == "centred":  # spectra of W itself (the Recorder's are of W - W_0): dead routes
+        extra.append(("spectra_W", _own_spectra))
+
     def integrate(kw):
         return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
-                            max_steps=cfg.get("max_steps", 100_000), recorder=Recorder(save_params=True),
-                            **kw)
+                            max_steps=cfg.get("max_steps", 100_000),
+                            recorder=Recorder(save_params=True, extra=extra), **kw)
 
     traj = integrate(kw)
     if traj.meta["stop_reason"] == "failed" and method == "lsoda":  # fall back to the reference

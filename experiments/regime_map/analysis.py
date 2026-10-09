@@ -274,7 +274,12 @@ def stall_type(exp: str, row: dict, R: int = 3) -> dict:
     from ttn.dynamics import Trajectory
 
     tr = Trajectory.load(os.path.join(OUT, exp, "traj", run_id(row_cfg(row)) + ".npz"))
-    t, spec = tr["t"], tr["spectra"]  # (n, E, chi_max), NaN-padded
+    # spectra of W itself: 'spectra' for plain runs; centred runs record W - W_0 there and W in
+    # 'spectra_W' (runs from 2026-10-09 21:00 on); older centred runs cannot be classified
+    key = "spectra_W" if "spectra_W" in tr.data else ("spectra" if row.get("model") != "centred" else None)
+    if key is None:
+        return dict(sR_end=np.nan, stall_kind="n/a")
+    t, spec = tr["t"], tr[key]  # (n, E, chi_max), NaN-padded
     if spec.shape[2] < R:
         return dict(sR_end=np.nan, stall_kind="n/a")
     sR = np.nanmin(spec[:, :, R - 1], axis=1)  # smallest R-th singular value over edges

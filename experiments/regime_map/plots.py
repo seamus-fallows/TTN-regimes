@@ -57,14 +57,17 @@ def _edges(vals):
     return np.exp(np.concatenate([[v[0] - (mid[0] - v[0])], mid, [v[-1] + (v[-1] - mid[-1])]]))
 
 
-def phase_panel(ax, df, ycol, label_col="label", hatch_lazy_stall=True):
-    """Categorical map: cell colour = majority label; text = majority count / seeds."""
-    sig = np.sort(df.sigma.unique())
-    ys = np.sort(df[ycol].unique())
-    xe = _edges(sig)
+def phase_panel(ax, df, ycol, label_col="label", hatch_lazy_stall=True, xcol="sigma", ylabels=None,
+                logx=True):
+    """Categorical map: cell colour = majority label; text = majority count / seeds when not
+    unanimous; hatched = stalled with delta_K < 0.1 (kernel-like stall). Rows are the sorted values
+    of `ycol` (categorical axis), columns the sorted values of `xcol` (log-spaced edges)."""
+    xs = np.sort(df[xcol].unique())
+    ys = np.sort(df[ycol].unique()) if ylabels is None else list(ylabels)
+    xe = _edges(xs) if logx else np.concatenate([[xs[0] - 0.5], (xs[1:] + xs[:-1]) / 2, [xs[-1] + 0.5]])
     for j, y in enumerate(ys):
-        for i, s in enumerate(sig):
-            sub = df[(df.sigma == s) & (df[ycol] == y)]
+        for i, x in enumerate(xs):
+            sub = df[(df[xcol] == x) & (df[ycol] == y)]
             if sub.empty:
                 continue
             counts = sub[label_col].value_counts()
@@ -75,14 +78,37 @@ def phase_panel(ax, df, ycol, label_col="label", hatch_lazy_stall=True):
             ax.add_patch(plt.Rectangle((xe[i], j - 0.5), xe[i + 1] - xe[i], 1, facecolor=COLORS[lab],
                                        edgecolor="white", lw=1.0, hatch=hatch))
             if counts.iloc[0] < len(sub):
-                ax.text(np.sqrt(xe[i] * xe[i + 1]), j, f"{counts.iloc[0]}/{len(sub)}", ha="center",
-                        va="center", fontsize=6, color=INK)
-    ax.set_xscale("log")
+                ax.text(np.sqrt(xe[i] * xe[i + 1]) if logx else (xe[i] + xe[i + 1]) / 2, j,
+                        f"{counts.iloc[0]}/{len(sub)}", ha="center", va="center", fontsize=6, color=INK)
+    if logx:
+        ax.set_xscale("log")
     ax.set_xlim(xe[0], xe[-1])
     ax.set_ylim(-0.5, len(ys) - 0.5)
     ax.set_yticks(range(len(ys)), [str(y) for y in ys])
-    ax.set_xlabel(r"per-core init scale $\sigma$")
+    ax.set_xlabel(r"per-core init scale $\sigma$" if xcol == "sigma" else xcol)
     return ys
+
+
+def heat_panel(ax, df, ycol, value, cmap, norm, title, xcol="sigma", ylabels=None, contour=None,
+               transform=None, fig=None):
+    """Median over seeds of `value` per (y, x) cell as a heatmap (log x)."""
+    piv = df.groupby([ycol, xcol])[value].median().unstack()
+    if ylabels is not None:
+        piv = piv.reindex(ylabels)
+    vals = piv.values.astype(float)
+    if transform is not None:
+        vals = transform(vals)
+    im = ax.pcolormesh(_edges(piv.columns), np.arange(len(piv.index) + 1) - 0.5, vals, norm=norm,
+                       cmap=cmap, shading="flat")
+    if contour is not None:
+        ax.contour(piv.columns, np.arange(len(piv.index)), vals, levels=[contour], colors=INK, linewidths=1)
+    ax.set_xscale("log")
+    ax.set_yticks(range(len(piv.index)), [str(c) for c in piv.index])
+    ax.set_xlabel(r"$\sigma$" if xcol == "sigma" else xcol)
+    ax.set_title(title, fontsize=9, loc="left")
+    if fig is not None:
+        fig.colorbar(im, ax=ax, fraction=0.05)
+    return im
 
 
 def legend_handles(with_hatch=True):
@@ -158,28 +184,10 @@ def fig_sigma_chi(exp, model, lazy_csv=None, title=""):
               loc="upper left", bbox_to_anchor=(0, -0.18), ncol=2, frameon=False)
     ax.set_title(f"{title}regime (majority of {df.seed.nunique()} seeds)", fontsize=9, loc="left")
 
-    piv = df.groupby(["chi", "sigma"]).dK.median().unstack()
-    ax = axes[1]
-    im = ax.pcolormesh(_edges(piv.columns), np.arange(len(piv.index) + 1) - 0.5, piv.values,
-                       norm=LogNorm(1e-4, 1e4), cmap="Blues", shading="flat")
-    ax.contour(piv.columns, np.arange(len(piv.index)), piv.values, levels=[0.1], colors=INK, linewidths=1)
-    ax.set_xscale("log")
-    ax.set_yticks(range(len(piv.index)), [str(c) for c in piv.index])
-    ax.set_xlabel(r"$\sigma$")
-    ax.set_title(r"median kernel change $\delta_K(T)$ (line: 0.1)", fontsize=9, loc="left")
-    fig.colorbar(im, ax=ax, fraction=0.05)
-
-    piv = df.groupby(["chi", "sigma"]).min_rho.median().unstack()
-    ax = axes[2]
-    lr = np.log10(piv.values.astype(float))
-    im = ax.pcolormesh(_edges(piv.columns), np.arange(len(piv.index) + 1) - 0.5, lr,
-                       norm=TwoSlopeNorm(vcenter=np.log10(3), vmin=-2, vmax=2.5), cmap="RdBu_r",
-                       shading="flat")
-    ax.set_xscale("log")
-    ax.set_yticks(range(len(piv.index)), [str(c) for c in piv.index])
-    ax.set_xlabel(r"$\sigma$")
-    ax.set_title(r"median $\log_{10}\min_i\rho_i$ (white: $\rho=3$)", fontsize=9, loc="left")
-    fig.colorbar(im, ax=ax, fraction=0.05)
+    heat_panel(axes[1], df, "chi", "dK", "Blues", LogNorm(1e-4, 1e4),
+               r"median kernel change $\delta_K(T)$ (line: 0.1)", contour=0.1, fig=fig)
+    heat_panel(axes[2], df, "chi", "min_rho", "RdBu_r", TwoSlopeNorm(vcenter=np.log10(3), vmin=-2, vmax=2.5),
+               r"median $\log_{10}\min_i\rho_i$ (white: $\rho=3$)", transform=np.log10, fig=fig)
     fig.tight_layout()
     save_fig(fig, f"phase_{exp}_{model}.png")
     return df
@@ -281,3 +289,78 @@ if __name__ == "__main__":
         fig_sigma_chi(a.exp, a.model, a.lazy, title=f"{a.exp}, {a.model}: ")
         bt = fig_sensitivity(a.exp, a.model)
         print(bt[(bt.k_thr == 0.1) & (bt.rho_thr == 3.0)])
+
+
+# ---- boundaries vs bond dimension (chi_b4) ------------------------------------------------------
+
+
+def chi_boundaries(df: pd.DataFrame, K: int = 3):
+    """Per-seed S2S boundary (label-based, with status), aligned-extrapolation prediction and
+    kernel boundary (delta_K = 0.1 crossing) for every chi; returns the per-seed table."""
+    from analysis import per_seed_table
+
+    return per_seed_table(df, ["model", "chi"], K)
+
+
+def fig_chi_b4(exp="chi_b4", lazy_csv=None):
+    """Boundaries vs chi: S2S (per seed, mean +- SE of log sigma_c) with the aligned prediction,
+    lazy (delta_K = 0.1 crossing per seed) with theory_regimes P5/P6 (6.50 and 5.16 chi^-1/2), and the
+    fitted exponents (fit to the per-seed values, error from seed-to-seed scatter)."""
+    from analysis import load, mean_se
+
+    df = load(exp)
+    tab = chi_boundaries(df)
+    save_csv(tab, f"boundaries_per_seed_{exp}.csv")
+    fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
+    out = {}
+    for model, color, marker in (("centred", "#2a78d6", "o"), ("twocopy", "#eb6834", "s")):
+        t = tab[tab.model == model]
+        if t.empty:
+            continue
+        chis = np.sort(t.chi.unique())
+        for col, ax, lab in (("sigma_c", axes[0], "S2S"), ("sigma_K01", axes[1], "lazy (delta_K = 0.1)")):
+            if col == "sigma_c" and model == "twocopy":
+                continue
+            m, e = [], []
+            for c in chis:
+                mu, se, n = mean_se(np.log(t[t.chi == c][col]))
+                m.append(mu)
+                e.append(se)
+            m, e = np.array(m), np.array(e)
+            ok = np.isfinite(m)
+            ax.errorbar(chis[ok], np.exp(m[ok]), yerr=[np.exp(m[ok]) - np.exp(m[ok] - e[ok]),
+                        np.exp(m[ok] + e[ok]) - np.exp(m[ok])], fmt=marker, color=color, ms=4, lw=1.2,
+                        label=f"{model}: geometric mean over seeds")
+            # exponent: fit on all per-seed points (chi >= 16 for the lazy boundary: isotropic regime)
+            sel = t[np.isfinite(t[col]) & (t.chi >= (16 if col == "sigma_K01" else 9))]
+            if len(sel) >= 5:
+                x, y = np.log(sel.chi.values), np.log(sel[col].values)
+                A = np.stack([x, np.ones_like(x)], 1)
+                coef, res, *_ = np.linalg.lstsq(A, y, rcond=None)
+                dof = max(len(x) - 2, 1)
+                s2 = ((y - A @ coef) ** 2).sum() / dof
+                cov = s2 * np.linalg.inv(A.T @ A)
+                out[(model, col)] = (coef[0], np.sqrt(cov[0, 0]))
+                xx = np.geomspace(sel.chi.min(), sel.chi.max(), 50)
+                ax.plot(xx, np.exp(coef[1]) * xx ** coef[0], "-", color=color, lw=1,
+                        label=f"fit slope {coef[0]:.2f} +- {np.sqrt(cov[0, 0]):.2f}")
+        if model == "centred":
+            pred = t.groupby("chi").sigma_c_pred.median()
+            axes[0].plot(pred.index, pred.values, "k--", lw=1, label="aligned-mode prediction (median)")
+    xx = np.geomspace(16, 128, 50)
+    axes[1].plot(xx, 6.50 * xx ** -0.5, ":", color="#2a78d6", lw=1.5, label=r"theory P5: $6.50\,\chi^{-1/2}$ (centred)")
+    axes[1].plot(xx, 5.16 * xx ** -0.5, ":", color="#eb6834", lw=1.5, label=r"theory P6: $5.16\,\chi^{-1/2}$ (two-copy)")
+    if lazy_csv:
+        lp = pd.read_csv(lazy_csv)
+        fo = lp.groupby("chi").kappa.median()
+        axes[1].plot(fo.index, (fo.values / 0.1) ** (1 / 3), "k-.", lw=1, label=r"first order $(\kappa/0.1)^{1/3}$")
+    for ax, title in zip(axes, ("S2S boundary (per seed)", "lazy boundary (per seed)")):
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlabel(r"bond dimension $\chi$")
+        ax.set_ylabel(r"boundary $\sigma$")
+        ax.set_title(title, fontsize=9, loc="left")
+        ax.legend(fontsize=6.5, frameon=False)
+    fig.tight_layout()
+    save_fig(fig, f"boundaries_vs_chi_{exp}.png")
+    return tab, out
