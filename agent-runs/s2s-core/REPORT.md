@@ -142,3 +142,7 @@ single runs (to be quantified over the sweeps):
   both gaps 1.00 +- 0.01 (binary4) and 2.000 (mps4) vs K - 2. Trap decay rate ~ sigma^2 per seed.
   Event windows now record bond spectra: every event raises the rank by one on all edges at the same
   sample (mps4 test).
+- 21:35 K = 7, 8 later gaps are long (binary8 chi 6 sigma 0.07: events 7.5e5, 5.8e6, 4.0e7) and LSODA
+  needs ~15-25 min per run; rtol 1e-6 / atol 1e-9 sigma reproduces rtol 1e-8 event times to 7e-7
+  relative, so `large.yaml` (K = 7, 8, chi = 6) uses those. Queue: main -> (large || first) ->
+  balanced -> LO sweeps (lo_d, lo_K, lo_chi). Trap sign rule checked (both route ends unfavourable).
