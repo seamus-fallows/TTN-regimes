@@ -9,7 +9,8 @@ trajectories), two-component teachers:
   - Q_end = nu^T Q_e nu if u is the child side of e, -nu^T Q_e nu if u is the parent side (Q_e = conserved
     G_v^T G_v - G_p,(v) G_p,(v)^T); y_route = norm of w's route entry along nu on e;
     R12: the end decays iff c = Q_end + |y_route|^2 < 0; the route dies iff every end has c < 0;
-  - outcome: escaped (second event), dead (stalled, second overlap < 1e-20 at the stop) or other;
+  - outcome: escaped (second event), dead (route ends at roundoff, < 1e-12, at the stop) or pinned (not
+    escaped within the long budget, ends small but finite);
     end amplitudes at the stop / end of the run (route_amps.route_entries).
 
 usage: uv run python experiments/locality/r12.py <prefix> --out results/r12.csv --workers 12
@@ -117,10 +118,10 @@ def analyse(rec):
     final = spec.unflatten(torch.from_numpy(Y[:, -1]))
     ent = route_entries(spec, final, teacher, S)
     end_amp = min(v["eps"] for v in ent.values() if v["end"])
-    status = rec.get("status")
     escaped = len(rec.get("events", [])) == 2
-    a_stop = rec.get("a_stall", rec.get("a_final", [np.nan, np.nan]))
-    outcome = "escaped" if escaped else ("dead" if status == "stalled" and abs(a_stop[1]) < 1e-20 else str(status))
+    # dead: the route ends sit at roundoff (< 1e-12); pinned: not escaped within the (long) budget, ends small
+    # but finite (theory_saddles.md 8: pinned 1e-11-1e-7)
+    outcome = "escaped" if escaped else ("dead" if end_amp < 1e-12 else "pinned")
     return dict(tree=tree.name, S="".join(map(str, S)), start=rec["start"], chi=rec["chi"], sigma=rec["sigma"],
                 seed=rec["seed"], outcome=outcome, t_end=float(t[-1]),
                 n_unfav=sum(e["c"] < 0 for e in ends), n_ends=len(ends),

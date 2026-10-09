@@ -63,10 +63,15 @@ Several components: the rank profile at every predicted saddle equals the route 
 
 ### 5. Dead routes (`results/run_classes_by_sweep.csv`, `stall_dropout*.csv`, `r12.csv`)
 Stalled runs (gradient at roundoff after a component is learned): fan-in χ = 2: 397 / 5,682 (all with k >= 4;
-none of ~3,560 runs with k <= 3); balanced init 16 / 1,008 (10x fewer; all on MPS routes); χ = 4 103 / 1,002 (routes
-with both ends on bonds capped at d). Stalls are σ-dependent in 20 of 33 fan-in rows (34 seeds stall at some σ
-only), which moves some exponents by up to 0.5-1.4 (`stall_dropout_bias.csv`). Dead vs slow and R12's criterion:
-see below (stall diagnosis).
+none of 5,112 runs with k <= 3); balanced init 16 / 1,008 (10x fewer than fan-in on the same cases, 169 / 1,008; all on
+MPS routes); χ = 4 103 / 1,002 (routes with both ends on bonds capped at d). Stalls are σ-dependent in 20 of 33 fan-in
+rows; restricting fits to never-stalling seeds moves five rows by 0.3-1.0 (it explains the off-target saddle-start
+k = 4 and ht8 rows). Longer runs (60x patience, 169 runs): every fan-in / saddle-start stall in the sample is dead
+(route ends at roundoff, 1e-17-1e-13, no escape by t ~ 1e10); balanced-init stalls are pinned slow escapes (6 of 9
+escaped at ~1e5 x the normal plateau, 3 pinned with ends 1e-10-1e-8). R12's criterion (both ends c = Q_end +
+|y_route|^2 < 0) is associated with death (30 of 55 such runs died vs 7 of 67 others) but is neither necessary
+nor sufficient; balanced-init end shrinkage and the HT-vs-MPS stall rates (ht4 k = 5: 0/144 vs mps4 {0,3}: 30/48)
+conflict with theory_saddles.md R12 / P12 (notes 7.5).
 
 ### 6. Robustness (`results/robust_table.md`)
 χ = 4, d = 4 (χ = 2, 4, 8), s2/s1 = 0.25 / 0.75: k = 2 slopes match (1.00-1.01; 3.02 vs 3.00; 0.37 vs 0.33; saddle

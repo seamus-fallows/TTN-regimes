@@ -160,3 +160,42 @@ None [1, 3, 5] mps 6 small_balanced 5 5s
 None [1, 3, 5] mps 6 small_balanced 6 5s
 None [1, 3, 5] mps 6 small_balanced 3 43s
 None [1, 3, 5] mps 6 small_balanced 7 6s
+None [0, 5] mps 6 small 1 12s
+None [2, 5] mps 8 small 0 670s
+None [2, 5] mps 8 small 0 683s
+None [1, 3, 5] mps 6 saddle 4 500s
+None [1, 3, 5] mps 6 saddle 1 508s
+None [0, 5] mps 6 small 4 12s
+None [1, 5] mps 8 small 1 670s
+None [1, 5] mps 8 small 0 671s
+None [0, 5] mps 6 small 1 12s
+None [1, 3, 5] mps 6 saddle 7 513s
+None [0, 3] mps 4 small 0 7s
+None [0, 3] mps 4 small 2 2s
+None [0, 3] mps 4 small 3 2s
+None [0, 3] mps 4 small 4 1s
+None [0, 5] mps 6 small 4 12s
+None [0, 3] mps 4 small 5 1s
+None [0, 3] mps 4 small 1 7s
+None [0, 3] mps 4 small 0 2s
+None [1, 5] mps 8 small 1 677s
+None [0, 3] mps 4 small 1 2s
+None [0, 3] mps 4 small 6 6s
+None [0, 3] mps 4 small 3 2s
+None [0, 3] mps 4 small 4 2s
+None [0, 3] mps 4 small 5 2s
+None [0, 3] mps 4 small 6 2s
+None [0, 3] mps 4 small 2 8s
+None [1, 5] mps 8 small 0 688s
+None [1, 5] mps 8 small_balanced 3 683s
+None [1, 3, 5] mps 6 small_balanced 3 450s
+None [0, 3] mps 4 small 7 361s
+None [0, 3] mps 4 small 7 373s
+None [1, 5] mps 8 small_balanced 1 696s
+None [1, 5] mps 8 small_balanced 3 682s
+None [0, 5] mps 6 small 0 612s
+None [0, 5] mps 6 small 2 621s
+None [0, 5] mps 6 small 2 607s
+None [0, 5] mps 6 small 3 597s
+None [0, 5] mps 6 small 0 618s
+None [0, 5] mps 6 small 3 639s

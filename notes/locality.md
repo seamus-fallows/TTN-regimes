@@ -321,21 +321,45 @@ Measured (`levels.py`, `results/levels_summary.csv`; figures `results/trees_TA.p
   from the exact bond-rank rule; TA separates the literal rule only. B4 on mps4: the 0.3 component is
   learned before the 0.6 one in every escaping run.
 
-### 7.5 Dead routes under fan-in init (theory_saddles.md R12) — **empirical**
+### 7.5 Stalled runs: counts, dead vs slow, theory R12 — **empirical**
 
-A run is "stalled" when, after a component has been learned, the gradient stays at roundoff (|v| < 1e-12
-for 5000 consecutive evaluations): the route of the next component is dead and gradient flow never
-leaves the plateau (L stays at the partial fit, e.g. 0.125 = s2^2/2).
+A run is "stalled" when, after a component has been learned, the gradient stays below 1e-12 for 5,000
+consecutive evaluations (the loss sits at the partial fit, e.g. L = 0.125 = s2^2/2).
 
-- Fan-in init: stalls occur **only for k >= 4**: k = 4: 6-30 of 48 runs per (tree, S) (mps4 S = {0,3}: 30/48,
-  5 of 8 seeds); k = 5: 6-17/48; k = 6-8: 7-23 of 24-30. **No stall in any k <= 3 run** (about 3000 runs),
-  and none on star3 (k = 4). A stalling seed stalls at every sigma (the imbalance pattern Q/sigma^2 is
-  fixed by the init direction).
-- Gauge-balanced init of the same W_0 (all Q_e = 0, `run.balance_gauge`): 2 stalls in 580 runs on the
-  same k >= 4 cases (mps4 S = {0,3}: 0/48). B4 on ht4: fan-in 23/48 stalled, balanced 0/48.
-- The saddle-start protocol also stalls (its noise has Q ~ sigma^2 of random sign).
-- Consequence: for k >= 4 the exponent table uses the runs that escape; gauge-balanced runs give the same
-  exponents (`results/twocomp_balanced_table.md`).
+- **Counts** (`results/run_classes_by_sweep.csv`; runs of the committed configs): fan-in chi = 2: 397 of
+  5,682 two-component runs, all with k >= 4 (none of 5,112 runs with k <= 3 in the two-component and robustness
+  sweeps); gauge-balanced init (same k >= 4 cases): 16 of 1,008 (fan-in on the same cases and sigma grids: 169
+  of 1,008, a 10x reduction), all on MPS routes (mps8 {2,5}, {1,5}, {1,6}, {0,7}; mps6 {1,3,5}); chi = 4: 103 of
+  1,002 (7.10); k = 5 extension (sigma <= 0.03): 34 of 96; k >= 6 extension (balanced): 10 of 256 (mps8 {1,6}).
+- **Sigma-dependent dropout** (`results/stall_dropout*.csv`): a stalling seed does not stall at every sigma in
+  20 of 33 fan-in rows with stalls (49 seeds stall at every sigma, 34 at some sigmas only); all balanced-init
+  stalls are of the second kind. Fits use the seeds that escape at >= 3 sigmas, so partially stalling seeds enter
+  with fewer sigmas. Restricting each row to seeds that never stall (`results/stall_dropout_bias.csv`) changes the
+  exponent by 0 in 24 of 40 rows, but by -0.47 / +0.33 / +0.36 / -1.00 / -0.30 in mps6 {0,3} saddle (2.39 -> 1.92),
+  midroot6 {0,3} saddle (1.49 -> 1.81), ht8 {1,2} (2.74 -> 3.10), ht8 {3,4} (5.74 -> 4.74), mps8 {1,5} small
+  (3.27 -> 2.98): the off-target saddle-start k = 4 and ht8 rows are carried by seeds that stall at some sigma.
+- **Dead vs slow** (`configs/stall_diagnosis.yaml`: 22 (case, sigma) pairs covering stalled runs and their
+  escaped controls, 169 runs, stall patience 300,000 evaluations (60x), trajectories saved; `r12.py`,
+  `results/r12.csv`): every fan-in and saddle-start run that the 5,000-evaluation detector had flagged (37) is
+  dead: no escape within the longer budget (up to t ~ 1e10) and route-end amplitudes at roundoff (1e-17 to
+  1e-13). With balanced init the flagged runs are not dead: 6 of 9 escaped very late (gaps 2e9-5e10, about 1e5 x
+  the normal plateau) and 3 remained pinned (route ends 3e-10 to 4e-8, finite). So "stalled" = dead under fan-in
+  init and saddle start, but = pinned (extremely slow) under balanced init.
+- **R12's criterion** (theory_saddles.md 8: a route end decays iff c = Q_end + |y_route|^2 < 0, evaluated here
+  at the plateau start a1 = 0.99; the route dies iff every end has c < 0): over the 122 fan-in and saddle-start
+  runs, 30 of 55 runs with both ends unfavourable died, against 7 of 67 with a favourable end; 30 of the 37 dead
+  runs had both ends unfavourable. The criterion is strongly associated with death (55% vs 10%) but is neither
+  sufficient (25 predicted-dead runs escaped, e.g. 7 of 9 on ht4 {1,2} from the saddle start) nor necessary (7
+  dead runs had a favourable end). For mps4 {0,3} at chi = 2 it classifies 14 of 16 runs correctly (all 10 dead
+  runs predicted; 2 false alarms with weakly negative c).
+- **Conflicts with theory_saddles.md** (to be resolved by the theory side):
+  (i) R12 says exactly balanced init removes the trap and that with Q = 0 the leaf column does not shrink. We find
+  no dead route with balanced init (consistent), but route ends do shrink to 1e-10-1e-8 on MPS8 routes and the
+  escape is delayed by ~1e5 or beyond the budget (inconsistent with "no shrink").
+  (ii) P12's heuristics (about 0.5 dead per two-ended HT route under fan-in init; MPS with chi = d stalling less
+  often) are contradicted: ht4 k = 5 routes: 0 of 144 fan-in small-init runs stalled, against 30 of 48 on mps4
+  {0,3}, 17 of 48 on mps6 {0,3}; stalls concentrate on MPS routes, especially those ending at the chain ends.
+  (iii) The joint criterion is a strong but not a deterministic predictor (above).
 
 ### 7.6 Bond spectra at events (step 4) — **empirical**
 
@@ -457,10 +481,12 @@ s2 = 0.25 / 0.75), sigma-independent; k = 3-7: λ_min ∝ sigma^(k-2) (exponents
 strict at k* >= 3.
 
 **Dead routes** (empirical; 7.5): with fan-in init at chi = 2, 397 of 5,682 two-component runs stall, all
-with k >= 4 (none of ~3,560 runs with k <= 3); gauge-balanced init cuts this to 16 of 1,008 (10x, not to
-zero; all on MPS routes), chi = 4 to 103 of 1,002 (routes with both ends on bonds capped at d). Stalls are
-partly sigma-dependent (20 of 33 fan-in rows), which biases fits in a few rows (7.5). The dead/slow split and
-R12's criterion are in 7.5.
+with k >= 4 (none of 5,112 runs with k <= 3); the stalls checked with a 60x longer budget are dead (route ends at
+roundoff). Gauge-balanced init leaves no dead route in the checked sample but 16 of 1,008 runs stall at the
+default patience (pinned, extremely slow escapes on MPS routes); chi = 4 leaves 103 of 1,002 (routes whose two
+ends sit on bonds capped at d). Stalls are partly sigma-dependent, which biases five rows by 0.3-1.0. Theory R12's
+joint criterion is associated with death but is not a deterministic predictor; balanced-init end shrinkage and
+the HT-vs-MPS stall rates conflict with theory_saddles.md (7.5).
 
 ## 9. Changes after review round 1 (notes/reviews/locality_round1.md)
 
@@ -475,7 +501,7 @@ R12's criterion are in 7.5.
 | chi = 4: 75/1,002 stalls | 103/1,002 (a zero-escape case had dropped out of the table; `make_figures` now keeps such cases) |
 | fan-in: 376/5,732 stalls | 397/5,682 (runs restricted to the committed config; the extra sigma points of three k = 7-8 rows were dropped) |
 | a stalling seed stalls at every sigma | false in 20 of 33 fan-in rows (34 seeds stall at some sigma only); effect on fits quantified (7.5, `results/stall_dropout_bias.csv`) |
-| "stalled" = dead | verified with longer runs and route-end amplitudes; R12's criterion tested (7.5) |
+| "stalled" = dead | true for fan-in and saddle-start stalls (60x longer runs: route ends at roundoff); balanced-init stalls are pinned slow escapes; R12's criterion is associated with death but not deterministic; conflicts with R12 / P12 stated (7.5) |
 | steep MPS exponents come from shrinking route ends | associated with, not shown to be caused by; the reviewer's log-correction form is rejected by the data; P14(ii) met at chi = 2 (7.9) |
 | TD last level 1.02 (7 seeds) | 1.012 ± 0.010 (8 seeds) |
 | "visited fraction" of predicted levels | replaced by detected plateaus (`find_plateaus`) matched to the predicted levels, and their duration exponents (7.4) |
