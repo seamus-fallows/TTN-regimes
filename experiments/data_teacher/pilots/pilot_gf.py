@@ -43,7 +43,7 @@ def dense_loss_fn(spec, w_star, metrics=None):
 
 def run_gf(spec, cores0, teacher, metrics=None, t_max=1e4, n_rec=400, rtol=1e-9, atol=1e-14,
            method="DOP853", record_overlaps=True, w_star=None, loss_fn=None, stop_rel_loss=None,
-           record_spectra=True, keep_y=False):
+           record_spectra=True, keep_y=False, t_eval=None):
     """stop_rel_loss: terminate once L < stop_rel_loss * L(0) (saves the stiff tail after
     convergence). loss_fn overrides the loss (e.g. a non-product metric)."""
     t2 = teacher.norm2(metrics)
@@ -61,8 +61,9 @@ def run_gf(spec, cores0, teacher, metrics=None, t_max=1e4, n_rec=400, rtol=1e-9,
         return -g.numpy()
 
     y0 = spec.flatten(cores0).detach().numpy().copy()
-    t_eval = np.concatenate([[0.0], np.logspace(-2, np.log10(t_max), n_rec)])
-    t_eval[-1] = t_max
+    if t_eval is None:
+        t_eval = np.concatenate([[0.0], np.logspace(-2, np.log10(t_max), n_rec)])
+        t_eval[-1] = t_max
     tic = time.time()
     events = None
     if stop_rel_loss is not None:
@@ -74,8 +75,14 @@ def run_gf(spec, cores0, teacher, metrics=None, t_max=1e4, n_rec=400, rtol=1e-9,
         converged.terminal = True
         converged.direction = -1
         events = converged
+    extra = {}
+    if method == "LSODA":  # stiff later plateaus: exact Hessian as the Jacobian
+        def jac(_t, y):
+            flat = torch.from_numpy(y)
+            return -torch.autograd.functional.hessian(loss_of, flat).numpy()
+        extra["jac"] = jac
     sol = solve_ivp(rhs, (0, t_max), y0, method=method, rtol=rtol, atol=atol, t_eval=t_eval,
-                    events=events)
+                    events=events, **extra)
     wall = time.time() - tic
     if sol.status == 1 and len(sol.t_events[0]):
         # Terminated between output points: record the terminal state too, or a fast final
