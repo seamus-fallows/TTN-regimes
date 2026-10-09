@@ -25,3 +25,16 @@ here too.
     the leaf bond dimension >= d and changes K. Supported as the `ht` topology, not the default.
 - **Lazy regime construction: antisymmetric doubling** (W_0 = 0 exactly at any init scale) rather
   than Chizat's centred model f - f_0, because it stays a genuine TTN.
+
+## 2026-10-09 — Launch remote agents before the library is finished
+
+- **Decision**: launch the six remote agents (`s2s-core`, `locality`, `order`, `regime-map`,
+  `data-teacher`, `optim-samples`) now, while `ttn/dynamics.py`, `diagnostics.py`, `runner.py` etc.
+  are still being built and reviewed locally. Agents start by reading, deriving, designing
+  experiments and piloting with the core modules + scipy; they merge `main` when told the library
+  has landed.
+- **Why**: maximize parallelism (user's instruction: keep 4-8 agents doing useful work); the core
+  library is tested and stable; machine setup and the reading/derivation phase take an hour or more
+  anyway. Risk: some throwaway pilot code; agents are told not to build their own frameworks.
+- **Mode**: autonomous (agents record decisions instead of blocking on questions); the lead checks in
+  every ~2 h and redirects with messages.
