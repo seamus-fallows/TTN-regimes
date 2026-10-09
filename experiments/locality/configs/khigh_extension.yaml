@@ -1,0 +1,34 @@
+# k >= 6 rows over one decade of sigma, 8 seeds, gauge-balanced init
+cases:
+- kind: binary
+  n: 8
+  S: [0, 2, 4]
+  start: small_balanced
+  sigmas: [0.5, 0.3598, 0.259, 0.1864, 0.1341, 0.09653, 0.06947, 0.05]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  wall_limit: 2400
+  cost: 6
+- kind: ht
+  n: 4
+  S: [0, 1, 2]
+  start: small_balanced
+  sigmas: [0.5, 0.3598, 0.259, 0.1864, 0.1341, 0.09653, 0.06947, 0.05]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  wall_limit: 2400
+  cost: 6
+- kind: mps
+  n: 8
+  S: [1, 6]
+  start: small_balanced
+  sigmas: [0.5, 0.3598, 0.259, 0.1864, 0.1341, 0.09653, 0.06947, 0.05]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  wall_limit: 2400
+  cost: 6
+- kind: ht
+  n: 4
+  S: [0, 1, 2, 3]
+  start: small_balanced
+  sigmas: [0.6, 0.4318, 0.3108, 0.2237, 0.161, 0.1158, 0.08337, 0.06]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  wall_limit: 2400
+  cost: 7

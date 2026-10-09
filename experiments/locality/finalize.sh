@@ -10,7 +10,7 @@ R=$(realpath -m "$1")
 W=${2:-8}
 mkdir -p "$R"
 cd "$(dirname "$0")/../.."
-O=/root/outputs/locality
+O=${LOCALITY_OUT:-/root/outputs/locality}
 py() { uv run python "$@" 2>&1 | grep -v -i "warn" || true; }
 
 # step 1/2: two-component exponent table, exponents figure, Hessian figure (+ balanced-init twins)
