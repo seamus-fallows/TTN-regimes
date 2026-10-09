@@ -1,0 +1,18 @@
+# Plateau scaling with the init scale, every optimizer, binary N=4 (K=3), odeco teacher (3, 2, 1).
+# GF prediction: every event time ~ sigma^-(K-2) = sigma^-1.
+name: scaling_b4
+blocks:
+  - base: {tree: binary, n_sites: 4, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
+    grid: {sigma: [0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers:
+      - {optimizer: gf, budget_c: 8.0, budget_power: 1.0}
+      - {optimizer: gd, lr: 0.02, budget_c: 8.0, budget_power: 1.0}
+      - {optimizer: momentum, lr: 0.002, beta: 0.9, budget_c: 8.0, budget_power: 1.0}
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 100000}
+      - {optimizer: adam, lr: 1.0e-3, beta2: [0.9, 0.99], n_steps: 100000}
+      - {optimizer: rmsprop, lr: 1.0e-3, n_steps: 100000}
+      - {optimizer: regauge, lr: 0.02, period: [1, 50], n_steps: 50000}
+      - {optimizer: riemannian, lr: [0.1, 1.0], n_steps: 2000}
+      - {optimizer: precond, lr: [0.01, 0.1], damping: 1.0e-3, n_steps: 50000}
+      - {optimizer: als, n_sweeps: 50}
+      - {optimizer: dmrg, n_sweeps: 50}

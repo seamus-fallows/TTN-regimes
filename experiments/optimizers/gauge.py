@@ -130,3 +130,38 @@ def hsvd(spec: TTNSpec, w: torch.Tensor) -> list[torch.Tensor]:
         cur = (u.T @ m).reshape(chi, *rest_shape)
         labels = [("b", v)] + [labels[i] for i in rest]
     return cores
+
+
+def _spd_pow(m: torch.Tensor, p: float) -> torch.Tensor:
+    vals, vecs = torch.linalg.eigh(m)
+    return (vecs * vals.clamp_min(1e-300) ** p) @ vecs.T
+
+
+def balance(spec: TTNSpec, cores: list[torch.Tensor], tol: float = 1e-13, max_sweeps: int = 500):
+    """Gauge-balance the cores (Q_e = 0 on every edge) without changing W.
+
+    Edge v (parent p): with M1 = G_v^T G_v and M2 = G_p,(v) G_p,(v)^T, the gauge A = P^(1/2),
+    P = M2^-1/2 (M2^1/2 M1 M2^1/2)^1/2 M2^-1/2 (the geometric mean of M2^-1 and M1) makes the two
+    Grams equal: A^-1 M1 A^-1 = A M2 A. Balancing one edge unbalances its neighbours, so edges are
+    swept until max_e ||Q_e|| / ||M1|| < tol. Each edge step minimizes sum_v ||G_v||^2 over that edge's
+    gauge, so the sweeps converge to the min-norm (balanced) point of the gauge orbit (Kempf-Ness).
+    Needs full-rank Grams (true for generic random cores)."""
+    t = spec.tree
+    cores = list(cores)
+    for _ in range(max_sweeps):
+        worst = 0.0
+        for v in t.edges:
+            p = t.parent[v]
+            leg = len(t.sites[p]) + t.children[p].index(v)
+            gv = cores[v].reshape(-1, cores[v].shape[-1])
+            gp = torch.movedim(cores[p], leg, 0).reshape(cores[p].shape[leg], -1)
+            m1, m2 = gv.T @ gv, gp @ gp.T
+            worst = max(worst, ((m1 - m2).norm() / m1.norm()).item())
+            r2, r2i = _spd_pow(m2, 0.5), _spd_pow(m2, -0.5)
+            pmat = r2i @ _spd_pow(r2 @ m1 @ r2, 0.5) @ r2i
+            a, ai = _spd_pow(pmat, 0.5), _spd_pow(pmat, -0.5)
+            cores[v] = apply_on_leg(cores[v], ai, cores[v].ndim - 1)  # G_v A^-1 (A symmetric)
+            cores[p] = apply_on_leg(cores[p], a, leg)
+        if worst < tol:
+            break
+    return cores

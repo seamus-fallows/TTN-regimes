@@ -62,6 +62,11 @@ def summarize(path: Path) -> dict:
     row["loss0"], row["loss_end"] = d["loss"][0], d["loss"][-1]
     row["pop_loss_end"] = d["pop_loss"][-1]
     row["converged"] = bool(d["loss"][-1] < 1e-3 * d["loss"][0])
+    rel = loss / loss[0]
+    for q in (1e-1, 1e-3):  # time to reduce the loss by 10x and to the 'converged' level 1e-3
+        hit = np.flatnonzero(rel < q)
+        row[f"t_loss_{q:g}"] = t[hit[0]] if hit.size else np.nan
+    row["loss_max_rel"] = float(np.nanmax(rel))
     times, widths = component_events(t, a)
     for r, (tr, wr) in enumerate(zip(times, widths)):
         row[f"t_{r}"], row[f"w_{r}"] = tr, wr

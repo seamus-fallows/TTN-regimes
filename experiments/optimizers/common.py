@@ -31,13 +31,20 @@ def make_problem(cfg: dict) -> Problem:
         raise ValueError(cfg["teacher"])
     problem = Problem(spec, teacher)
     if cfg.get("n_samples"):
-        gen = torch.Generator().manual_seed(int(cfg.get("data_seed", 0)) + 7_000_000)
+        gen = torch.Generator().manual_seed(int(cfg.get("data_seed", cfg["seed"])) + 7_000_000)
         problem = dataclasses.replace(problem, dataset=make_dataset(problem, int(cfg["n_samples"]), gen))
     return problem
 
 
 def initial_point(problem: Problem, cfg: dict) -> torch.Tensor:
-    return problem.spec.flatten(problem.spec.init(cfg["sigma"], seed=cfg["seed"]))
+    """Fan-in init (default) or, with init: balanced, the same W_0 in the balanced gauge
+    (Q_e = 0 on every edge; avoids the conservation-law trap of notes/theory_saddles.md R12)."""
+    cores = problem.spec.init(cfg["sigma"], seed=cfg["seed"])
+    if cfg.get("init", "fanin") == "balanced":
+        from experiments.optimizers.gauge import balance
+
+        cores = balance(problem.spec, cores)
+    return problem.spec.flatten(cores)
 
 
 # ---- extra diagnostics (passed to ttn.dynamics.Recorder) ------------------------------------------

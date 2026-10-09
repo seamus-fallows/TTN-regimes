@@ -37,6 +37,22 @@ def expand(d: dict) -> list[dict]:
     return out
 
 
+def resolve_budget(cfg: dict) -> dict:
+    """Optional budget in gradient-flow time units: budget = c * sigma^-power (keys budget_c,
+    budget_power). Sets t_max for gf and n_steps = budget / (lr / (1 - momentum)) for GD-type
+    methods (Adam-type methods and sweeps need explicit n_steps / n_sweeps)."""
+    if "budget_c" not in cfg:
+        return cfg
+    budget = cfg["budget_c"] * cfg["sigma"] ** (-cfg.get("budget_power", 0.0))
+    cfg = dict(cfg)
+    if cfg["optimizer"] == "gf":
+        cfg["t_max"] = float(budget)
+    elif "n_steps" not in cfg:
+        lr_eff = cfg["lr"] / (1 - cfg.get("beta", 0.0)) if cfg["optimizer"] == "momentum" else cfg["lr"]
+        cfg["n_steps"] = int(min(budget / lr_eff, cfg.get("max_steps", 2_000_000)))
+    return cfg
+
+
 def run_id(cfg: dict) -> str:
     return hashlib.sha1(json.dumps(cfg, sort_keys=True).encode()).hexdigest()[:16]
 
@@ -51,7 +67,7 @@ def jobs_from_config(path: str) -> tuple[str, list[dict]]:
                     cfg = {**block["base"], **g, **o}
                     cfg = {k: (float(v) if isinstance(v, str) and _is_number(v) else v)
                            for k, v in cfg.items()}
-                    jobs.append(cfg)
+                    jobs.append(resolve_budget(cfg))
     return conf["name"], jobs
 
 

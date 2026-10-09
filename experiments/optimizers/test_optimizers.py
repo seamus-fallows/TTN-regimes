@@ -67,3 +67,17 @@ def test_hsvd_exact_on_format_and_tour():
         for a, b in zip(tour[:-1], tour[1:]):
             c2 = move_center(spec, c2, a, b)
         assert torch.allclose(to_dense(spec, c2), w, atol=1e-12)
+
+
+def test_balance_keeps_w_and_zeroes_q():
+    from experiments.optimizers.gauge import balance
+    from ttn.network import conserved_quantities
+
+    for spec in _specs():
+        cores = spec.init(0.3, seed=4)
+        w = to_dense(spec, cores)
+        bal = balance(spec, cores)
+        assert torch.allclose(to_dense(spec, bal), w, atol=1e-12 * w.norm())
+        q = conserved_quantities(spec, bal)
+        scale = max(c.norm().item() ** 2 for c in bal)
+        assert max(qq.abs().max().item() for qq in q.values()) < 1e-10 * scale
