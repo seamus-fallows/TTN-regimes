@@ -213,7 +213,15 @@ Sigma-loss; "race" tensor = best bond-rank-1 approximation of Sigma W*). Results
    strict-saddle route on every MPS edge (log(1/sigma) escape) where the aligned case needs all 4 cores
    (sigma^-2); binary-4 is a depth-3 DLN whose second escape is always a 3-core route. The sigma-scaling
    check is `configs/e2_sigma.yaml` (queued).
-4. **Gradient-flow metric**: the absorbed white problem from the mapped init has the same plateau
+4. **Plateau law vs sigma** (`configs/e2_sigma.yaml`, dense runs with the library integrator,
+   MPS-4, alpha = 1, 6 sigma over a decade, 10 seeds; `results/e2_sigma_law{,_fits}.csv`,
+   `e2_sigma_law.png`) — *empirical*: theta = 0: Dt_2 ~ sigma^-p with p = 1.98 +- 0.005 (prediction 2);
+   theta = 20 deg: logarithmic, Dt_2 = A log(1/sigma) + B with A = 15.0 +- 0.4 (relative rms 1.6%,
+   vs 7.5% for the best power law, p = 0.46); theta = 5 deg: crossover (A = 264 +- 15, rms 7%).
+   Misalignment changes the law of the later plateau, exactly as non-orthogonal components do (4a),
+   which is Fact B at work. (The slope is not predicted here: theory_teachers.md R6 is for whitened
+   flow, and the Sigma problem is the whitened one with preconditioned physical legs.)
+5. **Gradient-flow metric**: the absorbed white problem from the mapped init has the same plateau
    levels and durations within ~20% (`white_mapped` rows), so the landscape transfer is exact and
    the metric changes only timing.
 
@@ -308,6 +316,27 @@ predictions `rank1_predictions_e2_misaligned_e4a_nonorth.csv`.
    4(a).2 (`configs/e4a_sigma.yaml`).
 4. Order: binary-4 learns the larger component first in 75-90% of runs (s2 = 0.7); with s2 = 1 the
    choice is 50/50, as expected from symmetry.
+
+### 4(a).2 Plateau law of the second escape — library integrator (LSODA, rtol 1e-9, atol 1e-14), dense grid
+
+`configs/e4a_sigma.yaml`, `run_dense.py`: MPS-4, s2 = 0.7, c in {0, 0.05, 0.2, 0.45}, sigma = 0.03 ... 0.3
+(6 values, one decade), 10 seeds; two-stage integration with a dense grid after the first escape.
+t_1 = first time L < 0.9 L(0); t_2 = first time the loss falls below half of the rank-1 plateau level.
+Results `results/e4a_sigma_law{,_fits}.csv`, figure `e4a_sigma_law.png`; predicted slopes
+`results/e4a_theory_slopes.csv` (`theory_log_slope.py`, from the computed rank-1 saddle).
+Conservation drift <= 2.6e-10 in all runs.
+
+| c | measured law of Dt_2 = t_2 - t_1 | prediction (theory_teachers.md) |
+|---|---|---|
+| 0 (odeco) | power law, exponent 1.97 +- 0.01 (per-sigma medians; 1.73 +- 0.04 from the mean of log, pulled down by seeds whose two components escape almost together) | sigma^-(K-2) = sigma^-2 (4-core route) |
+| 0.05 | effective exponent 1.66 +- 0.05: crossover | crossover at c_x ~ sigma [log(1/sigma)/(s2 a_N)]^(1/2) ~ 0.02-0.1 here |
+| 0.2 | logarithmic: A = 31.9 +- 1.6 (rel. rms of the fit 5%) | A = 34.1 (2-core strict saddle, R6) |
+| 0.45 | logarithmic: A = 4.7 +- 0.3 (means; ~5.6 from medians), sigma = 0.3 excluded (drops merged) | A = 5.68 |
+
+**Verdict** (*empirical, confirming the derived R6*): a small overlap between teacher components
+changes the *law* of the later plateau on an MPS student from polynomial (sigma^-2) to logarithmic,
+with the slope the 2-core strict-saddle theory predicts to within the statistical error (c = 0.2) or
+~20% (c = 0.45). The first plateau keeps its sigma^-(K-2) law (it is the escape from the origin).
 
 ## Results
 

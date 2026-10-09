@@ -75,6 +75,15 @@ def main():
     df = pd.DataFrame(rows)
     df.to_csv(HERE / "results" / f"{name}_law.csv", index=False)
     fits = []
+    # theory slopes (theory_log_slope.py, lowest-loss rank-1 saddle) and which cases to draw where
+    theory_a, log_cases, power_cases = {}, set(), set()
+    if name == "e4a_sigma":
+        th = pd.read_csv(HERE / "results" / "e4a_theory_slopes.csv")
+        theory_a = {r.overlap: r.A_pred for r in th.sort_values("saddle_loss")
+                    .drop_duplicates("overlap").itertuples()}
+        log_cases, power_cases = {0.2, 0.45}, {0.0}
+    elif name == "e2_sigma":
+        log_cases, power_cases = {5, 20}, {0}
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
     for i, (val, g) in enumerate(df.groupby(key)):
         g = g[g["dt2"] > 0]
@@ -102,13 +111,21 @@ def main():
                          label=f"{key}={val}: p = {-p_slope:.2f} +- {p_se:.2f}")
         xs = np.array(sorted(m.index))
         axes[0].plot(xs, np.exp(p_icpt) * xs**p_slope, "-", color=c, lw=0.8)
-        axes[1].errorbar(-np.log(m.index), m["mean"], m["sem"], fmt="o", color=c,
-                         label=f"{key}={val}: A = {a_slope:.2f} +- {a_se:.2f}")
-        axes[1].plot(-np.log(xs), a_slope * -np.log(xs) + a_icpt, "-", color=c, lw=0.8)
+        if val in log_cases:
+            axes[1].errorbar(-np.log(m.index), m["mean"], m["sem"], fmt="o", color=c,
+                             label=f"{key}={val}: fitted A = {a_slope:.2f} +- {a_se:.2f}")
+            axes[1].plot(-np.log(xs), a_slope * -np.log(xs) + a_icpt, "-", color=c, lw=0.8)
+            if val in theory_a:  # predicted slope through the data's centre of mass
+                x0, y0 = np.mean(-np.log(xs)), m["mean"].mean()
+                axes[1].plot(-np.log(xs), y0 + theory_a[val] * (-np.log(xs) - x0), "--", color=c,
+                             lw=1, label=f"{key}={val}: predicted A = {theory_a[val]:.2f}")
+        if val in power_cases:
+            axes[0].plot(xs, m["mean"].iloc[-1] * (xs / xs[-1]) ** -2.0, ":", color=c, lw=1,
+                         label=f"{key}={val}: sigma^-2 guide")
     axes[0].set(xscale="log", yscale="log", xlabel="sigma",
                 ylabel="Dt_2 = t_2 - t_1 (mean +- s.e., 10 seeds)",
                 title=f"{name}: power-law fit")
-    axes[1].set(xlabel="log(1/sigma)", ylabel="Dt_2", yscale="log",
+    axes[1].set(xlabel="log(1/sigma)", ylabel="Dt_2 (linear scale)",
                 title="logarithmic fit Dt_2 = A log(1/sigma) + B")
     for ax in axes:
         ax.legend(fontsize=7)
