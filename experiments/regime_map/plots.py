@@ -433,3 +433,155 @@ def fig_sigma_K(exp="sigma_K", chi=6):
     fig.tight_layout()
     save_fig(fig, f"phase_{exp}_chi{chi}.png")
     return tab
+
+
+# ---- N = 8: centred and plain rows --------------------------------------------------------------
+
+
+def fig_sigma_chi_b8(exp="sigma_chi_b8", lazy_csv=None):
+    """Rows (model, chi): centred at every chi (chi = 162 means bonds 18 / 162, twice the cut
+    dimension), plain at deficient chi. Overlays: centred floor sigma_floor ~ 0.74-0.78 (theory P4),
+    per-seed S2S boundaries, first-order lazy boundary (kappa/0.1)^(1/7) for full bonds."""
+    from analysis import load, per_seed_table
+
+    df = load(exp)
+    df["row"] = [f"{m} chi={'18/162' if c == 162 else c}" for m, c in zip(df.model, df.chi)]
+    order = [f"centred chi={c}" for c in (3, 6, 12, 24, 81, "18/162")] + [f"plain chi={c}" for c in (3, 6, 12, 24)]
+    order = [r for r in order if r in set(df.row)]
+    tab = per_seed_table(df, ["row"], 7)
+    save_csv(tab, f"boundaries_per_seed_{exp}.csv")
+    fig, ax = plt.subplots(figsize=(8.5, 4.6))
+    phase_rows(ax, df, "row", "sigma", order)
+    ys = np.arange(len(order))
+    med = [np.nanmedian(tab[tab.row == r].sigma_c) for r in order]
+    pred = [np.nanmedian(tab[tab.row == r].sigma_c_pred) for r in order]
+    ax.plot(med, ys, "o", color=INK, ms=4, label="per-seed S2S boundary (median)")
+    ax.plot(pred, ys, "x", color=INK, ms=5, label="predicted from deepest run (aligned extrapolation)")
+    for j, r in enumerate(order):
+        if r.startswith("centred") and not (r.endswith("81") or r.endswith("18/162")):
+            ax.plot([0.75, 0.75], [j - 0.45, j + 0.45], color=MUTED, lw=2)
+    ax.plot([], [], color=MUTED, lw=2, label=r"centred floor $\sigma_{\rm floor}\approx0.75$ (theory P4)")
+    if lazy_csv:
+        lp = pd.read_csv(lazy_csv)
+        for j, r in enumerate(order):
+            c = 81 if r.endswith("81") else (162 if r.endswith("18/162") else None)
+            if r.startswith("centred") and c is not None:
+                k = lp[lp.chi == c].kappa.median()
+                ax.plot((k / 0.1) ** (1 / 7), j, "s", color=INK, ms=4, mfc="none")
+        ax.plot([], [], "s", color=INK, ms=4, mfc="none", label=r"lazy boundary, first order $(\kappa/0.1)^{1/7}$")
+    ax.set_xlabel(r"per-core init scale $\sigma$")
+    ax.set_title(f"{exp}: binary N = 8 (K = 7), d = 3, teacher (3,2,1), 6 seeds", fontsize=9, loc="left")
+    ax.legend(handles=legend_handles() + ax.get_legend_handles_labels()[0], fontsize=6.5, loc="upper left",
+              bbox_to_anchor=(1.01, 1), frameon=False)
+    fig.tight_layout()
+    save_fig(fig, f"phase_{exp}.png")
+    return tab
+
+
+# ---- imbalance -----------------------------------------------------------------------------------
+
+
+def fig_imbalance(exp="imbalance_b4"):
+    """Phase diagrams over (lambda / sqrt(chi), alpha) for chi = 24 and 3, and delta_K vs lambda at the
+    theory check point (chi = 16, alpha = 3.375; theory_regimes P20: delta_K ~ lambda^2, saturating)."""
+    from analysis import load
+
+    df = load(exp)
+    df["alpha"] = [float(f"{a:.3g}") for a in df.alpha]  # early rows stored the recomputed product
+    df["lam_rel"] = df.root_scale / np.sqrt(df.chi)
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4.0), gridspec_kw=dict(width_ratios=[1, 1, 0.8]))
+    for ax, chi in zip(axes[:2], (24, 3)):
+        sub = df[(df.chi == chi) & (df.alpha != 3.375)]
+        if sub.empty:
+            continue
+        alphas = sorted(sub.alpha.unique())
+        sub = sub.assign(alpha_lab=[f"{a:g}" for a in sub.alpha])
+        phase_rows(ax, sub, "alpha_lab", "lam_rel", [f"{a:g}" for a in alphas])
+        ax.axvline(1.0, color=INK, lw=1, ls="--")
+        ax.axvline(1 / np.sqrt(chi), color=MUTED, lw=1, ls=":")
+        ax.set_xlabel(r"root imbalance $\lambda/\sqrt{\chi}$ (1: $\mathbb{E}Q=0$ on root edges)")
+        ax.set_ylabel(r"function-space scale $\alpha=\lambda\sigma^K$")
+        ax.set_title(f"binary N = 4, chi = {chi} (dotted: fan-in default lambda = 1)", fontsize=9, loc="left")
+    ax = axes[2]
+    pt = df[(df.chi == 16) & (df.alpha == 3.375)]
+    if not pt.empty:
+        g = pt.groupby("root_scale").dK
+        lam = np.array(sorted(pt.root_scale.unique()))
+        ax.loglog(lam, g.median().reindex(lam).values, "o-", color="#2a78d6", ms=4, label=r"median $\delta_K$ (6 seeds)")
+        ax.fill_between(lam, g.min().reindex(lam).values, g.max().reindex(lam).values, color="#2a78d6", alpha=0.2, lw=0)
+        ref = g.median().reindex(lam).values[0]
+        ax.loglog(lam[:4], ref * (lam[:4] / lam[0]) ** 2, "k--", lw=1, label=r"slope 2 (theory P20)")
+        ax.axhline(0.1, color=MUTED, lw=0.8)
+        ax.axvline(4.0, color=MUTED, lw=0.8, ls=":")
+        ax.set_xlabel(r"root scale $\lambda$ ($\chi=16$, $\alpha=3.375$)")
+        ax.set_ylabel(r"$\delta_K(T)$")
+        ax.legend(fontsize=7, frameon=False)
+        ax.set_title(r"kernel change vs root scale; dotted: $\lambda=\sqrt\chi$", fontsize=9, loc="left")
+    axes[0].legend(handles=legend_handles(), fontsize=6.5, loc="upper left", bbox_to_anchor=(0, -0.18), ncol=3,
+                   frameon=False)
+    fig.tight_layout()
+    save_fig(fig, f"phase_{exp}.png")
+
+
+# ---- large bond dimension ----------------------------------------------------------------------
+
+PARAM_COLORS = {"sp": "#2a78d6", "ntk": "#eb6834", "mup": "#1baf7a"}
+PARAM_NAMES = {"sp": "SP (fan-in, eta = 1)", "ntk": "NTK (eta_v = 1/F_v)", "mup": "muP-TTN"}
+THEORY_EXP = {  # theory_regimes P16 (N = 4, centred): (delta_K, delta_theta)
+    "sp": (-3.0, -1.5), "ntk": (-1.0, -0.5), "mup": (0.0, 0.0)}
+
+
+def pooled_slope(x, y):
+    """Slope of log y vs log x over independent runs (each (chi, seed) is its own init), with the
+    standard error from the residual scatter."""
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    ok = np.isfinite(x) & np.isfinite(y) & (x > 0) & (y > 0)
+    if ok.sum() < 4:
+        return np.nan, np.nan
+    X = np.stack([np.log(x[ok]), np.ones(ok.sum())], 1)
+    coef, *_ = np.linalg.lstsq(X, np.log(y[ok]), rcond=None)
+    r = np.log(y[ok]) - X @ coef
+    cov = (r @ r) / max(ok.sum() - 2, 1) * np.linalg.inv(X.T @ X)
+    return float(coef[0]), float(np.sqrt(cov[0, 0]))
+
+
+def fig_large_chi(exp="large_chi_b4", model="centred", sigma=1.5, chi_fit_min=16):
+    """delta_K, delta_theta and per-core changes vs chi for the three parameterizations; fitted
+    exponents (chi >= chi_fit_min) against theory_regimes P16."""
+    from analysis import load
+
+    df = load(exp)
+    df = df[(df.model == model) & (np.isclose(df.sigma, sigma))]
+    if df.empty:
+        return None
+    root = {"binary": {4: 2, 8: 6}}  # root index of binary_tree(N)
+    rows = []
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 3.8))
+    for lr in ("sp", "ntk", "mup"):
+        s = df[df.lr == lr]
+        if s.empty:
+            continue
+        c = PARAM_COLORS[lr]
+        ridx = root[s.kind.iloc[0]][int(s.n.iloc[0])]
+        s = s.assign(root_change=[d[ridx] for d in s.dth_core],
+                     leaf_change=[np.mean([v for i, v in enumerate(d) if i != ridx]) for d in s.dth_core])
+        for ax, col in zip(axes, ("dK", "dth", "root_change")):
+            med = s.groupby("chi")[col].median()
+            ax.loglog(med.index, med.values, "o-", color=c, ms=4, lw=1.2, label=PARAM_NAMES[lr])
+            ax.scatter(s.chi, s[col], s=6, color=c, alpha=0.35, lw=0)
+        fit = s[s.chi >= chi_fit_min]
+        for col in ("dK", "dth", "root_change", "leaf_change"):
+            b, e = pooled_slope(fit.chi, fit[col])
+            rows.append(dict(exp=exp, model=model, sigma=sigma, lr=lr, quantity=col, slope=b, se=e,
+                             n_runs=int(np.isfinite(fit[col]).sum()),
+                             theory={"dK": THEORY_EXP[lr][0], "dth": THEORY_EXP[lr][1]}.get(col, np.nan)))
+    for ax, t in zip(axes, (r"kernel change $\delta_K(T)$", r"$\delta_\theta(T)$", "root core: relative Frobenius change")):
+        ax.set_xlabel(r"bond dimension $\chi$")
+        ax.set_title(t, fontsize=9, loc="left")
+    axes[0].legend(fontsize=7, frameon=False)
+    fig.suptitle(f"{exp}, {model}, sigma = {sigma} (dots: seeds; lines: medians)", fontsize=9, x=0.01, ha="left")
+    fig.tight_layout()
+    save_fig(fig, f"large_chi_{exp}_{model}_sigma{sigma}.png")
+    tab = pd.DataFrame(rows)
+    save_csv(tab, f"large_chi_exponents_{exp}_{model}_sigma{sigma}.csv")
+    return tab

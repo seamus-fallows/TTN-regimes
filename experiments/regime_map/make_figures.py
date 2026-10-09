@@ -1,0 +1,45 @@
+"""Regenerate every figure and summary table of the regime map from the saved runs.
+
+Order: (1) run the sweeps (`sweep.py configs/*.yaml`), (2) the lazy predictions
+(`lazy_predict.py`, `pilots/lazy_pred_b8.py`), (3) this script. Usage:
+    uv run python experiments/regime_map/make_figures.py [--out DIR] [--force] [--only NAME ...]
+Outputs go to --out (default experiments/regime_map/results); existing files are not overwritten
+unless --force.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+import warnings
+
+sys.path.insert(0, os.path.dirname(__file__))
+warnings.filterwarnings("ignore")
+
+import plots  # noqa: E402
+
+RES = os.path.join(os.path.dirname(__file__), "results")
+
+FIGURES = {
+    "sigma_chi_b4": lambda: [plots.fig_sigma_chi("sigma_chi_b4", m, f"{RES}/lazy_pred_b4.csv", f"binary N=4, {m}: ")
+                             for m in ("centred", "plain", "twocopy")]
+    + [plots.fig_sensitivity("sigma_chi_b4", m) for m in ("centred", "plain", "twocopy")],
+    "chi_b4": lambda: plots.fig_chi_b4("chi_b4", f"{RES}/lazy_pred_b4.csv"),
+    "sigma_chi_b8": lambda: plots.fig_sigma_chi_b8("sigma_chi_b8", f"{RES}/lazy_pred_b8.csv"),
+    "sigma_K": lambda: [plots.fig_sigma_K("sigma_K", chi) for chi in (6, 3)],
+    "imbalance_b4": lambda: plots.fig_imbalance("imbalance_b4"),
+    "large_chi": lambda: [plots.fig_large_chi("large_chi_b4", m, s) for m in ("centred", "plain") for s in (1.0, 1.5)]
+    + [plots.fig_large_chi("large_chi_b8", "plain", 1.0, chi_fit_min=8)],
+}
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--out", default=RES)
+    ap.add_argument("--force", action="store_true")
+    ap.add_argument("--only", nargs="*", default=list(FIGURES))
+    a = ap.parse_args()
+    plots.RES, plots.FORCE = a.out, a.force
+    for name in a.only:
+        print("==", name, flush=True)
+        FIGURES[name]()
