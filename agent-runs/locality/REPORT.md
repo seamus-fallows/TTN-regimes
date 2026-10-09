@@ -79,7 +79,9 @@ start 4.04 / 1.345 vs 4.00 / 1.333); k = 3 0.99-1.05; k = 4 1.87-2.01.
 
 ### 7. Integrator accuracy
 LSODA (rtol 1e-9 / 1e-10), Radau (1e-9 / 1e-10) and RK45 agree on a k = 6 gap to 3e-8; the reviewer's independent
-dense/Radau implementation agrees on gaps to 1e-7-1e-9. Conservation-law drift < 1e-6 of |Q(0)| in every run.
+dense/Radau implementation agrees on gaps to 1e-7-1e-9. Conservation-law drift <= 1e-6 absolute in every run
+(Gram entries O(1)); relative to the initial imbalance |Q(0)| ~ σ² it is <= 1.6e-4 in every k >= 4 run, but up to 0.5
+for k <= 3 at σ <= 1e-3 (σ² below the integrator's absolute error; irrelevant there: no stalls, gaps verified).
 
 ## Changes after review round 1 (full table: notes/locality.md section 9)
 - H2 scope: k = 1..8 -> k = 1-5 with named exceptions; ±0.05 only for small-init / balanced / χ = 4 k = 4 rows;

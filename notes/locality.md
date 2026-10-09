@@ -206,9 +206,13 @@ loss. Dynamics: gradient flow, scipy LSODA with the exact-Hessian Jacobian (rtol
 times by root-finding (Radau fallback < 1% of runs), library v0 model, float64, teacher seed 1000, init seeds
 0-7 (0-4 for the round-1 k >= 6 rows). Every table is restricted to the runs of its committed config
 (`analysis.load_records(config=...)`), rotation runs are excluded from fits (counted separately), exponents
-are per-seed least-squares fits with mean ± SE and the median over seeds. Conservation-law drift: max
-|Q(T) - Q(0)| / max|Q(0)| < 1e-6 in every run (small init has |Q| ~ sigma^2, so this is the relevant
-relative measure; `Qdrift_rel_max` in the tables). Regenerate with `finalize.sh <dir>`.
+are per-seed least-squares fits with mean ± SE and the median over seeds. Conservation-law drift
+max_e |Q_e(T) - Q_e(0)|: <= 1e-6 in every run (99.9% < 3.5e-8, median 1.2e-9), against Gram entries of order 1
+after learning. Relative to the initial imbalance |Q(0)| ~ sigma^2 (fan-in small init) the drift is <= 1.6e-4 in
+every k >= 4 run (where the imbalance matters: dead routes, 7.5), but up to 0.5 at k <= 3 and sigma <= 1e-3, where
+sigma^2 is below the integrator's absolute error (those runs never stall, and their gaps agree with the reviewer's
+independent dense/Radau integration to 1e-7-1e-9). With balanced init Q(0) = 0 to roundoff. Regenerate with
+`finalize.sh <dir>`.
 
 ### 7.1 Two-component exponent table (step 1) — **empirical**
 
