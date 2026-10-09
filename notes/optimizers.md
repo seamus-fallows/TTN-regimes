@@ -137,6 +137,18 @@ Re-gauging at t = 0 alone is GF from a maximally imbalanced init (all scale in t
 first event at t = O(1) (lr n), all components rising together, order set by the projections of the
 components onto the random initial frames (not by weight), balance index near 1 on every edge.
 
+**Correction for deep trees (derived after the binary8 / mps8 data, section 2.5).** The O(1) statement
+assumes that the projection E^T W* of the teacher onto the random initial frames is O(1). A random
+chi-dimensional frame of the d^(n_e)-dimensional space of an edge's sites keeps a fraction ~chi / d^(n_e)
+of a fixed vector's squared norm, so a rank-one component keeps ~prod over the root's edges of
+chi / d^(n_e): (4/9)^2 = 0.2 on binary4 (d = 3, two sites per side) but (4/81)^2 = 2.4e-3 on binary8 (four
+sites per side). The root then first fits a tiny projection and the frames must rotate towards the
+teacher; their gradients are proportional to the (small) root, and rotating a deep subtree's frame needs
+coordinated changes of several cores. Learning becomes sequential again, with waiting times set by the
+frame overlaps (chi / d^(n_e)), **not by sigma**: up to O(sigma^K) corrections (the root's initial value)
+the trajectory is the same for every sigma, because the canonical form at t = 0 removes sigma from every
+core but the root.
+
 ### 1.5 Riemannian GD on the fixed-bond-dimension manifold (derived)
 
 Step: W_{n+1} = HSVD_chi(W_n - lr P_{T(W_n)} (W_n - W*)), with P_T the orthogonal projector onto
