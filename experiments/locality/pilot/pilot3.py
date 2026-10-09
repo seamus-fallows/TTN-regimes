@@ -27,9 +27,42 @@ from rules import get_tree  # noqa: E402
 from ttn.losses import population_loss  # noqa: E402
 from ttn.network import TTNSpec, aligned_init, conserved_quantities  # noqa: E402
 from ttn.teachers import pattern_teacher  # noqa: E402
+import ttn.network  # noqa: E402
+
+# torch.compile cannot trace the library's cached opt_einsum expressions; inside compiled code the
+# plain torch.einsum is equivalent (same contraction) and the path search is compiled away.
+_lib_einsum = ttn.network._einsum
+
+
+def _traceable_einsum(eq, *ops):
+    if torch.compiler.is_compiling():
+        return torch.einsum(eq, *ops)
+    return _lib_einsum(eq, *ops)
+
+
+ttn.network._einsum = _traceable_einsum
 
 OUT = "/root/outputs/locality/pilot3"
 LEVELS = (0.1, 0.5, 0.9)
+
+
+_MODELS: dict = {}
+
+
+def _model(kind, n, d, chi, weights, patterns, teacher_seed):
+    """Spec, teacher, loss and compiled gradient, cached per worker (compiling takes 5-25 s)."""
+    key = json.dumps([kind, n, d, chi, weights, patterns, teacher_seed])
+    if key not in _MODELS:
+        spec = TTNSpec.uniform(get_tree(kind, n), d, chi)
+        teacher = pattern_teacher(weights, patterns, d=d, seed=teacher_seed)
+        t2 = teacher.norm2()
+
+        def loss(x):
+            return population_loss(spec, spec.unflatten(x), teacher, teacher_norm2=t2)
+
+        grad_c = torch.compile(torch.func.grad(loss), fullgraph=True, dynamic=False)
+        _MODELS[key] = (spec, teacher, loss, grad_c)
+    return _MODELS[key]
 
 
 def run_case(case):
@@ -41,14 +74,8 @@ def run_case(case):
         patterns = [[0] * nn, [1 if i in case["S"] else 0 for i in range(nn)]]
     R = len(weights)
     tree = get_tree(kind, n)
-    spec = TTNSpec.uniform(tree, d, chi)
-    teacher = pattern_teacher(weights, patterns, d=d, seed=case.get("teacher_seed", 0))
-    t2 = teacher.norm2()
-
-    def loss(x):
-        return population_loss(spec, spec.unflatten(x), teacher, teacher_norm2=t2)
-
-    grad_c = torch.compile(torch.func.grad(loss), fullgraph=True, dynamic=False)
+    teacher_seed = case.get("teacher_seed", 1000)
+    spec, teacher, loss, grad_c = _model(kind, n, d, chi, weights, patterns, teacher_seed)
     outs = []
     start = case.get("start", "small")
     for sigma in case["sigmas"]:
@@ -89,7 +116,7 @@ def run_case(case):
 
         out = {k: case[k] for k in ("name", "kind", "n", "seed") if k in case}
         out.update(sigma=sigma, d=d, chi=chi, weights=weights, patterns=patterns, K=spec.n_cores,
-                   start=start, S=case.get("S"))
+                   start=start, S=case.get("S"), teacher_seed=teacher_seed)
         a_init = overlaps(y0)
         try:
             sol = solve_ivp(rhs, (0, case.get("tmax", 1e14)), y0, method="RK45", rtol=1e-9,
@@ -137,16 +164,43 @@ def run_case(case):
     return outs
 
 
+def run_key(c, sigma):
+    return json.dumps([c.get("name"), c.get("S"), c["kind"], c.get("n"), c.get("start", "small"),
+                       c.get("d", 2), c.get("chi", 2), c.get("weights", [1.0, 0.5]),
+                       c.get("teacher_seed", 1000), c["seed"], float(sigma)])
+
+
+def run_and_store(task):
+    """Run one (case, seed) task; append each sigma's result at once to a per-worker part file."""
+    path = f"{task['_out']}.part{os.getpid()}"
+    todo = [s for s in task["sigmas"] if run_key(task, s) not in task["_done"]]
+    if not todo:
+        return task, 0.0
+    t0 = time.time()
+    for sigma in todo:  # one at a time, so finished sigmas are saved even if a later one is slow
+        for out in run_case(dict(task, sigmas=[sigma])):
+            out["_key"] = run_key(task, sigma)
+            with open(path, "a") as fh:
+                fh.write(json.dumps(out) + "\n")
+    return task, time.time() - t0
+
+
+def load_results(prefix):
+    import glob
+    recs = []
+    for f in sorted(glob.glob(prefix + ".part*")):
+        recs += [json.loads(line) for line in open(f)]
+    return recs
+
+
 if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
     cases = json.load(open(sys.argv[1]))
-    tasks = [dict(c, seed=s) for c in cases for s in c["seeds"]]
+    out_prefix = sys.argv[2]
+    done = {r["_key"] for r in load_results(out_prefix)}
+    tasks = [dict(c, seed=s, _out=out_prefix, _done=done) for c in cases for s in c["seeds"]]
     tasks.sort(key=lambda c: -c.get("cost", 1))
-    with Pool(int(sys.argv[3]) if len(sys.argv) > 3 else 44) as pool, open(sys.argv[2], "a") as fh:
-        for outs in pool.imap_unordered(run_case, tasks):
-            for out in outs:
-                fh.write(json.dumps(out) + "\n")
-            fh.flush()
-            o = outs[-1]
-            print(o.get("name"), o.get("S"), o["kind"], o["n"], o.get("start"), o["seed"],
-                  f"{sum(x['wall'] for x in outs):.0f}s", flush=True)
+    with Pool(int(sys.argv[3]) if len(sys.argv) > 3 else 44) as pool:
+        for task, wall in pool.imap_unordered(run_and_store, tasks):
+            print(task.get("name"), task.get("S"), task["kind"], task.get("n"), task.get("start"),
+                  task["seed"], f"{wall:.0f}s", flush=True)

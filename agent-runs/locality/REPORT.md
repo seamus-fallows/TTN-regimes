@@ -1,6 +1,6 @@
 # locality: tree locality of saddle-to-saddle escapes (Q3, H2/H3)
 
-Status: working (interim report after step 1 on MPS/binary N = 4) - Branch: agent/locality - Updated: 2026-10-09 18:55 UTC
+Status: working (interim report after step 1 on MPS/binary N = 4; **numbers below are from the pre-fix library and are being rerun**) - Branch: agent/locality - Updated: 2026-10-09 18:55 UTC
 
 ## Summary
 Task: test H2 (after a component is learned, the next escape needs the k cores of the Steiner subtree of
@@ -57,6 +57,13 @@ Other observations (empirical):
    protocols; nested multi-component teachers (step 3).
 
 ## Decisions
+- **Discarded all results computed with the pre-57d5262 library** (lead's instruction: pattern-teacher bases and
+  student inits shared a random stream, so seed-0 runs started correlated with the teacher). Old outputs moved
+  to `/root/outputs/locality/obsolete_prefix/`; the interim N = 4 table below is kept only as a record and is
+  superseded by the rerun. Teacher seed is now 1000 (init seeds 0-7), stored in every record.
+- **torch.compile shim.** The fixed library computes einsums through cached opt_einsum expressions, which
+  `torch.compile` cannot trace; the runner swaps in `torch.einsum` only while compiling (same contraction,
+  agreement 3e-20). No library change.
 - **Pilot integrator = scipy `solve_ivp` RK45 on the flat vector with a `torch.compile`d autograd gradient**
   (the brief's suggested pilot path). torch.compile gives ~10x (2 ms -> 0.2-0.4 ms per gradient), which makes
   the stiff later plateaus affordable (~1 step per unit time). Will port to `ttn.dynamics`/`ttn.runner` when
@@ -90,3 +97,5 @@ Other observations (empirical):
 - 18:45 lead's message: merged literature v1; framed results vs Furman N, Rawal-DeWeese, Kumar-Haupt
 - 18:50 HT8 small-init infeasible (t1 > 1e14 below sigma 0.14); added saddle-start protocol
 - 18:55 launched all-trees two-component sweep (small + saddle start) and nested-teacher sweep (TA, TB)
+- 19:05 lead: core library fix (teacher/init random streams). Killed sweeps, merged 57d5262, tests pass,
+  teacher seed 1000; runner now writes each run immediately (resumable); relaunched both sweeps

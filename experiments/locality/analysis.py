@@ -60,11 +60,21 @@ def predictions(rec, learned, r):
     return _pred_cache[key]
 
 
+def load_records(paths):
+    """Records from .jsonl files or from runner prefixes (<prefix>.part<pid> files)."""
+    import glob
+    recs = []
+    for path in paths:
+        files = [path] if Path(path).exists() else sorted(glob.glob(path + ".part*"))
+        for f in files:
+            recs += [json.loads(line) for line in open(f)]
+    return recs
+
+
 def plateau_table(paths) -> pd.DataFrame:
     rows = []
-    for path in paths:
-        for line in open(path):
-            rec = json.loads(line)
+    for rec in load_records(paths):
+        if True:
             if rec.get("status") == "timeout" or "events" not in rec:
                 continue
             tree_name, case = case_label(rec)
