@@ -30,7 +30,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).parent))
 from common import RAW as OUT, lo_blowup, make_spec, make_teacher, single_component, unit_init  # noqa: E402
 from ttn.diagnostics import crossing_times  # noqa: E402
-from ttn.dynamics import Problem, Recorder, integrate_gf, log_time_grid  # noqa: E402
+from ttn.dynamics import Problem, Recorder, integrate_gf, log_time_grid, merged_rows  # noqa: E402
 
 
 
@@ -53,7 +53,10 @@ def job(args):
                         log_times=grid, method="lsoda", rtol=cfg.get("rtol", 1e-9),
                         atol=cfg.get("atol", 1e-14), loss_floor=cfg.get("loss_floor", 1e-8) * l0,
                         recorder=Recorder(spectra=False))
-    t, a = traj["t"], traj["overlaps"]
+    # event times from log rows merged with the recorder's fine rows (integrator steps where theta
+    # or the loss changed by 1%), which resolve every escape
+    rows = merged_rows(traj.data, keys=("loss", "overlaps"))
+    t, a = rows["t"], rows["overlaps"]
     times = crossing_times(t, a, 0.5)
     min_dormant = []
     for r in range(n_comp):
@@ -63,6 +66,7 @@ def job(args):
                sigma=sigma, seed=seed, times=[None if not np.isfinite(x) else float(x) for x in times],
                tau=taus, final_a=a[-1].tolist(), final_loss=float(traj["loss"][-1]),
                min_dormant=min_dormant, drift=float(np.nanmax(traj["conservation_drift"])),
+               n_rows=len(t), fine_capped=bool(traj.meta.get("fine_capped", False)),
                status=traj.meta.get("status"), t_end=traj.meta["t_end"], wall=time.time() - t0)
     return rec
 
