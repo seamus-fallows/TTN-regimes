@@ -240,8 +240,10 @@ def init_proxies(spec: TTNSpec, teacher: CPTeacher, u0: np.ndarray, seed: int = 
 
 
 def gf_trajectory(spec, teacher, y0, t_max, loss_stop=1e-10, rtol=1e-10, atol=1e-15,
-                  method="LSODA"):
-    """Full gradient flow with dense output until L < loss_stop * L(0) or t_max.
+                  method="LSODA", dead_floor=1e-25):
+    """Full gradient flow with dense output until L < loss_stop * L(0), until some component's
+    overlap |a_r| decays below `dead_floor` (its escape route has died: the run is stalled, since
+    any later escape would be seeded by roundoff), or t_max.
 
     Later plateaus sit near learned saddles with O(1) positive curvature, which makes explicit
     integrators step-size limited over plateaus of length sigma^-(k-2); the default is therefore
@@ -253,13 +255,19 @@ def gf_trajectory(spec, teacher, y0, t_max, loss_stop=1e-10, rtol=1e-10, atol=1e
         with torch.no_grad():
             return loss(torch.from_numpy(y)).item() - loss_stop * l0
 
+    def dead(t, y):
+        return np.abs(overlaps(spec, teacher, y)).min() - dead_floor
+
+    dead.terminal = True
+    dead.direction = -1
+
     def jac(t, y):
         return -torch.autograd.functional.hessian(loss, torch.from_numpy(y)).numpy()
 
     done.terminal = True
     kw = dict(jac=jac) if method in ("LSODA", "Radau", "BDF") else {}
     return solve_ivp(rhs, (0.0, t_max), y0, method=method, rtol=rtol, atol=atol,
-                     events=done, dense_output=True, **kw)
+                     events=[done, dead], dense_output=True, **kw)
 
 
 def crossings(t, x, level=0.5):

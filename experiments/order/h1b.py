@@ -109,15 +109,19 @@ def analyse(spec, teacher, sol, rho):
         rows.append([t, lval.item(), *a, g.norm().item(), bs[0].item(),
                      bs[1].item() if len(bs) > 1 else 0.0])
     traj = np.array(rows)  # t, L, a1, a2, |grad|, s1(edge), s2(edge)
+    stalled = bool(len(sol.t_events[1]))  # a component's overlap fell below the dead floor
     rec = dict(t1=t1, t2=t2, wrong=bool(t2 < t1), final_loss=traj[-1, 1], t_end=t_end,
+               stalled=stalled,
                a2_down=next((t for t, s in a2x if s < 0 and t > t2), np.nan),
                a2_reup=next((t for t, s in a2x if s > 0 and t > t2 + 1e-9 and t > t1), np.nan))
-    if rec["wrong"] and np.isfinite(t1):
-        i1 = np.searchsorted(traj[:, 0], t1)
-        rec["a2_min_after_t1"] = traj[i1:, 3].min()
-        rec["s2_bond_at_t1"] = np.interp(t1, traj[:, 0], traj[:, 6])
-        # wrong plateau: between t2 and t1, minimum parameter speed
-        mask = (traj[:, 0] > t2) & (traj[:, 0] < t1)
+    if rec["wrong"] and (np.isfinite(t1) or stalled):
+        t_stop = t1 if np.isfinite(t1) else t_end  # stalled: the wrong plateau lasts to the end
+        if np.isfinite(t1):
+            i1 = np.searchsorted(traj[:, 0], t1)
+            rec["a2_min_after_t1"] = traj[i1:, 3].min()
+            rec["s2_bond_at_t1"] = np.interp(t1, traj[:, 0], traj[:, 6])
+        # wrong plateau: between t2 and t1 (or the end), minimum parameter speed
+        mask = (traj[:, 0] > t2) & (traj[:, 0] < t_stop)
         if mask.sum() >= 3:
             def speed(t):
                 f = torch.from_numpy(sol.sol(t)).requires_grad_(True)
