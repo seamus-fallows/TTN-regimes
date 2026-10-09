@@ -1,0 +1,23 @@
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+TC None mps 8 saddle 0 171s
+TC None mps 8 saddle 1 263s
+TC None mps 8 saddle 5 231s
+TC None mps 8 saddle 4 1965s
+TC None mps 8 saddle 7 81s
+TD None mps 8 saddle 0 35s
+TD None mps 8 saddle 1 25s
+TD None mps 8 saddle 2 24s
+TD None mps 8 saddle 3 26s
+TC None mps 8 saddle 2 2335s
+TD None mps 8 saddle 4 24s
+TD None mps 8 saddle 5 34s
+TD None mps 8 saddle 6 23s
+TD None mps 8 saddle 7 27s
+B4 None mps 4 small 0 25s
