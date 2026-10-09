@@ -165,7 +165,20 @@ figures `results/h1b_correction_time.png`, `results/h1b_natural.png`, `results/h
    minimum-speed point lies between 0 and the saddle value. So in natural runs a wrong order shows up as a
    brief overshoot of the smaller component, then a plateau at s_2^2/2 with the smaller component
    forgotten, then its relearning.
-4. **Natural wrong-order runs, MPS4 (m = 4)**: (pending)
+4. **Natural wrong-order runs, MPS4 (m = 4)** (seeds whose first event was component 2 in the main sweep,
+   d = 2, chi = 4, sigma = 0.01, 20 per rho = 0.5, 0.8): no rotation (a_2 >= 0.999 when a_1 crosses 1/2);
+   component 1 is added in a new bond index after a median gap of 2.4e4 / 2.6e4 (~sigma^-2: a 4-core
+   route); lambda_min at the plateau midpoint has median -8.7e-5 / -8.5e-5 (raw -9.0e-5 / -8.6e-5),
+   |lambda_min|/lambda_max ~ 6e-5 (single-sigma fallback rule: non-strict; the sigma scaling in item 2 is
+   the primary evidence). **One run stalled** (rho 0.8, seed 25): after component 2 is learned, component
+   1's overlap decays (1e-12 at t = 1e5, 1e-50 at t = 1e7): its route dies (the conservation-law trap of
+   `notes/theory_saddles.md` 8) and GF stays at the wrong saddle (L = 0.5) indefinitely (run stopped when
+   a_1 < 1e-25). So for m >= 3 a wrong order is either kept (larger component learned later) or, rarely,
+   permanent.
+
+All lambda_min values above were computed with the fixed gauge projection (library commit 6c42d85,
+rtol 1e-3) and are reported with the raw (unprojected) value in `results/h1b_*.csv`
+(`lam_min_raw`); for binary4 the two agree to 6 digits at sigma <= 1e-3.
 
 ### 7.4-7.5 (controls, chi scan, R >= 3): pending
 

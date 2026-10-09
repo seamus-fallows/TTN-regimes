@@ -63,6 +63,7 @@ def saddle_fits(df):
                          p_power=ps.p_power.mean(),
                          a2_min_after_t1_max=rotated.a2_min_after_t1.max(),
                          lam_min_mean=g.lam_min.mean(), lam_min_sd=g.lam_min.std(),
+                         lam_min_raw_mean=g.lam_min_raw.mean(),
                          lam_pred=-lam_pred(rho)))
     return pd.DataFrame(rows)
 
@@ -118,43 +119,54 @@ def plot_natural(nat):
     plt.close(fig)
 
 
-def plot_example(path_b4, row_b4, path_m4, row_m4):
+def plot_example(cases):
+    """cases: list of (npz path, csv row, title, log_time, predicted saddle lambda_min). One row of panels per case: loss,
+    overlaps (+ second singular value of edge 0), gauge-projected Hessian spectrum at the
+    wrong-plateau midpoint."""
     plt = style.plt
     style.setup()
-    fig, axes = plt.subplots(2, 3, figsize=(9.5, 5.2))
-    for r, (path, row, name) in enumerate([(path_b4, row_b4, "binary4 (m=2)"),
-                                           (path_m4, row_m4, "mps4 (m=4)")]):
+    fig, axes = plt.subplots(len(cases), 3, figsize=(10, 2.7 * len(cases)),
+                             gridspec_kw=dict(wspace=0.35, hspace=0.55), squeeze=False)
+    for r, (path, row, name, logt, pred) in enumerate(cases):
         z = np.load(path)
         tr, eigs = z["traj"], z["eigs"]
         t = tr[:, 0]
-        lo, hi = row.t2 * 0.85, min(t[-1], max(row.t1, row.t2) + 3 * (abs(row.t1 - row.t2) + 5))
-        m = (t >= lo) & (t <= hi)
+        if logt:
+            m = t > 0
+        else:
+            lo = 0.85 * row.t2
+            hi = min(t[-1], max(row.t1, row.t2) + 3 * (abs(row.t1 - row.t2) + 5))
+            m = (t >= lo) & (t <= hi)
         ax = axes[r, 0]
         ax.plot(t[m], tr[m, 1], color=style.INK)
         for lev, lab in [(0.5, "s1^2/2"), (0.5 * row.rho**2, "s2^2/2")]:
             ax.axhline(lev, color=style.MUTED, lw=0.6, ls="--")
-            ax.text(hi, lev, lab, fontsize=6, ha="right", va="bottom", color=style.MUTED)
+            ax.text(t[m][0], lev, lab, fontsize=6, ha="left", va="bottom", color=style.MUTED)
         ax.set_ylabel("loss")
-        ax.set_title(f"{name}, rho={row.rho}, sigma={row.sigma:g}, seed {row.seed}", fontsize=7)
+        ax.set_title(name, fontsize=7)
         ax = axes[r, 1]
         ax.plot(t[m], tr[m, 2], color=style.SERIES[0], label="a1 (larger)")
         ax.plot(t[m], tr[m, 3], color=style.SERIES[1], label="a2 (smaller)")
-        ax.plot(t[m], tr[m, 6], color=style.SERIES[2], lw=1, ls="--",
-                label="2nd singular value, edge 0")
+        ax.plot(t[m], tr[m, 6], color=style.SERIES[2], lw=1, ls="--", label="2nd sing. value, edge 0")
         if np.isfinite(row.get("t_mid", np.nan)):
             ax.axvline(row.t_mid, color=style.MUTED, lw=0.6)
         ax.set_ylabel("overlap")
-        ax.legend(fontsize=6)
+        ax.legend(fontsize=5.5, loc="center right")
+        for a in axes[r, :2]:
+            a.set_xlabel("t")
+            if logt:
+                a.set_xscale("log")
         ax = axes[r, 2]
         if len(eigs):
             ax.plot(np.arange(len(eigs)), eigs, "o", color=style.SERIES[0], ms=3)
             ax.axhline(0, color=style.MUTED, lw=0.6)
-            ax.axhline(row.lam_pred if r == 0 else 0, color=style.SERIES[1], lw=0.8, ls="--")
-            ax.set_ylabel("gauge-projected Hessian eigenvalue")
-            ax.set_title(f"lambda_min = {eigs[0]:.4f} (pred {row.lam_pred if r == 0 else 0:.4f})",
-                         fontsize=7)
-        for a in axes[r, :2]:
-            a.set_xlabel("t")
+            ax.axhline(pred, color=style.SERIES[1], lw=0.8, ls="--")
+            ax.set_ylabel("projected Hessian eig.")
+            ax.set_xlabel("index")
+            ax.set_title(f"midpoint: lambda_min = {eigs[0]:.4f} (raw {row.lam_min_raw:.4f}; "
+                         f"m=2 saddle value {pred:.4f})" if pred else
+                         f"midpoint: lambda_min = {eigs[0]:.2e} (raw {row.lam_min_raw:.2e}; m>=3: no "
+                         "strict saddle predicted)", fontsize=6.5)
     fig.savefig(RES / "h1b_example.png")
     plt.close(fig)
 
@@ -179,6 +191,7 @@ def main():
                                            scaled_mean=("scaled", "mean"),
                                            scaled_se=("scaled", lambda x: x.std() / np.sqrt(x.count())),
                                            lam_min=("lam_min", "mean"),
+                                           lam_min_raw=("lam_min_raw", "mean"),
                                            rotated=("a2_min_after_t1", lambda x: np.mean(x < 0.1)),
                                            loss_after=("loss_after_rotation", "mean")).reset_index()
         sep = []
@@ -207,13 +220,36 @@ def main():
         if (RES / "h1b_natural_mps4.csv").exists():
             m4 = pd.read_csv(RES / "h1b_natural_mps4.csv")
             m4w = m4[m4.wrong]
-            print("mps4 natural wrong-order runs:", len(m4w), "lambda_min range",
-                  m4w.lam_min.min(), m4w.lam_min.max(), "min a2 after t1", m4w.a2_min_after_t1.min())
+            stalled = m4w.stalled.astype(bool) if "stalled" in m4w else pd.Series(False, m4w.index)
+            g4 = m4w.assign(stalled=stalled, gap=m4w.t1 - m4w.t2).groupby(["rho", "sigma"]).agg(
+                n=("seed", "size"), n_stalled=("stalled", "sum"),
+                a2_min_after_t1=("a2_min_after_t1", "min"),
+                gap_median=("gap", "median"), lam_min_median=("lam_min", "median"),
+                lam_min_most_negative=("lam_min", "min"),
+                lam_min_raw_median=("lam_min_raw", "median")).reset_index()
+            g4["set"] = "natural_mps4"
+            out.append(g4)
+            print(g4.to_string(index=False))
             ex_b4 = w[(w.rho == 0.8)].sort_values("sigma").iloc[len(w[w.rho == 0.8]) // 2]
-            ex_m4 = m4w.iloc[0]
-            plot_example(OUT / "h1b_natural_b4" / f"rho{ex_b4.rho}_s{ex_b4.sigma:g}_seed{ex_b4.seed}.npz",
-                         ex_b4, OUT / "h1b_natural_mps4" /
-                         f"rho{ex_m4.rho}_s{ex_m4.sigma:g}_seed{ex_m4.seed}.npz", ex_m4)
+            ex_m4 = m4w[~stalled & np.isfinite(m4w.t1)].iloc[0]
+            cases = []
+            if (RES / "h1b_saddle_b4.csv").exists():
+                sad = pd.read_csv(RES / "h1b_saddle_b4.csv")
+                ex_s = sad[(sad.rho == 0.8) & (sad.sigma == 1e-4) & (sad.seed == 0)].iloc[0]
+                ex_s = ex_s.copy()
+                ex_s["lam_pred"] = -lam_pred(0.8)
+                cases.append((OUT / "h1b_saddle_b4" / "rho0.8_s0.0001_seed0.npz", ex_s,
+                              "binary4 (m=2), start at the wrong saddle + noise 1e-4, rho=0.8", True,
+                              -lam_pred(0.8)))
+            cases.append((OUT / "h1b_natural_b4" /
+                          f"rho{ex_b4.rho}_s{ex_b4.sigma:g}_seed{ex_b4.seed}.npz", ex_b4,
+                          f"binary4 (m=2), random init, rho={ex_b4.rho}, sigma={ex_b4.sigma:g}, "
+                          f"seed {ex_b4.seed}", False, -lam_pred(ex_b4.rho)))
+            cases.append((OUT / "h1b_natural_mps4" /
+                          f"rho{ex_m4.rho}_s{ex_m4.sigma:g}_seed{ex_m4.seed}.npz", ex_m4,
+                          f"mps4 (m=4), random init, rho={ex_m4.rho}, sigma={ex_m4.sigma:g}, "
+                          f"seed {ex_m4.seed}", False, 0.0))
+            plot_example(cases)
     for name in ("h1b_saddle_b4", "h1b_saddle_mps4"):
         if not (RES / f"{name}.csv").exists():
             continue
@@ -222,6 +258,7 @@ def main():
                                            a2_min=("a2_min_after_t1", "min"),
                                            lam_min=("lam_min", "mean"),
                                            lam_min_sd=("lam_min", "std"),
+                                           lam_min_raw=("lam_min_raw", "mean"),
                                            n_neg=("n_neg", "mean")).reset_index()
         g["set"] = name + "_by_sigma"
         out.append(g)
