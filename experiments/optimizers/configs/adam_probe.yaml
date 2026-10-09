@@ -1,0 +1,15 @@
+# Adam / RMSProp internal state along representative runs (experiments/optimizers/adam_probe.py).
+name: adam_probe
+blocks:
+  - base: {tree: binary, n_sites: 4, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100, sigma: 0.008, seed: 0}
+    optimizers:
+      - {optimizer: adam, lr: 1.0e-3, beta2: [0.9, 0.99, 0.999], n_steps: 20000, n_probe: 80}
+      - {optimizer: adam, lr: 1.0e-2, n_steps: 20000, n_probe: 80}
+      - {optimizer: rmsprop, lr: 1.0e-3, n_steps: 20000, n_probe: 80}
+  - base: {tree: binary, n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100, sigma: 0.3, seed: 0, init: balanced}
+    optimizers:
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 300000, n_probe: 80}
+  - base: {tree: mps, n_sites: 8, d: 2, chi: 3, teacher: pattern, weights: [1.0, 0.4, 0.7], teacher_seed: 100, sigma: 0.3, seed: 0, init: balanced,
+           patterns: [[0,0,0,0,0,0,0,0], [0,0,0,1,1,0,0,0], [0,1,0,0,0,0,1,0]]}
+    optimizers:
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 300000, n_probe: 80}

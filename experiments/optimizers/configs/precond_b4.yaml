@@ -1,0 +1,10 @@
+# Per-core Gram preconditioning (block-diagonal Gauss-Newton, all cores at once) on the scaling_b4
+# problem: scale-free damping (overshoot + return, predicted ~ (K-1) ln(1/sigma) / lr steps) versus an
+# absolute damping floor (predicted: GD with lr / floor near the origin, so GF's sigma^-(K-2) returns).
+name: precond_b4
+blocks:
+  - base: {tree: binary, n_sites: 4, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
+    grid: {sigma: [0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers:
+      - {optimizer: precond, lr: [0.01, 0.1, 0.5], damping: 1.0e-3, n_steps: 50000, blowup: 1.0e300}
+      - {optimizer: precond, lr: 0.1, damping: 0.0, damping_abs: [1.0e-4, 1.0e-2], n_steps: 200000, blowup: 1.0e300}

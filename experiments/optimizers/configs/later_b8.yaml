@@ -1,0 +1,12 @@
+# Later plateaus on a deep tree: do Adam's later gaps scale with sigma, and with which exponent? Is re-gauged GD
+# sigma-independent? Binary N=8 (K=7), odeco (3, 2, 1), d=3, chi=4, balanced init. GF limits the range to
+# sigma >= 0.25 (later plateaus ~ sigma^-5 x 1e5 GF time units), so this is ~0.5 decade: exponents are
+# indicative, not a scaling claim in the sense of notes/diagnostics.md.
+name: later_b8
+blocks:
+  - base: {tree: binary, n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100, init: balanced}
+    grid: {sigma: [0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.8], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers:
+      - {optimizer: gf, t_max: 4.0e6}
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 500000}
+      - {optimizer: regauge, lr: 0.01, period: 1, n_steps: 200000}
