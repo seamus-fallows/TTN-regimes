@@ -1,0 +1,8 @@
+# Adam's eps restores the GF plateau law below sigma_eps = (eps / c_g)^(1/(K-1)) (notes/optimizers.md 1.2d).
+# MPS N=8 (K=8), odeco (3, 2, 1), d=3, chi=4, balanced init; c_g = 0.031 so sigma_eps(1e-8) = 0.12.
+name: eps_mps8
+blocks:
+  - base: {tree: mps, n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100, init: balanced}
+    grid: {sigma: [0.01, 0.015, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3], seed: [0, 1, 2, 3, 4, 5]}
+    optimizers:
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], eps: [1.0e-8, 1.0e-30], n_steps: 1000000}

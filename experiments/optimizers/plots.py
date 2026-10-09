@@ -88,39 +88,50 @@ def scaling_table(df: pd.DataFrame, quantities=("t_first", "gap_0", "gap_1", "t_
 
 
 def fig_scaling(name: str, methods: list[str], quantities=("t_first", "gap_0", "gap_1"),
-                titles=("first escape", "second event - first", "third event - second")):
-    """Event times vs sigma (mean +- s.e. over seeds), each method normalized by its geometric
-    mean so that slopes (= minus the exponents) can be compared on one axis; legend gives the
-    fitted exponent of T ~ sigma^-p... reported as the slope of log T vs log sigma."""
+                titles=("first escape", "second event - first", "third event - second"), tag=""):
+    """Event times vs sigma (mean +- s.e. over seeds; converged runs), each method normalized by its
+    geometric mean so that slopes can be compared on one axis. Lines and legend: least-squares fit
+    of log T on log(1/sigma) over all seeds (ttn.diagnostics.plateau_scaling), T ~ sigma^-p."""
     df = with_keys(collect(name))
     tp.set_style()
-    fig, axes = tp.subplots(1, len(quantities), width=tp.TEXT_WIDTH, panel_aspect=1.0, sharey=True)
+    fig, axes = tp.subplots(1, len(quantities), width=tp.TEXT_WIDTH, panel_aspect=0.95, sharey=True)
+    handles, exps = {}, {}
     for ax, q, title in zip(np.atleast_1d(axes), quantities, titles):
         for m in methods:
             g = df[(df["method"] == m) & df["converged"]]
             if g.empty or q not in g:
                 continue
             vals = g[q] * g["clock"]
-            stats = vals.groupby(g["sigma"]).agg(["mean", "sem", "count"])
+            ok = np.isfinite(vals) & (vals > 0)
+            # geometric means (the fit is in log space), error bars = s.e. of the mean log
+            stats = np.log(vals[ok]).groupby(g["sigma"][ok]).agg(["mean", "sem", "count"])
             stats = stats[stats["count"] >= 2]
-            if stats.empty or not np.all(stats["mean"] > 0):
+            if stats.empty:
                 continue
-            norm = np.exp(np.mean(np.log(stats["mean"])))
+            fit = plateau_scaling(g["sigma"][ok], vals[ok])["power"]
+            norm = np.exp(stats["mean"].mean())
+            geo = np.exp(stats["mean"])
+            err = np.vstack([geo * (1 - np.exp(-stats["sem"])), geo * (np.exp(stats["sem"]) - 1)])
             fam = g["optimizer"].iloc[0]
-            ls = "--" if fam in ("gd", "dmrg") else "-"
-            res = tp.fit_power_law(stats.index.values, stats["mean"].values)
-            ax.errorbar(stats.index, stats["mean"] / norm, yerr=stats["sem"] / norm, fmt="o", ms=3.5,
-                        color=FAMILY_COLOR[fam], mec="white", mew=0.6, elinewidth=0.8,
-                        label=f"{m}: {res[0]:+.2f}")
+            marker = {"Adam, lr 0.001, b2 0.9": "s", "Adam, lr 0.01": "^"}.get(m, "o")
+            h = ax.errorbar(stats.index, geo / norm, yerr=np.nan_to_num(err) / norm, fmt=marker, ms=3.5,
+                            color=FAMILY_COLOR[fam], mec="white", mew=0.6, elinewidth=0.8)
             xs = np.geomspace(stats.index.min(), stats.index.max(), 50)
-            ax.plot(xs, res[1] * xs ** res[0] / norm, color=FAMILY_COLOR[fam], lw=0.9, ls=ls)
+            pref = np.exp(fit["log_prefactor"])
+            ax.plot(xs, pref * (1 / xs) ** fit["exponent"] / norm, color=FAMILY_COLOR[fam], lw=0.9,
+                    ls="--" if fam in ("gd", "dmrg") else "-")
+            handles.setdefault(m, h)
+            exps.setdefault(m, []).append(f"{fit['exponent']:.2f}")
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_xlabel(r"init scale $\sigma$")
         ax.set_title(title)
-    axes[0].set_ylabel("event time / geometric mean")
-    axes[-1].legend(fontsize=6, loc="upper right", title="slope d log T / d log sigma", title_fontsize=6)
-    tp.savefig(fig, FIG / f"{name}_scaling")
+    np.atleast_1d(axes)[0].set_ylabel("event time (geometric mean over seeds),\nrelative to its mean over sigma")
+    labels = [f"{m}   (p = {' / '.join(exps[m])})" for m in handles]
+    fig.legend(list(handles.values()), labels, loc="lower center", ncol=2, fontsize=6.5,
+               bbox_to_anchor=(0.5, -0.17 - 0.035 * ((len(labels) + 1) // 2)), frameon=False,
+               title=r"fitted $T\propto\sigma^{-p}$, p per panel (all seeds)", title_fontsize=6.5)
+    tp.savefig(fig, FIG / f"{name}_scaling{tag}")
     return fig
 
 
@@ -156,7 +167,7 @@ def fig_side_by_side(name: str, sigma: float, seed: int, methods: list[str], edg
         ax = axes[0, j]
         ax.plot(t_f, loss / loss[0], color=tp.INK, lw=1.0)
         ax.set_yscale("log")
-        ax.set_title(m, fontsize=7)
+        ax.set_title(m.replace(", lr", "\nlr").replace(", every", ", every"), fontsize=7)
         ax = axes[1, j]
         for r in range(a.shape[1]):
             ax.plot(t_f, a[:, r], color=colors[r], lw=1.0, label=f"$a_{r + 1}$ (s={d['teacher_spectra'][0][r]:.0f})")

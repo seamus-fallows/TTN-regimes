@@ -146,10 +146,11 @@ def run_first_order(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
 # ---- per-core Gram preconditioning (block-diagonal Gauss-Newton, simultaneous) ---------------
 
 
-def precondition(spec: TTNSpec, cores, grads, damping: float):
+def precondition(spec: TTNSpec, cores, grads, damping: float, damping_abs: float = 0.0):
     """Apply the inverse of each core's exact Hessian block (the Kronecker product of the
     environment Grams, as in the ALS normal equations), each Kronecker factor damped by
-    `damping` x its mean eigenvalue."""
+    `damping` x its mean eigenvalue (scale-free) plus `damping_abs` (an absolute floor, like
+    Adam's eps or Levenberg-Marquardt damping)."""
     t = spec.tree
     below, above = env_grams(spec, cores)
     out = []
@@ -159,7 +160,7 @@ def precondition(spec: TTNSpec, cores, grads, damping: float):
         if v != t.root:
             legs.append((g.ndim - 1, above[v]))
         for leg, m in legs:
-            reg = damping * torch.trace(m) / m.shape[0]
+            reg = damping * torch.trace(m) / m.shape[0] + damping_abs
             minv = torch.linalg.inv(m + reg * torch.eye(m.shape[0], dtype=m.dtype))
             g = apply_on_leg(g, minv, leg)
         out.append(g)
@@ -168,11 +169,13 @@ def precondition(spec: TTNSpec, cores, grads, damping: float):
 
 def run_precond(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
     n_max, lr, damping = int(cfg["n_steps"]), float(cfg["lr"]), float(cfg.get("damping", 1e-3))
+    damping_abs = float(cfg.get("damping_abs", 0.0))
     sched = set(record_schedule(n_max).tolist())
     stride = _fine_stride(n_max)
     x = x0.clone()
     log = Log(p, x0)
-    stop = Stop(p.loss(x0).item(), cfg.get("tol", 1e-6))
+    # the simultaneous block update overshoots by many orders of magnitude before it returns
+    stop = Stop(p.loss(x0).item(), cfg.get("tol", 1e-6), blowup=float(cfg.get("blowup", 1e6)))
     for n in range(n_max + 1):
         loss, g = p.loss_and_grad(x)
         loss_v = loss.item()
@@ -183,7 +186,7 @@ def run_precond(p: Problem, x0: torch.Tensor, cfg: dict) -> Trajectory:
             log.full(x, float(n), step=n)
         if done:
             break
-        step = precondition(p.spec, p.spec.unflatten(x), p.spec.unflatten(g), damping)
+        step = precondition(p.spec, p.spec.unflatten(x), p.spec.unflatten(g), damping, damping_abs)
         x = x - lr * p.spec.flatten(step)
     return log.trajectory(x, {"stop_reason": stop.reason, "n_steps": n, "n_evals": n + 1})
 
