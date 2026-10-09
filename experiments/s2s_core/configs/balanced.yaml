@@ -22,3 +22,8 @@ integrator:
   wall_limit: 400
   max_steps: 5000
 hessians: true
+# As in main.yaml, chi = 6 at K = 7, 8 is not run here (step-limited at these tolerances).
+exclude:
+  - {tree: binary8, chi: 6}
+  - {tree: ht4, chi: 6}
+  - {tree: mps8, chi: 6}
