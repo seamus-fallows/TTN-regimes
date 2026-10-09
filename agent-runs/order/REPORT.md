@@ -22,3 +22,4 @@ Status: working - Branch: agent/order - Updated: 2026-10-09 18:18 UTC
 
 ## Log
 - 18:18 Started; read brief and repo; merged origin/main.
+- 18:23 Derived theory (m-count rule, MPS exact race, m=2 wrong-order exponent, H1b Hessian) in notes/order.md; pilots: GF to first event costs 1-9 s/run; leading-order race on MPS gives P(greedy)~0.73-0.87 at rho=0.5
