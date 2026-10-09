@@ -5,7 +5,7 @@
 Writes <out>/main_runs.csv (one row per run) and <out>/main_summary.csv (per tree, chi, teacher,
 sigma: run counts by class, S2S fraction, plateau-level errors, Hessian summary). Classes:
   complete    all components learned, every event resolved
-  trapped     not complete; a never-learned component's slice on some core fell below 1e-10 sigma
+  trapped     not complete; a never-learned component's slice on some core fell below 1e-8 sigma
               after the first escape (dead route end, the conservation-law trap; any later escape
               would be seeded by float64 roundoff, so it is not reported as physics)
   stalled     not complete, all slices alive, and the run reached t_max (1e3 x the RMS-overlap
@@ -44,7 +44,7 @@ def load(raw: Path) -> pd.DataFrame:
         after = [v for row in s["dormant_min_between_events"][1:] for v in row.values()]
         min_after = min(after) if after else np.nan
         # Dead route end: a never-learned component whose slice on some core (cores with sites,
-        # which include every route end) fell below 1e-10 sigma after the first escape: the
+        # which include every route end) fell below 1e-8 sigma after the first escape: the
         # conservation-law trap; any later escape of it is seeded by float64 roundoff.
         min_slice = np.nan
         if not complete and order:
@@ -55,7 +55,7 @@ def load(raw: Path) -> pd.DataFrame:
                 min_slice = float(np.nanmin(d["slice_norms"][after][:, :, never])) / s["sigma"]
         if complete:
             cls = "complete"
-        elif np.isfinite(min_slice) and min_slice < 1e-10:
+        elif np.isfinite(min_slice) and min_slice < 1e-8:
             cls = "trapped"
         elif s["stop_reason"] == "completed":
             cls = "stalled"

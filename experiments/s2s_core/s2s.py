@@ -236,10 +236,23 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
         learned = d["overlaps"][-1] >= 0.9
         return learned.any() and not learned.all() and amps[:, ~learned].max() < 1e-15
 
+    def dead_end(d):
+        # A never-learned component has a dead route end: its slice on some core stayed below
+        # 1e-8 sigma (7 decades below the init scale, above atol) for the whole chunk: the
+        # conservation-law trap, whose decay is exponential; only roundoff could revive it. Stop.
+        learned = d["overlaps"][-1] >= 0.9
+        if not learned.any() or learned.all():
+            return False
+        sl = d["slice_norms"][:, :, ~learned]
+        return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+
+    def stop(d):
+        return dead_end(d) or (cfg.get("roundoff_stop", True) and at_floor(d))
+
     tr = integrate_chunked(problem, theta0, t_max, n_log=cfg.get("n_log", 400),
                            wall_limit=cfg.get("wall_limit", 1200.0),
                            max_steps=cfg.get("max_steps", 20_000),
-                           stop_fn=at_floor if cfg.get("roundoff_stop", True) else None,
+                           stop_fn=stop,
                            loss_floor=cfg.get("loss_floor", 1e-9) * loss0,
                            extra=[slice_norm_recorder(teacher), balance_recorder()], **gf)
     t, a, params = tr["t"], tr["overlaps"], tr["params"]
