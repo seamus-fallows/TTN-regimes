@@ -47,13 +47,13 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 | `general.py` | `inner_general`: TTNs on different trees | main |
 | `teachers.py` | `CPTeacher` (odeco / pattern / random CP; `component_overlaps` reaches 1 at W* also under covariance), `TTNTeacher`, `ShiftedTeacher`, `teacher_generator` | main |
 | `losses.py` | exact `population_loss`, `centred_population_loss` (use for the centred model at large sigma), `empirical_loss`, `sample_inputs`, `power_law_cov` | main |
-| `diagnostics.py` | ranks, events (`crossing_times`, `event_widths` = final rise, `separation_ratios`), `find_plateaus`, `classify_regime`, `plateau_scaling`, tangent kernels, Hessian/Lanczos, gauge directions + projection, `saddle_type` | main (v0, under review) |
-| `theory.py` | balanced/unbalanced mode solutions, exact and asymptotic escape times, odeco aligned predictions | main (v0, under review) |
-| `plotting.py` | style, loss/overlap/spectra/scaling/phase-diagram plots, `fit_power_law`, `savefig` | main (v0, under review) |
-| `dynamics.py` | `Problem` (cancellation-free `effective` tensor for centred/two-copy), `integrate_gf` (`method="dopri5"` or `"lsoda"` for stiff later plateaus, `"radau"`), `run_gd`, `run_sgd`, `make_dataset`, `Recorder`, `Trajectory`, `log_time_grid` | main (v0, under review) |
-| `config.py`, `runner.py` | YAML configs, `run`, sweeps (parallel, resumable), CLI | being built |
+| `diagnostics.py` | ranks, events (`crossing_times`, `event_widths` = final rise, `separation_ratios`), `find_plateaus`, `classify_regime`, `plateau_scaling`, tangent kernels, Hessian/Lanczos, gauge directions + projection, `saddle_type` | main |
+| `theory.py` | balanced/unbalanced mode solutions, exact and asymptotic escape times, odeco aligned predictions | main |
+| `plotting.py` | style, loss/overlap/spectra/scaling/phase-diagram plots, `fit_power_law`, `savefig` | main |
+| `dynamics.py` | `Problem` (cancellation-free `effective` tensor for centred/two-copy), `integrate_gf` (`method="dopri5"` or `"lsoda"` for stiff later plateaus, `"radau"`), `run_gd`, `run_sgd`, `make_dataset`, `Recorder`, `Trajectory`, `log_time_grid` | main |
+| `config.py`, `runner.py` | YAML configs (validated), `run`, `summary` (events on log + fine rows, resolution checks, regime, lazy floor, float64-floor flag), `run_sweep` (parallel, resumable, refuses mixed configs, lock file), CLI `uv run python -m ttn.runner CONFIG.yaml [--grid G.yaml] [--seeds 0-9] [--out DIR] [--workers N] [key=value ...]` | main |
 
-"landing" = written and tested locally, not yet committed; "main" = on main.
+Recorder keeps "fine rows" (log + integrator steps where theta or log L moved by 1%): use `ttn.dynamics.merged_rows` for events. New diagnostics: `saddle_scaling` (classify by lambda_min scaling with sigma), `projected_fit_loss` (lazy floor), `gauge_projected_eigs`, `plateau_hessians`. Example experiment: `experiments/00_smoke/`.
 
 ## Notes index
 

@@ -1,0 +1,4 @@
+# Escape time vs init scale: 5 values of sigma over 1.3 decades, 8 init seeds each, on top of
+# base.yaml (the teacher is the same in every run).
+init.sigma: [0.1, 0.05, 0.02, 0.01, 0.005]
+seeds: [0, 1, 2, 3, 4, 5, 6, 7]

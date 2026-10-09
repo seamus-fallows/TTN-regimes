@@ -26,14 +26,22 @@ from ttn.diagnostics import (
     plateau_scaling,
     product_features,
     project_out_gauge,
+    projected_fit_loss,
+    ratio_lower_bounds,
     relative_change,
+    rise_times,
+    saddle_scaling,
     saddle_type,
+    sample_spacing,
     separation_ratios,
     smallest_nonzero,
+    spectral_events,
     tangent_kernel,
+    tensor_jacobian,
     tensor_tangent_kernel,
+    upward_crossings,
 )
-from ttn.losses import population_loss, sample_inputs
+from ttn.losses import population_loss, power_law_cov, sample_inputs
 from ttn.network import TTNSpec, aligned_init, forward, to_dense
 from ttn.teachers import odeco_teacher, random_cp_teacher
 from ttn.tree import make_tree
@@ -132,6 +140,49 @@ def test_plateau_midpoints():
     assert np.allclose(plateau_midpoints(t, speed, [9.5, np.nan, 1.0, 6.0]), [4.0, 8.5])
 
 
+def test_resolution_of_events_on_a_log_grid():
+    # A rise of width 2 ln 9 * 0.2 = 0.88 at t = 40 on a log grid (spacing 6.5 there): its width
+    # comes out ~0.8 intervals whatever its true value, and is flagged.
+    t = np.geomspace(1, 100, 30)
+    curves = np.column_stack([expit((t - 40) / 0.2), expit((np.log(t) - np.log(5)) / 0.02)])
+    lo, hi = rise_times(t, curves)
+    widths, spacing = hi - lo, sample_spacing(t, lo, hi)
+    assert widths[0] == pytest.approx(event_widths(t, curves)[0])
+    assert widths[0] > 3 * 0.88 and widths[0] < 3 * spacing[0]  # unresolved
+    fine = np.union1d(t, np.linspace(30, 50, 2001))
+    lo, hi = rise_times(fine, expit((fine - 40) / 0.2))
+    assert hi - lo == pytest.approx(0.88, rel=0.01) and hi - lo > 3 * sample_spacing(fine, lo, hi)
+    grid = np.array([0.0, 1.0, 2.0, 4.0, 8.0])
+    assert sample_spacing(grid, 1.5, 1.7) == 1.0 and sample_spacing(grid, 0.5, 5.0) == 4.0
+    np.testing.assert_array_equal(sample_spacing(grid, [1.0, np.nan], [2.0, 3.0]), [1.0, np.nan])
+    # Pair flags follow the event order of separation_ratios (sorted, NaN times dropped).
+    flags = ratio_lower_bounds([10.0, np.nan, 5.0, 20.0], [False, True, True, False])
+    np.testing.assert_array_equal(flags, [True, False])
+    bump = np.array([0.0, 0.6, 0.2, 0.1, 0.7, 1.0])
+    assert upward_crossings(bump, 0.5) == 2 and upward_crossings(np.ones(3), 0.5) == 1
+    np.testing.assert_array_equal(upward_crossings(np.column_stack([bump, 1 - bump]), 0.5), [2, 2])
+
+
+def test_spectral_events_and_merging():
+    # Two edges; component A raises s_1 on both edges at t = 10, component B raises s_2 on edge 0
+    # only at t = 100 (edge 1 has bond 1, padded); a decaying extra value on edge 0 is no event.
+    t = np.linspace(0, 200, 4001)
+    s = np.full((len(t), 2, 3), np.nan)
+    s[:, 0, 0] = s[:, 1, 0] = 3 * expit((t - 10) / 0.5) + 1e-6
+    s[:, 0, 1] = 1 * expit((t - 100) / 1.0) + 1e-6
+    s[:, 0, 2] = 0.3 * np.exp(-t / 20) + 1e-6
+    ref = [[3.0, 1.0], [3.0]]
+    ev = spectral_events(t, s, reference=ref)
+    assert list(zip(ev["edge"], ev["k"])) == [(0, 0), (0, 1), (1, 0)]
+    assert np.allclose(ev["time"], [10, 100, 10], atol=0.01) and np.all(ev["n_cross"] == 1)
+    assert np.allclose(ev["width"], 2 * np.log(9) * np.array([0.5, 1.0, 0.5]), rtol=0.01)
+    times, widths, groups = merge_events(ev["time"], ev["width"], return_groups=True)
+    assert np.allclose(times, [10, 100], atol=0.01) and [list(g) for g in groups] == [[0, 2], [1]]
+    assert separation_ratios(times, widths)[0] == pytest.approx(90 / (2 * np.log(9)), rel=0.01)
+    # Without a reference every value present at the end counts, the decaying one included.
+    assert len(spectral_events(t, s)["time"]) == 4
+
+
 # ---- regime assignment -----------------------------------------------------------------------
 
 
@@ -149,6 +200,17 @@ def test_classify_regime():
     assert classify_regime(0.15, [4.0], 1e-6, 1.0, {"delta_K": 0.2}) == "lazy"
     assert classify_regime(0.5, [4.0], 1e-6, 1.0, {"separation": 5.0}) == "rich"
     assert classify_regime(0.5, [4.0], 1e-6, 1.0) == "saddle-to-saddle"
+    # Overlapping events whose widths are only grid-limited bounds: undetermined, not rich.
+    assert classify_regime(0.5, [10.0, 2.0], 1e-6, 1.0, lower_bounds=[False, True]) == (
+        "undetermined"
+    )
+    assert classify_regime(0.5, [2.5, 2.0], 1e-6, 1.0, lower_bounds=[False, True]) == "rich"
+    assert classify_regime(0.5, [10.0, np.nan], 1e-6, 1.0, lower_bounds=[True, True]) == "rich"
+    # Deficient bonds: a lazy run ends at the projected fit (floor), not below 1e-3 L(0).
+    assert classify_regime(0.05, [], 0.31, 1.0, lazy_floor=0.30) == "lazy (projected fit)"
+    assert classify_regime(0.05, [], 0.40, 1.0, lazy_floor=0.30) == "stalled"
+    assert classify_regime(0.5, [], 0.31, 1.0, lazy_floor=0.30) == "stalled"
+    assert classify_regime(0.05, [], 1e-6, 1.0, lazy_floor=0.0) == "lazy"
 
 
 def test_plateau_scaling():
@@ -276,6 +338,30 @@ def test_tensor_tangent_kernel_consistent_with_probe_kernel(kind):
     assert torch.allclose(phi @ tensor_tangent_kernel(spec, theta, mask) @ phi.T, expected)
 
 
+@pytest.mark.parametrize("metrics", [False, True], ids=["whitened", "power-law"])
+def test_projected_fit_loss_is_the_least_squares_residual(metrics):
+    # chi = 1 on binary4 (d = 2): the tangent space misses part of a generic residual.
+    spec = TTNSpec.uniform(make_tree("binary", 4), 2, 1)
+    theta = spec.flatten(spec.init(1.0, seed=3))
+    r = torch.randn(2, 2, 2, 2, dtype=torch.float64, generator=torch.Generator().manual_seed(4))
+    mask = torch.ones(spec.n_params, dtype=torch.float64)
+    mask[:2] = 0.0  # two frozen coordinates
+    site = [power_law_cov(2, 1.0)] * 4 if metrics else None
+    jac = tensor_jacobian(spec, theta)[:, mask != 0].numpy()
+    m_half = np.eye(1)
+    for m in site or [torch.eye(2, dtype=torch.float64)] * 4:
+        vals, vecs = np.linalg.eigh(m.numpy())
+        m_half = np.kron(m_half, vecs @ np.diag(np.sqrt(vals)) @ vecs.T)
+    b = m_half @ r.numpy().ravel()
+    x = np.linalg.lstsq(m_half @ jac, b, rcond=None)[0]
+    expected = 0.5 * np.sum((m_half @ jac @ x - b) ** 2)
+    floor = projected_fit_loss(spec, theta, r, mask, site)
+    assert floor == pytest.approx(expected, rel=1e-9) and 0.05 * np.sum(b**2) < floor
+    full = TTNSpec.uniform(make_tree("binary", 4), 2, 4)  # full bonds: fits anything
+    theta = full.flatten(full.init(1.0, seed=3))
+    assert projected_fit_loss(full, theta, r, site_metrics=site) < 1e-20
+
+
 def test_kernel_alignment_and_change():
     rng = np.random.default_rng(0)
     y = rng.standard_normal(10)
@@ -337,6 +423,23 @@ def test_saddle_type():
     assert s["eps"] == pytest.approx(2e-3) and s["ratio"] == pytest.approx(-0.25)
     s = saddle_type(torch.tensor([-1e-5, 0.0, 2.0], dtype=torch.float64))
     assert s["type"] == "non-strict" and s["n_negative"] == 0 and s["lambda_min"] == -1e-5
+    # NaN padding (a recorder's hessian_eigs_gauge row) is ignored, not propagated.
+    s = saddle_type(np.array([-0.5, 0.0, 2.0, np.nan, np.nan]))
+    assert s["type"] == "strict" and s["n_negative"] == 1 and s["lambda_max"] == 2.0
+
+
+def test_saddle_scaling():
+    rng = np.random.default_rng(0)
+    sigma = np.repeat([0.08, 0.04, 0.02, 0.01], 3)
+    noise = np.exp(0.05 * rng.standard_normal(sigma.size))
+    strict = saddle_scaling(sigma, -0.5 * noise)  # lambda_min -> constant
+    assert strict["type"] == "strict" and abs(strict["exponent"]) < 0.1 and strict["n"] == 12
+    order3 = saddle_scaling(sigma, -2.0 * sigma * noise)  # k = 3 route: ~sigma^1
+    assert order3["type"] == "higher-order" and order3["order"] == pytest.approx(3, abs=0.1)
+    lam = -2.0 * sigma * noise
+    lam[0] = 0.3  # non-negative values are skipped
+    assert saddle_scaling(sigma, lam)["n"] == 11
+    assert saddle_scaling([0.1, 0.1], [-1.0, -2.0])["type"] == "undetermined"
 
 
 # ---- gauge -----------------------------------------------------------------------------------
