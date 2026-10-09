@@ -214,6 +214,12 @@ Findings (all **empirical** unless tagged otherwise):
    S2S rule holds in only 0-19% of runs. Later gaps grow weakly as sigma decreases (p = 0.14-0.50) and
    shrink with the memory length of beta2 (p = 0.50, 0.36, 0.21 for beta2 = 0.999, 0.99, 0.9): the
    memory phase of 1.2 (e').
+2b. **The sign-flow limit (derived 1.2 c) is reached as lr -> 0.** First escape in sign-flow time
+   tau_1 = lr n_1 (median over 42 runs, all sigma): 0.296 (lr 1e-2), 0.180 (1e-3), 0.162 (3e-4),
+   0.168 (1e-4), seed-to-seed s.d. 0.006-0.02; exponent in sigma 0.012 +- 0.003 at lr 1e-4. RMSProp:
+   0.086 (1e-3), 0.225 (1e-4). Later gaps also scale as 1/lr at small lr (gap 1 in tau: 0.44, 0.38,
+   0.37 for lr 1e-4, 3e-4, 1e-3), i.e. they are sign-flow durations, with a weak sigma dependence
+   (p = 0.30 +- 0.06 at lr 1e-4).
 3. **Re-gauged GD, Riemannian GD, ALS, DMRG: no plateau and no sigma dependence at all** (event times
    identical across sigma to the printed digits for re-gauged GD, proven for ALS / DMRG). All components
    rise together; the order is set by the projections of the teacher on the random initial frames, never

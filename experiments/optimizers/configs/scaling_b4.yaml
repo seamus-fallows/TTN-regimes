@@ -9,6 +9,8 @@ blocks:
       - {optimizer: gd, lr: 0.02, budget_c: 8.0, budget_power: 1.0}
       - {optimizer: momentum, lr: 0.002, beta: 0.9, budget_c: 8.0, budget_power: 1.0}
       - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 100000}
+      - {optimizer: adam, lr: [1.0e-4, 3.0e-4], n_steps: 300000}
+      - {optimizer: rmsprop, lr: 1.0e-4, n_steps: 300000}
       - {optimizer: adam, lr: 1.0e-3, beta2: [0.9, 0.99], n_steps: 100000}
       - {optimizer: rmsprop, lr: 1.0e-3, n_steps: 100000}
       - {optimizer: regauge, lr: 0.02, period: [1, 50], n_steps: 50000}
