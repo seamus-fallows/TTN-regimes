@@ -123,16 +123,17 @@ def balance_recorder():
 # ---- refined events ---------------------------------------------------------------------------
 
 
-def zoom_rise(problem, theta, t0, t1, r, n=100, min_points=40, max_levels=10, **gf):
+def zoom_rise(problem, theta, t0, t1, r, n=100, min_points=40, max_levels=10, spectra=False, **gf):
     """Resolve the final rise (0.1 -> 0.9) of overlap r inside [t0, t1], given theta at t0.
 
     Re-integrates the window on a linear grid of n points, then repeatedly zooms onto
     [last a_r < 0.1, first a_r >= 0.9] until that interval holds >= min_points samples.
-    Returns (t, overlaps (n, R), loss) on the finest window, or None if the rise is not inside.
+    Returns (t, overlaps (n, R), loss) on the finest window, or None if the rise is not inside; with
+    spectra=True also the bond spectra (n, E, chi_max) on that window (recorded at every level).
     """
     for _ in range(max_levels):
         grid = np.linspace(0.0, t1 - t0, n + 1)[1:]
-        rec = Recorder(spectra=False, conservation=False, save_params=True)
+        rec = Recorder(spectra=spectra, conservation=False, save_params=True)
         tr = integrate_gf(problem, theta, t1 - t0, log_times=grid, recorder=rec, **gf)
         t, a, params = t0 + tr["t"], tr["overlaps"], tr["params"]
         hi = np.flatnonzero(a[:, r] >= 0.9)
@@ -142,8 +143,10 @@ def zoom_rise(problem, theta, t0, t1, r, n=100, min_points=40, max_levels=10, **
         lo = np.flatnonzero(a[: i_hi + 1, r] < 0.1)
         i_lo = lo[-1] if lo.size else 0
         if i_hi - i_lo >= min_points or i_lo == 0 and i_hi <= 1:
-            return t, a, tr["loss"]
+            break
         theta, t0, t1 = torch.as_tensor(params[i_lo]), t[i_lo], t[i_hi]
+    if spectra:
+        return t, a, tr["loss"], tr["spectra"]
     return t, a, tr["loss"]
 
 
@@ -242,6 +245,7 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
 
     # Events: final rise of every component, refined in linear time.
     events, widths, first_cross, fine = np.full(R, np.nan), np.full(R, np.nan), np.full(R, np.nan), {}
+    edge_steps, edge_rank_change = {}, {}
     for r in range(R):
         first_cross[r] = dg.crossing_times(t, a[:, r], 0.5)
         hi = np.flatnonzero(a[:, r] >= 0.9)
@@ -249,13 +253,19 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
             continue
         lo = np.flatnonzero(a[: hi[0] + 1, r] < 0.1)
         i_lo = lo[-1] if lo.size else 0
-        z = zoom_rise(problem, torch.as_tensor(params[i_lo]), t[i_lo], t[hi[0]], r, **gf)
+        z = zoom_rise(problem, torch.as_tensor(params[i_lo]), t[i_lo], t[hi[0]], r, spectra=True, **gf)
         if z is None:
             continue
-        tz, az, lz = z
+        tz, az, lz, sz = z
         events[r] = dg.crossing_times(tz, az[:, r], 0.5, last=True)
         widths[r] = dg.event_widths(tz, az[:, r])
-        fine[f"t_{r}"], fine[f"a_{r}"], fine[f"loss_{r}"] = tz, az, lz
+        fine[f"t_{r}"], fine[f"a_{r}"], fine[f"loss_{r}"], fine[f"spectra_{r}"] = tz, az, lz, sz
+        # Per edge: time at which the number of singular values above s_r / 2 (half the final value
+        # of the new one, diagnostics.md) reaches its end-of-window value; one step per event and
+        # edge, at the same time on every edge if the component is learned on all bonds at once.
+        rk = dg.effective_rank(np.nan_to_num(sz), 0.5 * cfg["weights"][r])
+        edge_steps[r] = [float(tz[np.flatnonzero(rk[:, j] >= rk[-1, j])[0]]) for j in range(rk.shape[1])]
+        edge_rank_change[r] = (rk[-1] - rk[0]).tolist()
     order = [int(r) for r in np.argsort(events) if np.isfinite(events[r])]
     rho = dg.separation_ratios(events, widths)
 
@@ -342,6 +352,8 @@ def run_one(cfg: dict, out_dir: Path, hessians: bool = True) -> dict:
         "widths": widths.tolist(),
         "order": order,
         "separation_ratios": rho.tolist(),
+        "edge_rank_step_times": edge_steps,
+        "edge_rank_change": edge_rank_change,
         "s2s": bool(len(order) >= 2 and np.all(rho > 3)),
         "plateaus": plateaus,
         "dormant": dormant,

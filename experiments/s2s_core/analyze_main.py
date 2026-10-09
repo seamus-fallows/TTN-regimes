@@ -82,6 +82,47 @@ def summarize(df: pd.DataFrame) -> pd.DataFrame:
     ).reset_index()
 
 
+def gap_fits(df: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
+    """Per-seed power-law fits of t_1, t_2 - t_1 and t_3 - t_2 against sigma.
+
+    Only complete runs, and per seed only the sigmas at which the seed follows its most common
+    learning order (runs that visit a different saddle sequence are not pooled). Exponent p in
+    gap ~ sigma^-p; at least `min_sigmas` sigmas per fit.
+    """
+    rows = []
+    keys = ["tree", "K", "chi", "teacher", "init", "seed"]
+    comp = df[df["class"] == "complete"]
+    for key, g in comp.groupby(keys):
+        modal = g.order.mode().iloc[0]
+        g = g[g.order == modal].sort_values("sigma")
+        if len(g) < min_sigmas:
+            continue
+        x = np.log(g.sigma.values)
+        row = {**dict(zip(keys, key)), "order": modal, "n_sigma": len(g),
+               "sigma_min": g.sigma.min(), "sigma_max": g.sigma.max()}
+        for name, y in (("t1", g.t1.values), ("gap1", g.t2.values - g.t1.values),
+                        ("gap2", g.t3.values - g.t2.values)):
+            ok = np.isfinite(y) & (y > 0)
+            row[f"p_{name}"] = -np.polyfit(x[ok], np.log(y[ok]), 1)[0] if ok.sum() >= min_sigmas else np.nan
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def fit_summary(fits: pd.DataFrame) -> pd.DataFrame:
+    """Mean +- SE over seeds of the per-seed exponents, vs the prediction K - 2."""
+    def se(x):
+        x = x.dropna()
+        return x.std(ddof=1) / np.sqrt(len(x)) if len(x) > 1 else np.nan
+
+    g = fits.groupby(["tree", "K", "chi", "teacher", "init"])
+    out = g.agg(n_seeds=("seed", "size"),
+                p_t1=("p_t1", "mean"), p_t1_se=("p_t1", se),
+                p_gap1=("p_gap1", "mean"), p_gap1_se=("p_gap1", se), n_gap1=("p_gap1", "count"),
+                p_gap2=("p_gap2", "mean"), p_gap2_se=("p_gap2", se), n_gap2=("p_gap2", "count")).reset_index()
+    out["predicted"] = out.K - 2
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--raw", default="/root/outputs/s2s_core/main")
@@ -94,9 +135,14 @@ def main():
     df.to_csv(out / f"{args.tag}_runs.csv", index=False)
     summ = summarize(df)
     summ.to_csv(out / f"{args.tag}_summary.csv", index=False)
+    fits = gap_fits(df)
+    fits.to_csv(out / f"{args.tag}_gap_fits.csv", index=False)
+    fs = fit_summary(fits) if len(fits) else fits
+    fs.to_csv(out / f"{args.tag}_exponents.csv", index=False)
     pd.set_option("display.width", 250)
     pd.set_option("display.max_rows", 500)
     print(summ.to_string())
+    print(fs.round(3).to_string())
 
 
 if __name__ == "__main__":
