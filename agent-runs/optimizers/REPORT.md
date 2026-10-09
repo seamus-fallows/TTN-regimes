@@ -108,3 +108,6 @@ right in form but the floor acts once per bond leg, so near the origin it is GD 
 - 19:24 Merged library v0 (f2f0d6f), ported to ttn.dynamics; calibration on deep trees showed the fan-in trap; added balanced init.
 - 19:26 Launched scaling_b4, pilot_trap, implicit_bias_b4; then precond_b4, deep, eps_mps8, adam_probe.
 - 19:33 binary4 results, figures, Adam probe figure; interim report.
+- 19:45 Adam lr -> 0: first escape lr n_1 -> 0.165 (sign-flow limit confirmed); eps sweep restarted with 2e5-step budget (dormant components stay at init amplitude under Adam at small sigma).
+- 19:55 Implicit bias (finite samples): GF keeps bond rank 3 at n = 45 (11/12), Adam / RMSProp end at rank 4 (8-11/12). Merged theory_optimizer v2: P1/P2 confirmed on my GF/Adam endpoints, P6 consistent in magnitude.
+- 20:05 Deep trees partial: Adam first escape sigma-free, later gaps sigma-dependent with ~half GF's exponent; S2S survives under Adam on deep trees; re-gauged GD sequential on deep trees (frame-overlap plateaus). Launched later_b8 (sigma scan on binary8).
