@@ -20,10 +20,11 @@ Q5 (regime map) as the other substantial open items.
 
 ## 1. Research questions, ranked
 
-### Q1. Saddle sequence of gradient flow on TTNs from small init — *open* (top open problem in the literature)
+### Q1. Saddle sequence of gradient flow on TTNs from small init — *open for K >= 3* (top open problem in the literature)
 
-- Known around it: full saddle-to-saddle theory in DLNs is proven only for the first escape at generic
-  init (Jacot et al. 2021) and for decoupled DLNs / deep diagonal nets; Furman 2026 gives the landscape.
+- Known around it: the full sequence is proven at depth 2 (Jiang, Chen & Ding 2023; Jin et al. 2023), which
+  covers two-core TTNs; at depth >= 3 only the first escape at generic init (Jacot et al. 2021) and decoupled
+  DLNs / deep diagonal nets; Furman 2026 gives the landscape.
 - **Hypothesis**: plateaus sit at bond-rank-constrained critical points (bond spectra = truncated teacher
   spectra; for odeco teachers loss levels L_k = 1/2 sum_{r>k} s_r^2); bond spectra grow one value at a time.
 - **Theory**: Saxe-type exact solution for aligned odeco teachers (explicit for TTNs here; listed as future
