@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-09 21:10 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-09 22:00 UTC
 
 ## Summary
 Task: phase diagrams of saddle-to-saddle (S2S) / rich / lazy dynamics over init scale sigma, bond
@@ -112,6 +112,17 @@ Other interim findings (N = 4):
     (1e5; 3e4 for N = 8), whichever comes first. Runs stopped there unconverged are 'stalled' by the
     rule and are reported as such, with the stall type from the bond spectra (dead route: R-th bond
     singular value < 1e-12; long plateau: >= 1e-4; decaying: in between).
+13. **K = 7 lazy region mapped at d = 2.** At d = 3 the top cut of binary N = 8 has dimension 81: full
+    bonds mean square 81 x 81 cores (lazy fit needs tau ~ 1e5, theory P9) or 1.3e5 parameters for
+    2x-overparameterized bonds (~1 s per gradient under load). The d = 3 map (teacher [3, 2, 1]) keeps
+    the deficient bonds chi = 3..24 (centred and plain); a second map at d = 2 (teacher [3, 2], cut
+    dimensions 4 and 16) has chi = 2, 4, 8, 16 (full, square) and 8 / 32 (full, 2x), where the lazy
+    regime exists. Same for the large-chi study at K = 7 (d = 2, as in theory P17).
+14. **sigma x K uses the plain model with chi = 6 (= 2 x teacher rank) plus a chi = 3 slice**, after
+    theory v2 and the stall test: at chi = 3 most K >= 7 runs never learn the last component (dead
+    routes), and the centred target is floored near the expected boundary. For K >= 10 at chi = 6 the
+    sigma grid is a window around the predicted boundary (0.4-1.6) integrated with dopri5, because
+    LSODA's Hessian costs ~5 min per evaluation for P ~ 1800 under full load.
 
 ## Files left on the machine
 - `/root/outputs/regime_map/` raw outputs (none yet).
@@ -142,3 +153,5 @@ Other interim findings (N = 4):
 - 20:55 library vs scipy integrators on 1937 matched N = 4 runs: labels agree 98.1%, delta_K 0.08%, drift <= 1e-9
 - 21:02 load ~1900: LSODA workers spawned BLAS threads; pinned OMP/OpenBLAS/MKL threads to 1 in sweep.py and restarted (resumable)
 - 21:08 plain-model convergence/stop floor now relative to 1/2 ||W*||^2 (decision 11); dropped 140 affected plain rows; relaunched all sweeps (5516 runs to do)
+- 21:45 library N = 4 data: per-seed rho exponent on the S2S side -1.03 (seed sd 0.001-0.09) vs predicted -(K-2) = -1 (interim log-grid data had given -0.5..-0.7); continuous per-seed threshold sensitivity
+- 21:55 heavy runs infeasible under load (binary16 chi = 6 Hessian 330 s, N = 8 chi = 81 gradient 0.2 s); stopped and restructured (decisions 13-14); relaunched 5749 runs
