@@ -1,6 +1,5 @@
-"""Figures for the regime map (reads saved runs via analysis.load). Usage:
-uv run python experiments/regime_map/plots.py sigma_chi <exp> <model> [--lazy CSV] [--out DIR] [--force]
-Outputs go to --out (default results/); existing files are never overwritten without --force.
+"""Figure functions for the regime map (read saved runs via analysis.load). Run them through
+make_figures.py (--out DIR, --force); existing files are never overwritten without --force.
 """
 
 from __future__ import annotations
@@ -268,41 +267,32 @@ def load_traj(exp, cfg):
 
 
 def fig_examples(exp, picks, name):
-    """Representative runs: list of (title, cfg-dict); L/L0 and overlaps a_r vs t."""
-    fig, axes = plt.subplots(2, len(picks), figsize=(3.2 * len(picks), 4.6), sharex=False)
+    """Representative runs: list of (title, cfg-dict). Top: L / L(0) vs t (log-log; the S2S run also in
+    linear time, inset, since plateaus must be judged in linear time). Bottom: overlaps a_r vs t."""
+    fig, axes = plt.subplots(2, len(picks), figsize=(3.3 * len(picks), 4.8), sharex=False)
     comp_colors = ["#2a78d6", "#eb6834", "#1baf7a"]
     for k, (title, cfg) in enumerate(picks):
         t, L, A = load_traj(exp, cfg)
         t, L, A = t[1:], L[1:], A[1:]
-        axes[0, k].loglog(t, L, color=INK, lw=1.5)
-        axes[0, k].set_title(title, fontsize=8.5, loc="left")
+        ax = axes[0, k]
+        ax.loglog(t, L, color=INK, lw=1.5)
+        ax.set_title(title, fontsize=8.5, loc="left")
+        if cfg.get("linear_inset"):
+            ins = ax.inset_axes([0.12, 0.12, 0.45, 0.45])
+            ins.plot(t, L, color=INK, lw=1.2)
+            ins.set_xlim(0, t[-1])
+            ins.tick_params(labelsize=6)
+            ins.set_title("linear time", fontsize=6)
+        ws = cfg.get("weights", [3, 2, 1])
         for r in range(A.shape[1]):
-            axes[1, k].semilogx(t, A[:, r], color=comp_colors[r], lw=1.5, label=f"$a_{r + 1}$ ($s={[3, 2, 1][r]}$)")
+            axes[1, k].semilogx(t, A[:, r], color=comp_colors[r], lw=1.5, label=f"$a_{r + 1}$ ($s={ws[r]:g}$)")
         axes[1, k].set_xlabel("gradient-flow time t")
         axes[1, k].set_ylim(-0.1, 1.15)
-    axes[0, 0].set_ylabel(r"$L/L_0$")
+    axes[0, 0].set_ylabel(r"$L/L(0)$")
     axes[1, 0].set_ylabel(r"overlap $a_r$")
     axes[1, 0].legend(fontsize=7, frameon=False)
     fig.tight_layout()
     save_fig(fig, f"examples_{name}.png")
-
-
-if __name__ == "__main__":
-    import argparse
-
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("what", choices=["sigma_chi"])
-    ap.add_argument("exp")
-    ap.add_argument("model")
-    ap.add_argument("--lazy", help="per-seed lazy predictions CSV (lazy_predict.py)")
-    ap.add_argument("--out", default=RES, help="output directory (default: results/)")
-    ap.add_argument("--force", action="store_true", help="overwrite existing outputs")
-    a = ap.parse_args()
-    RES, FORCE = a.out, a.force
-    if a.what == "sigma_chi":
-        fig_sigma_chi(a.exp, a.model, a.lazy, title=f"{a.exp}, {a.model}: ")
-        bt = fig_sensitivity(a.exp, a.model)
-        print(bt[(bt.k_thr == 0.1) & (bt.rho_thr == 3.0)])
 
 
 # ---- boundaries vs bond dimension (chi_b4) ------------------------------------------------------

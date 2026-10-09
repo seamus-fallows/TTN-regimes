@@ -29,6 +29,12 @@ FIGURES = {
     "sigma_chi_b8": lambda: plots.fig_sigma_chi_b8("sigma_chi_b8", f"{RES}/lazy_pred_b8.csv"),
     "sigma_K": lambda: [plots.fig_sigma_K("sigma_K", chi) for chi in (6, 3)],
     "imbalance_b4": lambda: plots.fig_imbalance("imbalance_b4"),
+    "examples": lambda: plots.fig_examples("sigma_chi_b4", [
+        ("saddle-to-saddle: chi=24, sigma=0.016", dict(model="centred", kind="binary", n=4, d=3, chi=24, sigma=0.01585, seed=0, linear_inset=True)),
+        ("rich: chi=24, sigma=0.25", dict(model="centred", kind="binary", n=4, d=3, chi=24, sigma=0.2517, seed=0)),
+        ("lazy: chi=24, sigma=4", dict(model="centred", kind="binary", n=4, d=3, chi=24, sigma=3.995, seed=0)),
+        ("stalled (floor): chi=3, sigma=2.5", dict(model="centred", kind="binary", n=4, d=3, chi=3, sigma=2.52, seed=0)),
+    ], "b4_centred"),
     "large_chi": lambda: [plots.fig_large_chi("large_chi_b4", m, s) for m in ("centred", "plain") for s in (1.0, 1.5)]
     + [plots.fig_large_chi("large_chi_b8", "plain", 1.0, chi_fit_min=8)],
 }
