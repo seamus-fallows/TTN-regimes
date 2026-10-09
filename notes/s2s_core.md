@@ -7,6 +7,14 @@ sigma, gradient flow).
 
 ## 1. Theory
 
+**Relation to the project theory notes.** Sections 1.1-1.2 were derived here before
+`notes/theory_escape.md` existed; theory_escape v2 (verified) contains the same results and is the
+reference for them: P1 = its E1 and recipe 2.5 (t_hat_1 per init; my c_K = its delta_K), B1 = its E2
+(Kumar-Haupt lower bound), 1.2 = its E5 and 5.1 (reduced network, exact race on MPS); 1.4 = the
+piggyback block of `notes/theory_saddles.md` 4.1 (m = 2 strict iff a larger component is unlearned).
+What this note adds: the RMS-overlap heuristic P3 (1.5), the measured tests (section 2), and the
+dormant-suppression analysis (2.2). In what follows "derived here" marks my own derivations.
+
 Notation: K cores, g(theta) = <W(theta), W*> (degree-K homogeneous polynomial in theta),
 L = 1/2 ||W||^2 - g + 1/2 ||W*||^2. With the same seed, fan-in init is linear in sigma:
 theta_0(sigma) = sigma * theta_hat, theta_hat = the sigma = 1 init.
@@ -57,8 +65,9 @@ sphere, with equality at the balanced rank-one configuration aligned with compon
 
     T(theta_hat) >= ||theta_hat||^{-(K-2)} K^{K/2-1} / ((K-2) s_1).                 (B1)
 
-The PLAN's hypothesis t_1 ~ rho_0^{-(K-2)} [tau_align + K^{K/2-1}/((K-2) s_1)] is (B1) plus an
-alignment delay. Only the parameters g depends on matter: at each physical leg, directions
+The PLAN's early hypothesis t_1 ~ rho_0^{-(K-2)} [tau_align + K^{K/2-1}/((K-2) s_1)] is (B1) plus an
+alignment delay; as theory_escape 2.2 notes, there is no separate additive alignment phase (the whole
+integral is alignment). Only the parameters g depends on matter: at each physical leg, directions
 orthogonal to span{u_r} (and for a two-site core, the mixed slices u_r (x) u_r', r != r') have zero
 gradient in the correlation flow and stay frozen at O(sigma). Replacing ||theta_hat|| by the norm of
 the *active* parameters rho_act (slices along the teacher directions + cores without physical legs)
