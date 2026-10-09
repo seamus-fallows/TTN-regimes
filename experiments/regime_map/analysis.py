@@ -127,3 +127,60 @@ def boundary(xs, frac, level=0.5):
             w = (level - f0) / (f1 - f0)
             return float(np.exp(np.log(xs[i]) + w * (np.log(xs[i + 1]) - np.log(xs[i]))))
     return np.nan
+
+
+# ---- S2S boundary predicted from the deepest sigma by aligned-mode extrapolation ---------------
+
+
+def _I(K, v0, v1):
+    """I_K(v0, v1) = (1/K) int_{v0}^{v1} v^(-2+2/K) / (1-v) dv (theory_regimes section 3.1)."""
+    from scipy.integrate import quad
+
+    p = 2 - 2 / K  # split 1/(1-v) = 1 + v/(1-v): the singular part is analytic
+    sing = np.log(v1 / v0) if K == 2 else (v0 ** (1 - p) - v1 ** (1 - p)) / (p - 1)
+    reg = quad(lambda v: v ** (1 - p) / (1 - v), v0, v1, limit=200)[0]
+    return (sing + reg) / K
+
+
+def aligned_sigma_c(rows: pd.DataFrame, K: int, weights=(3.0, 2.0, 1.0), rho_thr=3.0):
+    """Predict one seed's S2S boundary from its deepest run only.
+
+    Each component r is treated as an aligned balanced mode u' = K u^(2-2/K) (s_r - u) with its own
+    effective initial value u0_r, calibrated from the measured event time t_r at the smallest sigma
+    (u0_r scales as sigma^K). This reproduces the event times and widths of the aligned theory at
+    every sigma, so min_i rho_i(sigma) and the crossing rho = rho_thr follow. Returns (sigma_c, R)
+    with R = rho * sigma^(K-2) at the deepest sigma (nan if the deepest run is not S2S-like)."""
+    from scipy.optimize import brentq
+
+    deep = rows.sort_values("sigma").iloc[0]
+    s0 = deep.sigma
+    ev = deep.events
+    w = np.array(weights)
+    expo = 2 - 2 / K
+    omega = _I(K, 0.1, 0.9)
+    v0 = []
+    for r, (t_r, _) in enumerate(ev):
+        if not np.isfinite(t_r):
+            return np.nan, np.nan
+        target = t_r * w[r] ** expo
+        f = lambda lv: _I(K, np.exp(lv), 0.5) - target  # noqa: E731
+        try:
+            v0.append(np.exp(brentq(f, np.log(1e-300), np.log(0.4999))))
+        except ValueError:
+            return np.nan, np.nan
+
+    def min_rho(sig):
+        scale = (sig / s0) ** K
+        times = [w[r] ** -expo * _I(K, min(v0[r] * scale, 0.4999), 0.5) for r in range(len(w))]
+        order = np.argsort(times)
+        widths = [w[r] ** -expo * omega for r in order]
+        ts = [times[r] for r in order]
+        return min((ts[i + 1] - ts[i]) / max(widths[i], widths[i + 1]) for i in range(len(ts) - 1))
+
+    grid = np.geomspace(s0, s0 * 1e3, 400)
+    vals = np.array([min_rho(s) for s in grid])
+    below = np.nonzero(vals < rho_thr)[0]
+    if len(below) == 0 or below[0] == 0:
+        return np.nan, min_rho(s0) * s0 ** (K - 2)
+    i = below[0]
+    return float(np.sqrt(grid[i - 1] * grid[i])), min_rho(s0) * s0 ** (K - 2)

@@ -7,7 +7,8 @@ One run = one (tree, d, chi, sigma, seed, model, root_scale) point. Models:
 Per run we save the trajectory (t, L, overlaps a_r of W - W_0 with the teacher components) to
 /root/outputs/regime_map/<exp>/<run_id>.npz and return a summary row (end-of-training diagnostics).
 
-Dynamics: gradient flow, scipy RK45, rtol 1e-9, atol 1e-14, float64. Stopped when l < 1e-12, or
+Dynamics: gradient flow, scipy RK45, rtol 1e-9, atol 1e-14, float64. Stopped when l < l_stop
+(default 1e-12; 1e-5 for the larger trees, two decades below the convergence threshold), or
 l < 1e-4 and t |grad L|^2 < 1e-7 L(0) (converged and stationary), or at the budget
 T = 50 t_esc + tau_max / max(lambda_bar, 1), with t_esc = (0.3 sigma)^-(K-2) / ((K-2) s_min) the aligned
 escape-time estimate of the smallest component and lambda_bar = tr Theta(0) / D the kernel scale
@@ -39,7 +40,7 @@ from ttn.network import (  # noqa: E402
     sum_difference_cores,
     to_dense,
 )
-from ttn.teachers import odeco_teacher  # noqa: E402
+from ttn.teachers import ShiftedTeacher, odeco_teacher  # noqa: E402
 from ttn.tree import make_tree  # noqa: E402
 
 torch.set_num_threads(1)
@@ -57,6 +58,27 @@ def make_spec(kind, n, d, chi, cap, bonds=None):
     return TTNSpec.uniform(tree, d, chi, cap=cap)
 
 
+def parameterization(spec: TTNSpec, cfg: dict):
+    """Per-core init multipliers m_v and learning-rate multipliers eta_v
+    (notes/theory_regimes.md section 4.3): sp (1, 1); ntk (1, 1/F_v); mup = muP-TTN
+    (root multiplier (sum of child-leg dims)^-1/2, eta_v = chi_v / F_v). `root_scale` multiplies
+    the root's init on top (imbalance experiments)."""
+    tree = spec.tree
+    lr = cfg.get("lr", "sp")
+    scales = [1.0] * spec.n_cores
+    if lr == "sp":
+        eta = [1.0] * spec.n_cores
+    elif lr == "ntk":
+        eta = [1.0 / f for f in spec.fan_in]
+    elif lr == "mup":
+        eta = [spec.bond_dims[v] / spec.fan_in[v] for v in range(spec.n_cores)]
+        scales[tree.root] = sum(spec.shapes[tree.root][:-1]) ** -0.5
+    else:
+        raise ValueError(lr)
+    scales[tree.root] *= cfg.get("root_scale", 1.0)
+    return scales, eta
+
+
 def run_point(cfg: dict) -> dict:
     """cfg keys: exp, kind, n, d, chi, cap, sigma, seed, model, weights, root_scale (default 1),
     tau_max (default 1e4), bonds (optional), lr (sp|ntk|mup, default sp)."""
@@ -67,13 +89,9 @@ def run_point(cfg: dict) -> dict:
     spec = make_spec(kind, n, d, chi, cfg.get("cap", True), cfg.get("bonds"))
     K = spec.n_cores
     tree = spec.tree
-    scales = [1.0] * K
-    scales[tree.root] = cfg.get("root_scale", 1.0)
+    scales, eta_core = parameterization(spec, cfg)
     base = odeco_teacher(n, d, list(weights), seed=1000 + seed)
     cores_init = spec.init(sigma, seed=seed, core_scales=scales)
-    eta_core = [1.0] * K  # per-core learning-rate multipliers (sp)
-    if cfg.get("lr", "sp") == "ntk":
-        eta_core = [1.0 / f for f in spec.fan_in]
     flat_eta1 = torch.cat([torch.full((sz,), e, dtype=torch.float64) for sz, e in zip(spec.sizes, eta_core)])
     b2 = base.norm2()
 
@@ -86,9 +104,15 @@ def run_point(cfg: dict) -> dict:
         spec_run, cores0 = spec, cores_init
         eta = flat_eta1
     flat0 = spec_run.flatten(cores0).clone()
+    alpha = math.prod(sigma * s for s in scales)
+    if model == "centred":
+        shifted = ShiftedTeacher(base, spec, cores0)
+        shifted_norm2 = shifted.norm2()
 
     def loss_of(flat):
         cores = spec_run.unflatten(flat)
+        if model == "centred" and alpha < 1e-3:  # cancellation error ~1e-16 alpha^2: negligible
+            return population_loss(spec_run, cores, shifted, teacher_norm2=shifted_norm2)
         if model == "centred":
             return centred_population_loss(spec_run, cores, cores0, base, base_norm2=b2)
         if model == "plain":
@@ -125,7 +149,6 @@ def run_point(cfg: dict) -> dict:
         return jac @ jac.T
 
     D = d**n
-    alpha = math.prod(sigma * s for s in scales)
     lam_bar = alpha**2 / D * sum(e * f / (sigma * s) ** 2 for e, f, s in zip(eta_core, spec.fan_in, scales))
     if model == "twocopy":
         lam_bar *= 2
@@ -134,16 +157,19 @@ def run_point(cfg: dict) -> dict:
     tau_max = cfg.get("tau_max", 1e4)
     t_max = cfg.get("t_max") or (50 * t_esc + tau_max / max(lam_bar, 1.0))
 
+    l_stop = cfg.get("l_stop", 1e-12)
+
     def stop(t, y):
         L, g = loss_grad(y)
-        if L / L0 < 1e-12 or (L / L0 < 1e-4 and t * float(g @ (g / eta.clamp_min(1e-300))) < 1e-7 * L0):
+        if L / L0 < l_stop or (L / L0 < 1e-4 and t * float(g @ (g / eta.clamp_min(1e-300))) < 1e-7 * L0):
             return -1.0
         return 1.0
 
     stop.terminal = True
     t_first = min(1e-3 / lam_bar, 1e-3 * t_esc, 1e-3)
     t_eval = np.concatenate([[0.0], np.geomspace(t_first, t_max, 600)])
-    sol = solve_ivp(lambda t, y: -loss_grad(y)[1].numpy(), (0, t_max), flat0.numpy(), method="RK45",
+    sol = solve_ivp(lambda t, y: -loss_grad(y)[1].numpy(), (0, t_max), flat0.numpy(),
+                    method=cfg.get("method", "RK45"),
                     t_eval=t_eval, rtol=cfg.get("rtol", 1e-9), atol=cfg.get("atol", 1e-14), events=stop)
     y_end = sol.y_events[0][0] if sol.status == 1 else sol.y[:, -1]
     t_end = float(sol.t_events[0][0]) if sol.status == 1 else float(sol.t[-1])
@@ -193,13 +219,12 @@ def lazy_row(cfg: dict) -> dict:
     """Lazy-limit predictions at sigma = 1 for the run's init seed (sigma-independent)."""
     kind, n, d, chi, seed = cfg["kind"], cfg["n"], cfg["d"], cfg["chi"], cfg["seed"]
     spec = make_spec(kind, n, d, chi, cfg.get("cap", True), cfg.get("bonds"))
-    scales = [1.0] * spec.n_cores
-    scales[spec.tree.root] = cfg.get("root_scale", 1.0)
+    scales, eta_core = parameterization(spec, cfg)
     base = odeco_teacher(n, d, list(cfg.get("weights", [3.0, 2.0, 1.0])), seed=1000 + seed)
     probes = torch.randn(128, n, d, generator=torch.Generator().manual_seed(PROBE_SEED), dtype=torch.float64)
     eta = None
-    if cfg.get("lr", "sp") == "ntk":
-        eta = torch.cat([torch.full((sz,), 1.0 / f, dtype=torch.float64) for sz, f in zip(spec.sizes, spec.fan_in)])
+    if cfg.get("lr", "sp") != "sp":
+        eta = torch.cat([torch.full((sz,), e, dtype=torch.float64) for sz, e in zip(spec.sizes, eta_core)])
     p = lazy_predictions(spec, spec.init(1.0, seed=seed, core_scales=scales), base, probes, mask=eta)
     return p
 

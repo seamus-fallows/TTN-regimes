@@ -73,15 +73,24 @@ def legend_handles(with_hatch=True):
     return h
 
 
-def scaling_sigma_c(df, ycol, K, rho_thr=3.0, n_small=2):
-    """Predicted S2S boundary from the deep-S2S scaling rho = R sigma^-(K-2): R from the median of
-    min_rho * sigma^(K-2) at the n_small smallest sigmas."""
+def scaling_sigma_c(df, ycol, K, rho_thr=3.0):
+    """Predicted S2S boundary from the small-sigma law rho = R sigma^-(K-2) + c (theory_regimes
+    section 3.2), fitted to the per-sigma median of min_i rho_i on the S2S side (S2S fraction >= 1/2,
+    sigma below the first sigma where it drops under 1/2); solves R sigma^-(K-2) + c = rho_thr."""
     out = {}
     for y, sub in df.groupby(ycol):
-        sig = np.sort(sub.sigma.unique())[:n_small]
-        r = sub[sub.sigma.isin(sig)]
-        R = np.nanmedian(r.min_rho * r.sigma ** (K - 2))
-        out[y] = (R / rho_thr) ** (1.0 / (K - 2)) if np.isfinite(R) and R > 0 else np.nan
+        sig = np.sort(sub.sigma.unique())
+        frac = np.array([(sub[sub.sigma == s].label == "s2s").mean() for s in sig])
+        stop = np.argmax(frac < 0.5) if (frac < 0.5).any() else len(sig)
+        use = sig[:stop]
+        med = np.array([np.nanmedian(sub[sub.sigma == s].min_rho) for s in use])
+        ok = np.isfinite(med)
+        if ok.sum() < 3:
+            out[y] = np.nan
+            continue
+        A = np.stack([use[ok] ** (-(K - 2.0)), np.ones(ok.sum())], 1)
+        (R, c), *_ = np.linalg.lstsq(A, med[ok], rcond=None)
+        out[y] = (R / (rho_thr - c)) ** (1.0 / (K - 2)) if R > 0 and rho_thr > c else np.nan
     return out
 
 
@@ -97,7 +106,7 @@ def fig_sigma_chi(exp, model, lazy_csv=None, title=""):
     yi = {y: j for j, y in enumerate(ys)}
     sc = scaling_sigma_c(df, "chi", K)
     ax.plot([sc[y] for y in ys], range(len(ys)), "k--", lw=1.2, marker="o", ms=3,
-            label=r"S2S boundary, $\rho\propto\sigma^{-(K-2)}$ extrapolation")
+            label=r"S2S boundary from fit $\rho=R\sigma^{-(K-2)}+c$")
     if lazy_csv is not None and model in ("centred", "twocopy"):
         lp = pd.read_csv(lazy_csv)
         lp = lp[lp.residual < 1e-6]
