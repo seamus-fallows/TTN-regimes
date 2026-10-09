@@ -178,3 +178,71 @@ n ~ (K - 1) ln(1/sigma) / lr. **Plateau replaced by an overshoot of the loss fol
 geometric return lasting ~ln(1/sigma)/lr steps**; events (a_r = 1/2) are crossed at step 1 by the
 overshoot and are not meaningful. Damping (here: each Kronecker factor + damping x mean eigenvalue)
 caps the overshoot. Near the global minimum (b^K = s) the update is stable for lr < 2/K.
+
+## 2. Results
+
+All runs: exact population loss, float64; GF = `ttn.dynamics.integrate_gf` (LSODA, rtol 1e-9, atol
+1e-14, stop at L < 1e-6 L0); event = component overlap a_r reaching 1/2; widths, separation ratios and
+the S2S rule (all rho > 3) as in `notes/diagnostics.md`. Exponent p: least-squares fit of
+log T = c + p log(1/sigma) over all converged seeds (`ttn.diagnostics.plateau_scaling`), +- its standard
+error. Tables: `experiments/optimizers/results/`; figures: `.../results/figures/`.
+
+### 2.1 Binary N = 4 (K = 3), odeco (3, 2, 1), every optimizer (`scaling_b4`, 6 seeds x 7 sigma in [0.002, 0.128])
+
+| method | p, first escape | p, gap 1 | p, gap 2 | weight order | S2S | balance index (end) |
+|---|---|---|---|---|---|---|
+| GF (prediction p = K - 2 = 1) | 1.007 +- 0.026 | 1.008 +- 0.046 | 1.011 +- 0.038 | 100% | 95% | 0.000 |
+| GD lr 0.02 | 1.005 +- 0.026 | 1.008 +- 0.046 | 1.011 +- 0.038 | 100% | 95% | 0.000 |
+| heavy ball lr 0.002, beta 0.9 | 0.970 +- 0.025 | 1.006 +- 0.047 | 1.010 +- 0.038 | 100% | 95% | 0.003 |
+| Adam lr 1e-3 | 0.012 +- 0.006 | 0.50 +- 0.13 | 0.03 +- 0.11 | 98% | 19% | 0.38 |
+| Adam lr 1e-3, beta2 0.99 | 0.011 +- 0.007 | 0.36 +- 0.10 | 0.03 +- 0.05 | 98% | 7% | 0.34 |
+| Adam lr 1e-3, beta2 0.9 | 0.013 +- 0.007 | 0.21 +- 0.07 | 0.04 +- 0.02 | 93% | 0% | 0.33 |
+| Adam lr 1e-2 | 0.009 +- 0.008 | 0.23 +- 0.18 | 0.12 +- 0.07 | 86% | 12% | 0.39 |
+| RMSProp lr 1e-3 | -0.003 +- 0.012 | 0.14 +- 0.07 | 0.04 +- 0.03 | 98% | 0% | 0.33 |
+| GD + re-gauge every step / every 50 steps, lr 0.02 | 0.000 +- 0.027 | 0.00 +- 0.09 | 0.00 +- 0.09 | 67% | 0% | (gauge-fixed) |
+| Riemannian GD lr 0.1 / 1 | 0.000 +- 0.02 | 0.00 +- 0.09 | 0.00 +- 0.15 | 0% | 0% | (gauge-fixed) |
+| ALS / DMRG | 0 (exact) | 0 | 0 | 0% | 0% | (gauge-fixed) |
+
+Findings (all **empirical** unless tagged otherwise):
+
+1. GD and heavy ball are GF at t = lr n / (1 - beta): same events, same exponent; Q_e drift 1e-5 (GD),
+   3e-4 (heavy ball) relative, vs 1e-11 for the integrator (figure `balance.png`).
+2. **Adam / RMSProp: the first escape no longer depends on sigma** (p = 0.01 +- 0.01; ~185 steps at
+   lr 1e-3, ~30 at lr 1e-2, for sigma from 0.002 to 0.128), as derived in 1.2 (b, c). The learning is still
+   sequential and in weight order (86-98% of runs), but the first escape is a slow polynomial rise
+   (width ~ its own time, sign-flow growth), so separation ratios are small (median rho_1 ~ 1-3) and the
+   S2S rule holds in only 0-19% of runs. Later gaps grow weakly as sigma decreases (p = 0.14-0.50) and
+   shrink with the memory length of beta2 (p = 0.50, 0.36, 0.21 for beta2 = 0.999, 0.99, 0.9): the
+   memory phase of 1.2 (e').
+3. **Re-gauged GD, Riemannian GD, ALS, DMRG: no plateau and no sigma dependence at all** (event times
+   identical across sigma to the printed digits for re-gauged GD, proven for ALS / DMRG). All components
+   rise together; the order is set by the projections of the teacher on the random initial frames, never
+   (Riemannian, ALS, DMRG) or rarely (re-gauged GD, 67%) the weight order. On binary N = 4 ALS is exact
+   after one sweep (1.6).
+4. Adam ends unbalanced: balance index 0.38 on the root edges (entry-count heuristic 0.385, 1.2 f);
+   GF keeps O(sigma^2) (0.000).
+
+### 2.2 Adam internals (`adam_probe`, figure `adam_probe.png`)
+
+Median preconditioner P = sqrt(vhat) and lambda_max(P^-1 H) / (38 / lr) along four runs. Binary4,
+beta2 = 0.999: after the first component, P follows the pure-memory decay beta2^(n/2) and the
+preconditioned sharpness stays below 0.1 of the threshold until the second component escapes (memory
+phase). Binary8 and MPS8 E8 (long plateaus): P decays, then lambda_max(P^-1 H) reaches the adaptive-
+edge-of-stability threshold (ratio 1.0 +- 0.1) and P stops decaying at ~2-4e-4; the effective step
+lr / P is then ~2-5 GF-time units per step, close to 38 / lambda_max (lambda_max = 26 on binary8:
+1.5). Binary4, beta2 = 0.9: memory too short to matter, Adam sits at the AEoS during the plateaus.
+**Empirical**, supporting the heuristic 1.2 (e').
+
+### 2.3 Gram-preconditioned GD (`precond_b4`, 6 seeds x 7 sigma)
+
+- Scale-free damping (1e-3 x mean eigenvalue per Kronecker factor), lr 0.01 / 0.1 / 0.5: the first step
+  overshoots the loss to up to 1e22-1e34 L0 (growing as sigma^-6 = sigma^-K(K-1), as derived in 1.7),
+  then the loss returns; converged runs need ~60-400 steps for lr 0.5-0.1 independently of sigma, but
+  4-9 of 42 runs per lr did not converge within 5e4 steps. Order: mixed (33% weight order).
+- Absolute damping floor 1e-4 / 1e-2 per Kronecker factor, lr 0.1: no overshoot (max loss ~L0 for the
+  larger floor), convergence in 14-36 steps for every sigma (p = 0.04 +- 0.03 and 0.11 +- 0.03 for the
+  time to L < 1e-3 L0). **My prediction 1.7 that an absolute floor restores the GF plateau (as eps does for
+  Adam) fails in this sigma range**: the floor enters once per bond leg of a core, so near the origin the
+  method is GD with step lr / floor^(#bond legs) = 10-1e5 GF-time units per step, and the GF escape time
+  (~10-1000 units at these sigma) is crossed in a few steps. The plateau would reappear only once
+  T_GF(sigma) floor^(#legs) / lr >> 1, far below sigma = 0.002.
