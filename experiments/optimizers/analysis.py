@@ -106,7 +106,7 @@ def summarize(path: Path) -> dict:
         row[f"a_min_{r}"] = np.min(np.abs(a[:, r]))
     ok = np.isfinite(times)
     order = np.argsort(np.where(ok, times, np.inf))[: ok.sum()]
-    row["order"] = "".join(map(str, order))
+    row["order"] = "o" + "".join(map(str, order))  # prefix keeps leading zeros through CSV
     row["n_events"] = int(ok.sum())
     rho = separation_ratios(times, widths)
     sorted_t = np.sort(times[ok])
@@ -133,7 +133,8 @@ def summarize(path: Path) -> dict:
 def collect(name: str, refresh: bool = False) -> pd.DataFrame:
     out_dir = OUT_ROOT / name
     cache = RESULTS / f"{name}_summary.csv"
-    old = pd.read_csv(cache) if (cache.exists() and not refresh) else pd.DataFrame()
+    old = pd.read_csv(cache, dtype={"order": str}, keep_default_na=False, na_values=[""]) \
+        if (cache.exists() and not refresh) else pd.DataFrame()
     seen = set(old["file"]) if len(old) else set()
     rows = [summarize(p) for p in sorted(out_dir.glob("*.npz"))
             if not p.name.endswith(".tmp.npz") and p.name not in seen]

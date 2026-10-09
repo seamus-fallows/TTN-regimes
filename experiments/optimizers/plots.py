@@ -194,3 +194,61 @@ def fig_side_by_side(name: str, sigma: float, seed: int, methods: list[str], edg
 
 if __name__ == "__main__":
     print("use from scripts/make_figures.py")
+
+
+# ---- Adam internals ---------------------------------------------------------------------------------
+
+
+def fig_probe(name: str = "adam_probe"):
+    """Adam's state along representative runs (adam_probe.py): overlaps, the median preconditioner
+    sqrt(vhat) (with the pure-memory decay beta2^(n/2) from the end of each learning event as a guide)
+    and the preconditioned sharpness relative to the adaptive-edge-of-stability threshold."""
+    import glob
+
+    from experiments.optimizers.run import OUT_ROOT
+
+    runs = []
+    for f in sorted(glob.glob(str(OUT_ROOT / name / "*_probe.npz"))):
+        z = np.load(f)
+        cfg = json.loads(str(z["cfg"]))
+        runs.append((cfg, {k: z[k] for k in z.files}))
+    order = [("binary", 4, "adam", 1e-3, 0.9), ("binary", 4, "adam", 1e-3, 0.999),
+             ("binary", 8, "adam", 1e-3, None), ("mps", 8, "adam", 1e-3, None)]
+    picked = []
+    for key in order:
+        for cfg, z in runs:
+            if (cfg["tree"], cfg["n_sites"], cfg["optimizer"], cfg["lr"], cfg.get("beta2")) == key:
+                picked.append((cfg, z))
+    tp.set_style()
+    fig, axes = tp.subplots(3, len(picked), width=tp.TEXT_WIDTH, panel_aspect=0.85, sharex="col",
+                            squeeze=False)
+    colors = tp.palette(3)
+    for j, (cfg, z) in enumerate(picked):
+        b2 = cfg.get("beta2", 0.999)
+        teacher = "odeco" if cfg["teacher"] == "odeco" else "pattern E8"
+        axes[0, j].set_title(f"{cfg['tree']}{cfg['n_sites']} {teacher}\nAdam lr {cfg['lr']:g}, b2 {b2:g}",
+                             fontsize=7)
+        t, a = z["fine_t"], z["fine_overlaps"]
+        for r in range(a.shape[1]):
+            axes[0, j].plot(np.maximum(t, 1), a[:, r], color=colors[r], lw=1.0, label=f"$a_{r + 1}$")
+        axes[0, j].set_ylim(-0.1, 1.15)
+        n = z["step"]
+        axes[1, j].plot(n, z["p_median"], color=tp.INK, lw=1.0, label=r"median $\sqrt{\hat v}$")
+        i0 = int(np.argmax(z["p_median"]))
+        guide = z["p_median"][i0] * b2 ** ((n[i0:] - n[i0]) / 2)
+        axes[1, j].plot(n[i0:], guide, color=tp.MUTED, lw=0.8, ls="--", label=r"$\beta_2^{n/2}$ decay")
+        axes[1, j].set_yscale("log")
+        axes[2, j].plot(n, z["precond_sharpness"] / z["threshold"], color=tp.INK, lw=1.0)
+        axes[2, j].axhline(1.0, color=tp.MUTED, lw=0.8, ls="--")
+        axes[2, j].set_yscale("log")
+        axes[2, j].set_xlabel("steps")
+        for i in range(3):
+            axes[i, j].set_xscale("log")
+    axes[0, 0].set_ylabel("overlap $a_r$")
+    axes[1, 0].set_ylabel("preconditioner")
+    axes[2, 0].set_ylabel(r"$\lambda_{\max}(P^{-1}H)$ / AEoS")
+    axes[0, -1].legend(fontsize=6, loc="center right")
+    axes[1, -1].legend(fontsize=6, loc="lower left")
+    fig.align_ylabels(axes[:, 0])
+    tp.savefig(fig, FIG / "adam_probe")
+    return fig

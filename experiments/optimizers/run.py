@@ -4,7 +4,7 @@
 
 Config layout: `name`, then `blocks`, each with `base` (problem + init settings), `grid` (lists,
 expanded as a Cartesian product) and `optimizers` (one dict per optimizer setting; list-valued
-entries are expanded too). Each run writes /root/outputs/optimizers/<name>/<run_id>.npz and one
+entries are expanded too; an optional `when: {key: value}` restricts it to matching grid points). Each run writes /root/outputs/optimizers/<name>/<run_id>.npz and one
 JSON line to index.jsonl in that folder; existing runs are skipped.
 """
 
@@ -63,8 +63,11 @@ def jobs_from_config(path: str) -> tuple[str, list[dict]]:
     for block in conf["blocks"]:
         for g in expand(block.get("grid", {})):
             for opt in block["optimizers"]:
-                for o in expand(opt):
+                when = opt.get("when", {})  # run this optimizer only where cfg matches these values
+                for o in expand({k: v for k, v in opt.items() if k != "when"}):
                     cfg = {**block["base"], **g, **o}
+                    if any(cfg.get(k) != v for k, v in when.items()):
+                        continue
                     cfg = {k: (float(v) if isinstance(v, str) and _is_number(v) else v)
                            for k, v in cfg.items()}
                     jobs.append(resolve_budget(cfg))

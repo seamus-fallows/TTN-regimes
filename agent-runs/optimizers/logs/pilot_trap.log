@@ -47,3 +47,5 @@ pilot_trap: 72 runs, 72 to do
 [46/72] adam sigma=0.3 seed=2 converged 114.7s
 [47/72] adam sigma=0.45 seed=2 converged 86.3s
 [48/72] adam sigma=0.3 seed=1 converged 206.8s
+[49/72] adam sigma=0.45 seed=1 converged 209.3s
+[50/72] adam sigma=0.45 seed=1 converged 492.8s

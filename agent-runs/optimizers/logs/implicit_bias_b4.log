@@ -1,2 +1,13 @@
 implicit_bias_b4: 240 runs, 240 to do
 [1/240] momentum sigma=0.01 seed=2 converged 314.6s
+[2/240] momentum sigma=0.01 seed=3 budget 542.2s
+[3/240] momentum sigma=0.01 seed=4 budget 545.3s
+[4/240] momentum sigma=0.01 seed=5 budget 546.0s
+[5/240] momentum sigma=0.01 seed=4 budget 567.1s
+[6/240] momentum sigma=0.01 seed=3 budget 567.5s
+[7/240] momentum sigma=0.01 seed=0 budget 568.8s
+[8/240] momentum sigma=0.01 seed=5 budget 569.6s
+[9/240] momentum sigma=0.01 seed=1 budget 569.8s
+[10/240] momentum sigma=0.01 seed=0 budget 570.5s
+[11/240] momentum sigma=0.01 seed=1 budget 571.6s
+[12/240] momentum sigma=0.01 seed=2 budget 571.8s

@@ -86,6 +86,28 @@ previous components, not by sigma. Separation ratios (gap / width) are then O(1)
 sigma-independent: S2S by the rho > 3 rule is neither guaranteed nor excluded, and the scaling
 criterion (iii) (plateaus grow as sigma -> 0) fails in the sign regime.
 
+**(e') Later plateaus: Adam's memory, then the adaptive edge of stability (heuristic, from the
+probes of section 2.4).** After a component is learned its gradient vanishes, so the second
+moments decay: P = sqrt(vhat) + eps shrinks by beta2^(1/2) per step, from the level P_0 set by the
+gradients of the escape just finished. Coordinates are shared between components (Haar-random
+teacher bases), so the dormant components see GD with a growing learning rate lr / P(n). The decay
+stops when the preconditioned sharpness lambda_max(P^-1 H) reaches the adaptive-edge-of-stability
+threshold 2 (1 + beta1) / ((1 - beta1) lr) (= 38 / lr for beta1 = 0.9; Cohen et al. 2022, cited
+from memory): oscillations along the stiff learned directions then keep v from decaying further.
+From then on Adam is GD with an **lr-independent** step of ~2 (1 + beta1) / ((1 - beta1) lambda_max)
+GF-time units per step (lambda_max ~ K s^(2 - 2/K) of the learned components). A plateau that
+needs GF time T (from the dormant amplitudes Adam has at its start) therefore lasts
+
+  n(T) ~ (2 / (1 - beta2)) ln(1 + T P_0 (1 - beta2) / (2 lr))           while P is still decaying,
+  n(T) ~ n_AEoS + (T - T_AEoS) (1 - beta1) lambda_max / (2 (1 + beta1))  once P is held at the AEoS.
+
+Short GF plateaus (binary N = 4) end in the first, logarithmic phase: weak dependence on sigma and
+on lr, a strong one on beta2. Long ones (deep trees) end in the second, linear phase: the GF time
+scale is back, converted at a fixed rate of ~lambda_max / 38 steps per GF-time unit. Whether the
+sigma^-(k-2) law also comes back depends on whether the dormant amplitudes at the start of the
+plateau still remember sigma: Adam's sign phase during the first escape moves every coordinate by
+~lr per step, so they need not.
+
 **(f) Balance (heuristic).** Under the sign flow every active core entry grows at the same rate, so
 at the end of an escape entries have similar magnitudes in every core, and ||G_v||^2 is roughly
 proportional to the number n_v of entries of core v. GF keeps Q_e = O(sigma^2) (balanced:

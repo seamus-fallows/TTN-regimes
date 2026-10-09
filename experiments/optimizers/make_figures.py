@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 from experiments.optimizers.analysis import RESULTS, collect
-from experiments.optimizers.plots import fig_scaling, fig_side_by_side, scaling_table, with_keys
+from experiments.optimizers.plots import fig_probe, fig_scaling, fig_side_by_side, scaling_table, with_keys
 
 B4_SCALING = ["GF", "heavy ball, lr 0.002", "Adam, lr 0.001", "Adam, lr 0.001, b2 0.9", "RMSProp, lr 0.001",
               "GD + re-gauge, lr 0.02, every 1", "Riemannian GD, lr 1", "ALS (1-site)"]
@@ -23,7 +23,7 @@ def order_table(df: pd.DataFrame) -> pd.DataFrame:
     median separation ratios."""
     g = df.groupby(["method", "sigma"])
     return g.agg(n=("seed", "count"), converged=("converged", "mean"),
-                 weight_order=("order", lambda x: float(np.mean([str(o) == "12" or str(o) == "012" for o in x]))),
+                 weight_order=("order", lambda x: float(np.mean([str(o) == "o012" for o in x]))),
                  s2s=("s2s", "mean"), rho0_median=("rho_0", "median"), rho1_median=("rho_1", "median"),
                  balance_end=("balance_end_max", "median")).reset_index()
 
@@ -37,7 +37,7 @@ def b4():
     fig_side_by_side("scaling_b4", 0.008, 0, B4_SIDE, edge_index=0)
 
 
-FIGURES = {"b4": b4}
+FIGURES = {"b4": b4, "probe": fig_probe}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or FIGURES:
