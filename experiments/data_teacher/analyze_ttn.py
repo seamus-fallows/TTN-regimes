@@ -29,6 +29,7 @@ from constrained import constrained_minima, metric_loss_of_dense, ranked_spec
 from run_generic import expand
 from setups import build
 
+from ttn.dynamics import Trajectory
 from ttn.network import to_dense
 
 HERE = Path(__file__).parent
@@ -77,12 +78,19 @@ def plateaus(t, loss):
 
 
 def analyze(name, case, tree, sigma, seed, spec, teacher, cache):
+    dense = OUT_ROOT / f"{name}_dense" / f"{case['tag']}_{tree}_s{sigma}_seed{seed}.npz"
     path = OUT_ROOT / name / f"{case['tag']}_{tree}_s{sigma}_seed{seed}.npz"
-    if not path.exists():
+    if dense.exists():  # library two-stage run (run_dense.py), preferred: resolves short plateaus
+        tr = Trajectory.load(dense)
+        t, loss, tsp, y = tr.data["t"], tr.data["loss"], tr.data["teacher_spectra"], tr.data["params"]
+        sp = np.nan_to_num(tr.data["spectra"])
+        edges = list(spec.tree.edges)
+    elif path.exists():
+        d = np.load(path, allow_pickle=True)
+        t, loss, sp, tsp, y = d["t"], d["loss"], d["spectra"], d["teacher_spectra"], d["y"]
+        edges = list(d["edges"])
+    else:
         return [], []
-    d = np.load(path, allow_pickle=True)
-    t, loss, sp, tsp, y = d["t"], d["loss"], d["spectra"], d["teacher_spectra"], d["y"]
-    edges = list(d["edges"])
     w_star = teacher.dense()
     lfun = metric_loss_of_dense(w_star, None)
     thr = []

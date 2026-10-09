@@ -78,7 +78,7 @@ def main():
             if s != seed:
                 continue
             ax.plot(r["t"], r["loss"] / r["loss"][0], lw=1, label=f"online SGD eta={eta}, B={b}")
-            for level in (0.9, 0.5):
+            for level in (0.9, 0.5, 0.1, 0.01):
                 t_sgd = r["t"][np.argmax(r["loss"] / r["loss"][0] < level)]
                 t_gf = gf["t"][np.argmax(gf["loss"] / gf["loss"][0] < level)]
                 rows.append(dict(seed=seed, eta=eta, batch=b, level=level, t_sgd=t_sgd, t_gf=t_gf))
