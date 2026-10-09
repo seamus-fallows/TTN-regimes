@@ -170,3 +170,9 @@ chi = 3, fan-in vs gauge-balanced; large: chi = 6).
 - 21:50 Interim report 2. Sweep A done and reclassified (dead-route-end criterion instead of the
   amplitude threshold, which was too strict at K >= 7). Running: first (B), large; queued: k78,
   balanced (K = 3, 4), LO sweeps. Library final merged; projection-bias bug noted.
+- 22:44 Mistake, fixed at once: a `mv <file> /dev/null` replaced /dev/null with a regular file for
+  under a minute; restored with `mknod -m 666 /dev/null c 1 3` (char device 1,3). No job depended on it.
+- 22:44 Continuation test: 8 k78 runs classed "stalled" (route ends alive, budget exhausted), continued
+  from their final state, ALL escape, at 0.49-0.85 x the balanced-route estimate of the remaining
+  plateau b^-(K-2)/((K-2) s_r), b = (s_r |a_r|)^(1/K) (constant per seed across sigma). Stalled =
+  ever-longer plateau, not stuck. A spread sample from `large` is running.

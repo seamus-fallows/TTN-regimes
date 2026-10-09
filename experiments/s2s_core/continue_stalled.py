@@ -75,15 +75,21 @@ def main():
     ap.add_argument("--n", type=int, default=6)
     ap.add_argument("--factor", type=float, default=4.0)
     ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--spread", action="store_true")
+    ap.add_argument("--max_ratio", type=float, default=1e3)
+    ap.add_argument("--tag", default="")
     args = ap.parse_args()
     cands = candidates(Path(args.raw))
-    # spread over the distribution of predicted remaining plateaus (shortest first)
-    pick = cands[: args.n]
+    # args.spread: evenly spaced over the distribution of predicted remaining plateau / elapsed time
+    # (else the n shortest), skipping estimates beyond max_ratio x the elapsed time
+    cands = [c for c in cands if c[0] <= args.max_ratio]
+    pick = cands[:: max(1, len(cands) // args.n)][: args.n] if args.spread else cands[: args.n]
     with Pool(len(pick)) as pool:
         rows = pool.map(job, [(*c, args.factor) for c in pick])
     df = pd.DataFrame(rows)
     Path(args.out).mkdir(parents=True, exist_ok=True)
-    df.to_csv(Path(args.out) / f"continued_{Path(args.raw).name}.csv", index=False)
+    df["predicted_over_elapsed"] = [c[0] for c in pick]
+    df.to_csv(Path(args.out) / f"continued_{Path(args.raw).name}{args.tag}.csv", index=False)
     print(df.to_string())
 
 
