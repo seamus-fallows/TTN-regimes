@@ -25,56 +25,13 @@ from scipy.optimize import brentq
 from scipy.special import hyp2f1
 
 
-def _solve(rhs, t0: float, y0: float, t, y_end: float, atol: float = 1e-12) -> np.ndarray:
-    """y(t) for the scalar autonomous ODE y' = rhs(y) with y(t0) = y0 (DOP853, rtol = 1e-12),
-    integrated backward from t0 for t < t0 and forward for t > t0. The timing error grows like
-    ~1e-12 |t - t0|.
-
-    y_end: the stable fixed point the solution approaches monotonically (the learned mode). Once
-    within 10 times the tolerance of it, later times get y_end: an explicit solver is
-    stability-limited there (step ~ 1 / (K s^{2-2/K})), so integrating on to t >> the escape
-    time would take ~t K s^{2-2/K} steps.
-    """
+def _solve(rhs, y0: float, t, atol: float = 1e-12) -> np.ndarray:
+    """y(t) for the scalar autonomous ODE y' = rhs(y), y(0) = y0 (DOP853, rtol = 1e-12)."""
     t = np.asarray(t, dtype=float)
-    out = np.full(t.shape, float(y0))
-
-    def converged(_, y):
-        return abs(y[0] - y_end) - 10 * (atol + 1e-12 * abs(y_end))
-
-    converged.terminal = True
-    for side, direction in ((t < t0, -1.0), (t > t0, 1.0)):
-        if side.any():
-            order = np.argsort(direction * t[side])
-            ts = t[side][order]
-            sol = solve_ivp(
-                lambda _, y: rhs(y[0]),
-                (t0, ts[-1]),
-                [y0],
-                t_eval=ts,
-                method="DOP853",
-                rtol=1e-12,
-                atol=atol,
-                events=converged if direction > 0 else None,
-            )
-            values = np.full(len(ts), float(y_end))
-            if len(sol.t):  # none if the solution converged before the first requested time
-                values[: len(sol.t)] = sol.y[0]
-            out[np.flatnonzero(side)[order]] = values
-    return out
-
-
-def _solve_two_anchors(rhs, y0: float, t_esc: float, y_esc: float, t, y_end: float, atol=1e-12):
-    """y(t) from y(0) = y0 for t <= t_esc / 2 and from the escape point y(t_esc) = y_esc (exact,
-    from quadrature) after, so the timing error is ~1e-12 min(t, |t - t_esc|): the curve passes
-    through the escape point however long the plateau before it (from t = 0 alone the overlap at
-    t_esc = 2e9 was 0.4992 instead of 0.5), and starts exactly at y0 (a backward solve alone loses
-    the relative accuracy of a tiny amplitude that grows from t = 0). y_end: see `_solve`."""
-    t = np.asarray(t, dtype=float)
-    early = t <= 0.5 * t_esc
-    out = np.empty(t.shape)
-    out[early] = _solve(rhs, 0.0, y0, t[early], y_end, atol)
-    out[~early] = _solve(rhs, t_esc, y_esc, t[~early], y_end, atol)
-    return out
+    sol = solve_ivp(
+        lambda _, y: rhs(y[0]), (0.0, t[-1]), [y0], t_eval=t, method="DOP853", rtol=1e-12, atol=atol
+    )
+    return sol.y[0]
 
 
 # ---- balanced mode ------------------------------------------------------------------------------
@@ -84,11 +41,9 @@ def balanced_mode_solution(K: int, s: float, a0: float, t) -> np.ndarray:
     """Per-core amplitude a(t) of a balanced mode: a' = a^{K-1} (s - a^K), a(0) = a0 > 0.
 
     Integrated numerically (DOP853, rtol = atol = 1e-12) in u = log a, u' = a^{K-2} (s - a^K), so
-    the error is relative at every scale and a0 can be tiny. If P0 = a0^K < s/2, times past T/2
-    are integrated from the escape point a(T) = (s/2)^{1/K}, T = `escape_time` (exact): the timing
-    error is ~1e-12 min(t, |t - T|) instead of ~1e-12 t. For K = 2 see `balanced_mode_solution_k2`.
-    K = 1 (linear, no plateau) uses the closed form a = s + (a0 - s) exp(-t), since
-    u' = (s - a)/a is unbounded as a0 -> 0.
+    the error is relative at every scale and a0 can be tiny; over a plateau of length T the timing
+    error is ~1e-12 T. For K = 2 see `balanced_mode_solution_k2`. K = 1 (linear, no plateau) uses
+    the closed form a = s + (a0 - s) exp(-t), since u' = (s - a)/a is unbounded as a0 -> 0.
     """
     if K == 1:
         return s + (a0 - s) * np.exp(-np.asarray(t, dtype=float))
@@ -97,11 +52,7 @@ def balanced_mode_solution(K: int, s: float, a0: float, t) -> np.ndarray:
         a = np.exp(u)
         return a ** (K - 2) * (s - a**K)
 
-    u_end = np.log(s) / K
-    if a0**K < 0.5 * s:
-        t_esc = escape_time(K, s, a0)
-        return np.exp(_solve_two_anchors(rhs, np.log(a0), t_esc, np.log(0.5 * s) / K, t, u_end))
-    return np.exp(_solve(rhs, 0.0, np.log(a0), t, u_end))
+    return np.exp(_solve(rhs, np.log(a0), t))
 
 
 def balanced_mode_solution_k2(s: float, a0: float, t) -> np.ndarray:
@@ -185,10 +136,8 @@ def unbalanced_mode_solution(s: float, a0, t) -> np.ndarray:
         y' = 2 P (s - P),   P = sqrt(prod_v (a_v(0)^2 + y)),   y(0) = 0.
 
     y' is bounded (no blow-up when one core starts tiny); DOP853 with rtol = 1e-12 and
-    atol = 1e-12 min_v a_v(0)^2 keeps every a_v^2 accurate to ~1e-12 relative. As in
-    `balanced_mode_solution`, if P0 < s/2 times past T/2 are integrated from the escape point
-    (P = s/2 at T = `unbalanced_escape_time`), so the timing error is ~1e-12 min(t, |t - T|).
-    Signs of a_v(0) are carried along (a_v never crosses 0 when P0 > 0).
+    atol = 1e-12 min_v a_v(0)^2 keeps every a_v^2 accurate to ~1e-12 relative. Signs of a_v(0) are
+    carried along (a_v never crosses 0 when P0 > 0).
     """
     a2 = np.asarray(a0, dtype=float) ** 2
 
@@ -196,16 +145,7 @@ def unbalanced_mode_solution(s: float, a0, t) -> np.ndarray:
         p = np.sqrt(np.prod(a2 + y))
         return 2 * p * (s - p)
 
-    atol = 1e-12 * a2.min()
-    # P(y_end) = s at the end; P >= y^{K/2} bounds the root from above when P0 < s.
-    p0 = np.sqrt(np.prod(a2))
-    bracket = (0.0, s ** (2 / len(a2))) if p0 < s else (-a2.min(), 0.0)
-    y_end = brentq(lambda y: np.sqrt(np.prod(a2 + y)) - s, *bracket, xtol=1e-300)
-    if p0 < 0.5 * s:
-        t_esc, x_star = _unbalanced_escape(s, a2, 0.5)
-        y = _solve_two_anchors(rhs, 0.0, t_esc, x_star - a2.min(), t, y_end, atol=atol)
-    else:
-        y = _solve(rhs, 0.0, 0.0, t, y_end, atol=atol)
+    y = _solve(rhs, 0.0, t, atol=1e-12 * a2.min())
     return np.sign(a0) * np.sqrt(a2 + y[:, None])
 
 
@@ -222,11 +162,7 @@ def unbalanced_escape_time(s: float, a0, level: float = 0.5) -> float:
     P ~ sqrt(C) x^{m/2} with C = prod_{c_v > 0} c_v, and for m >= 3 the escape time is
     ~ a_min^{-(m-2)} / ((m-2) s sqrt(C)): a depth-m balanced mode with effective weight s sqrt(C).
     """
-    return _unbalanced_escape(s, np.asarray(a0, dtype=float) ** 2, level)[0]
-
-
-def _unbalanced_escape(s: float, a2: np.ndarray, level: float) -> tuple[float, float]:
-    """(escape time, x*) of `unbalanced_escape_time`, from the squared amplitudes a2."""
+    a2 = np.asarray(a0, dtype=float) ** 2
     x0, c = a2.min(), a2 - a2.min()
     target = level * s
 
@@ -242,7 +178,7 @@ def _unbalanced_escape(s: float, a2: np.ndarray, level: float) -> tuple[float, f
         return x / (2 * px * (s - px))
 
     t, _ = quad(integrand, np.log(x0), np.log(x_star), epsabs=0.0, epsrel=1e-12, limit=500)
-    return float(t), float(x_star)
+    return float(t)
 
 
 # ---- whole odeco teacher ------------------------------------------------------------------------

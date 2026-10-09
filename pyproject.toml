@@ -12,7 +12,6 @@ dependencies = [
     "pandas",
     "opt_einsum",
     "tqdm",
-    "threadpoolctl>=3.7.0",
 ]
 
 # `uv sync` installs the dev group by default, so remote machines get pytest too.

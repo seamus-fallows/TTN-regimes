@@ -26,9 +26,8 @@ import numpy as np
 import torch
 from scipy.signal import find_peaks
 from scipy.sparse.linalg import LinearOperator, eigsh
-from threadpoolctl import threadpool_limits
 
-from ttn.network import TTNSpec, _sqrt_psd, apply_on_leg, forward, site_vectors, to_dense
+from ttn.network import TTNSpec, apply_on_leg, forward, site_vectors, to_dense
 
 LossFn = Callable[[torch.Tensor], torch.Tensor]
 
@@ -135,68 +134,26 @@ def crossing_times(t, curves, level, last: bool = False) -> np.ndarray:
     return out[0] if single else out
 
 
-def rise_times(t, curves, lo: float = 0.1, hi: float = 0.9) -> tuple[np.ndarray, np.ndarray]:
-    """(t_lo, t_hi) of each column's final rise (NaN if hi is never reached; see `event_widths`).
-
-    t_hi is the first crossing of hi and t_lo the last upward crossing of lo before it.
-    """
-    t, c = _np(t), _np(curves)
-    single = c.ndim == 1
-    c = c.reshape(len(t), -1)
-    his = np.broadcast_to(_np(hi), (c.shape[1],))
-    los = np.broadcast_to(_np(lo), (c.shape[1],))
-    t_lo, t_hi = np.full(c.shape[1], np.nan), np.full(c.shape[1], np.nan)
-    for j in range(c.shape[1]):
-        reached = np.flatnonzero(c[:, j] >= his[j])
-        if reached.size:
-            end = reached[0] + 1
-            t_lo[j] = _crossing(t[:end], c[:end, j], los[j], last=True)
-            t_hi[j] = _crossing(t, c[:, j], his[j], last=False)
-    return (t_lo[0], t_hi[0]) if single else (t_lo, t_hi)
-
-
 def event_widths(t, curves, lo: float = 0.1, hi: float = 0.9) -> np.ndarray:
     """w = t(curve = hi) - t(curve = lo) per column, on the final rise (NaN if hi is never reached).
 
     t(hi) is the first crossing of hi and t(lo) the last upward crossing of lo before it, so a
     transient bump above lo that falls back (see `crossing_times`) does not inflate the width; for
     monotone curves both are first crossings. Curves are normalized so that 1 means learned
-    (overlaps a_r, or s_k^e / s_k^e(final)). A rise that happens between two samples gets a width of
-    about 0.8 sample intervals whatever its true width: compare with `sample_spacing`.
+    (overlaps a_r, or s_k^e / s_k^e(final)).
     """
-    t_lo, t_hi = rise_times(t, curves, lo, hi)
-    return t_hi - t_lo
-
-
-def sample_spacing(t, start, end) -> np.ndarray:
-    """Largest sample interval of t that overlaps [start, end], elementwise (NaN where start or end
-    is NaN): the time resolution of an event spanning [start, end], e.g. a rise from `rise_times`.
-
-    A width below ~3 times this spacing is not resolved: it is then an overestimate (a rise inside
-    one interval gets ~0.8 intervals), and separation ratios built from it are lower bounds.
-    """
-    t = _np(t)
-    start, end = np.broadcast_arrays(_np(start), _np(end))
-    dt = np.diff(t)
-    out = np.full(start.shape, np.nan)
-    last = len(dt) - 1
-    for idx in np.ndindex(start.shape):
-        a, b = start[idx], end[idx]
-        if np.isfinite(a) and np.isfinite(b) and last >= 0:
-            i = int(np.clip(np.searchsorted(t, a, side="right") - 1, 0, last))
-            j = int(np.clip(np.searchsorted(t, b, side="left") - 1, i, last))
-            out[idx] = dt[i : j + 1].max()
-    return out
-
-
-def upward_crossings(curves, level) -> np.ndarray:
-    """Number of upward crossings of `level` per column (a curve starting at or above it counts
-    one; NaN counts as below). More than one means a transient excursion above the level."""
-    c = _np(curves)
+    t, c = _np(t), _np(curves)
     single = c.ndim == 1
-    c = c.reshape(c.shape[0], -1)
-    above = c >= np.broadcast_to(_np(level), (c.shape[1],))
-    out = above[0].astype(int) + np.sum(above[1:] & ~above[:-1], axis=0)
+    c = c.reshape(len(t), -1)
+    his = np.broadcast_to(_np(hi), (c.shape[1],))
+    los = np.broadcast_to(_np(lo), (c.shape[1],))
+    out = np.full(c.shape[1], np.nan)
+    for j in range(c.shape[1]):
+        reached = np.flatnonzero(c[:, j] >= his[j])
+        if reached.size:
+            end = reached[0] + 1
+            t_lo = _crossing(t[:end], c[:end, j], los[j], last=True)
+            out[j] = _crossing(t, c[:, j], his[j], last=False) - t_lo
     return out[0] if single else out
 
 
@@ -220,27 +177,12 @@ def separation_ratios(times, widths) -> np.ndarray:
         return np.where(scale > 0, np.diff(t) / scale, np.where(np.isnan(scale), np.nan, np.inf))
 
 
-def ratio_lower_bounds(times, unresolved) -> np.ndarray:
-    """For the separation ratios of `separation_ratios(times, ...)` (same event order): True where
-    either event of the pair is unresolved (width below ~3 sample intervals, `sample_spacing`), so
-    that rho_i is only a lower bound."""
-    times, flags = _np(times).ravel(), np.asarray(unresolved, dtype=bool).ravel()
-    keep = np.isfinite(times)
-    flags = flags[keep][np.argsort(times[keep], kind="stable")]
-    return flags[:-1] | flags[1:]
-
-
-def merge_events(times, widths, return_groups: bool = False):
+def merge_events(times, widths) -> tuple[np.ndarray, np.ndarray]:
     """Merge events closer than their widths (rho <= 1; single linkage after sorting by time).
 
     A merged event has the mean time and the largest width of its members (NaN widths ignored).
     Used for general teachers, where one component raises several bond spectra at once.
-    Returns (times, widths), plus with return_groups=True the members of each merged event as
-    index arrays into the inputs.
     """
-    times = _np(times).ravel()
-    finite = np.flatnonzero(np.isfinite(times))
-    index = finite[np.argsort(times[finite], kind="stable")]
     t, w = _sorted_events(times, widths)
     groups: list[list[int]] = []
     for i in range(len(t)):
@@ -250,54 +192,7 @@ def merge_events(times, widths, return_groups: bool = False):
             groups.append([i])
     merged_t = np.array([t[g].mean() for g in groups])
     merged_w = np.array([np.fmax.reduce(w[g]) for g in groups])
-    if return_groups:
-        return merged_t, merged_w, [index[g] for g in groups]
     return merged_t, merged_w
-
-
-def spectral_events(
-    t, spectra, reference=None, rank_rtol: float = 1e-8, lo: float = 0.1, hi: float = 0.9
-) -> dict[str, np.ndarray]:
-    """Learning events of the bond spectra (notes/diagnostics.md, general teachers), one per edge e
-    and index k that the target needs, before merging (`merge_events`).
-
-    t: (T,). spectra: (T, E, k) NaN-padded, e.g. a recorder's `spectra`. reference: the target's
-    Schmidt values per edge, (E, k') NaN-padded or a list of E sequences (e.g. a teacher's
-    `bond_spectra`); (e, k) is used iff k < the number of reference values on edge e above
-    rank_rtol times the largest. None: the final spectra are the reference (an over-parameterized
-    student's decaying extra values then count too: raise rank_rtol). Each used curve is
-    c(t) = s_k^e(t) / s_k^e(t[-1]); its event time is the last upward crossing of 1/2 (the first,
-    unless a transient crossed 1/2 and fell back) and its width the final rise lo -> hi.
-    Returns arrays edge (index along the E axis), k, time, width, t_lo, t_hi, n_cross (upward
-    crossings of 1/2).
-    """
-    t, s = _np(t), _np(spectra)
-    final = s[-1]
-    if reference is None:
-        ref = final
-    else:
-        ref = np.full((s.shape[1], max(len(r) for r in reference)), np.nan)
-        for e, r in enumerate(reference):
-            ref[e, : len(r)] = _np(r)
-    top = np.fmax.reduce(np.abs(ref), axis=1)
-    edges, ks = [], []
-    for e in range(s.shape[1]):
-        rank = int(np.sum(np.abs(ref[e]) > rank_rtol * top[e])) if top[e] > 0 else 0
-        for k in range(min(rank, s.shape[2])):
-            if np.isfinite(final[e, k]) and final[e, k] > 0:
-                edges.append(e)
-                ks.append(k)
-    curves = (s[:, edges, ks] / final[edges, ks]).reshape(len(t), len(edges))
-    t_lo, t_hi = rise_times(t, curves, lo, hi)
-    return {
-        "edge": np.array(edges, dtype=int),
-        "k": np.array(ks, dtype=int),
-        "time": np.atleast_1d(crossing_times(t, curves, 0.5, last=True)),
-        "width": np.atleast_1d(t_hi - t_lo),
-        "t_lo": np.atleast_1d(t_lo),
-        "t_hi": np.atleast_1d(t_hi),
-        "n_cross": np.atleast_1d(upward_crossings(curves, 0.5)),
-    }
 
 
 # ---- plateaus and drops of the loss ----------------------------------------------------------
@@ -438,7 +333,6 @@ REGIME_THRESHOLDS = {
     "separation": 3.0,  # S2S iff every rho_i > this
     "converged": 1e-3,  # stalled iff final loss >= this * L(0)
     "diverged": 1e6,  # diverged iff final loss non-finite or > this * L(0)
-    "floor": 0.1,  # lazy at the projected fit iff final loss <= (1 + this) * the lazy floor
 }
 
 
@@ -448,11 +342,8 @@ def classify_regime(
     final_loss: float,
     initial_loss: float,
     thresholds: dict | None = None,
-    lower_bounds=None,
-    lazy_floor: float | None = None,
 ) -> str:
-    """One run's regime: 'diverged', 'stalled', 'lazy', 'saddle-to-saddle' or 'rich', plus
-    'lazy (projected fit)' and 'undetermined' when the optional arguments are given.
+    """One run's regime: 'diverged', 'stalled', 'lazy', 'saddle-to-saddle' or 'rich'.
 
     Rules of notes/diagnostics.md, checked in this order: diverged (final loss non-finite or
     > 1e6 L(0)); stalled (final loss >= 1e-3 L(0)); lazy (delta_K < 0.1); saddle-to-saddle (at least
@@ -460,35 +351,17 @@ def classify_regime(
     transitions, or a single event). The sweep-level scaling check (iii) is `plateau_scaling`.
     `thresholds` overrides entries of REGIME_THRESHOLDS. A NaN ratio (an event that never completed)
     is not > 3, so it rules out S2S.
-
-    lazy_floor (the loss of the lazy fit, `projected_fit_loss`, > 0 when a bond is deficient): a run
-    with delta_K < 0.1 whose final loss is within 10% of it is 'lazy (projected fit)', not
-    'stalled' (theory_regimes R7; that run cannot converge). Checked before 'stalled'.
-    lower_bounds (`ratio_lower_bounds`, one flag per ratio): if every rho_i <= 3 is only a lower
-    bound (an event narrower than the sample spacing), the label is 'undetermined', not 'rich'.
     """
     th = {**REGIME_THRESHOLDS, **(thresholds or {})}
     if not np.isfinite(final_loss) or final_loss > th["diverged"] * initial_loss:
         return "diverged"
-    converged = final_loss < th["converged"] * initial_loss
-    if (
-        not converged
-        and lazy_floor is not None
-        and delta_K < th["delta_K"]
-        and final_loss <= (1 + th["floor"]) * lazy_floor
-    ):
-        return "lazy (projected fit)"
-    if not converged:
+    if final_loss >= th["converged"] * initial_loss:
         return "stalled"
     if delta_K < th["delta_K"]:
         return "lazy"
     rho = _np(separation_ratios).ravel()
     if rho.size >= 1 and np.all(rho > th["separation"]):
         return "saddle-to-saddle"
-    if rho.size >= 1 and lower_bounds is not None:
-        low = ~(rho > th["separation"])
-        if np.all(np.asarray(lower_bounds, dtype=bool)[low] & np.isfinite(rho[low])):
-            return "undetermined"
     return "rich"
 
 
@@ -562,18 +435,20 @@ def tangent_kernel(spec: TTNSpec, theta, probe_x, mask=None) -> torch.Tensor:
     0/1 gradient mask of `antisymmetric_double` or per-parameter learning rates (the kernel of the
     preconditioned flow). Returns (P, P).
     """
-    # All rows in one batched backward pass (vmap over the identity): 3-20x faster than one
-    # backward pass per probe point, and much faster than torch.func.jacrev on these small einsums.
+    # One backward pass per probe point: 10-30x faster than torch.func.jacrev on these small einsums.
     th = _flat(spec, theta).clone().requires_grad_(True)
     f = forward(spec, spec.unflatten(th), probe_x)
-    eye = torch.eye(f.numel(), dtype=f.dtype)
-    (jac,) = torch.autograd.grad(f, th, grad_outputs=eye, is_grads_batched=True)
-    return _gram(jac, mask)
+    rows = [torch.autograd.grad(f[i], th, retain_graph=True)[0] for i in range(f.numel())]
+    return _gram(torch.stack(rows), mask)
 
 
-def tensor_jacobian(spec: TTNSpec, theta) -> torch.Tensor:
-    """J = d vec(W) / d theta, shape (D, n_params), D = prod d_i; vec(W) row-major in site order
-    (site 0 slowest), matching `product_features`. Small N only."""
+def tensor_tangent_kernel(spec: TTNSpec, theta, mask=None) -> torch.Tensor:
+    """Tensor-space kernel J diag(mask) J^T with J = d vec(W) / d theta, shape (D, D), D = prod d_i.
+
+    vec(W) is row-major in site order (site 0 slowest), matching `product_features`, so the probe
+    kernel is Phi K_tensor Phi^T with Phi = product_features(probe_x). Small N only.
+    """
+
     cores = spec.unflatten(_flat(spec, theta))
     # W is linear in each core, so d vec(W) / d G_v[i] is vec(W) with G_v replaced by the unit
     # tensor e_i: exact, n_params contractions, cost independent of D (unlike reverse mode).
@@ -581,48 +456,7 @@ def tensor_jacobian(spec: TTNSpec, theta) -> torch.Tensor:
     for v, shape in enumerate(spec.shapes):
         for unit in torch.eye(spec.sizes[v], dtype=cores[v].dtype):
             cols.append(to_dense(spec, cores[:v] + [unit.view(shape)] + cores[v + 1 :]).reshape(-1))
-    return torch.stack(cols, dim=1)
-
-
-def tensor_tangent_kernel(spec: TTNSpec, theta, mask=None) -> torch.Tensor:
-    """Tensor-space kernel J diag(mask) J^T with J = `tensor_jacobian`, shape (D, D), D = prod d_i.
-
-    vec(W) is row-major in site order (site 0 slowest), matching `product_features`, so the probe
-    kernel is Phi K_tensor Phi^T with Phi = product_features(probe_x). Small N only.
-    """
-    return _gram(tensor_jacobian(spec, theta), mask)
-
-
-def projected_fit_loss(
-    spec: TTNSpec, theta, residual, mask=None, site_metrics=None, rtol: float = 1e-10
-) -> float:
-    """Loss at the end of a lazy run: 1/2 ||(I - P) r||_M^2, the part of the residual r that the
-    model linearized at theta cannot fit.
-
-    residual: dense tensor (site order) target minus fitted tensor at theta (for the centred and
-    two-copy models simply W*). P: the M-orthogonal projector (M = Sigma_1 (x) ... (x) Sigma_N, the
-    site metrics; identity if None) onto the tangent space range(J diag(mask)) at theta, J =
-    `tensor_jacobian`; mask: trained coordinates (nonzero entries; e.g. a problem's precond).
-    Gradient flow of the linearized model, with any positive learning rates, converges to
-    W_lin = W(theta) + P r (theory_regimes R2, R7): this is the floor of the lazy regime, 0 with full
-    bonds and > 0 when a bond is deficient (then the run is 'stalled' by the convergence rule, see
-    `classify_regime(..., lazy_floor=...)`). Rank of J: singular values above rtol times the largest.
-    Small N only (J is dense, D x n_params).
-    """
-    jac = tensor_jacobian(spec, theta)
-    if mask is not None:
-        jac = jac[:, torch.as_tensor(mask) != 0]
-    dims = spec.phys_dims
-    jac = jac.reshape(*dims, -1)
-    r = torch.as_tensor(residual, dtype=jac.dtype).reshape(dims)
-    if site_metrics is not None:
-        for i, m in enumerate(site_metrics):
-            root = _sqrt_psd(torch.as_tensor(m, dtype=jac.dtype))
-            jac, r = apply_on_leg(jac, root, i), apply_on_leg(r, root, i)
-    u, s, _ = torch.linalg.svd(jac.reshape(r.numel(), -1), full_matrices=False)
-    q = u[:, : int((s > rtol * s.max()).sum())] if s.numel() else u[:, :0]
-    b = r.reshape(-1)
-    return 0.5 * (b - q @ (q.T @ b)).pow(2).sum().item()
+    return _gram(torch.stack(cols, dim=1), mask)
 
 
 def product_features(x) -> torch.Tensor:
@@ -658,13 +492,11 @@ def kernel_change(K_t, K_0) -> float:
 
 
 def hessian(loss_fn: LossFn, theta) -> torch.Tensor:
-    """Full Hessian of loss_fn at theta, (n_params, n_params), symmetrized.
-
-    Vectorized double backward (all rows in one batched pass): 0.002 s at P = 63 and 0.1 s at
-    P = 1376, against 0.04 s and 2.3 s with one backward pass per row; the first call in a process
-    costs ~0.3 s more (torch.vmap set-up).
-    """
-    h = torch.autograd.functional.hessian(loss_fn, theta.detach(), vectorize=True)
+    """Full Hessian of loss_fn at theta, (n_params, n_params), symmetrized (one backward per row)."""
+    # Rows by differentiating the scalars g[i]: in torch 2.x, double backward with grad_outputs=
+    # (also used by autograd.functional.hessian) pays a ~10 s one-time initialization.
+    th, g = _grad_with_graph(loss_fn, theta)
+    h = torch.stack([torch.autograd.grad(g[i], th, retain_graph=True)[0] for i in range(len(g))])
     return 0.5 * (h + h.T)
 
 
@@ -704,10 +536,7 @@ def lanczos_extremes(
     op = LinearOperator((n, n), matvec=matvec, dtype=np.float64)
     v0 = np.random.default_rng(0).standard_normal(n)  # deterministic start vector
     modes = {"largest": ["LA"], "smallest": ["SA"], "both": ["SA", "LA"]}[which]
-    # One BLAS thread: OpenBLAS ignores torch.set_num_threads, and its default pool is 100x slower
-    # on a loaded machine.
-    with threadpool_limits(limits=1, user_api="blas"):
-        results = [eigsh(op, k=k, which=mode, tol=tol, v0=v0) for mode in modes]
+    results = [eigsh(op, k=k, which=mode, tol=tol, v0=v0) for mode in modes]
     vals = np.concatenate([r[0] for r in results])
     vecs = np.concatenate([r[1] for r in results], axis=1)
     order = np.argsort(vals)
@@ -715,19 +544,13 @@ def lanczos_extremes(
 
 
 def saddle_type(eigs, rel_eps: float = 1e-3) -> dict:
-    """Raw curvature report of a (gauge-projected) Hessian spectrum (notes/diagnostics.md, "Saddle
-    type"); NaN entries (padding, e.g. a recorder's `hessian_eigs_gauge` row) are dropped.
+    """Classify a (gauge-projected) Hessian spectrum (notes/diagnostics.md, "Saddle type").
 
-    eps = rel_eps * max |lambda|. 'strict' if lambda_min < -eps, else 'non-strict'. Also returns
+    eps = rel_eps * max |lambda|. 'strict' if lambda_min < -eps, else 'non-strict' (a higher-order
+    saddle if the loss later decreases, a minimum otherwise: the caller knows which). Also returns
     n_negative (eigenvalues < -eps), lambda_min, lambda_max, ratio = lambda_min / lambda_max, eps.
-    This relative threshold does NOT separate strict from higher-order saddles: near the origin
-    H(sigma theta) = sigma^(K-2) H(theta), so the ratio does not depend on sigma and the first
-    plateau (an order-K saddle) is 'strict' at every sigma, and k = 3 plateaus are 'strict' for
-    sigma >~ 0.01-0.04 (theory_saddles R11, P7). Decide strictness across a sweep with
-    `saddle_scaling` (how lambda_min scales with sigma).
     """
     e = _np(eigs)
-    e = e[np.isfinite(e)]
     eps = rel_eps * np.abs(e).max()
     n_negative = int(np.sum(e < -eps))
     return {
@@ -738,28 +561,6 @@ def saddle_type(eigs, rel_eps: float = 1e-3) -> dict:
         "ratio": float(e.min() / e.max()),
         "eps": float(eps),
     }
-
-
-def saddle_scaling(sigmas, lambda_mins, threshold: float = 0.5) -> dict:
-    """Strict vs higher-order saddle from how the most negative gauge-projected Hessian eigenvalue
-    at the same plateau scales with the init scale across a sweep (theory_saddles R11, P6, P7).
-
-    At a strict saddle lambda_min tends to a sigma-independent negative value (p = 0); at a saddle
-    of order k (a route of k cores, or the origin with k = K) lambda_min ~ -sigma^(k-2) (p = k - 2),
-    measured at equivalent points of the plateau (e.g. midpoints). Fits
-    log|lambda_min| = c + p log sigma by least squares over the points with lambda_min < 0 (seeds as
-    separate points). Returns n, exponent p, exponent_se, order = p + 2 (the k this suggests), and
-    type: 'strict' if p < threshold, 'higher-order' otherwise, 'undetermined' with fewer than two
-    distinct sigmas.
-    """
-    sig, lam = _np(sigmas).ravel(), _np(lambda_mins).ravel()
-    keep = np.isfinite(sig) & np.isfinite(lam) & (sig > 0) & (lam < 0)
-    p, se, _, _ = _linear_fit(np.log(sig[keep]), np.log(-lam[keep]))
-    if np.unique(sig[keep]).size < 2:
-        kind = "undetermined"
-    else:
-        kind = "strict" if p < threshold else "higher-order"
-    return {"n": int(keep.sum()), "exponent": p, "exponent_se": se, "order": p + 2, "type": kind}
 
 
 # ---- gauge directions ------------------------------------------------------------------------

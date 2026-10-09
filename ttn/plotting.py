@@ -326,16 +326,11 @@ def plot_overlaps(
 # ---- bond spectra ----------------------------------------------------------------------------
 
 
-def stack_spectra(spectra, tree=None) -> dict[int, np.ndarray]:
+def stack_spectra(spectra) -> dict[int, np.ndarray]:
     """{edge: (T, k) array} from a list of T dicts as returned by `bond_spectra` (one per saved
-    time), from a mapping that is already {edge: (T, k)}, or from a (T, E, k) array such as a
-    recorder's NaN-padded `spectra`, whose axis 1 follows `tree.edges` (keys are the edges if
-    `tree` is given, else the positions 0..E-1)."""
+    time), or from a mapping that is already {edge: (T, k)}."""
     if isinstance(spectra, dict):
         return {v: _np(s) for v, s in spectra.items()}
-    if hasattr(spectra, "ndim") and spectra.ndim == 3:
-        edges = tree.edges if tree is not None else range(spectra.shape[1])
-        return {v: _np(spectra[:, j, :]) for j, v in enumerate(edges)}
     return {v: _np([s[v] for s in spectra]) for v in spectra[0]}
 
 
@@ -384,9 +379,7 @@ def plot_bond_spectra(
 
     target: a Figure (or SubFigure), on which a grid of panels with shared axes and `ncols` columns
     (default up to 4) is created, or a sequence of Axes, one per edge.
-    spectra: a list of T dicts as returned by `bond_spectra`, {edge: (T, k) array}, or a recorder's
-    (T, E, k) array (pass `tree` so that its axis 1 maps to `tree.edges`; `stack_spectra`). NaN
-    entries (padding of edges with smaller bonds) are not drawn.
+    spectra: a list of T dicts as returned by `bond_spectra`, or {edge: (T, k) array}.
     edges: the edges to show (default: all, in increasing order). tree: if given, each panel is
     titled with the bipartition its edge induces (`edge_label`), otherwise with the edge index.
     teacher: target singular values, drawn as dashed lines: one 1-D array for every edge (an odeco
@@ -399,7 +392,7 @@ def plot_bond_spectra(
     accurate to ~1e-15 relative, so they are rounding noise. None hides only zeros.
     Returns the list of Axes, in the order of `edges`.
     """
-    data = stack_spectra(spectra, tree)
+    data = stack_spectra(spectra)
     edges = sorted(data) if edges is None else list(edges)
     if isinstance(target, FigureBase):
         fig = target
@@ -424,9 +417,7 @@ def plot_bond_spectra(
     n_legend, any_gray = 0, False
     for ax, v in zip(axes, edges):
         s = data[v]
-        top = np.fmax.reduce(s, axis=1, keepdims=True)  # ignores NaN padding
-        s = np.where(s > (rel_floor or 0.0) * top, s, np.nan)
-        s = s[:, np.isfinite(s).any(axis=0)]  # padding columns (values sorted, NaN last)
+        s = np.where(s > (rel_floor or 0.0) * s.max(axis=1, keepdims=True), s, np.nan)
         ref = _teacher_values(teacher, v, rel_floor)
         n_ref = 0 if ref is None else len(ref)
         n_col = min(n_colored or (n_ref if ref is not None else s.shape[1]), len(PALETTE))

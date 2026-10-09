@@ -7,15 +7,12 @@ import pytest
 import torch
 from scipy.integrate import solve_ivp
 
-from ttn.diagnostics import event_widths
 from ttn.dynamics import (
     Problem,
     Recorder,
     Trajectory,
-    default_log_times,
     integrate_gf,
     make_dataset,
-    merged_rows,
     run_gd,
     run_sgd,
 )
@@ -354,68 +351,9 @@ def test_trajectory_save_load_and_extras(tmp_path):
     assert traj["spectra"].shape == (n, len(problem.spec.tree.edges), 2)
     assert traj["core_norms"].shape == (n, problem.spec.n_cores)
     assert traj["params"].shape == (n, problem.spec.n_params) and traj["grad_norm"].shape == (n,)
-    # The integrator passes its loss and velocity to the log rows: same values as recomputed.
-    assert np.allclose(traj["speed"], traj["grad_norm"], rtol=1e-12)
     path = traj.save(tmp_path / "run")
     loaded = Trajectory.load(path)
     assert loaded.meta == traj.meta
     assert set(loaded.data) == set(traj.data)
     for key in traj.data:
         assert np.array_equal(loaded[key], traj[key], equal_nan=True)
-
-
-# ---- fine rows, default grid, wall-time limit ---------------------------------------------------
-
-
-def test_fine_rows_resolve_learning_events():
-    """Aligned init: exact scalar-ODE overlaps. 30 log times over 4 decades are ~35% of t apart,
-    wider than the escapes, so widths from the log rows only measure the grid; with the fine rows
-    they are those of a dense linear grid."""
-    weights, a0s = [2.0, 1.0], [0.05, 0.05]
-    problem, theta0 = aligned_problem(binary_tree(4), weights, a0s)
-    k = problem.spec.n_cores
-    traj = integrate_gf(problem, theta0, t_max=60.0, n_log=30)
-    fine_t = traj["fine_t"]
-    assert np.all(np.diff(fine_t) > 0) and len(fine_t) > 3 * len(traj["t"])
-    expected = scalar_ode_overlaps(fine_t, k, weights, a0s)
-    assert np.abs(traj["fine_overlaps"] - expected).max() < 1e-6
-    assert traj["fine_spectra"].shape == (len(fine_t), *traj["spectra"].shape[1:])
-    rows = merged_rows(traj.data)
-    assert set(rows) == {"t", "loss", "overlaps", "spectra"} and np.all(np.diff(rows["t"]) > 0)
-    dense_t = np.linspace(0.0, 60.0, 60001)
-    exact = event_widths(dense_t, scalar_ode_overlaps(dense_t, k, weights, a0s))
-    np.testing.assert_allclose(event_widths(rows["t"], rows["overlaps"]), exact, rtol=0.01)
-    assert np.all(event_widths(traj["t"], traj["overlaps"]) > 1.5 * exact)  # log rows alone
-
-    gd = run_gd(problem, theta0, lr=0.01, n_steps=2000, n_log=20)
-    assert len(gd["fine_t"]) > 50 and np.allclose(gd["fine_t"] / 0.01, np.rint(gd["fine_t"] / 0.01))
-    off = integrate_gf(problem, theta0, t_max=60.0, n_log=30, recorder=Recorder(fine=False))
-    assert "fine_t" not in off.data and merged_rows(off.data)["t"] is off["t"]
-
-
-def test_default_log_times_resolve_the_lazy_fit():
-    """At small init the parameter time scale |theta| / |v| sets the first log time; at large init
-    the loss moves sigma^K times faster than theta, and L / |dL/dt| sets it, so the lazy fit is
-    logged (before, the first log time came after it)."""
-    spec = TTNSpec.uniform(binary_tree(4), 2, 2)
-    base = random_cp_teacher(4, 2, [1.0, 0.5], seed=1)
-    for sigma, lazy in ((0.05, False), (8.0, True)):
-        cores0 = spec.init(sigma, seed=2)
-        problem = Problem(spec, ShiftedTeacher(base, spec, cores0))
-        theta0 = spec.flatten(cores0)
-        grid = default_log_times(problem, theta0, t_max=10.0)
-        tau0 = theta0.norm().item() / problem.velocity(theta0).norm().item()
-        assert (grid[1] < 1e-3 * tau0 / 100) == lazy
-        if lazy:
-            traj = integrate_gf(problem, theta0, t_max=2 * grid[1], log_times=grid[1:2])
-            assert traj["loss"][1] > 0.95 * traj["loss"][0]  # still at the start of the fit
-
-
-def test_max_wall_time():
-    problem, theta0 = random_problem(binary_tree(4), sigma=0.9, seed=9)
-    for method in ("dopri5", "lsoda"):
-        traj = integrate_gf(problem, theta0, t_max=100.0, method=method, max_wall_time=0.0)
-        assert traj.meta["stop_reason"] == "max_wall_time" and traj.meta["n_steps"] == 1
-        assert traj["t"][-1] == traj.meta["t_end"] < 100.0
-    gd = run_gd(problem, theta0, lr=0.01, n_steps=1000, max_wall_time=0.0)
-    assert gd.meta["stop_reason"] == "max_wall_time" and gd.meta["n_steps"] == 0

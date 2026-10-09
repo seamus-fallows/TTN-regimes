@@ -67,27 +67,6 @@ def test_escape_time_is_level_crossing_of_ode(K):
     assert a[2] ** K / (level * s) == pytest.approx(1, abs=1e-8)
 
 
-@pytest.mark.parametrize("K,a0", [(7, 0.01), (8, 0.01)])  # plateaus of length 2e9 and 1.7e11
-def test_mode_solutions_pass_through_the_exact_escape_point(K, a0):
-    """The curves are integrated from the escape point (exact, by quadrature) after T/2: from t = 0
-    alone the timing error ~1e-12 T put the overlap at 0.4992 (K = 7) and 0.415 (K = 8) at T.
-    Times long after the escape (stiff for an explicit solver) take the converged value."""
-    s = 1.3
-    T = escape_time(K, s, a0)
-    t = np.array([0.0, 0.3 * T, T, T + 1.0, 10 * T])
-    a = balanced_mode_solution(K, s, a0, t)
-    assert a[0] == pytest.approx(a0, rel=1e-12) and a[2] ** K == pytest.approx(0.5 * s, rel=1e-10)
-    assert a[1] ** K < 0.5 * s < a[3] ** K and a[4] ** K == pytest.approx(s, rel=1e-10)
-    amps = a0 * np.linspace(0.9, 1.1, K)
-    T = unbalanced_escape_time(s, amps)
-    a = unbalanced_mode_solution(s, amps, [0.0, T, 10 * T])
-    np.testing.assert_allclose(a[0], amps, rtol=1e-12)
-    assert np.prod(a[1]) == pytest.approx(0.5 * s, rel=1e-10)
-    assert np.prod(a[2]) == pytest.approx(s, rel=1e-10)
-    pred = odeco_aligned_prediction([s], K, a0, [0.0, escape_time(K, s, a0)])
-    assert pred["overlaps"][1, 0] == pytest.approx(0.5, rel=1e-10)
-
-
 def test_escape_time_k2_logistic():
     s, a0, level = 0.7, 1e-3, 0.3
     p0, p1 = a0**2, level * s
