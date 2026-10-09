@@ -218,7 +218,14 @@ init; verified against GF above), median with bootstrap 95% CI.
   balanced with core norms 1/K): at the end of the correlation flow every core's squared-norm fraction
   is 1/K to within 5e-4 .. 1.3e-2 (max over 1200 inits) (`frac_dev_max` in `results/lo_d.csv`).
   (Expected by the conservation laws: Q_e is constant while |theta|^2 grows without bound.)
-- chi and K dependence: [lo_chi, lo_K pending]
+- **K dependence** (`configs/lo_K.yaml`, chi = 3, d = 4, s = (3, 2, 1), 50 inits per tree,
+  `results/lo_K_table.csv`, figure e2): median t_hat_1 grows from 0.68 (mps3) / 0.86 (binary4) to 52 (mps12),
+  814 (binary16) and 5.6 (ht8). The zero-parameter RMS-overlap heuristic P3 = d^{N(K-2)/(2K)}/((K-2) s_1)
+  (section 1.5) tracks the median within a factor 0.87-2.1 over K = 3-15 (MPS: 0.95-1.54; binary:
+  0.87-2.13; HT: 1.10-1.80; the excess grows with K), while the median t_hat_1 / t_KH grows from 3 to
+  2.9e7. In the brief's terms: t_1 vs K across trees is captured by P3 to a factor 2 with no fit
+  (empirical; P3 is a heuristic, derived from the RMS initial overlap under an aligned-mode assumption).
+- chi dependence: [lo_chi pending]
 
 ### 2.3 Saddle-to-saddle phenomenology at K = 3, 4 (empirical)
 
