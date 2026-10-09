@@ -181,3 +181,21 @@ library rerun with linear-time event refinement, `sigma_chi_b4`).*
   (predicted (5/2)^(1/(K-2)) = 2.5). Lazy boundary ratio between delta_K thresholds 0.05 and 0.2:
   2.4, 1.7, 1.6, 1.1, 1.5 for chi = 9..36 (first-order prediction 4^(1/3) = 1.59; grid step 1.585).
 
+
+### 2.x Two-copy cross-check (binary N = 4)
+
+*Interim data (scipy RK45), 6 seeds x 8 chi x 19 sigma.*
+
+- **Lazy side agrees in mechanism, not in position.** Same lazy residual as the centred model at
+  deficient bonds (chi = 3: 0.49 / 0.25 for seeds 0 / 1 in both models); the kernel change is second
+  order, delta_K ~ sigma^-2K: ratio 1362 between sigma = 3 and 10 at chi = 24 (predicted (10/3)^6 =
+  1372; centred: 40.6 vs (10/3)^3 = 37). Hence the two-copy lazy boundary is lower (0.80 vs 1.13 at
+  chi = 36). **Empirical**, confirming theory_regimes R5.
+- **S2S side differs (new, empirical).** At small sigma the two copies start identical (theta+ =
+  theta-), so their near-origin escapes happen together: each copy learns *half* of components 1 and 2
+  at the same time (binary N = 4, chi = 36, sigma = 0.01, seed 0: a+ = (0.502, 0.498, 0), a- = (-0.498,
+  -0.502, 0) at t = 32; `pilots/twocopy_mechanism.py`). Events 1 and 2 then merge: t_2 - t_1 stays
+  ~2 for sigma from 0.01 to 0.04 (instead of growing like 1/sigma), rho_1 ~ 2, and the run is labelled
+  rich at every sigma in the grid for chi >= 18 (S2S boundary 0.015 vs 0.075 centred at chi = 24).
+  So the two-copy model is a faithful cross-check of the lazy boundary (up to the predicted shift) but
+  **not of the S2S boundary at large chi**: its incremental structure is changed by the mirror copy.
