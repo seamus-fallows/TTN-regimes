@@ -46,7 +46,7 @@ def job(args):
     teacher = make_teacher(n, d, weights)
     u0 = unit_init(spec, seed)
     taus = [lo_blowup(spec, single_component(teacher, r), u0)[0] for r in range(n_comp)]
-    sigma = cfg["sigma"]
+    sigma = cfg["sigma"][tree] if isinstance(cfg["sigma"], dict) else cfg["sigma"]
     problem = Problem(spec, teacher)
     l0 = 0.5 * float(teacher.norm2())
     grid = log_time_grid(1e-2, cfg["t_max"], cfg.get("n_log", 1500))

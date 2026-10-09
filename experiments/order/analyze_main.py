@@ -158,6 +158,21 @@ def plot_spread(per_setting, summ, name):
     plt.close(fig)
 
 
+def d_pairs(summ):
+    """Settings that differ only in d (same tree, same capped bond dimensions): is P(greedy) equal?
+    Prediction: on an MPS d only rescales every core slice by the same factor (cancels); on binary
+    trees it also changes the leaf-to-internal scale ratio of the fan-in init."""
+    rows = []
+    for (tree, bonds, rho), g in summ.groupby(["tree", "bonds", "rho"]):
+        if set(g.d) >= {2, 4}:
+            a, b = g[g.d == 2].iloc[0], g[g.d == 4].iloc[0]
+            diff = b.p_greedy - a.p_greedy
+            rows.append(dict(tree=tree, bonds=bonds, rho=rho, p_d2=a.p_greedy, p_d4=b.p_greedy,
+                             diff=diff, z=diff / np.sqrt(a.se**2 + b.se**2 + 1e-12),
+                             race_d2=a.race_curve, race_d4=b.race_curve))
+    return pd.DataFrame(rows)
+
+
 def main():
     name = sys.argv[1] if len(sys.argv) > 1 else "main"
     seeds, runs = load(name)
@@ -165,6 +180,11 @@ def main():
     RES.mkdir(exist_ok=True)
     summ.to_csv(RES / f"{name}_summary.csv", index=False, float_format="%.5g")
     per_setting.to_csv(RES / f"{name}_settings.csv", index=False, float_format="%.5g")
+    dp = d_pairs(summ)
+    dp.to_csv(RES / f"{name}_d_pairs.csv", index=False, float_format="%.4g")
+    if len(dp):
+        print(dp.groupby("tree").z.agg(["count", "mean", lambda z: np.sum(z**2)]).rename(
+            columns={"<lambda_0>": "chi2"}).to_string())
     plot_pg_vs_rho(summ, seeds, name)
     plot_spread(per_setting, summ, name)
     with pd.option_context("display.width", 200, "display.max_rows", 500):

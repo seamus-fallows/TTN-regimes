@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 import torch
 import yaml
-from scipy.optimize import minimize_scalar
+from scipy.optimize import brentq, minimize_scalar
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (  # noqa: E402
@@ -68,11 +68,34 @@ def saddle_init(spec, teacher, rho, sigma, seed):
     return base + sigma * unit_init(spec, seed)
 
 
+def event_crossings(spec, teacher, sol, r):
+    """Up/down crossings of a_r = 1/2: bracketed on the solver's own steps (which resolve every
+    transition), refined by root finding on the dense output."""
+    ts = sol.t
+    a = np.array([overlaps(spec, teacher, sol.sol(t))[r] for t in ts])
+    out = []
+    for t, sgn in crossings(ts, a):
+        i = np.searchsorted(ts, t)
+        lo, hi = ts[max(i - 1, 0)], ts[min(i, len(ts) - 1)]
+        f = lambda x: overlaps(spec, teacher, sol.sol(x))[r] - 0.5  # noqa: E731
+        out.append((brentq(f, lo, hi, xtol=1e-12 * max(hi, 1.0)) if f(lo) * f(hi) < 0 else t, sgn))
+    return out, a
+
+
 def analyse(spec, teacher, sol, rho):
     loss, _ = loss_grad_fn(spec, teacher)
     t_end = sol.t[-1]
+    a1x, a1_steps = event_crossings(spec, teacher, sol, 0)
+    a2x, a2_steps = event_crossings(spec, teacher, sol, 1)
+    t1 = next((t for t, s in a1x if s > 0), np.inf)
+    # saddle starts begin with a_2 ~ 1 (component 2 learned at t = 0)
+    t2 = 0.0 if a2_steps[0] >= 0.5 else next((t for t, s in a2x if s > 0), np.inf)
+    # record grid: log-spaced, uniform, and dense around the first two events
+    t_lo = 0.7 * min(t1, t2) if np.isfinite(min(t1, t2)) else 0.0
+    t_hi = max(t for t in (t1, t2, 0.0) if np.isfinite(t))
+    t_hi = min(t_end, t_hi + 2 * (abs(t1 - t2) if np.isfinite(t1 - t2) else 0) + 20)
     grid = np.unique(np.concatenate([np.geomspace(max(t_end * 1e-8, 1e-3), t_end, 600),
-                                     np.linspace(0, t_end, 3000)]))
+                                     np.linspace(0, t_end, 1000), np.linspace(t_lo, t_hi, 2000)]))
     edge = spec.tree.edges[0]
     rows = []
     for t in grid:
@@ -86,10 +109,6 @@ def analyse(spec, teacher, sol, rho):
         rows.append([t, lval.item(), *a, g.norm().item(), bs[0].item(),
                      bs[1].item() if len(bs) > 1 else 0.0])
     traj = np.array(rows)  # t, L, a1, a2, |grad|, s1(edge), s2(edge)
-    a1x, a2x = crossings(traj[:, 0], traj[:, 2]), crossings(traj[:, 0], traj[:, 3])
-    t1 = next((t for t, s in a1x if s > 0), np.inf)
-    # saddle starts begin with a_2 ~ 1 (component 2 learned at t = 0)
-    t2 = traj[0, 0] if traj[0, 3] >= 0.5 else next((t for t, s in a2x if s > 0), np.inf)
     rec = dict(t1=t1, t2=t2, wrong=bool(t2 < t1), final_loss=traj[-1, 1], t_end=t_end,
                a2_down=next((t for t, s in a2x if s < 0 and t > t2), np.nan),
                a2_reup=next((t for t, s in a2x if s > 0 and t > t2 + 1e-9 and t > t1), np.nan))
@@ -104,8 +123,11 @@ def analyse(spec, teacher, sol, rho):
                 f = torch.from_numpy(sol.sol(t)).requires_grad_(True)
                 (gg,) = torch.autograd.grad(loss(f), f)
                 return gg.norm().item()
-            res = minimize_scalar(speed, bounds=(t2, t1), method="bounded",
-                                  options={"xatol": 1e-6 * (t1 - t2)})
+            idx = np.nonzero(mask)[0]
+            im = idx[np.argmin(traj[idx, 4])]
+            lo, hi = traj[max(im - 1, idx[0]), 0], traj[min(im + 1, idx[-1]), 0]
+            res = minimize_scalar(speed, bounds=(lo, hi), method="bounded",
+                                  options={"xatol": 1e-9 * max(hi, 1.0)})
             tm = res.x
             ev, gauge_rank = projected_hessian(spec, teacher, sol.sol(tm))
             q = rho ** (1.0 / spec.n_cores)
