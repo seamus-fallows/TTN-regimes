@@ -387,31 +387,53 @@ sample sizes, as expected from the loss of gauge equivariance (Singh 2026, abstr
 ## 3. Synthesis (for practitioners and the report)
 
 **Why GF has plateaus that scale with the init, and what removes them (derived).** Near the origin the
-gradient is ~sigma^(K-1) while the displacement needed to learn a component is O(1) (relative to the
-init: O(sigma) to leave the saddle neighbourhood, then O(1)). Any method whose step is invariant under a
-rescaling of the gradient near the origin escapes in a sigma-independent number of steps:
-Adam / RMSProp (per-coordinate 1/sqrt(v), 1.2), Gauss-Newton / Riemannian GD (tangent projection, 1.5),
-per-core Gram preconditioning ((E^T E)^-1 ~ sigma^-2(K-1), 1.7), GD in a canonical gauge (the root holds the
-whole scale and sees an isometric environment, 1.4), ALS / DMRG (exactly scale-free, 1.6). An absolute floor
-in the preconditioner (Adam's eps, absolute damping) turns it back into GD with a rescaled step below the
-scale where the gradient (or Gram) falls under the floor, so the GF law returns for small enough sigma
-(Adam eps = 1e-8 on K = 7-8 trees: sigma < ~0.1).
+gradient is ~sigma^(K-1) while the displacement needed to leave the saddle and learn a component is O(1)
+relative to the init. Any method whose step is invariant under a rescaling of the gradient near the
+origin escapes in a sigma-independent number of steps: Adam / RMSProp (per-coordinate 1/sqrt(v), 1.2),
+Riemannian GD / Gauss-Newton (tangent projection, 1.5), per-core Gram preconditioning (1.7), GD in a
+canonical gauge (the root holds the whole scale and sees an isometric environment, 1.4), ALS / DMRG
+(exactly scale-free, 1.6). An absolute floor in the preconditioner (Adam's eps) turns it back into GD with
+a rescaled step below the scale where the gradient falls under the floor, and the GF law returns there
+(confirmed to 0.97-1.05 per seed, 2.7). Methods linear in the gradient (GF, GD, heavy ball) keep the GF law.
 
-**Which S2S features survive which optimizer** (binary N = 4 complete; deep trees in section 2.5):
+**What survives which optimizer** (binary N = 4: 7 sigma over 1.8 decades x 6 seeds; binary N = 8 / MPS
+N = 8: 2-7 sigma, 6 seeds; exponents are per-seed fits, mean +- s.e.):
 
-| method | plateaus | first escape vs sigma | later plateaus | order | rank growth | balance |
-|---|---|---|---|---|---|---|
-| GF / GD (lr < eta_c) / heavy ball | yes (S2S) | sigma^-(K-2) | sigma^-(k-2) (k-rule) | weight x overlap | one singular value at a time, all edges together | conserved (GD: O(lr^2) drift) |
-| Adam / RMSProp | first: no; later: yes | sigma-independent (~0.17 / lr steps on binary4) unless sigma < sigma_eps | memory phase (log, beta2-dependent) then AEoS phase (GF-like time, ~lambda_max/38 steps per GF unit) | mostly weight order (86-98% binary4) | sequential | drifts to O(1) imbalance, sharper minima |
-| GD + re-gauging | no | O(1), sigma-free | none | projection on random frames | all at once | gauge-fixed |
-| Riemannian GD | no | O(1), sigma-free | none | not weight order | all at once | n/a |
-| Gram-preconditioned GD | no (overshoot instead, without absolute damping) | sigma-free | none | mixed | all at once | n/a |
-| ALS / DMRG | no | exactly sigma-free (proven) | none | not weight order (sweep position) | all at once per bond as the sweep passes | n/a |
+| method | plateaus (S2S) | first escape vs sigma | later plateaus vs sigma | learning order (same as GF from the same init) | rank growth | balance / minimum | cost to L < 1e-3 L0 (median) |
+|---|---|---|---|---|---|---|---|
+| GF (reference) | yes | p = 1.007 +- 0.001 (K=3), 4.76 +- 0.06 (K=7; theory 5) | p = 1.01 (K=3), 4.5-4.7 (K=7) | - | one singular value at a time | conserved; flattest (pattern-rule) minimum | 7e3-1.7e4 LSODA evaluations |
+| GD (lr < eta_c), heavy ball | yes, = GF | = GF (p 0.97-1.01) | = GF | 100% (K=3), 98% first component (deep) | = GF | O(lr^2) drift | ~T_GF / lr steps |
+| Adam / RMSProp | first: no; later: yes | **sigma-free** (p = 0.01 +- 0.01 K=3; 0.05 +- 0.02 K=7), ~0.17 / lr steps, until sigma < sigma_eps where n = (eps / lr) T_GF(sigma) | weak at K = 3 (p 0.0-0.4), about half GF's at K = 7 (p 2.2-3.0 vs 4.5-4.7) | 86-98% (K=3), first component 92-100% (deep) | sequential, one component at a time | O(1) imbalance (0.3-0.8), sharper minima (1.06-6x) | 1e3-2e5 steps |
+| GD + re-gauging | no at K = 3; sequential but sigma-free plateaus at K = 7-8, often stalls | sigma-free (p = 0.00) | sigma-free (p = 0.0 +- 0.05) | 67% (K=3), 50% (deep) | all at once (K=3) | gauge-fixed | 2e2-2e4 steps, stalls on MPS8 |
+| Riemannian GD (lr 1) | no | sigma-free, 2-8 steps | none | 0-31% (chance 33%) | all at once | n/a | 4-9 steps (dense Jacobian each) |
+| Gram-preconditioned GD | no | sigma-free | none | 33% / 19% | all at once | n/a | 14-36 steps with absolute damping; overshoot to 1e34 L0 and unreliable without |
+| ALS / DMRG | no | exactly sigma-free (proven) | none | 0-17% | spectra jump to final rank as the sweep passes | n/a | < 1 sweep (6-11 micro-steps) |
 
-**Statement (empirical on binary N = 4, deep trees pending).** Gradient-flow results describe GD and
-momentum quantitatively. They describe Adam qualitatively for the order and the sequential nature of
-learning, but not for the time scales: Adam's first escape does not slow down as the init shrinks (until
-eps takes over), and its later plateaus are governed by its own second-moment memory and adaptive edge
-of stability. Methods that act on the tensor W rather than on the cores (Riemannian GD, ALS / DMRG) or
-that fix the gauge (canonical form) do not show saddle-to-saddle dynamics at all: they fit all teacher
-components together, in an order set by the random initial frames.
+**Statement for practitioners (empirical, N <= 8, d <= 3, chi <= 4, odeco and one locality teacher).**
+- GD and momentum: the gradient-flow saddle-to-saddle picture applies quantitatively (event times, plateau
+  exponents, order).
+- Adam (the TN-ML default): learning stays sequential and in GF's order (same first component as GF in
+  92-100% of runs), and the locality order of a structured teacher survives; but time scales do not follow
+  GF: the first plateau disappears (its length no longer grows as the init shrinks), later plateaus are
+  set by Adam's second-moment memory and adaptive edge of stability and grow with 1/sigma at about half
+  GF's rate on a K = 7 tree. With the default eps = 1e-8 and per-core init scales below
+  ~(eps / c_g)^(1/(K-1)) (~0.1 for K = 7-8 here), Adam is GD in disguise and inherits GF's sigma^-(K-2)
+  plateau. Adam ends at unbalanced, sharper minima and, with few samples, more often uses the full bond
+  dimension (worse generalization than GF at n = 45-60 on binary N = 4).
+- Methods that act on the tensor or fix the gauge (Riemannian GD, ALS / DMRG; Gram preconditioning)
+  show no saddle-to-saddle dynamics: all teacher components appear together, in an order set by the
+  random initial frames, in a time independent of the init scale; ALS / DMRG need under one sweep on these
+  exactly realizable problems. Re-gauged GD sits in between on deep trees (sequential, sigma-free,
+  stall-prone).
+- Fan-in initialization traps GF (and Adam at small lr) on MPS N = 8 (dormant components die, R12); a
+  gauge-balanced version of the same initial tensor avoids it.
+
+## 4. Open problems
+
+- Why Adam's later-plateau exponent is about half of GF's on binary N = 8 (2.5 item 4); a sigma range
+  wider than 0.5 decade would need a saddle-start protocol (start at the learned saddle with a controlled
+  dormant amplitude) to separate the dormant-amplitude effect from Adam's memory.
+- Quantitative model of Adam's memory phase (1.2 e'): fit n(T) with measured P_0 and lambda_max.
+- Gram preconditioning: return time after the overshoot is 3x the aligned scalar prediction (2.3).
+- Re-gauged GD stalls on MPS8 (2/24 converged): which saddle of the canonical-gauge dynamics?
+- Larger chi, HT trees, non-orthogonal teachers, finite-sample SGD + Adam (not run).
