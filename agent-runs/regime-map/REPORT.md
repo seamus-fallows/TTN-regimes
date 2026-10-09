@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-09 20:40 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-09 21:10 UTC
 
 ## Summary
 Task: phase diagrams of saddle-to-saddle (S2S) / rich / lazy dynamics over init scale sigma, bond
@@ -102,6 +102,16 @@ Other interim findings (N = 4):
 10. **Interim scipy sweep superseded.** The first N = 4 sigma x chi map (2460 runs, scipy RK45) is
     kept in /root/outputs/regime_map/b4_sigma_chi as an integrator cross-check; all reported numbers
     come from the library runs (ttn.dynamics) with event refinement.
+11. **Convergence is judged against 1/2 ||W*||^2, not L(0).** For the centred and two-copy models
+    these are equal. For the plain model at large sigma, L(0) ~ 1/2 ||W_0||^2 >> 1/2 ||W*||^2, and the
+    literal rule "L(T) < 1e-3 L(0)" (and a stop floor relative to L(0)) would call a run converged
+    after it merely shrank W_0, before any teacher component is learned (seen: K = 15, sigma = 2, no
+    events). Plain rows with L(0) > 100 x 1/2 ||W*||^2 computed under the old floor were discarded and
+    rerun; the others were rescaled (the analysis recomputes labels from l_end).
+12. **Gradient-flow budget is not unlimited**: runs stop at the time budget T or at max_steps
+    (1e5; 3e4 for N = 8), whichever comes first. Runs stopped there unconverged are 'stalled' by the
+    rule and are reported as such, with the stall type from the bond spectra (dead route: R-th bond
+    singular value < 1e-12; long plateau: >= 1e-4; decaying: in between).
 
 ## Files left on the machine
 - `/root/outputs/regime_map/` raw outputs (none yet).
@@ -129,3 +139,6 @@ Other interim findings (N = 4):
 - 20:25 all K >= 7 runs at chi = 3 (= teacher rank) stall; paused sweeps; added gauge-balanced init (balance.py); stall test (binary/MPS N = 8, fan-in vs balanced, chi = 3 vs 6, centred vs plain)
 - 20:30 merged analysis standards + theory_regimes v2 (stalls at chi = R, centred floor at deficient bonds, second-order lazy boundary); revised configs: sigma x K in the plain model with chi = 3 and 6; chi_b4 to chi = 128; imbalance check point; added output-dir options, per-seed boundary functions, stall classification from bond spectra
 - 20:38 stall test (plain, K = 7/8, chi = 3, 3 sigma x 6 seeds): fan-in 12/17 (binary) and 11/13 (MPS) dead routes (3rd bond singular value < 1e-12); balanced init: 0 dead but 12/17 still unconverged (route decaying, s_3 ~ 3e-5) - agrees with theory P14
+- 20:55 library vs scipy integrators on 1937 matched N = 4 runs: labels agree 98.1%, delta_K 0.08%, drift <= 1e-9
+- 21:02 load ~1900: LSODA workers spawned BLAS threads; pinned OMP/OpenBLAS/MKL threads to 1 in sweep.py and restarted (resumable)
+- 21:08 plain-model convergence/stop floor now relative to 1/2 ||W*||^2 (decision 11); dropped 140 affected plain rows; relaunched all sweeps (5516 runs to do)
