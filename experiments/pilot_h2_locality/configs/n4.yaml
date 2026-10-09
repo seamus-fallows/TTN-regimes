@@ -1,0 +1,20 @@
+# Main sweep, N = 4 sites, d = 2, chi = 2, teacher weights (1.0, 0.5).
+# MPS (K = 4 cores) and balanced binary tree (K = 3 cores). "sites0-2" is an extra MPS variant
+# (second component differs on sites 0 and 2: k = 3 < K = 4).
+out_dir: data/pilot_h2_locality/runs
+csv: runs.csv
+method: LSODA
+rtol: 1.0e-10
+wall_limit: 600
+t_max_factor: 1.0e+5  # t_max = 1e5 sigma^-(K-2); the longest escape seen is ~700 t_first
+workers: 8
+seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+groups:
+  - tree: mps
+    n: 4
+    kinds: [local, far, global, sites0-2]
+    sigmas: [0.1, 0.05, 0.03, 0.02, 0.01, 0.005, 0.002, 0.001]
+  - tree: binary
+    n: 4
+    kinds: [local, far, global]
+    sigmas: [0.05, 0.02, 0.01, 0.005, 0.002, 0.001, 0.0005, 0.0002]

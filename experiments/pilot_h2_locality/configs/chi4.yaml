@@ -1,0 +1,14 @@
+# Robustness check: is "stuck at the rank-one saddle" an artifact of the minimal bond dimension
+# chi = 2 (= teacher rank)? Same runs with chi = 4 (bonds capped at the bipartition rank, so the MPS
+# end bonds stay 2-dimensional).
+out_dir: data/pilot_h2_locality/chi4
+csv: chi4_runs.csv
+method: LSODA
+rtol: 1.0e-10
+wall_limit: 900
+workers: 8
+seeds: [0, 1, 2, 3]
+groups:
+  - {tree: mps, n: 6, kinds: [sites0-3, sites0-4, far, global], sigmas: [0.2, 0.1], overrides: {chi: 4}}
+  - {tree: binary, n: 8, kinds: [far, global], sigmas: [0.2, 0.15], overrides: {chi: 4}}
+  - {tree: mps, n: 4, kinds: [far, global], sigmas: [0.03, 0.01], overrides: {chi: 4}}
