@@ -1,6 +1,6 @@
 # optim-samples: learning rate, SGD noise and finite samples (Q8)
 
-Status: working (step 1 done; steps 2-3 in progress) - Branch: agent/optim-samples - Updated: 2026-10-09 20:10 UTC
+Status: working (step 1 done; steps 2-3 in progress) - Branch: agent/optim-samples - Updated: 2026-10-09 20:25 UTC
 
 ## Summary
 Question: how do discrete-step GD, SGD noise and a finite training set change the gradient-flow
@@ -50,10 +50,22 @@ for d = 2; a d = 3, N = 6 test is queued).
   vs 0.4496 at 1.2), a few % on N = 8 trees; the linear formula is its small-excess limit.
 - P6/P7: my backward-error and SGD first-plateau formulas are the same as the note's (P6 exact
   variational version matches GD to 3 digits; P7 being tested in the running SGD sweep).
-- P9 (SGD lengthens/traps later k = 3 plateaus): dedicated aligned-route test running (`p9_sgd.py`;
-  first run: T_SGD/T_GF = 1.45 at eta/B = 2.5e-4, T_GF = 50, i.e. c_gamma ~ 48 vs heuristic 26). Also
-  found: in random-init SGD runs, near-tie seeds flip the race under noise and the second plateau
-  disappears (ratio 0.82 on average at sigma = 0.1); a mechanism outside P9.
+- P9 (SGD lengthens/traps later k = 3 plateaus): **confirmed** with an aligned-route test
+  (`p9_sgd.py`, `fig_p9.png`, 51 runs): T_SGD/T_GF = 1.06 / 1.13 / 1.38 at eta/B = 6.25e-5 / 1.25e-4 /
+  2.5e-4 for T_GF = 50, 1.27 / 3.06 / trapped for T_GF = 166, trapped at all eta/B for T_GF = 500; B = 16
+  and B = 64 at equal eta/B agree to 0.5% (only eta/B matters); no run escaped faster than GF.
+  Fitted c_gamma = 34-45 (heuristic of the note: 26), rising with x, so -ln(1-x)/x underestimates the
+  lengthening close to the trap. In random-init runs, near-tie seeds instead flip the race under
+  noise and the second plateau disappears (mean ratio 0.6-0.7 for those seeds): a mechanism outside P9.
+- P10 (safety at <= 0.25 eta*_ms): **fails for long plateaus with teacher [3, 2, 1]**: the learned
+  component dips below 1/2 at 0.25-0.3 eta*_ms within ~70 time units and is erased at 0.15 eta*_ms over
+  1600 time units.
+- GD stability limit across the lazy transition (centred model, 360 runs): eta_max(sigma) =
+  2/lambda_GF(sigma), from the teacher value at small sigma down to ~sigma^{-2(K-1)} (0.19 eta_max at
+  sigma = 2); no bounded oscillation regime on the lazy side (`fig_lr_regime_map.png`).
+- Order flips below eta_max with 45 seeds (`fig_order_flips.png`): 0/45 at 0.1 eta_max; 1-4 of 45 at
+  0.3-0.9 eta_max; 6 of 7 flipped seeds are near-ties (GF's eventual second component peaks at
+  0.23-0.49 during the first event and is then suppressed).
 - Correction to my notes: I had argued that k >= 3 routes cannot stochastically collapse; the
   theory note's O(1) zero-mean coupling to mixed bond entries shows they can (fixed in section 4).
 
@@ -91,6 +103,13 @@ final losses; GF to ~1e-5 relative; SGD trajectories are identical (events to 2e
   lines in my folder; I will rerun key settings with `ttn.dynamics` once it lands.
 - **sigma = 0.9 for the N = 8 trees** (GF first events at t ~ 4-80; at sigma = 0.5 later events
   take > 1000 time units for K = 7, 8).
+- **SGD sweep: 10 noise seeds per init** (20 for the aligned block), down from 20 (40), after the
+  first ~400 runs showed the full grid would take ~5 h on the shared CPUs; runs already made with more
+  seeds are kept. Pooled over 5 inits this is still 50 runs per setting.
+- **Collapse test on MPS N=4, not binary N=4**: on binary N=4 the pattern [[0,0,0,0],[1,1,0,0]] lies
+  inside one core (k = 1, both components learned together), which I noticed only from the first
+  results; those runs are kept separately (`/root/outputs/optim_samples/collapse_binary4_k1/`) and show
+  only that label noise zeta >= 10 at eta = 5e-4, B = 1 erases learned components.
 - **Outcome classes for GD** (not in `notes/diagnostics.md`, which has only "diverged" for GD):
   converges / bounded oscillation (loss total variation > 10x net change over the last 20% of steps,
   or final sharpness x eta/2 > 1) / thrown back to origin (loss > 0.9 L(0) after an event) / diverged.
@@ -130,3 +149,5 @@ final losses; GF to ~1e-5 relative; SGD trajectories are identical (events to 2e
 - 19:33 Library cross-check passed (GD/GF/SGD); SGD sweep and finite-sample sweep running (15 workers each).
 - 19:55 Finite-sample sweep done (275 runs). Lead: theory_optimizer v2; merged; P5 confirmed from GD data.
 - 20:05 P9 aligned-route SGD test, GD order-flip (40 seeds) and centred-model GD blocks running; d = 3 samples block queued.
+- 20:15 P9 confirmed (c_gamma 34-45, only eta/B matters, trapping); centred GD: limit 2/lambda_GF(sigma); order flips quantified.
+- 20:20 Collapse test v1 used a k = 1 pattern on binary N=4 by mistake; redone on MPS N=4 (k = 2). SGD sweep noise seeds reduced to 10/init (20 aligned) to finish in ~1.5 h.

@@ -274,3 +274,4 @@
 [273/275] chi4_small n=16 sigma=0.5 max_steps test_rel=3.27 72s
 [274/275] chi4_small n=16 sigma=0.5 max_steps test_rel=1.02 74s
 [275/275] chi4_small n=16 sigma=0.5 max_steps test_rel=2.22 75s
+365 tasks, 90 to run

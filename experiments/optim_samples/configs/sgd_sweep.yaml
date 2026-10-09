@@ -2,23 +2,23 @@
 # odeco teacher [3, 2, 1] (teacher seed 101). eta in units of gradient-flow time (t = eta * steps).
 # GD stability limit 0.154; exact mean-square SGD limit eta_ms(B) ~ 0.00107 B for B <= 16
 # (results/sgd_stability.csv), so eta = 5e-4 is stable for every B. Runs stop 25 checks after the
-# second event (stop_after: 2).
+# second event (stop_after: 2). Noise seeds: 10 per init (20 for the aligned block); runs already
+# made with more noise seeds are kept and used.
 blocks:
   - {name: B_sweep, tree: binary, n: 4, sigmas: [0.1, 0.3], seeds: [0, 1, 2, 3, 4],
-     noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+     noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
      B: [1, 2, 4, 8, 16, 32, 64, 128, 256], eta: [0.0005], T: {0.1: 40, 0.3: 15}, stop_after: 2}
   # sigma = 0.03 is ~3x more expensive per run: fewer batch sizes and noise seeds.
   - {name: B_sweep, tree: binary, n: 4, sigmas: [0.03], seeds: [0, 1, 2, 3, 4],
      noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], B: [1, 4, 16, 64, 256], eta: [0.0005],
      T: {0.03: 120}, stop_after: 2}
   - {name: eta_sweep_B4, tree: binary, n: 4, sigmas: [0.1], seeds: [0, 1, 2, 3, 4],
-     noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+     noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
      B: [4], eta: [0.0001, 0.0002, 0.001, 0.002], T: 40, stop_after: 2}
   - {name: eta_sweep_B64, tree: binary, n: 4, sigmas: [0.1], seeds: [0, 1, 2, 3, 4],
-     noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+     noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
      B: [64], eta: [0.001, 0.002, 0.005, 0.01, 0.02], T: 40, stop_after: 2}
   # Aligned balanced init (per-core amplitude sigma for every component): exact 1D reduction.
   - {name: aligned, tree: binary, n: 4, init: aligned, sigmas: [0.05], seeds: [0],
-     noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-                   23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+     noise_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
      B: [1, 2, 4, 8, 16, 32, 64, 128, 256], eta: [0.0005], T: 40, stop_after: 2}
