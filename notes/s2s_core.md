@@ -170,7 +170,74 @@ DOP853 rtol 1e-10. d = 4, odeco teacher seed 100.
   by the rho_0 picture for K = 8.
 - Seed-to-seed spread of T: coefficient of variation 0.2 (K = 3) to 0.8 (HT 4, MPS 8).
 
-### 2.2 Dormant-component suppression (in progress; sweep `configs/main.yaml`, LSODA rtol 1e-8, atol 1e-11 sigma)
+### 2.2 Step 1: aligned init reproduces the exact mode solutions (derived; known for DLNs)
+
+Aligned balanced init (`ttn.network.aligned_init`, per-core amplitude a0 on every component) on the
+odeco teacher [3, 2, 1]: the TTN gradient flow stays in the aligned family and each component follows
+the balanced Saxe mode a' = a^{K-1}(s - a^K) (Saxe et al. 2014 eq. 15 for DLNs; explicit for TTNs here,
+`notes/theory_escape.md` 2.3). **Empirical check** (`results/aligned.csv`, DP5 rtol 1e-10, atol 1e-14):
+max |a_GF - a_theory| over t and r = 2.0e-10 (binary4), 3.1e-10 (mps4), 2.2e-9 (binary8), 2.5e-9
+(ht4), 2.8e-9 (mps8); event times identical to 1e-11 relative on the same grid; Q drift <= 2e-14.
+
+### 2.3 Saddle-to-saddle phenomenology at K = 3, 4 (empirical)
+
+Sweep `configs/main.yaml`: fan-in init, d = 4, chi = 3, 6, teachers [3, 2, 1] and [1, 0.85, 0.7],
+sigma = 0.1 .. 0.003 (8 values), 10 seeds; LSODA rtol 1e-8, atol 1e-11 sigma. Events refined in
+linear time (no duration read off the log grid).
+- **All runs learn all components** on binary4 (320/320). On mps4: 160/160 at chi = 6; at chi = 3,
+  48/80 (separated) and 58/80 (close): the rest are trapped (2.7).
+- **S2S criterion** (diagnostics.md) among complete runs: binary4 separated 158/160, close teacher
+  5/20 at sigma = 0.1 rising monotonically to 20/20 at sigma = 0.003 (overlapping transitions at larger
+  sigma); mps4 266/266. Criterion (iii) (plateaus grow without bound) is the exponent table of 2.4.
+- **Plateau levels are the partial-fit levels** L_S = 1/2 sum_{r not learned} s_r^2 (S = the components
+  learned so far, in whatever order): max relative deviation at the plateau midpoint 2e-3 (mps4),
+  2e-2 (binary4, at sigma = 0.1), 3e-6 (the few complete K = 7 runs).
+- **Bond spectra grow one value at a time on every edge simultaneously**: in 213/236 runs with
+  event-window spectra, each event raises the number of singular values above s_r/2 by exactly one on
+  every edge, and all edges step at the same output sample of the refined window (spread < width/40).
+  The 23 exceptions are overlapping events (two ranks in one window: binary4, close teacher,
+  sigma >= 0.05). Effective bond rank 0 -> 1 -> 2 -> 3 (figure b).
+- **Order** (recorded; `order` studies it): binary4 learns the largest component first in 320/320
+  runs' first event (matrix-like, greedy); the full order is greedy in 157/160 at chi = 3, 6 ... (close
+  teacher: 0.9-0.96). On mps4 the first component is random (P(largest first) = 0.5-0.8 per cell) but is
+  the same at every sigma for each seed (10/10 seeds in every cell), as the race picture predicts
+  (theory_escape E8).
+
+### 2.4 Escape-time exponents (empirical; prediction derived)
+
+Per-seed fits of log t vs log sigma over the sigmas at which the seed completes in its modal order
+(>= 4 sigmas), mean +- SE over seeds; predicted K - 2 for t_1 and every gap (odeco: every route uses
+all K cores, theory_saddles R2):
+
+| tree | K | chi | teacher | seeds | t_1 | t_2 - t_1 | t_3 - t_2 |
+|---|---|---|---|---|---|---|---|
+| binary4 | 3 | 3 | separated | 10 | 1.005 +- 0.000 | 1.003 +- 0.001 | 1.004 +- 0.003 |
+| binary4 | 3 | 6 | separated | 10 | 1.006 +- 0.001 | 1.008 +- 0.002 | 1.012 +- 0.002 |
+| binary4 | 3 | 3 | close | 10 | 1.000 +- 0.003 | 1.002 +- 0.042 | 0.92 +- 0.11 |
+| binary4 | 3 | 6 | close | 10 | 0.999 +- 0.005 | 1.036 +- 0.036 | 1.12 +- 0.05 |
+| mps4 | 4 | 3 | separated | 6 | 2.000 +- 0.000 | 1.999 +- 0.000 | 1.990 +- 0.005 |
+| mps4 | 4 | 6 | separated | 10 | 2.000 +- 0.000 | 2.001 +- 0.001 | 1.998 +- 0.001 |
+| mps4 | 4 | 3 | close | 7 | 2.000 +- 0.000 | 2.000 +- 0.001 | 2.004 +- 0.002 |
+| mps4 | 4 | 6 | close | 10 | 2.000 +- 0.000 | 2.001 +- 0.001 | 2.001 +- 0.001 |
+
+The residual deviations of the raw t_1 exponent from K - 2 (e.g. 1.005) are the predicted O(1) offset
+c_K (section 1.1): with it removed the exponent is 0.9996 +- 0.0001 (2.5). The close-teacher binary4
+gaps scatter more because transitions overlap at sigma >= 0.03. K = 7, 8: section 2.6 (pending).
+
+### 2.5 Saddle type at plateau midpoints (empirical; theory_saddles R10)
+
+Gauge-projected Hessian at the plateau midpoints (minimum speed between events). Primary rule
+(diagnostics.md): slope of log(-lambda_min) vs log sigma per seed: 1.06 +- 0.01 / 1.02 +- 0.00 (first /
+second plateau, binary4 chi = 3, separated), 1.08 / 1.04 (chi = 6); mps4 2.01 / 1.99 (chi = 3), 2.01 /
+2.00 (chi = 6): lambda_min -> 0 like sigma^{K-2}, i.e. **higher-order saddles**, as predicted for odeco
+teachers (no strict direction: m >= 3, or m = 2 on binary4 with the larger components learned first).
+Magnitude: ratio of lambda_min to the route formula -(K-1) s_r (s_r |a_r|)^{(K-2)/K} (theory_saddles R10,
+balanced route, A = 1 for k = K) evaluated with the measured dormant overlap: median 0.88-1.15 per cell.
+Caveat: the library's gauge projection was found to bias projected eigenvalues by up to ~20% near
+rank-deficient saddles (fix pending); slopes are unaffected; values will be recomputed, raw values are
+reported next to them (`recompute_hessians.py`).
+
+### 2.7 Dormant-component suppression (in progress; sweep `configs/main.yaml`, LSODA rtol 1e-8, atol 1e-11 sigma)
 
 Question (from the lead): do dormant components shrink during earlier escapes and plateaus, by how
 much, vs sigma, K, chi, and does a gauge-balanced init avoid it?
