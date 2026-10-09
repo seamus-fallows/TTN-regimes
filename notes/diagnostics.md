@@ -77,6 +77,7 @@ several sigma. **Strict saddle**: lambda_min tends to a negative sigma-independe
 (k = 2 routes). **Higher-order saddle**: lambda_min -> 0 like sigma^(k-2) (k >= 3). Reason: at a plateau
 point (not exactly at the saddle) higher-order saddles show small negative eigenvalues of order
 sigma^(k-2), which a fixed threshold misclassifies at moderate sigma (`theory_saddles.md` R10-R11).
+Gauge projection (`ttn.diagnostics.project_out_gauge`, default rtol = 1e-3) drops near-null gauge generators: renormalizing them (the old default rtol = 1e-10) biased lambda_min by up to ~20% near rank-deficient saddles. Always report the raw lambda_min too; for saddle-start states at moderate sigma (~1e-2), where bad generators survive any safe cut, the raw value is the one to quote.
 Fallback (single sigma only, state it): at the plateau midpoint, compute the gauge-projected Hessian spectrum. **Strict saddle**:
 lambda_min < -epsilon (epsilon = 1e-3 x the largest eigenvalue's magnitude scale at that point, also
 reported raw). **Higher-order (non-strict) saddle**: no eigenvalue below -epsilon although the loss

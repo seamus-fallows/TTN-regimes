@@ -67,12 +67,30 @@ def with_keys(df: pd.DataFrame) -> pd.DataFrame:
 # ---- scaling of event times with sigma ------------------------------------------------------------
 
 
+def _log_law_rms(x: np.ndarray, y: np.ndarray) -> float:
+    """rms residual in ln T of the log law T = a + b ln(1/sigma), fitted by least squares in ln T (the
+    same space and weighting as the power law; analysis standard 5), with T > 0 on the data enforced."""
+    from scipy.optimize import least_squares
+
+    cl, *_ = np.linalg.lstsq(np.vstack([np.ones_like(x), x]).T, y, rcond=None)
+    b0 = max(cl[1], 1e-12 * y.mean())
+    a0 = max(y.min() - b0 * x.min(), 1e-6 * y.min()) if b0 > 0 else y.mean()
+
+    def resid(ab):
+        model = ab[0] + ab[1] * x
+        return np.log(np.clip(model, 1e-300, None)) - np.log(y)
+
+    best = least_squares(resid, x0=[a0 if a0 + b0 * x.min() > 0 else y.min(), b0])
+    return float(np.sqrt(np.mean(best.fun ** 2)))
+
+
 def per_seed_fits(g: pd.DataFrame, q: str, min_sigmas: int = 4) -> dict:
     """Scaling of quantity q (method clock) with sigma, fitted per seed (each seed is one init direction
     rescaled by sigma; notes/briefs/README.md, analysis standards 1, 3, 4, 5).
 
-    Per seed: keep converged runs whose event is resolved (`<q>_resolved`) and whose learning order is the
-    seed's most common order (same saddle sequence), need >= min_sigmas sigma values; fit
+    Per seed: keep converged runs whose event is resolved (`<q>_resolved`) and, for event quantities, whose
+    learning order is the seed's most common order (same saddle sequence; not applied to the times to reach a
+    loss level, t_loss_*), need >= min_sigmas sigma values; fit
     power  ln T = c + p ln(1/sigma)  and  log  T = a + b ln(1/sigma), both scored by the rms residual of
     ln T (the log-law prediction is clipped at a tiny positive value). Returns mean +- s.e. of p over seeds,
     the mean scores and the exclusion counts."""
@@ -86,9 +104,10 @@ def per_seed_fits(g: pd.DataFrame, q: str, min_sigmas: int = 4) -> dict:
             gs = gs[gs[res_col].astype(bool)]
         if gs.empty:
             continue
-        modal = gs["order"].astype(str).value_counts().index[0]
-        n_order += int((gs["order"].astype(str) != modal).sum())
-        gs = gs[gs["order"].astype(str) == modal]
+        if not q.startswith("t_loss"):  # plateau durations: one saddle sequence per fit (standard 3)
+            modal = gs["order"].astype(str).value_counts().index[0]
+            n_order += int((gs["order"].astype(str) != modal).sum())
+            gs = gs[gs["order"].astype(str) == modal]
         y = (gs[q] * gs["clock"]).values
         x = np.log(1 / gs["sigma"].values)
         if gs["sigma"].nunique() < min_sigmas or np.any(y <= 0):
@@ -96,10 +115,9 @@ def per_seed_fits(g: pd.DataFrame, q: str, min_sigmas: int = 4) -> dict:
             continue
         A = np.vstack([np.ones_like(x), x]).T
         cp, *_ = np.linalg.lstsq(A, np.log(y), rcond=None)
-        cl, *_ = np.linalg.lstsq(A, y, rcond=None)
         p_list.append(cp[1])
         rms_pow.append(np.sqrt(np.mean((np.log(y) - A @ cp) ** 2)))
-        rms_log.append(np.sqrt(np.mean((np.log(y) - np.log(np.clip(A @ cl, 1e-300, None))) ** 2)))
+        rms_log.append(_log_law_rms(x, y))
     p_arr = np.array(p_list)
     return {"exponent": p_arr.mean() if len(p_arr) else np.nan,
             "exponent_se": p_arr.std(ddof=1) / np.sqrt(len(p_arr)) if len(p_arr) > 1 else np.nan,
@@ -402,7 +420,7 @@ def fig_adam_escape(tag=""):
     colors = {1e-3: tp.palette(2)[1], 1e-2: tp.palette(7)[6]}
     for lr in sorted(eps["lr"].unique()):
         for e, mk, ls in ((1e-8, "o", "-"), (1e-30, "s", ":")):
-            g = eps[(eps["lr"] == lr) & (eps["eps"] == e)]
+            g = eps[np.isclose(eps["lr"], lr) & np.isclose(eps["eps"], e, rtol=1e-6, atol=0)]
             if g.empty:
                 continue
             t1 = g["t_first"].where(np.isfinite(g["t_first"]), np.nan)
@@ -414,7 +432,7 @@ def fig_adam_escape(tag=""):
                 ax.plot(lower.index, lower.values, "^", color=colors.get(lr, tp.INK), ms=4, mfc="none",
                         label=f"  (no escape within budget)")
             if e == 1e-8 and len(ref):
-                n_sign = eps[(eps["lr"] == lr) & (eps["eps"] == 1e-30)]["t_first"].median()
+                n_sign = eps[np.isclose(eps["lr"], lr) & np.isclose(eps["eps"], 1e-30, rtol=1e-6, atol=0)]["t_first"].median()
                 sig = np.geomspace(eps["sigma"].min(), eps["sigma"].max(), 60)
                 pred = (e / lr) * np.median(ref.values) * (0.3 / sig) ** k_minus_2 + n_sign
                 ax.plot(sig, pred, color=colors.get(lr, tp.INK), lw=0.8, ls="--")
@@ -429,10 +447,10 @@ def fig_adam_escape(tag=""):
 
 
 def fig_implicit_bias(name: str = "implicit_bias_b4"):
-    """Finite samples (binary4, chi = 4 > teacher rank 3): fraction of runs recovering the teacher
-    (population loss < 1e-2 L0... here < 1e-2 absolute, L0 = 7) and fraction ending with a full-chi
-    interpolant (effective rank 4 on an edge), against the number of samples. Only runs that reached
-    the training tolerance are counted for the rank panel (GF: the long t_max = 1e6 runs)."""
+    """Round 1 (superseded by fig_implicit_bias2: one data draw per init seed). Finite samples (binary4,
+    chi = 4 > teacher rank 3): fraction of runs recovering the teacher (population loss < 1e-2, L0 = 7) and
+    fraction ending with a rank-4 edge, against n. All runs are counted, including runs that did not reach
+    the training tolerance (GF: the long t_max = 1e6 runs)."""
     df = with_keys(collect(name))
     gf_long = (df["optimizer"] == "gf") & (df["t_max"] == 1e6)
     df = df[(df["optimizer"] != "gf") | gf_long].copy()
@@ -465,4 +483,34 @@ def fig_implicit_bias(name: str = "implicit_bias_b4"):
     axes[0].set_title("binary4, chi = 4, sigma in {0.01, 0.1}, 12 runs per point", fontsize=7)
     axes[1].set_title("dotted: dimension of the rank-(3,3) manifold (45)", fontsize=7)
     tp.savefig(fig, FIG / "implicit_bias_b4")
+    return fig
+
+
+def fig_implicit_bias2(name: str = "implicit_bias2_b4"):
+    """Finite samples, several data draws: population loss of Adam vs GF on the same (data draw, init
+    seed), runs that reached the training tolerance (empirical loss < 1e-8 L0) only. Panels n = 45, 60."""
+    df = with_keys(collect(name))
+    df = df[df["meta_stop_reason"].astype(str).eq("converged")]
+    key = ["n_samples", "sigma", "data_seed", "seed"]
+    gf = df[df["optimizer"] == "gf"].set_index(key)["pop_loss_end"]
+    tp.set_style()
+    fig, axes = tp.subplots(1, 2, width=tp.TEXT_WIDTH, panel_aspect=0.9)
+    for ax, n in zip(axes, (45, 60)):
+        for m, mk in (("Adam, lr 0.001", "o"), ("Adam, lr 0.01", "^")):
+            g = df[(df["method"] == m) & (df["n_samples"] == n)].set_index(key)["pop_loss_end"]
+            common = g.index.intersection(gf.index)
+            ax.plot(np.maximum(gf.loc[common], 1e-9), np.maximum(g.loc[common], 1e-9), mk, ms=3.5,
+                    color=FAMILY_COLOR["adam"], mec="white", mew=0.5, alpha=0.8 if mk == "o" else 0.6,
+                    label=f"{m} ({len(common)} pairs)")
+        lim = (1e-9, 1e2)
+        ax.plot(lim, lim, color=tp.MUTED, lw=0.8, ls="--")
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlim(*lim)
+        ax.set_ylim(*lim)
+        ax.set_xlabel("population loss, GF")
+        ax.set_title(f"binary4, n = {n}: 4 data draws x 6 inits x sigma in {{0.01, 0.1}}", fontsize=7)
+        ax.legend(fontsize=6, loc="upper left")
+    axes[0].set_ylabel("population loss, Adam (same draw and init)")
+    tp.savefig(fig, FIG / "implicit_bias2_b4")
     return fig

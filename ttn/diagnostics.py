@@ -771,7 +771,9 @@ def gauge_directions(spec: TTNSpec, theta) -> torch.Tensor:
     Inserting (1 + eps E) (1 + eps E)^{-1} on edge v (parent p) gives, for each generator
     E = E_ab (a, b < chi_v), dG_v = G_v E (G_v matricized as (fan_in, chi_v)) and dG_p = -E applied
     on p's v-leg; all other cores 0. W is unchanged to first order. Columns are not normalized and
-    are linearly independent for generic theta (not at special points such as aligned inits).
+    are linearly independent for generic theta (not at special points such as aligned inits). Near
+    a rank-deficient point the generators acting on a nearly unused bond index are tiny (size ~ the
+    unused entries); `project_out_gauge` drops them rather than normalizing them.
     """
     cores = spec.unflatten(_flat(spec, theta))
     t, slices = spec.tree, spec.core_slices()
@@ -792,19 +794,40 @@ def gauge_directions(spec: TTNSpec, theta) -> torch.Tensor:
     return out
 
 
-def gauge_complement(U, rtol: float = 1e-10) -> torch.Tensor:
-    """Orthonormal basis (n, n - r) of the orthogonal complement of span(U), r = numerical rank of U
-    (singular values > rtol * the largest), so rank-deficient U (special points) is handled."""
+def gauge_complement(U, rtol: float = 1e-3) -> torch.Tensor:
+    """Orthonormal basis (n, n - r) of the orthogonal complement of the well-conditioned part of
+    span(U): r = number of singular values of the (unnormalized) U above rtol * the largest. Exact
+    dependencies (special points) and near-null generators are both left out of the span; see
+    `project_out_gauge` for why the latter must be. rtol = 1e-10 drops only exact dependencies."""
     # SVD rather than plain QR: QR of a rank-deficient U does not give a basis of its span.
     q, s, _ = torch.linalg.svd(U, full_matrices=True)
     rank = int((s > rtol * s.max()).sum())
     return q[:, rank:]
 
 
-def project_out_gauge(H, U, rtol: float = 1e-10) -> tuple[torch.Tensor, torch.Tensor]:
-    """Restrict H to the orthogonal complement of span(U): returns (C^T H C, its eigenvalues
-    ascending) with C = gauge_complement(U). Gauge zero modes are removed, so the remaining zero /
-    negative eigenvalues are genuine flat / descent directions (map eigenvectors back with C)."""
+def project_out_gauge(H, U, rtol: float = 1e-3) -> tuple[torch.Tensor, torch.Tensor]:
+    """Restrict H to the orthogonal complement of the well-conditioned gauge directions: returns
+    (C^T H C, its eigenvalues ascending) with C = gauge_complement(U, rtol). Gauge zero modes are
+    removed, so the remaining zero / negative eigenvalues are genuine flat / descent directions (map
+    eigenvectors back with C).
+
+    Only left singular vectors of the unnormalized U with singular value > rtol * the largest are
+    removed: tiny generators must not be renormalized. A gauge vector is linear in theta,
+    u_E = A_E theta, and differentiating L(exp(t A_E) theta) = L(theta) gives
+    H u_E = -A_E^T grad L (the gauge vector of E^T evaluated at grad L), so |H u_E| <= |grad L|.
+    Near a critical point an O(1) generator is a near-zero mode of H, but one acting on a nearly
+    unused bond index (size eps ~ the unused entries, e.g. ~sigma near a rank-deficient saddle) is
+    not: the gradient on those entries is O(eps) too, so u_E / |u_E| carries O(1) curvature. Its
+    direction, (eps_v, -eps_p) normalized, is set by the noise on that index and overlaps the escape
+    direction of a route through the bond unless the route is exactly balanced, so projecting it
+    out removes part of the negative mode. With rtol = 1e-10 the k = 2 saddle lambda_min came out
+    up to ~50% too small in magnitude, seed-dependent and eps-independent
+    (notes/reviews/locality_round1.md, B3). With the cut the projected spectrum tends to the exact
+    saddle's (where those generators vanish) as eps -> 0. It separates them only while
+    eps < rtol * the learned amplitudes (e.g. not at sigma = 1e-2 saddle starts): otherwise compare
+    with the raw spectrum. At generic points (fan-in inits, binary / mps / ht trees) the smallest
+    singular value of U is >= 2e-2 of the largest, so nothing is dropped there.
+    """
     c = gauge_complement(U, rtol)
     h = c.T @ torch.as_tensor(H, dtype=c.dtype) @ c
     h = 0.5 * (h + h.T)

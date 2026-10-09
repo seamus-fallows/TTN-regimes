@@ -76,11 +76,10 @@ def q_norms(problem: Problem, theta: torch.Tensor, t: float) -> np.ndarray:
     return np.array([q[v].norm().item() for v in problem.spec.tree.edges])
 
 
-def make_recorder(speed: bool = True) -> Recorder:
-    rec = Recorder(extra=[("balance", balance_index), ("q_norm", q_norms)])
-    if not speed:  # the library's record() always adds |v|; the GD-type loops pass it themselves
-        pass
-    return rec
+def make_recorder() -> Recorder:
+    """Library recorder at the scheduled points. Its own fine rows are off: the discrete methods keep
+    their own fine trace (`optimizers.Log`) and GF locates events exactly (`optimizers.run_gf`)."""
+    return Recorder(extra=[("balance", balance_index), ("q_norm", q_norms)], fine=False)
 
 
 def teacher_spectra(problem: Problem) -> np.ndarray:
