@@ -209,6 +209,34 @@ eta q s_new - eta^2 q^2 E xi^2/2, so collapse needs s_new < eta q (V + zeta^2)/(
 label noise to collapse (components weaker than ~eta q zeta^2/(2B)). Tests: `p9_sgd.py` (k = 3,
 section 6), `collapse_test.py` (k = 2 with label noise).
 
+### 4.1 Test of the theory note's P9/P10 (empirical; `p9_sgd.py`, `plot_p9.py`, `results/p9_fit.csv`)
+
+Binary N=4, d = chi = 3, teacher [3, 2, 1]; start on the aligned route (component 1 learned,
+components 2 and 3 at per-core amplitude b0), so the GF second plateau is exact: T_GF = 49.7, 166.3,
+499.6 for b0 = 0.01, 0.003, 0.001 (exact 1D integral = `integrate_gf` lsoda to 1e-8). Online SGD
+(`ttn.dynamics.run_sgd`), 4 noise seeds per point, eta/B = 6.25e-5, 1.25e-4, 2.5e-4 at B = 64
+(eta = 0.004-0.016 = 0.08-0.3 eta*_ms) and B = 16 (b0 = 0.01). Event: a_2 = 1/2.
+
+| b0 (T_GF) | eta/B = 6.25e-5 | 1.25e-4 | 2.5e-4 |
+|---|---|---|---|
+| 0.01 (50), B=64 / B=16 | 1.056 / 1.056 (c 33.6 / 33.5) | 1.130 / 1.129 (35.6 / 35.3) | 1.386 / 1.380 (40.1 / 39.7) |
+| 0.003 (166), B=64 | 1.267 (37.5) | 3.06 +- 0.26 (45.1) | trapped (4/4) |
+| 0.001 (500), B=64 | trapped (4/4) | trapped (4/4) | trapped (2/2) |
+
+(T_SGD/T_GF, mean over seeds; c = c_gamma from inverting -ln(1-x)/x.) Findings:
+- **Lengthening and trapping confirmed** (P9 (i)): no SGD run escaped faster than GF (P9 (iv)); the
+  route amplitude sigma_2^{1/3} of trapped runs decays (0.001 -> 5e-4, 3e-5, 1e-6 by t = 1600 at the
+  three eta/B).
+- **Only eta/B matters** (P9 (ii)): B = 16 and B = 64 at equal eta/B agree to 0.5%.
+- **c_gamma = 34-45** for this teacher (heuristic of the note: 26), increasing with x: the law's
+  shape -ln(1-x)/x underestimates the lengthening near the trap; the trapping threshold
+  (x = c (eta/B) T_GF ~ 1) is consistent with all trapped runs (c >= 32).
+- **P10 safety rule fails for long plateaus with this teacher:** at eta/B = 2.5e-4 (0.25-0.3 eta*_ms)
+  the learned component dips below 1/2 within T ~ 70 (min a_1 = 0.44-0.46); over 1600 time units it is
+  erased even at 0.15 eta*_ms (min a_1 = 0.04, -0.07). Excursions accumulate with run length, and the
+  residual noise grows like s^2 while eta*_ms shrinks only like s^{-4/3}, so larger teachers need a
+  smaller fraction of eta*_ms (conjecture).
+
 ## 5. SGD stability limit (derived)
 
 At an interpolating minimum (realizable teacher, no label noise) the noise vanishes; linear
@@ -294,8 +322,20 @@ For small (saddle-to-saddle) init, with s_1 the largest teacher weight and K the
 
 For imbalanced (or large, non-small) inits the GF minimum is sharper than the balanced one, and GD
 with 2/lambda_GF < eta < eta_max converges to a flatter, more balanced minimum at sharpness ~2/eta (EoS
-selection). For the centred (lazy-side) model the limit is set by the sharpness of the GF minimum
-it reaches (section 3.4 and the centred sweep, results pending).
+selection).
+
+**Across the lazy transition (centred model, binary N=4, sigma = 0.3-2, 5 seeds x 11 step sizes,
+`configs/gd_centred.yaml`, `fig_lr_regime_map.png`; empirical).** The GD limit is 2/lambda_GF(sigma),
+lambda_GF = sharpness of the GF state reached (for sigma >= 1 the state at the end of the run, T = 2-5,
+not yet converged): predicted eta_max(sigma)/eta_max(balanced) = 1.00, 0.99, 0.97, 0.88, 0.57, 0.19 for
+sigma = 0.3, 0.5, 0.7, 1.0, 1.4, 2.0; observed converge/fail boundaries 0.9-1.05, 0.9-1.05, 0.9-1.05,
+~0.9 (3/5 converge), 0.5-0.7, ~0.2 (3/5 at 0.2). The GF sharpness grows like sigma^{2(K-1)} = sigma^4 in the
+lazy regime (init sharpness 15.5 -> 61.6 from sigma = 1.4 to 2, ratio 4.0 vs 1.43^4 = 4.2). Above the
+limit, small-init runs oscillate boundedly, while lazy-side runs (sigma >= 1.4) are thrown back or
+diverge: there is no bounded EoS regime in the lazy corner. The learned bond rank of the GF state is
+the teacher's (3) for sigma <= 0.5 and 4-6 for sigma >= 1. So **the stability limit is set by the
+teacher in the saddle-to-saddle regime and by the init scale (sigma^{-2(K-1)}) in the lazy regime**,
+and a fixed eta that is safe at small init becomes unstable as sigma grows past ~s_1^{1/K}.
 
 Online SGD with batch B at small step: the first plateau keeps its GF law (P7; mean delay
 ~ (eta/2)(K-1)(1 + kappa/B) ln(a_e/a_0), spread ~ sqrt(kappa (eta/B) t)); later degenerate plateaus are
