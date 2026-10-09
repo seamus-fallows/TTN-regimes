@@ -158,29 +158,47 @@ L(0)), at all 9 threshold pairs. Every number below states tree, chi, sigma rang
 
 ### 2.1 sigma x chi, binary N = 4 (K = 3)
 
-*Interim data (scipy RK45, rtol 1e-9, 6 seeds x 8 chi x 19 sigma in [0.01, 40]; to be replaced by the
-library rerun with linear-time event refinement, `sigma_chi_b4`).*
+Library gradient flow (DP5, rtol 1e-8, atol 1e-12; events re-integrated on a dense linear grid),
+6 seeds x 8 chi (3, 4, 6, 9, 12, 18, 24, 36; uncapped) x 19 sigma in [0.01, 40], centred model;
+`results/phase_sigma_chi_b4_centred.png`, per-seed tables `results/sensitivity_per_seed_sigma_chi_b4_centred.csv`.
+Boundaries are per seed (geometric mean x/ standard-error factor over 6 seeds); "S2S boundary" =
+sigma where the seed's min_i rho_i drops below 3 (log-log interpolation), "kernel boundary" = sigma
+where delta_K(T) drops below 0.1 (converged runs).
 
-- **Three regions plus a stall region** (`results/phase_b4_sigma_chi_centred.png`): S2S for
-  sigma < sigma_c(chi); rich non-incremental in between; lazy for sigma > sigma_lazy(chi) only if
-  chi >= 9 (= the cut dimension d^2); for chi < 9 the runs stall above sigma ~ 0.8-1.3. **Empirical.**
-- **S2S boundary.** sigma_c (S2S fraction 1/2) = 0.25, 0.13, 0.14, 0.13, 0.10, 0.071, 0.076, 0.045 for
-  chi = 3, 4, 6, 9, 12, 18, 24, 36. Predicted per seed from its deepest run only (aligned-mode
-  extrapolation of the three event times, `analysis.aligned_sigma_c`): medians 0.34, 0.13, 0.13, 0.14,
-  0.10, 0.075, 0.074, 0.043 - within one grid step (x1.585) everywhere. **Empirical** test of the
-  **derived** small-sigma law rho_i = R_i sigma^-(K-2) + O(1) with aligned-mode O(1) terms.
-- **Stall = realizability.** For chi < 9 the final loss equals the best rank-chi fit of W_0 + W* across
-  the 01|23 cut (exact SVD) in every run, and the stall onset is where that best fit reaches 1e-3 L(0).
-  **Empirical**, confirming theory R6.
-- **Lazy boundary** (chi >= 9): sigma_lazy = 3.0, 2.1, 1.59, 1.26, 1.13 for chi = 9, 12, 18, 24, 36; first-
-  order prediction (kappa/0.1)^(1/3) with kappa from linear response at init: 3.8, 2.4, 1.45, 0.98, 0.59.
-  It holds where x = ||W*|| / sigma^3 <~ 1 (chi <= 18) and underestimates sigma_lazy when the predicted
-  boundary has x > 1 (chi >= 24): there delta_K is dominated by higher orders in x. At sigma >= 3 the
-  measured delta_K equals kappa / sigma^3 within 1% (chi = 24). **Empirical.**
-- **Threshold sensitivity.** S2S boundary ratio between rho thresholds 2 and 5: 2.2-2.55 for every chi
-  (predicted (5/2)^(1/(K-2)) = 2.5). Lazy boundary ratio between delta_K thresholds 0.05 and 0.2:
-  2.4, 1.7, 1.6, 1.1, 1.5 for chi = 9..36 (first-order prediction 4^(1/3) = 1.59; grid step 1.585).
+| chi | S2S boundary | predicted from deepest run (aligned extrapolation) | pred / measured | rho exponent on the S2S side (mean +- SE) | kernel boundary | ratio of S2S boundaries rho 2 / rho 5 | ratio of kernel boundaries dK 0.05 / 0.2 |
+|---|---|---|---|---|---|---|---|
+| 3 | 0.236 x/ 1.32 | 0.283 x/ 1.35 | 1.23 +- 0.10 | -1.056 +- 0.022 | stalled (floor) | 2.15 +- 0.05 | - |
+| 4 | 0.089 x/ 1.58 | 0.118 x/ 1.50 | 1.50 +- 0.47 | -1.070 +- 0.040 | stalled | 2.03 +- 0.18 | - |
+| 6 | 0.137 x/ 1.19 | 0.143 x/ 1.19 | 1.06 +- 0.05 | -1.030 +- 0.004 | stalled | 2.22 +- 0.04 | - |
+| 9 | 0.136 x/ 1.11 | 0.141 x/ 1.11 | 0.97 +- 0.07 | -1.030 +- 0.004 | 3.01 x/ 1.10 | 2.27 +- 0.02 | 1.89 +- 0.11 |
+| 12 | 0.088 x/ 1.33 | 0.091 x/ 1.34 | 1.04 +- 0.05 | -1.029 +- 0.002 | 2.20 x/ 1.05 | 2.29 +- 0.02 | 1.62 +- 0.03 |
+| 18 | 0.072 x/ 1.07 | 0.073 x/ 1.08 | 1.08 +- 0.05 | -1.031 +- 0.000 | 1.66 x/ 1.05 | 2.30 +- 0.01 | 1.46 +- 0.03 |
+| 24 | 0.067 x/ 1.12 | 0.068 x/ 1.12 | 1.01 +- 0.05 | -1.030 +- 0.002 | 1.31 x/ 1.04 | 2.33 +- 0.01 | 1.38 +- 0.02 |
+| 36 | 0.043 x/ 1.05 | 0.044 x/ 1.06 | 1.03 +- 0.07 | -1.034 +- 0.003 | 1.04 x/ 1.04 | 2.34 +- 0.01 | 1.33 +- 0.01 |
 
+- **Map** (`phase_sigma_chi_b4_centred.png`): S2S for sigma below the S2S boundary, rich in between,
+  lazy above the kernel boundary only for chi >= 9 (full bonds); for chi < 9 the runs stall above
+  sigma ~ 0.6-1.0 at the best fit of W_0 + W* (unrealizable centred target). **Empirical.**
+- **S2S side.** Per seed, rho scales as sigma^-1.03 (6 seeds per chi, SE <= 0.04): the predicted
+  sigma^-(K-2) (theory_regimes R9/P12; the 3% excess is the O(1) term of rho = R sigma^-1 + c).
+  The boundary of each seed is predicted from that seed's deepest run alone by the aligned-mode
+  extrapolation (`analysis.aligned_sigma_c`): pred / measured = 0.97-1.08 for chi >= 6 (1.23 and 1.50 at
+  chi = 3, 4, where the boundary is pushed toward the realizability floor). The S2S boundary falls
+  with chi (0.24 at chi = 3, 0.043 at chi = 36). **Empirical.** At chi = 3 it agrees with theory P11
+  (plain model, 30 seeds: per-seed median 0.27-0.31).
+- **Lazy side.** Kernel boundary 3.0, 2.2, 1.66, 1.31, 1.04 at chi = 9, 12, 18, 24, 36: theory_regimes P5
+  (second-order law, sigma_lazy -> 6.50 chi^-1/2) gives 1.53, 1.33, 1.08 at chi = 18, 24, 36. The
+  first-order law (kappa/0.1)^(1/3) is right only at chi <= 12 (2.4 at chi = 12; 0.59 at chi = 36).
+  **Empirical**, confirming the theory's correction that the coherent second-order kernel change sets
+  the lazy boundary at large chi.
+- **Threshold sensitivity.** rho threshold 2 -> 5 moves the S2S boundary by 2.15-2.34 (asymptotic
+  prediction (5/2)^(1/(K-2)) = 2.5; the O(1) term in rho lowers it at finite sigma). delta_K threshold
+  0.05 -> 0.2 moves the kernel boundary by 1.89 (chi = 9) down to 1.33 (chi = 36): the local slope of
+  delta_K vs x = ||W*|| / sigma^3 grows from ~1 to ~2 with chi, so the ratio goes from 4^(1/3) = 1.59
+  toward 4^(1/6) = 1.26 (theory P7: 1.3-1.36 at chi >= 32). **Empirical.**
+- **Realizability.** For chi < 9 the final loss equals the Eckart-Young minimum of W_0 + W* across the
+  01|23 cut (`l_best`, exact) and the runs stall above sigma ~ 0.6-1.0 (theory P4: sigma_floor = 0.56,
+  0.60, 0.71 for chi = 3, 4, 6). **Empirical**, confirming theory R7.
 
 ### 2.x Two-copy cross-check (binary N = 4)
 

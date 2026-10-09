@@ -412,25 +412,28 @@ def fig_sigma_K(exp="sigma_K", chi=6):
     df = df[df.chi == chi].copy()
     df["tree"] = [tree_label(k, n, K) for k, n, K in zip(df.kind, df.n, df.K)]
     df["alpha"] = df.sigma ** df.K
+    df["u0"] = df.alpha / np.sqrt(3.0 ** df.n)  # RMS overlap of W_0 with a unit rank-one tensor
     order = df.drop_duplicates("tree").sort_values(["K", "kind"]).tree.tolist()
     Ks = {t: int(df[df.tree == t].K.iloc[0]) for t in order}
+    Ns = {t: int(df[df.tree == t].n.iloc[0]) for t in order}
     tab = per_seed_table(df, ["tree"])
     save_csv(tab, f"boundaries_per_seed_{exp}_chi{chi}.csv")
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
-    for ax, xcol in zip(axes, ("sigma", "alpha")):
+    fig, axes = plt.subplots(1, 3, figsize=(17, 4.2))
+    for ax, xcol in zip(axes, ("sigma", "alpha", "u0")):
         phase_rows(ax, df, "tree", xcol, order)
-        p = 1 if xcol == "sigma" else None
         med = [np.nanmedian(tab[tab.tree == t].sigma_c) for t in order]
         pred = [np.nanmedian(tab[tab.tree == t].sigma_c_pred) for t in order]
         a0c = [aligned_boundary_a0(Ks[t]) for t in order]
-        f = (lambda s, t: s) if xcol == "sigma" else (lambda s, t: s ** Ks[t])
+        f = {"sigma": lambda s, t: s, "alpha": lambda s, t: s ** Ks[t],
+             "u0": lambda s, t: s ** Ks[t] / 3.0 ** (Ns[t] / 2)}[xcol]
         ys = np.arange(len(order))
         ax.plot([f(m, t) for m, t in zip(med, order)], ys, "o", color=INK, ms=4, label="per-seed S2S boundary (median)")
         ax.plot([f(m, t) for m, t in zip(pred, order)], ys, "x", color=INK, ms=5,
                 label="predicted from deepest run (aligned extrapolation)")
         ax.plot([f(m, t) for m, t in zip(a0c, order)], ys, "--", color=MUTED, lw=1,
                 label=r"aligned-init boundary $a_{0c}(K)$ ($\kappa_K\to1$ limit)")
-        ax.set_xlabel(r"per-core init scale $\sigma$" if xcol == "sigma" else r"function-space scale $\alpha=\sigma^K$")
+        ax.set_xlabel({"sigma": r"per-core init scale $\sigma$", "alpha": r"function-space scale $\alpha=\sigma^K$",
+                       "u0": r"per-component amplitude $\sigma^K/\sqrt{D}$"}[xcol])
     axes[0].legend(handles=legend_handles(False) + axes[0].get_legend_handles_labels()[0], fontsize=6.5,
                    loc="upper left", bbox_to_anchor=(0, -0.15), ncol=2, frameon=False)
     axes[0].set_title(f"{exp}: plain model, chi = {chi}, d = 3, teacher (3,2,1)", fontsize=9, loc="left")
