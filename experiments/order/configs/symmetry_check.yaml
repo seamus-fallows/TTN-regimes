@@ -1,0 +1,12 @@
+# Check of exchangeability of the two components' blow-up times (main showed mean log(tau1/tau2) > 0
+# in 22/28 settings, but settings share random draws for equal seeds): fresh seeds, LO race only.
+name: symmetry_check
+trees: ["mps:4", "mps:8"]
+d: [4]
+chi: [2]
+rho: []
+sigma: []
+seeds: 1500
+seed0: 100000
+proxies: false
+lo_race: true

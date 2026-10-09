@@ -85,8 +85,14 @@ def loss_grad_fn(spec: TTNSpec, teacher: CPTeacher):
     return loss, rhs
 
 
-def gf_first_event(spec, teacher, y0, threshold=0.5, rtol=RTOL, atol=ATOL, t_max=1e20):
-    """Gradient flow until max_r a_r(t) = threshold. Returns (t, overlaps, nfev, status)."""
+def gf_first_event(spec, teacher, y0, threshold=0.5, rtol=RTOL, atol=ATOL, t_max=1e20,
+                   max_restarts=20):
+    """Gradient flow until max_r a_r(t) = threshold. Returns (t, overlaps, nfev, status).
+
+    The flow is autonomous, so when the step size hits the float64 resolution of t (at t ~ 1e14 the
+    spacing of representable times is ~0.02 while the escape itself takes O(1) time; scipy then
+    stops with status -1) the integration is restarted from the last state with the clock reset,
+    and the elapsed time is carried as an offset."""
     _, rhs = loss_grad_fn(spec, teacher)
 
     def event(t, y):
@@ -94,8 +100,15 @@ def gf_first_event(spec, teacher, y0, threshold=0.5, rtol=RTOL, atol=ATOL, t_max
 
     event.terminal = True
     event.direction = 1
-    sol = solve_ivp(rhs, (0.0, t_max), y0, method="RK45", rtol=rtol, atol=atol, events=event)
-    return sol.t[-1], overlaps(spec, teacher, sol.y[:, -1]), sol.nfev, sol.status
+    offset, y, nfev = 0.0, y0, 0
+    for _ in range(max_restarts + 1):
+        sol = solve_ivp(rhs, (0.0, t_max - offset), y, method="RK45", rtol=rtol, atol=atol,
+                        events=event)
+        nfev += sol.nfev
+        if sol.status != -1 or sol.t[-1] == 0.0:
+            break
+        offset, y = offset + sol.t[-1], sol.y[:, -1]
+    return offset + sol.t[-1], overlaps(spec, teacher, sol.y[:, -1]), nfev, sol.status
 
 
 def lo_blowup(spec, teacher, u0, grow=1e4, rtol=RTOL, atol=ATOL):
