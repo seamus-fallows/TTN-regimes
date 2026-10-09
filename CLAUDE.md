@@ -78,7 +78,7 @@ Read this file first; it is how the lead and all agents recover context. Keep it
 |---|---|---|---|---|
 | Q1 | saddle sequence from small init | open | `s2s-core` | running |
 | Q2 | plateau scaling with sigma, K, chi | partly known | `s2s-core` | running |
-| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | running; N=4 interim matches k=1..4 predictions; theory: Steiner identity proven, saddle order = k* derived (upper bound proven), several residuals: strict iff rho(S) > s_q |
+| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | round 1 DONE, merged, under review: H2 holds on 9 trees, k = 1..8 (~7k runs); route rule for several components; theory: Steiner identity proven, saddle order = k* derived (upper bound proven), several residuals: strict iff rho(S) > s_q |
 | Q4 | learning order | analogues known, TTN open | `order` | running |
 | Q5 | regime map | analogues known, TTN open | `regime-map` | running |
 | Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | running |
@@ -107,6 +107,12 @@ Read this file first; it is how the lead and all agents recover context. Keep it
   escape in a sigma-independent number of steps); re-gauged GD, Riemannian GD, Gram preconditioning, ALS, DMRG remove
   plateaus altogether. data-teacher: any non-orthogonality (misaligned covariance, CP overlap, correlations, generic TTN
   teachers) turns MPS later plateaus into strict log-time saddles (analysis under revision after review).
+- **Locality (agent `locality`, ~10k GF runs, under review):** for two-component teachers the gap exponent is k - 2 with
+  k = Steiner-subtree core count, on 9 tree types for k = 1..8 (+-0.05 for k <= 4); k = 2 log law with head-start slope
+  (1 - s2/s1)/lambda2 (1/lambda2 from a saddle start); H3 by lambda_min scaling (-lambda2 for k = 2, sigma^(k-2) for k >= 3);
+  same teacher S = {3,4}, N = 8: MPS log, binary sigma^-3, HT sigma^-5.7; rising edges = Steiner edges in 98.7% of 5132
+  events; k readable from one run via the growth exponent; for >= 3 components the route rule at rank-constrained optima
+  (not literal H2) predicts 7/7 teachers; dead routes only k >= 4 with fan-in init, removed by balanced init or spare chi.
 - Local H2 pilot (experiments/pilot_h2_locality, d = chi = 2): H2 exponents hold wherever the second component is learned
   (k = 3, 4, 5, 7 on MPS4/6, binary4/8); first escape sigma^-(K-2) to +-0.003. COLLAPSE: with chi = 2, 95/332 runs with
   k >= 4 never learn the second component (route ends die to 1e-12..1e-16; failing seeds fixed across sigma); MPS6 k = 5-6
