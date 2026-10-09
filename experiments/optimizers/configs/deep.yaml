@@ -10,7 +10,7 @@ blocks:
   - base: {n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100}
     grid: {tree: [binary, mps], init: [balanced, fanin], sigma: [0.3, 0.8], seed: [0, 1, 2, 3, 4, 5]}
     optimizers: &gauge_dependent
-      - {optimizer: gf, t_max: 2.0e6}
+      - {optimizer: gf, t_max: 2.0e6, gf_events: exact}
       - {optimizer: gd, lr: 0.01, budget_c: 2.0e4, budget_power: 0.0, max_steps: 500000, when: {sigma: 0.8}}
       - {optimizer: momentum, lr: 0.001, beta: 0.9, budget_c: 2.0e4, budget_power: 0.0, max_steps: 500000, when: {sigma: 0.8}}
       - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 300000}

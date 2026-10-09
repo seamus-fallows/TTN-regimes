@@ -7,6 +7,7 @@ blocks:
   - base: {tree: binary, n_sites: 8, d: 3, chi: 4, teacher: odeco, weights: [3.0, 2.0, 1.0], teacher_seed: 100, init: balanced}
     grid: {sigma: [0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.8], seed: [0, 1, 2, 3, 4, 5]}
     optimizers:
-      - {optimizer: gf, t_max: 4.0e6}
-      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 500000}
+      - {optimizer: gf, t_max: 4.0e6, gf_events: exact}
+      # fine trace every step for the first 2000 steps (round 1 sampled every 10 steps)
+      - {optimizer: adam, lr: [1.0e-3, 1.0e-2], n_steps: 500000, fine: early}
       - {optimizer: regauge, lr: 0.01, period: 1, n_steps: 200000}
