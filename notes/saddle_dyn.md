@@ -280,6 +280,12 @@ slow, the grid is cut from the small end and the range reached is reported; wind
    costs time, not accuracy; the rerun of previously stalled runs reproduces finished values: PS08 seed
    0, eps = 1e-2, t_esc to 3e-10; H-B PS08 seed 7, dt = 211.8845). Files record `driver = "switch"`.
    Not outcome-selective: every run without an outcome was rerun, and nothing else.
+   *Addendum (18:36):* the same stall also hit runs whose solver had been restarted by the local-clock
+   rule of item 5 (threshold: step < 1e-7 of the local time, which fired on transient step drops on
+   plateaus, e.g. right after the reference switch; a restarted LSODA starts nonstiff). The threshold
+   is now 1e-11 (float64 spacing is 2e-16 t, so resolution is still protected; the H-B first escapes
+   need it at ~1e-14). The ~45 runs still without outcome at 18:36 were rerun with this (PS08 seed 9,
+   eps = 10^-4.75: escape at 2.6331e10 in 85 s, after a 1-hour stall before).
 
 # Part II: results
 
