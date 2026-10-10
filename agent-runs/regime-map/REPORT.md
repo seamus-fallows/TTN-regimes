@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-10 02:45 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-10 02:58 UTC
 
 ## Summary
 Task: phase diagrams of saddle-to-saddle (S2S), rich non-incremental and lazy dynamics over init scale
@@ -151,6 +151,15 @@ K = 7 (`large_chi_b8`). Interim data and figures of the first report are in `res
     escape), so the full K range is now mapped at **d = 2** (teacher [3, 2], chi = 4 = 2R and chi = 2 = R;
     <= 600 parameters, LSODA everywhere; `configs/sigma_K_d2.yaml`), as in theory P15. The d = 3 sweep
     keeps K <= 8 (chi = 3, 6) and the chi = 3 stall slice up to K = 15.
+15. **Centred model with small W_0 uses the direct loss** 1/2 ||W - (W* + W_0)||^2 (alpha = prod sigma_v
+    < 1e-2; `run_regime.ShiftedCP`). Its cancellation error is ~1e-16 alpha^2, and the cancellation-free
+    doubled-bond form costs 4.5x per gradient and 14x per Hessian (binary 16 under load: 0.21 s vs 0.05 s,
+    47 s vs 3.3 s). Checked on two configurations: identical labels, event times to 1e-4, delta_K to
+    6 digits. Overlaps and spectra then refer to W instead of W - W_0 (difference O(alpha / sqrt(D))).
+16. **Dropped the rest of the d = 3 sigma x K sweep for K <= 8** (252 runs done) when the heavy pool
+    was projected at > 5 h; the d = 2 plain, full-bond and centred sweeps cover the K dependence.
+17. **Cost.** The full program is ~9,000 gradient-flow runs; the heavy part (K >= 7 with LSODA or the
+    centred loss) dominates: 20-60 min per run under full load. Machine time so far ~8.5 h on 368 vCPUs.
 
 ## Files left on the machine
 - `/root/outputs/regime_map/` raw outputs (none yet).
@@ -193,3 +202,4 @@ K = 7 (`large_chi_b8`). Interim data and figures of the first report are in `res
 - 01:25 chi_b4 complete: lazy boundary slope -0.522 +- 0.020 (chi >= 32; theory -1/2), S2S boundary slope -0.524 +- 0.045 (chi 16-128): collapse in sigma sqrt(chi) (per-bond Gram scale); large_chi_b4 complete (sigma = 1.5): SP -3.09 +- 0.09, NTK -0.84 +- 0.06, muP-TTN +0.03 +- 0.06 for delta_K vs chi
 - 01:37 started the centred sigma x K sweep (d = 2) alongside the N = 4 tail (two-copy deficient escapes at large sigma)
 - 01:52 heavy pool too slow (~1350 runs left at ~4/min): dropped the remaining d = 3 sigma x K runs (K <= 8; 252 done, d = 2 sweeps cover K); restarted heavy pool with the N = 8 maps, the d = 2 plain and full-bond K sweeps and large-chi K = 7
+- 02:55 centred loss with small W_0 switched to the direct form (decision 15, verified); restarted the heavy pool with the centred sigma x K sweep included (1885 runs)
