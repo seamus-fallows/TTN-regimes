@@ -349,3 +349,9 @@ runs each; error from the residual scatter). sigma = 1.5 is the theory's check p
   Recorder): max 1e-9 over all runs.
 - **Event widths** in deep S2S match the aligned-mode theory: 0.466, 0.798, 2.010 for s = 3, 2, 1
   (theory 0.46, 0.80, 2.01; K = 3, chi = 36, sigma = 0.01).
+- **Width resolution check** (`analysis.add_resolution_flags`): the refined window spans two log-grid
+  points, so its resolution is ~0.06 t / 200. Every N = 4 run has all widths resolved (>= 5 samples per
+  width; 2204/2204). At K >= 7 deep in the S2S region (events at t ~ 1e5-1e7) the widths are not
+  resolved (45% of the full-bond K = 7, 8 runs), so their rho values are lower bounds (e.g. rho ~ 5e3
+  where the aligned theory gives ~1e6); no label depends on them (0 runs 'undetermined': every
+  unresolved run has rho > 3 already). No rho magnitudes or rho exponents are reported for K >= 7.

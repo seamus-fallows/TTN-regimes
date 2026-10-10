@@ -351,3 +351,48 @@ def sensitivity_table(df: pd.DataFrame, by: list[str]) -> pd.DataFrame:
             row[f"lazy_{kt:g}"] = seed_kernel_boundary(g, kt)
         out.append(row)
     return pd.DataFrame(out)
+
+
+def width_resolution(exp: str, row: dict, n_dense: int = 200) -> list[float]:
+    """Time resolution of each refined event width: (t[i1] - t[i0]) / n_dense for the window that
+    run_regime.refine_events re-integrated (last a_r < 0.1 before the first a_r >= 0.9, coarse log
+    grid). A width below ~5 resolutions is an upper bound, so the run's rho values are lower bounds."""
+    from run_regime import row_cfg, run_id
+
+    path = os.path.join(OUT, exp, "traj", run_id(row_cfg(row)) + ".npz")
+    if not os.path.exists(path):
+        return []
+    with np.load(path, allow_pickle=False) as z:
+        if "overlaps" not in z.files:
+            return []
+        t, A = z["t"], z["overlaps"]
+    out = []
+    for r in range(A.shape[1]):
+        hi = np.flatnonzero(A[:, r] >= 0.9)
+        if hi.size == 0:
+            out.append(np.nan)
+            continue
+        i1 = hi[0]
+        lo = np.flatnonzero(A[:i1, r] < 0.1)
+        i0 = lo[-1] if lo.size else 0
+        out.append((t[i1] - t[i0]) / n_dense)
+    return out
+
+
+def add_resolution_flags(df: pd.DataFrame, exp: str, factor: float = 5.0) -> pd.DataFrame:
+    """Columns: width_res (per event), rho_resolved (every width >= factor x its resolution), and
+    label_resolved: the label, or 'undetermined' when the S2S/rich decision rests on an unresolved
+    width (rho <= 3 with an unresolved width could be S2S; rho > 3 is a lower bound and stays S2S)."""
+    res, ok = [], []
+    for _, r in df.iterrows():
+        wr = width_resolution(exp, r.to_dict())
+        widths = [w for _, w in r.events]
+        good = all((not np.isfinite(w)) or (not np.isfinite(q)) or w >= factor * q for w, q in zip(widths, wr))
+        res.append(wr)
+        ok.append(good)
+    df = df.copy()
+    df["width_res"] = res
+    df["rho_resolved"] = ok
+    df["label_resolved"] = np.where((df.label == "rich") & (~df.rho_resolved) & (df.n_events >= 2),
+                                    "undetermined", df.label)
+    return df
