@@ -47,6 +47,20 @@
     \ref{fig:locality-bonds} & \texttt{plot\_bonds.py \$O/twocomp -{}-cases mps8:25 binary8:34 ht8:12s
       -{}-sigma 0.05 -{}-out R/bond\_spectra.png}
       & \texttt{twocomp} (saved trajectories) \\
+    \ref{fig:optim-gd} & \texttt{uv run python experiments/optim\_samples/\allowbreak plot\_report.py
+      -{}-out-dir experiments/optim\_samples/\allowbreak results} draws this figure and the next two from
+      committed tables, here
+      \texttt{gd\_sweep.csv}, \texttt{map1d\_points.csv} and \texttt{centred\_chi9\_gf.csv} (written from the raw
+      runs by \texttt{analyze\_gd.py}, \texttt{map1d.py}, \texttt{analyze\_centred.py}; order of all steps in the
+      experiment's README)
+      & \texttt{gd\_sweep}, \texttt{gd\_centred\_chi9} (\cref{tab:exp-optim}); local copy
+      \texttt{data/optim\_samples/} \\
+    \ref{fig:optim-sgd} & as above; tables \texttt{sgd\_summary.csv}, \texttt{sgd\_second\_plateau.csv}
+      (\texttt{analyze\_sgd.py}), \texttt{p9\_sgd.csv} (\texttt{p9\_sgd.py}), \texttt{p9\_conditions.csv} and
+      \texttt{p9\_fit.csv} (\texttt{plot\_p9.py})
+      & \texttt{sgd\_sweep}, \texttt{p9\_sgd.py} \\
+    \ref{fig:optim-samples} & as above; table \texttt{samples\_summary.csv} (\texttt{analyze\_samples.py})
+      & \texttt{samples\_sweep} \\
     \ref{fig:optimizers-side} & \texttt{uv run python -m experiments.optimizers.make\_figures}
       \texttt{-{}-results-dir experiments/optimizers/results b4} & \texttt{scaling\_b4}
       (\cref{tab:exp-optimizers}) \\

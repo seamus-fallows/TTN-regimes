@@ -57,6 +57,7 @@ of the folder.
 | `samples_sweep.py experiments/optim_samples/configs/samples_sweep.yaml` | step 3: fixed training sets, small vs centred init, exact lazy limit | raw: `<raw-dir>/samples/*.jsonl` |
 | `analyze_samples.py` | step-3 tables and figure | `samples_summary.csv`, `fig_samples.png` |
 | `validate_library.py` | reruns sample GD/GF/SGD settings with `ttn.dynamics` and compares (round 1) | `validate_library.csv` |
+| `plot_report.py` | the three figures of report Sec. 5.5, drawn only from the committed CSVs (run last, with `--out-dir experiments/optim_samples/results`); applies the round-2 verification errata (catapult-window end per sigma; c_gamma from `p9_fit.csv`) | `report_gd`, `report_sgd`, `report_samples` (.pdf and .png) |
 
 Helpers: `common.py` (setup, Problem with centred variant, GF reference via scipy DOP853 with exact
 event location, persistent events `record_events`), `plot_style.py`. Order to regenerate everything:
@@ -65,7 +66,7 @@ event location, persistent events `record_events`), `plot_style.py`. Order to re
 `analyze_order.py`, `analyze_p5.py`, `analyze_centred.py`, `plot_gd.py`, `plot_regime.py`; then
 `sgd_sweep.py` (needs the GF references), `analyze_sgd.py`, `plot_sgd.py`, `p9_sgd.py`, `plot_p9.py`,
 `collapse_test.py`, `check_k2_saddle.py`, `sgd_limit_test.py`, `samples_sweep.py`,
-`analyze_samples.py`. Cost on 30 vCPUs (shared): GD sweeps ~40 min, chi = 9 centred ~1.5 h, SGD sweep
+`analyze_samples.py`, and last `plot_report.py`. Cost on 30 vCPUs (shared): GD sweeps ~40 min, chi = 9 centred ~1.5 h, SGD sweep
 ~3 h, samples ~1 h, P9 ~40 min.
 
 ## Results summary (details, tags and numbers in `notes/optim_samples.md`; fix round 1)
