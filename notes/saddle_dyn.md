@@ -236,6 +236,13 @@ slow, the grid is cut from the small end and the range reached is reported; wind
    continues with the plain loss for 50 time units after t_v (old directions relax at O(1) rates),
    and the re-gauge and the reference are taken there; escapes inside those 50 units are recorded
    (they are unresolved plateaus, dt < 60).
+5. **Local clock (15:55; numerics only).** Escapes are fast transitions at late absolute times
+   (H-B first escapes at t ~ 1e13-1e15, where the float64 spacing of t is 0.004-0.1, comparable to
+   the step sizes), and LSODA failed there ("tout too close to t") in ~5 % of the runs. The driver now
+   re-zeroes the solver clock (the ODE is autonomous; absolute t = offset + local t) whenever the
+   step falls below 1e-7 of the local time. Runs that had finished with the previous version are
+   kept (a run that hit the resolution limit failed outright, it did not return a wrong number;
+   C2 seed 7, eps = 1e-5: t_esc identical to 1e-14 in both versions).
 
 # Part II: results
 
