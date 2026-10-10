@@ -35,43 +35,77 @@ escapes and plateaus (which would turn long plateaus into stalls)?
 
 ## Parts, scripts and configs
 
-| part | script | config | output (raw) | results |
+| part | script | config | raw output (`/root/outputs/s2s_core/...`) | results |
 |---|---|---|---|---|
-| 1. aligned init vs exact solution | `aligned.py`, `plot_aligned.py` | `configs/aligned.yaml` | `/root/outputs/s2s_core/aligned/` | `results/aligned.csv`, `fig_a_aligned.*` |
-| 2-4. full S2S runs (events, plateaus, spectra, Hessians, dormant components) | `run.py` (+ `s2s.py`), `analyze_main.py`, `analyze_dormant.py`, `plot_run.py` | `configs/main.yaml` | `/root/outputs/s2s_core/main/` | `results/main_*.csv`, `fig_b_run_*` |
-| 3a. first escape vs sigma, per-seed prediction | `first_escape.py`, `analyze_first.py` | `configs/first.yaml` | `/root/outputs/s2s_core/first/` | `results/first_*.csv` |
-| 3b. chi, d, K dependence at leading order | `lo_sweep.py` | `configs/lo_chi.yaml`, `lo_d.yaml`, `lo_K.yaml` | - | `results/lo_*.csv` |
-| dormant suppression: gauge-balanced init | `run.py` | `configs/balanced.yaml` | `/root/outputs/s2s_core/balanced/` | `results/balanced_*.csv` |
+| 1. aligned init vs exact solution | `aligned.py`, `plot_aligned.py` | `configs/aligned.yaml` | `aligned/<tree>_<integrator>.npz` | `aligned.csv`, `fig_a_aligned.*` |
+| 2-4. full S2S runs, K = 3, 4 (and first K = 7, 8 pass) | `run.py` (+ `s2s.py`) | `configs/main.yaml` | `main/` | via `analyze_main.py` |
+| K = 7, 8 at chi = 6, long budget | `run.py` | `configs/large.yaml` | `large/` | via `analyze_main.py` |
+| K = 7, 8 at chi = 3, fan-in vs gauge-balanced | `run.py` | `configs/k78.yaml` | `k78/` | via `analyze_main.py` |
+| gauge-balanced init, K = 3, 4 | `run.py` | `configs/balanced.yaml` | `balanced/` | via `analyze_main.py` |
+| analysis of the four sweeps above | `analyze_main.py`, `analyze_dormant.py`, `slice_trends.py`, `recompute_hessians.py` | - | - | `main_*.csv`, `hess_*.csv`, `dormant_*.csv`, `slice_trends.csv` |
+| 3a. first escape vs sigma, per-seed prediction | `first_escape.py`, `recompute_T.py`, `analyze_first.py` | `configs/first.yaml`, `first_k78.yaml` | `first/` | `first_*.csv` |
+| 3b. chi, d, K dependence at leading order | `lo_sweep.py`, `plot_lo.py` | `configs/lo_chi.yaml`, `lo_d.yaml`, `lo_K.yaml` | - | `lo_*.csv`, `fig_e_chi.*`, `fig_e2_K.*` |
+| stalled runs continued from their final state | `continue_stalled.py` | - | - | `continued_*.csv` |
+| tolerance check of run classes | `tolcheck.py` | - | `k78_tight/` | `tolcheck_k78.csv` |
+| figures b, c, d, f, g | `plot_run.py`, `plot_scaling.py`, `plot_dormant.py` | - | - | `fig_*` |
 
 ## How to run
 
-All scripts take an output directory (`--out`, default `results/`) and a process count where they
-run sweeps (`--workers`, default 60; one thread per process). Order:
+Every script that writes results takes a required `--out` (so a rerun never overwrites the committed
+`results/` by accident; pass `--out experiments/s2s_core/results` to regenerate them) and, where it runs
+a pool, `--workers` (one thread per process). Raw outputs go to `/root/outputs/s2s_core/` (option
+`--raw` of `run.py`, `first_escape.py`, `aligned.py`). With `R=/root/outputs/s2s_core` and
+`O=experiments/s2s_core/results`, in this order:
 
 ```
-uv run python experiments/s2s_core/aligned.py experiments/s2s_core/configs/aligned.yaml
-uv run python experiments/s2s_core/plot_aligned.py
-uv run python experiments/s2s_core/run.py experiments/s2s_core/configs/main.yaml --workers 60      # ~2 h on 60 CPUs
-uv run python experiments/s2s_core/run.py experiments/s2s_core/configs/balanced.yaml --workers 60
-uv run python experiments/s2s_core/first_escape.py experiments/s2s_core/configs/first.yaml --workers 60
-uv run python experiments/s2s_core/lo_sweep.py experiments/s2s_core/configs/lo_chi.yaml
-uv run python experiments/s2s_core/analyze_main.py --raw /root/outputs/s2s_core/main
-uv run python experiments/s2s_core/analyze_dormant.py --raw /root/outputs/s2s_core/main /root/outputs/s2s_core/balanced
-uv run python experiments/s2s_core/analyze_first.py
-uv run python experiments/s2s_core/plot_run.py <run name>
+D=experiments/s2s_core; C=$D/configs
+# sweeps (CPU hours on 60 CPUs in brackets)
+uv run python $D/aligned.py $C/aligned.yaml --out $O                      # (0.01)
+uv run python $D/run.py $C/main.yaml --workers 60                         # (~3)
+uv run python $D/run.py $C/large.yaml --workers 30                        # (~2)
+uv run python $D/run.py $C/k78.yaml --workers 30                          # (~1)
+uv run python $D/run.py $C/balanced.yaml --workers 30                     # (~0.2)
+uv run python $D/first_escape.py $C/first.yaml --workers 60               # (~1.5)
+uv run python $D/first_escape.py $C/first_k78.yaml --workers 30           # (~1.5; add --reverse for a 2nd instance)
+uv run python $D/recompute_T.py --raw $R/first                            # only for jobs run before the T fix
+for c in lo_d lo_K lo_chi; do uv run python $D/lo_sweep.py $C/$c.yaml --workers 60 --out $O; done
+uv run python $D/recompute_hessians.py --raw $R/main --tag hess_main --out $O
+uv run python $D/recompute_hessians.py --raw $R/large $R/k78 $R/balanced --tag hess_other --out $O
+uv run python $D/continue_stalled.py --raw $R/k78 --names <8 runs, see continued_k78_resolved.csv> --factor 4 --tag _resolved --out $O
+uv run python $D/continue_stalled.py --raw $R/k78 --random --seed 1 --n 8 --max_ratio 100 --factor 3 --tag _random --out $O
+uv run python $D/continue_stalled.py --raw $R/large --spread --n 8 --max_ratio 1000 --factor 3 --tag _spread --out $O
+uv run python $D/tolcheck.py --raw $R/k78 --per-class 1 --workers 12 --out $O
+# analysis (minutes)
+uv run python $D/analyze_main.py --raw $R/main $R/large $R/k78 $R/balanced --hess $O/hess_main.csv $O/hess_other.csv --out $O
+uv run python $D/analyze_dormant.py --raw $R/main $R/large $R/k78 $R/balanced --out $O
+uv run python $D/slice_trends.py --runs $O/main_runs.csv --out $O
+uv run python $D/analyze_first.py --raw $R/first --out $O
+# figures
+uv run python $D/plot_aligned.py --out $O
+uv run python $D/plot_run.py mps4_chi3_w3-2-1_fanin_s0.01_seed0 --out $O
+uv run python $D/plot_run.py binary8_chi6_w3-2-1_fanin_s0.1_seed0 --raw $R/large --out $O
+uv run python $D/plot_scaling.py --results $O --out $O
+uv run python $D/plot_dormant.py --results $O --out $O
+uv run python $D/plot_lo.py --results $O --out $O
 ```
 
-`run.py` and `first_escape.py` are resumable (finished runs are skipped). Variants: edit or copy a
-config (trees, chis, teachers, inits, sigmas, seeds, integrator tolerances, wall limit). The sweep
-driver is experiment code written before `ttn.runner` landed.
+`run.py` and `first_escape.py` are resumable (finished runs are skipped). `analyze_main.py --hess`
+must name the Hessian tables recomputed for the same raw folders (no default: a stale table would
+silently replace the new values). Variants: copy a config and change trees, chis, teachers, inits,
+sigmas, seeds, tolerances or budgets. The sweep driver is experiment code written before `ttn.runner`
+landed.
 
-## Run budget and stopping (affects only stalled runs)
+## Run budget and stopping (affects only runs that do not complete)
 
-t_max = 1e3 x the RMS-overlap escape time of the weakest component; a run also stops when the loss
-reaches 1e-9 L(0), after a wall limit (400-600 s) or 5000-20000 integrator steps per chunk, or when
-every dormant amplitude |<W, U_r>| has stayed below 1e-15 for a whole output chunk (its later escape
-would be seeded by float64 roundoff). The first ~310 runs of `main.yaml` used wall 600 s and 20000
-steps and no roundoff stop; this changes only when stalled runs end, not their classification.
+t_max = 1e3 x the RMS-overlap escape time of the weakest component. A run also stops when the loss
+reaches 1e-9 L(0), after a wall-clock limit (300-2400 s, so the number of "unresolved" runs depends on
+CPU speed) or a per-chunk step limit, or when a never-learned component has a dead route end (slice
+< 1e-8 sigma for a whole output chunk: the conservation-law trap; added for `k78` and `balanced`).
+`main.yaml` also used an amplitude-based roundoff stop (every dormant |<W, U_r>| < 1e-15 for a chunk);
+it is too strict at K >= 7 (the amplitude is a product of K per-core amplitudes), so those K = 7, 8
+runs are classed "unresolved" unless a slice is dead, and were re-run in `k78` without it. The first
+~310 runs of `main.yaml` had no dead-end stop and ran to t_max (their dead slices sit at the ~1e-12
+floor for the rest of the run, which is why decay rates are fitted above 1e-9 only).
 
 ## Raw outputs
 

@@ -100,8 +100,12 @@ escape and
 
 with C_i from the projected correlation flow (no closed form). Widths of events are O(1) (time from
 a = 0.1 to a = 0.9 of a Saxe mode, ~ s^{-(2-2/K)}), so separation ratios grow like sigma^{-(K-2)}:
-**S2S for every tree with K >= 3 as sigma -> 0** (derived). Caveat: if two components blow up at
-nearly the same rescaled time (close weights), the separation at a given sigma can be small.
+**S2S for every tree with K >= 3 as sigma -> 0** (derived, for live routes and the weight order
+allowed by 1.4). Caveats, all seen in the experiments: if two components blow up at nearly the same
+rescaled time (close weights), the separation at a given sigma can be small; on binary N = 4 (m = 2) a
+learned set with a larger component still unlearned is a STRICT saddle (1.4) and the next gap is short
+(no sigma^-(K-2) growth: section 2.5); and under fan-in init the conservation-law trap can kill the route
+of a dormant component (2.7), which then is never learned in float64.
 
 ### 1.4 Saddle type at partial fits (derived)
 
@@ -114,7 +118,9 @@ For m = 2 (binary N = 4) the Hessian along this direction is q (s_r - s_r') with
 **negative iff a larger component r' is unlearned while r is learned** (a wrong-order saddle is
 strict). For m >= 3 (binary N = 8: m = 4; MPS and HT: m = N) the gain is O(eps^m) and the direction
 is again higher order. Prediction for the Hessian at plateau midpoints: no eigenvalue below -epsilon
-for K >= 3, except binary N = 4 plateaus where a larger component is still unlearned.
+for K >= 3, except binary N = 4 plateaus where a larger component is still unlearned. (Same as the
+piggyback block of theory_saddles 4.1. Confirmed on binary N = 4 with the close teacher, section 2.5:
+lambda_min = 0.98x the predicted -0.133, flat in sigma.)
 
 ### 1.5 Typical prefactor: RMS-overlap heuristic (derived heuristic, P3)
 
@@ -182,13 +188,17 @@ the balanced Saxe mode a' = a^{K-1}(s - a^K) (Saxe et al. 2014 eq. 15 for DLNs; 
 max |a_GF - a_theory| over t and r = 2.0e-10 (binary4), 3.1e-10 (mps4), 2.2e-9 (binary8), 2.5e-9
 (ht4), 2.8e-9 (mps8); event times identical to 1e-11 relative on the same grid; Q drift <= 2e-14.
 
-### 2.2b First escape: per-seed test of the correlation-flow prediction (empirical; P1 = theory_escape E1)
+### 2.2b First escape: per-seed test of the correlation-flow prediction (empirical replication of theory_escape E1, E2)
 
-Sweep `configs/first.yaml` (+ `first_k78.yaml`): for every seed, T(theta_hat) from the correlation flow
-of the sigma = 1 init, then gradient flow (LSODA rtol 1e-8, atol 1e-11 sigma) at 8 sigmas until the
-first component is learned, event refined in linear time. Fan-in and gauge-balanced inits, d = 4,
-chi = 3, 6, both teachers, 10 seeds (K = 7, 8: separated teacher, fan-in; `results/first_*.csv`,
-figure c).
+The prediction (P1 here) is theory_escape's E1 / recipe 2.5, derived independently; the measurements
+below replicate it. Sweep `configs/first.yaml` (+ `first_k78.yaml`): for every seed, T(theta_hat) from
+the correlation flow of the sigma = 1 init, then gradient flow (LSODA rtol 1e-8, atol 1e-11 sigma) at 8
+sigmas until the first component is learned, event refined in linear time. Fan-in and gauge-balanced
+inits, d = 4, chi = 3, 6, both teachers, 10 seeds (K = 7, 8: separated teacher, fan-in only; mps8 at
+chi = 3 only); `results/first_*.csv`, figure c. T is computed with the direction-convergence stop of
+`s2s.correlation_flow_blowup` (review round 1: the earlier stop at amplitude 1e6 biased binary4 T by up
+to 1.7e-3 for the close teacher and up to 2.4e-5 for the separated one, and picked the wrong first
+component in 5 binary4 close-teacher cells; all numbers below are recomputed).
 - **Exponent** (per seed, then mean +- SE): binary4 (sigma 0.1 .. 0.002) 1.0045 +- 0.0002 raw,
   0.9996 +- 0.0001 with the predicted O(1) offset c_K removed; mps4 (same sigmas) 2.0002 / 2.0000;
   (sigma 0.4 .. 0.01, 1.6 decades, offset removed, 10 seeds each) binary8 4.9983 +- 0.0003 (chi 3),
@@ -196,29 +206,32 @@ figure c).
   (chi 3) (K - 2 = 1, 2, 5, 6). mps8 at chi = 6 was not completed (jobs stopped at the end; first
   escapes at sigma = 0.01 are at t ~ 1e13).
 - **Prefactor, no free parameter**: |t_1 / (sigma^-(K-2) T(theta_hat) + c_K) - 1| at the smallest
-  sigma <= 2e-3 (binary4), 6e-5 (mps4), <= 2e-7 (binary8, ht4, mps8 at sigma = 0.01). At larger sigma the residual
-  is the O(1) offset (K = 3, 4: the predicted c_K accounts for it to within ~25% (binary4) and ~10%
-  (mps4)) or, at K = 7, ~37x the c_K term at sigma = 0.3 (2% at sigma = 0.4), as theory_escape 2.4
-  anticipates (the escape direction has not converged at moderate sigma).
-- **First component** = the one dominating the correlation flow at its blow-up: 100% of runs on mps4,
-  binary8, ht4 and mps8; 80-90% on binary4 with the close teacher (matrix-like pair: the wrong order at finite
-  sigma, theory_escape E9).
-- **Kumar-Haupt is a lower bound, far off**: median T / t_KH = 3.1-4.8 (binary4), 7.9-13.7 (mps4),
-  95-210 (ht4), 184-2650 (binary8), 1460 (mps8), inside the ranges theory_escape 9.2 predicts (2.5-5.2,
-  5.2-18, 35-270, 94-4463, 182-12378).
+  sigma: binary4 separated <= 8.5e-6 (median 6e-7), binary4 close <= 2.1e-3 (median 7e-5: for close
+  weights the escape direction has not converged at sigma = 0.002, so the O(1) offset is not yet c_K),
+  mps4 <= 6e-5 (median 5e-9), binary8, ht4, mps8 <= 4e-8 at sigma = 0.01. At larger sigma the residual is
+  the O(1) offset (K = 3, 4: c_K accounts for it to within ~25% (binary4) and ~10% (mps4)) or, at
+  K = 7, ~37x the c_K term at sigma = 0.3 (2% at sigma = 0.4), as theory_escape 2.4 anticipates.
+- **First component** = the one dominating the correlation flow at its blow-up: 100% of runs on every
+  tree and teacher. (The "80-90% on binary4 close" reported before review round 1 was an artifact of the
+  amplitude-1e6 stop; gradient flow learns the largest component first at every sigma there.)
+- **Kumar-Haupt is a lower bound, far off** (replication of theory_escape E2): median T / t_KH =
+  3.1-4.8 (binary4), 7.9-13.7 (mps4), 95-210 (ht4), 184-2650 (binary8), 1460 (mps8), i.e. 3-2700x at
+  K = 3-8 (and up to 3e7 at K = 15 at leading order, 2.2c); inside the ranges theory_escape 9.2 gives
+  (2.5-5.2, 5.2-18, 35-270, 94-4463, 182-12378), a weak test since those span 1-2 decades.
 - **Fan-in imbalance and the prefactor**: gauge-balancing the same init (same W_0, Q_e = 0) changes
   T per seed by a factor 0.88-1.92 (median 0.99-1.18 per cell; usually slower), keeps the first
-  component in 80-100% of seeds, and leaves the exponent unchanged.
+  component in 88/94 seeds, and leaves the exponent unchanged.
 
-### 2.2c Leading-order prefactor vs d, chi, K (empirical; tests of theory_escape section 9)
+### 2.2c Leading-order prefactor vs d, chi, K (empirical; replications of theory_escape E5-E7, section 9, except P3)
 
 Correlation-flow blow-up time only (`lo_sweep.py`, the exact sigma -> 0 limit of sigma^(K-2) t_1 per
 init; verified against GF above), median with bootstrap 95% CI.
 - **d-dependence at full bond** (`configs/lo_d.yaml`, single component s = 1, 200 inits; theory_escape
   9.3, 9.5): binary4 median t_hat_1 = 1.544 [1.468, 1.594], 1.569 [1.525, 1.616], 1.563 [1.525, 1.586]
   for d = 2, 3, 4 (chi = d^2), i.e. pi/2 = 1.571 and flat in d as predicted, while the Kumar-Haupt
-  time falls 1.9x (0.576 -> 0.301); sd ln t_hat_1 = 0.218, 0.157, 0.135 vs the predicted
-  1/(2 sqrt(chi_b)) = 0.250, 0.167, 0.125. mps4: 1.39 [1.26, 1.58], 1.41 [1.30, 1.52], 1.50 [1.43, 1.60]
+  time falls 1.9x (0.576 -> 0.301); sd ln t_hat_1 = 0.218 +- 0.010, 0.157 +- 0.009, 0.135 +- 0.006
+  (bootstrap) vs the predicted 1/(2 sqrt(chi_b)) +- 0.02 = 0.250, 0.167, 0.125 (d = 2 is 1.4 combined
+  SE below). mps4: 1.39 [1.26, 1.58], 1.41 [1.30, 1.52], 1.50 [1.43, 1.60]
   (predicted 1.30, 1.35, 1.46), while t_KH falls 2.9x (predicted 2.8x). The rho_0 (whole-norm) law is
   refuted; the per-init prediction is not.
 - **Balance at the escape** (lead's check of the critique claim that KKT points with g > 0 are
@@ -244,19 +257,29 @@ init; verified against GF above), median with bootstrap 95% CI.
   "t_1 vs chi at fixed sigma": weakly decreasing, slope -0.26 .. -0.76 depending on the tree, quantified
   per init by the correlation flow, not by rho_0.
 
-### 2.3 Saddle-to-saddle phenomenology at K = 3, 4 (empirical)
+### 2.3 Saddle-to-saddle phenomenology (empirical)
 
-Sweep `configs/main.yaml`: fan-in init, d = 4, chi = 3, 6, teachers [3, 2, 1] and [1, 0.85, 0.7],
-sigma = 0.1 .. 0.003 (8 values), 10 seeds; LSODA rtol 1e-8, atol 1e-11 sigma. Events refined in
-linear time (no duration read off the log grid).
-- **All runs learn all components** on binary4 (320/320). On mps4: 160/160 at chi = 6; at chi = 3,
-  48/80 (separated) and 58/80 (close): the rest are trapped (2.7).
+**Scope (review round 1).** Complete saddle-to-saddle sequences (all three components learned) were
+measured on binary4 and mps4 (both teachers, chi = 3 and 6, sigma = 0.1 .. 0.003) and on binary8 and ht4
+at chi = 6 (separated teacher, sigma = 0.3 .. 0.07, 0.6 decade: below the project's 1-decade rule for
+scaling claims). At chi = R = 3, K = 7 runs rarely complete (fan-in: binary8 14/180, ht4 12/150) because
+of the trap (2.7). On mps8 no run learns the third component (0/284 over all sweeps); 132 runs learn two,
+so mps8 contributes the first escape and the first gap only.
+
+Sweep `configs/main.yaml` (and `large`, `k78`, `balanced` where stated): fan-in init, d = 4, teachers
+[3, 2, 1] and [1, 0.85, 0.7], 10 seeds; LSODA rtol 1e-8, atol 1e-11 sigma (1e-6 / 1e-9 sigma in large,
+k78). Events refined in linear time (no duration read off the log grid).
+- **Complete runs**: binary4 320/320. mps4: 160/160 at chi = 6; at chi = 3, 48/80 (separated; the
+  other 32 trapped) and 58/80 (close: 14 trapped, 8 stalled) (2.7).
 - **S2S criterion** (diagnostics.md) among complete runs: binary4 separated 158/160, close teacher
-  5/20 at sigma = 0.1 rising monotonically to 20/20 at sigma = 0.003 (overlapping transitions at larger
-  sigma); mps4 266/266. Criterion (iii) (plateaus grow without bound) is the exponent table of 2.4.
+  5/20 at sigma = 0.1 rising monotonically to 20/20 at sigma = 0.003; mps4 266/266; binary8 83/83, ht4
+  74/74 (all chi). Criterion (iii) (plateaus grow without bound) is the exponent table of 2.4, with the
+  binary4 exception of 2.5 (a wrong-order plateau that does not grow).
 - **Plateau levels are the partial-fit levels** L_S = 1/2 sum_{r not learned} s_r^2 (S = the components
-  learned so far, in whatever order): max relative deviation at the plateau midpoint 2e-3 (mps4),
-  2e-2 (binary4, at sigma = 0.1), 3e-6 (the few complete K = 7 runs).
+  learned so far, in whatever order). Max relative deviation at plateau midpoints bracketed by resolved
+  events (rho > 3): binary4 2.0e-2 (both teachers, sigma = 0.1), mps4 2.8e-3 (8.1e-3 with balanced init),
+  K = 7 <= 2.1e-5; it falls to 6e-7 at sigma = 0.003. At unresolved binary4 close-teacher "plateaus"
+  (rho <= 3: overlapping or wrong-order transitions) the loss is up to 0.50 away from L_S.
 - **Plateaus sit at bond-rank-constrained critical points** (lead's check): at every plateau midpoint
   of the complete runs, every edge's top |S| singular values equal the learned weights (the truncated
   teacher spectrum) to a max relative deviation that shrinks with sigma: separated teacher 3e-3
@@ -267,56 +290,85 @@ linear time (no duration read off the log grid).
 - **Bond spectra grow one value at a time on every edge simultaneously**: from the bond spectra recorded
   in the refined event windows, each event raises the number of singular values above f s_r (f = 1/2,
   or the nearest of 0.75, 0.3, ... that avoids the weights already learned) by exactly one on every
-  edge, in 517 of 551 complete runs (all sweeps, K = 3, 4, 7); the edges step within a median 0 and at
-  most 0.05 event widths of each other (HT4: up to 0.6). Exceptions: 28 binary4 close-teacher runs at
-  sigma >= 0.05 (overlapping events: two ranks in one window) and 6 HT4 runs. Effective bond rank
+  edge, in 497 of the 531 complete runs that have event-window spectra (the first 332 complete runs of
+  `main` were run before spectra were recorded there and are untested); the edges step within a median
+  0 and at most 0.05 event widths of each other (HT4: up to 0.6). Exceptions: 28 binary4 close-teacher
+  runs at sigma >= 0.05 (overlapping events: two ranks in one window) and 6 HT4 runs. Effective bond rank
   0 -> 1 -> 2 -> 3 (figure b).
-- **Order** (recorded; `order` studies it): binary4 learns the largest component first in 320/320
-  runs' first event (matrix-like, greedy); the full order is greedy in 160/160 with the separated teacher and
-  in 89-95% with the close teacher. On mps4 the first component is random (P(largest first) = 0.5-0.8 per cell) but is
-  the same at every sigma for each seed (10/10 seeds in every cell), as the race picture predicts
-  (theory_escape E8).
+- **Order** (recorded; `order` studies it): binary4 learns the largest component first in all 380 runs
+  (20 distinct inits: 10 seeds x chi = 3, 6; the teacher does not change the init); the full order is
+  greedy in 160/160 with the separated teacher and in 89-95% with the close teacher (the exceptions are
+  the wrong-order 1-3-2 runs of 2.5). On mps4 the first component is random (P(largest first) = 0.5-0.8
+  per cell) but is the same at every sigma for each seed (10/10 seeds in every cell), as the race picture
+  predicts (replication of theory_escape E8).
 
 ### 2.4 Escape-time exponents (empirical; prediction derived)
 
-Per-seed fits of log t vs log sigma over the sigmas at which the seed completes in its modal order
-(>= 4 sigmas), mean +- SE over seeds; predicted K - 2 for t_1 and every gap (odeco: every route uses
-all K cores, theory_saddles R2):
+Per-seed fits of log t vs log sigma, mean +- SE over seeds, with the runs classified by the saddle
+sequence they visit before pooling (review round 1): t_1 on the runs whose first component is the
+seed's modal one; t_2 - t_1 on runs with >= 2 events whose first two components are the seed's modal
+pair and whose first transition is resolved (rho_1 > 3); t_3 - t_2 on complete runs in the seed's modal
+order with rho_1, rho_2 > 3; >= 4 sigmas per fit. Predicted K - 2 for t_1 and every gap (odeco: every
+route uses all K cores, theory_saddles R2) wherever the plateau is a higher-order saddle (2.5). In
+brackets: the range of the per-seed exponents.
 
-| tree | K | chi | teacher | seeds | t_1 | t_2 - t_1 | t_3 - t_2 |
-|---|---|---|---|---|---|---|---|
-| binary4 | 3 | 3 | separated | 10 | 1.005 +- 0.000 | 1.003 +- 0.001 | 1.004 +- 0.003 |
-| binary4 | 3 | 6 | separated | 10 | 1.006 +- 0.001 | 1.008 +- 0.002 | 1.012 +- 0.002 |
-| binary4 | 3 | 3 | close | 10 | 1.000 +- 0.003 | 1.002 +- 0.042 | 0.92 +- 0.11 |
-| binary4 | 3 | 6 | close | 10 | 0.999 +- 0.005 | 1.036 +- 0.036 | 1.12 +- 0.05 |
-| mps4 | 4 | 3 | separated | 6 | 2.000 +- 0.000 | 1.999 +- 0.000 | 1.990 +- 0.005 |
-| mps4 | 4 | 6 | separated | 10 | 2.000 +- 0.000 | 2.001 +- 0.001 | 1.998 +- 0.001 |
-| mps4 | 4 | 3 | close | 7 | 2.000 +- 0.000 | 2.000 +- 0.001 | 2.004 +- 0.002 |
-| mps4 | 4 | 6 | close | 10 | 2.000 +- 0.000 | 2.001 +- 0.001 | 2.001 +- 0.001 |
-| binary8 | 7 | 6 | separated | 10 | 4.999 +- 0.000 | 5.020 +- 0.009 | 4.969 +- 0.022 |
-| ht4 | 7 | 6 | separated | 9 | 4.999 +- 0.001 | 5.11 +- 0.09 | 4.75 +- 0.14 |
+| tree | K | chi | teacher | sigma | seeds (t_1 / gap 1 / gap 2) | t_1 | t_2 - t_1 | t_3 - t_2 |
+|---|---|---|---|---|---|---|---|---|
+| binary4 | 3 | 3 | separated | 0.1-0.003 | 10/10/10 | 1.005 +- 0.000 | 1.003 +- 0.001 [1.00, 1.01] | 1.004 +- 0.003 [0.99, 1.02] |
+| binary4 | 3 | 6 | separated | 0.1-0.003 | 10/10/10 | 1.006 +- 0.001 | 1.007 +- 0.001 [1.00, 1.01] | 1.011 +- 0.002 [1.00, 1.02] |
+| binary4 | 3 | 3 | close | 0.1-0.003 | 10/9/8 | 1.000 +- 0.003 | 1.004 +- 0.010 [0.95, 1.06] | 1.016 +- 0.011 [1.00, 1.09] |
+| binary4 | 3 | 6 | close | 0.1-0.003 | 10/9/7 | 0.998 +- 0.005 | 0.999 +- 0.008 [0.96, 1.04] | 1.014 +- 0.006 [1.00, 1.05] |
+| mps4 | 4 | 3 | separated | 0.1-0.003 | 10/10/6 | 2.000 +- 0.000 | 2.000 +- 0.000 [2.00, 2.00] | 1.990 +- 0.005 [1.97, 2.00] |
+| mps4 | 4 | 6 | separated | 0.1-0.003 | 10/10/10 | 2.000 +- 0.000 | 2.001 +- 0.001 [2.00, 2.01] | 1.998 +- 0.001 [1.99, 2.00] |
+| mps4 | 4 | 3 | close | 0.1-0.003 | 10/10/7 | 2.000 +- 0.000 | 2.001 +- 0.001 [2.00, 2.01] | 2.004 +- 0.002 [2.00, 2.01] |
+| mps4 | 4 | 6 | close | 0.1-0.003 | 10/10/10 | 2.000 +- 0.000 | 2.001 +- 0.001 [2.00, 2.00] | 2.001 +- 0.001 [2.00, 2.01] |
+| binary8 | 7 | 6 | separated | 0.3-0.07 | 10/10/10 | 4.999 +- 0.000 | 5.020 +- 0.009 [4.98, 5.05] | 4.969 +- 0.022 [4.88, 5.09] |
+| ht4 | 7 | 6 | separated | 0.3-0.07 | 10/10/9 | 4.999 +- 0.000 | 5.10 +- 0.08 [4.83, 5.78] | 4.75 +- 0.14 [3.94, 5.33] |
+| mps8 | 8 | 6 | separated | 0.3-0.07 | 10/7/0 | 6.000 +- 0.000 | 5.95 +- 0.05 [5.79, 6.20] | not reached |
+| mps8 | 8 | 3 | separated | 0.4-0.03 | 10/3/0 | 5.999 +- 0.000 | 6.0 +- 0.3 [5.7, 6.6] | not reached |
 
-The residual deviations of the raw t_1 exponent from K - 2 (e.g. 1.005) are the predicted O(1) offset
-c_K (section 1.1): with it removed the exponent is 0.9996 +- 0.0001 (2.5). The close-teacher binary4
-gaps scatter more because transitions overlap at sigma >= 0.03. K = 7 rows: sweep `large` (sigma 0.07-0.3,
-0.6 decade; rtol 1e-6, atol 1e-9 sigma); at chi = 3 too few K = 7, 8 runs complete (dormant suppression,
-2.7) and mps8 completes no run at either chi within budget, so no gap exponent is measured there.
+(`results/main_exponents.csv`, `main_gap_fits.csv`; K = 7, 8 rows from sweep `large` (rtol 1e-6, atol
+1e-9 sigma) except mps8 chi = 3 (sweep `main`); the t_1 column of the first-escape sweep, with the
+offset c_K removed and sigma down to 0.002 / 0.01, is in 2.2b.) Reading:
+- K = 3, 4: every gap scales as sigma^-(K-2) per seed within +-0.1 (+-0.03 for mps4) over 1.5 decades,
+  once the binary4 close-teacher runs that do not follow a resolved S2S sequence are separated (2.5).
+  Pooling them, as done before review round 1, gave gap 2 = 0.92 +- 0.11 (chi = 3).
+- K = 7: binary8 per-seed exponents 4.88-5.09 (robust); ht4 per-seed exponents span 3.9-5.8 and the
+  second gap's mean is 4.75 +- 0.14, i.e. consistent with 5 only in the mean of gap 1. Both over 0.6
+  decade of sigma only (the project rule asks for >= 1 decade), at chi = 6.
+- K = 8 (mps8): only the first gap is measured, 5.95 +- 0.05 over 7 seeds at chi = 6 (predicted 6); no
+  run learns the third component.
+- The deviations of the raw t_1 exponent from K - 2 (e.g. 1.005) are the predicted O(1) offset c_K
+  (section 1.1): with it removed the exponent is 0.9996 +- 0.0001 (2.2b).
 
-### 2.5 Saddle type at plateau midpoints (empirical; theory_saddles R10)
+### 2.5 Saddle type at plateau midpoints (empirical; theory_saddles R10; strict case predicted in 1.4)
 
-Gauge-projected Hessian at the plateau midpoints (minimum speed between events). Primary rule
-(diagnostics.md): slope of log(-lambda_min) vs log sigma per seed: 1.06 +- 0.01 / 1.02 +- 0.00 (first /
-second plateau, binary4 chi = 3, separated), 1.08 / 1.04 (chi = 6); mps4 2.01 / 1.99 (chi = 3), 2.01 /
-2.00 (chi = 6): lambda_min -> 0 like sigma^{K-2}, i.e. **higher-order saddles**, as predicted for odeco
-teachers (no strict direction: m >= 3, or m = 2 on binary4 with the larger components learned first).
-Magnitude: ratio of lambda_min to the route formula -(K-1) s_r (s_r |a_r|)^{(K-2)/K} (theory_saddles R10,
-balanced route, A = 1 for k = K) evaluated with the measured dormant overlap: median 0.88-1.15 per cell.
-All values were recomputed from the saved midpoint parameters after the library's gauge-projection
-fix (6c42d85; `recompute_hessians.py`, `results/hess_*.csv`): projected and raw lambda_min agree to a
-median ratio 0.99-1.00 and give the same slopes to 0.01. K = 7 (sweep `large`, chi = 6): slopes
-5.10 +- 0.01 / 5.07 +- 0.02 (binary8), 5.14 +- 0.09 / 4.88 +- 0.11 (ht4), predicted 5; the magnitude
-ratio to the route formula is 1.4-1.7 (binary8) and 1.4-2.9 (ht4): the route is not yet balanced at
-these sigma (the balanced estimate is then too small).
+Gauge-projected Hessian at the plateau midpoints (minimum speed between events), recomputed from the
+saved midpoint parameters after the library's gauge-projection fix (6c42d85; `recompute_hessians.py`,
+`results/hess_*.csv`; projected and raw lambda_min agree to a median ratio 0.99-1.00 and give the same
+slopes to 0.01). Primary rule (diagnostics.md): slope of log(-lambda_min) vs log sigma per seed, on the
+same run sets as the gaps of 2.4.
+- **Higher-order saddles** (greedy-order binary4 and all plateaus on the tensor-like trees, m >= 3):
+  slopes 1.06 +- 0.01 / 1.02 +- 0.00 (first / second plateau, binary4 chi = 3 separated), 1.08 / 1.04
+  (chi = 6); close teacher 1.17 / 1.12 (chi = 3), 1.18 / 1.17 (chi = 6); mps4 2.00-2.02 / 1.99-2.00 in
+  all four cells; binary8 (chi = 6) 5.10 +- 0.01 / 5.07 +- 0.02; ht4 (chi = 6) 5.13 +- 0.08 / 4.88 +- 0.11;
+  mps8 (chi = 6, first plateau) 5.99 +- 0.06. lambda_min -> 0 like sigma^{K-2}. Magnitude vs the route
+  formula -(K-1) s_r (s_r |a_r|)^{(K-2)/K} (theory_saddles R10, balanced route, A = 1) with the measured
+  dormant overlap: cell medians 0.87-1.15 at K = 3, 4; 1.36-3.15 at K = 7, 8 (per seed up to ~7): the
+  routes are not balanced at these sigma, so the balanced estimate is too small.
+- **A strict saddle, as predicted** (`results/main_strict_saddles.csv`). On binary4 (m = 2) a learned set
+  with a larger component still unlearned has a piggyback direction of negative curvature
+  s_q^((K-2)/K)(s_q - s_r) (1.4; theory_saddles 4.1). With the close teacher, chi = 3, seed 8 learns in the
+  order 1-3-2 at 7 of 8 sigmas (seed 5 at 2 more): on the plateau where 0.7 is learned and 0.85 is not,
+  lambda_min (projected) = -0.118 .. -0.146 over sigma = 0.005-0.1 (raw -0.121 .. -0.147), slope 0.03,
+  i.e. flat in sigma, against the predicted -0.7^(1/3) x 0.15 = -0.133 (median ratio 0.98). The next
+  event follows within about one width (rho ~ 1.2), so the gap does not grow as sigma -> 0 (per-seed
+  exponent -0.08). These runs are not S2S and are excluded from the fits of 2.4. At chi = 6 (seed 4, 3
+  sigmas) the wrong-order state has no resolved plateau (rho ~ 0.3), so the midpoint Hessian
+  (-0.36 .. -0.53) is taken mid-transition and is not comparable.
+- So: plateaus are higher-order saddles on greedy-order binary4 sequences and on all tensor-like trees
+  (mps4, binary8, ht4, mps8); on binary4 a wrong-order plateau is a strict saddle, measured as
+  predicted. (Before review round 1 the notes said "no strict saddles seen with odeco teachers".)
 
 ### 2.7 Dormant-component suppression (lead's question; empirical unless tagged)
 

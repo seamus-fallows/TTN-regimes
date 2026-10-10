@@ -1,0 +1,117 @@
+lo_chi: 5400 jobs
+[200/5400 8s]
+[400/5400 11s]
+[600/5400 14s]
+[800/5400 17s]
+[1000/5400 25s]
+[1200/5400 30s]
+[1400/5400 36s]
+[1600/5400 42s]
+[1800/5400 64s]
+[2000/5400 76s]
+[2200/5400 88s]
+[2400/5400 99s]
+[2600/5400 112s]
+[2800/5400 121s]
+[3000/5400 130s]
+[3200/5400 144s]
+[3400/5400 162s]
+[3600/5400 180s]
+[3800/5400 195s]
+[4000/5400 208s]
+[4200/5400 219s]
+[4400/5400 226s]
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+[4600/5400 241s]
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+[4800/5400 256s]
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+[5000/5400 271s]
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:684: RuntimeWarning: invalid value encountered in dot
+  err5 = np.dot(K.T, self.E5) / scale
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/rk.py:685: RuntimeWarning: invalid value encountered in dot
+  err3 = np.dot(K.T, self.E3) / scale
+[5200/5400 287s]
+[5400/5400 302s]
+done 302.64883971214294

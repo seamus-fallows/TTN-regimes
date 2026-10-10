@@ -94,7 +94,7 @@ def summarize(df: pd.DataFrame, fits: pd.DataFrame) -> pd.DataFrame:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--raw", default="/root/outputs/s2s_core/first")
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

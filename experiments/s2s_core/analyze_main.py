@@ -27,8 +27,13 @@ HERE = Path(__file__).parent
 FLOOR = 1e-14
 
 
-def load(raw: Path) -> pd.DataFrame:
-    rows = []
+# Cores carrying physical legs: the piggyback block is a strict (Hessian) direction only when the
+# differing sites sit on m = 2 such cores (theory_saddles 4.1); for odeco teachers m = this count.
+N_SITE_CORES = {"binary4": 2, "binary8": 4, "mps4": 4, "mps8": 8, "ht4": 4}
+
+
+def load(raw: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
+    rows, prow = [], []
     for f in sorted(raw.glob("*.json")):
         if f.name == "summary.json":
             continue
@@ -139,8 +144,32 @@ def load(raw: Path) -> pd.DataFrame:
             "edge_spread_over_width_max2": max(edge_spread) if edge_spread else np.nan,
             "drift": s["max_conservation_drift"], "q0_max": s["q0_max"], "wall": s["wall_time"],
         }
+        rho = s["separation_ratios"] + [np.nan, np.nan]
+        row["rho1"], row["rho2"] = rho[0], rho[1]
         rows.append(row)
-    return pd.DataFrame(rows)
+        # One row per plateau midpoint: which events precede it (`after`), the learned set, the
+        # route prediction (R10) and, on trees with m = 2, the piggyback prediction of a strict
+        # saddle when a larger component is unlearned: s_q^((K-2)/K) (s_q - max_r s_r).
+        ev_sorted = sorted(t for t in t_sorted if np.isfinite(t))
+        for pos, p in enumerate(plateaus, 1):
+            after = int(sum(t < p["t_mid"] for t in ev_sorted))
+            learned = order[:after]
+            unlearned = [r for r in range(R) if r not in learned]
+            pig = np.nan
+            if N_SITE_CORES.get(row["tree"]) == 2 and learned and unlearned:
+                smax = max(s["weights"][r] for r in unlearned)
+                cands = [s["weights"][q] ** ((s["K"] - 2) / s["K"]) * (s["weights"][q] - smax)
+                         for q in learned if s["weights"][q] < smax]
+                pig = min(cands) if cands else np.nan
+            prow.append({k: row[k] for k in ("sweep", "tree", "K", "chi", "teacher", "init", "sigma", "seed",
+                                             "class", "order")} | {
+                "plateau": pos, "after": after, "learned": "-".join(str(q + 1) for q in learned),
+                "t_mid": p["t_mid"], "loss_rel_err": abs(p["loss"] - p["partial_fit_level"]) / p["partial_fit_level"],
+                "rho_next": rho[after - 1] if 1 <= after <= len(s["separation_ratios"]) else np.nan,
+                "lam_min_stored": p.get("saddle", {}).get("lambda_min", np.nan),
+                "lam_pred_route": lam_pred[pos - 1] if pos - 1 < len(lam_pred) else np.nan,
+                "lam_pred_piggyback": pig})
+    return pd.DataFrame(rows), pd.DataFrame(prow)
 
 
 def summarize(df: pd.DataFrame) -> pd.DataFrame:
@@ -159,46 +188,103 @@ def summarize(df: pd.DataFrame) -> pd.DataFrame:
     ).reset_index()
 
 
-def gap_fits(df: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
-    """Per-seed power-law fits of t_1, t_2 - t_1 and t_3 - t_2 against sigma.
-
-    Only complete runs, and per seed only the sigmas at which the seed follows its most common
-    learning order (runs that visit a different saddle sequence are not pooled). Exponent p in
-    gap ~ sigma^-p; at least `min_sigmas` sigmas per fit.
+def gap_fits(df: pd.DataFrame, plat: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
+    """Per-seed power-law fits against sigma, each on the runs where that step is a resolved S2S
+    step of the seed's modal saddle sequence (review s2s_core round 1, issue 1):
+      t_1    runs whose first component is the seed's modal first component;
+      gap1   t_2 - t_1 on runs with >= 2 events, first two components = the seed's modal pair, rho_1 > 3;
+      gap2   t_3 - t_2 on complete runs in the seed's modal order with rho_1, rho_2 > 3.
+    Plateau 1 / 2 Hessian slopes (log(-lambda_min) vs log sigma, projected and raw) use the same run
+    sets. Exponent p in t ~ sigma^-p; at least `min_sigmas` sigmas per fit.
     """
+    def fit(x, y):
+        ok = np.isfinite(y) & (y > 0)
+        return -np.polyfit(x[ok], np.log(y[ok]), 1)[0] if ok.sum() >= min_sigmas else np.nan
+
+    def slope(x, lam):
+        neg = np.isfinite(lam) & (lam < 0)
+        return np.polyfit(x[neg], np.log(-lam[neg]), 1)[0] if neg.sum() >= min_sigmas else np.nan
+
     rows = []
     keys = ["sweep", "tree", "K", "chi", "teacher", "init", "seed"]
-    comp = df[df["class"] == "complete"]
-    for key, g in comp.groupby(keys):
-        modal = g.order.mode().iloc[0]
-        g = g[g.order == modal].sort_values("sigma")
-        if len(g) < min_sigmas:
-            continue
-        x = np.log(g.sigma.values)
-        row = {**dict(zip(keys, key)), "order": modal, "n_sigma": len(g),
-               "sigma_min": g.sigma.min(), "sigma_max": g.sigma.max()}
-        for name, y in (("t1", g.t1.values), ("gap1", g.t2.values - g.t1.values),
-                        ("gap2", g.t3.values - g.t2.values)):
-            ok = np.isfinite(y) & (y > 0)
-            row[f"p_{name}"] = -np.polyfit(x[ok], np.log(y[ok]), 1)[0] if ok.sum() >= min_sigmas else np.nan
-        # Saddle type (diagnostics.md, primary rule): slope of log(-lambda_min) vs log(sigma) per seed;
-        # ~0 for a strict saddle, ~k-2 for a higher-order one. Plateaus without a negative
-        # eigenvalue are counted separately.
+    pl = plat.set_index(keys[:-1] + ["sigma", "seed", "after"]) if len(plat) else None
+    for key, g in df[df.n_learned >= 1].groupby(keys):
+        row = dict(zip(keys, key))
         for i in (1, 2):
-            lam = g[f"plateau{i}_lam_min"].values
-            neg = np.isfinite(lam) & (lam < 0)
-            row[f"lam{i}_slope"] = np.polyfit(x[neg], np.log(-lam[neg]), 1)[0] if neg.sum() >= min_sigmas else np.nan
-            row[f"lam{i}_n_nonneg"] = int((np.isfinite(lam) & (lam >= 0)).sum())
-            row[f"lam{i}_slope_raw"] = np.nan
-            if f"plateau{i}_lam_min_raw" in g:
-                raw = g[f"plateau{i}_lam_min_raw"].values
-                negr = np.isfinite(raw) & (raw < 0)
-                row[f"lam{i}_slope_raw"] = np.polyfit(x[negr], np.log(-raw[negr]), 1)[0] if negr.sum() >= min_sigmas else np.nan
-            pred = g[f"plateau{i}_lam_pred"].values
-            okp = neg & np.isfinite(pred) & (pred < 0)
-            row[f"lam{i}_over_pred_median"] = float(np.median(lam[okp] / pred[okp])) if okp.any() else np.nan
+            row.update({f"lam{i}_slope": np.nan, f"lam{i}_slope_raw": np.nan,
+                        f"lam{i}_over_pred_median": np.nan, f"sigma_range_gap{i}": ""})
+        first = g.order.str.split("-").str[0]
+        g1 = g[first == first.mode().iloc[0]].sort_values("sigma")
+        row["p_t1"] = fit(np.log(g1.sigma.values), g1.t1.values)
+        row["n_t1"] = len(g1)
+        two = g[g.n_learned >= 2]
+        pair = two.order.str.split("-").str[:2].str.join("-")
+        sets = {}
+        if len(two):
+            modal2 = pair.mode().iloc[0]
+            sets[1] = two[(pair == modal2) & (two.rho1 > 3)].sort_values("sigma")
+            row["order2"] = modal2
+        comp = g[g["class"] == "complete"]
+        if len(comp):
+            modal = comp.order.mode().iloc[0]
+            sets[2] = comp[(comp.order == modal) & (comp.rho1 > 3) & (comp.rho2 > 3)].sort_values("sigma")
+            row["order"] = modal
+        for i, col in ((1, "gap1"), (2, "gap2")):
+            d = sets.get(i)
+            if d is None or not len(d):
+                row[f"p_{col}"], row[f"n_{col}"] = np.nan, 0
+                continue
+            x = np.log(d.sigma.values)
+            y = (d.t2 - d.t1).values if i == 1 else (d.t3 - d.t2).values
+            row[f"p_{col}"], row[f"n_{col}"] = fit(x, y), len(d)
+            row[f"sigma_range_{col}"] = f"{d.sigma.min():g}-{d.sigma.max():g}"
+            # Hessian at the plateau that precedes this step (after = i events).
+            lam, raw, pred = [], [], []
+            for _, r in d.iterrows():
+                k = (*key[:-1], r.sigma, r.seed, i)
+                if pl is not None and k in pl.index:
+                    e = pl.loc[[k]].iloc[0]
+                    lam.append(e.get("lam_min", np.nan)), raw.append(e.get("lam_min_raw", np.nan))
+                    pred.append(e.lam_pred_route)
+                else:
+                    lam.append(np.nan), raw.append(np.nan), pred.append(np.nan)
+            lam, raw, pred = map(np.asarray, (lam, raw, pred))
+            row[f"lam{i}_slope"], row[f"lam{i}_slope_raw"] = slope(x, lam), slope(x, raw)
+            ok = np.isfinite(lam) & (lam < 0) & np.isfinite(pred) & (pred < 0)
+            row[f"lam{i}_over_pred_median"] = float(np.median(lam[ok] / pred[ok])) if ok.any() else np.nan
         rows.append(row)
     return pd.DataFrame(rows)
+
+
+def strict_saddles(plat: pd.DataFrame) -> pd.DataFrame:
+    """Plateaus where the piggyback block predicts a strict saddle (m = 2 trees with a larger component
+    unlearned): measured lambda_min (projected, raw) vs the prediction, per (seed, learned set), with
+    the slope of log(-lambda_min) vs log(sigma) (~0 for a strict saddle)."""
+    x = plat[np.isfinite(plat.lam_pred_piggyback)]
+    rows = []
+    for key, g in x.groupby(["sweep", "tree", "K", "chi", "teacher", "init", "seed", "learned"]):
+        g = g.sort_values("sigma")
+        lam = g.lam_min.values
+        neg = np.isfinite(lam) & (lam < 0)
+        rows.append({**dict(zip(["sweep", "tree", "K", "chi", "teacher", "init", "seed", "learned"], key)),
+                     "n_sigma": len(g), "sigma_range": f"{g.sigma.min():g}-{g.sigma.max():g}",
+                     "orders": ",".join(sorted(set(g.order))),
+                     "lam_pred": g.lam_pred_piggyback.iloc[0],
+                     "lam_min_proj_range": f"{np.nanmin(lam):.3f}..{np.nanmax(lam):.3f}",
+                     "lam_min_raw_range": f"{np.nanmin(g.lam_min_raw):.3f}..{np.nanmax(g.lam_min_raw):.3f}",
+                     "lam_over_pred_median": float(np.nanmedian(lam / g.lam_pred_piggyback.values)),
+                     "slope": np.polyfit(np.log(g.sigma[neg]), np.log(-lam[neg]), 1)[0] if neg.sum() >= 3 else np.nan,
+                     "rho_next_median": float(np.nanmedian(g.rho_next))})
+    return pd.DataFrame(rows)
+
+
+def class_table(df: pd.DataFrame) -> pd.DataFrame:
+    """Run classes per (sweep, tree, chi, teacher, init), pooled over sigma."""
+    g = df.groupby(["sweep", "tree", "K", "chi", "teacher", "init"])
+    out = g["class"].value_counts().unstack(fill_value=0).reset_index()
+    out["n"] = g.size().values
+    out["sigmas"] = g.sigma.apply(lambda x: f"{x.min():g}-{x.max():g}").values
+    return out
 
 
 def order_table(df: pd.DataFrame) -> pd.DataFrame:
@@ -226,7 +312,9 @@ def fit_summary(fits: pd.DataFrame) -> pd.DataFrame:
     out = g.agg(n_seeds=("seed", "size"),
                 p_t1=("p_t1", "mean"), p_t1_se=("p_t1", se),
                 p_gap1=("p_gap1", "mean"), p_gap1_se=("p_gap1", se), n_gap1=("p_gap1", "count"),
+                p_gap1_min=("p_gap1", "min"), p_gap1_max=("p_gap1", "max"),
                 p_gap2=("p_gap2", "mean"), p_gap2_se=("p_gap2", se), n_gap2=("p_gap2", "count"),
+                p_gap2_min=("p_gap2", "min"), p_gap2_max=("p_gap2", "max"),
                 lam1_slope=("lam1_slope", "mean"), lam1_slope_se=("lam1_slope", se),
                 lam2_slope=("lam2_slope", "mean"), lam2_slope_se=("lam2_slope", se),
                 lam1_slope_raw=("lam1_slope_raw", "mean"), lam2_slope_raw=("lam2_slope_raw", "mean"),
@@ -239,39 +327,47 @@ def fit_summary(fits: pd.DataFrame) -> pd.DataFrame:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--raw", nargs="+", default=["/root/outputs/s2s_core/main"])
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (never defaults to results/)")
     ap.add_argument("--tag", default="main")
-    ap.add_argument("--hess", nargs="*", default=[str(HERE / "results" / "hess_main.csv")],
-                    help="recomputed Hessian tables (recompute_hessians.py)")
+    ap.add_argument("--hess", nargs="*", default=[],
+                    help="recomputed Hessian tables (recompute_hessians.py) for THESE raw folders; "
+                         "without them the lambda_min stored by the runs is used")
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    df = pd.concat([load(Path(r)) for r in args.raw if Path(r).exists()], ignore_index=True)
-    # Hessians recomputed after the library's gauge-projection fix (recompute_hessians.py) replace
-    # the values stored by the runs; raw (unprojected) lambda_min is kept next to them.
+    loaded = [load(Path(r)) for r in args.raw if Path(r).exists()]
+    df = pd.concat([x[0] for x in loaded], ignore_index=True)
+    plat = pd.concat([x[1] for x in loaded], ignore_index=True)
+    plat["lam_min"], plat["lam_min_raw"] = plat.lam_min_stored, np.nan
     hfiles = [pd.read_csv(h) for h in args.hess if Path(h).exists()]
-    for hs in ([pd.concat(hfiles, ignore_index=True)] if hfiles else []):
-        keys = ["sweep", "tree", "chi", "teacher", "init", "sigma", "seed"]
-        for i in (1, 2):
-            hi = hs[hs.plateau == i][keys + ["lam_min_proj", "lam_min_raw", "lam_max_proj"]].rename(columns={
-                "lam_min_proj": f"p{i}_proj", "lam_min_raw": f"plateau{i}_lam_min_raw", "lam_max_proj": f"p{i}_max"})
-            df = df.merge(hi, on=keys, how="left")
-            has = df[f"p{i}_proj"].notna()
-            df.loc[has, f"plateau{i}_lam_min"] = df.loc[has, f"p{i}_proj"]
-            if i == 1:
-                df.loc[has, "plateau1_lam_max"] = df.loc[has, "p1_max"]
-            df = df.drop(columns=[f"p{i}_proj", f"p{i}_max"])
+    if hfiles:
+        hs = pd.concat(hfiles, ignore_index=True)
+        keys = ["sweep", "tree", "chi", "teacher", "init", "sigma", "seed", "plateau"]
+        plat = plat.drop(columns=["lam_min", "lam_min_raw"]).merge(
+            hs[keys + ["lam_min_proj", "lam_min_raw"]].rename(columns={"lam_min_proj": "lam_min"}),
+            on=keys, how="left")
+        plat["lam_min"] = plat.lam_min.fillna(plat.lam_min_stored)
+    # Back-compatible per-run columns: Hessian at the plateaus after 1 and 2 events.
+    for i in (1, 2):
+        pi = plat[plat.after == i][["sweep", "tree", "chi", "teacher", "init", "sigma", "seed",
+                                     "lam_min", "lam_min_raw"]].drop_duplicates(
+            ["sweep", "tree", "chi", "teacher", "init", "sigma", "seed"])
+        pi = pi.rename(columns={"lam_min": f"plateau{i}_lam", "lam_min_raw": f"plateau{i}_lam_min_raw"})
+        df = df.merge(pi, on=["sweep", "tree", "chi", "teacher", "init", "sigma", "seed"], how="left")
+        df[f"plateau{i}_lam_min"] = df.pop(f"plateau{i}_lam")
     df.to_csv(out / f"{args.tag}_runs.csv", index=False)
+    plat.to_csv(out / f"{args.tag}_plateaus.csv", index=False)
     summ = summarize(df)
     summ.to_csv(out / f"{args.tag}_summary.csv", index=False)
-    fits = gap_fits(df)
+    class_table(df).to_csv(out / f"{args.tag}_classes.csv", index=False)
+    fits = gap_fits(df, plat)
     fits.to_csv(out / f"{args.tag}_gap_fits.csv", index=False)
     fs = fit_summary(fits) if len(fits) else fits
     fs.to_csv(out / f"{args.tag}_exponents.csv", index=False)
+    strict_saddles(plat).to_csv(out / f"{args.tag}_strict_saddles.csv", index=False)
     order_table(df).to_csv(out / f"{args.tag}_order.csv", index=False)
     pd.set_option("display.width", 250)
     pd.set_option("display.max_rows", 500)
-    print(summ.to_string())
     print(fs.round(3).to_string())
 
 

@@ -24,14 +24,15 @@ def main():
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", default=str(HERE / "results"))
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
+    ap.add_argument("--raw", default=str(RAW), help="directory with <tree>_dopri5.npz (aligned.py)")
     args = ap.parse_args()
     tp.set_style()
     table = pd.read_csv(Path(args.results) / "aligned.csv")
     fig, axes = tp.subplots(1, len(TREES), width=tp.TEXT_WIDTH, panel_aspect=1.45, sharey=True)
     colors = tp.palette(3)
     for ax, tree in zip(axes, TREES):
-        d = np.load(RAW / f"{tree}.npz")
+        d = np.load(Path(args.raw) / f"{tree}_dopri5.npz")
         t = d["t"]
         for r in range(3):
             ax.plot(t, d["overlaps"][:, r], color=colors[r], lw=1.4, label=f"$a_{r + 1}$ (GF)")

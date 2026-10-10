@@ -60,7 +60,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
     ap.add_argument("--workers", type=int, default=60)
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
     args = ap.parse_args()
     config = yaml.safe_load(Path(args.config).read_text())
     settings = []
