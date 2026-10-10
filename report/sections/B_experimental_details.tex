@@ -22,7 +22,7 @@ in \path{configs/}); findings in \path{notes/s2s_core.md}; reviews in \path{note
 and \path{notes/reviews/s2s_core_round2_verification.md}, whose errata E1--E21 are applied in \cref{sec:s2s}.
 Numbers that are not single entries of a results table are computed by \path{report_numbers.py} into
 \path{results/report_numbers.csv}.
-\placeholder{Order experiment (\cref{sec:s2s-order}): settings to be added.}
+The order experiment of \cref{sec:s2s-order} is described in \cref{app:exp-order}.
 
 \paragraph{Problems.}
 Whitened Gaussian inputs, exact population loss, double precision. Odeco teachers
@@ -283,6 +283,131 @@ escape and still falling, or at roundoff; horizons $10^5\isc^{-(\Kc-2)}$ ($\Ns=4
 $10^4\isc^{-(\Kc-2)}$. Fits per seed, mean $\pm$ s.d.\ over seeds; gap fits for $k\ge3$ use runs with a
 distinct intermediate plateau. A first sweep, made before the teacher and initialization streams
 were separated, was discarded.
+
+\subsection{Order of learning}\label{app:exp-order}
+Settings of \cref{sec:s2s-order}. Experiment folder \path{experiments/order/} (README with every command and
+the run order; one YAML configuration per sweep in \path{configs/}); findings in \path{notes/order.md}, whose
+sections 0 and 6--11 were revised after the review \path{notes/reviews/order_round1.md} (section 11 lists the
+changed claims); verification of the revision in \path{notes/reviews/order_round2_verification.md}, whose errata
+E1--E10 are applied in \cref{sec:s2s-order}; running report \path{agent-runs/order/REPORT.md}.
+
+\paragraph{Problems.}
+Whitened Gaussian inputs, exact population loss, double precision. Teachers with weights $(1,\varrho)$, or
+$(1,\varrho,\dots,\varrho^{\ncomp-1})$ with $\ncomp=3,4$: odeco, or pattern teachers whose first component has the
+first basis vector at every site and whose second differs from it on the sites $D$ (MPS6: $D=\{0,5\}$, $\{2,3\}$,
+$\{0,1,2\}$, $\{0,1,2,3\}$; MPS4: $\{0,2\}$, $\{1,2\}$). All teachers use the standard site basis: the fan-in
+initialization is invariant in law under an orthogonal rotation of any physical leg, so this changes no order
+statistic, and no teacher randomness enters. Trees binary4, MPS4, MPS6, binary8 and MPS8 ($\Kc=3,4,6,7,8$);
+$d\in\{2,4\}$; nominal $\chi\in\{2,4,8\}$ capped by \eqref{eq:bond-cap} (28 distinct settings), or uncapped
+$\chi=1$--$32$. Fan-in initialization \eqref{eq:init} with seeds $0,\dots,n-1$, the same for every $\varrho$ and
+$\isc$; the $d$ test uses the disjoint ranges from $200000$ ($d=2$) and $300000$ ($d=4$), the exchangeability check
+the range from $100000$.
+
+\paragraph{Dynamics.}
+\emph{First events} (\path{sweep.py}): gradient flow by SciPy's RK45 (Dormand--Prince 5(4)) with relative and
+absolute tolerances $10^{-9}$ and $10^{-14}$, stopped by event location at the first crossing of $\ov r=\frac12$ by
+any component; 1,105 MPS8 runs of the main sweep that reached the float64 resolution of $t$ were re-integrated
+with a restarted clock (\path{repair.py}; no winner changed). \emph{Leading-order race}
+(\path{common.lo_blowup}): for each component $r$, the flow of $\ip{\W}{\U r}$ from the initialization at $\isc=1$
+until $\norm{\params}=10^4\norm{\params_0}$, plus the radial remainder of the blow-up time; the predicted winner is
+$\arg\min_r\hat t_{1,r}/\tw r$. \emph{Full runs} (\path{h1b.py}): LSODA with the exact Hessian as Jacobian,
+tolerances $10^{-10}$ and $10^{-15}$, dense output, event times by root finding on it and a fine record window
+around the events; a run stops below $10^{-10}\Loss(0)$, at $\tmax=10^9$ ($10^{10}$ for the MPS6 and binary8 saddle
+starts, $10^{12}$ for the natural MPS4 runs), or when some component's slice of some core falls to $10^{-14}$ times
+the largest core norm (\emph{stalled}). The threshold is justified empirically: in the 22 runs without any stall
+stop, every learned component kept a slice ratio of at least $6.7\cdot10^{-6}$ before its event, while 25 of the 29
+unlearned ones fell below $10^{-14}$ (17 to an exact zero by underflow), so the rule had no false positive; the
+slices keep decaying rather than stopping at a roundoff floor (verification review). The Hessian is computed at the
+plateau midpoint (minimum parameter speed between the two events), raw and gauge-projected
+(\path{ttn.diagnostics}, relative cutoff $10^{-3}$); at $\isc=10^{-2}$ the projection is biased for the adjacent MPS4
+pair ($-0.58$ to $-0.80$ against the raw $-0.71$ to $-0.95$), so raw values are quoted. In the natural adjacent runs
+57 of 150 wrong plateaus are near-ties without a resolved midpoint; no claim uses their Hessians.
+\emph{Several components} (\path{multi.py}): LSODA with the exact Hessian, tolerances $10^{-9}$ and $10^{-14}$, exact
+location of every first crossing; a run stops below $10^{-8}\Loss(0)$ (converged), at $t=10^9$ (unfinished) or by
+the slice criterion (stalled). The round-1 run \texttt{multi} (raw folder \texttt{multi2}) stopped instead when an
+overlap fell below $10^{-25}$, which can also fire while a component is forgotten, and flagged runs with an
+overlap below $10^{-14}$ as seeded by roundoff, which wrongly excluded 18--19 binary8 runs per $\varrho$. The
+three-component rerun \texttt{multi3} reproduces it run for run (same status and event times) and changes only
+that flag; \texttt{multi} is used only for the four-component counts, which \texttt{multi\_nostop} checks without any
+stall stop.
+
+\paragraph{Sweeps.} \Cref{tab:exp-order}.
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the order experiment (\cref{sec:s2s-order}), one configuration file each in
+    \texttt{experiments/order/configs/} (the \texttt{*} rows group several). GF: gradient-flow runs; LO:
+    leading-order race only.}
+  \label{tab:exp-order}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}X r@{}}
+    \toprule
+    sweep & content & runs \\
+    \midrule
+    \texttt{main} & binary4, MPS4, MPS6, binary8, MPS8; $d\in\{2,4\}$, $\chi\in\{2,4,8\}$ (28 settings);
+      $\varrho\in\{0.5,0.7,0.8,0.9,0.95,0.99\}$; $\isc=0.01$; seeds $0$--$399$; LO race and initialization statistics
+      per seed & 67,200 GF \\
+    \texttt{b4\_sigma} & binary4, $\chi\in\{2,4\}$, $\varrho\in\{0.5,0.7,0.8,0.9,0.95\}$, 7 values of
+      $\isc\in[10^{-4},0.1]$, seeds $0$--$999$ & 70,000 GF \\
+    \texttt{m4\_sigma}, \texttt{b8\_sigma} & MPS4 (5 values of $\isc\in[0.003,0.3]$) and binary8 (4 values in
+      $[0.01,0.3]$), $\chi=4$, $\varrho\in\{0.5,0.8,0.95\}$, seeds $0$--$399$ & 10,800 GF \\
+    \texttt{pat\_mps6\_*} & MPS6 pattern pairs ($D$ above), $\chi=4$, $\varrho\in\{0.7,0.8,0.9\}$,
+      $\isc\in\{0.003,0.01,0.03,0.1\}$, seeds $0$--$399$ & 19,200 GF \\
+    \texttt{pat\_mps4\_sep}, \texttt{\_adj} & MPS4, $D=\{0,2\}$ and $\{1,2\}$, $\chi=4$, $\varrho\in\{0.8,0.9\}$,
+      $\isc\in\{10^{-5},\dots,10^{-1}\}$ (5 values), seeds $0$--$999$ & 20,000 GF \\
+    \texttt{d\_test\_*} & binary8 (all bonds 4) and MPS4 (all bonds 2), $d=2$ and $4$, $\varrho\in\{0.5,0.8\}$,
+      $\isc=0.01$, 1,000 seeds each & 8,000 GF \\
+    \texttt{chi\_scan}, \texttt{chi\_gf} & MPS4, MPS6, MPS8, binary8, uncapped $\chi\in\{1,2,4,8,16,32\}$, 500
+      initializations; GF check on MPS4 and binary8 at $\chi=16$, $32$, $\varrho\in\{0.8,0.9,0.95\}$, $\isc=0.01$, 400 seeds &
+      12,000 LO; 4,800 GF \\
+    \texttt{symmetry\_check} & MPS4 and MPS8, $d=4$, $\chi=2$, seeds $100000$--$101499$ & 3,000 LO \\
+    \texttt{h1b\_saddle\_*} & saddle starts, 6 values of $\isc\in[10^{-7},10^{-2}]$, seeds $0$--$7$: binary4
+      ($\varrho\in\{0.5,0.7,0.8,0.9\}$), MPS4 $D=\{0,2\}$ and $\{1,2\}$ ($\varrho\in\{0.5,0.8,0.9\}$); MPS4 odeco
+      ($\varrho\in\{0.5,0.8\}$, 5 values of $\isc\in[0.01,0.1]$); MPS6 and binary8 odeco ($\varrho=0.8$, 5 values in
+      $[0.05,0.2]$ and $[0.15,0.35]$, seeds $0$--$5$) & 619 GF \\
+    \texttt{h1b\_natural\_*} & wrong-order seeds of \texttt{b4\_sigma} ($\chi=4$, $\varrho\in\{0.7,0.8,0.9\}$,
+      $\isc\in\{10^{-4},10^{-3},10^{-2},0.1\}$), of \texttt{pat\_mps4\_sep} and \texttt{\_adj} ($\varrho\in\{0.8,0.9\}$,
+      $\isc\in\{10^{-4},10^{-3},10^{-2}\}$) and of \texttt{main} (MPS4, $d=2$, $\chi=4$, $\varrho\in\{0.5,0.8\}$); at most 40
+      (20 for \texttt{main}) per $(\varrho,\isc)$ & 851 GF \\
+    \texttt{multi3} & three components, $\varrho\in\{0.8,0.9\}$, $d=\chi=4$; $\isc=0.05$ (binary4), $0.1$ (MPS4), $0.2$
+      (MPS6), $0.25$ (binary8); seeds $0$--$199$ & 1,597 GF \\
+    \texttt{multi} (\texttt{multi2}) & as \texttt{multi3}, with three and four components and the overlap stall
+      criterion & 3,190 GF \\
+    \texttt{multi\_nostop} & four components, $\varrho=0.8$, MPS6 and binary8, no stall stop, $t\le10^9$, seeds
+      $0$--$11$ & 22 GF \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Analysis.}
+$P$ with Wilson 95\% intervals; power laws $P=C\isc^\gamma$ by binomial maximum likelihood over the whole measured
+range of $\isc$, with standard errors from a bootstrap over seeds (the seeds are shared across $\isc$), local slopes
+between consecutive values of $\isc$ and fits over $\isc\le0.01$ as checks (\path{analyze_sigma.py}); escape times
+from the saddle fitted per seed against $\ln(1/\isc)$ and as a power law, compared by their residuals
+(\path{analyze_h1b.py}); three components compared with the race model on the same runs, with
+$z=(P_{\rm GF}-P_{\rm model})/\mathrm{s.e.}$, and the excluded runs reported with their own race orders
+(\path{analyze_multi.py}). The verification review recomputed the power laws (and fits over the three smallest
+$\isc$) and the three-component statistics from the raw runs with its own code, and added a paired comparison of
+each run's order with its own LO race (McNemar test), which \cref{sec:s2s-order} quotes. \Cref{fig:order-first,fig:order-wrong}
+come from \path{plot_report.py}, from committed tables only (\cref{app:reproducibility}).
+
+\paragraph{Accuracy.}
+Tightening the RK45 tolerance to $10^{-11}$ leaves the winner unchanged in 500 of 500 initializations (100 per tree,
+$\varrho=0.8$, $\isc=0.01$) and moves $\tev1$ by at most $1.0\cdot10^{-9}$ relative; the conservation drift at the event
+is below $3.5\cdot10^{-11}$ (\path{tol_check.py}). The LO escape direction is balanced: at
+$\norm{\params}=10^4\norm{\params_0}$ every core holds $1/\Kc$ of $\norm{\params}^2$ to within $5.0\cdot10^{-5}$, and the
+per-bond imbalance relative to $\norm{\params}^2$ is below $3.3\cdot10^{-5}$ (five trees, five seeds each;
+\path{balance_check.py}). The review reproduced every number it recomputed, seed by seed, with the committed code
+and with independent code (numpy contractions, DOP853, its own LO blow-up times and exact Hessians): $P$ on MPS4 at
+six values of $\varrho$ (400 seeds), the binary4 wrong-order counts in every recomputed $(\varrho,\isc)$ cell, the
+race agreement, and the wrong-saddle eigenvalues.
+
+\paragraph{Excluded runs.}
+Missing from the tables: 3 of 1,600 \texttt{multi3} runs and 2 of 24 \texttt{multi\_nostop} runs, still integrating
+after 1.5\,h; 10 of 3,200 \texttt{multi} runs; and one binary8 saddle start ($\isc=0.3$, seed 0), stopped after 80
+minutes, after which the table was rebuilt from the 29 stored trajectories (\path{rebuild_h1b_csv.py}). The raw outputs (JSON lines per
+sweep and \texttt{.npz} trajectories, 346\,MB) are not in the repository; \cref{app:reproducibility} says how to
+regenerate them.
 
 \subsection{Regime-map experiments}\label{app:exp-regimes}
 Settings of \cref{sec:regime-map} and \cref{sec:other-lazy,sec:other-rich,sec:other-stalled,sec:other-large-chi}.

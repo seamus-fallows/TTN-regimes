@@ -40,6 +40,11 @@ experiments/locality/results/twocomp_hessian.png     locality/twocomp_hessian.pn
 experiments/locality/results/trees_TA.png            locality/trees_TA.png
 experiments/locality/results/bond_spectra.png        locality/bond_spectra.png
 
+# Section 4.5, order of learning (experiment order; plot_report.py, from the committed tables of results/,
+# including report_examples.csv, which plot_report.py --raw DIR rewrites from the raw trajectories)
+experiments/order/results/report_order_first.pdf   order/first.pdf
+experiments/order/results/report_order_wrong.pdf   order/wrong.pdf
+
 # Section 5.5, discrete steps, gradient noise and finite samples (experiment optim_samples;
 # plot_report.py, from the committed summary CSVs)
 experiments/optim_samples/results/report_gd.pdf        optim/gd.pdf
