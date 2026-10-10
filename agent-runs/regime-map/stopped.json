@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791619194,
+  "reason": "done",
+  "outputs": {
+    "files": 11721,
+    "bytes": 1239111270,
+    "sample": [
+      "regime_map/pilots/b4.pkl",
+      "regime_map/pilots/b4_twocopy.pkl",
+      "regime_map/test/traj/modelcentred_kindbinary_n4_d3_chi3_sigma0.1_seed0.npz",
+      "regime_map/test/traj/modelcentred_kindbinary_n4_d3_chi24_sigma3.0_seed0.npz",
+      "regime_map/test/traj/modeltwocopy_kindbinary_n4_d3_chi24_sigma3.0_seed0.npz"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}
