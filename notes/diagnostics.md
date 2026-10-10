@@ -38,18 +38,61 @@ the probe kernel while the theory constants refer to the tensor-space kernel; fi
 
 ### Overlap events (CP teachers whose components are orthogonal in the input metric)
 
-- Rule: event r at the **last upward crossing** of a_r = 1/2 (the first crossing unless a transient
-  crossed 1/2 and fell back). Width = duration of the **final rise**: w_r = t(a_r first reaches 0.9) -
-  t(last upward crossing of 0.1 before that). Non-learned components can rise transiently while another
-  component is learned (observed: a_2 up to 0.41 during the first escape on binary N = 4, then back
-  down); a first-crossing time or width would then span the whole plateau and misclassify clean S2S
-  runs. Report transients (more than one upward crossing of 1/2).
-- impl.: `ttn.diagnostics.crossing_times(..., last=True)`, `rise_times`, `event_widths`, used by
-  `ttn.runner.learning_events` / `summary` when meta['problem']['orthogonal_components'] is true.
-- used by: s2s-core (event windows re-integrated on linear grids until the rise holds >= 40 points,
-  `s2s.zoom_rise`), locality and optimizers (root finding on the integrator's dense output), 00_smoke.
-  Deviations: experiments/regime_map `refine_events` keeps the first crossing when a transient precedes
-  the final rise (flagged by the regime-map review, fix pending); pilot_h2_locality uses first crossings.
+- **Rule (recommended; lead decision 2026-10-10).** Event r at the **last upward crossing of a_r = 1/2
+  before a_r first reaches 0.9**. This is the first crossing unless a transient crossed 1/2 and fell back
+  before the final rise, and a later dip of the learned component below 1/2 (and its relearning) does
+  not move it. A component that never reaches 0.9 is not learned and has no event. Width = duration of
+  the **final rise**: w_r = t(a_r first reaches 0.9) - t(last upward crossing of 0.1 before that), so
+  time and width belong to the same rise. Report transients (more than one upward crossing of 1/2 before
+  the first 0.9) and dips (a_r < 1/2 after the event) separately.
+- Why: non-learned components can rise transiently while another component is learned (observed: a_2
+  up to 0.41 during the first escape on binary N = 4, then back down); a first-crossing time or width
+  would then span the whole plateau and misclassify clean S2S runs once such a transient passes 1/2. Taking
+  the last crossing over the whole run instead moves the event of a component that is learned, dips
+  below 1/2 while another component escapes and recovers, to its relearning: in the regime-map fix round
+  this turned 6 runs with K = 7 from S2S to rich (e.g. binary 8, seed 2, sigma = 0.16) before it was
+  corrected (`notes/regime_map.md` 3.1).
+- impl.: no single library call. `ttn.diagnostics.rise_times(t, a, lo=0.5, hi=0.9)[0]` returns exactly
+  this time (its t_lo is the last upward crossing of lo before the first reach of hi; NaN if hi is never
+  reached), as does `crossing_times(t[:i + 1], a[:i + 1], 0.5, last=True)` with i the first index where
+  a >= 0.9 (experiments/regime_map `run_regime.final_rise`). Width: `rise_times`, `event_widths`
+  (defaults lo = 0.1, hi = 0.9). `crossing_times(..., last=True)` on the whole record is the persistent
+  rule below, `crossing_times(...)` (default) the first crossing.
+
+Three rules are in use (code checked 2026-10-10; report Appendix B has each experiment's details):
+
+- **Recommended rule, exactly:** s2s-core (`s2s.py` main runs, `first_escape.py`, `continue_stalled.py`:
+  the window from the last a_r < 0.1 to the first a_r >= 0.9 on the log grid is re-integrated on linear
+  grids until the rise holds >= 40 points, `s2s.zoom_rise`, and the event is the last upward crossing of
+  1/2 in that window); regime-map since its fix round 1 (`run_regime.final_rise` inside
+  `refine_events`; `analysis.relabel_last_crossing` for the copied pre-fix runs; a component that never
+  reaches 0.9 gets the persistent time with a NaN width).
+- **Persistent rule**: the last upward crossing of 1/2 after which a_r stays >= 1/2 until the end of the
+  record (NaN if a_r ends below 1/2). Used by the library (`crossing_times(..., last=True)` in
+  `ttn.runner.learning_events` / `summary`, so 00_smoke and any runner-based sweep), locality (`run.py`:
+  root-found crossings of 1/2 in both directions, event = the last one when their number is odd; a
+  component learned, lost and relearned counts when relearned; runs with more than one crossing are
+  "rotations", excluded from the fits), optimizers (`analysis.component_events` on sampled traces,
+  `exact_events` on root-found gradient-flow crossings) and optim-samples (`common.record_events` t50
+  for the GD and SGD records, the DOP853 references in `common.gradient_flow`, `p9_sgd.py`; SGD runs whose
+  first-learned component falls below 1/2 are flagged "forgot" and left out of the second-plateau
+  statistics). The library, `record_events` and `component_events` take the width from the first rise to
+  0.9 (`rise_times`), so in a dip-and-relearn case their time and width belong to different rises;
+  locality and `exact_events` take the rise around the event.
+- **First crossing** (`crossing_times` default, or the first root-found upward crossing): order
+  (`common.gf_first_event`, `gf_events`, `h1b.py`; the learning order is defined by it), data-teacher
+  step 1 (`common.component_events`: t_half_r, with down-crossings counted as swaps), pilot_h2_locality;
+  also checks on monotone or library-compared overlaps (s2s-core `aligned.py`, optim-samples
+  `validate_library.py`, `check_k2_saddle.py`, `collapse_test.py`).
+
+The persistent rule differs from the recommended one only when a learned component later dips below
+1/2: it then dates the relearning, or gives no event if the component ends below 1/2. (It also dates a
+component that ends between 1/2 and 0.9, which the recommended rule leaves unlearned.) Dips occur with
+star teachers (a larger learned component is forgotten and relearned, `theory_saddles.md`), under SGD
+noise (optim-samples P10: min a_1 < 1/2 in 20 of 36 runs at 0.25-0.30 eta*_ms), in rotations to a better
+component (order H1b, data-teacher swaps on binary 4, locality rotation runs) and in a few deep-tree
+gradient-flow runs (the 6 regime-map runs with K = 7 above). The first crossing differs from the
+recommended rule only when a transient crosses 1/2 and falls back before the final rise.
 
 ### Spectral (bond) events (non-orthogonal CP teachers, TTN teachers)
 
