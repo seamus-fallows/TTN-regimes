@@ -303,7 +303,7 @@ teacher rank on every tree, plus full bonds for MPS 6 / binary 8 / MPS 8), plain
 - **Consequence for H4 (derived from the effective-amplitude law; assumptions: u_0c and c_K = O(1) as
   K grows, N = K or K + 1).** sigma_c(K) -> sqrt(d), not 1: the effective per-core amplitude kappa_K =
   a_0c(K) / sigma_c tends to 1/sqrt(d). Measured kappa_K (centred, chi = 4) rises from 0.39 (K = 3) to
-  ~0.6-0.7 for K >= 6 (1/sqrt(2) = 0.707). So H4's "sigma_c -> 1" holds in the normalization where the
+  0.52-0.74 for K = 6-12 (0.70 and 0.74 at K = 10, 12; 1/sqrt(2) = 0.707). So H4's "sigma_c -> 1" holds in the normalization where the
   per-site features have unit total variance; with x_i ~ N(0, I_d) the limit is sqrt(d). The data
   reach only K = 15, where the measured bracket [0.63, 1.36] contains both 1 and the predicted 1.07;
   **conjecture** beyond the measured range.
