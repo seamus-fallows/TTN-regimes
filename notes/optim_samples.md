@@ -196,7 +196,7 @@ lazy transition, falling like sigma^{-2(K-1)} (0.19 eta_max at sigma = 2), and t
 steps above it never oscillate but re-enter or diverge. Those runs used chi = 3, while the centred
 target W* + W_0 has bond rank up to 6 (3 from W_0, 3 from W*) > chi: their GF references stopped at L/L_0 = 0.06-0.55
 (sigma = 1.4-2) and were **stalled** (diagnostics.md), not lazy, and "GF-like" ignored the final loss.
-They remain in `gd_sweep.csv` (centred, chi = 3) but are not used.
+They were not rerun; their raw data are kept in `/root/outputs/optim_samples/gd_round1/`.
 
 Setup (`configs/gd_centred_chi9.yaml`, `analyze_centred.py`, `results/centred_chi9_*.csv`,
 `fig_centred_chi9.png`): binary N=4, d = 3, teacher [3, 2, 1], **chi = 9 = the cut dimension d^2**, so
