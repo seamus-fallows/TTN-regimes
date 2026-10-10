@@ -100,8 +100,8 @@ capped at the largest rank its bipartition allows,
 The cap $\min(\prod_{i\in\below{v}}\pd[i],\prod_{i\notin\below{v}}\pd[i])$, the largest rank
 $\mat{\W}{\edge{v}}$ can have, is the \emph{cut dimension} of $\edge{v}$, and a bond is \emph{full} when
 $\bd{v}$ reaches it (binary4 with $d=3$: both bonds have cut dimension $9$). A bond below its cut
-dimension limits the tensors the network can represent; whether every bond is full decides whether a
-lazy regime exists (\cref{sec:regime-map}).
+dimension limits the tensors the network can represent; a lazy regime needs every bond full
+(\cref{sec:regime-map}).
 
 \begin{table}[t]
   \centering
@@ -426,14 +426,16 @@ From small initialization gradient flow rests, between escapes, near a \emph{lea
 $\params_S$: a critical point that represents a partial fit $\W_S$ (for orthonormal teachers the sum
 of the learned components, \eqref{eq:partial-fit}; in general a best approximation of $\Wt$ with the
 current bond ranks). Each bond uses only its first $\rank\mat{(\W_S)}{e}$ (\emph{learned}) channels;
-the others are zero. A channel opened in one core meets zeros in its neighbours and leaves $\W$
-unchanged: $\W$ moves only when every core of a connected set $C$ opens the channel together, and then
-by a product of $\abs{C}$ small entries, a small TTN on $C$ attached to the learned network
+the others are zero. A new channel opened in one core meets zeros in its neighbours and leaves $\W$
+unchanged: new channels move $\W$ only when every core of a connected set $C$ opens one together, and
+then by a product of $\abs{C}$ small entries, a small TTN on $C$ attached to the learned network
 (\cref{lem:A-routes}). Such a set is a \emph{route}. It lowers the loss at order $\abs{C}$ in the new
 entries, while the quadratic (Gauss--Newton) term $\frac12\normS{\Delta\W}^2$ is of order $2\abs{C}$,
 so near the saddle it behaves like a fresh $\abs{C}$-core TTN started near zero
 (\cref{prop:A-escape-degree}). The \emph{ends} of a route are its leaves as a subtree; the
 \emph{slice} of an end is that core's part on the route's new channel (for a leaf core, one column).
+The learned channels can also rotate; when such moves descend faster than the cheapest route is
+decided in \cref{app:saddle-order}.
 
 \paragraph{Route size $k$ and $k^*$.}
 For an orthonormal pattern teacher with one learned component, the route that adds component $r$ is
@@ -443,14 +445,15 @@ learned component, and the bonds whose rank must grow are exactly its edges
 cores that must move together, and $k^*$ is the smallest $k$ among the components not yet learned (in
 general, the smallest route with a nonzero local residual, \cref{prop:A-escape-degree}). If $D$ lies on
 one core ($k=1$), that core fits the component through its learned channel and the flow does not stop.
-Otherwise the next plateau follows the first-escape law with $\Kc$ replaced by $k^*$: it lasts
-$\propto\ln(1/\isc)$ for $k^*=2$ and $\propto\isc^{-(k^*-2)}$ for $k^*\ge3$ \derived{}
-(\cref{sec:s2s-locality}). Example: $0000$ and $0110$ differ on sites $1$ and $2$; on MPS4 these sit
+Otherwise, when the saddle order is $k^*$ (below), the next plateau follows the first-escape law
+with $\Kc$ replaced by $k^*$: it lasts $\propto\ln(1/\isc)$ for $k^*=2$ and $\propto\isc^{-(k^*-2)}$ for
+$k^*\ge3$ \derived{} (\cref{sec:s2s-locality}). Example: $0000$ and $0110$ differ on sites $1$ and $2$; on MPS4 these sit
 on adjacent cores ($k=2$), on binary4 on the two bottom cores, joined through the root ($k=3$).
 
 \paragraph{Saddle order.}
 The \emph{order} of a saddle is the power of the distance at which the loss first decreases: the
-largest exponent $\operatorname{ord}$ with $\Loss(\params)-\Loss_S\ge-C\norm{\params-\params_S}^{\operatorname{ord}}$ near $\params_S$
+largest exponent $\operatorname{ord}$ with
+$\Loss(\params)-\Loss_S\ge-C\norm{\params-\params_S}^{\operatorname{ord}}$ near $\params_S$
 (\cref{app:saddle-order}). A \emph{strict} saddle has order $2$ (a negative Hessian eigenvalue); at a
 \emph{higher-order} saddle (order at least $3$) every descent direction is flat to second order. A
 route of $k^*$ cores descends at order $k^*$, so the order is at most $k^*$ \proven{}
@@ -592,7 +595,7 @@ duration of that final rise, from $\ov{r}=0.1$ to $0.9$. Experiments date the cr
 different rules: the last upward crossing before $\ov{r}$ first reaches $0.9$ (recommended), the last
 upward crossing after which $\ov{r}$ stays above $\frac12$, or the first crossing. The rules agree
 unless a learned component later dips below $\frac12$ (star teachers, gradient noise, rotations to a
-better component; the second rule then dates the relearning) or a transient crosses $\frac12$ while
+better component; the second rule then dates the relearning, or gives none) or a transient crosses $\frac12$ while
 another component is learned (the third rule then dates the transient). For other teachers one escape
 can raise several overlaps, and events are read from the bond spectra instead (for example the onset,
 when $\bs{e}{j}$ first reaches $0.05$ times the teacher's value); on real data from the loss rate.
