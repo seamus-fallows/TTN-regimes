@@ -352,8 +352,7 @@ checked with the conservation laws (\cref{sec:setup-conservation}) and the align
 (\cref{prop:aligned}).
 
 \paragraph{Gradient descent} with learning rate $\lr$,
-$\params_{k+1}=\params_k-\lr\Pre\nabla\Loss(\params_k)$, is recorded at $t=\lr k$ (gradient-flow
-time as $\lr\to0$). A run has diverged when $\Loss$ becomes non-finite or exceeds
+$\params_{k+1}=\params_k-\lr\Pre\nabla\Loss(\params_k)$, is recorded at $t=\lr k$. A run has diverged when $\Loss$ becomes non-finite or exceeds
 $10^{6}\Loss(\params_0)$.
 
 \paragraph{Stochastic gradient descent} uses the minibatch loss
@@ -421,10 +420,10 @@ symmetry-induced conservation laws \citep{kunin2021neural}. Consequences:
 
 Regimes are assigned from measured quantities, never by eye, by the rules of
 \path{notes/diagnostics.md} (code: \path{ttn/diagnostics.py}; per-experiment details:
-\cref{app:experiments}). Thresholds are conventions, varied in every phase diagram.
+\cref{app:experiments}).
 
 \paragraph{Raw quantities} (\cref{tab:raw-diagnostics}) are recorded at the log times of
-\cref{sec:setup-dynamics} (loss, overlaps and spectra also on the fine rows). The tangent kernel uses
+\cref{sec:setup-dynamics}. The tangent kernel uses
 a fixed probe set of $\nprobe=128$ inputs $x_p\sim\Normal(0,\Sig)$ and the Jacobian
 $\Jac_t=\partial\big(f_\params(x_1),\dots,f_\params(x_{\nprobe})\big)/\partial\params$ at
 $\params(t)$. The gauge directions at $\params$ are the tangent vectors
@@ -461,19 +460,24 @@ $M\in\R^{\bd{v}\times\bd{v}}$.
 
 \paragraph{Learning events.}
 For CP teachers with orthogonal components (in the metric $\Sig$), event $r$ is dated at the last
-upward crossing $\tev{r}$ of $\ov{r}=\frac12$, the first crossing unless a transient crossed and fell
-back (a component can rise transiently while another is learned). Its width $\wev{r}$ is the final
-rise, from the last upward crossing of $0.1$ before $\ov{r}$ first reaches $0.9$ to that time. For
-other teachers one escape can raise several overlaps, so events come from the bond spectra: event
-$(e,k)$ is dated at its onset, when $\bs{e}{k}$ first reaches $f\bst{e}{k}$ with $f=0.05$
-(sensitivity $f\in[0.03,0.1]$), because a half-of-final rule can skip intermediate saddles whose
-spectra stay below the final ones (\cref{cor:A-second-escape}). Spectral widths, where needed, are
-final rises from $0.1$ to $0.9$ of the teacher's value, and spectral events closer than their widths
-are merged. Crossings are interpolated on the merged log and fine rows (or found by root finding on
-dense output; \cref{app:experiments}); an event narrower than three sample intervals is unresolved,
-and separation ratios involving it are lower bounds. The \emph{effective bond rank} is
-$\rk{e}(t)=\#\{k:\bs{e}{k}(t)>0.1\,\bst{e}{\min}\}$, with $\bst{e}{\min}$ the smallest nonzero teacher
-Schmidt value on $e$.
+upward crossing $\tev{r}$ of $\ov{r}=\frac12$, the first crossing unless a transient (while another
+component is learned) crossed and fell back. Its width $\wev{r}$ is the final rise, from the last
+upward crossing of $0.1$ before $\ov{r}$ first reaches $0.9$ to that time. For
+other teachers one escape can raise several overlaps, so events $(e,k)$ come from the bond spectra,
+by one of three rules (\cref{app:experiments} gives each experiment's): (a)~the onset, the first time
+$\bs{e}{k}$ reaches $f\bst{e}{k}$ with $f=0.05$ (sensitivity $f\in[0.03,0.1]$), without widths
+(locality bond events, data-teacher v2 analyses); (b)~half the teacher's value (first crossing for
+the optimizers, last upward crossing under correlated inputs), with final-rise widths from $0.1$ to
+$0.9$ of it; (c)~the library default (\path{spectral_events}, used by \path{runner.summary}), the last
+upward crossing of half the run's final value, with final-rise widths from $0.1$ to $0.9$ of it;
+consecutive events whose gap is at most the larger width are then merged into one, with their mean
+time and largest width. Rule (a) is recommended: a half-value rule can skip intermediate saddles whose
+spectra stay below the final ones (\cref{cor:A-second-escape}). Crossings are interpolated on the
+merged log and fine rows (or found by root finding on dense output); an event narrower than three
+sample intervals is unresolved, and separation ratios involving it are lower bounds. The
+\emph{effective bond rank} is $\rk{e}(t)=\#\{k:\bs{e}{k}(t)>0.1\,\bst{e}{\min}\}$, with
+$\bst{e}{\min}$ the smallest nonzero teacher Schmidt value on $e$; the threshold-free alternative is
+the entropy rank $\rkH{e}=\exp(-\sum_kp_k\log p_k)$, $p_k=(\bs{e}{k})^2/\sum_j(\bs{e}{j})^2$.
 
 \paragraph{Plateaus and the saddle-to-saddle signature.}
 Number the events in time order, $\tev{1}<\tev{2}<\cdots$, with widths $\wev{i}$; the
@@ -506,16 +510,23 @@ Each run, trained up to time $T$, receives one label (\cref{tab:regimes}).
     rich, non-incremental & $\dTK(T)\ge0.1$ and the loss converges, but some $\sep{i}\le3$
       (overlapping transitions) \\
     stalled & $\Loss(T)\ge10^{-3}\Loss(0)$ within the time budget \\
-    diverged & GD and SGD only: $\Loss$ non-finite or above $10^{6}\Loss(0)$ \\
+    diverged & $\Loss$ non-finite or above $10^{6}\Loss(0)$ (GD and SGD; for gradient flow, an
+      integrator failure) \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
 \begin{remark}[Reading of the rules]\label{rem:regime-rules}
-  ``Converges'' means $\Loss(T)<10^{-3}\Loss(0)$ (not stalled); labels are checked in the order
-  diverged, stalled, then the converged regimes. Condition (iii) belongs to a sweep: a run is
+  ``Converges'' means $\Loss(T)<10^{-3}\Loss(0)$; labels are checked in the order diverged,
+  stalled, then the converged regimes. Condition (iii) belongs to a sweep: a run is
   labelled S2S on (i)--(ii), and a region of a phase diagram is S2S only if (iii) holds there. A
-  converged run with $\dTK(T)\ge0.1$ and a single (merged) event is rich, non-incremental.
+  converged run with $\dTK(T)\ge0.1$ and a single (merged) event is rich, non-incremental. The code
+  (\path{classify_regime}) adds two labels: \emph{lazy (projected fit)}, checked before stalled, for
+  $\dTK(T)<0.1$ and a final loss within $10\%$ of that of the linearized fit (positive when a bond is
+  deficient), and \emph{undetermined} when every $\sep{i}\le3$ involves an unresolved event. The
+  regime map measures convergence against $\frac12\normS{\Wt}^2$, which equals $\Loss(0)$ when the
+  fitted tensor vanishes at $t=0$ (centred and two-copy models) and differs only for the plain model
+  at large $\isc$.
 \end{remark}
 
 \paragraph{Saddle type at a plateau.}
@@ -530,15 +541,14 @@ across a sweep from how $\lambda_{\min}(\Hperp)$ at the midpoint scales with $\i
 like $\isc^{k-2}$ at a \emph{higher-order saddle} of order $k\ge3$ (a route through $k$ cores, or the
 origin with $k=\Kc$). A fixed threshold confuses the two: the single-$\isc$ fallback, strict if
 $\lambda_{\min}(\Hperp)<-10^{-3}\max_j\abs{\lambda_j(\Hperp)}$, calls $k=3$ plateaus strict for
-$\isc\gtrsim0.01$--$0.04$. We report the number of negative eigenvalues, $\lambda_{\min}$ and
-$\lambda_{\min}/\lambda_{\max}$.
+$\isc\gtrsim0.01$--$0.04$.
 
 \paragraph{Reporting rules.}
 Every scaling claim uses at least five initialization scales over at least one decade and five seeds
 per point, and reports mean $\pm$ standard error, a fitted exponent with its standard error, and the
 theoretical prediction. Every regime boundary comes with the threshold sensitivity check of
-\cref{tab:regimes}, and every number states the dynamics that produced it (gradient flow with its
-tolerances, GD with its step size, SGD with its step and batch size).
+\cref{tab:regimes}, and every number states the dynamics that produced it (integrator tolerances,
+step size, batch size).
 
 % ===========================================================================================
 \subsection{What the results may depend on}\label{sec:setup-scope}
@@ -550,7 +560,6 @@ tolerances, GD with its step size, SGD with its step and batch size).
     the population loss is a tree contraction, which cross-site correlations break.
   \item \emph{Placement of physical legs.} Binary trees and HT differ in $\Kc$ and in how many cores
     must change to learn a component, which sets plateau-time exponents (\cref{sec:s2s-locality}).
-  \item \emph{Scalar output.} Multiple outputs would add a leg to the root.
   \item \emph{Fan-in initialization.} It fixes the relative scales of the cores; exponents should not
     depend on it, but prefactors and the learning order might, so imbalanced, balanced ($\Q{e}=0$)
     and aligned initializations are also studied.
