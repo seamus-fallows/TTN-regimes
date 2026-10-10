@@ -1,17 +1,17 @@
 
 ### features = raw
 
-| tree | sigma | runs | S2S | drops (mean) | min rho (median) |
-|---|---|---|---|---|---|
-| MPS snake | 0.05 | 5 | 0.80 | 4.4 | 4.1 |
-| MPS snake | 0.14 | 5 | 0.60 | 4.2 | 3.1 |
-| MPS snake | 0.5 | 5 | 0.80 | 3.0 | 3.7 |
-| binary quadtree | 0.05 | 5 | 1.00 | 2.0 | 8.2 |
-| binary quadtree | 0.14 | 5 | 1.00 | 2.4 | 11 |
-| binary quadtree | 0.5 | 5 | 0.60 | 4.0 | 4.8 |
-| binary scrambled | 0.05 | 5 | 0.60 | 2.0 | 4.3 |
-| binary scrambled | 0.14 | 5 | 0.80 | 2.4 | 8.4 |
-| binary scrambled | 0.5 | 5 | 0.60 | 4.2 | 4.3 |
+| tree | sigma | runs | S2S (rho > 3) | rho > 2 | rho > 5 | drops (mean) | min rho (median) |
+|---|---|---|---|---|---|---|---|
+| MPS snake | 0.05 | 5 | 0.80 | 0.80 | 0.20 | 4.4 | 4.1 |
+| MPS snake | 0.14 | 5 | 0.60 | 0.80 | 0.00 | 4.2 | 3.1 |
+| MPS snake | 0.5 | 5 | 0.80 | 1.00 | 0.40 | 3.0 | 3.7 |
+| binary quadtree | 0.05 | 5 | 1.00 | 1.00 | 1.00 | 2.0 | 8.2 |
+| binary quadtree | 0.14 | 5 | 1.00 | 1.00 | 0.80 | 2.4 | 11 |
+| binary quadtree | 0.5 | 5 | 0.60 | 0.80 | 0.40 | 4.0 | 4.8 |
+| binary scrambled | 0.05 | 5 | 0.60 | 1.00 | 0.40 | 2.0 | 4.3 |
+| binary scrambled | 0.14 | 5 | 0.80 | 1.00 | 0.80 | 2.4 | 8.4 |
+| binary scrambled | 0.5 | 5 | 0.60 | 0.80 | 0.20 | 4.2 | 4.3 |
 
 | tree | runs | first rise = sibling bottom pair | first two rising edges = siblings | = single edge | Kendall tau(level, time) |
 |---|---|---|---|---|---|

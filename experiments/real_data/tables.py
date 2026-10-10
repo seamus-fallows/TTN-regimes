@@ -69,15 +69,16 @@ def main(summary_json, out_prefix, routes_json=None):
         sub = [r for r in rows if r["features"] == feats]
         md.append(f"\n### features = {feats}\n")
         # S2S and drops per sigma
-        md.append("| tree | sigma | runs | S2S | drops (mean) | min rho (median) |\n|---|---|---|---|---|---|")
+        md.append("| tree | sigma | runs | S2S (rho > 3) | rho > 2 | rho > 5 | drops (mean) | min rho (median) |\n|---|---|---|---|---|---|---|---|")
         groups = defaultdict(list)
         for r in sub:
             groups[(tree_label(r), r["sigma"])].append(r)
         for (tree, s), rs in sorted(groups.items()):
             s2s = np.mean([r["s2s"] for r in rs])
             minrho = [min(r["rho"]) if r["rho"] else np.nan for r in rs]
-            md.append(f"| {tree} | {s:g} | {len(rs)} | {s2s:.2f} | {np.mean([r['n_drops'] for r in rs]):.1f} "
-                      f"| {np.nanmedian(minrho):.2g} |")
+            sens = [np.mean([r["n_drops"] >= 2 and min(r["rho"]) > th for r in rs]) for th in (2.0, 5.0)]
+            md.append(f"| {tree} | {s:g} | {len(rs)} | {s2s:.2f} | {sens[0]:.2f} | {sens[1]:.2f} | "
+                      f"{np.mean([r['n_drops'] for r in rs]):.1f} | {np.nanmedian(minrho):.2g} |")
             out.setdefault(feats, {}).setdefault("s2s", {})[f"{tree}|{s:g}"] = {
                 "runs": len(rs), "s2s_fraction": float(s2s),
                 "drops_mean": float(np.mean([r["n_drops"] for r in rs]))}

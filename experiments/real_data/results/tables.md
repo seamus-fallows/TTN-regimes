@@ -1,29 +1,29 @@
 
 ### features = raw
 
-| tree | sigma | runs | S2S | drops (mean) | min rho (median) |
-|---|---|---|---|---|---|
-| MPS snake | 0.05 | 5 | 0.20 | 6.6 | 2.1 |
-| MPS snake | 0.07 | 5 | 0.40 | 5.6 | 2.4 |
-| MPS snake | 0.1 | 5 | 0.40 | 5.2 | 2.1 |
-| MPS snake | 0.14 | 5 | 0.00 | 4.6 | 1.9 |
-| MPS snake | 0.2 | 5 | 0.40 | 3.6 | 2.6 |
-| MPS snake | 0.3 | 5 | 0.40 | 3.2 | 2.6 |
-| MPS snake | 0.5 | 5 | 0.20 | 1.8 | 3.2 |
-| binary quadtree | 0.05 | 5 | 1.00 | 3.0 | 24 |
-| binary quadtree | 0.07 | 5 | 1.00 | 4.2 | 9.8 |
-| binary quadtree | 0.1 | 5 | 0.80 | 5.0 | 8.2 |
-| binary quadtree | 0.14 | 5 | 0.80 | 5.4 | 5.8 |
-| binary quadtree | 0.2 | 5 | 0.80 | 4.6 | 4.3 |
-| binary quadtree | 0.3 | 5 | 1.00 | 4.2 | 3.8 |
-| binary quadtree | 0.5 | 5 | 0.40 | 4.0 | 2.8 |
-| binary scrambled | 0.05 | 15 | 1.00 | 2.5 | 37 |
-| binary scrambled | 0.07 | 10 | 0.80 | 2.8 | 29 |
-| binary scrambled | 0.1 | 15 | 0.67 | 3.6 | 5.9 |
-| binary scrambled | 0.14 | 10 | 0.50 | 4.1 | 3.5 |
-| binary scrambled | 0.2 | 15 | 0.87 | 4.7 | 4.7 |
-| binary scrambled | 0.3 | 9 | 0.78 | 5.0 | 4.4 |
-| binary scrambled | 0.5 | 15 | 0.67 | 4.5 | 3.3 |
+| tree | sigma | runs | S2S (rho > 3) | rho > 2 | rho > 5 | drops (mean) | min rho (median) |
+|---|---|---|---|---|---|---|---|
+| MPS snake | 0.05 | 5 | 0.20 | 0.80 | 0.00 | 6.6 | 2.1 |
+| MPS snake | 0.07 | 5 | 0.40 | 0.60 | 0.00 | 5.6 | 2.4 |
+| MPS snake | 0.1 | 5 | 0.40 | 0.60 | 0.00 | 5.2 | 2.1 |
+| MPS snake | 0.14 | 5 | 0.00 | 0.40 | 0.00 | 4.6 | 1.9 |
+| MPS snake | 0.2 | 5 | 0.40 | 0.60 | 0.20 | 3.6 | 2.6 |
+| MPS snake | 0.3 | 5 | 0.40 | 0.80 | 0.20 | 3.2 | 2.6 |
+| MPS snake | 0.5 | 5 | 0.20 | 0.40 | 0.00 | 1.8 | 3.2 |
+| binary quadtree | 0.05 | 5 | 1.00 | 1.00 | 1.00 | 3.0 | 24 |
+| binary quadtree | 0.07 | 5 | 1.00 | 1.00 | 0.80 | 4.2 | 9.8 |
+| binary quadtree | 0.1 | 5 | 0.80 | 0.80 | 0.60 | 5.0 | 8.2 |
+| binary quadtree | 0.14 | 5 | 0.80 | 0.80 | 0.60 | 5.4 | 5.8 |
+| binary quadtree | 0.2 | 5 | 0.80 | 1.00 | 0.20 | 4.6 | 4.3 |
+| binary quadtree | 0.3 | 5 | 1.00 | 1.00 | 0.20 | 4.2 | 3.8 |
+| binary quadtree | 0.5 | 5 | 0.40 | 0.80 | 0.00 | 4.0 | 2.8 |
+| binary scrambled | 0.05 | 15 | 1.00 | 1.00 | 0.93 | 2.5 | 37 |
+| binary scrambled | 0.07 | 10 | 0.80 | 1.00 | 0.80 | 2.8 | 29 |
+| binary scrambled | 0.1 | 15 | 0.67 | 0.87 | 0.53 | 3.6 | 5.9 |
+| binary scrambled | 0.14 | 10 | 0.50 | 0.70 | 0.40 | 4.1 | 3.5 |
+| binary scrambled | 0.2 | 15 | 0.87 | 0.93 | 0.47 | 4.7 | 4.7 |
+| binary scrambled | 0.3 | 9 | 0.78 | 1.00 | 0.33 | 5.0 | 4.4 |
+| binary scrambled | 0.5 | 15 | 0.67 | 0.80 | 0.27 | 4.5 | 3.3 |
 
 | tree | runs | first rise = sibling bottom pair | first two rising edges = siblings | = single edge | Kendall tau(level, time) |
 |---|---|---|---|---|---|
@@ -57,23 +57,23 @@
 
 ### features = white
 
-| tree | sigma | runs | S2S | drops (mean) | min rho (median) |
-|---|---|---|---|---|---|
-| MPS snake | 0.05 | 5 | 0.20 | 5.6 | 2.9 |
-| MPS snake | 0.07 | 5 | 0.00 | 7.0 | 1.8 |
-| MPS snake | 0.1 | 5 | 0.00 | 5.8 | 1.8 |
-| MPS snake | 0.2 | 5 | 0.20 | 4.0 | 2.2 |
-| MPS snake | 0.5 | 5 | 0.80 | 2.0 | 4.8 |
-| binary quadtree | 0.05 | 5 | 0.80 | 5.2 | 8.1 |
-| binary quadtree | 0.07 | 5 | 0.60 | 5.4 | 6.1 |
-| binary quadtree | 0.1 | 5 | 0.80 | 5.2 | 3.4 |
-| binary quadtree | 0.2 | 5 | 0.20 | 4.8 | 2.1 |
-| binary quadtree | 0.5 | 5 | 0.40 | 2.4 | 3.8 |
-| binary scrambled | 0.05 | 5 | 0.40 | 6.2 | 2.6 |
-| binary scrambled | 0.07 | 5 | 0.60 | 6.8 | 3.9 |
-| binary scrambled | 0.1 | 5 | 0.20 | 6.8 | 2.5 |
-| binary scrambled | 0.2 | 5 | 0.40 | 5.6 | 2.5 |
-| binary scrambled | 0.5 | 5 | 0.40 | 2.6 | 3.5 |
+| tree | sigma | runs | S2S (rho > 3) | rho > 2 | rho > 5 | drops (mean) | min rho (median) |
+|---|---|---|---|---|---|---|---|
+| MPS snake | 0.05 | 5 | 0.20 | 0.80 | 0.00 | 5.6 | 2.9 |
+| MPS snake | 0.07 | 5 | 0.00 | 0.20 | 0.00 | 7.0 | 1.8 |
+| MPS snake | 0.1 | 5 | 0.00 | 0.40 | 0.00 | 5.8 | 1.8 |
+| MPS snake | 0.2 | 5 | 0.20 | 0.80 | 0.20 | 4.0 | 2.2 |
+| MPS snake | 0.5 | 5 | 0.80 | 0.80 | 0.40 | 2.0 | 4.8 |
+| binary quadtree | 0.05 | 5 | 0.80 | 1.00 | 0.80 | 5.2 | 8.1 |
+| binary quadtree | 0.07 | 5 | 0.60 | 0.80 | 0.60 | 5.4 | 6.1 |
+| binary quadtree | 0.1 | 5 | 0.80 | 0.80 | 0.40 | 5.2 | 3.4 |
+| binary quadtree | 0.2 | 5 | 0.20 | 0.80 | 0.20 | 4.8 | 2.1 |
+| binary quadtree | 0.5 | 5 | 0.40 | 0.40 | 0.40 | 2.4 | 3.8 |
+| binary scrambled | 0.05 | 5 | 0.40 | 1.00 | 0.20 | 6.2 | 2.6 |
+| binary scrambled | 0.07 | 5 | 0.60 | 1.00 | 0.40 | 6.8 | 3.9 |
+| binary scrambled | 0.1 | 5 | 0.20 | 0.80 | 0.00 | 6.8 | 2.5 |
+| binary scrambled | 0.2 | 5 | 0.40 | 0.80 | 0.20 | 5.6 | 2.5 |
+| binary scrambled | 0.5 | 5 | 0.40 | 0.60 | 0.20 | 2.6 | 3.5 |
 
 | tree | runs | first rise = sibling bottom pair | first two rising edges = siblings | = single edge | Kendall tau(level, time) |
 |---|---|---|---|---|---|
