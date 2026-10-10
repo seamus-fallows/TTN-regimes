@@ -1,8 +1,11 @@
 # data-teacher: do input covariance and teacher structure change the saddle-to-saddle picture? (Q6, Q7)
 
-Status: done (fix round 2: response to the review of round 2) - Branch: agent/data-teacher - Updated: 2026-10-10 10:11 UTC
+Status: done (fix round 2 + verification errata E1-E16) - Branch: agent/data-teacher - Updated: 2026-10-10 10:49 UTC
 
 ## Summary
+**Errata pass (verification of fix round 2, `notes/reviews/data_teacher_round3_verification.md`):** E1–E16
+applied in place in the notes, this report and the README (E17 is the lead's). No new runs.
+
 **Fix round 2** (review: `notes/reviews/data_teacher_round2.md`). The review reproduced every group of
 claims and found no wrong result. This round changes how slopes are fitted, fixes several counts and
 labels, rereads the star random-init runs and narrows the scope statements. **The list of claims that
@@ -15,13 +18,14 @@ changed is section R2.4 of `notes/data_teacher.md`**; the main ones:
   - random init, mps4: within 1.3% of R6 (with the head start) for all 5 teachers with a prediction,
     5 seeds each (c = 0.2: 33.95 vs 34.14, was 36.3);
   - 4a: c = 0.2 34.40 vs 34.14 (+0.8%, was +7%); step 2, θ = 5°: 194.9 vs the bound 193.2 (was 251);
-  - binary / HT students: ε^−1 with p = 0.9998–1.0036 (24 cases).
+  - binary / HT students: ε^−1 with p = 0.9998–1.0009 over ε ≤ 1e-3 in 23 cases (nonorth8_c0.45 on ht8,
+    fitted out to ε = 2e-2 because its small-ε runs were stopped: 1.0036).
 - **misaligned8_20 is not degenerate.** Its escape ends at an intermediate saddle whose s₂ is below the
   f = 0.05 event threshold, so the event timed the next escape. Re-timed at that level: slope 1979.6 vs
   1974.8 (+0.24%). This is a failure mode of the f-rule worth knowing.
 - **4c / P11 count corrected.** The "discriminating" flag was too loose and one set of runs was counted
-  twice: 46/48 runs on 2 discriminating teachers. 120 new runs with 5 teachers whose root cut is the
-  strongest cut (a weight-order rule predicts the root first): P11 holds in 117/120. Total over the
+  twice: 46/48 runs on 2 discriminating teachers. 120 new runs with 5 teachers whose root s₂ exceeds
+  every bottom bond by 5.5–13% (a weight-order rule predicts the root first): P11 holds in 117/120. Total over the
   7 discriminating teachers: **163/168**.
 - **Stars:**
   - The random-init "forgetting depth σ^5.7" is withdrawn. Those runs never sit at "q learned", two
@@ -42,15 +46,19 @@ changed is section R2.4 of `notes/data_teacher.md`**; the main ones:
   √Λ·s.
 - *Non-orthogonality in the loss metric:* misalignment, CP overlap, cross-site correlations and generic
   TTN teachers all make the rank-one saddle of MPS students strict. It is escaped in log(1/σ) time with
-  slope 1/γ of the growing edge, instead of σ^−(K−2).
+  slope 1/γ of the growing edge, instead of σ^−(K−2). For cross-site correlations the MPS-4 escape is
+  two-stage, with ln2·[(1 − κ)/λ₂ + 1/λ''] per halving of σ (theory_covariance 7.4).
 - *Binary and HT students:* for the same teachers they keep a higher-order rank-one saddle with σ⁻¹
-  escape (a 3-core route through an internal core).
-- *Plateaus:* they sit at critical points of the bond-rank-constrained loss, not at SVD-type
-  truncations.
-- *Binary students and cross-tree teachers:* they grow the root bipartition only after a bottom bond on
-  each half (P11).
-- *Star teachers:* they lose a learned component exactly when ρ(S) > s_q. This happens in log time on
-  MPS students and in polynomial time on HT students.
+  escape (a 3-core route through an internal core). For cross-site correlations only binary-4 was run,
+  never HT.
+- *Plateaus:* rank-one plateaus converge to the bond-rank-1 critical point. They are distinguishable
+  from every SVD-type truncation for 3 of 5 random MPS-4 teachers (102, 104, 105); at higher ranks the
+  two coincide for these teachers.
+- *Binary students and cross-tree teachers:* the root bipartition grows only after a bottom bond on each
+  half (P11) in 163/168 discriminating runs (N = 8, σ = 0.3–0.5), not in every run.
+- *Star teachers:* started at θ_q with noise ε ≤ 1e-3, the flow leaves θ_q iff ρ(S) > s_q (to 3e-4 at
+  ε = 1e-6); at ε = 1e-2 the apparent threshold moves to w ≈ 1.43–1.44. Leaving takes log time on MPS
+  students and polynomial time on HT students. Random-init runs never sit at θ_q.
 
 Status: empirical, confirming the theory notes. The tree contrast is shown for the escape from the
 rank-one saddle.
@@ -64,12 +72,12 @@ moment-matrix loss. Paths are under `experiments/data_teacher/`.
 |---|---|---|---|
 | Rank-1 saddle strict (by sign) on MPS, no negative eigenvalue on binary / HT | 13 MPS (5 / 17 negatives on mps4 / mps8), 26 binary / HT | `results/r2_saddle_hessian.csv`, `r2_saddle_b_hessian.csv` | derived + computed |
 | Saddle start, MPS: log law, slope 1/γ of the realized edge | ≤ 0.4% for 13 teachers (asymptotic, ε ≤ 1e-4); log law preferred in 65/65 seeds | `results/r2_saddle_fits.csv`, `r2_saddle_perseed_local.csv`, `r2_saddle_collapse.png` | empirical, confirms R9 / R13 |
-| Saddle start, binary / HT: ε^−1 | p = 0.9998–1.0036 (24 cases, ε ≤ 1e-3) | same | empirical |
+| Saddle start, binary / HT: ε^−1 | p = 0.9998–1.0009 (23 cases, ε ≤ 1e-3); nonorth8_c0.45 on ht8 1.0036 (window to ε = 2e-2) | same | empirical |
 | misaligned8_20 re-timed (intermediate saddle) | 1979.6 ± 1.8 vs 1974.8 | same; `configs/r2_saddle_m20.yaml` | empirical |
 | Random init mps4 = R6 with head start; binary4 σ⁻¹ | within 1.3% (5 teachers); p = 1.001–1.005 | `results/r2_random_v2_summary.csv`, `r2_random_v2.png` | empirical |
 | 4a, step 2 (round 1, asymptotic) | 34.40 ± 0.20 (34.14), 5.686 ± 0.016 (5.682); θ = 5°: 194.9 ± 1.2 (bound 193.2) | `results/e4a_sigma_v2_summary.csv`, `e2_sigma_v2_summary.csv` | empirical |
-| 4b single-route slopes; P1 exponent | within 0.3–1.6% of R6; measured α 0.07–0.15 above min(α_r, α_a), same order over 5 teachers | `results/e4b_ttn_v2_summary.csv`, `e4b_p1_exponents.csv` | empirical |
-| 4c P11 (root bipartition after a bottom bond on each half) | 163/168 runs over 7 discriminating teachers (117/120 with the root cut strongest) | `results/p11_totals.csv`, `p11_counts.csv` | empirical |
+| 4b single-route slopes; P1 exponent | within 0.3–1.6% of R6; measured α 0.07–0.15 above min(α_r, α_a) for all 5 teachers (102 and 105 swap order, within errors) | `results/e4b_ttn_v2_summary.csv`, `e4b_p1_exponents.csv` | empirical |
+| 4c P11 (root bipartition after a bottom bond on each half) | 163/168 runs over 7 discriminating teachers (117/120 for the 5 new teachers whose root s₂ exceeds every bottom bond by 5.5–13%) | `results/p11_totals.csv`, `p11_counts.csv` | empirical |
 | Correlated inputs, MPS-4 increments per halving | 2.133 ± 0.003 (2.128), 14.67 ± 0.06 (14.39) | `results/r2_corr_fits.csv`, `r2_corr_increments_perseed.csv` | empirical (replicates N14) |
 | Star Hessian at θ_q, threshold ρ(S) = s_q | 1e-15; to 3e-4 (mps4, binary4), between w = 1.40 and 1.42 (ht4) | `results/r2_star_hessian.csv`, `r2_star_threshold.csv` | replication (C11) + empirical |
 | Star escape from θ_q | 1/\|λ_q\| to ≤ 0.2% (one stage); 1/\|λ_q\| + 1/\|λ_b\| to 0.1–0.2% (mps4 near threshold); ε^−1 stage on ht4 | `results/r2_star_rotation_law.csv`, `r2_star_blended.csv` | derived + empirical |
@@ -85,7 +93,7 @@ moment-matrix loss. Paths are under `experiments/data_teacher/`.
    correlated inputs; P11 flag fixed and runs de-duplicated (`count_p11.py`); float-floor scan extended.
    Commit a9bbfa9.
 2. New runs:
-   - 120 step-4(c) runs with 5 teachers whose root cut is the strongest (`configs/r2_cross_b.yaml`,
+   - 120 step-4(c) runs with 5 teachers whose root s₂ exceeds every bottom bond by 5.5–13% (`configs/r2_cross_b.yaml`,
      chosen by `scan_cross_teachers.py`);
    - 15 misaligned8_20 saddle-start runs at ε = 1e-6–1e-4 (`configs/r2_saddle_m20.yaml`);
    - 5 ht4 star runs at w = 1.42, ε = 1e-6.
@@ -120,7 +128,7 @@ moment-matrix loss. Paths are under `experiments/data_teacher/`.
 - **P11 "discriminating"** means the root s₂ beats both bottom bonds of at least one half, as the review
   defines it.
 - **New 4c teachers:** the 5 seeds (of seeds 200–999) where the root cut beats every bottom bond by the
-  largest margins (5–13%).
+  largest margins (5.5–13%).
 - **Star thresholds also use the departure rule a_q < 0.99.** On ht4 near the threshold the strict
   escape stops at a_q = 0.98, and a_q < 0.9 would need the ~1/ε stage. Wherever both rules fire they
   give identical outcomes.
@@ -256,3 +264,4 @@ summary CSVs and figures are in git, and every file is regenerated by `experimen
 - 10:05 Stars: classes, departure rule, two-stage escape near threshold (0.1-0.2%); ht4 eps = 1e-6 bracket completed.
 - 10:06 misaligned8_20 re-timed: 1979.6 vs 1974.8. Float-floor scan extended (no new flags).
 - 10:11 Notes (R2.1-R2.4, summary table), README, report updated. Done.
+- 10:49 Verification of fix round 2 merged; errata E1-E16 applied (text and tables only, no runs). Done.
