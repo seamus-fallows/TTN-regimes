@@ -1,0 +1,11 @@
+# m = 2 (binary N=4 is a depth-3 deep linear network): P(wrong order) vs sigma.
+# Prediction (notes/order.md sec. 5): P(wrong) ~ C sigma^((1-rho)/rho).
+name: b4_sigma
+trees: ["binary:4"]
+d: [2]
+chi: [2, 4]
+rho: [0.5, 0.7, 0.8, 0.9, 0.95]
+sigma: [0.1, 0.03, 0.01, 0.003, 0.001, 0.0003, 0.0001]
+seeds: 1000
+proxies: false
+lo_race: false

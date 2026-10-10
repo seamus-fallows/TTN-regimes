@@ -1,0 +1,11 @@
+# m = 4 (odeco on MPS4): P(greedy) should not depend on sigma (scale invariance of the
+# leading-order flow plus exact decoupling of the two components).
+name: m4_sigma
+trees: ["mps:4"]
+d: [2]
+chi: [4]
+rho: [0.5, 0.8, 0.95]
+sigma: [0.3, 0.1, 0.03, 0.01, 0.003]
+seeds: 400
+proxies: false
+lo_race: false
