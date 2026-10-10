@@ -39,7 +39,7 @@ $\abs{\lambda_{\min}}$ to the balanced-route value reaches $20$ at $\Kc=7,8$.
 \begin{table}[tbp]
   \centering
   \caption{Plateau durations and saddle type, odeco teachers, fan-in initialization. Gaps: per-seed exponent
-    $p$ of $\tev{i+1}-\tev i\propto\isc^{-p}$, mean $\pm$ s.e.\ over seeds (run sets: \cref{app:exp-s2s}),
+    of $\tev{i+1}-\tev i$ as a power of $1/\isc$, mean $\pm$ s.e.\ over seeds (run sets: \cref{app:exp-s2s}),
     for $\chi=3$ and $6$ or, in rows ``both'', the separated and close teachers; brackets: range of the
     per-seed values (binary4, MPS4: over their four cells). $\lambda_{\min}$: mean per-seed slope of
     $\ln(-\lambda_{\min}(\Hperp))$ against $\ln\isc$ at the first and second plateau midpoints ($\chi=3$; $6$, or
@@ -47,8 +47,7 @@ $\abs{\lambda_{\min}}$ to the balanced-route value reaches $20$ at $\Kc=7,8$.
     $\chi=3$ (6, 7), HT4 gap 2 (9), MPS8 (7; 3). $\isc$: $0.003$--$0.1$ (binary4, MPS4), $0.07$--$0.3$ at
     $\chi=6$, $0.03$--$0.4$ (binary8) and $0.1$ or $0.15$ to $0.4$ (MPS8) at $\chi=3$; $\dagger$: limited range
     (less than one decade, or fewer than five seeds; binary8 at $\chi=3$: $1.1$ decades for 11 of 20 seeds; some
-    binary4 close-teacher seeds keep four or five values of $\isc$, about $0.8$ decade). Source:
-    \texttt{experiments/s2s\_core/results/main\_exponents.csv}.}
+    binary4 close-teacher seeds keep four or five values of $\isc$, about $0.8$ decade) (source: \cref{tab:exp-s2s}).}
   \label{tab:s2s-gaps}
   \footnotesize
   \setlength{\tabcolsep}{3pt}
@@ -96,7 +95,7 @@ $7.1\cdot10^{-7}$. The test checks contractions, gradients, integrators and even
     $\chi=3$; one run per tree, with per-core amplitude $q_0=0.01$ (binary4), $0.07$ (MPS4), $0.29$ (binary8, HT4)
     and $0.34$ (MPS8). Panel titles: largest deviation over time and components. Takeaway: with aligned
     initialization every tree learns the components in the order of their weights, at times $\propto1/\tw r$, as
-    the decoupled modes of a deep linear network do (source: \cref{app:experiments}, \cref{tab:exp-s2s}).}
+    the decoupled modes of a deep linear network do (source: \cref{tab:exp-s2s}).}
   \label{fig:s2s-aligned}
 \end{figure}
 
@@ -147,8 +146,7 @@ unchanged.
     trees (diamonds; binary, MPS and HT with $\Ns=3$--$16$), $\chi=3$, $d=4$, weights $(3,2,1)$, 50 initializations;
     dotted: the RMS-overlap heuristic $P_3$; dashed: $t_{\rm KH}$. Takeaway: weak $\chi$-dependence, none on $d$ at
     full bond, $P_3$ follows the growth with $\Kc$, and $t_{\rm KH}$, which uses only the norm of the
-    initialization, is low by factors that grow with $d$, $\chi$ and $\Kc$ (source: \cref{app:experiments},
-    \cref{tab:exp-s2s}).}
+    initialization, is low by factors that grow with $d$, $\chi$ and $\Kc$ (source: \cref{tab:exp-s2s}).}
   \label{fig:s2s-prefactor}
 \end{figure}
 
@@ -157,12 +155,12 @@ unchanged.
 \begin{table}[tbp]
   \centering
   \caption{Plateau law after the first component, two-component pattern teachers ($d=\chi=2$, weights
-    $(1,0.5)$): prediction \eqref{eq:locality-rule} against measurement. $p$ is the exponent of
-    $\Delta t_2\propto\isc^{-p}$, fitted per seed; for $k=2$ the slope of $\Delta t_2$ against $\ln(1/\isc)$.
+    $(1,0.5)$): prediction \eqref{eq:locality-rule} against measurement. Measured: the exponent of
+    $\Delta t_2$ as a power of $1/\isc$, fitted per seed; for $k=2$ the slope of $\Delta t_2$ against $\ln(1/\isc)$.
     Ranges are over rows (one row = tree, $D$, protocol); single rows give mean $\pm$ s.e.\ over seeds (median).
     $\sep{}$ is the separation ratio \eqref{eq:separation}. $\dagger$: limited range (less than one decade of
     $\isc$, or fewer than five fitted seeds; the reporting rule of \cref{sec:setup-diagnostics}). Sets $D$ number
-    the sites from $0$ (source: \cref{app:experiments}, \cref{tab:exp-locality}).}
+    the sites from $0$ (source: \cref{tab:exp-locality}).}
   \label{tab:locality-exponents}
   \small
   \begin{tabularx}{\textwidth}{@{}c>{\raggedright\arraybackslash}p{3.0cm}
@@ -208,11 +206,11 @@ $0.595\pm0.003$ against $1/\lambda_2=0.707$, $0.630$, $0.595$.
 \cref{sec:setup-diagnostics} would call $k=3$ plateaus strict for $\isc\gtrsim0.01$--$0.04$. For $k=2$ from the
 saddle, $\lambda_{\min}=-0.5000$, projected and raw ($-0.2500$ and $-0.7500$ for $\tw2=0.25$, $0.75$). From small
 initialization the raw value departs from $-\lambda_2$ where the plateau is too short to reach the saddle ($-0.437$
-for MPS8 $\{3,4\}$ at $\isc=0.008$; $-0.581$ against $-0.75$ for $\tw2=0.75$). For $k\ge3$ the exponent $x$ of
-$\lambda_{\min}\propto\isc^x$ ranges over rows from $0.81$ to $1.06$ for $k=3$ (raw $0.92$--$1.06$), $1.64$--$2.16$ for
+for MPS8 $\{3,4\}$ at $\isc=0.008$; $-0.581$ against $-0.75$ for $\tw2=0.75$). For $k\ge3$ the exponent of
+$\lambda_{\min}$ as a power of $\isc$ ranges over rows from $0.81$ to $1.06$ for $k=3$ (raw $0.92$--$1.06$), $1.64$--$2.16$ for
 $k=4$, $2.82$--$3.76$ for $k=5$, $4.00$ and $4.04$ for $k=6$ (balanced binary8 and HT4, one decade; $4.27$ on MPS8;
 $3.19$--$5.23$ in the rows of limited range), and $5.01$ (balanced HT4) up to $6.5$ (limited range) for $k=7$; the
-median of $\abs{x-p}$ is $0.02$; raw and projected exponents differ by up to $0.11$.
+median difference from the row's plateau exponent is $0.02$; raw and projected exponents differ by up to $0.11$.
 
 \begin{figure}[tbp]
   \centering
@@ -225,7 +223,7 @@ median of $\abs{x-p}$ is $0.02$; raw and projected exponents differ by up to $0.
     For $k\ge3$, $\lambda_{\min}\to0$ as $\isc\to0$, roughly as $\isc^{k-2}$: higher-order saddles. Lines for
     $k\ge6$ come from the rows of limited range of \cref{fig:locality-exponents}. Takeaway: with the larger component
     learned first, negative curvature that survives $\isc\to0$ exists only for two-core routes (source:
-    \cref{app:experiments}, \cref{tab:exp-locality}).}
+    \cref{tab:exp-locality}).}
   \label{fig:locality-hessian}
 \end{figure}
 
@@ -237,14 +235,14 @@ percentile of $0.25$ event widths and grows as $\isc^{1.94}$.
 
 \paragraph{Reading $k$ from a single run.}
 On a balanced route the new overlap grows as $\dot{\ov2}\propto\ov2^{\,2-2/k}$ at small $\ov2$, so the local growth
-exponent $\zeta=\dd\ln\dot{\ov2}/\dd\ln\ov2$ gives $k=2/(2-\zeta)$ (\cref{eq:A-growth-exponent}) \derived{}
+exponent $\beta(\ov2)=\dd\ln\dot{\ov2}/\dd\ln\ov2$ gives $k=2/(2-\beta)$ (\cref{eq:A-growth-exponent}) \derived{}
 \knownresult[the exponent $2-2/k$ of a balanced product of $k$ factors: \citealp{arora2019implicit,razin2022implicit}].
 Fitted over $\ov2\in[10^{-4},10^{-2}]$, the medians per row give $k=2.00$, $3.0$, $4.0$, $5.1$--$5.3$, $6.0$,
 $7.0$--$7.7$ for $k=2$ (saddle start) to $7$ \empirical{} \newresult[as a meter of $k$]. Validity range: from the
 saddle, or from small initialization if the plateau is long enough for the window to lie after the escape
 transient. The estimate fails for small-initialization $k=2$ on MPS6 and MPS8 ($2.4$--$3.3$; plateau shorter than
 the transient), is biased high for $k\ge5$ (HT8: $5.3$ for $k=5$, $7.7$ for $k=7$), and cannot separate $k=7$ from
-$8$, since $\dd k/\dd\zeta=k^2/2$ (per-run 5--95\% ranges $\pm1$ at $k=7$; MPS8 $\{0,7\}$, $k=8$: $7.9$ from small
+$8$, since $\dd k/\dd\beta=k^2/2$ (per-run 5--95\% ranges $\pm1$ at $k=7$; MPS8 $\{0,7\}$, $k=8$: $7.9$ from small
 initialization, 3 runs, $6.1$ from the saddle, 2 runs).
 
 \paragraph{Independent cross-check.}
@@ -252,7 +250,7 @@ initialization, 3 runs, $6.1$ from the saddle, 2 runs).
 initialization; mean $\pm$ s.d.\ of per-seed fits over 3--8 seeds) gives the first escape $\tev1\propto\isc^{-(\Kc-2)}$
 to within $0.003$ in the exponent for every seed; no plateau for $k=1$; a logarithmic $k=2$ plateau with slope
 $1.01\pm0.01$ on MPS4 ($\isc=10^{-3}$--$0.1$; predicted $1$), rising to $2.3\pm0.4$ from the saddle (predicted $2$);
-and $p=1.00$--$1.01$ for $k=3$, $2.00$ (MPS4) and $2.05\pm0.06$ (MPS6) for $k=4$, $3.00\pm0.11$ (binary8) for $k=5$
+and plateau exponents $1.00$--$1.01$ for $k=3$, $2.00$ (MPS4) and $2.05\pm0.06$ (MPS6) for $k=4$, $3.00\pm0.11$ (binary8) for $k=5$
 and $4.97\pm0.05$ (binary8, limited range: under one decade) for $k=7$. It also met the failure modes of
 \cref{sec:s2s-failure}: 95 of 332 runs with $k\ge4$ (none with $k\le3$) never learn the second component, and on
 MPS6 the exponents for $k=5$ and $6$ are seed-dependent and up to two units steeper than $k-2$ ($3.75\pm0.24$ for
@@ -328,7 +326,7 @@ $0.73$, $0.76$ at $\chi=2$, $4$, $8$). With uncapped bonds $\mathrm{sd}\ln\hat t
 ($\chi\ge4$), and its growth with $\Kc$ approaches $\sqrt{\Kc-2}$. The test of $d$ at equal bonds (binary8 and MPS4,
 independent seed sets) excludes differences above about $0.06$ at 95\%. With $X_r$ the projection of the
 initialization onto the orbit of component $r$'s balanced rank-one configuration,
-$\ln\hat t_{1,r}\approx\mathrm{const}-q\ln X_r$ with $q=(0.99$--$1.25)(\Kc-2)$ (s.e.\ $1$--$4\%$).
+$\ln\hat t_{1,r}$ is linear in $\ln X_r$ with slope $-(0.99$--$1.25)(\Kc-2)$ (s.e.\ $1$--$4\%$).
 
 \paragraph{Matrix-like pairs.}
 \empirical{} \Cref{tab:order-gamma} lists the fitted exponents. Fits over the whole measured range lie below
@@ -342,8 +340,8 @@ binary4 is far greedier than a race of independent clocks ($0.87$ against $0.73$
   \caption{Matrix-like pairs: exponent $\gamma$ of $P(\text{smaller first})=C\isc^{\gamma}$, binomial maximum likelihood
     over the whole $\isc$ range, s.e.\ from a bootstrap over seeds (shared across $\isc$); $d=2$, $\chi=4$ for the pattern
     pairs; weights $(1,w)$. Prediction \eqref{eq:A-matrix-like}: $n(1-w)/w$, $n=1$ for non-adjacent cores, $n=\bd e=4$
-    (conjectured) for adjacent ones. --: not run, or (MPS6 $\{2,3\}$, $w=0.7$) events at two values of $\isc$ only.
-    Source: \texttt{experiments/order/results/sigma\_fits.csv}.}
+    (conjectured) for adjacent ones. --: not run, or (MPS6 $\{2,3\}$, $w=0.7$) events at two values of $\isc$ only
+    (source: \cref{tab:exp-order}).}
   \label{tab:order-gamma}
   \footnotesize
   \setlength{\tabcolsep}{4pt}
@@ -438,8 +436,8 @@ rank, but not on HT4 and MPS8, whose route ends sit on bonds capped at $d=4$, on
   \caption{Stalled runs among two-component runs with $k\ge4$: small initialization, $d=2$, the same 24 (tree, $D$)
     cases and $\isc$ grids in every column. Fan-in initialization at $\chi=2$ and $\chi=4$; balanced initialization
     ($\Q e=0$, same $\Wz$) at $\chi=2$. Bottom rows: split by whether at least one end of the route sits on a bond
-    below the cap \eqref{eq:bond-cap} or both ends sit on bonds capped at $d$ (MPS chain ends, HT leaves). Source:
-    \texttt{experiments/locality/results/stall\_capped\_ends.csv} and \texttt{run\_classes\_by\_sweep.csv}.}
+    below the cap \eqref{eq:bond-cap} or both ends sit on bonds capped at $d$ (MPS chain ends, HT leaves)
+    (source: \cref{tab:exp-locality}).}
   \label{tab:locality-stalls}
   \small
   \begin{tabular}{@{}lccc@{}}
@@ -466,10 +464,11 @@ unchanged in 27 of 46 rows with stalls and moves it by $0.1$ or more in 9 fan-in
 keep only 1--3 seeds) and 3 other rows. This accounts for the off-target saddle-start $k=4$ and HT8 rows of
 \cref{tab:locality-exponents}.
 
-\paragraph{The reduced-model criterion.}
+\paragraph{The earlier reduced-model criterion.}
 \empirical{} Evaluated once, at the start of the plateau ($\ov1=0.99$), in the 122 fan-in and saddle-start runs of the
-stall diagnosis, the criterion of the reduced model of \cref{prop:A-trap} (an end is unfavourable if
-$c=Q_{\nu\nu}+\norm{y_{\rm route}}^2<0$; dead if all ends are) is strongly associated with death (30 of 55 runs with both
+stall diagnosis, an earlier form of the criterion of \cref{prop:A-trap}, which kept only the route entry of the
+partner's block $Y_{\rm nv}$ (an end is unfavourable if $c=Q_{\nu\nu}+\norm{y_{\rm route}}^2<0$; dead if two or more ends
+are), is strongly associated with death (30 of 55 runs with both
 ends unfavourable died, 7 of 67 with a favourable end) but is neither sufficient (25 predicted-dead runs escaped) nor
 necessary (seven dead runs had a live end at the plateau start). It conflicts with the data in three places:
 (i)~exactly balanced initialization leaves no dead route in either experiment (consistent), but on the pattern-teacher
@@ -479,20 +478,21 @@ two-ended HT routes dead under fan-in initialization; fewer stalls on MPS with $
 small-initialization HT4 runs with $k=5$ stall, against 30 of 48 on MPS4 $\{0,3\}$ and 17 of 48 on MPS6 $\{0,3\}$ (the
 odeco HT4 routes, with four leaf ends, end dead in at least 24 of 30 runs at $\chi=3$); (iii)~spare channels remove
 stalls only on routes with an uncapped end, here as in the regime maps, and the stalls rise on capped routes. The
-criterion of \cref{app:supp-s2s-trap} (pending verification) resolves (ii) and the drop in (iii).
+full criterion (\cref{app:supp-s2s-trap}) resolves (ii) and the drop in (iii).
 
 \paragraph{Steep MPS routes.}
 \empirical{} (mechanism open) One row stays steep at small $\isc$: MPS8 $\{1,5\}$ ($k=5$) from the saddle,
-$p=3.67\pm0.20$ at $\isc\in[0.012,0.03]$ (median $3.83$; limited range: 4 fitted seeds, $0.4$ decade; 10 of 24 runs
+exponent $3.67\pm0.20$ at $\isc\in[0.012,0.03]$ (median $3.83$; limited range: 4 fitted seeds, $0.4$ decade; 10 of 24 runs
 stalled), with a matching Hessian exponent ($3.74$ projected, $3.75$ raw). Its fitted seeds escape at every $\isc$, so
 it meets a refutation criterion of the theory (a per-seed exponent off by more than $0.2$ at $\isc\le0.05$ in runs
 without stall or sign correction), on thin evidence. In the steep MPS rows the route-end amplitudes at the plateau
-midpoint scale as $\isc^{a}$ with $a=1.24$--$1.91$ and shrink during the plateau (median ratio of midpoint to first
-event $0.53$--$0.78$, against $0.85$--$1.03$ in on-target rows); but $a>1$ also occurs in on-target rows (binary8
-$\{0,7\}$, balanced: $a=1.34$, $p=2.99$), so the steep exponents are associated with shrinking route ends, not shown
+midpoint scale as a power of $\isc$ with exponent $1.24$--$1.91$ and shrink during the plateau (median ratio of midpoint to first
+event $0.53$--$0.78$, against $0.85$--$1.03$ in on-target rows); but exponents above 1 also occur in on-target rows
+(binary8 $\{0,7\}$, balanced: $1.34$, with plateau exponent $2.99$), so the steep exponents are associated with shrinking route ends, not shown
 to be caused by them. Neither the logarithmic correction expected if small ends caught up through the conservation
 laws (per seed it fits much worse than a free power law: median residual of $\ln\Delta t_2$ $0.25$--$0.62$ against
-$0.05$--$0.12$) nor a law $\isc^{-(2k-6)}$ (both ends pinned, $a=2$; measured $a$ is seed-dependent, between 1 and 2)
+$0.05$--$0.12$) nor a law $\isc^{-(2k-6)}$ (pinned ends, amplitude exponent 2; the measured exponents are seed-dependent, between 1
+and 2)
 describes the data.
 
 \paragraph{Stall test of the regime maps.}
@@ -515,8 +515,8 @@ at $\isc=0.1$ (after $2\cdot10^4$ steps, at $t=1.4\cdot10^9$ of a budget of $5.7
   \caption{Stall test at $\chi$ equal to the teacher rank: $d=3$, $\chi=3$, odeco teacher $(3,2,1)$,
     $\isc\in\{0.3,0.45,0.6\}$, six seeds; ``balanced'': the same $\Wz$ with $\Q e=0$ on every bond. Types of the stalled
     runs from the third bond singular value of $\W$ at the end, minimized over edges: dead route below $10^{-12}$,
-    decaying up to $10^{-4}$ (no stalled run is above); the centred runs did not record the spectra of $\W$. Source:
-    \texttt{experiments/regime\_map/results/report/stall\_test\_summary.csv}.}
+    decaying up to $10^{-4}$ (no stalled run is above); the centred runs did not record the spectra of $\W$
+    (source: \cref{tab:exp-regimes}).}
   \label{tab:stall-test}
   \footnotesize
   \begin{tabular}{@{}lllcccc@{}}
@@ -534,84 +534,115 @@ at $\isc=0.1$ (after $2\cdot10^4$ steps, at $t=1.4\cdot10^9$ of a budget of $5.7
   \end{tabular}
 \end{table}
 
-\subsubsection{Trap criterion from the initialization (pending verification)}\label{app:supp-s2s-trap}
-Source: \path{notes/theory_trap.md} (v1) and \path{experiments/theory_checks/trap/} (README there), merged before its
-verification. Setting: a learned rank-one saddle of component $q$ (every core $a\,p_v\otimes\bigotimes_fw_f$,
-$a=\tw q^{1/\Kc}$), the dormant component $r$ with route $C$, $k=\abs C$; an \emph{end} $u$ of $C$ has one route
-neighbour, its \emph{partner} $w$, on the route edge $e$.
+\subsubsection{Trap criterion from the initialization}\label{app:supp-s2s-trap}
+Source: \path{notes/theory_trap.md} (v1) and \path{experiments/theory_checks/trap/} (README there), verified in
+\path{notes/reviews/trap_verification.md}: tables reproduced, verdicts recomputed with independent code for a stratified
+sample of 96 runs with $k\ge4$ (94 agree), the conservation law checked in full gradient flow; its errata are applied
+here and in \cref{prop:A-trap}. Setting: a learned rank-one saddle of component $q$ (every core the product of its pattern vector and unit bond
+vectors, with per-core amplitude $\tw q^{1/\Kc}$), the dormant component $r$ with route $\mathcal C$, $k=\abs{\mathcal C}$;
+an \emph{end} $u$ of $\mathcal C$ has one route neighbour, its \emph{partner} $w$, on the route edge $e$.
 
 \paragraph{Statements.}
 (1)~On the plateau the entries with all bond indices learned relax fast; the entries with one new bond index form
 two-core products whose Gauss--Newton cost is only their part normal to the learned manifold (lemma \proven; reduced
 flow \derived). (2)~In this reduced flow $C_u=X_u^{\perp\top}X_u^\perp-X_w^{\perp\top}X_w^\perp$ is conserved, and the
-end's route entry survives iff $C_u$ has a positive eigenvalue (\proven{} within the reduced flow). (3)~Identity:
-$C_u=\nu\T Q^{(u)}_e\nu+\norm{Y_{\rm nv}}^2-\norm{X_{\rm nv}}^2+O(\isc^3)$, the conserved bond imbalance (end minus
-partner) plus the partner's non-visible new entries minus the end's; the reduced model of \cref{prop:A-trap} kept only
-the route part of $Y_{\rm nv}$ (exact identity; checked to 3--4 digits). (4)~A partner without sites gives no
-second-order cost: the end then decays through a three-core cluster at a rate $\propto\isc^4$; in general an end of
-visible degree $j$ decays at a rate $\propto\isc^{2(j-1)}$, so it can kill its route only if $k\ge2j$: $k\ge4$ for a
-partner with sites, $k\ge6$ at HT and binary leaves, never for $k\le3$ (\derived). (5)~A route is dead iff two or more
-of its ends die; one dying end is pinned at $\propto\isc^{k-3}$ and escapes after $\propto\isc^{-(2k-6)}$; at $k=4$ a
-$\isc$-free competition, settled by a reduced route model, decides (\derived; checked). (6)~An end with more new
-directions on its route edge than its partner has normal physical rows generically never dies (spare channels protect
-only there; \derived). (7)~The plateau-start state is $\isc$ times a function of the initialization direction
-(checked on MPS4 $\{0,3\}$: $\isc=0.02$ and $0.005$ agree to 3 digits), so the outcome is a property of the direction
-(\derived). (8)~Balanced initialization: $C_u\ge0$ at ends that are tree leaves, which cannot die; ends with extra legs
-(pattern teachers on MPS) still can (\derived).
+end's route entry survives iff $C_u$ has a positive eigenvalue (\proven{} within the reduced flow; in full gradient
+flow $C_u$ stays constant to four digits after the initial transient, and the dying blocks go to $10^{-30}$, in the
+verification's run on MPS6). (3)~Identity: $C_u=\nu\T Q^{(u)}_e\nu+\norm{Y_{\rm nv}}^2-\norm{X_{\rm nv}}^2+O(\isc^3)$, the
+conserved bond imbalance (end minus partner) plus the partner's non-visible new entries minus the end's; an earlier
+form kept only the route part of $Y_{\rm nv}$ (exact identity; checked to 3--4 digits). (4)~A partner without sites
+gives no second-order cost: the end then decays through a three-core cluster at a rate $\propto\isc^4$; in general an
+end of visible degree $j$ decays at a rate $\propto\isc^{2(j-1)}$, so it can kill its route only if $k\ge2j$: $k\ge4$ for
+a partner with sites, $k\ge6$ at HT and binary leaves, never for $k\le3$ (\derived). (5)~For $k\le5$, as $\isc\to0$, a
+route is dead iff two or more of its ends die, and one dying end is pinned at an amplitude $\propto\isc^{k-3}$
+(\derived); at $k=4$ a $\isc$-free competition, settled by a reduced route model, decides (\derived{} where every
+route edge has one new direction; with $\chi\ge3$ on an inner edge the model's scalar route amplitude is a choice of
+basis, and its verdicts change with it). From $k=6$ on, three-core clusters through inner route cores decay at a rate
+$\propto\isc^4$ and are a further death channel, marginal at $k=6$ for a live route and dominant beyond, so the
+two-end rule is incomplete there. That a pinned route escapes after $\propto\isc^{-(2k-6)}$ is a \conjecture: untested
+at $k=5$, and at $k=6$ the verification's gradient-flow run (MPS6 $\{0,5\}$, seed 3, $\isc=0.03$) pins the dying end
+and then decays instead of escaping. (6)~An end with more new directions on its route edge than its partner has
+normal physical rows generically never dies (spare channels protect only there; \derived). (7)~The plateau-start
+state is $\isc$ times a function of the initialization direction (checked on MPS4 $\{0,3\}$: $\isc=0.02$ and $0.005$
+agree to 3 digits), so the outcome is a property of the direction (\derived{} as $\isc\to0$, with $O(\isc)$
+corrections). (8)~Balanced initialization: $C_u\ge0$ at ends that are tree leaves, which cannot die at leading order;
+ends with extra legs (pattern teachers on MPS) still can (\derived). No balanced odeco run ends with a dead route (0
+of 150), but 69 of them stall (binary8 27, HT4 12, MPS8 30 of 30 each) \empirical.
 
 \paragraph{Per-run tests} \empirical.
 Every committed two-component run of the locality sweeps and of the pilot was rebuilt from its configuration and seed
-and predicted without gradient flow. Fan-in initialization, saddle start and small initialization (3,492 locality
-runs with $k\ge4$, 587 stalled; the 191 wrong-order runs excluded), stalled over runs per predicted class: dead
-$408/457$ ($89\%$), pinned $141/934$ ($15\%$), alive $38/2{,}101$ ($1.8\%$); the reduced-model criterion of
-\cref{prop:A-trap} gives $417/1{,}143$ ($36\%$), $119/1{,}116$ and $51/1{,}233$ ($4.1\%$). By $k$ (dead, pinned, alive):
-$k=4$: $203/232$, $2/432$, $5/796$; $k=5$: $73/79$, $10/116$, $9/1{,}089$; $k=6$: $86/98$, $87/284$, $18/150$; $k=7$:
-$25/27$, $8/60$, $0/42$; $k=8$: $21/21$, $34/42$, $6/24$. Stall diagnosis (60 times the patience): predicted dead 30
-dead, 6 escaped, 2 pinned; predicted pinned 5, 63, 0; predicted alive 2, 56, 0. Pilot: $102/109$ predicted-dead runs
-die, $20/182$ pinned and $2/146$ alive. MPS4 at $\chi=2$, fan-in (locality and pilot): all 150 predicted-dead runs
-stall or die, none of the other 344. Balanced initialization: 16 of the 50 predicted-dead runs stall, none of them dead
-(very late escapes instead); 4 of 990 predicted-alive runs stall. Per seed (cases with at least three values of
-$\isc$): 447 of 462 predicted-alive seeds never stall, 45 of 65 predicted-dead seeds stall at every $\isc$.
-Known failures (56 false alarms and 40 misses among 3,929 fan-in runs with the pilot): $k=4$ with spare inner channels
-(MPS4 at $\chi=4$: 20 of 46 predicted-dead runs escape); the marginal case $k=6$ on HT4 $\{0,1,2\}$ (11 of 18
-predicted-dead runs escape); large $\isc$ (24 predicted-alive runs on long MPS and midroot6 routes stall, all at
-$\isc\ge0.08$; two dead HT4 $\{1,2\}$ saddle-start runs at $\isc=0.19$, $0.30$; five dead runs predicted pinned, all at
-$\isc\ge0.19$); seeds near the boundary at $k=4$--$5$.
+and predicted from its initialization and the $\isc$-free correlation flow, without the gradient flow of the run. Fan-in initialization, saddle start and small initialization (3,492 locality
+runs with $k\ge4$, 587 stalled; the 191 wrong-order runs excluded, which behave like the rest), stalled over runs per
+predicted class: dead $408/457$ ($89\%$), pinned $141/934$ ($15\%$), alive $38/2{,}101$ ($1.8\%$); the earlier criterion
+(route part of $Y_{\rm nv}$ only; dead if two or more ends are unfavourable) gives $417/1{,}143$ ($36\%$), $119/1{,}116$ and
+$51/1{,}233$ ($4.1\%$). By $k$ (dead, pinned, alive): $k=4$: $203/232$, $2/432$, $5/796$; $k=5$: $73/79$, $10/116$,
+$9/1{,}089$; $k=6$: $86/98$, $87/284$, $18/150$; $k=7$: $25/27$, $8/60$, $0/42$; $k=8$: $21/21$, $34/42$, $6/24$. Stall
+diagnosis (60 times the patience): predicted dead 30 dead, 6 escaped, 2 pinned; predicted pinned 5, 63, 0; predicted
+alive 2, 56, 0. Pilot, by its own collapse detector: 56 of 63 predicted-dead runs collapse, none of 150 predicted
+alive. Counting also the pilot runs that reach the time or wall-clock limit with the second component below
+$10^{-20}$ as dead (a rule added in this analysis; 46 runs, 10 of which end at $10^{-9}$--$10^{-4}$, not at roundoff)
+gives $102/109$ predicted-dead runs dead, $20/182$ pinned and $2/146$ alive. MPS4 at $\chi=2$, fan-in (locality and
+pilot): all 150 predicted-dead runs stall or die, none of the other 344. Balanced initialization: 16 of the 50
+predicted-dead runs stall, none of them dead (very late escapes instead); 4 of 990 predicted-alive runs stall. Per seed
+(cases with at least three values of $\isc$): 447 of 462 predicted-alive seeds never stall, 45 of 65 predicted-dead
+seeds stall at every $\isc$ (16 at some). At $\Kc=8$ the correlation flow, stopped at the norm ratio $10^{10}$, leaves
+the split into learned and small entries ambiguous at about $6\%$, enough to flip verdicts with $\abs{C_u}<0.003$ (2 of
+the 96 recomputed). Known failures (56 false alarms and 40 misses among 3,929 fan-in runs with the pilot): $k=4$ with spare inner
+channels (MPS4 at $\chi=4$: 20 of 46 predicted-dead runs escape; these verdicts depend on the basis, see (5)); the
+marginal case $k=6$ on HT4 $\{0,1,2\}$ (11 of 18 predicted-dead runs escape); 24 predicted-alive runs on MPS6 and
+midroot6 routes with $k=6$ that stall at the small end of a $\isc$ grid starting at $0.08$ (seed-specific, barely live
+ends such as $C_u=+0.007$, or the inner clusters; not large $\isc$); routes with one dying end that end dead (5 runs of
+the stall diagnosis, all at $\isc\ge0.19$; 20 pilot runs, the MPS6 $\{0,5\}$ family with seed 3, at every $\isc$): the
+inner-cluster channel, not large $\isc$; at large $\isc$, two dead HT4 $\{1,2\}$ saddle-start runs at $\isc=0.19$,
+$0.30$ predicted alive (the same seed stalls at all six $\isc$, as slow escapes) and three predicted-dead runs that
+escape at $\isc\ge0.45$ (HT8 $\{0,1,2,3\}$ twice, MPS8 $\{1,6\}$); and seeds near the boundary at $k=4$--$5$. The stall rate of
+pinned routes does not grow monotonically with $k$ ($31\%$, $13\%$, $81\%$ at $k=6$, $7$, $8$).
 
 \paragraph{Odeco teachers.}
 \empirical{} The dying component is the last one: the trap acts on the third plateau, after two escapes. The learning
-order is predicted from the initialization (the first component in 1,196 of 1,196 runs, the first two in order in 872
-of 1,029), but the trap is not: from the initialization alone the criterion does not separate the classes. From the
-state after the second escape it does: MPS4 at $\chi=3$, $\isc=0.03$, 10 of 10 seeds with the separated teacher and
-10 of 10 with the close one; HT4 at $\chi=3$, $\isc=0.2$, 6 of 6. A $\isc$-free model of the second plateau would close
-the gap.
+order is predicted from the initialization (the first component in 1,196 of 1,196 runs, against 844 for ``largest
+first''; the first two in order in 872 of 1,029), but the trap is not: from the initialization alone the criterion
+does not separate the classes. From the state after the second escape (that is, with gradient flow up to the second
+escape) it does, nearly: MPS4 at $\chi=3$, $\isc=0.03$, 10 of 10 seeds with the separated teacher and 9 of 10 with the
+close one (the tenth, predicted to escape through an end at $C_u=+0.0097$, stalls at every $\isc$); HT4 at $\chi=3$,
+$\isc=0.2$, 6 of 6 on seeds 0--5 and 8 of 10 with seeds 6--9 added (two runs with one dying end trap instead of being
+pinned). A $\isc$-free model of the second plateau would close the gap.
 
 \paragraph{Probability under fan-in initialization.}
-\derived{} (saddle start, one new direction per route edge, partner with sites, independent Gaussian entries) With
-$n_u=d^{s_u}-1$ normal physical rows of variance $\isc^2/F_u$ at the end and $n_w$ of variance $\isc^2/F_w$ at the
-partner ($F$ the fan-in, $s$ the number of sites), $p_u=P(C_u<0)=I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$: $0.392$ at an MPS end
-that is a tree leaf ($d=\chi_e=2$, any $\chi$), $0.5$ at an MPS root end at $\chi=2$ ($0.392$ at $\chi=4$); an internal
-MPS end has $0.5$ at $\chi=2$ and is protected at $\chi\ge3$. For two ends ($k\ge5$): $P(\text{dead})=p_up_{u'}$,
-$P(\text{pinned})=p_u+p_{u'}-2p_up_{u'}$ ($0.196$ and $0.50$ for an MPS chain with a leaf and a root end). A Monte Carlo
-with fresh seeds agrees with the closed form within two standard errors at every case with $k\ge5$ \empirical; the
-trap probability is $0.1$--$0.3$ per run for routes whose two ends have partners with sites. The committed seeds of MPS4
-$\{0,3\}$ (5 of 8 trapping) are a trap-prone draw (probability about $3\%$).
+\proven{} for one new direction on the end's route edge (saddle start, partner with sites, independent Gaussian
+entries; the model is exact) With $n_u=d^{s_u}-1$ normal physical rows of variance $\isc^2/F_u$ at the end and $n_w$ of
+variance $\isc^2/F_w$ at the partner ($F$ the fan-in, $s$ the number of sites), $p_u=P(C_u<0)=I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$:
+$0.392$ at an MPS end that is a tree leaf ($d=\chi_e=2$, any $\chi$), $0.5$ at an MPS root end at $\chi=2$ ($0.392$ at
+$\chi=4$); an internal MPS end has $0.5$ at $\chi=2$ and is protected at $\chi\ge3$ (Monte Carlo with $2\cdot10^5$ draws:
+within $0.002$). The formula needs one new direction: at an end bond capped at $d\ge3$ there are $d-1$, death needs
+$C_u\le0$ on all of them, and the probability falls to about $0.023$ ($d=3$) and $1.5\cdot10^{-4}$ ($d=4$) (Monte
+Carlo). For a route with two ends ($k\ge5$, by the two-end rule of (5)): $P(\text{dead})=p_up_{u'}$, $P(\text{pinned})=p_u+p_{u'}-2p_up_{u'}$ ($0.196$ and $0.50$ for an
+MPS chain with a leaf and a root end). A Monte Carlo with fresh seeds agrees with the closed form within two standard
+errors at every case with $k\ge5$ \empirical; the trap probability is $0.1$--$0.3$ per run for routes whose two ends
+have partners with sites (a four-ended HT4 route: $0.33$--$0.42$). The committed seeds of MPS4 $\{0,3\}$ (5 of 8
+trapping) are a trap-prone draw (probability about $3\%$).
 
 \paragraph{What it changes.}
-The weak association of the reduced-model criterion (30 of 55 against 7 of 67) came from that criterion; with the new
-one the stall diagnosis gives 30 of 38 predicted-dead runs dead and 7 of 126 others. HT routes with $k=5$ never stall
-(0 of 144) because HT leaves need $k\ge6$; the drop of the stalls with spare channels is the protection of (6), while
-their rise on capped routes from small initialization is reproduced per run but its mechanism is not isolated. Steep
-MPS routes: a pinned end gives exponent $2k-6$ and end amplitudes $\propto\isc^{k-3}$, a partly decayed end values in
-between, qualitatively as measured ($k=5$: $3.3$--$3.8$; not tested per seed). Prior work: a conserved quantity that
-decides which side of a unit can vanish is Lemma~B.1 of \citet{kunin2025alternating}; \citet{furman2026benign}, Thm~G.1,
-give a spurious minimum away from the minimum-norm set, and the trapped endpoints here are reached because the conserved
-imbalance, of order $\isc^2$, is as large as the dormant entries.
+The weak association of the earlier criterion (30 of 55 against 7 of 67) came from its truncation; with the full
+identity the stall diagnosis gives 30 of 38 predicted-dead runs dead and 7 of 126 others. HT routes with $k=5$ never
+stall (0 of 144) because HT leaves need $k\ge6$; the drop of the stalls with spare channels is the protection of (6),
+while their rise on capped routes from small initialization is reproduced per run but its mechanism is not isolated.
+Steep MPS routes: if pinned routes escape as conjectured in (5), a pinned end gives the exponent $2k-6$ and end
+amplitudes $\propto\isc^{k-3}$, and a partly decayed end values in between, qualitatively as measured ($k=5$: $3.3$--$3.8$;
+not tested per seed). Prior work: a conserved quantity that decides which side of a unit can vanish is Lemma~B.1 of
+\citet{kunin2025alternating}; \citet{furman2026benign}, Thm~G.1, give a spurious minimum away from the minimum-norm
+set, and the trapped endpoints here are reached because the conserved imbalance, of order $\isc^2$, is as large as the
+dormant entries.
 
 \subsubsection{Provenance and corrections after review}\label{app:supp-s2s-provenance}
+{\sloppy
 The numbers of \cref{sec:s2s} come from the committed result tables of the experiments \path{s2s_core},
 \path{locality}, \path{order} and \path{regime_map} (\cref{app:reproducibility}), checked against them in two
-verification reviews per experiment and a final review of the claims. Three numbers of \cref{sec:s2s-order} exist only in
+verification reviews per experiment and a final review of the claims. The tables of this appendix are, under
+\path{experiments/}: \path{s2s_core/results/main_exponents.csv} (\cref{tab:s2s-gaps});
+\path{order/results/sigma_fits.csv} (\cref{tab:order-gamma}); \path{locality/results/stall_capped_ends.csv} and
+\path{run_classes_by_sweep.csv} (\cref{tab:locality-stalls}); and
+\path{regime_map/results/report/stall_test_summary.csv} (\cref{tab:stall-test}). Three numbers of \cref{sec:s2s-order} exist only in
 the independent recomputation of the order experiment (scripts in \path{notes/reviews/scripts/verify_order/}): the fits
 over the three smallest values of $\isc$ (\path{v_sigma.py}, \path{v_sigma2.py}, \path{v_sigma3.py}), the paired McNemar
 comparison of each run's order with its own LO race (\path{v_multi.py}), and the margin of the stall rule of the
@@ -623,6 +654,4 @@ $\tev1\propto\norm{\params_0}^{-(\Kc-2)}$, the first guess of the research plan,
 (\cref{sec:s2s-escape}); the binary4 sequence, its $\isc^{-1}$ plateaus and its strict wrong-order saddle are known for
 deep linear networks and are reported as checks; the single-route consistency of the bond spectra is a check of the
 Steiner edges, not a prediction success rate; the law $\isc^{-(2k-6)}$ for steep MPS routes was the pilot's conjecture;
-the claims withdrawn in the reviews are not restated.
-
-
+the claims withdrawn in the reviews are not restated.\par}

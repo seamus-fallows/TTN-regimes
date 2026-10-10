@@ -40,8 +40,8 @@ diverges, since the balanced minimum is already the flattest; from $\isc=1$ on G
 to $2\cdot10^5\Loss_0$ at $\isc=8$) and then reaches gradient flow's final loss (86 of 90 runs below $10^{-6}\Loss_0$)
 at a flatter minimum, of sharpness $0.58$--$1.00$ times $2/\lr$ (per run), for steps up to $1.5$ ($\isc=1$) and $3$
 ($\isc=2$--$8$) times $2/\lambda_{\rm GF}$; at $4$ times all runs diverge. For $\isc\ge2$ the window thus ends between
-$6/\lambda_{\rm GF}$ and $8/\lambda_{\rm GF}$, $1.5$--$2$ times the $4/\lambda_0$ of the two-layer model of
-\citet{lewkowycz2020large}. Imbalanced small initializations ($\isc=0.1$ with the root core at scale 2, 4 or 6)
+$6/\lambda_{\rm GF}$ and $8/\lambda_{\rm GF}$, $1.5$--$2$ times the end of the catapult window of the two-layer model
+of \citet{lewkowycz2020large} (four times the inverse curvature, $4/\lambda_{\rm GF}$ here). Imbalanced small initializations ($\isc=0.1$ with the root core at scale 2, 4 or 6)
 reproduce the known selection: the 104 of 150 runs that converge end $0.05$--$3\%$ below
 $\min(\lambda_{\rm GF},2/\lr)$.
 
@@ -97,8 +97,7 @@ seen with another teacher (\cref{app:optimizer}) does not carry over.
     laws, one fitted collapse constant $c_{\rm col}$ each. (c)~Minimum of $\ov1$ during each run of (b) (colours as in
     (b)) against $\lr/\lr^*_{\rm ms}(\batch)$, with $\lr^*_{\rm ms}(\batch)$ the mean-square stability limit
     \eqref{eq:A-ms-threshold}; dashed: $\frac12$. Takeaway: SGD lengthens later plateaus as the collapse law predicts and
-    traps at $x\ge1$; near its stability limit it also erases the learned component. (source: \cref{app:exp-optim},
-    \cref{tab:exp-optim})}
+    traps at $x\ge1$; near its stability limit it also erases the learned component. (source: \cref{tab:exp-optim})}
   \label{fig:optim-sgd}
 \end{figure}
 
@@ -135,8 +134,7 @@ dimension with $\chi=4$ students, is unexplained.
     teacher-manifold dimension 28, the tangent dimension 112 at $\chi=4$, $d^\Ns=256$; grey: the zero predictor.
     (c)~Effective bond rank (bond singular values above $0.2$, a tenth of the smallest teacher weight, averaged over
     the six edges), $\chi=4$; grey: the teacher's bond rank 2. Takeaway: small initialization recovers the teacher
-    with its bond ranks from about 250 samples; the lazy limit cannot at $\chi=4$. (source: \cref{app:exp-optim},
-    \cref{tab:exp-optim})}
+    with its bond ranks from about 250 samples; the lazy limit cannot at $\chi=4$. (source: \cref{tab:exp-optim})}
   \label{fig:optim-samples}
 \end{figure}
 
@@ -162,7 +160,7 @@ and near the crossover $\isc_\times\approx0.05$--$0.1$ the deviations run from $
     121--139 steps ($\lr=10^{-3}$; single runs 111--140) and 23.5--29.3 steps ($\lr=10^{-2}$; single runs 21.5--30.9)
     at every $\isc$; with $\epsilon=10^{-8}$ the law $\isc^{-6}$ returns below $\isc\approx0.05$--$0.1$. Takeaway: Adam's
     first escape does not depend on $\isc$ until $\epsilon$ brings gradient flow's law back. (source:
-    \cref{app:exp-optimizers}, \cref{tab:exp-optimizers})}
+    \cref{tab:exp-optimizers})}
   \label{fig:optimizers-adam-escape}
 \end{figure}
 
@@ -199,27 +197,10 @@ threshold count differs (a fourth bond singular value above $0.1\,\bst{e}{\min}$
 runs, gradient flow in 5); the entropy rank does not.
 
 \paragraph{Which invariance removes which feature.}
-Two properties of an update decide what survives (\cref{tab:optimizers}, second column). The first is how its step
-scales with the gradient, which near the origin is $O(\isc^{\Kc-1})$ while the parameters must move by their own
-size: a step proportional to the gradient needs a time $\isc^{-(\Kc-2)}$, a step invariant under its rescaling (Adam)
-does not, and an absolute scale in the preconditioner, such as Adam's $\epsilon$, brings the law back \derived; Adam
-still follows the gradient's sign, which one component dominates, so learning stays sequential and its first
-component is gradient flow's (\conjecture). The second is the metric. Under gradient flow $\W$ moves through
-$\Jac\Jac\T$ ($\Jac=\partial\W/\partial\params$), which vanishes like $\isc^{2(\Kc-1)}$ at the origin, whereas Riemannian
-GD (in continuous time the Gauss--Newton flow $\dot\params=\Jac^+(\Wt-\W)$) and the exact block minimizations of ALS
-and DMRG move $\W$ at a rate of order one. These methods are equivariant under the whole gauge group \eqref{eq:gauge},
-including the rescaling of a core against its neighbour, and see $\W_0$ only through its frames, so they keep no
-$\isc$ (\proven{} for ALS and DMRG, exact for Riemannian GD at $\lr=1$); because they move $\W$ at a rate of order one
-they keep no plateaus (\derived); re-gauged GD shares the equivariance and the $\isc$-independence but not the rate.
-Plateaus at singular points of a parametrization, and the better behaviour of the natural gradient there, are known
-for multilayer perceptrons \knownresult[\citealp{amari2006singularities}]. Equivariance alone is not enough: Gram
-preconditioning is gauge-equivariant up to damping \derived{} but moves all cores at once from their current values.
-Balance and the flattest minimum (\cref{prop:A-pattern-rule}) rest on the conserved $\Q e$, the charges of the gauge
-symmetry under Euclidean gradient flow (\cref{prop:conservation}). Their relative drift is about $10^{-11}$ under
-gradient flow and, growing with $\isc$, $4\cdot10^{-5}$--$2\cdot10^{-3}$ under GD and $10^{-3}$--$5\cdot10^{-2}$ under heavy
-ball on binary $\Ns=4$ (momentum flows conserve fewer quantities than gradient flow, with time- and velocity-dependent
-laws, \citealp{marcotte2024keep}), while Adam, equivariant only under coordinate permutations and sign flips, breaks
-them at order one \empirical. A law for Adam's later plateaus is open (\cref{sec:open}).
+The reading of \cref{tab:optimizers} by two properties of an update, how its step scales with the gradient and the
+metric in which it moves $\W$, is given once, in \cref{sec:summary-parameters} (``Landscape and clock''), with the
+conservation drifts measured under gradient flow, GD and heavy ball. A law for Adam's later plateaus is open
+(\cref{sec:open}).
 
 \paragraph{Provenance and corrections after review.}
 The results on steps, noise and samples come from the experiment \path{experiments/optim_samples/}, with findings in

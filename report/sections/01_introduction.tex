@@ -77,9 +77,9 @@ can be compared with experiment number by number. The main focus is the saddle-t
     regime exists only when every bond reaches its cut dimension; below it training stalls on a loss
     floor.
   \item Gradient descent (GD) with steps below a sharp stability limit, $2/(\Kc\tw1^{2-2/\Kc})$ with $\tw1$
-    the largest teacher weight, keeps the saddle sequence on a shifted clock; gradient noise (SGD)
-    lengthens later plateaus on average and can trap; Adam keeps the first component but leaves the
-    origin in a number of steps that does not depend on $\isc$; ALS, DMRG and Riemannian gradient descent
+    the largest teacher weight, keeps the saddle sequence on a shifted clock; gradient noise (SGD) does
+    not shorten the first plateau on average, lengthens later ones and can trap; Adam keeps the first
+    component but leaves the origin in a number of steps that does not depend on $\isc$; ALS, DMRG and Riemannian gradient descent
     remove the plateaus. What decides is invariance: steps proportional to the gradient vanish near the
     origin, steps invariant under rescaling the gradient do not, and methods equivariant under the gauge
     group of the network see the initialization only through its frames. In short, the tree, the teacher
@@ -188,25 +188,27 @@ sections cited, and novelty is discussed in \cref{sec:intro-prior}.
     with a shorter route is learned first (locality beats weight) \derived{} \empirical{} (teacher B4,
     \cref{fig:teaser}a).
   \item\label{it:intro-failure} \textbf{Failure modes: dead routes} (\cref{sec:s2s-failure}). A sequence
-    can end early when a route dies (an end core decays to roundoff); a conservation-law mechanism
-    explains the decay in a reduced model \derived, but its criterion is neither necessary nor sufficient
-    \empirical. Most runs with $\Kc=7,8$ and the bond dimension equal to the teacher rank never learn the
-    last component, and 398 of 5,682 pattern-teacher runs stall, all with $k\ge4$; balanced initialization
+    can end early when a route dies (an end core decays to roundoff): 398 of 5,682 pattern-teacher runs
+    stall, all with $k\ge4$, and most runs with $\Kc=7,8$ and the bond dimension equal to the teacher rank
+    never learn the last component \empirical. A conserved quantity of each route end decides which ends die
+    \derived; computed from the initialization alone, it separates the runs that stall ($89\%$ of those it
+    predicts dead, $1.8\%$ of the others), with known gaps from $k=6$ on \empirical. Balanced initialization
     removes the dead routes in the runs checked, but not all stalls \empirical.
   \item\label{it:intro-regimes} \textbf{The map of regimes} (\cref{sec:regime-map}; \cref{sec:other-lazy,%
     sec:other-rich,sec:other-large-chi}). With the initial function removed, raising $\isc$ moves training
     from saddle-to-saddle through a rich window to lazy training \empirical, which needs full bonds
     \derived{} \empirical; on binary4 both boundaries scale as $\chi^{-1/2}$, the lazy one as predicted
     \derived{} \empirical. The saddle-to-saddle boundary rises with $\Kc$ and, with the initial function kept
-    and spare channels, does not tend to $1$: at $\Kc=8$--$15$ all 97 per-seed lower bounds exceed both
-    candidate laws, and 76 of 96 seeds stay saddle-to-saddle up to where the initial function overlaps the
-    teacher, about $1.15\sqrt d$ \empirical. At large $\chi$ a $\mu$P-type parameterization keeps the
-    kernel moving \derived{} \empirical.
+    and spare channels, does not tend to $1$: at $\Kc=8$--$15$ the per-seed lower bounds on it ($1.07$--$2.03$,
+    85 of 96 seeds) all exceed 1 and both candidate laws, and 76 of the 96 seeds stay saddle-to-saddle up to
+    the scale at which the initial function overlaps the teacher (about $\sqrt d$ there) \empirical. At large
+    $\chi$ a $\mu$P-type parameterization keeps the kernel moving \derived{} \empirical.
   \item\label{it:intro-optim} \textbf{Steps, noise and practical optimizers}
     (\cref{sec:other-optim,sec:other-optimizers}). Gradient descent is stable at the balanced global
     minimum only below $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$ \proven, and below it keeps gradient flow's sequence
-    on a clock shifted by $O(\lr)$ \derived{} \empirical. SGD lengthens later plateaus on average and can
-    trap \empirical{} (law: \conjecture). Adam keeps the first component, and mostly the order, with a
+    on a clock shifted by $O(\lr)$ \derived{} \empirical. SGD keeps the law of the first plateau \derived{} and
+    shortens it in no setting beyond noise; it lengthens later plateaus on average and can trap \empirical{}
+    (law: \conjecture). Adam keeps the first component, and mostly the order, with a
     $\isc$-independent first escape until $\epsilon$ restores the law \derived{} \empirical; ALS, DMRG and
     Riemannian GD have no plateaus \derived, and ALS and DMRG do not see $\isc$ \proven.
   \item\label{it:intro-cov} \textbf{Covariance, teacher structure and real data}
@@ -250,8 +252,8 @@ reweighting by a commuting input covariance \citep[Thm~2]{gidel2019implicit} and
 target, selected by the initialization \citep[Thm~1]{kumar2025early}, and escape after a time that grows
 as a negative power of the initialization \citep{kumar2025early,kumar2025towards}; dormant weights of the
 lowest homogeneity degree stay small for a time of the same kind \citep[Thm~8]{kumar2026learning};
-escapes that need $1$, $2$ or $r\ge3$ small layers take a time of order one, logarithmic, or
-$\propto\epsilon^{-(r-2)}$, with $\epsilon$ their scale \citep[Thm~4.2]{rawal2026theory}; alternating
+escapes that need $1$, $2$ or $k\ge3$ small layers take a time of order one, logarithmic, or
+$\propto\isc^{-(k-2)}$, with $\isc$ their scale \citep[Thm~4.2]{rawal2026theory}; alternating
 gradient flows carry dormant amplitudes across phases \citep{kunin2025alternating}; weaker directions get
 a head start in two-layer linear networks \citep[Thm~4]{zhang2026saddletosaddle}; and the leap of
 \citet{abbe2023sgd} counts the coordinates that must be learned at once. Hence known in our setting: the
@@ -295,8 +297,8 @@ over-parameterized orthogonal tensor decomposition learns the largest component 
 \citep{wang2020beyond}; growth exponents depend on depth in deep CP factorization \citep{hariz2022implicit};
 the Tucker landscape has descents of order 2, 3 and 4 \citep{frandsen2022optimization}; and tensor-train
 completion shows a plateau, then abrupt rank growth \citep{milanesi2021implicit}. In multi-spike tensor
-PCA the recovery order is a greedy selection on (weight)$\times$(initial correlation)$^{p-2}$ for $p\ge3$
-and follows the signal-to-noise ratios for $p=2$ \citep[Thm~1.5]{benarous2025stochastic},
+PCA the recovery order is a greedy selection on (weight)$\times$(initial correlation)$^{\Kc-2}$ for tensors of
+order $\Kc\ge3$ and follows the signal-to-noise ratios for matrices \citep[Thm~1.5]{benarous2025stochastic},
 \citep[gradient flow, Thm~1.3]{benarous2025permutation}, the dichotomy we find between pairs that differ
 on three or more cores and on two; related orderings hold for the tensor power method
 \citep[Lemma~5.1]{anandkumar2014tensor} and for units quadratic in their weights

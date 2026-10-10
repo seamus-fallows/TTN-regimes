@@ -4,7 +4,9 @@
 % sections. Symbols that clash with the notes are renamed here on purpose:
 %   - the tangent kernel is \TK (Theta), because K is the number of cores (the notes call it K_t);
 %   - aligned-init amplitudes are q_{v,r} (\amp), because a_r is the teacher-component overlap;
-%   - the gradient-flow preconditioner is D, because P is the size of the kernel probe set.
+%   - the gradient-flow preconditioner is diag(eta) (\Pre), because D is the set of differing sites;
+%   - the rooted tree is blackboard T, because \mathcal{T}(Z) is the first-escape prefactor;
+%   - event widths are omega_r, because w is the weight ratio s_2/s_1.
 
 % ---- general ---------------------------------------------------------------------------------
 \newcommand{\R}{\mathbb{R}}
@@ -41,7 +43,7 @@
 \newcommand{\nprobe}{P}                           % size of the kernel probe set
 
 % ---- tree and tensor network ---------------------------------------------------------------------
-\newcommand{\tree}{\mathcal{T}}                   % rooted tree
+\newcommand{\tree}{\mathbb{T}}                    % rooted tree (\mathcal{T}(Z) is the first-escape prefactor)
 \newcommand{\nodes}{\mathcal{V}}                  % its nodes (= cores)
 \newcommand{\edges}{\mathcal{E}}                  % its edges (= bonds)
 \newcommand{\Kc}{K}                               % number of cores
@@ -97,14 +99,14 @@
 \newcommand{\Q}[1]{Q_{#1}}                        % conserved quantity of bond e
 
 % ---- diagnostics ---------------------------------------------------------------------------------
-\newcommand{\TK}{\Theta}                          % tangent kernel on the probe set
+\newcommand{\TK}{\Theta}                          % tangent kernel (tensor kernel; restricted to the probe set where stated)
 \newcommand{\dTK}{\delta_{\TK}}                   % relative kernel change
 \newcommand{\dth}{\delta_{\params}}               % relative parameter change
 \newcommand{\KTA}{\mathcal{A}}                    % kernel-target alignment
-\newcommand{\Jac}{J}                              % Jacobian of the probe outputs
+\newcommand{\Jac}{J}                              % Jacobian dW/dtheta
 \newcommand{\Hess}{H}                             % Hessian of the loss
 \newcommand{\Hperp}{H_{\perp}}                    % gauge-projected Hessian
 \newcommand{\sep}[1]{\rho_{#1}}                   % separation ratio of consecutive events
 \newcommand{\tev}[1]{t_{#1}}                      % event time
-\newcommand{\wev}[1]{w_{#1}}                      % event width
+\newcommand{\wev}[1]{\omega_{#1}}                 % event width (w is the weight ratio)
 \newcommand{\tmid}[1]{t^{\mathrm{mid}}_{#1}}      % plateau midpoint

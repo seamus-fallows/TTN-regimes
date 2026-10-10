@@ -31,10 +31,20 @@ reviewers' reruns in \path{data/review_<name>/}. Scripts written by the reviewer
 source of some numbers in \path{notes/reviews/}, are kept for provenance in
 \path{notes/reviews/scripts/}.
 
+\paragraph{Literature search and audits.}
+The literature search behind \cref{sec:intro-prior} is documented in \path{notes/literature.md} (v1.2; method and
+limits in its section 1.2, every paper with its reading status in section 7); every citation and every new/known
+marker was then checked against the cited work in \path{notes/reviews/citation_check.md}. The saddle
+hopper of \cref{sec:s2s-hopper} (\path{experiments/saddle_hopper/}, findings in \path{notes/saddle_hopper.md}) was
+audited in \path{notes/reviews/saddle_hopper_verification.md}, which reproduced its scores and found the predictor
+permissive (\cref{app:supp-s2s-hopper}). The trap criterion of \cref{sec:s2s-failure} was verified in
+\path{notes/reviews/trap_verification.md} (\cref{app:supp-s2s-trap}).
+
 \subsection{Figures}\label{app:repro-figures}
 \Cref{tab:repro-figures} gives, for each figure, the command that draws it and the sweeps whose raw
-runs it rests on (their configurations are in \cref{app:experiments}). \Cref{fig:trees} is drawn in
-TikZ (\path{report/tikz/trees.tex}) when the report is built.
+runs it rests on (their configurations are in \cref{app:experiments}). \Cref{fig:trees} and panel (a) of
+\cref{fig:teaser} are drawn in TikZ (\path{report/tikz/trees.tex}, \path{report/tikz/teaser.tex}) when the report
+is built.
 % Rows of tab:repro-figures: one per figure, in the order of the report.
 
 % A multi-page table (xltabular = longtable with X columns): longer than a page, so not a float; it
@@ -61,6 +71,12 @@ TikZ (\path{report/tikz/trees.tex}) when the report is built.
     \endfoot
     \bottomrule
     \endlastfoot
+    \ref{fig:teaser} & \texttt{uv run python experiments/report\_figures/\allowbreak make\_teaser.py} draws panels (b)
+      and (c) from the committed \texttt{experiments/\allowbreak report\_figures/\allowbreak results/\allowbreak teaser\_run.csv} and
+      \texttt{experiments/\allowbreak locality/\allowbreak results/\allowbreak twocomp\_table.csv} (\texttt{-{}-raw data/s2s\_core/main} rewrites the
+      first from the raw run); panel (a) is \texttt{report/tikz/teaser.tex}
+      & \texttt{main} of s2s\_core (one run; \cref{tab:exp-s2s}), \texttt{twocomp} of locality
+      (\cref{tab:exp-locality}) \\
     \ref{fig:regime-map} & \texttt{uv run python experiments/regime\_map/\allowbreak plot\_report.py} draws this
       figure (\texttt{report\_map}) and \cref{fig:other-regimes} from committed tables in \texttt{results/},
       \texttt{results/fix1/} and \texttt{results/report/}; the last are written by \texttt{report\_tables.py

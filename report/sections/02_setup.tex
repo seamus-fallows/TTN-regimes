@@ -26,11 +26,11 @@ $\abs{\nodes}=\Kc$, and an assignment of each site to one node. For a node $v$, 
 (possibly empty) set of sites, $\ch{v}$ its children and $\pa{v}$ its parent. Every non-root node $v$
 is joined to its parent by the edge (bond) $\edge{v}$ of \emph{bond dimension} $\bd{v}$;
 $\bd{\vroot}=1$. Node $v$ carries a \emph{core} $\G{v}$ with one \emph{physical leg} of dimension
-$\pd[i]$ per $i\in\sites{v}$, one leg of dimension $\bd{c}$ per child $c$, and a parent leg of
+$\pd[i]$ per $i\in\sites{v}$, one leg of dimension $\bd{u}$ per child $u$, and a parent leg of
 dimension $\bd{v}$ (at the root, the scalar output). The dimensions of the other (\emph{child}) legs
 multiply to the \emph{fan-in}
 \begin{equation*}
-  \fanin{v}=\prod_{i\in\sites{v}}\pd[i]\prod_{c\in\ch{v}}\bd{c},
+  \fanin{v}=\prod_{i\in\sites{v}}\pd[i]\prod_{u\in\ch{v}}\bd{u},
 \end{equation*}
 so $\G{v}$ is an $\fanin{v}\times\bd{v}$ matrix; the parameters are $\params=(\G{v})_{v\in\nodes}$.
 
@@ -43,8 +43,8 @@ over all bonds, and the model is
 Equivalently, $f_\params$ is computed by passing messages $h_v(x)\in\R^{\bd{v}}$ from the leaves to
 the root,
 \begin{equation}\label{eq:messages}
-  h_v(x)_a=\sum_{(j_i),(b_c)}\G{v}\big[(j_i)_{i\in\sites{v}},(b_c)_{c\in\ch{v}},a\big]
-  \prod_{i\in\sites{v}}\feat{i}(x)_{j_i}\prod_{c\in\ch{v}}h_c(x)_{b_c},
+  h_v(x)_a=\sum_{(j_i),(b_u)}\G{v}\big[(j_i)_{i\in\sites{v}},(b_u)_{u\in\ch{v}},a\big]
+  \prod_{i\in\sites{v}}\feat{i}(x)_{j_i}\prod_{u\in\ch{v}}h_u(x)_{b_u},
   \qquad
   f_\params(x)=h_{\vroot}(x).
 \end{equation}
@@ -144,9 +144,9 @@ Three kinds are used:
   \item \emph{Odeco} (orthogonally decomposable): $\ip{\fac{r}{i}}{\fac{r'}{i}}=\delta_{rr'}$ at every
     site (so $\ncomp\le\min_i\pd[i]$); by default the factors at each site are columns of an
     independent Haar-random orthogonal matrix.
-  \item \emph{Pattern teachers}: site $i$ has an orthonormal basis $(\beta^{(i)}_j)_{j=0}^{d-1}$ and
-    component $r$ uses $\fac{r}{i}=\beta^{(i)}_{\pi_r(i)}$, where the \emph{pattern} $\pi_r$ maps
-    each site to a basis index in $\{0,\dots,d-1\}$; we write it as the digit string
+  \item \emph{Pattern teachers}: each site $i$ has a fixed orthonormal basis of $\R^{\pd[i]}$, with
+    vectors numbered $0,\dots,d-1$, and component $r$ uses as $\fac{r}{i}$ the basis vector numbered
+    $\pi_r(i)$; the \emph{pattern} $\pi_r$ maps each site to a basis index, and we write it as the digit string
     $\pi_r(0)\pi_r(1)\cdots\pi_r(\Ns-1)$; powers mark repeats ($0^31^20^3=00011000$). Components with
     distinct patterns are orthonormal. Two components \emph{differ} on the site set
     $D=\{i:\pi_r(i)\ne\pi_{r'}(i)\}$: $0000$ and $1100$ differ on $D=\{0,1\}$, so the second is a
@@ -226,8 +226,8 @@ the dense second-moment matrix (\cref{sec:covariance-teacher}).
 
 \paragraph{Finite samples.}
 A training set $(x_j,y_j)_{j=1}^{\nsamp}$ has
-$x_j\sim\Normal(0,\Sig)$ \iid and $y_j=f^*(x_j)+\varepsilon_j$ with optional label noise
-$\varepsilon_j\sim\Normal(0,\varsigma^2)$. The empirical loss is
+$x_j\sim\Normal(0,\Sig)$ \iid and $y_j=f^*(x_j)$, plus optional Gaussian label noise of variance
+$\varsigma^2$. The empirical loss is
 $\Lemp(\params)=\frac{1}{2\nsamp}\sum_{j}(f_\params(x_j)-y_j)^2$, and the test error is the
 population loss \eqref{eq:loss}.
 
@@ -251,8 +251,8 @@ messages \eqref{eq:messages} keep their size up the tree.
 \begin{proof}
   Let $\Sub{v}$ be the contraction of the subtree below $v$ ($\bd{v}$ columns). Given the children's
   (independent) subtrees, the entries of $\G{v}$, of variance $\iscv{v}^2/\fanin{v}$, give
-  $\E[\Sub{v}\T\Sub{v}]=\frac{\iscv{v}^2}{\fanin{v}}\prod_{i\in\sites{v}}\pd[i]\prod_{c\in\ch{v}}
-  \tr(\Sub{c}\T\Sub{c})\,\Id$, so by induction from the leaves
+  $\E[\Sub{v}\T\Sub{v}]=\frac{\iscv{v}^2}{\fanin{v}}\prod_{i\in\sites{v}}\pd[i]\prod_{u\in\ch{v}}
+  \tr(\Sub{u}\T\Sub{u})\,\Id$, so by induction from the leaves
   $\E[\Sub{v}\T\Sub{v}]=(\prod_{u}\iscv{u}^2)\Id$ over the subtree of $v$; $\Sub{\vroot}$ is $\W$
   flattened. Finally, $\E\normF{\G{v}}^2=\fanin{v}\bd{v}\,\iscv{v}^2/\fanin{v}$.
 \end{proof}
@@ -288,9 +288,9 @@ bond dimensions.
 
 \begin{remark}[The two-copy model needs a gradient mask]\label{rem:two-copy-mask}
   \proven{} Gradient flow on the doubled TTN does not keep its block-diagonal form: at a root with
-  children $c_1,c_2$ and no sites, the entry that pairs index $b_1$ of the $+$ half of $\edge{c_1}$
-  with index $b_2$ of the $-$ half of $\edge{c_2}$ has, at initialization, the gradient
-  $-\ipS{\Wt}{\Sub{c_1}^+[:,b_1]\otimes\Sub{c_2}^-[:,b_2]}$ (up to the order of sites), generically
+  children $u_1,u_2$ and no sites, the entry that pairs index $b_1$ of the $+$ half of $\edge{u_1}$
+  with index $b_2$ of the $-$ half of $\edge{u_2}$ has, at initialization, the gradient
+  $-\ipS{\Wt}{\Sub{u_1}^+[:,b_1]\otimes\Sub{u_2}^-[:,b_2]}$ (up to the order of sites), generically
   nonzero. The two-copy dynamics is therefore the flow \eqref{eq:gf} with multipliers set to zero off
   the diagonal blocks; it keeps the blocks and equals gradient flow of
   $\tfrac12\normS{\W(\params^+)-\W(\params^-)-\Wt}^2$ in $(\params^+,\params^-)$.
@@ -302,7 +302,7 @@ bond dimensions.
   (true for the trees of \cref{tab:trees}). Initialize
   \begin{equation}\label{eq:aligned-init}
     \G{v}=\sum_{r=1}^{\ncomp}\amp{v}{r}\Big(\bigotimes_{i\in\sites{v}}\fac{r}{i}\Big)\otimes
-    \Big(\bigotimes_{c\in\ch{v}}\varepsilon_r\Big)\otimes\varepsilon_{r(v)},
+    \Big(\bigotimes_{u\in\ch{v}}\varepsilon_r\Big)\otimes\varepsilon_{r(v)},
   \end{equation}
   with $\varepsilon_r$ the $r$-th standard basis vector of the bond in question, $r(v)=r$ for
   $v\ne\vroot$ and $r(\vroot)=1$. Under gradient flow with multipliers $\lrm{v}$ the cores keep this
@@ -427,11 +427,11 @@ $\params_S$: a critical point that represents a partial fit $\W_S$ (for orthonor
 of the learned components, \eqref{eq:partial-fit}; in general a best approximation of $\Wt$ with the
 current bond ranks). Each bond uses only its first $\rank\mat{(\W_S)}{e}$ (\emph{learned}) channels;
 the others are zero. A new channel opened in one core meets zeros in its neighbours and leaves $\W$
-unchanged: new channels move $\W$ only when every core of a connected set $C$ opens one together, and
-then by a product of $\abs{C}$ small entries, a small TTN on $C$ attached to the learned network
-(\cref{lem:A-routes}). Such a set is a \emph{route}. It lowers the loss at order $\abs{C}$ in the new
-entries, while the quadratic (Gauss--Newton) term $\frac12\normS{\Delta\W}^2$ is of order $2\abs{C}$,
-so near the saddle it behaves like a fresh $\abs{C}$-core TTN started near zero
+unchanged: new channels move $\W$ only when every core of a connected set $\mathcal C$ opens one together, and
+then by a product of $\abs{\mathcal C}$ small entries, a small TTN on $\mathcal C$ attached to the learned network
+(\cref{lem:A-routes}). Such a set is a \emph{route}. It lowers the loss at order $\abs{\mathcal C}$ in the new
+entries, while the quadratic (Gauss--Newton) term $\frac12\normS{\Delta\W}^2$ is of order $2\abs{\mathcal C}$,
+so near the saddle it behaves like a fresh $\abs{\mathcal C}$-core TTN started near zero
 (\cref{prop:A-escape-degree}). The \emph{ends} of a route are its leaves as a subtree; the
 \emph{slice} of an end is that core's part on the route's new channel (for a leaf core, one column).
 The learned channels can also rotate; when such moves descend faster than the cheapest route is
@@ -460,113 +460,6 @@ route of $k^*$ cores descends at order $k^*$, so the order is at most $k^*$ \pro
 (\cref{prop:A-steiner}); when it equals $k^*$ is stated in \cref{sec:s2s} and proven in
 \cref{app:saddle-order}.
 
-\begin{table}[p]
-  \centering
-  \caption{Notation and where it is defined (\S: section; (n): equation). Sites and cores are
-    numbered from $0$, teacher components from $1$. Abbreviations: GF gradient flow; GD, SGD
-    (stochastic) gradient descent; S2S saddle-to-saddle; LO leading order; odeco orthogonally
-    decomposable; MPS matrix product state; HT hierarchical Tucker; SP, NTK, $\mu$P
-    parameterizations (\cref{sec:other-large-chi}); ALS, DMRG sweep methods
-    (\cref{sec:other-optimizers}).}
-  \label{tab:notation}\label{tab:raw-diagnostics}
-  \footnotesize
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm}X
-      >{\raggedright\arraybackslash}p{2.1cm}@{}}
-    \toprule
-    symbol & meaning & defined in \\
-    \midrule
-    $\Ns$, $i$; $\pd[i]$, $d$ & number of sites, site index $i=0,\dots,\Ns-1$; local feature dimension
-      (default $d$) & \S\labelcref{sec:setup-model} \\
-    $\feat{i}$, $\Feat$; $\Sigi{i}$, $\Sig$ & site features, their tensor product; site and product
-      input covariance & \S\labelcref{sec:setup-model} \\
-    $\tree$, $\nodes$, $\Kc$; $\pa{v}$, $\ch{v}$ & rooted tree, its cores, their number; parent and
-      children of core $v$ & \S\labelcref{sec:setup-model} \\
-    $\sites{v}$, $\below{v}$; $\edge{v}$, $\bd{v}$, $\chi$ & sites of core $v$, sites below $v$; bond
-      to the parent, its dimension; nominal value & \S\labelcref{sec:setup-model}, \eqref{eq:bond-cap} \\
-    $\G{v}$, $\fanin{v}$, $\params$ & core of $v$, its fan-in; all parameters & \S\labelcref{sec:setup-model} \\
-    $\W$, $\Wt$, $\Wz$ & tensor of the student, of the teacher, at initialization
-      & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-loss} \\
-    $\mat{\W}{e}$, $01|23$ & matricization across $e$; a bipartition written by its site sets
-      & \S\labelcref{sec:setup-model} \\
-    $\bs{e}{j}$, $\bst{e}{j}$; $\rk{e}$ & $j$-th singular value across $e$ of $\W$, of $\Wt$ (their
-      nonzero count: the bond rank); effective bond rank
-      & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-diagnostics} \\
-    cut dimension, full & largest rank across $\edge{v}$; a bond is full when $\bd{v}$ reaches it
-      & \S\labelcref{sec:setup-trees} \\
-    binary$N$, MPS$N$, HT$N$ & trees with $N$ sites; also star3, midroot6 & \cref{tab:trees} \\
-    \midrule
-    $\ncomp$, $\tw{r}$ & number of teacher components; weights $\tw1\ge\dots\ge\tw{\ncomp}$
-      & \eqref{eq:cp-teacher} \\
-    $\fac{r}{i}$, $\U{r}$ & unit factor of component $r$ at site $i$; unit rank-one term
-      & \eqref{eq:cp-teacher} \\
-    $\pi_r$ & pattern of component $r$, a digit string, site $0$ first ($0110$, $0^31^20^3$)
-      & \S\labelcref{sec:setup-loss} \\
-    $\ov{r}$ & overlap with component $r$ ($0$ at $\W=0$, $1$ at $\W=\Wt$) & \eqref{eq:overlap} \\
-    $D$; $V_D$, $m$ & sites where a component differs from the learned one; cores carrying them,
-      $m=\abs{V_D}$ & \S\labelcref{sec:setup-loss} \\
-    $\mathrm{St}(\cdot)$ & Steiner subtree: the smallest subtree that contains a set of cores
-      & \S\labelcref{sec:setup-loss} \\
-    $\Loss$, $\lossn$; $\W_S$, $\Loss_S$ & population loss, $\Loss/\Loss(0)$; partial fit of the
-      components in $S$, its loss & \eqref{eq:loss}, \eqref{eq:partial-fit} \\
-    $\nsamp$, $\Lemp$; $\batch$ & training-set size, empirical loss; minibatch size
-      & \S\labelcref{sec:setup-loss}, \S\labelcref{sec:setup-dynamics} \\
-    $c$; $\Lambda_r$ & cross-site input correlation; aligned covariance: per-component product of
-      eigenvalues & \S\labelcref{app:covariance}; \S\labelcref{sec:cov-aligned} \\
-    \midrule
-    $\isc$, $\iscv{v}$, $\fsc$ & initialization scale; per-core scale; function-space scale
-      $\prod_v\iscv{v}$ & \eqref{eq:init}, \S\labelcref{sec:setup-init} \\
-    $\amp{v}{r}$, $\prodamp{r}$ & aligned-initialization amplitudes; their product & Prop.~\labelcref{prop:aligned} \\
-    $Z$; $\varepsilon$ & initialization direction, $\params_0=\isc Z$; perturbation of a saddle start
-      & \S\labelcref{sec:s2s-escape}; \S\labelcref{app:exp-common} \\
-    $t$, $\tmax$; $T$ & gradient-flow time, time budget; end time of a run
-      & \S\labelcref{sec:setup-dynamics}; \cref{tab:regimes} \\
-    $\lr$; $\lrm{v}$, $\boldsymbol{\lr}$ & learning rate (step size); per-core multiplier, the
-      diagonal preconditioner & \eqref{eq:gf} \\
-    $\lr_c$ & $2/(\Kc\tw1^{2-2/\Kc})$, the step size up to which GD keeps the saddle sequence
-      & \eqref{eq:optim-etac} \\
-    $\Q{e}$ & conserved quantity of bond $e$ & \eqref{eq:conserved} \\
-    \midrule
-    $\TK$, $\Jac$ & tangent kernel $\Jac\,\diag(\boldsymbol{\lr})\Jac\T$; $\Jac=\partial\W/\partial\params$
-      & \S\labelcref{sec:setup-diagnostics} \\
-    $\dTK$, $\dTK^{\rm probe}$; $\nprobe$ & relative kernel change (tensor, probe kernel); probe-set
-      size & \S\labelcref{sec:setup-diagnostics} \\
-    $\dth$; drift & relative parameter change; conservation drift
-      & \S\labelcref{sec:setup-diagnostics}, \eqref{eq:drift} \\
-    $\Hess$, $\Hperp$, $\lambda_{\min}$ & Hessian, its gauge projection, its smallest eigenvalue
-      & \S\labelcref{sec:setup-diagnostics} \\
-    $\tev{r}$, $\wev{r}$ & time and width of event $r$ & \S\labelcref{sec:setup-diagnostics} \\
-    $\sep{i}$, $\tmid{i}$ & separation ratio of consecutive events; plateau midpoint
-      & \eqref{eq:separation} \\
-    \midrule
-    $\params_S$; $\mathcal R$ & learned saddle; residual $\Wt-\W_S$
-      & \S\labelcref{sec:setup-routes}; \S\labelcref{app:saddles} \\
-    route, end, slice & cores that open a channel together; its leaves; an end's part on the channel
-      & \S\labelcref{sec:setup-routes} \\
-    $k$, $k^*$ & route size $\abs{\mathrm{St}(V_D)}$; smallest route with a nonzero residual
-      & \S\labelcref{sec:setup-routes} \\
-    saddle order & power of the distance at which the loss first decreases ($2$: strict)
-      & \S\labelcref{sec:setup-routes}; \S\labelcref{app:saddle-order} \\
-    $\Delta t_2$, $\lambda_2$ & time between the first two events; $k=2$ escape rate
-      $\tw2\tw1^{(\Kc-2)/\Kc}$ & \eqref{eq:locality-rule} \\
-    head start & factor $1-\tw2/\tw1$: the route grew during the previous plateau
-      & \S\labelcref{sec:s2s-locality} \\
-    $c_r$; $T(Z)$ & coupling of the route of component $r$; first-escape prefactor of $Z$
-      & \eqref{eq:A-coupling}; \S\labelcref{sec:s2s-escape} \\
-    $\Gamma$ & piggyback graph; the saddle is strict if $\lambda_{\max}(\Gamma)>\tw j$
-      & Prop.~\labelcref{prop:A-piggyback-graph} \\
-    $Q_{\nu\nu}$ & conserved quantity on the new channel $\nu$ of a route end & Prop.~\labelcref{prop:A-trap} \\
-    $w$; $\gamma$ & weight ratio $\tw2/\tw1$; exponent in $P(\text{smaller first})\propto\isc^{\gamma}$
-      & \S\labelcref{sec:s2s-order} \\
-    \midrule
-    $\isc_c$, $\isc_{\rm lazy}$; $\lambda$ & S2S and lazy boundaries in $\isc$; root scale at fixed
-      $\fsc$ & \S\labelcref{sec:regime-map}, \S\labelcref{sec:regime-imbalance} \\
-    $r_S$; $r(\cdot)$ & Spearman correlation; spectral radius
-      & \S\labelcref{sec:real-data}; \S\labelcref{app:saddle-order} \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
 % ===========================================================================================
 \subsection{Regime diagnostics}\label{sec:setup-diagnostics}
 
@@ -583,10 +476,12 @@ entropy rank $\rkH{e}=\exp(-\sum_j\hat s_j^2\ln\hat s_j^2)$, $\hat s_j=\bs{e}{j}
 tangent kernel $\TK=\Jac\,\diag(\boldsymbol{\lr})\,\Jac\T$, $\Jac=\partial\W/\partial\params$, is the
 operator on $\R^{d^\Ns}$ that drives the function-space dynamics of \eqref{eq:gf}, and
 $\dTK=\normF{\TK_t-\TK_0}/\normF{\TK_0}$; it is computed where $d^\Ns\dim\params\le2\cdot10^7$
-(binary4 at every bond dimension used), and \cref{app:boundaries} derives its constants. The
-\emph{probe kernel} restricts $\TK$ to $\nprobe=128$ fixed inputs $x_p\sim\Normal(0,\Sig)$ (for
-whitened inputs, $\Feat(x_p)\T\TK\,\Feat(x_{p'})$); where it is used instead, as in the regime labels
-of \cref{sec:regime-map}, the change is written $\dTK^{\rm probe}$.
+(binary4 at every bond dimension used: its maps of regimes and the large-$\chi$ runs), and
+\cref{app:boundaries} derives its constants. The
+\emph{probe kernel} restricts $\TK$ to 128 fixed inputs $x_p\sim\Normal(0,\Sig)$ (for whitened inputs,
+$\Feat(x_p)\T\TK\,\Feat(x_{p'})$); it gives the regime labels of the larger trees (\cref{sec:regime-K} and the
+binary tree with $\Ns=8$) and of the large-$\chi$ sweep, whose exponents use the tensor kernel, and its change
+is written $\dTK^{\rm probe}$.
 
 \paragraph{Learning events.}
 For CP teachers with orthogonal components (in the metric $\Sig$), \emph{event} $r$ is the time
@@ -654,9 +549,9 @@ Each run, trained up to time $T$, receives one label (\cref{tab:regimes}).
 \emph{Stalled} is an umbrella label (\cref{tab:regimes}); its four causes fall into three
 subclasses. \emph{Dead route} (trap): an end of the route that the next component needs has its slice
 at roundoff. The route's drive is a product over its cores, so it cannot escape, and the run stays at
-a partial fit. The proposed mechanism is the conservation-law trap (\cref{prop:A-trap}, \derived{} in
-a reduced model): on a long plateau the conservation laws can make an end's slice decay at a rate
-$\propto\isc^2$ (tests and open conflicts: \cref{sec:s2s-failure}). \emph{Slow}: every route is live,
+a partial fit. The mechanism is the conservation-law trap (\cref{prop:A-trap}; \derived{} in a reduced
+model): on a long plateau a conserved quantity of each route end decides whether its slice decays, at a
+rate $\propto\isc^2$ ($\propto\isc^4$ at HT and binary leaves; tests and known gaps: \cref{sec:s2s-failure}). \emph{Slow}: every route is live,
 but the budget ends first, on a plateau longer than the time budget (a route of $k$ cores needs a time
 $\propto\isc^{-(k-2)}$) or at the step limit (unfinished lazy fits at full bonds, some deep-tree runs).
 \emph{Floor}: in the centred model with a bond below its cut dimension, the target $\Wt+\W(\params_0)$
@@ -695,3 +590,208 @@ component, which sets plateau-time exponents (\cref{sec:s2s-locality}). Fan-in i
 the relative scales of the cores; exponents should not depend on it, but prefactors and the learning
 order might, so imbalanced, balanced ($\Q{e}=0$) and aligned initializations are also studied.
 
+% ===========================================================================================
+\subsection{Notation}\label{sec:setup-notation}
+
+\Cref{tab:notation} lists the symbols of the report with the place where each is defined. Symbols used
+only inside one proof or one paragraph are defined there and not listed. A subscript or argument makes a
+different symbol ($\tw r$, $\bs ej$ and $s_n(M)$ are three); where one letter has a second, local use, the
+table says where.
+
+% A multi-page table (xltabular, as in Appendix C): it breaks between rows and repeats its header.
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.08}
+\setlength{\LTcapwidth}{\textwidth}
+\begin{xltabular}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm}X
+    >{\raggedright\arraybackslash}p{2.5cm}@{}}
+  \caption{Notation and where it is defined (\S: section; numbers in parentheses: equations). Sites and cores are numbered
+    from $0$, teacher components from $1$. Abbreviations: GF gradient flow; GD, SGD (stochastic) gradient
+    descent; S2S saddle-to-saddle; LO leading order; odeco orthogonally decomposable; MPS matrix product
+    state; HT hierarchical Tucker; HSVD hierarchical singular value decomposition; SP, NTK, $\mu$P
+    parameterizations (\cref{sec:other-large-chi}); ALS, DMRG sweep methods
+    (\cref{sec:other-optimizers}).}
+  \label{tab:notation}\label{tab:raw-diagnostics} \\
+  \toprule
+  symbol & meaning & defined in \\
+  \midrule
+  \endfirsthead
+  \caption[]{Notation (continued).} \\
+  \toprule
+  symbol & meaning & defined in \\
+  \midrule
+  \endhead
+  \midrule
+  \multicolumn{3}{@{}r@{}}{\itshape continued on the next page} \\
+  \endfoot
+  \bottomrule
+  \endlastfoot
+  \multicolumn{3}{@{}l}{\itshape Sites, tree and network} \\
+  $\Ns$, $i$; $\pd[i]$, $d$ & number of sites, site index ($i=0,\dots,\Ns-1$); local feature dimension
+    (default $d$) & \S\labelcref{sec:setup-model} \\
+  $x$, $\xs{i}$; $\feat{i}$, $\Feat$ & an input, its part at site $i$; site features, their tensor
+    product & \S\labelcref{sec:setup-model} \\
+  $\Sigi{i}$, $\Sig$ & site covariance; second-moment matrix $\E[\Feat\otimes\Feat]$ of the features
+    ($\Sigi0\otimes\dots\otimes\Sigi{\Ns-1}$ for independent sites) & \S\labelcref{sec:setup-model} \\
+  $\tree$, $\nodes$, $\Kc$; $\pa{v}$, $\ch{v}$ & rooted tree, its nodes (the cores), their number; parent
+    and children of core $v$ & \S\labelcref{sec:setup-model} \\
+  $u$, $v$, $w$; $e$, $f$ & cores, as labels (a route end $u$ and its partner $w$; alone, $w$ is the
+    weight ratio); bonds (edges) & \S\labelcref{sec:setup-model} \\
+  $\sites{v}$, $\below{v}$; $\edge{v}$, $\bd{v}$, $\chi$ & sites of core $v$, sites below $v$; bond to the
+    parent, its dimension; nominal bond dimension & \S\labelcref{sec:setup-model}, \eqref{eq:bond-cap} \\
+  $\G{v}$, $\Gm{v}{e}$; $\fanin{v}$; $\params$ & core of $v$, matricized with its $e$-leg as rows; its
+    fan-in; all parameters & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-conservation} \\
+  $h_v$; $\Sub{v}$, $C_v$; $C$ & message of core $v$; contraction of the subtree below $v$ and of the rest,
+    $\mat{\W}{\edge v}=\Sub vC_v\T$; alone, a positive constant (bounds, fits such as $C\isc^\gamma$)
+    & \eqref{eq:messages}, \S\labelcref{sec:setup-model} \\
+  $\W$, $\Wt$, $\Wz$; $f_\params$, $f^*$ & tensor of the student, of the teacher, at initialization; model and
+    teacher functions & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-loss} \\
+  $\mat{\W}{e}$; $01|23$ & matricization across $e$; a bipartition written by its site sets (ranges:
+    $0$--$3|4$--$7$) & \S\labelcref{sec:setup-model} \\
+  $\bs{e}{j}$, $\bst{e}{j}$; $\rk{e}$, $\rkH{e}$ & $j$-th singular value across $e$ of $\W$, of $\Wt$
+    (their nonzero count: the bond rank); effective and entropy bond rank
+    & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-diagnostics} \\
+  cut dimension, full; $\mathcal M_\chi$ & largest rank across $\edge{v}$; a bond is full when $\bd{v}$
+    reaches it; the tensors with bond ranks $\bd e$ & \S\labelcref{sec:setup-trees};
+    \cref{prop:A-kernel} \\
+  binary$N$, MPS$N$, HT$N$ & trees with $N$ sites; also star3, midroot6 & \cref{tab:trees} \\
+  \midrule
+  \multicolumn{3}{@{}l}{\itshape Teachers, data and losses} \\
+  $\ncomp$, $\tw{r}$; $j$, $q$, $r$ & number of teacher components; weights $\tw1\ge\dots\ge\tw{\ncomp}$;
+    component labels ($j$, $q$: learned; $r$: any, or not yet learned) & \eqref{eq:cp-teacher} \\
+  $\fac{r}{i}$, $\U{r}$ & unit factor of component $r$ at site $i$; unit rank-one term
+    & \eqref{eq:cp-teacher} \\
+  $\pi_r$ & pattern of component $r$: a digit string, site $0$ first ($0110$; powers mark repeats,
+    $0^31^20^3$) & \S\labelcref{sec:setup-loss} \\
+  $\ov{r}$ & overlap with component $r$ ($0$ at $\W=0$, $1$ at $\W=\Wt$) & \eqref{eq:overlap} \\
+  $D$; $V_D$, $m$; $\mathrm{St}(\cdot)$ & sites where a component differs from the learned one; the cores
+    that carry them, $m=\abs{V_D}$ ($D_{jr}$, $V_{jr}$, $m_{jr}$ for components $j$, $r$ in
+    \cref{app:derivations}); Steiner subtree, the smallest subtree that contains a set of cores
+    & \S\labelcref{sec:setup-loss} \\
+  $\Loss$, $\lossn$, $\Loss_0$; $\W_S$, $\Loss_S$ & population loss, $\Loss/\Loss(0)$, $\Loss(0)$; partial fit
+    of the components in $S$, its loss & \eqref{eq:loss}, \eqref{eq:partial-fit} \\
+  $\nsamp$, $(x_j,y_j)$, $\Lemp$; $\batch$; $\varsigma$ & training-set size, samples, empirical loss; minibatch
+    size; label-noise standard deviation & \S\labelcref{sec:setup-loss}, \S\labelcref{sec:setup-dynamics} \\
+  $\beta$; $\Lambda_r$ & exponent of the power-law site spectra (also: the heavy-ball momentum, below, and
+    the local slope $\dd\ln\dTK/\dd\ln\xi$ at the lazy boundary, \cref{app:boundaries}); product of the
+    covariance eigenvalues of component $r$ (aligned covariance)
+    & \S\labelcref{sec:setup-loss}; \S\labelcref{sec:cov-aligned} \\
+  $c$; $z$, $z_i$ & cross-site input correlation; the common and the site Gaussian factors of correlated
+    inputs & \S\labelcref{app:covariance}, \S\labelcref{sec:cov-correlated} \\
+  $\cos\phi$; $e_1$, $e_2$ & overlap of two CP factors at each site; standard basis vectors of
+    $\R^d$ & \S\labelcref{sec:covariance-teacher} \\
+  \midrule
+  \multicolumn{3}{@{}l}{\itshape Initialization and training} \\
+  $\isc$, $\iscv{v}$, $\fsc$ & initialization scale; per-core scale; function-space scale $\prod_v\iscv{v}$
+    & \eqref{eq:init}, \S\labelcref{sec:setup-init} \\
+  $c_v$; $\lambda$; $\xi$ & profile of the per-core scales, or forward multiplier; scale of the root
+    relative to the other cores ($\lambda_{\rm root}$ in \cref{app:boundaries}); $\normF{\Wt}/\fsc$
+    & \S\labelcref{sec:setup-init}; \S\labelcref{sec:regime-imbalance} \\
+  $\amp{v}{r}$, $\prodamp{r}$; $\varepsilon_r$ & aligned-initialization amplitudes, their product; $r$-th
+    basis vector of a bond & \cref{prop:aligned} \\
+  $q_j$; $b$, $b_0$ & per-core amplitude $\tw j^{1/\Kc}$ of a learned component; per-core amplitude of a
+    route (at its start) & \cref{app:derivations}; \cref{app:supp-s2s-failure,app:D-optim} \\
+  $Z$; $\varepsilon$ & initialization direction, $\params_0=\isc Z$; scale of the perturbation added to an
+    exact saddle (saddle start) & \S\labelcref{sec:s2s-escape}; \S\labelcref{sec:covariance-teacher} \\
+  $t$, $\tmax$; $T$ & gradient-flow time, time budget; end time of a run
+    & \S\labelcref{sec:setup-dynamics}; \cref{tab:regimes} \\
+  $\lr$; $\lrm{v}$, $\boldsymbol{\lr}$ & learning rate (step size); per-core multiplier, the diagonal
+    preconditioner & \eqref{eq:gf} \\
+  $\Q{e}$; $\Omega$ & conserved quantity of bond $e$; gauge transformation & \eqref{eq:conserved},
+    \eqref{eq:gauge} \\
+  \midrule
+  \multicolumn{3}{@{}l}{\itshape Diagnostics and regimes} \\
+  $\TK$, $\Jac$; $P_\perp$ & tangent kernel $\Jac\,\diag(\boldsymbol{\lr})\Jac\T$; $\Jac=\partial\W/\partial\params$;
+    projector onto the complement of the range of $\TK$ & \S\labelcref{sec:setup-diagnostics};
+    \S\labelcref{sec:other-lazy} \\
+  $\dTK$, $\dTK^{\rm probe}$; $\delta_*$; $\dth$ & relative kernel change (tensor, probe kernel); its
+    threshold; relative parameter change & \S\labelcref{sec:setup-diagnostics}, \cref{tab:regimes} \\
+  $\Hess$, $\Hperp$; $\lambda_{\min}$, $\lambda_{\max}$ & Hessian, its gauge projection; their smallest and
+    largest eigenvalues & \S\labelcref{sec:setup-diagnostics} \\
+  $\tev{r}$, $\wev{r}$; $\sep{i}$, $\tmid{i}$; $\omega_\Kc$ & time and width of event $r$; separation ratio of
+    consecutive events, plateau midpoint; width of an aligned event at unit weight
+    & \S\labelcref{sec:setup-diagnostics}, \eqref{eq:separation}; \cref{prop:A-s2s-aligned} \\
+  drift & conservation drift & \eqref{eq:drift} \\
+  $\isc_c$, $\isc_{\rm lazy}$; $a_{0c}$ & saddle-to-saddle and lazy boundaries in $\isc$;
+    saddle-to-saddle boundary of aligned initialization (per-core amplitude)
+    & \S\labelcref{sec:regime-map}; \cref{prop:A-s2s-aligned} \\
+  $c_1$, $c_2$; $x_W$ & first- and second-order constants of the kernel change at the lazy boundary;
+    size of $\Wz$ against the teacher, $\isc^\Kc\sqrt{d^\Ns}/(\tw2d)$ & \eqref{eq:A-lazy-dk};
+    \cref{app:D-regimes} \\
+  \midrule
+  \multicolumn{3}{@{}l}{\itshape Saddles, routes and escapes} \\
+  $\params_S$; $\mathcal R$ & learned saddle; residual $\Wt-\W_S$ & \S\labelcref{sec:setup-routes};
+    \S\labelcref{app:saddles} \\
+  route $\mathcal C$, end, slice & cores that open a channel together; its leaves; an end's part on the
+    channel & \S\labelcref{sec:setup-routes} \\
+  $k$, $k^*$ & route size $\abs{\mathrm{St}(V_D)}$; smallest route with a nonzero residual
+    & \S\labelcref{sec:setup-routes} \\
+  saddle order, $\mathrm{ord}(\params_S)$ & power of the distance at which the loss first decreases ($2$: strict)
+    & \S\labelcref{sec:setup-routes}; \S\labelcref{app:saddle-order} \\
+  $g$, $G$; $\mathcal{T}(Z)$, $r_1$ & correlation $\ip{\W}{\Wt}$, its integral along the spherical flow;
+    first-escape prefactor computed from $Z$, and the component learned first & \S\labelcref{sec:s2s-escape} \\
+  $\tau$ & time of the spherical flow, $\dd\tau=\norm{\params}^{\Kc-2}\dd t$; on real data, the clock $t-t_a$
+    (below) & \S\labelcref{sec:s2s-escape}; \S\labelcref{sec:real-data} \\
+  $\delta_\Kc$; $t_{\rm KH}$; $P_3$ & offset of the first event; norm-based (Kumar--Haupt) escape time;
+    root-mean-square-overlap heuristic for $\mathcal T$ & \eqref{eq:s2s-first}; \S\labelcref{sec:s2s-escape};
+    \cref{app:supp-s2s-escape} \\
+  $\Delta t_2$, $\lambda_2$; $A$ & time between the first two events; $k=2$ escape rate
+    $\tw2\tw1^{(\Kc-2)/\Kc}$; prefactor of a plateau law & \eqref{eq:locality-rule} \\
+  head start; $c_r$ & factor $1-\tw2/\tw1$: the route grew during the previous plateau; coupling of the
+    route of component $r$ & \S\labelcref{sec:s2s-locality}; \eqref{eq:A-coupling} \\
+  $\Gamma$; $\Gamma^{(\ell)}$, $\lambda_\ell$ & piggyback matrix (the saddle is strict if
+    $\lambda_{\max}(\Gamma)>\tw j$); generalized piggyback operator, its largest eigenvalue
+    & \cref{prop:A-piggyback-graph}; \cref{def:A-gen-piggyback} \\
+  $r(\cdot)$; $\norm{\cdot}_2$, $s_n(\cdot)$ & spectral radius; largest and $n$-th singular value of a
+    matrix (in \cref{app:derivations} and \S\labelcref{sec:teacher-generic} the singular-value index is
+    $n$, since $j$ is the learned component) & \cref{app:derivations} \\
+  $\beta(\ov r)$ & local growth exponent of an overlap & \eqref{eq:A-growth-exponent} \\
+  $C_u$; $Q_{\nu\nu}$; $X_{\rm nv}$, $Y_{\rm nv}$ & conserved quantity of a route end $u$; imbalance of its bond
+    on the route's new direction $\nu$; new entries of the end, of its partner, that pair with nothing at
+    second order & \cref{prop:A-trap} \\
+  $I$; $F_u$, $n_u$ & regularized incomplete beta function; fan-in and number of normal physical directions
+    of a route end & \S\labelcref{sec:s2s-failure} \\
+  \midrule
+  \multicolumn{3}{@{}l}{\itshape Order of learning} \\
+  $w$; $\gamma$; $n$; $P$ & weight ratio $\tw2/\tw1$ (smaller over larger); exponent in
+    $P(\text{smaller first})\propto\isc^{\gamma}$, $\gamma=n(1-w)/w$; number of unstable directions there
+    ($n_{jr}$ in \cref{app:derivations}; elsewhere $n$ is the training-set size); probability
+    & \S\labelcref{sec:s2s-order} \\
+  $\hat t_{1,r}$; $X_r$ & leading-order blow-up time of component $r$ alone; projection of the
+    initialization onto the orbit of its rank-one configuration & \S\labelcref{sec:s2s-order} \\
+  \midrule
+  \multicolumn{3}{@{}l}{\itshape Steps, noise and optimizers} \\
+  $\lr_c$; $\lambda_{\rm bal}$, $\lambda_{\rm GF}$ & $2/(\Kc\tw1^{2-2/\Kc})$, the step size up to which GD keeps
+    the saddle sequence; largest Hessian eigenvalue at the balanced global minimum, at the minimum that
+    gradient flow reaches & \eqref{eq:optim-etac}; \S\labelcref{sec:other-optim} \\
+  $c_e$; $h$ & shift of event $e$ per unit step under GD; step of the balanced scalar map,
+    $\lr\tw1^{2-2/\Kc}$ & \S\labelcref{sec:other-optim}; \cref{fig:optim-gd} \\
+  $\lr^*_{\rm ms}$; $\kappa_{\rm n}$ & mean-square stability limit of SGD; noise factor of the first escape
+    under SGD & \eqref{eq:A-ms-threshold}; \eqref{eq:A-sgd-first} \\
+  $c_{\rm col}$, $x$; $T_{\rm GF}$, $T_{\rm SGD}$ & collapse constant and $x=c_{\rm col}(\lr/\batch)T_{\rm GF}$ (the only
+    use of $x$ other than an input); length of a plateau under gradient flow, under SGD
+    & \eqref{eq:optim-collapse} \\
+  $\beta$; $\beta_1$, $\beta_2$, $\epsilon$ & heavy-ball momentum; Adam's averaging parameters and its
+    regularizer ($\varepsilon$ is the perturbation scale) & \S\labelcref{sec:other-optimizers} \\
+  $n_1$, $n_{\rm sign}$; $\isc_\times$ & Adam: steps to the first escape, their part in the sign regime;
+    crossover scale & \eqref{eq:adam-eps} \\
+  $P_{\W}$; $\mathrm{HSVD}_\chi$ & projector onto the tangent space at $\W$ of the fixed-rank manifold;
+    truncation of the hierarchical SVD to bond dimension $\chi$ & \S\labelcref{sec:other-optimizers} \\
+  \midrule
+  \multicolumn{3}{@{}l}{\itshape Covariance, teacher structure and real data} \\
+  $\W_1$, $\bar s$; $M_e$ & bond-rank-one critical point, its value; the $d\times d$ matrix that $\Wt$
+    leaves on the two cores of edge $e$ & \S\labelcref{sec:teacher-generic} \\
+  $\lambda_e$; $h_e$; $e^*$; $\kappa_{\rm c}$ & escape rate of edge $e$, $\bar s^{(\Ns-2)/\Ns}s_2(M_e)$; slope in
+    $\ln(1/\isc)$, $(1-s_2(M_e)/\bar s)/\lambda_e$ ($s_2(M_e)/\bar s$: the head start); the edge with the largest
+    $s_2(M_e)$; head start under correlated inputs & \S\labelcref{sec:teacher-generic},
+    \S\labelcref{sec:teacher-ttn}; \cref{app:covariance} \\
+  $\params_q$, $\lambda_q$ & star teacher: saddle with component $q$ learned, its rate
+    $-\lambda_{\min}$ & \S\labelcref{sec:teacher-star} \\
+  $t_{\rm esc}$ & escape time from a saddle start & \S\labelcref{sec:covariance-teacher} \\
+  $y$, $Y$; $t_a$, $t_0$ & label ($\pm1$) and label tensor $\E[y\Feat]$; end of the first plateau on real data,
+    offset of the gap law $A/\isc+t_0$ & \S\labelcref{sec:real-data} \\
+  $\mu_{uw}$, $k_{uw}$; $\mathcal S$; $r_S$ & route coupling of bottom cores $u$, $w$, and the size of their
+    route; share of $\sum\mu_{uw}^2$ on routes with $k_{uw}\le5$; Spearman correlation
+    & \S\labelcref{sec:real-data} \\
+\end{xltabular}
+\endgroup

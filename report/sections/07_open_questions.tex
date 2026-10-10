@@ -8,8 +8,7 @@
 % (notes/reviews/saddle_hopper_verification.md, sections 6 and 8).
 \section{Summary by parameter and open questions}\label{sec:summary}
 
-\subsection{How each parameter acts}\label{sec:summary-parameters}%
-\label{sec:s2s-parameters}
+\subsection{How each parameter acts}\label{sec:summary-parameters}
 
 \Cref{tab:s2s-parameters} collects, for each parameter, what it does to the saddle sequence (which
 saddles are visited and in which order), to the plateau durations, and to the regime boundaries of
@@ -108,8 +107,7 @@ saddles are visited and in which order), to the plateau durations, and to the re
       Aligned initialization: the boundary depends on the weight ratios (\cref{prop:A-s2s-aligned})
       \proven; lazy boundary through $\normF{\Wt}/\fsc$; centred floor $\propto\isc^{2\Kc}/\normF{\Wt}^2$
       \derived \\
-    input covariance\newline(\ref{sec:cov-aligned}, \ref{sec:cov-misaligned},
-      \ref{sec:cov-correlated}) & Aligned: race with weights $\Lambda_r\tw r$, landscape with
+    input covariance\newline(\ref{sec:cov-aligned}, \ref{sec:cov-misaligned}) & Aligned: race with weights $\Lambda_r\tw r$, landscape with
       $\Lambda_r^{1/2}\tw r$, which can reverse the order and, on binary4, swap a learned component \derived{}
       \empirical; otherwise plateaus at critical points of the $\Sig$-weighted loss \proven{} \empirical &
       Aligned: exact clocks $\Lambda_rt$, exponents unchanged \proven{} \empirical; non-orthogonal in the
@@ -156,7 +154,7 @@ scales with the gradient, which near the origin is $O(\isc^{\Kc-1})$ while the p
 their own size: a step proportional to the gradient needs a time $\isc^{-(\Kc-2)}$, a step invariant
 under its rescaling (Adam) does not, and an absolute scale in the preconditioner, such as Adam's
 $\epsilon$, brings the law back \derived; Adam still follows the sign of the gradient, which one
-component dominates, so learning stays sequential (\conjecture). The second is the metric. Under
+component dominates, so learning stays sequential and its first component is gradient flow's (\conjecture). The second is the metric. Under
 gradient flow $\W$ moves through $\Jac\Jac\T$ ($\Jac=\partial\W/\partial\params$), which vanishes like
 $\isc^{2(\Kc-1)}$ at the origin, whereas Riemannian gradient descent (in continuous time the
 Gauss--Newton flow $\dot\params=\Jac^+(\Wt-\W)$) and the exact block minimizations of ALS and DMRG move
@@ -167,9 +165,9 @@ a parametrization, and the better behaviour of the natural gradient there, are k
 perceptrons \knownresult[\citealp{amari2006singularities}]. Equivariance alone is not enough: Gram
 preconditioning is gauge-equivariant up to damping \derived{} but moves all cores at once from their
 current values. Balance and the flattest minimum (\cref{prop:A-pattern-rule}) rest on the conserved
-$\Q e$, the charges of the gauge symmetry under Euclidean gradient flow (\cref{prop:conservation}); their
-measured relative drift is $10^{-11}$, $10^{-5}$ and $3\cdot10^{-4}$ under gradient flow, GD and heavy
-ball (momentum flows conserve fewer quantities, with time- and velocity-dependent laws,
+$\Q e$, the charges of the gauge symmetry under Euclidean gradient flow (\cref{prop:conservation}); on
+binary4 their measured relative drift is about $10^{-11}$ under gradient flow and, growing with $\isc$,
+$4\cdot10^{-5}$--$2\cdot10^{-3}$ under GD and $10^{-3}$--$5\cdot10^{-2}$ under heavy ball (momentum flows conserve fewer quantities, with time- and velocity-dependent laws,
 \citealp{marcotte2024keep}), while Adam, equivariant only under coordinate permutations and sign flips,
 breaks them at order one \empirical. Where an entry of the table rests on one tree, one teacher or a
 single $\isc$, the sections cited give its scope.
@@ -190,7 +188,7 @@ what would settle it.
     learned component only; with several, the fixed-rank block (couplings through learned superpositions)
     is not worked out; ties between routes are decided by random route amplitudes; and cheaper routes can
     insert intermediate plateaus by learning part of a component. What exists is bookkeeping: an
-    implementation of the known rules that hops from saddle to saddle (\cref{sec:s2s-locality}) agrees
+    implementation of the known rules that hops from saddle to saddle (\cref{sec:s2s-hopper}) agrees
     with the measured sequences, but its prediction differs from the weight order without rotations in
     only 107 runs, and on the informative runs it scores $97.0\%$ against that baseline's $95.8\%$
     \empirical. What is missing is a predictive version. \emph{What would settle it:} a rule that runs the
@@ -223,18 +221,22 @@ what would settle it.
     near-tied escapes at accessible $\isc$ \conjecture{} (heuristic, \cref{prop:A-agf-race}). \emph{What
     would settle it:} a law for how route amplitudes are carried through each escape, tested against the
     per-seed prefactors already measured (\cref{sec:s2s-escape,sec:s2s-locality}).
-  \item \textbf{Why routes die, and how often.} The reduced model of \cref{prop:A-trap} explains the decay
-    of route ends at a rate $\propto\isc^2$ and the role of balance, but its criterion, evaluated at the
-    start of the plateau, is neither sufficient nor necessary (seven dead runs had a live end); balanced
-    initialization removes dead routes yet delays some escapes by $10^5$ or more; HT routes stall far less
-    often than the heuristic predicts; spare channels raise the stalls on routes whose ends are capped,
-    for no known reason; and whether the odeco runs at $\Kc=7,8$ that end with live route ends face long
-    plateaus or slowly dying routes is a \conjecture{} (from fan-in initialization most stalls of the regime
-    map are dead routes; \cref{sec:s2s-failure}). One route (MPS8, $D=\{1,5\}$, from the saddle) is steeper
-    than predicted ($3.67\pm0.20$ against $3$), with no mechanism. \emph{What would settle it:} following the
-    criterion of \cref{prop:A-trap} through the whole plateau, a reduced model with capped end bonds, and
-    the dead fraction against $\isc$ at $k\ge5$ for fan-in and balanced initialization (predicted to tend
-    to the probability that all route ends are unfavourable, \conjecture).
+  \item \textbf{Why routes die, and how often.} The conserved quantity $C_u$ of each route end
+    (\cref{prop:A-trap}) predicts from the initialization which pattern-teacher runs trap ($89\%$ of the
+    predicted-dead runs stall, $1.8\%$ of the others), why HT routes with $k=5$ never stall, and why spare
+    channels protect only ends whose own bond has them (\cref{sec:s2s-failure}). Open: from $k=6$ on,
+    three-core clusters of inner route cores are a further death channel that the criterion omits, and
+    whether a route with one dying end escapes (after $\propto\isc^{-(2k-6)}$) is a \conjecture, contradicted at
+    $k=6$ by one gradient-flow run; with spare inner channels at $k=4$ the reduced route model depends on a
+    choice of basis; the odeco traps are predicted only from the state after the second escape; spare
+    channels raise the stalls on routes whose ends are both capped, reproduced per run but without an
+    isolated mechanism; balanced initialization removes dead routes yet delays some escapes by $10^5$ or
+    more; and whether the odeco runs at $\Kc=7,8$ that end with live route ends face long plateaus or slowly
+    dying routes is a \conjecture{} (from fan-in initialization most stalls of the regime map are dead
+    routes). One route (MPS8, $D=\{1,5\}$, from the saddle) is steeper than predicted ($3.67\pm0.20$ against
+    $3$), with no established mechanism. \emph{What would settle it:} the cluster channel added to the reduced
+    flow and tested at $k=6$--$8$, a reduced route model with vector amplitudes for spare inner channels, a
+    $\isc$-free model of the second odeco plateau, and long runs continued from pinned states.
   \item \textbf{The learning order in closed form.} The race of independent components is exact only on
     MPS; where cores without sites couple the components it still names the first component in
     $95$--$100\%$ of the runs on binary8 and HT4 but in only 537 of 640 on binary4, and it has no closed
@@ -247,10 +249,11 @@ what would settle it.
     binary and HT trees, and $\isc$ scans down to $10^{-6}$ with $1{,}000$ seeds for adjacent pairs.
   \item \textbf{Regime boundaries at large $\Kc$ and large $\chi$.} With the initial function kept and
     spare channels, the saddle-to-saddle boundary does not tend to $1$, the limit of aligned
-    initialization: at $\Kc=8$--$15$ ($d=2$, $3$) all 97 per-seed lower bounds exceed both candidate laws,
-    $\isc_c^{\Kc}=\text{const}$ and $\isc_c^{\Kc}/\sqrt{d^\Ns}=\text{const}$, and 76 of 96 seeds stay
-    saddle-to-saddle up to where the initial function overlaps the teacher, about $1.15\sqrt d$
-    \empirical{} (this setup only). The proposed mechanism, the model unlearning its initial function on
+    initialization: at $\Kc=8$--$15$ ($d=2$, $3$) the lower bounds of the 85 censored seeds ($1.07$--$2.03$) all
+    exceed 1 and both candidate laws, $\isc_c^{\Kc}=\text{const}$ and $\isc_c^{\Kc}/\sqrt{d^\Ns}=\text{const}$, and 76 of
+    the 96 seeds stay saddle-to-saddle up to the scale at which the initial function overlaps the teacher
+    (about $\sqrt d$ at these $\Kc$; about $1.15\sqrt d$ in the limit) \empirical{} (this setup only). The
+    proposed mechanism, the model unlearning its initial function on
     the plateau, is consistent with the data but not confirmed (\conjecture). With the initial function
     removed and full bonds the two laws are not resolved, so whether $\isc_c(\Kc)$ tends to $\sqrt d$, a
     fixed amplitude per component, remains a \conjecture{} (\cref{sec:regime-K}). Its $\chi^{-1/2}$ scaling is measured on one tree over less than a decade and is
