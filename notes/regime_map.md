@@ -935,3 +935,57 @@ runs do not finish, the report gives the largest K reached and how the run time 
      lazy label needs, not sigma_c.
    - Every completed row is kept (each relaunch resumes from the rows). Some walkers lost up to an hour
      of wall-clock.
+
+## 5. Round-1 N = 4 maps relabelled with the tensor-space kernel (lead's request, 2026-10-10)
+
+**Change.** Labels of `sigma_chi_b4`, `chi_b4` and `imbalance_b4` use the tensor-space kernel J D J^T of
+`notes/theory_regimes.md` instead of the 128-probe kernel. The rules are unchanged: delta_K < 0.1 is
+lazy, rho > 3 is S2S, and convergence is measured against 1/2 ||W*||^2.
+- dK_tensor was computed for all 5,298 runs from theta_end and the rebuilt initial point
+  (`relabel_tensor.py compute`; cache `/root/outputs/regime_map/tensor_kernel/`, none missing).
+- `analysis.load` selects the label kernel with `REGIME_MAP_LABEL_KERNEL=tensor`.
+- The report tables (`report_tables.py --only sigma_chi_b4 imbalance`), the numbers
+  (`report_numbers.py`), the report figures (`plot_report.py`; copied to `report/figures/regime_map/`)
+  and the standard figures of these sweeps (`make_figures.py --only sigma_chi_b4 chi_b4 imbalance_b4
+  summary`) were regenerated with it.
+- The K sweeps, the N = 8 maps and the large-chi tables keep the probe kernel. Large chi and P20 already
+  quoted the tensor kernel.
+
+**Label changes** (`results/tensor_relabel/label_changes.csv`): 65 of 5,298 runs (1.2%).
+
+| sweep | model | runs | changed | transitions |
+|---|---|---|---|---|
+| sigma_chi_b4 | centred | 912 | 9 | lazy -> rich |
+| sigma_chi_b4 | plain | 912 | 9 | 3 lazy -> rich, 3 rich -> lazy, 3 s2s -> lazy |
+| sigma_chi_b4 | two-copy | 912 | 6 | lazy -> rich |
+| chi_b4 | centred | 1188 | 15 | lazy -> rich |
+| chi_b4 | two-copy | 240 | 4 | lazy -> rich |
+| imbalance_b4 | all | 1134 | 22 | lazy -> rich |
+
+Near the boundary the probe kernel is ~0.8x the tensor value (section 3.2 item 1), so almost every
+change is lazy -> rich at the lazy boundary.
+
+**Lazy boundary** (per-seed sigma where delta_K drops below 0.1, coming from large sigma;
+`results/tensor_relabel/lazy_boundary_*.csv`). The tensor / probe ratio of per-seed boundaries, median
+per chi:
+
+| sweep | ratio |
+|---|---|
+| centred, chi_b4 | 1.04-1.09 at chi = 12-128 (0.99 at chi = 9, where only 3 seeds have a tensor boundary) |
+| centred, sigma_chi_b4 | 1.04-1.08 at chi = 12-36; 1.14 at chi = 9 |
+| two-copy | 1.01-1.07 |
+| plain | 1.04-1.07 |
+
+The lazy boundary therefore moves up by about 4-9% (14% at chi = 9). The S2S boundary and the rho
+statistics do not change: they do not depend on the kernel.
+
+**Imbalance map at chi = 24** (`report/imbalance_map_b4.csv`, panel (c) of `report_map`). 7 of 189
+majority cells change, all lazy -> rich and all at chi = 24:
+- **Balance and heavy roots** (lambda / sqrt(chi) >= 1) are now lazy from alpha = 100. At alpha = 10
+  balance is rich (4/6), and heavy roots are rich (6/6).
+- **Light root at lambda / sqrt(chi) = 0.01** is lazy from alpha = 1 (it was 0.1 with 4/6 seeds),
+  and so is 0.03.
+- The claims become "a light root lowers the lazy boundary by ~100x in alpha (alpha = 1 vs 100)" and
+  "a heavy root is lazy from alpha = 100, as at balance". These replace "alpha = 10" in sections 0,
+  2.4 and 3.2 item 6 (probe-kernel statements).
+- **Status:** empirical, majority labels of 6 seeds, one-decade alpha grid.
