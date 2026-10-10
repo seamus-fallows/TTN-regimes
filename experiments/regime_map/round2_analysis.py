@@ -345,6 +345,35 @@ def decision(f_joint: dict, f_A: dict, f_B: dict) -> str:
     return "unresolved"
 
 
+def shrink_table(raw: str, arm: str, df: pd.DataFrame) -> pd.DataFrame:
+    """H_W diagnostic per run: the largest relative loss of squared core norm before the first
+    escape, shrink = 1 - min_{t <= t_0.1} min_v ||G_v(t)||^2 / ||G_v(0)||^2 (t_0.1 = first time any
+    overlap reaches 0.1), against H_W's parameter x_W = sigma^K sqrt(D) / (s_2 d). Every core loses
+    the same absolute amount, d||G_v||^2/dt = -2 (||W||^2 - <W, W*>), so the smallest core (the
+    root, ||G||^2 = sigma^2 at init) loses the largest fraction."""
+    import glob
+
+    import run_regime as rr
+
+    out = []
+    for r in df.to_dict("records"):
+        if r["model"] == "plain" and "a0" in r and np.max(np.abs(r["a0"])) >= 0.1:
+            continue
+        path = os.path.join(raw, ARMS[arm]["exp"], "traj", rr.run_id(r) + ".npz")
+        if not os.path.exists(path):
+            continue
+        z = np.load(path, allow_pickle=True)
+        t, a, cn = z["t"], np.abs(z["overlaps"]), z["core_norms"]
+        hit = np.flatnonzero(a.max(axis=1) >= 0.1)
+        i1 = hit[0] if hit.size else len(t) - 1
+        ratio = (cn[: i1 + 1] / cn[0]) ** 2
+        K, d = r["n"] - 1, r["d"]
+        out.append(dict(K=K, d=d, seed=r["seed"], sigma=r["sigma"], shrink=float(1 - ratio.min()),
+                        x_W=r["sigma"] ** K * d ** ((K + 1) / 2) / (min(WEIGHTS) * d),
+                        rho=r["rhos"][0] if r.get("rhos") else np.nan))
+    return pd.DataFrame(out)
+
+
 COL = {2: "#2a78d6", 3: "#eb6834"}
 
 
@@ -426,6 +455,31 @@ def fig_round2(arm: str, ps: pd.DataFrame, path: str, title: str):
     plt.close(fig)
 
 
+def fig_shrink(tabs: dict, path: str):
+    """H_W diagnostic: pre-escape core shrinkage vs x_W = sigma^K sqrt(D) / (s_2 d), plain vs centred."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(6.5, 4.2))
+    style = {"P": ("o", "plain, chi = 4 (arm P)"), "C": ("s", "centred, full bonds (arm C)")}
+    for arm, sh in tabs.items():
+        for d in (2, 3):
+            g = sh[sh.d == d]
+            ax.plot(g.x_W, np.maximum(g.shrink, 1e-5), style[arm][0], color=COL[d], ms=3.5, alpha=0.45,
+                    mfc="none" if arm == "C" else COL[d], label=f"{style[arm][1]}, d = {d}")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel("x_W = sigma^K sqrt(D) / (s_2 d)")
+    ax.set_ylabel("pre-escape core shrinkage  1 - min ||G_v(t)||^2 / ||G_v(0)||^2")
+    ax.set_title("H_W: the plain model unlearns W_0 while it waits")
+    ax.legend(fontsize=7)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--raw", default=OUT)
@@ -442,6 +496,7 @@ def main():
         df.to_csv(path, index=False, float_format="%.6g")
 
     fit_rows = []
+    shrink_tabs = {}
     for arm in a.arms.split(","):
         try:
             df = load(a.raw, arm)
@@ -468,6 +523,10 @@ def main():
             for t in tb:
                 print(arm, f"rho*={thr:g} tobit (all seeds, not pre-registered): beta = {t['beta']:.3f} +- {t['se_beta']:.3f}",
                       f"(exact {t['n_exact']}, lower {t['n_lower']}, upper {t['n_upper']}); LR vs H_A p = {t['p_A']:.2g}, vs H_B p = {t['p_B']:.2g}")
+        sh = shrink_table(a.raw, arm, df)
+        if len(sh):
+            save(sh, f"shrink_{arm}.csv")
+            shrink_tabs[arm] = sh
         cen = censored_table(ps, fr)
         if len(cen):
             save(cen, f"censored_{arm}.csv")
@@ -482,6 +541,11 @@ def main():
     if fit_rows:
         fits = pd.DataFrame(fit_rows)
         save(fits, "fits.csv")
+    if shrink_tabs:
+        fpath = os.path.join(a.out, "round2_shrink.png")
+        if os.path.exists(fpath) and not a.force:
+            raise FileExistsError(fpath)
+        fig_shrink(shrink_tabs, fpath)
 
 
 if __name__ == "__main__":
