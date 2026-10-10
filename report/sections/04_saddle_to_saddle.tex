@@ -1,242 +1,262 @@
-% sections/04_saddle_to_saddle.tex -- The saddle-to-saddle regime (Q1-Q4, H1-H3).
-% Main section of the report. Sources: PLAN.md Q1-Q4; briefs s2s-core, order (and locality);
-% results in experiments/s2s_core/, experiments/locality/, experiments/order/ and the notes
-% notes/s2s_core.md, notes/locality.md, notes/order.md; theory in notes/theory_escape.md and
-% notes/theory_saddles.md; pilot experiments/pilot_h2_locality/. The introduction below and Sec. 4.7
-% summarize 4.1-4.6 and Secs. 3, 5, 6 and keep their tags.
+% sections/04_saddle_to_saddle.tex -- The saddle-to-saddle regime (Q1-Q4).
+% Main section of the report. Sources: PLAN.md Q1-Q4; experiments s2s_core, locality, order and the pilot
+% pilot_h2_locality; notes s2s_core.md, locality.md, order.md, theory_escape.md, theory_saddles.md,
+% theory_saddle_order.md. Final edit (2026-10-10) per notes/report_style.md: material moved out of this
+% section (tables, secondary checks, per-seed numbers, provenance and review history) is in
+% sections/D_s2s.tex with its labels; the parameter table (tab:s2s-parameters) moved to Sec. 7.
+% Old Sec. 5.3 "Stalled runs" is merged into the failure modes (sec:s2s-failure).
+
+% Merge-safe labels for material that moves between files of different editors: \LabelUnlessIn{file}{label}
+% defines the label here unless that file still contains "\label{label}". Before the editors' branches are
+% merged the old file keeps the label; after the merge (old copy deleted) this file defines it, so references
+% elsewhere keep working and no label is ever defined twice. Used for sec:other-stalled and tab:stall-test (old
+% Sec. 5.3, file 05) and for the stub of tab:s2s-parameters (moved to Sec. 7, file 07; see D_s2s.tex).
+\ExplSyntaxOn
+\cs_if_exist:NF \LabelUnlessIn
+  {
+    \cs_new_protected:Npn \LabelUnlessIn #1#2
+      {
+        \file_get:nnNTF {#1} { \cctab_select:N \c_str_cctab } \l_tmpa_tl
+          { \str_if_in:NnF \l_tmpa_tl { label{#2} } { \label{#2} } }
+          { \label{#2} }
+      }
+  }
+\ExplSyntaxOff
+
 \section{The saddle-to-saddle regime}\label{sec:s2s}
 
 This section treats gradient flow from small initialization, where a run passes from plateau to plateau
 (\cref{tab:regimes}). It answers questions Q1--Q4 of \cref{sec:intro-question}: which saddles are
 visited, how long the flow stays near each, which component comes next, and how all of this depends on
-the tree. The organizing idea is the \emph{route}: near a saddle, new parameters can lower the loss only
-through connected sets of cores whose new entries combine into a term of the residual, and the number
-of cores of the cheapest route sets the type of the saddle and the length of the plateau \derived{}
-(\cref{app:saddles}; \cref{app:saddle-order} proves when this number is the saddle order). Unless
-stated otherwise, inputs are whitened, the loss is the exact population loss, the initialization is
-fan-in (\cref{sec:setup-init}), and events are dated by the final rise of the overlaps
-(\cref{sec:setup-diagnostics}).
+the tree. The organizing idea is the \emph{route} (box below): near a saddle, new parameters lower the
+loss at no Gauss--Newton cost only through connected sets of cores whose new entries combine into a term
+of the residual, and, when the spectral condition of \cref{app:saddle-order} holds, the number of cores
+of the cheapest route sets the type of the saddle and the length of the plateau \derived{}
+(\cref{app:saddles}). Unless stated otherwise, inputs are whitened, the loss is the exact population
+loss, the initialization is fan-in (\cref{sec:setup-init}), and events are dated as in
+\cref{sec:setup-diagnostics}, by the rule of each experiment (\cref{app:experiments}).
 
-\Cref{sec:s2s-phenomenology} shows complete sequences for odeco teachers on four trees (and the first two
-components on a fifth): plateaus at
-the partial fits with fixed bond ranks, one rank step per event, durations $\propto\isc^{-(\Kc-2)}$ at
-higher-order saddles. \Cref{sec:s2s-aligned} solves the aligned case exactly and uses it to check the
-integrators. \Cref{sec:s2s-escape} predicts the first escape of each run from its initialization.
-\Cref{sec:s2s-locality} treats the later escapes: the route rule, its tests on nine trees, the types of
-the saddles, and the theorem that says when the route gives the saddle order. \Cref{sec:s2s-order} asks
-which component is learned first, \cref{sec:s2s-failure} how sequences end early (dead routes and
-stalls), and \cref{sec:s2s-parameters} collects how each parameter acts.
+\Cref{sec:s2s-phenomenology} shows complete sequences for odeco teachers, \cref{sec:s2s-aligned} the
+exactly solvable aligned case, and \cref{sec:s2s-escape} predicts the first escape of each run from its
+initialization. \Cref{sec:s2s-locality} tests the route rule for the later escapes on two-component
+teachers, \cref{sec:s2s-saddle-order} says when the route gives the saddle order, and
+\cref{sec:s2s-several} treats teachers with more components. \Cref{sec:s2s-order} asks which component is
+learned first, and \cref{sec:s2s-failure} how sequences end early. Supplementary tables, secondary checks
+and the provenance of the numbers are in \cref{app:supp-s2s}.
+
+% ---- Box: how to read every plateau law (readability review HI-3). Teacher B4 checked in the data:
+% experiments/locality/results/levels_runs.csv, order 0>1>2 (0000, 0110, 1001) in 60 of 60 MPS4 runs and
+% 0>2>1 (0000, 1001, 0110) in 48 of 48 binary4 runs; levels_summary.csv for the exponents.
+\tikzset{
+  s2sbox/core/.style={circle, draw=black!55, fill=white, line width=0.5pt, minimum size=3.0mm,
+                      inner sep=0pt},
+  s2sbox/route/.style={s2sbox/core, draw=BurntOrange!85!black, fill=BurntOrange!40},
+  s2sbox/bond/.style={line width=0.9pt, black!45},
+  s2sbox/rbond/.style={line width=2.4pt, BurntOrange!85!black},
+  s2sbox/phys/.style={line width=0.5pt, black!45},
+  s2sbox/digit/.style={font=\footnotesize, inner sep=1pt, text=black!80},
+  s2sbox/diff/.style={font=\footnotesize\bfseries, inner sep=1pt, text=BrickRed},
+  s2sbox/label/.style={font=\scriptsize, align=center, text width=30mm},
+}
+\begin{center}
+\setlength{\fboxsep}{7pt}%
+\fcolorbox{MidnightBlue!55}{MidnightBlue!3}{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\small
+\textbf{How to read every plateau law.}
+\emph{Toy model.} A product of $k$ scalars, each started at $\isc$, with $\dot a=a^{k-1}(s-a^k)$ (the
+balanced mode of \eqref{eq:aligned-ode}), reaches $O(1)$ in a time of order one for $k=1$, in
+$\ln(1/\isc)/s$ for $k=2$, and in $\isc^{-(k-2)}/((k-2)s)$ for $k\ge3$. If the factors start unequal, those
+that start smallest set the time: $k$ of them at scale $\isc$, far below the others, give the same three laws
+\derived{} (\cref{prop:A-product-mode}) \knownresult[\citealp{rawal2026theory}, Thm~4.2]. Every plateau
+law of this section has this form, with $k$ the number of cores that must move together; prefactors and the
+head start of $k=2$ need the full analysis.
+
+\emph{Why routes.} At a saddle every bond uses only the channels of what has been learned; the other
+channels are zero. A new channel opened in one core meets zeros in its neighbours and leaves $\W$ unchanged,
+so $\W$ moves only when every core of a connected set opens the channel together, and then by the product
+of their small new entries. Such a set is a \emph{route}. The loss changes by a gain (the overlap of the
+change of $\W$ with the residual) and a Gauss--Newton cost (half its squared norm); a route moves $\W$ only
+through all of its cores at once, so it pays no cost at the order of its gain (\cref{lem:A-routes}). Near the
+saddle the residual is therefore fitted by a fresh $k$-core TTN that starts near zero, and the escape is the
+first escape (\cref{sec:s2s-escape}) with $\Kc$ replaced by $k$ (\cref{prop:A-escape-degree}). The next
+plateau is set by $k^*$, the number of cores of the smallest route that reaches a nonzero part of the
+residual: it is absent ($k^*=1$), lasts $\propto\ln(1/\isc)$ ($k^*=2$), or lasts $\propto\isc^{-(k^*-2)}$
+($k^*\ge3$). For a component that differs from the learned one on the sites $D$, let $V_D$ be the
+$m=\abs{V_D}$ cores that carry them: its route is the Steiner subtree $\mathrm{St}(V_D)$, the smallest
+subtree containing $V_D$, so it includes the cores on the paths between them, and $k=\abs{\mathrm{St}(V_D)}$
+\proven{} (\cref{prop:A-steiner}).
+
+\emph{Example} (teacher B4: patterns $0000$, $0110$, $1001$ with weights $1$, $0.3$, $0.6$; $0000$ is learned
+first on both trees). On MPS4 the $0.3$ component differs on sites 1 and 2, on adjacent cores: $k=2$, a
+logarithmic plateau. The $0.6$ component differs on sites 0 and 3, at the two ends of the chain: $k=4$, a
+$\isc^{-2}$ plateau. So the smaller component is learned first (\emph{locality beats weight}), in every run
+that escapes. On binary4 both components need the two leaf cores and the root: $k=3$ for both, each comes
+after a $\isc^{-1}$ plateau, and they are learned in the order of their weights, in all 48 runs
+(\cref{sec:s2s-several}).
+
+\smallskip
+\centering
+\begin{tikzpicture}[x=6.5mm, y=6.5mm]
+  % MPS4 (cores 0-3 carry sites 0-3): route of 0110 = cores 1, 2; route of 1001 = all four cores.
+  % binary4 (leaf cores carry sites {0,1} and {2,3}; the root none): both routes = all three cores.
+  \newcommand{\sboxmps}[6]{% #1 x shift, #2-#5 digits (d = differs), #6 label
+    \begin{scope}[shift={(#1,0)}]
+      \draw[s2sbox/bond] (0,0) -- (3,0);
+      \foreach \i/\dg in {0/#2,1/#3,2/#4,3/#5} {
+        \draw[s2sbox/phys] (\i,0) -- (\i,-0.75);
+        \if d\dg \node[s2sbox/diff] at (\i,-1.05) {1}; \else \node[s2sbox/digit] at (\i,-1.05) {0}; \fi
+      }
+      \node[s2sbox/label] at (1.5,-2.0) {#6};
+    \end{scope}}
+  \sboxmps{0}{0}{d}{d}{0}{MPS4, weight $0.3$\\$k=2$: $\ln(1/\isc)$}
+  \draw[s2sbox/rbond] (1,0) -- (2,0);
+  \node[s2sbox/core] at (0,0) {}; \node[s2sbox/route] at (1,0) {};
+  \node[s2sbox/route] at (2,0) {}; \node[s2sbox/core] at (3,0) {};
+  \sboxmps{5.2}{d}{0}{0}{d}{MPS4, weight $0.6$\\$k=4$: $\isc^{-2}$}
+  \draw[s2sbox/rbond] (5.2,0) -- (8.2,0);
+  \foreach \x in {5.2,6.2,7.2,8.2} \node[s2sbox/route] at (\x,0) {};
+  \newcommand{\sboxbin}[6]{%
+    \begin{scope}[shift={(#1,0)}]
+      \draw[s2sbox/rbond] (0.5,0) -- (1.5,0.8) -- (2.5,0);
+      \foreach \i/\dg in {0/#2,1/#3,2/#4,3/#5} {
+        \pgfmathsetmacro{\leaf}{\i<2 ? 0.5 : 2.5}
+        \draw[s2sbox/phys] (\leaf,0) -- (\i,-0.75);
+        \if d\dg \node[s2sbox/diff] at (\i,-1.05) {1}; \else \node[s2sbox/digit] at (\i,-1.05) {0}; \fi
+      }
+      \node[s2sbox/route] at (0.5,0) {}; \node[s2sbox/route] at (2.5,0) {};
+      \node[s2sbox/route] at (1.5,0.8) {};
+      \node[s2sbox/label] at (1.5,-2.0) {#6};
+    \end{scope}}
+  \sboxbin{10.4}{0}{d}{d}{0}{binary4, weight $0.3$\\$k=3$: $\isc^{-1}$}
+  \sboxbin{15.6}{d}{0}{0}{d}{binary4, weight $0.6$\\$k=3$: $\isc^{-1}$}
+\end{tikzpicture}
+
+\raggedright\footnotesize
+Routes of teacher B4 after its first component ($0000$): pattern of the next component under the sites (in
+red where it differs from $0000$); orange: the cores and bonds of the Steiner subtree.
+\end{minipage}}
+\end{center}
 
 \subsection{Phenomenology}\label{sec:s2s-phenomenology}
-% Sources: notes/s2s_core.md (sections 1, 2.3-2.5, after fix round 1), agent-runs/s2s-core/REPORT.md,
-% reviews notes/reviews/s2s_core_round1.md and notes/reviews/s2s_core_round2_verification.md, whose
-% "safe to cite" list and errata E1-E21 override the note (applied here and in 4.2, 4.3, 4.6). Numbers
-% from experiments/s2s_core/results/*.csv; derived ones in report_numbers.csv (report_numbers.py).
-% Settings: app:exp-s2s. WITHDRAWN or not safe, do not reintroduce: "S2S on every tree"; "no strict
-% saddles with odeco teachers"; gap exponents from pooled run sets (binary4 close gap 2 = 0.92 +- 0.11);
-% "binary4 plateau error 2.0e-2 for both teachers at sigma = 0.1", "K = 7 <= 2.1e-5" without "chi = 6",
-% "falls to 6e-7 at sigma = 0.003" for the close teacher (E10); per-seed R10 magnitudes (E11); K = 7, 8
-% gap exponents as meeting the one-decade rule, except binary8 chi = 3 gap 1 (E21); "-0.118..-0.146" as
-% the range of all wrong-order plateaus (that is seed 8 only, E6); the binary4 sequence, its sigma^-1
-% plateaus and its strict wrong-order saddle as new results (known for deep linear networks, E7).
+% Sources: notes/s2s_core.md (sections 1, 2.3-2.5, after fix round 1); s2s-core round-2 verification
+% ("safe to cite" list and errata E1-E21 override the note). Numbers from experiments/s2s_core/results/*.csv.
+% Settings: app:exp-s2s. Details moved to app:supp-s2s-phen. WITHDRAWN or not safe, do not reintroduce:
+% "S2S on every tree"; "no strict saddles with odeco teachers"; gap exponents from pooled run sets (binary4
+% close gap 2 = 0.92 +- 0.11); "binary4 plateau error 2.0e-2 for both teachers at sigma = 0.1", "K = 7 <=
+% 2.1e-5" without "chi = 6", "falls to 6e-7 at sigma = 0.003" for the close teacher (E10); per-seed R10
+% magnitudes (E11); K = 7, 8 gap exponents as meeting the one-decade rule, except binary8 chi = 3 gap 1 (E21);
+% "-0.118..-0.146" as the range of all wrong-order plateaus (seed 8 only, E6); the binary4 sequence, its
+% sigma^-1 plateaus and its strict wrong-order saddle as new results (known for deep linear networks, E7).
 
 Gradient flow from a small fan-in initialization learns an odeco teacher one component at a time. This
-subsection shows such runs, where complete sequences were observed, and which saddles the plateaus are;
-\cref{sec:s2s-escape} treats the first escape, and \cref{sec:s2s-locality} teachers whose components
-differ on a few sites only.
+subsection shows such runs and which saddles the plateaus are.
 
 \paragraph{Setup} (details in \cref{app:exp-s2s}).
 Odeco teachers (\cref{sec:setup-loss}) with $\ncomp=3$, $d=4$, Haar-random site bases and weights $(3,2,1)$
 (\emph{separated}) or $(1,0.85,0.7)$ (\emph{close}); trees binary4 ($\Kc=3$), MPS4 ($\Kc=4$), binary8 and HT4
-($\Kc=7$), MPS8 ($\Kc=8$); $\chi=3=\ncomp$ or $\chi=6$, capped by \eqref{eq:bond-cap} (at $d=4$ on MPS end
-bonds and HT leaf bonds). Fan-in initialization with seeds $0$--$9$ at eight values of $\isc\in[0.003,0.1]$
-($\Kc=3,4$) or five or six in $[0.07,0.4]$ ($\Kc=7,8$; smaller $\isc$ is out of reach, as the later plateaus
-grow like $\isc^{-5}$ and $\isc^{-6}$); also the same $\Wz$ re-gauged to $\Q e=0$ (\emph{balanced}). Gradient flow by LSODA with the
-exact Hessian as Jacobian; every event is re-integrated on a fine grid. A run is \emph{complete} if it
-learns all three components; \cref{sec:s2s-failure} treats the others.
+($\Kc=7$), MPS8 ($\Kc=8$); $\chi=3=\ncomp$ or $\chi=6$, capped by \eqref{eq:bond-cap}. Fan-in initialization
+with seeds $0$--$9$ at eight values of $\isc\in[0.003,0.1]$ ($\Kc=3,4$) or five or six in $[0.07,0.4]$
+($\Kc=7,8$, whose later plateaus grow like $\isc^{-5}$ and $\isc^{-6}$); also the same $\Wz$ re-gauged to
+$\Q e=0$ (\emph{balanced}). A run is \emph{complete} if it learns all three components; \cref{sec:s2s-failure}
+treats the others.
 
 \paragraph{Prediction.}
-\derived{} Two odeco components differ at every site, so the \emph{route} to a new component, the set of
-cores that must move together (\cref{sec:s2s-locality}), is the whole tree at every saddle: $k=\Kc$ in
-\eqref{eq:locality-k} (\cref{prop:A-steiner}). Hence (i)~the plateaus sit at the
-partial fits $\W_S=\sum_{r\in S}\tw r\U r$, $S$ the components learned so far, at the loss
+\derived{} Two odeco components differ at every site, so the route to a new component is the whole tree at
+every saddle, $k=\Kc$ (\cref{prop:A-steiner}). Hence (i)~the plateaus sit at the partial fits
+$\W_S=\sum_{r\in S}\tw r\U r$, $S$ the components learned so far, at the loss
 \begin{equation}\label{eq:s2s-levels}
-  \Loss_S=\tfrac12\textstyle\sum_{r\notin S}\tw r^2
+  \Loss_S=\tfrac12\textstyle\sum_{r\notin S}\tw r^2,
 \end{equation}
-($\Lpart{k}$ of \eqref{eq:partial-fit} in the greedy order), with bond spectrum $(\tw r)_{r\in S}$ on every
-edge (\cref{prop:teacher-spectra}(a)); (ii)~each event raises the rank of every edge by one; (iii)~every
-plateau is the first-escape problem of a $\Kc$-core route (\cref{prop:A-escape-degree}) and lasts
-$\propto\isc^{-(\Kc-2)}$ for a fixed initialization direction; (iv)~the plateaus are higher-order saddles,
-$\lambda_{\min}(\Hperp)\propto\isc^{\Kc-2}$ (\cref{prop:A-signatures}). The exception to (iv) is binary4, where
-only two cores carry sites: a learned set that misses a larger component is a strict saddle,
-$\lambda_{\min}=-(\tw r-\tw j)\,\tw j^{(\Kc-2)/\Kc}$ ($j$ learned, $r$ larger and not learned;
-\cref{prop:A-piggyback-graph}), reached only after a wrong first escape. Binary4 is a depth-3 deep linear
-network (\cref{rem:A-binary4-dln}), for which all of this is known
-\knownresult[\citealp{saxe2014exact,jacot2022saddletosaddle,achour2024loss}]; the other four trees are
-genuine tensor networks.
+with bond spectrum $(\tw r)_{r\in S}$ on every edge (\cref{prop:teacher-spectra}(a)); (ii)~each event raises the
+rank of every edge by one; (iii)~every plateau is the first-escape problem of a $\Kc$-core route
+(\cref{prop:A-escape-degree}) and lasts $\propto\isc^{-(\Kc-2)}$ for a fixed initialization direction; (iv)~the
+plateaus are higher-order saddles, $\lambda_{\min}(\Hperp)\propto\isc^{\Kc-2}$ (\cref{prop:A-signatures}). The
+exception to (iv) is binary4, where only two cores carry sites: a learned set that misses a larger component
+is a strict saddle, $\lambda_{\min}=-(\tw r-\tw j)\,\tw j^{(\Kc-2)/\Kc}$ ($j$ learned, $r$ larger and not
+learned; \cref{prop:A-piggyback-graph}), reached only after an escape out of weight order (in our runs the
+second escape: order 1-3-2). Binary4 is a depth-3 deep linear network (\cref{rem:A-binary4-dln}), for which all
+of this is known \knownresult[\citealp{saxe2014exact,jacot2022saddletosaddle,achour2024loss}]; the other four
+trees are genuine tensor networks.
 
 \begin{figure}[tbp]
   \centering
   \includegraphics{s2s/runs.pdf}
   \caption{Two saddle-to-saddle runs: separated teacher $(3,2,1)$, fan-in initialization, seed 0; top: MPS4,
     $\chi=3$, $\isc=0.01$; bottom: binary8, $\chi=6$, $\isc=0.1$. Columns: loss in linear time with the
-    partial-fit levels \eqref{eq:s2s-levels} (dotted); overlaps $\ov r$; singular values $\bs ek$ of the middle
-    edge (MPS4) and the root edge (binary8), teacher values dashed; effective bond rank
-    (\cref{sec:setup-diagnostics}) of every edge, offset slightly per edge. Dashed verticals: events, at
-    $3.6\cdot10^3$, $4.4\cdot10^4$, $5.6\cdot10^5$ (MPS4) and $1.3\cdot10^5$, $9.8\cdot10^5$, $6.8\cdot10^6$
-    (binary8), with widths below $2$ \empirical. Edges are named by the sites on either side (sites numbered
-    from 1). Data: experiment \texttt{s2s\_core}, sweeps \texttt{main} and \texttt{large}
-    (\cref{tab:repro-figures}). Takeaway: one component per event, in the order of the weights; every edge
-    gains one singular value at each event, all at the same time, and the next ones stay far below the
-    teacher's in between.}
+    partial-fit levels \eqref{eq:s2s-levels} (dotted); overlaps $\ov r$; singular values $\bs ej$ of the middle
+    edge $01|23$ (MPS4) and the root edge $0$--$3|4$--$7$ (binary8), teacher values dashed (edges are named by
+    the sites on either side, numbered from 0); effective bond rank of every edge, offset slightly per edge.
+    Dashed verticals: events. Takeaway: one component per event, in the order of the weights; every edge gains
+    one singular value at each event, all at the same time, and the next ones stay far below the teacher's in
+    between (source: \cref{app:experiments}, \cref{tab:exp-s2s}).}
   \label{fig:s2s-runs}
 \end{figure}
 
-\paragraph{Scope.}
-\empirical{} \newresult[MPS4, binary8, HT4; known for binary4] Complete runs: binary4 320 of 320 (fan-in, both teachers, $\chi=3,6$) and 60 of 60 (balanced);
-MPS4 160/160 at $\chi=6$, 106/160 at $\chi=3$ and 60/60 balanced; binary8 50/50 and HT4 45/50 at $\chi=6$
-($\isc=0.07$--$0.3$). At $\chi=3$ few runs with $\Kc=7$ complete (binary8 14 of 180, HT4 12 of 150), and no
-MPS8 run learns its third component (0 of 284; 132 learn two; \cref{sec:s2s-failure}). Complete sequences were
-thus measured on binary4 and MPS4 over $1.5$ decades of $\isc$, on binary8 and HT4 at $\chi=6$ over $0.6$
-decade, and on MPS8 up to the second component.
-
 \paragraph{Plateaus at the rank-constrained partial fits, one rank step per event.}
-\empirical{} \newresult[MPS4, binary8, HT4; known for binary4] At every plateau between resolved events
-($\sep i>3$) the loss equals \eqref{eq:s2s-levels} for the components learned so far, in whatever order.
-The largest relative deviation is $8.5\cdot10^{-3}$ (binary4, separated teacher, $\isc=0.1$), $2.0\cdot10^{-2}$
-(binary4, close teacher, at $\isc=0.003$ on a plateau with $\sep{}=5.1$), $2.8\cdot10^{-3}$ (MPS4;
-$8.1\cdot10^{-3}$ balanced), and $2.1\cdot10^{-5}$ and $1.5\cdot10^{-4}$ at $\Kc=7,8$ ($\chi=6$, $3$); at
-$\isc=0.003$ it is at most $7.4\cdot10^{-7}$, except on binary4 with the close teacher. At these plateaus, in
-runs with the S2S signature, the top $\abs S$ singular values of every edge equal the learned weights to a
-relative $7.7\cdot10^{-3}$ (binary4, close), $9.0\cdot10^{-4}$ (binary4, separated; $1.7\cdot10^{-9}$ at
-$\isc=0.003$) and $3.5\cdot10^{-4}$ (other trees), and the next one is below $0.07$ times the smallest weight:
-the plateaus are the critical points $\W_S$ of the problem with all bond ranks fixed at $\abs S$. In 497 of
-the 531 complete runs that recorded spectra in their event windows, every event raised by exactly one, on
-every edge, the number of singular values above $f\tw r$ ($r$ the component being learned; $f=\frac12$ or a
-nearby value that separates $\tw r$ from the learned weights); the exceptions are 28 binary4 runs with the
-close teacher at $\isc\ge0.05$, whose events overlap, and 6 HT4 runs.
+\empirical{} Complete sequences were measured on binary4 and MPS4 over $1.5$ decades of $\isc$, on binary8 and
+HT4 at $\chi=6$ over $0.6$ decade, and on MPS8 up to its second component (run counts in
+\cref{app:supp-s2s-phen}). At every plateau between resolved events ($\sep i>3$) the loss equals
+\eqref{eq:s2s-levels} for the components learned so far, in whatever order: to a relative $2\cdot10^{-2}$ at
+worst (binary4, close teacher), and to $7.4\cdot10^{-7}$ in the other cells at $\isc=0.003$. The top $\abs S$
+singular values of every edge equal the learned weights (to a relative $7.7\cdot10^{-3}$ at worst), and the
+next one is below $0.07$ times the smallest weight: the plateaus are the critical points $\W_S$ of the problem
+with all bond ranks fixed at $\abs S$. In 497
+of the 531 complete runs that recorded spectra in their event windows, every event raised by exactly one, on
+every edge, the number of singular values above about half the weight being learned (the exceptions:
+overlapping events on binary4 with the close teacher at $\isc\ge0.05$, and 6 HT4 runs).
+\newresult[MPS4, binary8, HT4; known for binary4]
 
 \paragraph{Plateaus grow as $\isc^{-(\Kc-2)}$.}
-\empirical{} \newresult[MPS4, binary8, HT4, MPS8; known for binary4] Every separation ratio exceeds $3$ in
-all complete runs on MPS4 (326), binary8 (83) and HT4 (74), and in 218 of 220 on binary4 with the separated
-teacher; with the close teacher on binary4 in 5 of 20 runs at $\isc=0.1$, rising to 20 of 20 at
-$\isc=0.003$, as close weights make escapes overlap unless $\isc$ is small. Per-seed fits of
-$\ln(\tev{i+1}-\tev i)$ against $\ln\isc$ (\cref{tab:s2s-gaps}; run sets in \cref{app:exp-s2s})
-give $\Kc-2$ to within $0.1$ per seed on binary4 and $0.04$ on MPS4, over $1.5$ decades. At $\Kc=7,8$ the
-means agree with $\Kc-2$ (binary8 $5.02\pm0.01$ and $4.97\pm0.02$, MPS8 $5.95\pm0.05$ for its only gap) but
-over $0.6$ decade, below the reporting rule of \cref{sec:setup-diagnostics}; binary8 at $\chi=3$, over up to
-$1.1$ decades, gives $4.93\pm0.05$, and HT4 is not a clean confirmation (per seed $3.93$--$5.78$).
-
-\begin{table}[tbp]
-  \centering
-  \caption{Plateau durations and saddle type, odeco teachers, fan-in initialization. Gaps: per-seed exponent
-    $p$ of $\tev{i+1}-\tev i\propto\isc^{-p}$, mean $\pm$ s.e.\ over seeds (run sets: \cref{app:exp-s2s}),
-    for $\chi=3$ and $6$ or, in rows ``both'', the separated and close teachers; brackets: range of the
-    per-seed values (binary4, MPS4: over their four cells). $\lambda_{\min}$: mean per-seed slope of
-    $\ln(-\lambda_{\min}(\Hperp))$ against $\ln\isc$ at the first and second plateau midpoints ($\chi=3$; $6$, or
-    the two teachers). Predicted: $\Kc-2$. Ten seeds per fit except binary4 close (9, 9; 8, 7), MPS4 gap 2 at
-    $\chi=3$ (6, 7), HT4 gap 2 (9), MPS8 (7; 3). $\isc$: $0.003$--$0.1$ (binary4, MPS4), $0.07$--$0.3$ at
-    $\chi=6$, $0.03$--$0.4$ (binary8) and $0.1$ or $0.15$ to $0.4$ (MPS8) at $\chi=3$; $\dagger$: less than one
-    decade (binary8 at $\chi=3$: $1.1$ decades for 11 of 20 seeds). Source: \texttt{main\_exponents.csv}.}
-  \label{tab:s2s-gaps}
-  \footnotesize
-  \setlength{\tabcolsep}{3pt}
-  \begin{tabular}{@{}llc lll@{}}
-    \toprule
-    tree & teacher & $\chi$ & $\tev2-\tev1$ & $\tev3-\tev2$ & $\lambda_{\min}$ slopes \\
-    \midrule
-    binary4 & sep. & 3, 6 & $1.003\pm0.001$, $1.007\pm0.001$ & $1.004\pm0.003$, $1.011\pm0.002$ & 1.05, 1.02; 1.08, 1.04 \\
-    ($\Kc=3$) & close & 3, 6 & $1.004\pm0.010$, $0.999\pm0.008$ & $1.016\pm0.011$, $1.014\pm0.006$ & 1.17, 1.12; 1.18, 1.17 \\
-            & & & [0.95, 1.06] & [0.99, 1.09] & \\
-    MPS4    & sep. & 3, 6 & $2.000\pm0.000$, $2.001\pm0.001$ & $1.990\pm0.005$, $1.998\pm0.001$ & 2.01, 1.99; 2.00, 2.00 \\
-    ($\Kc=4$) & close & 3, 6 & $2.001\pm0.001$, $2.001\pm0.001$ & $2.004\pm0.002$, $2.001\pm0.001$ & 2.01, 2.00; 2.02, 2.00 \\
-            & & & [2.00, 2.01] & [1.97, 2.01] & \\
-    binary8 & sep. & 6$^\dagger$ & $5.020\pm0.009$ [4.98, 5.05] & $4.969\pm0.022$ [4.88, 5.09] & 5.10, 5.07 \\
-    ($\Kc=7$) & both & 3 & $4.93\pm0.05$, $4.92\pm0.04$ [4.65, 5.13] & -- & 5.03; 5.03 \\
-    HT4 ($\Kc=7$) & sep. & 6$^\dagger$ & $5.10\pm0.08$ [4.83, 5.78] & $4.75\pm0.14$ [3.93, 5.33] & 5.13, 4.88 \\
-    MPS8    & sep. & 6$^\dagger$ & $5.95\pm0.05$ [5.79, 6.20] & not reached & 5.99 \\
-    ($\Kc=8$) & both & 3$^\dagger$ & $6.0\pm0.3$, $6.2\pm0.6$ [5.14, 7.21] & not reached & 5.88; 6.07 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+\empirical{} Per-seed fits of $\ln(\tev{i+1}-\tev i)$ against $\ln\isc$ give $\Kc-2$ to within $0.1$ per seed on
+binary4 and $0.04$ on MPS4, over $1.5$ decades (limited range for some binary4 close-teacher seeds: after the cut
+$\sep i>3$ they keep four or five values of $\isc$, about $0.8$ decade). At $\Kc=7,8$ the means agree with
+$\Kc-2$ (binary8 $5.02\pm0.01$ and $4.97\pm0.02$, MPS8 $5.95\pm0.05$ for its only gap), but over $0.6$ decade
+(limited range); HT4 is not a clean confirmation (per seed $3.93$--$5.78$). All fits: \cref{tab:s2s-gaps}.
+\newresult[MPS4, binary8, HT4, MPS8; known for binary4]
 
 \paragraph{Saddle type.}
-\empirical{} \newresult[MPS4, binary8, HT4, MPS8; known for binary4] At the plateau midpoints
-$\lambda_{\min}(\Hperp)$ vanishes like $\isc^{\Kc-2}$: the cell means of the per-seed slopes are
-$1.02$--$1.18$ (binary4), $1.99$--$2.02$ (MPS4), $5.07$--$5.10$ (binary8), $4.88$--$5.13$ (HT4) and $5.99$ (MPS8),
-with $\chi=6$ for $\Kc\ge7$ (\cref{tab:s2s-gaps}; the raw Hessian agrees to $0.004$). In cell medians the
-magnitude is $0.87$--$1.15$ times the balanced-route value of \eqref{eq:A-plateau-lambda} at $\Kc=3,4$ and
-$1.36$--$3.15$ times it at $\Kc=7,8$, where the routes are not balanced; per seed the ratio reaches $20$. The strict exception appears as predicted \knownresult[deep linear networks:
-\citealp{achour2024loss}, Thm~7; \citealp{jacot2022saddletosaddle}, Lemma~15]. With the close teacher on
-binary4 ($\chi=3$), seed 8 learns in the order 1-3-2 at seven of eight values of $\isc$ ($0.005$--$0.1$), and
-seed 5 at two. At the plateau where $1$ and $0.7$ are learned and $0.85$ is not, $\lambda_{\min}$ is $-0.106$
-to $-0.146$ at the nine midpoints (raw: $-0.113$ to $-0.149$) and flat in $\isc$ (seed 8: slope $0.03$),
-against $-(0.85-0.7)\,0.7^{1/3}=-0.133$; the next event follows within about one width
-($\sep{}=0.76$--$1.25$), and this gap does not grow as $\isc\to0$ (seed 8: $\propto\isc^{0.08}$). At
-$\isc=0.003$ seed 8 learns greedily: the wrong order, and with it the strict saddle, becomes rare as
-$\isc\to0$ (\cref{prop:A-matrix-like}). Otherwise the full order on binary4 is greedy (160 of 160 complete runs
-with the separated teacher; $89\%$ and $95\%$ at $\chi=3$, $6$ with the close one); on the other trees it
-varies from seed to seed (\cref{sec:s2s-escape}).
+\empirical{} At the plateau midpoints $\lambda_{\min}(\Hperp)$ vanishes like $\isc^{\Kc-2}$: the cell means of
+the per-seed slopes are $1.02$--$1.18$ (binary4), $1.99$--$2.02$ (MPS4), $4.88$--$5.13$ ($\Kc=7$, $\chi=6$) and
+$5.99$ (MPS8). In the medians of the fan-in cells the magnitude is $0.87$--$1.15$ times the balanced-route value
+of \eqref{eq:A-plateau-lambda} at $\Kc=3,4$ ($1.19$ for balanced binary4) and $1.36$--$3.9$ times it at
+$\Kc=7,8$, where the routes are not balanced. The strict exception appears as predicted: on binary4 with the
+close teacher, the runs that learn in the order 1-3-2 rest at $\lambda_{\min}$ between $-0.11$ and $-0.15$, flat
+in $\isc$, against $-(0.85-0.7)\,0.7^{1/3}=-0.133$, and leave within about one event width; the wrong order, and
+with it the strict saddle, becomes rare as $\isc\to0$ (\cref{prop:A-matrix-like}; seeds in
+\cref{app:supp-s2s-phen}). Otherwise the full order on binary4 is greedy (all 160 complete runs with the
+separated teacher; $89\%$ and $95\%$ at $\chi=3$, $6$ with the close one); on the other trees it varies from seed
+to seed (\cref{sec:s2s-order}). \newresult[MPS4, binary8, HT4, MPS8] \knownresult[binary4 and its strict saddle, deep
+linear networks: \citealp{achour2024loss}, Thm~7; \citealp{jacot2022saddletosaddle}, Lemma~15]
 
 \subsection{An exactly solvable case: aligned initialization}\label{sec:s2s-aligned}
-% Sources: notes/s2s_core.md 2.2, experiments/s2s_core/results/aligned.csv (aligned.py, one file per
-% integrator since review round 1; the values match round-1 reviewer A's own code, verification S3).
-% A demonstration and an integrator check of a known solution, not a new claim.
+% Sources: notes/s2s_core.md 2.2, experiments/s2s_core/results/aligned.csv. A demonstration and an
+% integrator check of a known solution (Prop. 2.4 is stated once, in Sec. 2); the test is in app:supp-s2s-aligned.
 
-If every core starts diagonal in the teacher's basis (\cref{prop:aligned}), the components decouple
-exactly: component $r$ is a product of $\Kc$ per-core amplitudes obeying \eqref{eq:aligned-ode}, and a
-balanced start stays balanced, $\dot q_r=q_r^{\Kc-1}(\tw r-q_r^{\Kc})$, the mode equation of deep linear
-networks \knownresult[\citealp{saxe2014exact}, eq.~15], here on any tree \proven. Integrating it gives
-\eqref{eq:aligned-escape}, $t_r\simeq q_r(0)^{-(\Kc-2)}/((\Kc-2)\tw r)$ \knownresult[from eq.~15 of
-\citealp{saxe2014exact}; symmetric matrix factorization from $\alpha\Id$: \citealp{li2021towards}, Thm~6.2]:
-with one initial amplitude for all components they are learned in the order of their weights, at times in
-the ratio $1/\tw1:1/\tw2:1/\tw3$, and every gap grows like $\isc^{-(\Kc-2)}$. This is the case $k=\Kc$ of
-\cref{prop:A-head-start}, where a route through every core never sees the components already learned.
-With unequal amplitudes the escape time is set by the cores that start smallest: $m$ of them at $\gamma$, far
-below the others, give a time that stays $O(1)$, grows like $\ln(1/\gamma)$, or grows like $\gamma^{-(m-2)}$
-for $m=1$, $2$, $\ge3$ \derived{} \knownresult[the trichotomy: \citealp{rawal2026theory}, Thm~4.2; new: the
-TTN reduction, \cref{prop:A-product-mode}]. Random initialization is of this unbalanced kind, which is why its
-escape times are not those of a balanced start of the same norm (\cref{sec:s2s-escape}).
-
-\paragraph{Test} (\cref{fig:s2s-aligned}).
-\empirical{} Separated teacher, $d=4$, $\chi=3$, balanced aligned initialization with per-core amplitude
-$q_0=0.01$ (binary4), $0.07$ (MPS4), $0.29$ (binary8, HT4) and $0.34$ (MPS8), so that the events fall near
-$t=33$, $50$, $100$ on every tree. Gradient flow on the full TTN (Dormand--Prince 5(4), tolerances $10^{-10}$
-and $10^{-14}$) follows the exact solutions: the largest deviation of any overlap is $2.0\cdot10^{-10}$
-(binary4), $3.2\cdot10^{-10}$ (MPS4), $2.3\cdot10^{-9}$ (binary8), $2.6\cdot10^{-9}$ (HT4) and $2.7\cdot10^{-9}$
-(MPS8); event times agree on the same output grid to $1.3\cdot10^{-11}$ relative; the conservation drift
-\eqref{eq:drift} stays below $3\cdot10^{-14}$. LSODA, the integrator of all other runs of this section,
-deviates by at most $7.1\cdot10^{-7}$. The test checks contractions, gradients, integrators and event
-detection on all five trees.
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics{s2s/aligned.pdf}
-  \caption{Aligned balanced initialization: overlaps from gradient flow on the full TTN (solid,
-    Dormand--Prince, tolerances $10^{-10}$ and $10^{-14}$) and the exact mode solutions (dashed); separated
-    teacher $(3,2,1)$, $d=4$, $\chi=3$; one run per tree, with per-core amplitude $q_0=0.01$ (binary4), $0.07$
-    (MPS4), $0.29$ (binary8, HT4) and $0.34$ (MPS8). Panel titles: largest deviation over time and components.
-    Data: experiment \texttt{s2s\_core}, sweep \texttt{aligned} (\cref{tab:repro-figures}). Takeaway: with
-    aligned initialization every tree learns the components in the order of their weights, at times
-    $\propto1/\tw r$, as the decoupled modes of a deep linear network do.}
-  \label{fig:s2s-aligned}
-\end{figure}
+If every core starts diagonal in the teacher's basis (\cref{prop:aligned}), the components decouple exactly, a
+balanced start stays balanced, and each component follows the mode equation of deep linear networks, here on any
+tree \proven{} \knownresult[\citealp{saxe2014exact}, eq.~15]. By \eqref{eq:aligned-escape}, with one initial
+amplitude for all components they are learned in the order of their weights, at times in the ratio
+$1/\tw1:1/\tw2:1/\tw3$, and every gap grows like $\isc^{-(\Kc-2)}$ \knownresult[from eq.~15 of
+\citealp{saxe2014exact}; symmetric matrix factorization from $\alpha\Id$: \citealp{li2021towards}, Thm~6.2]. This
+is the case $k=\Kc$ of \cref{prop:A-head-start}: a route through every core never sees the components already
+learned. Random initialization is unbalanced, so its escape times are not those of a balanced start of the same
+norm (the toy model of the box; \cref{sec:s2s-escape}). The exact solution also checks the integrators: gradient
+flow on the full TTN follows it on all five trees, every overlap to within $3\cdot10^{-9}$ \empirical{}
+(\cref{fig:s2s-aligned} in \cref{app:supp-s2s-aligned}).
 
 \subsection{Escape from the origin}\label{sec:s2s-escape}
-% Sources: notes/s2s_core.md 1.1-1.5, 2.2b, 2.2c; theory notes/theory_escape.md v2 (E1, E2, E5-E8,
-% recipe 2.5, section 9) = app:escape; s2s-core round-2 verification (E1-E3, E14, E16, E17; safe-to-cite
-% items 2-7, 18, 19). Known: the exponent K - 2; the per-initialization blow-up identity is in substance
-% the activation law of AGF (Kunin et al. 2025, Eqs. 2-3), so only its TTN form is new. WITHDRAWN, do not
-% reintroduce: "first component = correlation flow's in 100% of runs" or "largest first at every
-% sigma" (1847/1848, E1); "T moved by <= 1.7e-3" (E2); "stopped on direction convergence" for the binary4
-% close-teacher jobs (they stopped at the amplitude cap, E3); "residual <= 2e-3" (2.2e-3, E16); 0.9996
-% without "separated teacher" (E17); the research plan's t_1 ~ rho_0^{-(K-2)}[tau_align + ...] as a
-% prediction (without the alignment term it is the lower bound t_KH; there is no separate alignment time).
+% Sources: notes/s2s_core.md 1.1-1.5, 2.2b, 2.2c; theory notes/theory_escape.md v2 = app:escape; s2s-core
+% round-2 verification (E1-E3, E14, E16, E17; safe-to-cite items 2-7, 18, 19). Known: the exponent K - 2; the
+% per-initialization blow-up identity is in substance the activation law of AGF (Kunin et al. 2025, Eqs. 2-3).
+% The first-component statistics moved to sec:s2s-order; details to app:supp-s2s-escape. WITHDRAWN, do not
+% reintroduce: "first component = correlation flow's in 100% of runs" or "largest first at every sigma"
+% (1847/1848, E1); "T moved by <= 1.7e-3" (E2); "stopped on direction convergence" for the binary4 close-teacher
+% jobs (E3); "residual <= 2e-3" (2.2e-3, E16); 0.9996 without "separated teacher" (E17); t_1 ~
+% rho_0^{-(K-2)}[tau_align + ...] as a prediction (there is no separate alignment time).
 
-How long does the first plateau last, and which component ends it? The research plan's first guess used
-only the size of the initialization, $\tev1\propto\norm{\params_0}^{-(\Kc-2)}$. The answer is a blow-up time
-computed for each initialization, with no free parameter; the norm gives only a lower bound, low by
-factors from $3$ to $3\cdot10^7$.
+How long does the first plateau last? The answer is a blow-up time computed for each initialization, with no
+free parameter; the norm of the initialization gives only a lower bound, low by factors from $3$ to $3\cdot10^7$.
 
 \begin{figure}[t]
   \centering
@@ -245,154 +265,101 @@ factors from $3$ to $3\cdot10^7$.
     shade of blue per seed). Top: $\tev1$ from gradient flow (dots) and each seed's prediction
     $\isc^{-(\Kc-2)}T(Z)$ (lines), with $T(Z)$ computed from that seed's initialization before training.
     Bottom: $\tev1$ over the prediction \eqref{eq:s2s-first}, with the offset $\delta_\Kc\tw{r_1}^{-(2-2/\Kc)}$
-    (solid) and without it (dotted). Data: experiment \texttt{s2s\_core}, sweeps \texttt{first} and
-    \texttt{first\_k78} (\cref{tab:repro-figures}). Takeaway: one number per initialization, computed before
-    training, predicts the first escape of every run, to within $10^{-5}$ at the smallest $\isc$ in every
-    panel; the deviations at large $\isc$ are the offset and, at $\Kc=7,8$, a direction that has not
-    converged.}
+    (solid) and without it (dotted). Takeaway: one number per initialization, computed before training,
+    predicts the first escape of every run, to within $10^{-5}$ at the smallest $\isc$ in every panel; the
+    deviations at large $\isc$ are the offset and, at $\Kc=7,8$, a direction that has not converged (source:
+    \cref{app:experiments}, \cref{tab:exp-s2s}).}
   \label{fig:s2s-first}
 \end{figure}
 
 \paragraph{Prediction: one blow-up time per initialization.}
-On the first plateau $\normF{\W}$ is far below the teacher's weights, and gradient flow is to leading order
-the flow $\dot\params=\nabla g$ of the correlation $g=\ip{\W}{\Wt}$ (\cref{app:escape}): its direction follows
-the spherical gradient flow of $g$, independent of $\isc$, and its norm blows up at the time
-\eqref{eq:A-blowup}. As $g$ is homogeneous of degree $\Kc$, the initialization $\params_0=\isc Z$ ($Z$ the
-initialization at $\isc=1$) blows up at $\isc^{-(\Kc-2)}T(Z)$, with $T(Z)=\hat t_1(Z)/\tw1$ of
-\cref{cor:A-blowup}. The direction tends to the balanced rank-one configuration of one component $r_1$,
-which then escapes as a balanced mode (\cref{prop:A-first-event}):
+On the first plateau $\normF{\W}$ is far below the teacher's weights, and gradient flow is to leading order (LO)
+the flow $\dot\params=\nabla g$ of the correlation $g=\ip{\W}{\Wt}$ (\cref{app:escape}). In the time
+$\dd\tau=\norm{\params}^{\Kc-2}\dd t$ the direction $\hat\params$ follows the spherical gradient flow of $g$,
+independent of $\isc$, and $\dd\ln\norm{\params}/\dd\tau=\Kc\,g(\hat\params)$ (\cref{prop:A-spherical}). Hence
+$\norm{\params}$ blows up at
+\[
+  t^*=\norm{\params_0}^{-(\Kc-2)}\int_0^\infty e^{-(\Kc-2)\Kc G(\tau)}\,\dd\tau,\qquad
+  G(\tau)=\int_0^\tau g(\hat\params)\,\dd\tau',
+\]
+which for $\params_0=\isc Z$ ($Z$ the initialization at $\isc=1$) is $\isc^{-(\Kc-2)}T(Z)$, with $T(Z)$
+independent of $\isc$ (\cref{cor:A-blowup}). The direction tends to the balanced rank-one configuration of one
+component $r_1$, which then escapes as a balanced mode (\cref{prop:A-first-event}):
 \begin{equation}\label{eq:s2s-first}
   \tev1=\isc^{-(\Kc-2)}\,T(Z)+\delta_\Kc\,\tw{r_1}^{-(2-2/\Kc)}+o(1),
 \end{equation}
 with $\delta_\Kc$ from \eqref{eq:A-first-event} ($\delta_3=-0.850$, $\delta_4=-0.266$, $\delta_7=0.148$,
-$\delta_8=0.201$). $T(Z)$ and $r_1$ come from integrating the leading-order flow from $Z$ (\cref{rem:A-recipe}),
-so \eqref{eq:s2s-first} predicts the exponent, the prefactor and the first component of every run. Status:
-the scaling and \eqref{eq:A-blowup} are \proven, the offset \derived{} (the direction must have converged to
-$r_1$ by the time $\normF{\W}$ is comparable to $\tw{r_1}$). Known: the exponent
-\knownresult[deep linear networks: \citealp{jacot2022saddletosaddle}; homogeneous models, from directional
-convergence: \citealp{kumar2025early}, Thm~1], and \eqref{eq:A-blowup} is in substance the activation law of
-alternating gradient flows \knownresult[\citealp{kunin2025alternating}, Eqs.~2--3]; new \newresult[TTN form]:
-its evaluation on trees and the tests below. The escape direction is exactly balanced, with core norms
-$1/\Kc$ (\cref{prop:A-kkt}) \proven{} \knownresult[deep linear networks: \citealp{kumar2025early}, Lemma~5;
-also from the proof of \citealp{furman2026benign}, Prop.~F.10]; at the end of the leading-order flow every core
-holds $1/\Kc$ of $\norm{\params}^2$ to within $1.3\%$ relative in all 1,200 initializations of the $d$ sweep
-below \empirical.
+$\delta_8=0.201$). $T(Z)$ and $r_1$ come from integrating the LO flow from $Z$ (\cref{rem:A-recipe}), so
+\eqref{eq:s2s-first} predicts the exponent, the prefactor and the first component of every run. Status: the
+scaling and the blow-up identity are \proven{} (at LO); the offset is \derived{} (the direction must have
+converged to $r_1$ by the time $\normF{\W}$ is comparable to $\tw{r_1}$), and so is the first component, which
+needs the KKT point reached to be a component configuration (\cref{prop:A-component-hessian}; not for stars,
+\cref{rem:A-sequence}). The escape direction is exactly balanced, with core norms
+$1/\Kc$ (\cref{prop:A-kkt}) \proven; at the end of the LO flow every core holds $1/\Kc$ of $\norm{\params}^2$ to
+within $1.3\%$ in all 1,200 initializations of the $d$ sweep \empirical. \knownresult[the exponent: deep linear
+networks, \citealp{jacot2022saddletosaddle}; homogeneous models, \citealp{kumar2025early}, Thm~1; the identity is
+the activation law of \citealp{kunin2025alternating}, Eqs.~2--3; balance: \citealp{kumar2025early}, Lemma~5, and
+the proof of \citealp{furman2026benign}, Prop.~F.10] \newresult[TTN form: its evaluation on trees and the tests]
 
 \paragraph{Test, seed by seed} (\cref{fig:s2s-first}).
-\empirical{} For 231 pairs of initialization and teacher we computed $T(Z)$ and $r_1$ and ran gradient flow
-to the first event at eight values of $\isc$ (1,848 runs): $0.002$--$0.1$ on binary4 and MPS4 ($\chi=3,6$,
-both teachers, fan-in and balanced) and $0.01$--$0.4$ at $\Kc=7,8$ (mostly separated teacher, fan-in;
-\cref{tab:exp-s2s}). At the smallest $\isc$ the prediction \eqref{eq:s2s-first} matches every run to a relative
-$8.5\cdot10^{-6}$ (binary4, separated teacher), $2.2\cdot10^{-3}$ (binary4, close teacher, whose direction has
-not converged at $\isc=0.002$), $6\cdot10^{-5}$ (MPS4) and $4\cdot10^{-8}$ (binary8, HT4, MPS8 at
-$\isc=0.01$). With the offset removed the per-seed exponents are $0.9996$--$0.9997$ ($\pm0.0001$; binary4,
-separated), $0.990$--$0.996$ (binary4, close: $2.6$--$3.8$ s.e.\ below $1$, as an unconverged offset makes
-them), $1.9999$--$2.0000$ (MPS4), $4.996$--$4.999$ (binary8, HT4) and $5.9995\pm0.0002$ (MPS8). An
-independent integration of the spherical flow reproduces $T(Z)$ for the 160 binary4 and MPS4 jobs to
-$2\cdot10^{-10}$ (verification review).
+\empirical{} For 231 pairs of initialization and teacher on the five trees (1,848 runs, eight values of $\isc$
+each), the prediction matches every run at the smallest $\isc$ to a relative $4\cdot10^{-8}$ to $2.2\cdot10^{-3}$
+(the largest for binary4 with the close teacher, whose direction has not converged at $\isc=0.002$). With the
+offset removed, the per-seed exponents are $\Kc-2$ to within $0.004$, except in that cell ($0.990$--$0.996$).
+Details: \cref{app:supp-s2s-escape}.
 
 \paragraph{The size of the initialization gives only a lower bound.}
 From an initialization along a maximizer of $g$ the escape takes
-$t_{\rm KH}=\Kc^{\Kc/2-1}\norm{\params_0}^{-(\Kc-2)}/((\Kc-2)\tw1)$ \knownresult[\citealp{kumar2025towards},
-text before Thm~11], and every initialization of the same norm takes longer (\cref{cor:A-kh}) \proven. The
-median $T/t_{\rm KH}$ is $3.1$--$4.8$ (binary4), $7.9$--$13.7$ (MPS4), $95$--$210$ (HT4), $184$--$2650$ (binary8)
-and $1460$ (MPS8) over the cells of the first-escape sweep \empirical{} \newresult[the bound on trees and
-the ratios]. Most of $\norm{\params_0}$ sits in core
-slices orthogonal to the teacher's factors, which do not move at leading order (\cref{prop:A-reduced}), and
-the moving slices form an unbalanced product path (\cref{prop:A-product-mode}): the norm law is a bound,
-not a prediction.
+$t_{\rm KH}=\Kc^{\Kc/2-1}\norm{\params_0}^{-(\Kc-2)}/((\Kc-2)\tw1)$ \knownresult[\citealp{kumar2025towards}, text
+before Thm~11], and every initialization of the same norm takes longer (\cref{cor:A-kh}) \proven. The median
+$T/t_{\rm KH}$ over the cells of the first-escape sweep is $3.1$--$4.8$ on binary4, $7.9$--$13.7$ on MPS4, $95$--$210$
+on HT4, $184$--$2650$ on binary8 and $1460$ on MPS8, and it reaches $2.9\cdot10^7$ on binary16 \empirical{}
+\newresult[the bound on trees and the ratios]. Most of $\norm{\params_0}$ sits in core slices orthogonal to the
+teacher's factors, which do not move at leading order (\cref{prop:A-reduced}), and the moving slices form an
+unbalanced product path (\cref{prop:A-product-mode}; the toy model of the box): the norm law is a bound, not a
+prediction.
 
-\paragraph{Dependence on $d$, $\chi$ and $\Kc$} (\cref{fig:s2s-prefactor}).
-The leading-order flow gives $T=\lim_{\isc\to0}\isc^{\Kc-2}\tev1$ per initialization cheaply, so these were
-measured on many initializations ($d=4$, one component of weight $1$, unless stated).
-\emph{Physical dimension} \empirical{} \newresult[the closed form]: at full bond $\chi=d^2$ (200 initializations
-per point) the binary4 medians are $1.544$ $[1.468,1.594]$, $1.569$ $[1.525,1.615]$ and $1.563$
-$[1.525,1.587]$ (95\% bootstrap intervals) for $d=2,3,4$, independent of $d$ and equal to $\pi/2$, the
-full-bond value of the closed form of \cref{prop:A-product-mode} (\derived{} given end directions that do not
-rotate), while $t_{\rm KH}$ falls by a factor $1.9$; $\mathrm{sd}\ln T=0.218\pm0.010$, $0.157\pm0.009$,
-$0.135\pm0.006$ against the closed form's $1/(2\sqrt\chi)=0.250$, $0.167$, $0.125$ ($\pm0.02$). MPS4 gives
-$1.39$, $1.41$, $1.50$ (theory note, other initializations: $1.30$, $1.35$, $1.46$) while $t_{\rm KH}$ falls by
-$2.9$. \emph{Bond dimension} \empirical{} \newresult: the median falls slowly, with log-log slopes $-0.335\pm0.028$ (binary4)
-and $-0.264\pm0.038$ (MPS4) over $\chi=4$--$16$ and $-0.76\pm0.08$ (binary8, $\chi\le12$), $-0.69\pm0.08$ (HT4)
-and $-0.72\pm0.06$ (MPS8) over $\chi=2$--$16$, against $-0.47$ and $-1.5$ to $-2.5$ for $t_{\rm KH}$, as the theory
-note found ($-0.20\pm0.05$ for MPS4, $-0.36$ to $-0.38$ for binary4): $\chi$ acts only through the moving
-slices. \emph{Number of cores} \conjecture{} (heuristic) \empirical{} (agreement) \newresult: over 17 trees
-with $\Kc=3$--$15$ ($\chi=3$, weights $(3,2,1)$, 50 initializations each) the median grows from $0.42$ (HT3)
-to $814$ (binary16). The RMS-overlap heuristic $P_3=d^{\Ns(\Kc-2)/(2\Kc)}/((\Kc-2)\tw1)$, the escape time of a
-balanced aligned mode started at the root-mean-square overlap $\isc^\Kc d^{-\Ns/2}$ of a fan-in $\Wz$ with a
-unit rank-one tensor, tracks it within a factor $0.87$--$2.13$ with no free parameter, while the median of
-$T/t_{\rm KH}$ grows from $3.1$ to $2.9\cdot10^7$. \emph{Gauge balance} \empirical{} \newresult[minor]: re-gauging
-the same $\Wz$ to
-$\Q e=0$ changes $T$ per seed by a factor $0.88$--$1.92$ (cell medians $0.99$--$1.18$), keeps $r_1$ in 88 of
-94 seeds and leaves the exponent unchanged.
+\paragraph{Dependence on $d$, $\chi$ and $\Kc$.}
+\empirical{} The prefactor $T=\lim_{\isc\to0}\isc^{\Kc-2}\tev1$ falls slowly with $\chi$ (log-log slopes $-0.26$
+to $-0.76$, against $-0.47$ to $-2.5$ for $t_{\rm KH}$): $\chi$ acts only through the moving slices. At full bond
+$\chi=d^2$ it does not depend on $d$ (binary4 medians $\approx\pi/2$ for $d=2,3,4$, the closed form of
+\cref{prop:A-product-mode}, \derived{} given end directions that do not rotate). Its median ranges from $0.42$
+(HT3, $\Kc=5$) to $814$ (binary16, $\Kc=15$), growing with $\Kc$ within each tree family, and a heuristic with no
+free parameter tracks it within a factor $0.87$--$2.13$ (\conjecture, heuristic). Re-gauging to $\Q e=0$ changes
+$T$ per seed by a factor $0.88$--$1.92$ and leaves the exponent unchanged. Details and
+\cref{fig:s2s-prefactor}: \cref{app:supp-s2s-escape}. \newresult
 
-\begin{figure}[tbp]
-  \centering
-  \includegraphics{s2s/prefactor.pdf}
-  \caption{Prefactor $T=\lim_{\isc\to0}\isc^{\Kc-2}\tev1$ from the leading-order flow, medians over
-    initializations with 95\% bootstrap intervals. Colour: tree family (MPS blue, binary orange, HT green);
-    marker in (a), (b): circles $\Ns=4$, squares $\Ns=8$. (a)~Against $\chi$: one component of weight $1$,
-    $d=4$, 100 initializations per point; dashed (open markers): median Kumar--Haupt time $t_{\rm KH}$.
-    (b)~Against $d$ at full bond $\chi=d^2$, binary4 and MPS4, 200 initializations; dotted: $\pi/2$; dashed:
-    $t_{\rm KH}$. (c)~Against $\Kc$, 17 trees (diamonds; binary, MPS and HT with $\Ns=3$--$16$), $\chi=3$, $d=4$,
-    weights $(3,2,1)$, 50 initializations; dotted: the RMS-overlap heuristic $P_3$; dashed: $t_{\rm KH}$. Data:
-    experiment \texttt{s2s\_core}, sweeps \texttt{lo\_chi}, \texttt{lo\_d}, \texttt{lo\_K}
-    (\cref{tab:repro-figures}). Takeaway: weak $\chi$-dependence, none on $d$ at full bond, $P_3$ follows the
-    growth with $\Kc$, and $t_{\rm KH}$, which uses only the norm of the initialization, is low by factors that
-    grow with $d$, $\chi$ and $\Kc$.}
-  \label{fig:s2s-prefactor}
-\end{figure}
+\subsection{Locality of later escapes: two components}\label{sec:s2s-locality}
+% Sources: notes/locality.md (final; sections 7, 8, 10); reviews locality_round1.md and
+% locality_round2_verification.md (caveats a-g applied); notes/theory_saddles.md v3; theory_saddle_order.md v2;
+% pilot experiments/pilot_h2_locality (in app:supp-s2s-locality). Settings: app:exp-locality. WITHDRAWN or
+% overstated, do not reintroduce: "H2 holds for k = 1..8" or "+-0.05 for k <= 4"; k = 6-7 = k - 2 without
+% "balanced initialization only"; ht8 D = {3,4} "measures k = 7"; "rank rises on the Steiner edges in 98.7% /
+% 99.75% of events" as a prediction success rate; "spare bond channels remove most dead routes"; "a stalling seed
+% stalls at every sigma"; "steep MPS exponents come from shrinking route ends"; "raw and projected Hessian
+% exponents agree to 0.01"; "2 of 1008 stalls with balanced initialization"; "log" labels for k* = 2 levels
+% without the fair comparison (TA on MPS4, first level).
 
-\paragraph{Which component escapes first.}
-\empirical{} \newresult[tensor-like trees; binary4 known, below] In 1,847 of the 1,848 runs the first component learned is the leading-order flow's $r_1$, and in
-all 231 at the smallest $\isc$; the exception (binary4, $\chi=3$, close teacher, balanced, seed 6, $\isc=0.1$)
-learns the weakest component first, a wrong first escape at finite $\isc$ (\cref{prop:A-matrix-like}). On
-binary4 only the largest odeco component is a local maximum of $g$ on the sphere (a matrix-like tree,
-\cref{prop:A-component-hessian}), and it is learned first in 639 of 640 first-escape runs and in all 380 full
-runs, which have 20 independent initialization directions \knownresult[deep linear networks:
-\citealp{jacot2022saddletosaddle}, Thm~2 and Lemma~15]. On the tensor-like trees every component is a local
-maximum, and the first component varies from seed to seed (largest first in 400 of 640 runs on MPS4, 264/328
-on binary8, 104/160 on HT4, 64/80 on MPS8) but is the same at every $\isc$ for a given seed (10 of 10 seeds in
-every cell of the full runs). The race of independent per-component flows (\cref{prop:A-race}) names it in
-all 640 MPS4 and 80 MPS8 runs, where it is exact at leading order, in 328 of 328 binary8 and 152 of 160 HT4
-runs, where cores without sites couple the components, and in only 537 of 640 binary4 runs, where that
-coupling decides. Statistics of the order: \cref{sec:s2s-order}.
-
-\subsection{Saddle sequence and locality}\label{sec:s2s-locality}
-% Sources: notes/locality.md (final; sections 7, 8, 10), agent-runs/locality/REPORT.md, reviews
-% notes/reviews/locality_round1.md and locality_round2_verification.md (caveats a-g applied),
-% notes/theory_saddles.md v3 (section 9: known vs new), notes/theory_saddle_order.md v2 (saddle order:
-% paragraph "When the saddle order is k*", app:saddle-order), experiments/pilot_h2_locality/README.md,
-% notes/literature.md (H2, H3). Settings: app:exp-locality. WITHDRAWN or overstated, do not
-% reintroduce: "H2 holds for k = 1..8" or "+-0.05 for k <= 4"; k = 6-7 = k - 2 without "balanced
-% initialization only"; ht8 D = {3,4} "measures k = 7"; "rank rises on the Steiner edges in 98.7% /
-% 99.75% of events" as a prediction success rate; "spare bond channels remove most dead routes";
-% "a stalling seed stalls at every sigma"; "steep MPS exponents come from shrinking route ends";
-% "raw and projected Hessian exponents agree to 0.01"; "2 of 1008 stalls with balanced
-% initialization"; "log" labels for k* = 2 levels without the fair comparison (TA on MPS4, first level).
-
-After the first escape, gradient flow rests near a saddle that represents what has been learned.
-Which component comes next, and how long is the next plateau? In a TTN the answer depends on where
-the next component sits in the tree: one that differs from what is learned only on sites carried by
-two adjacent cores needs those two cores to move, one spread over the tree needs many. We state the
-resulting rule, derived in \cref{app:saddles}, and test it.
+After the first escape, gradient flow rests near a saddle that represents what has been learned. Which
+component comes next, and how long is the next plateau? In a TTN the answer depends on where the next component
+sits in the tree (box at the start of this section). We state the route rule, derived in \cref{app:saddles},
+and test it on two-component teachers.
 
 \paragraph{Prediction: the route rule.}
-Take a two-component pattern teacher (\cref{sec:setup-loss}), $\Wt=\tw1\U1+\tw2\U2$ with
-$\tw1>\tw2$, whose components differ exactly on the site set $D$ (sites numbered from $0$, as in
-\cref{tab:A-route-degree}). Let $N(D)$ be the set of cores that carry a site of $D$,
-$\mathrm{St}(N(D))$ the smallest subtree containing them (their Steiner subtree), and
+Take a two-component pattern teacher (\cref{sec:setup-loss}), $\Wt=\tw1\U1+\tw2\U2$ with $\tw1>\tw2$, whose
+components differ exactly on the site set $D$ (sites numbered from $0$, as in \cref{tab:A-route-degree}). Let
+$V_D$ be the set of cores that carry a site of $D$, $\mathrm{St}(V_D)$ its Steiner subtree, and
 \begin{equation}\label{eq:locality-k}
-  k=\abs{\mathrm{St}(N(D))}.
+  k=\abs{\mathrm{St}(V_D)}.
 \end{equation}
-The bonds whose teacher rank is two are exactly the bonds of $\mathrm{St}(N(D))$
-(\cref{prop:teacher-spectra}(b)). Once $\U1$ is learned, the flow sits near the balanced saddle
-$\params_1$ that represents $\tw1\U1$, and new parameters can lower the loss only through
-\emph{routes}, connected sets of cores whose new entries combine into a term proportional to the
-residual at no Gauss--Newton cost (\cref{lem:A-routes}). The cheapest route to $\U2$ is
-$\mathrm{St}(N(D))$, with coupling $c_2=\tw2\tw1^{(\Kc-k)/\Kc}$ (\cref{prop:A-steiner}), and the
-escape is the first-escape problem of a $k$-core TTN (\cref{prop:A-escape-degree}). With
-$\Delta t_2=\tev2-\tev1$ the time between the two learning events,
+The bonds whose teacher rank is two are exactly the bonds of $\mathrm{St}(V_D)$ (\cref{prop:teacher-spectra}(b)).
+Once $\U1$ is learned, the flow sits near the balanced saddle $\params_1$ that represents $\tw1\U1$, and new
+parameters can lower the loss at no Gauss--Newton cost only through \emph{routes}, connected sets of cores whose
+new entries combine into a term proportional to the residual (\cref{lem:A-routes}); for two-component teachers in
+the correct order no other curve descends faster (\cref{cor:A-order}). The cheapest route to $\U2$ is
+$\mathrm{St}(V_D)$, with coupling $c_2=\tw2\tw1^{(\Kc-k)/\Kc}$ (\cref{prop:A-steiner}), and the escape is the
+first-escape problem of a $k$-core TTN (\cref{prop:A-escape-degree}). With $\Delta t_2=\tev2-\tev1$ the time
+between the two learning events,
 \begin{equation}\label{eq:locality-rule}
   \Delta t_2\simeq
   \begin{cases}
@@ -402,117 +369,54 @@ $\Delta t_2=\tev2-\tev1$ the time between the two learning events,
   \end{cases}
 \end{equation}
 (\cref{prop:A-head-start}). For $k=2$ the saddle is strict, with $\lambda_{\min}(\Hperp)=-\lambda_2$
-(\cref{prop:A-hessian}); for $k\ge3$ its Hessian has no negative eigenvalue (a higher-order saddle),
-and on the plateau $\lambda_{\min}\propto\isc^{k-2}\to0$ (\cref{prop:A-signatures}). The factor
-$1-\tw2/\tw1$ is a \emph{head start}: the route grows during the first plateau, so from the saddle
-itself the $k=2$ slope is $1/\lambda_2$. The prefactor $A$ is set by the route amplitudes when the
-plateau starts and is not predicted from $\isc$ alone for random initialization. Status: the Steiner
-identity, the upper bound $k$ on the saddle order and, for two-component teachers learned in this
-(greedy) order, the matching lower bound, so that the order is exactly $k$ on every tree
-(\cref{cor:A-order}), are \proven; \eqref{eq:locality-rule} is \derived{} (leading order, small $\isc$).
-
-With several learned components ``the sites where the next component differs'' is ambiguous, and
-saddles need not be partial sums of components. The \emph{route rule} (\cref{rem:A-sequence}) works at
-the saddle actually reached, the best approximation of $\Wt$ with the current bond-rank profile: if
-the learned structure is stable (no wrong order, no star, \cref{prop:A-piggyback-graph}; from $k^*=5$
-on also no generalized star, see the next paragraph), the next
-escape takes the smallest route, of size $k^*$, with a nonzero local residual
-(\cref{def:A-local-residual}), raises the bond rank on its internal edges, and the flow moves to the
-best approximation with the new profile. We evaluate it numerically (rank-constrained optima by
-L-BFGS with restarts); it predicts every plateau level and its $k^*$, and $k^*=k$ for two components.
-Status: \derived{} at leading order for each step, \conjecture{} as an algorithm.
-
-\paragraph{When the saddle order is $k^*$.}
-\proven{} \newresult{} (\cref{app:saddle-order}) The route always gives a descent of order $k^*$; that
-nothing descends faster is decided, at a saddle with one learned component $j$, by a
-\emph{generalized piggyback operator} (\cref{def:A-gen-piggyback}). It couples the parts of the
-residual that live on small sets of cores: single cores (the piggyback graph of
-\cref{prop:A-piggyback-graph}) and, from $k^*=5$ on, also sets whose Steiner subtree has fewer than
-$k^*/2$ cores. If its largest eigenvalue is below $\tw j$, the order is exactly $k^*$
-(\cref{thm:A-order-lower}). This holds always for $k^*=2$; for $k^*=3,4$ when the piggyback graph has
-$\lambda_{\max}(\Gamma)<\tw j$ (no wrong order, no star; above $\tw j$ the saddle is strict); and for
-two-component teachers in the correct order on every tree (\cref{cor:A-order}). It fails from $k^*=5$ on. On MPS6 the teacher
-$000000$ ($1$), $110001$, $110010$ ($0.8$ each) has $k^*=5$ and a positive semidefinite Hessian at the
-saddle of the first component, yet new entries on cores 0, 1 that point at the non-residual pattern
-$110000$, together with old rotations of cores 4 and 5, descend at order 4 ($-0.0350\,t^4$, as
-predicted); gradient flow escapes in $\propto\isc^{-2}$ instead of $\isc^{-3}$ and then forgets the first
-component \derived{} (checked on this teacher; from small initialization only some seeds visit the
-saddle). Which of our experiments satisfy the condition: every two-component row of
-\cref{tab:locality-exponents} (the fits use the runs that learn the larger component first), and every
-saddle with one learned component of the multi-component teachers below (there the operator reduces to
-the piggyback graph, with $\lambda_{\max}(\Gamma)\le0.7<\tw j$). Saddles with two or more learned
-components are not covered by the theorem. The condition fails for the runs on HT4 with $D=\{0,1,2,3\}$ that learn the
-smaller component first (order $6$, not $k=7$; excluded from the fits): in 6 of the 7 such runs with
-$\chi=2$ ($\isc\ge0.4$) the smaller component is forgotten when the larger one is learned and then
-relearned, as the cluster mechanism predicts \empirical.
-
-\paragraph{What is known and what is new.}
-Known in general: dormant weights of lowest homogeneity degree $L$ stay $O(\delta)$ for at least a
-time $\propto\delta^{-(L-2)}$, $\delta$ their initial size, if the active weights start within $\delta$
-of a local minimum of the loss restricted to them ({\L}ojasiewicz) \knownresult[\citealp{kumar2026learning},
-Thm~8]; escapes that need $1$, $2$ or $r\ge3$ small layers take a time of order $1$, $\ln(1/\epsilon)$
-or $\epsilon^{-(r-2)}$ \knownresult[\citealp{rawal2026theory}, Thm~4.2] (first escape; the first $r$
-layers at scale $\epsilon$, the others $O(1)$); in our model a min-norm critical point has a descent
-curve of order $N$, the number of cores touching a connected component of rank-deficient bonds, and
-with several such components the smallest gives the least suppressed escape
-\knownresult[\citealp{furman2026benign}, Lemmas~D.8--D.9, Remark~D.10 and Fig.~4]; for $N=2$ the curve
-is a direction of negative curvature, so the saddle is strict (a one-line consequence, not stated
-there); in deep linear networks with at least three weight matrices, which include the binary tree
-with $\Ns=4$ (\cref{rem:A-binary4-dln}), every saddle visited from an exactly balanced initialization
-that selects the top singular values is non-strict \knownresult[\citealp{achour2024loss}, Thm~7 and the
-remark after Prop.~8; full-rank targets with distinct singular values]; and the $k=2$ head start
-\knownresult[weaker directions are $O(\epsilon^{1-\tw{r+1}/\tw1})$ when the top ones are learned,
-two-layer linear networks: \citealp{zhang2026saddletosaddle}, Thm~4; dormant norms carried across
-phases: \citealp{kunin2025alternating}, Sec.~2.2]. New for TTNs \newresult: (i)~the dormant block is the
-Steiner route of the residual, which can be a proper subtree of a connected rank-deficient component,
-so $k^*=\abs{\mathrm{St}(N(D))}$ can be far below Furman et al.'s $N$ ($N=\Kc$ at a rank-one saddle with
-$\chi\ge2$); (ii)~the coupling $c_2$ and the rate $\lambda_2$ (\cref{eq:A-coupling,eq:A-lambda2});
-(iii)~the head start for $k\ge3$ in closed form, an effective initial route amplitude
-$\isc(1-\tw2/\tw1)^{-1/(k-2)}$ (the carry-over of dormant amplitudes is that of
-\citealp{kunin2025alternating}); (iv)~the piggyback-graph criterion for learned saddles
-that are strict although $k^*\ge3$ (\cref{prop:A-piggyback-graph}); (v)~the conservation-law trap
-(\cref{prop:A-trap}); (vi)~the measured dependence on the topology, below; (vii)~the matching lower bound
-on the saddle order and its failure from $k^*=5$ on (\cref{thm:A-order-lower,thm:A-order-sharp}; lower
-bounds were known for deep linear networks, order 2 or more, \citealp[Thm~7]{achour2024loss}, and for one
-parity saddle, \citealp[Prop.~5.3]{furman2026benign}).
+(\cref{prop:A-hessian}); for $k\ge3$ its Hessian has no negative eigenvalue (a higher-order saddle), and on the
+plateau $\lambda_{\min}\propto\isc^{k-2}\to0$ (\cref{prop:A-signatures}). The factor $1-\tw2/\tw1$ is a
+\emph{head start}: the route grows during the first plateau, so from the saddle itself the $k=2$ slope is
+$1/\lambda_2$. The prefactor $A$ is set by the route amplitudes when the plateau starts and is not predicted
+from $\isc$ alone for random initialization. Status: the Steiner identity, the upper bound $k$ on the saddle order
+and, for two-component teachers learned in this (greedy) order, the matching lower bound, so that the order is
+exactly $k$ on every tree (\cref{cor:A-order}), are \proven; \eqref{eq:locality-rule} is \derived{} (leading
+order, small $\isc$). \knownresult[mechanism and trichotomy: \citealp{kumar2026learning}, Thm~8;
+\citealp{rawal2026theory}, Thm~4.2; descent along a whole connected set of rank-deficient bonds:
+\citealp{furman2026benign}, Lemma~D.8; head start for $k=2$: \citealp{zhang2026saddletosaddle}, Thm~4,
+\citealp{kunin2025alternating}, Sec.~2.2] \newresult[the route is the Steiner subtree, which can be a proper
+subtree of such a set; the coupling and rate; the head start for $k\ge3$]
 
 \paragraph{Setup} (details in \cref{app:exp-locality}).
-Scope of every statement below: orthogonal pattern teachers with $d=2$ and weights $(1,0.5)$ unless
-stated, $\chi=2$ ($3$ for the three-component teachers B4, N4, E8), whitened inputs, gradient flow on
-the exact population loss. Nine trees: MPS with $\Ns=4,6,8$
-(MPS4, MPS6, MPS8), binary4, binary8, HT4, HT8, and two custom trees with $\Ns=6$, \emph{star3} (a root
-without sites, three children with two sites each) and \emph{midroot6} (the MPS6 chain rooted at a
-middle core). Protocols: \emph{small} (fan-in initialization \eqref{eq:init} at scale $\isc$, first
-plateau included), \emph{saddle} (the exact balanced saddle $\tw1\U1$ plus a fan-in perturbation of
-scale $\isc$; $\Delta t_2=\tev2$ times the escape alone) and \emph{balanced} (the fan-in $\Wz$ re-gauged
-to $\Q e=0$). Event $r$ is the last upward crossing of $\ov r=\frac12$. Per seed (seeds $0$--$7$), over
-the (at least three) $\isc$ at which it escapes, we fit $\ln\Delta t_2$ against $\ln(1/\isc)$
-(exponent $p$), or $\Delta t_2$ against $\ln(1/\isc)$ (the $k=2$ slope), and report mean $\pm$ s.e.\ over
-seeds (median); log and power laws are compared by the residual of $\ln\Delta t_2$ on the same data
-(``fair comparison''). Fits use the runs that learn $\U1$ first, without rotations (an overlap crossing
+Orthogonal pattern teachers with $d=2$ and weights $(1,0.5)$ unless stated, $\chi=2$, whitened inputs, gradient
+flow on the exact population loss. Nine trees: MPS with $\Ns=4,6,8$, binary4, binary8, HT4, HT8, and two trees
+with $\Ns=6$, \emph{star3} (a root without sites, three children with two sites each) and \emph{midroot6} (the
+MPS6 chain rooted at a middle core). Protocols: \emph{small} (fan-in initialization at scale $\isc$, first
+plateau included), \emph{saddle} (the exact balanced saddle $\tw1\U1$ plus a fan-in perturbation of scale
+$\isc$; $\Delta t_2=\tev2$ times the escape alone) and \emph{balanced} (the fan-in $\Wz$ re-gauged to $\Q e=0$).
+Per seed (seeds $0$--$7$) we fit $\ln\Delta t_2$ against $\ln(1/\isc)$ (exponent $p$), or $\Delta t_2$ against
+$\ln(1/\isc)$ (the $k=2$ slope), over the values of $\isc$ at which the seed escapes (at least three; fewer than
+the row's six or seven for seeds that stall at some $\isc$, \cref{sec:s2s-failure}), and report mean $\pm$ s.e.\
+over seeds (median). Log and power laws are compared by the residual of $\ln\Delta t_2$ on the same data
+(\emph{fair comparison}). Fits use the runs that learn $\U1$ first, without rotations (an overlap crossing
 $\frac12$ more than once). About $11{,}600$ runs in all.
 
 \paragraph{Two components: the plateau exponent is $k-2$.}
-\empirical{} \newresult{} (\cref{tab:locality-exponents,fig:locality-exponents}) There is no plateau
-for $k=1$, a logarithmic one for $k=2$, and the exponent is $k-2$ for $k=3$ (all nine trees), $4$ and
-$5$, on trees with $\Kc$ from $3$ to $15$: it follows the Steiner count, not $\Kc$ or the tree family.
-Named exceptions: the saddle-start $k=4$ rows and HT8 $\{1,2\}$ are carried by seeds that stall at some
-$\isc$ (\cref{sec:s2s-failure}); the MPS rows with $k=5$ exceed $3$ for $\isc\in[0.03,0.3]$ but give
-$2.97$--$3.15$ at $\isc\le0.03$ or on never-stalling seeds, except MPS8 $\{1,5\}$ from the saddle,
-$3.67\pm0.20$. For $k=6$, $7$ the exponent is $k-2$ on binary8 and HT4 \emph{with balanced
-initialization only}, over one decade; MPS8 with $k=6$ gives $4.51\pm0.19$, and the other $k\ge6$ rows
-show only that the exponent grows with $k$. $k=8$ is not measured. Coverage is uneven: $k=2$ occurs only
-on chains (MPS, midroot6), $k=4$ on chains and star3, $k=7$ only on HT trees.
+\empirical{} (\cref{tab:locality-exponents,fig:locality-exponents}) There is no plateau for $k=1$, a logarithmic
+one for $k=2$, and the exponent is $k-2$ for $k=3$ (all nine trees), $4$ and $5$, on trees with $\Kc$ from $3$ to
+$15$: it follows the Steiner count, not $\Kc$ or the tree family. Named exceptions: the saddle-start $k=4$ rows
+and HT8 $\{1,2\}$ are carried by seeds that stall at some $\isc$ (\cref{sec:s2s-failure}); the MPS rows with
+$k=5$ exceed $3$ for $\isc\in[0.03,0.3]$ but give $2.97$--$3.15$ at $\isc\le0.03$ or on never-stalling seeds,
+except MPS8 $\{1,5\}$ from the saddle, $3.67\pm0.20$ (limited range: 4 seeds, $0.4$ decade). For $k=6$, $7$ the
+exponent is $k-2$ on binary8 and HT4 \emph{with balanced initialization only}, over one decade; MPS8 with $k=6$
+gives $4.51\pm0.19$, and the other $k\ge6$ rows (limited range) show only that the exponent grows with $k$. $k=8$
+is not measured. Coverage is uneven: $k=2$ occurs only on chains (MPS, midroot6), $k=4$ on chains and star3,
+$k=7$ only on HT trees. \newresult
 
 \begin{table}[!t]
   \centering
-  \caption{Plateau law after the first component, two-component pattern teachers ($d=\chi=2$,
-    weights $(1,0.5)$): prediction \eqref{eq:locality-rule} against measurement. $p$ is the exponent
-    of $\Delta t_2\propto\isc^{-p}$, fitted per seed; for $k=2$ the slope of $\Delta t_2$ against
-    $\ln(1/\isc)$. Ranges are over rows (one row = tree, $D$, protocol); single rows give mean $\pm$
-    s.e.\ over seeds (median). Protocols as in the text; $\sep{}$ is the separation ratio
-    \eqref{eq:separation}. $\dagger$: less than one decade of $\isc$, below the reporting rule of
-    \cref{sec:setup-diagnostics}. Sets $D$ number the sites from $0$.}
+  \caption{Plateau law after the first component, two-component pattern teachers ($d=\chi=2$, weights
+    $(1,0.5)$): prediction \eqref{eq:locality-rule} against measurement. $p$ is the exponent of
+    $\Delta t_2\propto\isc^{-p}$, fitted per seed; for $k=2$ the slope of $\Delta t_2$ against $\ln(1/\isc)$.
+    Ranges are over rows (one row = tree, $D$, protocol); single rows give mean $\pm$ s.e.\ over seeds (median).
+    $\sep{}$ is the separation ratio \eqref{eq:separation}. $\dagger$: limited range (less than one decade of
+    $\isc$, or fewer than five fitted seeds; the reporting rule of \cref{sec:setup-diagnostics}). Sets $D$ number
+    the sites from $0$ (source: \cref{app:experiments}, \cref{tab:exp-locality}).}
   \label{tab:locality-exponents}
   \small
   \begin{tabularx}{\textwidth}{@{}c>{\raggedright\arraybackslash}p{3.0cm}
@@ -525,13 +429,13 @@ on chains (MPS, midroot6), $k=4$ on chains and star3, $k=7$ only on HT trees.
     2 & MPS, midroot6 (7 cases) & log, slope $1$ (small), $2$ (saddle) & $0.980$--$1.009$ (small),
       $2.002$--$2.071$ (saddle); log law preferred in 14 of 14 rows \\
     3 & all nine trees (22 cases) & $1$ & $0.98$--$1.04$ (42 rows) \\
-    4 & MPS, star3, midroot6 (8 cases) & $2$ & small $1.95$--$2.05$, balanced $1.94$--$2.02$,
-      $\chi=4$: $1.99$--$2.03$; saddle $1.48$--$2.39$ ($1.81$--$2.19$ on never-stalling seeds) \\
+    4 & MPS, star3, midroot6 (8 cases) & $2$ & small $1.95$--$2.05$ (MPS4 $\{0,3\}$: 3 seeds$^\dagger$), balanced
+      $1.94$--$2.02$, $\chi=4$: $1.99$--$2.03$; saddle $1.48$--$2.39$ ($1.81$--$2.19$ on never-stalling seeds) \\
     5 & binary8, HT4 (6 cases) & $3$ & $2.89$--$3.13$, all protocols \\
     5 & HT8 $\{1,2\}$ & $3$ & saddle $2.74\pm0.37$ ($2.96$); $3.10\pm0.11$ on never-stalling seeds \\
     5 & MPS6 $\{1,3,5\}$, MPS8 $\{1,5\}$ & $3$ & $\isc\in[0.03,0.3]$: $2.86$--$3.76$.
       $\isc\in[0.012,0.03]^\dagger$: MPS6 $3.05\pm0.06$ (saddle), $3.15\pm0.23$ (balanced); MPS8
-      $3.13\pm0.25$ (balanced), $\mathbf{3.67\pm0.20}$ (saddle, 4 seeds). MPS8 small, never-stalling
+      $3.13\pm0.25$ (balanced, 4 seeds), $\mathbf{3.67\pm0.20}$ (saddle, 4 seeds). MPS8 small, never-stalling
       seeds: $2.97\pm0.05$. $\chi=4$: $3.19\pm0.15$, $2.97\pm0.04$ \\
     6 & binary8 $\{0,2,4\}$, HT4 $\{0,1,2\}$ & $4$ & balanced, one decade, 8 and 7 seeds:
       $4.007\pm0.021$, $4.061\pm0.048$ (fan-in$^\dagger$: $3.68\pm0.20$, $4.23\pm0.10$) \\
@@ -547,725 +451,535 @@ on chains (MPS, midroot6), $k=4$ on chains and star3, $k=7$ only on HT trees.
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=0.86\textwidth]{locality/twocomp_exponents.png}
-  \caption{Plateau law after the first component: two-component pattern teachers, $d=\chi=2$,
-    weights $(1,0.5)$, all rows of the main sweep. Left: per-seed exponent $p$ of
-    $\Delta t_2\propto\isc^{-p}$ (mean $\pm$ s.e.\ over the fitted seeds, at most eight) against the prediction
-    $k-2$, with $k=\abs{\mathrm{St}(N(D))}$, for every row with $k\ge3$; filled circles: small initialization,
-    open squares: saddle start; colour: tree family (as in all figures: MPS blue, binary orange, HT green);
-    points are offset horizontally by family and protocol. Right: slope of $\Delta t_2$ against $\ln(1/\isc)$
-    for the $k=2$ rows, against $(1-\tw2/\tw1)/\lambda_2=1$ (small initialization) and $1/\lambda_2=2$ (saddle
-    start). Dashed: equality. The points at $k-2\ge4$ span $0.5$--$0.8$ decades of $\isc$ with $1$--$5$ fitted
-    seeds and are not measurements of the exponent (one-decade values in \cref{tab:locality-exponents}). Data:
-    experiment \texttt{locality}, sweep \texttt{twocomp} (\cref{tab:repro-figures}). Takeaway: up to $k=5$ the
-    exponent is set by the number of cores of the Steiner subtree, on every tree; for $k=2$ the head start
-    halves the slope.}
+  \caption{Plateau law after the first component: two-component pattern teachers, $d=\chi=2$, weights
+    $(1,0.5)$, all rows of the main sweep. Left: per-seed exponent $p$ of $\Delta t_2\propto\isc^{-p}$ (mean $\pm$
+    s.e.\ over the fitted seeds, at most eight) against the prediction $k-2$, $k=\abs{\mathrm{St}(V_D)}$, for every
+    row with $k\ge3$; filled circles: small initialization, open squares: saddle start; colour: tree family (MPS
+    blue, binary orange, HT green); points are offset horizontally by family and protocol. Right: slope of
+    $\Delta t_2$ against $\ln(1/\isc)$ for the $k=2$ rows, against $(1-\tw2/\tw1)/\lambda_2=1$ (small
+    initialization) and $1/\lambda_2=2$ (saddle start). Dashed: equality. The points at $k-2\ge4$ have limited
+    range ($0.5$--$0.8$ decades of $\isc$, $1$--$5$ fitted seeds) and are not measurements of the exponent
+    (one-decade values in \cref{tab:locality-exponents}). Takeaway: up to $k=5$ the exponent is set by the number
+    of cores of the Steiner subtree, on every tree; for $k=2$ the head start halves the slope (source:
+    \cref{app:experiments}, \cref{tab:exp-locality}).}
   \label{fig:locality-exponents}
 \end{figure}
 
 \paragraph{$k=2$: a logarithmic plateau with a head start.}
-\empirical{} The fair comparison prefers the logarithmic law in all 14 rows with $k=2$ ($1.1$--$3$
-decades of $\isc$; MPS8 $\{3,4\}$ from small initialization nearly ties, residuals $0.004$ and $0.005$).
-Its slope carries the head start: $0.980$--$1.009$ from small initialization against
+\empirical{} The fair comparison prefers the logarithmic law in all 14 rows with $k=2$ ($1.1$--$3$ decades of
+$\isc$). Its slope carries the head start: $0.980$--$1.009$ from small initialization against
 $(1-\tw2/\tw1)/\lambda_2=1$, and $2.002$--$2.071$ from the saddle against $1/\lambda_2=2$
-(\cref{fig:locality-exponents}, right); without a head start both would be $2$. On MPS4, $\tw2=0.25$
-gives $3.023\pm0.010$ (small) and $4.04\pm0.05$ (saddle) against $3$ and $4$, and $\tw2=0.75$ gives
-$0.367\pm0.025$ and $1.345\pm0.016$ against $1/3$ and $4/3$. With weights $(2,1)$ from the saddle on
-MPS4, MPS6, MPS8 (8 seeds each), $\lambda_{\min}=-1.4142$, $-1.5874$, $-1.6818$ against
-$\lambda_2=2^{(\Kc-2)/\Kc}=1.4142$, $1.5874$, $1.6818$, and the slopes are $0.712\pm0.007$,
-$0.649\pm0.016$, $0.595\pm0.003$ against $1/\lambda_2=0.707$, $0.630$, $0.595$. The $k=2$ head start is
-known in other models \knownresult[two-layer linear networks: \citealp{zhang2026saddletosaddle}, Thm~4;
-dormant norms carried across phases: \citealp{kunin2025alternating}, Sec.~2.2]; the TTN rate $\lambda_2$,
-including its dependence on $\Kc$, is new \newresult.
+(\cref{fig:locality-exponents}, right); without a head start both would be $2$. Other weights and trees agree as
+well, including the dependence of $\lambda_2$ on $\Kc$: with weights $(2,1)$ from the saddle the slopes on MPS4,
+MPS6 and MPS8 are within $3\%$ of $1/\lambda_2=0.707$, $0.630$, $0.595$ (\cref{app:supp-s2s-locality}).
+\knownresult[head start: two-layer linear networks, \citealp{zhang2026saddletosaddle}, Thm~4; dormant norms
+carried across phases, \citealp{kunin2025alternating}, Sec.~2.2] \newresult[the TTN rate $\lambda_2$ and its
+dependence on $\Kc$]
 
 \paragraph{Saddle type: strict for $k=2$, higher order for $k\ge3$.}
-\empirical{} \newresult[for TTNs; deep linear networks: \citealp{achour2024loss}] At the plateau midpoint
-(minimum speed between the events) we compute $\lambda_{\min}$ of $\Hperp$ and of the raw Hessian;
-near rank-deficient states the gauge projection removes part of the escape direction
-(\cref{app:exp-locality}), so raw values are quoted where the two differ. The type is read from the
-scaling of $\lambda_{\min}$ with $\isc$ (\cref{prop:A-signatures}); the fixed threshold of
-\cref{sec:setup-diagnostics} would call $k=3$ plateaus strict for $\isc\gtrsim0.01$--$0.04$. For $k=2$,
-$\lambda_{\min}=-0.5000=-\lambda_2$ from the saddle at every $\isc$, projected and raw ($-0.2500$ and
-$-0.7500$ for $\tw2=0.25$, $0.75$), with one negative eigenvalue per active route, also at $\chi=4$, $8$.
-From small initialization the raw value is $-0.498$ to $-0.499$ for $\isc\le10^{-3}$ and departs from
-$-\lambda_2$ where the plateau is too short to reach the saddle ($-0.437$ for MPS8 $\{3,4\}$ at
-$\isc=0.008$; $-0.581$ against $-0.75$ for $\tw2=0.75$). For $k\ge3$, $\lambda_{\min}\propto\isc^{x}\to0$
-with $x$ growing with $k$ (\cref{fig:locality-hessian}); full ranges over rows: $x=0.81$--$1.06$ for $k=3$
-(raw $0.92$--$1.06$), $1.64$--$2.16$ for $k=4$, $2.82$--$3.76$ for $k=5$, $4.00$ and $4.04$ for $k=6$
-(balanced binary8 and HT4, one decade; $4.27$ on MPS8; $3.19$--$5.23$ in the short rows), and $5.01$
-(balanced HT4) up to $6.5$ (short rows) for $k=7$. $x$ is within $0.2$ of $k-2$ in 126 of 135 rows with $k=3$--$5$, and the raw $x$ is
-within $0.2$ of the row's duration exponent $p$ in $95\%$ of 169 rows with $k\ge3$ (median
-$\abs{x-p}=0.02$): where the plateau law deviates, the curvature deviates the same way. Raw and
-projected exponents differ by up to $0.11$. No plateau with $k\ge3$ has $\isc$-independent negative
-curvature, as predicted for saddles visited in the greedy order; wrong-order and star saddles, strict
-with $k^*\ge3$ by \cref{prop:A-piggyback-graph}, were not tested.
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=0.86\textwidth]{locality/twocomp_hessian.png}
-  \caption{Saddle type from the Hessian at the plateau midpoint, same sweep as
-    \cref{fig:locality-exponents}. Plotted: $-\lambda_{\min}$ of the gauge-projected Hessian $\Hperp$
-    (median over seeds) against $\isc$, one line per (tree, $D$), coloured by $k$; left small
-    initialization, right saddle start; dotted: $\lambda_2=\tw2\tw1^{(\Kc-2)/\Kc}=0.5$. For $k=2$,
-    $\lambda_{\min}=-\lambda_2$ at every $\isc$: a strict saddle (the small-initialization curves drop
-    at the largest $\isc$, where the plateau is too short to reach the saddle). For $k\ge3$,
-    $\lambda_{\min}\to0$ as $\isc\to0$, roughly as $\isc^{k-2}$: higher-order saddles. Lines for
-    $k\ge6$ come from the short rows of \cref{fig:locality-exponents}. Data: as \cref{fig:locality-exponents},
-    with the Hessians of \texttt{hessians.csv} (\cref{tab:repro-figures}). Takeaway: negative curvature
-    that survives $\isc\to0$ exists only for two-core routes.}
-  \label{fig:locality-hessian}
-\end{figure}
+\empirical{} At the plateau midpoint we compute $\lambda_{\min}$ of $\Hperp$ and of the raw Hessian and read the
+type from its scaling with $\isc$ (\cref{prop:A-signatures}). For $k=2$, $\lambda_{\min}=-0.5000=-\lambda_2$ from
+the saddle at every $\isc$, with one negative eigenvalue per active route (also at $\chi=4$, $8$, and for other
+weights); from small initialization the raw value is $-0.498$ to $-0.499$ for $\isc\le10^{-3}$. For $k\ge3$,
+$\lambda_{\min}\propto\isc^{x}\to0$, with $x$ within $0.2$ of $k-2$ in 126 of 135 rows with $k=3$--$5$, and the raw
+$x$ is within $0.2$ of the row's duration exponent $p$ in $95\%$ of 169 rows with $k\ge3$: where the plateau law
+deviates, the curvature deviates the same way. No plateau with $k\ge3$ has $\isc$-independent negative curvature,
+as predicted for saddles visited in the greedy order; wrong-order saddles
+(\cref{sec:s2s-phenomenology,sec:s2s-order}) and star saddles (\cref{sec:teacher-star}) were not part of this
+sweep. Per-row values and \cref{fig:locality-hessian}: \cref{app:supp-s2s-locality}. \newresult[for TTNs]
+\knownresult[deep linear networks: \citealp{achour2024loss}, Thm~7]
 
 \paragraph{One teacher, different trees.}
-\empirical{} \newresult{} Since $k$ depends on the tree, one teacher has different plateau laws on
-different trees. For $D=\{3,4\}$ and $\Ns=8$ the route has $k=2$ on MPS8, $5$ on binary8 and $7$ on
-HT8 (\cref{tab:A-route-degree}). MPS8 shows a logarithmic plateau (saddle slope $2.002\pm0.010$
-against $2$; residuals $0.003$ for the log law, $0.064$ for a power law), binary8 a $\isc^{-3}$ plateau
-($2.998\pm0.078$ small, $3.106\pm0.057$ saddle), and HT8 $p=5.74\pm1.06$ (median $5.01$; saddle start,
-$0.6$ decades, one seed with a pinned route), consistent with $5$ but unable to separate $k=6$, $7$, $8$.
-The order of learning changes too. Teacher B4 has patterns $0000$, $0110$, $1001$ with weights $1$,
-$0.3$, $0.6$ ($\chi=3$): on MPS4 the $0.3$ component needs $k=2$ and the $0.6$ component $k=4$, and
-every escaping run learns the smaller one first (\emph{locality beats weight}), then the larger after
-a $\isc^{-2}$ plateau ($p=2.02$); on binary4 both need $k=3$ and come after two $\isc^{-1}$ plateaus
-($1.05$, $1.03$). \Cref{fig:locality-trees} shows teacher TA on three trees.
-
-\paragraph{Several components: the route rule, not the literal rule.}
-\empirical{} (predictions \derived{} at leading order) For seven teachers with three or four
-components (TA, TB, N4, B4 with $\Ns=4$; E8, TC, TD with $\Ns=8$; \cref{app:exp-locality}) we detect the
-plateaus of $\Loss(t)$ (separation ratio above $3$, linear time) and match them to the levels predicted
-by the route rule (within $5\%$). Every predicted level with $k^*\ge3$ is detected in $88$--$100\%$ of the
-runs ($35$--$65\%$ for a few $k^*=3$ levels within $10\%$ of the next one), with a duration exponent
-within $0.2$ of $k^*-2$ ($1.02$--$1.19$, $2.02$--$2.08$, $2.97$--$3.17$, $4.05$ for $k^*=3,4,5,6$), except
-B4's second level on HT4 with fan-in initialization, $4.73\pm0.90$ (4 fitted seeds, 23 of 48 runs
-stalled; $3.17\pm0.10$ with balanced initialization). Three teachers discriminate between rules. The
-literal reading of H2 (Steiner count of the sites where the next component differs from the closest
-learned one) predicts no plateau before the third component of TA on any tree; there is a $\isc^{-1}$
-plateau on binary4 ($1.02$) and a $\isc^{-2}$ one on HT4 ($2.08$), as the route rule predicts. For TD on
-MPS8 (patterns $0^8$, $0^31^20^3$, $1^20^6$, weights $1$, $0.6$, $0.35$, from the saddle) the last plateau
-has $k=2$ by the literal rule, $k=4$ by the exact bond-rank rule (cores whose bond rank must grow to add
-the component exactly, \cref{lem:A-general-S}) and $k^*=3$ by the route rule, which first learns part of
-the component through a two-core route: measured $1.012\pm0.010$ (8 seeds). For TC on MPS8 (patterns
-$0^8$, $1^20^6$, $1^40^4$, $1^8$, weights $1$, $0.6$, $0.35$, $0.2$, from the saddle) the route rule
-predicts a $k^*=4$ plateau where the bond-rank rule predicts $k=5$: measured $2.018\pm0.017$. The $k^*=2$
-levels are logarithmic where measured over three decades from the saddle (four levels of TC, the
-first of TD); elsewhere (TD's second level, the first levels on MPS8 from small initialization) a power
-law below $1$ fits better and the law is not determined. At the predicted saddles the measured
-bond-rank profile equals the predicted one in $93.9\%$ of 3,114 resolved (run, level) pairs ($99.6$--$100\%$
-for $k^*=3$, $92$--$100\%$ for $k^*=4$--$6$, $86$--$97\%$ for $k^*=2$).
-
-\begin{figure}[!t]
-  \centering
-  \includegraphics[width=0.8\textwidth]{locality/trees_TA.png}
-  \caption{One teacher on three trees: teacher TA (patterns $0000$, $1100$, $1110$, weights $1$,
-    $0.6$, $0.35$), $d=\chi=2$, small fan-in initialization. Columns: MPS4 ($\Kc=4$), binary4
-    ($\Kc=3$), HT4 ($\Kc=7$). Top: loss of one run (seed 0, $\isc$ in the panel title) against time
-    since the first event (symmetric-log axis), with the plateau levels predicted by the route rule
-    (dashed; labels: $k^*$ and the predicted law). Middle: effective bond rank of every edge in that run,
-    one colour per edge (threshold $0.1$ times the smallest nonzero teacher singular value of the edge;
-    edges offset vertically by $0.05$). Bottom: duration of each predicted level against $1/\isc$, median
-    over 8 seeds with the range shaded; solid: detected plateaus, dotted: time spent within $2\%$ of a
-    level too short to be detected; dashed: slope $k^*-2$. Data: experiment \texttt{locality}, sweep
-    \texttt{multicomp} (\cref{tab:repro-figures}). Measured: MPS4 two short levels (the
-    second logarithmic in $\isc$; for the first the fair comparison favours a power below $1$, so its
-    law is undetermined); binary4 one $\isc^{-1}$ plateau ($p=1.02$), where the first escape already
-    fits $\U1$, $\U2$ and part of $\U3$; HT4 $\isc^{-1}$ and $\isc^{-2}$ plateaus ($1.09$, $2.08$).
-    Takeaway: the tree, not the teacher alone, sets the number of plateaus and their laws.}
-  \label{fig:locality-trees}
-\end{figure}
+\empirical{} Since $k$ depends on the tree, one teacher has different plateau laws on different trees. For
+$D=\{3,4\}$ and $\Ns=8$ the route has $k=2$ on MPS8, $5$ on binary8 and $7$ on HT8 (\cref{tab:A-route-degree}).
+MPS8 shows a logarithmic plateau (saddle slope $2.002\pm0.010$ against $2$; residuals $0.003$ for the log law,
+$0.064$ for a power law), binary8 a $\isc^{-3}$ plateau ($2.998\pm0.078$ small, $3.106\pm0.057$ saddle), and HT8
+$p=5.74\pm1.06$ (median $5.01$; saddle start, limited range: $0.6$ decade, one seed with a pinned route),
+consistent with $5$ but unable to separate $k=6$, $7$, $8$. The order of learning changes too (teacher B4, box
+and \cref{sec:s2s-several}). \newresult
 
 \paragraph{Bond spectra: the new component enters through the Steiner edges only.}
-\empirical{} \newresult{} The second component raises the teacher's bond rank exactly on the edges of
-$\mathrm{St}(N(D))$ (\cref{prop:teacher-spectra}(b)), so the bond spectra show which cores the escape
-uses (\cref{fig:locality-bonds}). Through all 5,131 two-component events the second singular value of
-every edge outside the Steiner subtree stays at the initialization-noise level, from the plateau
-midpoint to the end of the run: $\bs e2\le4.3\,\isc^2\tw2$, scaling as $\isc^{2.07}$ (below
-$3\cdot10^{-3}\tw2$ for $\isc\le0.03$). This \emph{leakage bound} is the substantive result: the new
-component enters through the Steiner edges only, up to $O(\isc^2)$. The rest is \emph{single-route
-consistency}: the edges whose effective rank (number of $\bs ek$ above $0.05$ times the teacher's value)
-is higher at $\ov2=0.9$ than at the plateau midpoint are the Steiner edges in $99.75\%$ of the 4,448
-events with a resolved plateau ($99.6\%$, $99.9\%$ with thresholds $0.03$, $0.1$). Given the leakage
-bound a non-Steiner edge cannot cross the threshold, so this number checks only that every Steiner
-edge rises; it is not a prediction success rate. The Steiner edges also cross together (median spread
-of crossing times $5\cdot10^{-5}$ event widths, 95th percentile $0.25$, growing as $\isc^{1.94}$), which
-tests that they rise as one route, not the timing of the event.
+\empirical{} The second component raises the teacher's bond rank exactly on the edges of $\mathrm{St}(V_D)$
+(\cref{prop:teacher-spectra}(b)), so the bond spectra show which cores the escape uses (\cref{fig:locality-bonds}).
+Through all 5,131 two-component events the second singular value of every edge outside the Steiner subtree stays at
+the initialization-noise level, from the plateau midpoint to the end of the run: $\bs e2\le4.3\,\isc^2\tw2$,
+scaling as $\isc^{2.07}$. This \emph{leakage bound} is the substantive result: the new component enters through
+the Steiner edges only, up to $O(\isc^2)$. Given it, a check of which edges gain effective rank tests that every
+Steiner edge rises, and that they rise together: the edges whose effective rank is higher at $\ov2=0.9$ than at the
+plateau midpoint are the Steiner edges in $99.75\%$ of the 4,448 events with a resolved plateau, and their crossing
+times differ by a median $5\cdot10^{-5}$ event widths. \newresult
 
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{locality/bond_spectra.png}
-  \caption{Bond spectra through the second event, two-component teachers, $d=\chi=2$, weights
-    $(1,0.5)$. Second singular value $\bs e2$ of every edge, relative to $\tw2$, against the time since
-    the first event (symmetric-log axis); coloured: the edges of the Steiner subtree
-    $\mathrm{St}(N(D))$ (legend: the sites below each edge, numbered from 0), grey dashed: all other edges,
-    drawn on top (edges with equal values, such as the two root edges of a binary tree, coincide); dotted
-    vertical line: the second event. Left: MPS8, $D=\{2,5\}$, $k=4$, small initialization; middle:
-    binary8, $D=\{3,4\}$, $k=5$, small initialization; right: HT8, $D=\{1,2\}$, $k=5$, saddle start
-    (one run each, $\isc$ and seed in the panel titles). Data: experiment \texttt{locality}, sweep
-    \texttt{twocomp}, saved trajectories (\cref{tab:repro-figures}). Before the event every edge sits at the
-    initialization-noise level, Steiner edges included; at the event exactly the Steiner edges rise,
-    together. Takeaway: the escape uses the cores of the Steiner subtree and no others.}
+  \caption{Bond spectra through the second event, two-component teachers, $d=\chi=2$, weights $(1,0.5)$. Second
+    singular value $\bs e2$ of every edge, relative to $\tw2$, against the time since the first event
+    (symmetric-log axis); coloured: the edges of the Steiner subtree $\mathrm{St}(V_D)$ (legend: the sites below
+    each edge, numbered from 0), grey dashed: all other edges, drawn on top (edges with equal values, such as the
+    two root edges of a binary tree, coincide); dotted vertical line: the second event. Left: MPS8, $D=\{2,5\}$,
+    $k=4$, small initialization; middle: binary8, $D=\{3,4\}$, $k=5$, small initialization; right: HT8,
+    $D=\{1,2\}$, $k=5$, saddle start (one run each). Before the event every edge sits at the initialization-noise
+    level, Steiner edges included; at the event exactly the Steiner edges rise, together. Takeaway: the escape
+    uses the cores of the Steiner subtree and no others (source: \cref{app:experiments},
+    \cref{tab:exp-locality}).}
   \label{fig:locality-bonds}
 \end{figure}
 
-\paragraph{Reading $k$ from a single run.}
-On a balanced route the new overlap grows as $\dot{\ov2}\propto\ov2^{\,2-2/k}$ at small $\ov2$, so the
-local growth exponent $\gamma=\dd\ln\dot{\ov2}/\dd\ln\ov2$ gives $k=2/(2-\gamma)$
-(\cref{eq:A-growth-exponent}) \derived{} \knownresult[the exponent $2-2/k$ of a balanced product of
-$k$ factors: \citealp{arora2019implicit,razin2022implicit}]. Fitted over $\ov2\in[10^{-4},10^{-2}]$, the
-medians per row give $k=2.00$, $3.0$, $4.0$, $5.1$--$5.3$, $6.0$, $7.0$--$7.7$ for $k=2$ (saddle start) to
-$7$ \empirical{} \newresult[as a meter of $k$]. Validity range: from the saddle, or from small
-initialization if the plateau is long enough for the window to lie after the escape transient. The
-estimate fails for small-initialization $k=2$ on MPS6 and MPS8 ($2.4$--$3.3$; plateau shorter than the
-transient), is biased high for $k\ge5$ (HT8: $5.3$ for $k=5$, $7.7$ for $k=7$), and cannot separate $k=7$
-from $8$, since $\dd k/\dd\gamma=k^2/2$ (per-run 5--95\% ranges $\pm1$ at $k=7$; MPS8 $\{0,7\}$, $k=8$: $7.9$
-from small initialization, 3 runs, $6.1$ from the saddle, 2 runs).
+\subsection{When is \texorpdfstring{$k^*$}{k*} the saddle order?}\label{sec:s2s-saddle-order}
+% Sources: notes/theory_saddle_order.md v2; saddle_order_verification_proof.md and
+% saddle_order_verification_numerics.md. Formal statements and the counterexample: app:saddle-order (A.4).
+% Claims review A: M3 ("can fail", not "fails"), M4 (escape law derived, forgetting empirical, seen from small
+% initialization only), m24 (the control teacher's exponents). Pending: saddle-dyn (dynamics of the theorem).
 
-\paragraph{Independent cross-check.}
-\empirical{} A pilot with separate code (\cref{app:exp-locality}: $d=\chi=2$, weights $(1,0.5)$, MPS4,
-MPS6, binary4, binary8, fan-in initialization; mean $\pm$ s.d.\ of per-seed fits over 3--8 seeds)
-gives the first escape $\tev1\propto\isc^{-(\Kc-2)}$ to within $0.003$ in the exponent for every seed;
-no plateau for $k=1$; a logarithmic $k=2$ plateau with slope $1.01\pm0.01$ on MPS4 ($\isc=10^{-3}$--$0.1$;
-predicted $1$), rising to $2.3\pm0.4$ from the saddle (predicted $2$); and $p=1.00$--$1.01$ for $k=3$,
-$2.00$ (MPS4) and $2.05\pm0.06$ (MPS6) for $k=4$, $3.00\pm0.11$ (binary8) for $k=5$ and $4.97\pm0.05$
-(binary8, under one decade) for $k=7$. It also met the failure modes of \cref{sec:s2s-failure}: 95 of
-332 runs with $k\ge4$ (none with $k\le3$) never learn the second component, and on MPS6 the
-exponents for $k=5$ and $6$ are seed-dependent and up to two units steeper than $k-2$ ($3.75\pm0.24$ for
-$k=5$, with 3 of 6 seeds escaping).
+The route gives a descent of order $k^*$ at every learned saddle, so the saddle order, the power of the distance
+at which the loss first decreases, is at most $k^*$. Can anything descend faster?
+
+\paragraph{The theorem, informally.}
+\proven{} (\cref{thm:A-order-lower,thm:A-order-sharp,cor:A-order}) At a saddle with one learned component $j$,
+and with a spare bond channel along the route, the saddle order is exactly $k^*$ unless a piggyback coupling of
+the residual on small sets of cores exceeds the learned weight $\tw j$. This never happens for $k^*=2$, nor for
+two-component teachers learned in weight order, on any tree. For $k^*=3$ or $4$ it happens exactly when the saddle
+is strict ($\lambda_{\max}(\Gamma)>\tw j$ below; equality at $k^*=4$ is open). From $k^*=5$ on it can happen while
+the Hessian is positive semidefinite, and the order then drops below $k^*$. Saddles with two or more learned
+components are not covered. \newresult
+
+\paragraph{The piggyback idea.}
+Besides opening new channels, the flow can rotate the site vectors of single learned cores, piggybacking on the
+learned channel. Two such rotations together produce a component that differs from the learned one on exactly
+those two cores, at second order and without new channels. The \emph{piggyback graph}
+(\cref{prop:A-piggyback-graph}) has one node per pair (core, rotated pattern) and one edge of weight $\tw r$ per
+residual component $r$ that differs from the learned one on exactly two cores; if its largest eigenvalue
+$\lambda_{\max}(\Gamma)$ exceeds $\tw j$, the learned saddle is strict. This happens when a larger component is
+still waiting (a wrong order, \cref{sec:s2s-order}) or when several components share a core (a \emph{star},
+\cref{sec:teacher-star}). From $k^*=5$ on, small clusters of cores can piggyback in the same way: new entries on a
+cluster whose Steiner subtree has fewer than $k^*/2$ cores, together with rotations of other cores, couple through
+the residual, and a generalized piggyback operator (\cref{def:A-gen-piggyback}) decides whether they descend
+before the route.
+
+\paragraph{A counterexample.}
+On MPS6 the teacher $000000$ (weight $1$), $110001$ and $110010$ ($0.8$ each) has $k^*=5$ and a positive
+semidefinite Hessian at the saddle of its first component, yet new entries on cores 0 and 1 aimed at the
+non-residual pattern $110000$, together with rotations of cores 4 and 5, descend at order 4 \proven{}
+(\cref{app:saddle-order}). Gradient flow from this saddle escapes in $\propto\isc^{-2}$ instead of $\isc^{-3}$
+\derived{} (checked on this teacher: 5 seeds from the saddle, and the seeds that visit it from small
+initialization), and then forgets the first component \empirical{} (seen from small initialization). For the
+matched control with weights $0.6$, which meets the condition and has order $5$, the small-initialization exponent
+is about $3$ in some seeds and about $4$ in others, unexplained (\cref{sec:s2s-failure}).
+
+\placeholder{Pending (saddle-dyn): the dynamics test of the theorem; one sentence here when it lands.}
+
+\paragraph{Which experiments satisfy the condition.}
+Every two-component fit of \cref{sec:s2s-locality} (the runs that learn the larger component first), and every
+saddle with one learned component of the multi-component teachers of \cref{sec:s2s-several} (there
+$\lambda_{\max}(\Gamma)\le0.7<\tw j$). The condition fails for the HT4 runs with $D=\{0,1,2,3\}$ that learn the
+smaller component first (order $6$, not $k=7$; excluded from the fits): in 6 of the 7 such runs ($\chi=2$,
+$\isc\ge0.4$) the smaller component is forgotten when the larger one is learned, and then relearned \empirical. A
+check of all rank-one saddles that our runs can reach finds 30 such order-6 saddles, all after a wrong first escape
+on binary and HT trees (\cref{sec:s2s-several}).
+
+\subsection{Several components}\label{sec:s2s-several}
+% Sources: notes/locality.md sections 5 and 7.4; experiments/locality/results/levels_summary.csv,
+% route_sequences.json; teachers as in app:exp-locality. Claims review A: m5 (levels found, one exception),
+% m26 (error bars for B4 and TA).
+
+\paragraph{Prediction: the route rule at rank-constrained optima.}
+With several learned components ``the sites where the next component differs'' is ambiguous, and saddles need not
+be partial sums of components. The \emph{route rule} (\cref{rem:A-sequence}) works at the saddle actually
+reached, the best approximation of $\Wt$ with the current bond-rank profile: if the learned structure is stable
+(no wrong order, no star, and from $k^*=5$ on no generalized star; \cref{sec:s2s-saddle-order}), the next escape
+takes the smallest route, of size $k^*$, with a nonzero local residual (\cref{def:A-local-residual}), raises the
+bond rank on its internal edges, and the flow moves to the best approximation with the new profile. We evaluate
+it numerically (rank-constrained optima by L-BFGS with restarts); for two components $k^*=k$. Status: \derived{}
+at leading order for each step, \conjecture{} as an algorithm.
+
+\paragraph{Test.}
+\empirical{} (predictions \derived{} at leading order) Seven teachers (patterns as site values, weights in
+brackets): TA $0000$ ($1$), $1100$ ($0.6$), $1110$ ($0.35$); TB as TA plus $1111$ ($0.2$); N4 $0000$ ($1$),
+$1100$ ($0.6$), $1111$ ($0.4$); B4 $0000$ ($1$), $0110$ ($0.3$), $1001$ ($0.6$); E8 $0^8$ ($1$), $0^31^20^3$
+($0.4$), $010^41\,0$ ($0.7$); TC $0^8$ ($1$), $1^20^6$ ($0.6$), $1^40^4$ ($0.35$), $1^8$ ($0.2$); TD $0^8$ ($1$),
+$0^31^20^3$ ($0.6$), $1^20^6$ ($0.35$); $\chi=2$ ($3$ for B4, N4, E8; \cref{app:exp-locality}). We detect the
+plateaus of $\Loss(t)$ (separation ratio above $3$, linear time) and match them to the levels predicted by the
+route rule (within $5\%$). Every predicted level with $k^*\ge3$ is found as a plateau ($88$--$100\%$ of the runs;
+$35$--$65\%$ for a few $k^*=3$ levels within $10\%$ of the next one), with one exception below, and its duration
+exponent is within $0.2$ of $k^*-2$ ($1.02$--$1.19$, $2.02$--$2.08$, $2.97$--$3.17$, $4.05$ for $k^*=3,4,5,6$).
+The exception is B4's second level on HT4 with fan-in initialization, $4.73\pm0.90$ (limited range: 4 fitted
+seeds, 23 of 48 runs stalled; $3.17\pm0.10$ with balanced initialization). The $k^*=2$ levels are logarithmic
+where measured over three decades from the saddle (four levels of TC, the first of TD); elsewhere (TD's second
+level, the first levels on MPS8 from small initialization) a power law below $1$ fits better and the law is not
+determined. At the predicted saddles the measured bond-rank profile equals the predicted one in $93.9\%$ of 3,114
+resolved (run, level) pairs. \newresult
+
+\paragraph{Locality beats weight.}
+\empirical{} On MPS4 every escaping run learns B4's $0.3$ component before its $0.6$ component, after a $k^*=2$
+level too short to be detected as a plateau; the $0.6$ component follows after a $\isc^{-2}$ plateau
+($p=2.015\pm0.013$, 5 seeds). On binary4 every run (48 of 48) learns them in weight order, after two $\isc^{-1}$
+plateaus ($1.051\pm0.008$ and $1.028\pm0.005$, 8 seeds). As $\isc\to0$ a logarithmic route beats a power-law
+route whatever the weights (\cref{rem:A-sequence}) \derived; at finite $\isc$ weights and prefactors compete.
+\newresult
+
+\paragraph{The route rule, not the literal rule.}
+\empirical{} Three teachers discriminate between rules. The literal rule (the Steiner count of the sites where
+the next component differs from the closest learned one) predicts no plateau before the third component of TA on
+any tree; there is a $\isc^{-1}$ plateau on binary4 ($1.023\pm0.005$, 8 seeds) and a $\isc^{-2}$ one on HT4
+($2.084\pm0.040$, 7 seeds), as the route rule predicts (\cref{fig:locality-trees}). For TD on MPS8 (from the
+saddle) the last plateau has $k=2$ by the literal rule, $k=4$ by the exact bond-rank rule (cores whose bond rank
+must grow to add the component exactly, \cref{lem:A-general-S}) and $k^*=3$ by the route rule, which first
+learns part of the component through a two-core route: measured $1.012\pm0.010$ (8 seeds). For TC on MPS8 (from
+the saddle) the route rule predicts a $k^*=4$ plateau where the bond-rank rule predicts $k=5$: measured
+$2.018\pm0.017$. \newresult
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.8\textwidth]{locality/trees_TA.png}
+  \caption{One teacher on three trees: teacher TA (patterns $0000$, $1100$, $1110$, weights $1$, $0.6$, $0.35$),
+    $d=\chi=2$, small fan-in initialization. Columns: MPS4 ($\Kc=4$), binary4 ($\Kc=3$), HT4 ($\Kc=7$). Top: loss
+    of one run (seed 0, $\isc$ in the panel title) against time since the first event (symmetric-log axis), with
+    the plateau levels predicted by the route rule (dashed; labels: $k^*$ and the predicted law). Middle:
+    effective bond rank of every edge in that run, one colour per edge (threshold $0.1$ times the smallest nonzero
+    teacher singular value of the edge; edges offset vertically by $0.05$).
+    Bottom: duration of each predicted level against $1/\isc$, median over 8 seeds with the range shaded; solid:
+    detected plateaus, dotted: time spent within $2\%$ of a level too short to be detected; dashed: slope
+    $k^*-2$. Measured: MPS4 two short levels (the second logarithmic in $\isc$; the law of the first is
+    undetermined); binary4 one $\isc^{-1}$ plateau, where the first escape already fits $\U1$, $\U2$ and part of
+    $\U3$; HT4 $\isc^{-1}$ and $\isc^{-2}$ plateaus ($1.09$, $2.08$). Takeaway: the tree, not the teacher alone,
+    sets the number of plateaus and their laws (source: \cref{app:experiments}, \cref{tab:exp-locality}).}
+  \label{fig:locality-trees}
+\end{figure}
+
+\paragraph{Whole sequences: a saddle hopper.}
+\empirical{} (bookkeeping of known theory) The sequence rules of this section (first escape, route rule, branches
+after a wrong first escape, race of logarithmic routes) were implemented as a predictor that hops from saddle to
+saddle, and scored on all committed runs without tuning (\cref{app:supp-s2s-hopper}). Where its prediction is
+informative (one predicted order, run not stalled) it matches $97.0\%$ of the event sequences, against $95.8\%$ for
+the baseline ``learn the components in weight order''; it beats the baseline only on the 107 runs where the route
+rule overrides the weight order (B4 on MPS4, E8 on MPS8: $88.8\%$ against $0\%$). Its race across several saddles of
+the nested teacher TC (MPS8, from the saddle) predicts five plateau slopes within $3.5\%$ \empirical{} \newresult.
+Checked at the
+587 rank-one saddles that the scored runs can reach, the condition of \cref{sec:s2s-saddle-order} fails at 30, where
+the order drops from $7$ to $6$ \proven{} (the theorems applied by exact computation); all are saddles reached by a
+wrong first escape on binary and HT trees, and in one HT4 seed the escape has the predicted signature of the
+clusters (a ratio of loss decrease to overlap of $0.2998$, against $0.300$; about $1$ for a route) \empirical{}
+\newresult.
 
 \subsection{Order of learning}\label{sec:s2s-order}
-% Sources: notes/order.md (sections 0 and 6-11 were revised in the fix round and override older text;
-% section 11 lists the changed claims), agent-runs/order/REPORT.md, experiments/order/README.md and
-% results/*.csv, review notes/reviews/order_round1.md and the verification
-% notes/reviews/order_round2_verification.md (errata E1-E10 applied; safe-to-cite list C1-C17 used for
-% tags and known/new); theory notes/theory_escape.md section 5 and notes/theory_saddles.md 4.3-4.6.
-% Settings: app:exp-order. Figures: experiments/order/plot_report.py.
-% WITHDRAWN or narrowed, do not reintroduce: "H1b holds for m = 2" (only for pairs on non-adjacent
-% cores, k >= 3; adjacent pairs add the larger component); the m = 2 law without n, or "confirmed"
-% (it is "consistent with"); "adjacent pairs still steepen toward n = chi_e", and also "n = chi_e is not
-% supported by GF" or "is reached" (E2: supported at the small-sigma end on MPS4, rho = 0.9 only); the
-% round-1 chi^2 test of d (shared seeds); "no d effect at the 0.04 level" (E3: 0.06); "R = 4: gradient
-% flow mostly stalls before the last component"; R = 3 comparisons of gradient flow and race model on
-% different run sets; "R = 3: GF less greedy than independent clocks in 6/6 cases, combined z = -1.9"
-% and the open issue that went with it (E1: paired test finds no difference); "lambda_min between 0 and
-% the saddle value" (E4); "a power law fits 10-80x worse" (E9: 11-88x, from the CSV); the binary4
-% results (greedy limit, strict wrong-order saddle, rotation) as new (known for deep linear networks);
-% "later escapes 10% to 2x later than the LO blow-up" (not reproducible from committed data); R >= 3
-% statistics outside d = chi = 4 and the single sigma per tree.
+% Sources: notes/order.md (sections 0 and 6-11 revised in the fix round); experiments/order/README.md and
+% results/*.csv; order_round1.md and order_round2_verification.md (errata E1-E10; safe-to-cite C1-C17);
+% theory_escape.md section 5, theory_saddles.md 4.3-4.6. Settings: app:exp-order. The first-component
+% statistics of the odeco runs moved here from sec:s2s-escape. Tags (todo item 3, lead decision): the gamma law
+% for n = 1 is \empirical (heuristic mechanism); n = chi_e is \conjecture. Numbers that exist only in the order
+% verification (small-sigma fits, McNemar test): provenance in app:supp-s2s-provenance. WITHDRAWN or narrowed,
+% do not reintroduce: "H1b holds for m = 2" (only for pairs on non-adjacent cores, k >= 3); the m = 2 law
+% without n, or "confirmed" (it is "consistent with"); "adjacent pairs still steepen toward n = chi_e", "n = chi_e
+% is not supported by GF" or "is reached" (E2); the round-1 chi^2 test of d; "no d effect at the 0.04 level" (E3:
+% 0.06); "R = 4: gradient flow mostly stalls before the last component"; R = 3 comparisons on different run
+% sets; "R = 3: GF less greedy than independent clocks in 6/6 cases, combined z = -1.9" (E1); "lambda_min between
+% 0 and the saddle value" (E4); "a power law fits 10-80x worse" (E9: 11-88x); the binary4 results as new (known
+% for deep linear networks); "later escapes 10% to 2x later than the LO blow-up"; R >= 3 statistics outside
+% d = chi = 4 and the single sigma per tree.
 
-Which component is learned first, and how random is the answer? With aligned initialization every tree learns
-the components in the order of their weights (\cref{sec:s2s-aligned}), and a deep linear network of depth three
-leaves the origin along its top singular pair as $\isc\to0$ \knownresult[\citealp{jacot2022saddletosaddle}, Thm~2;
-with probability one if the gradient at the origin has full rank]. In a
-TTN with random initialization the answer depends on $m$, the number of cores that carry a site on which the two
-components differ ($m=\abs{N(D)}$ in the notation of \cref{sec:s2s-locality}; for odeco teachers $m=\Ns$ on an MPS,
-$4$ on binary8 and $2$ on binary4): the order is a race set by the initialization when $m\ge3$ and greedy as
-$\isc\to0$ when $m=2$.
+Which component is learned first, and how random is the answer? With aligned initialization every tree learns the
+components in the order of their weights (\cref{sec:s2s-aligned}), and a deep linear network of depth three leaves
+the origin along its top singular pair as $\isc\to0$ \knownresult[\citealp{jacot2022saddletosaddle}, Thm~2; with
+probability one if the gradient at the origin has full rank]. In a TTN with random initialization the answer
+depends on $m=\abs{V_D}$, the number of cores that carry a site on which the two components differ (for odeco
+teachers $m=\Ns$ on an MPS, $4$ on binary8 and $2$ on binary4): the order is a race set by the initialization when
+$m\ge3$ and greedy as $\isc\to0$ when $m=2$.
 
 \paragraph{Prediction.}
 As $\isc\to0$ the first component learned is the local maximum of $g=\ip{\W}{\Wt}$ on the sphere whose basin
 contains the initial direction, since the spherical flow does not depend on $\isc$ (\cref{sec:s2s-escape})
-\derived. For $m\ge3$ every component is such a maximum (\emph{tensor-like} pairs); for $m=2$ only the larger one,
+\derived{} \knownresult[convergence to a KKT point selected by the initialization: \citealp{kumar2025early},
+Thm~1]. For $m\ge3$ every component is such a maximum (\emph{tensor-like} pairs); for $m=2$ only the larger one,
 the smaller having $n$ unstable directions, with $n=\bd e$ if its two cores share the bond $e$ and $n=1$ otherwise
-(\emph{matrix-like} pairs; \cref{prop:A-component-hessian}) \derived. With weights $(1,\varrho)$:
+(\emph{matrix-like} pairs; \cref{prop:A-component-hessian}) \derived. With weights $(1,w)$:
 \begin{enumerate}[label=(\roman*)]
-  \item \emph{Race.} On an MPS the components of an odeco teacher evolve independently at leading order (LO;
-    \cref{prop:A-reduced}); component $r$ blows up at $\isc^{-(\Kc-2)}\hat t_{1,r}/\tw r$ with $\hat t_{1,r}$ \iid, so
+  \item \emph{Race.} On an MPS the components of an odeco teacher evolve independently at leading order
+    (\cref{prop:A-reduced}); component $r$ blows up at $\isc^{-(\Kc-2)}\hat t_{1,r}/\tw r$ with $\hat t_{1,r}$ \iid,
+    so
     \begin{equation}\label{eq:order-race}
-      P(\text{larger first})=P\big(\hat t_{1,2}/\hat t_{1,1}>\varrho\big),
+      P(\text{larger first})=P\big(\hat t_{1,2}/\hat t_{1,1}>w\big),
     \end{equation}
-    independent of $\isc$ (\cref{prop:A-race}) \proven{} (at LO). Cores without sites (binary, HT trees) couple the
-    components and make the race approximate.
-  \item \emph{Matrix-like pairs.} $P(\text{smaller first})\to0$ \derived, as $\isc^{\,n(1-\varrho)/\varrho}$
-    \derived{} (heuristic argument of \cref{prop:A-matrix-like}(b); for $n=\bd e$ a \conjecture): to end near the
-    smaller component, all $n$ unstable deviations must start below $\isc^{(1-\varrho)/\varrho}$. When a wrong order
-    does happen, the deviation is therefore of order one at the start of the wrong plateau, and the correction in
-    (iii) takes a time $O(1/\abs{\lambda_{\min}})$, not $\ln(1/\isc)/\abs{\lambda_{\min}}$ \derived{} (heuristic).
+    independent of $\isc$ (\cref{prop:A-race}) \proven{} (at LO). Cores without sites (binary, HT trees) couple
+    the components and make the race approximate.
+  \item \emph{Matrix-like pairs.} $P(\text{smaller first})\to0$ \derived. To end near the smaller component, all
+    $n$ unstable deviations must start below $\isc^{(1-w)/w}$ (\cref{prop:A-matrix-like}(b)), which gives
+    $P(\text{smaller first})\propto\isc^{\gamma}$ with $\gamma=n(1-w)/w$: for $n=1$ \empirical{} (heuristic
+    mechanism; the data below support it), for $n=\bd e$ a \conjecture. When a wrong order does happen, the
+    deviation is therefore of order one at the start of the wrong plateau, and the correction in (iii) takes a time
+    $O(1/\abs{\lambda_{\min}})$, not $\ln(1/\isc)/\abs{\lambda_{\min}}$ \empirical{} (heuristic mechanism).
   \item \emph{After a wrong first escape} (\cref{rem:A-wrong-order}) \derived{}, with the Hessian at the saddle
     \proven{} (\cref{prop:A-hessian,prop:A-piggyback-graph}) and $k$ the Steiner count \eqref{eq:locality-k}:
     \emph{rotation} for $m=2$, $k\ge3$: the saddle is strict along the piggyback direction,
-    $\lambda_{\min}=-(1-\varrho)\varrho^{(\Kc-2)/\Kc}$; the learned bond index turns to $\U1$, and $\U2$ is forgotten (the
-    loss rests at $\frac12\varrho^2$) and relearned after a plateau $\propto\isc^{-(k-2)}$. \emph{Adding} for $m=2$,
-    $k=2$: a two-core route with $\lambda_{\min}=-\varrho^{(\Kc-2)/\Kc}$ (multiplicity $\bd e-1$) puts $\U1$ on a spare
-    channel and nothing is forgotten. \emph{Kept} for $m\ge3$: no negative Hessian eigenvalue; $\U1$ is added after a
-    plateau $\propto\isc^{-(k-2)}$ and the wrong order stays.
+    $\lambda_{\min}=-(1-w)w^{(\Kc-2)/\Kc}$; the learned bond index turns to $\U1$, and $\U2$ is forgotten (the loss
+    rests at $\frac12w^2$) and relearned after a plateau $\propto\isc^{-(k-2)}$. \emph{Adding} for $m=2$, $k=2$: a
+    two-core route with $\lambda_{\min}=-w^{(\Kc-2)/\Kc}$ (multiplicity $\bd e-1$) puts $\U1$ on a spare channel and
+    nothing is forgotten. \emph{Kept} for $m\ge3$: no negative Hessian eigenvalue; $\U1$ is added after a plateau
+    $\propto\isc^{-(k-2)}$ and the wrong order stays.
 \end{enumerate}
 A correction through a strict saddle thus exists only where the wrong order becomes rare as $\isc\to0$.
 
-\paragraph{What is known and what is new.}
-Near the origin the direction converges to a KKT point of $g$ selected by the initialization
-\knownresult[\citealp{kumar2025early}, Thm~1]. Binary4 is a depth-3 linear network (\cref{rem:A-binary4-dln}), whose
-greedy limit \knownresult[\citealp{jacot2022saddletosaddle}, Thm~2; their probability-one proof for depth three
-assumes a full-rank gradient at the origin] and strict wrong-order saddles \knownresult[\citealp{achour2024loss},
-Thm~7; \citealp{jacot2022saddletosaddle}, Lemma~15] are known; the binary4 results below are checks. The
-tensor-versus-matrix dichotomy appears elsewhere: in multi-spike tensor PCA of order $p\ge3$ the recovery order is
-a greedy selection on (weight)$\times$(initial correlation)$^{p-2}$, for $p=2$ the order of the signal-to-noise
-ratios \knownresult[\citealp{benarous2025stochastic}, Thm~1.5; gradient flow: \citealp{benarous2025permutation},
-Thm~1.3]; the tensor power method converges to the component with the largest weight times initial overlap
-\knownresult[symmetric third-order odeco tensors: \citealp{anandkumar2014tensor}, Lemma~5.1]; units quadratic in
-their weights are ordered by their initialization \knownresult[\citealp{zhang2026saddletosaddle}, Prop.~5]; and
-over-parameterized orthogonal tensor decomposition learns the largest component first
-\knownresult[\citealp{ge2021understanding}; proven for a modified gradient flow]. New for TTNs \newresult: the
-classification by $m$; the exact, $\isc$-independent race on MPS; the order statistics; the finite-$\isc$ law of
-matrix-like pairs; a selection rule; the branches after a wrong first escape beyond binary4; three components.
-
 \paragraph{Setup} (\cref{app:exp-order}).
-Two-component teachers $\Wt=\U1+\varrho\U2$: odeco on five trees, or pattern teachers on MPS4 and MPS6 whose
-components differ on the sites $D$ (numbered from $0$; on an MPS core $i$ carries site $i$), in the standard site
-basis, which the rotation invariance of the initialization makes general; $d=2$ unless stated, fan-in
-initialization, exact population loss, double precision. The component learned first is the one whose overlap $\ov r$
-first crosses $\frac12$; probabilities are frequencies over seeds $0$--$399$ ($0$--$999$ in the $\isc$ scans of binary4
-and MPS4), the same for every $\varrho$ and $\isc$, with Wilson 95\% intervals or binomial s.e.\ ($\le0.025$).
+Two-component teachers $\Wt=\U1+w\U2$: odeco on five trees, or pattern teachers on MPS4 and MPS6 whose components
+differ on the sites $D$ (numbered from $0$; on an MPS core $i$ carries site $i$), in the standard site basis, which
+the rotation invariance of the initialization makes general; $d=2$ unless stated, fan-in initialization, exact
+population loss. The component learned first is the one whose overlap $\ov r$ first crosses $\frac12$; probabilities
+are frequencies over seeds $0$--$399$ ($0$--$999$ in the $\isc$ scans of binary4 and MPS4), the same seeds for
+every $w$ and $\isc$, with Wilson 95\% intervals or binomial s.e.\ ($\le0.025$).
+
+\paragraph{The first component of the odeco runs.}
+\empirical{} In the first-escape test of \cref{sec:s2s-escape} the first component learned is the LO flow's $r_1$
+in 1,847 of 1,848 runs, and in all 231 at the smallest $\isc$; the exception (binary4, close teacher, $\isc=0.1$)
+is a wrong first escape at finite $\isc$ (\cref{prop:A-matrix-like}). On binary4 only the largest component is a
+local maximum of $g$ (a matrix-like tree), and it is learned first in 639 of 640 first-escape runs
+\knownresult[deep linear networks: \citealp{jacot2022saddletosaddle}, Thm~2 and Lemma~15]. On the tensor-like trees
+the first component varies from seed to seed (largest first in 400 of 640 runs on MPS4) but is the same at every
+$\isc$ for a given seed, and the race of independent per-component flows names it in every MPS run, where it is
+exact at leading order, in 328 of 328 binary8 and 152 of 160 HT4 runs, where cores without sites couple the
+components, and in only 537 of 640 binary4 runs, where that coupling decides (\cref{app:supp-s2s-order}).
 
 \paragraph{Tensor-like pairs: a race set by the initialization} (\cref{fig:order-first}(a,b)).
-\empirical{} \newresult{} In the main sweep (five trees, 28 settings of $(d,\chi)$, six values of $\varrho$, $\isc=0.01$;
-67,200 runs) $P(\text{larger first})$ is $0.60$--$0.88$ at $\varrho=0.5$ and $0.51$--$0.65$ at $\varrho=0.8$ on the 23
-tensor-like settings. In all 40,800 MPS runs the first component learned is the winner of the run's own LO race
-(single-component blow-up times $\hat t_{1,r}$), $\arg\min_r\hat t_{1,r}/\tw r$; on binary8, whose internal cores are
-shared, in $96$--$99.5\%$ of the runs of each setting. The race curves \eqref{eq:order-race} lie at $0.66$--$0.89$
-and $0.55$--$0.66$, with gradient flow $0.018\pm0.019$ below them over the 102 MPS cells, a fluctuation of the shared
-seeds. The order does not depend on $\isc$: $P(\text{smaller first})=0.185$, $0.395$, $0.490$ at $\varrho=0.5$, $0.8$,
-$0.95$ for every $\isc\in[0.003,0.1]$ on MPS4 ($\chi=4$), and $0.240$, $0.4075$, $0.4875$ for every $\isc\in[0.01,0.1]$ on
-binary8, with the same winner per seed (at $\isc=0.3$ at most $1\%$ change). MPS6 pattern pairs with $m=3$, $4$ behave
-alike, and the order becomes more random as $m$ grows: on MPS6 at $\isc=0.01$, $\varrho=0.8$,
-$P(\text{smaller first})=0.17$, $0.32$, $0.41$, $0.46$ for $m=2$ ($D=\{0,5\}$), $3$, $4$, $6$ (odeco).
+\empirical{} In the main sweep (five trees, 28 settings of $(d,\chi)$, six values of $w$, $\isc=0.01$; 67,200 runs)
+$P(\text{larger first})$ is $0.60$--$0.88$ at $w=0.5$ and $0.51$--$0.65$ at $w=0.8$ on the 23 tensor-like settings.
+In all 40,800 MPS runs the first component learned is the winner of the run's own LO race,
+$\arg\min_r\hat t_{1,r}/\tw r$; on binary8, whose internal cores are shared, in $96$--$99.5\%$ of the runs of each
+setting. The order does not depend on $\isc$: on MPS4 ($\chi=4$) $P(\text{smaller first})=0.185$, $0.395$, $0.490$
+at $w=0.5$, $0.8$, $0.95$ for every $\isc\in[0.003,0.1]$, with the same winner per seed, and likewise on binary8
+and for MPS6 pattern pairs with $m=3$, $4$. The order becomes more random as $m$ grows: on MPS6 at $\isc=0.01$,
+$w=0.8$, $P(\text{smaller first})=0.17$, $0.32$, $0.41$, $0.46$ for $m=2$ ($D=\{0,5\}$), $3$, $4$, $6$ (odeco).
+\newresult[related: units ordered by their initialization, \citealp{zhang2026saddletosaddle}, Prop.~5]
 
 \begin{figure}[tbp]
   \centering
   \includegraphics{order/first.pdf}
-  \caption{Which component is learned first: weights $(1,\varrho)$, $d=2$; dots: gradient flow, Wilson 95\% intervals
-    (400 seeds; 1,000 for binary4 and MPS4 in (b)). (a)~$\isc=0.01$, $\chi=4$, odeco teachers; lines: the race
-    \eqref{eq:order-race} of the same initializations (dotted for binary4, where it is not the dynamics).
-    (b)~$\varrho=0.8$; lines: fitted $C\isc^\gamma$ for $m=2$ (\cref{tab:order-gamma}); zero counts not drawn. (c)~Uncapped
-    bonds, $\varrho=0.8$: race (lines, 500 initializations), gradient flow at $\chi=16$, $32$. $D$: differing sites of
-    pattern teachers. Takeaway: for $m\ge3$ a race set by the initialization, independent of $\isc$ and slowly greedier
-    with $\chi$; for $m=2$ the wrong order dies out as a power of $\isc$.}
+  \caption{Which component is learned first: weights $(1,w)$, $d=2$; dots: gradient flow, Wilson 95\% intervals
+    (400 seeds; 1,000 for binary4 and MPS4 in (b)). (a)~$\isc=0.01$, $\chi=4$, odeco teachers; lines: the
+    leading-order (LO) race \eqref{eq:order-race} of the same initializations (dotted for binary4, where it is not
+    the dynamics). (b)~$w=0.8$; lines: fitted $C\isc^\gamma$ for $m=2$ (\cref{tab:order-gamma}); zero counts not
+    drawn. (c)~Uncapped bonds, $w=0.8$: race (lines, 500 initializations), gradient flow at $\chi=16$, $32$.
+    Legend: $m$, the number of cores that carry a site where the two components differ; $D$, the differing sites
+    of pattern teachers; ``adj.'', a pair whose two cores share a bond; ``LO race / fit'', the race in (a) and (c)
+    and the fitted power law in (b). Takeaway: for $m\ge3$ a race set by the initialization, independent of $\isc$
+    and slowly greedier with $\chi$; for $m=2$ the wrong order dies out as a power of $\isc$ (source:
+    \cref{app:experiments}, \cref{tab:exp-order}).}
   \label{fig:order-first}
 \end{figure}
 
-\paragraph{Number of cores, bond dimension, physical dimension; a selection rule} (\cref{fig:order-first}(c)).
-\empirical{} \newresult{} The order becomes more random with $\Kc$ and greedier with $\chi$, through the spread of the
-race: on MPS with $d=\chi=2$, $\mathrm{sd}\ln\hat t_1=0.59$, $0.93$, $1.20$ and $P(\text{larger first})=0.79$, $0.69$,
-$0.63$ at $\varrho=0.5$ for $\Kc=4$, $6$, $8$. With capped bonds the gain stops once the end bonds reach their cap $d$
-(MPS8, $d=4$: $0.60$, $0.73$, $0.76$ at $\chi=2$, $4$, $8$). With uncapped bonds $\mathrm{sd}\ln\hat t_1\propto\chi^{-(0.48\text{--}0.54)}$ ($\chi\ge4$), its growth with $\Kc$
-approaches $\sqrt{\Kc-2}$, and at $\chi=32$, $\varrho=0.8$ the race gives $0.86$ (MPS4) to $0.72$ (binary8), confirmed by
-gradient flow: the greedy order returns, as in over-parameterized tensor decomposition, but slowly. On an MPS, $d$
-enters only through the caps \derived; at equal bonds independent seed sets show no effect of $d$ on binary8 and
-MPS4 ($\abs{\Delta P}\le0.021$; differences above about $0.06$ excluded at 95\%). With $X_r$ the projection of the
-initialization onto the orbit of component $r$'s balanced rank-one configuration,
-$\ln\hat t_{1,r}\approx\mathrm{const}-q\ln X_r$ with $q=(0.99$--$1.25)(\Kc-2)$ (s.e.\ $1$--$4\%$), and ``the winner is $\arg\max_r\tw rX_r^{\Kc-2}$'' names
-$76$--$92\%$ of the winners on the tensor-like settings, also out of sample: the TTN form of the
-(weight)$\times$(overlap)$^{p-2}$ rule of tensor PCA.
+\paragraph{Number of cores, bond and physical dimension; the selection rule} (\cref{fig:order-first}(c)).
+\empirical{} The order becomes more random with $\Kc$ and greedier with $\chi$, through the spread of the race: on
+MPS with $d=\chi=2$, $P(\text{larger first})=0.79$, $0.69$, $0.63$ at $w=0.5$ for $\Kc=4$, $6$, $8$. With uncapped
+bonds the spread of $\ln\hat t_1$ falls about like $\chi^{-1/2}$, and at $\chi=32$, $w=0.8$ the race gives $0.86$
+(MPS4) to $0.72$ (binary8), confirmed by gradient flow: the greedy order returns, but slowly; with capped bonds the
+gain stops once the end bonds reach their cap $d$. On an MPS, $d$ enters only through the caps \derived; at equal
+bonds, independent seed sets show no effect of $d$ ($\abs{\Delta P}\le0.021$). The winner follows the TTN form of
+the selection rule of tensor PCA: with $X_r$ the projection of the initialization onto the orbit of component
+$r$'s balanced rank-one configuration, ``the winner is $\arg\max_r\tw rX_r^{\Kc-2}$'' names $76$--$92\%$ of the
+winners on the tensor-like settings, also out of sample (details in \cref{app:supp-s2s-order}). \newresult
+\knownresult[the (weight)$\times$(overlap)$^{p-2}$ rule of multi-spike tensor PCA, \citealp{benarous2025stochastic},
+Thm~1.5, and for gradient flow \citealp{benarous2025permutation}, Thm~1.3; the tensor power method,
+\citealp{anandkumar2014tensor}, Lemma~5.1; over-parameterized orthogonal tensor decomposition learns the largest
+component first, \citealp{ge2021understanding}]
 
-\paragraph{Matrix-like pairs: greedy as $\isc\to0$, slowly} (\cref{fig:order-first}(b), \cref{tab:order-gamma}).
-\derived{} (heuristic exponent) \empirical{} \newresult[the power law in $\isc$; the limit is known for binary4] For the
-three pairs on non-adjacent cores ($n=1$: odeco binary4, and $D=\{0,5\}$ on MPS6 and $D=\{0,2\}$ on MPS4)
-$P(\text{smaller first})$ is consistent with $C\isc^{(1-\varrho)/\varrho}$ for $\varrho=0.7$--$0.95$: fits over the whole
-measured range lie below $(1-\varrho)/\varrho$ in 12 of 13 sets, by up to $24\%$ ($2.5$--$3.3$ s.e.\ at $\varrho=0.95$ and for
-MPS4 $D=\{0,2\}$ at $\varrho=0.9$, otherwise within $1.8$ s.e.), but fits over the three smallest values of $\isc$ agree
-within $1.1$ s.e.\ in all 13 (verification review): the deficit is pre-asymptotic. The wrong-order seeds are nested
-in all 18 matrix-like sets (a seed wrong at some $\isc$ is wrong at every larger $\isc$), as the threshold picture of
-(ii) predicts. Adjacent pairs ($n=\bd e=4$) are $2.2$--$3.4$ times steeper; on MPS4 at $\varrho=0.9$ the fit over
-$\isc=10^{-5}$--$10^{-3}$ gives $0.40\pm0.05$, consistent with $n(1-\varrho)/\varrho=0.444$, while at $\varrho=0.8$ and on MPS6
-(down to $\isc=0.003$) the exponents stay below it: $n=\bd e$ remains a \conjecture{} supported at the small-$\isc$
-end. Binary4 is far greedier than a race of independent clocks (\cref{fig:order-first}(a): $0.87$ against $0.73$ at
-$\varrho=0.8$).
-
-\begin{table}[tbp]
-  \centering
-  \caption{Matrix-like pairs: exponent $\gamma$ of $P(\text{smaller first})=C\isc^{\gamma}$, binomial maximum likelihood
-    over the whole $\isc$ range, s.e.\ from a bootstrap over seeds (shared across $\isc$); $d=2$, $\chi=4$ for the pattern
-    pairs. Prediction \eqref{eq:A-matrix-like}: $n(1-\varrho)/\varrho$, $n=1$ for non-adjacent cores, $n=\bd e=4$
-    (conjectured) for adjacent ones. --: not run, or (MPS6 $\{2,3\}$, $\varrho=0.7$) events at two $\isc$ only. Source:
-    \texttt{sigma\_fits.csv}.}
-  \label{tab:order-gamma}
-  \footnotesize
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{@{}llcccc@{}}
-    \toprule
-    pair & $\isc$ range, seeds & $\varrho=0.7$ & $0.8$ & $0.9$ & $0.95$ \\
-    \midrule
-    binary4, $\chi=2$ & $10^{-4}$--$0.1$, 1,000 & $0.370\pm0.034$ & $0.237\pm0.018$ & $0.103\pm0.008$ & $0.042\pm0.004$ \\
-    binary4, $\chi=4$ & $10^{-4}$--$0.1$, 1,000 & $0.42\pm0.05$ & $0.248\pm0.018$ & $0.102\pm0.008$ & $0.040\pm0.004$ \\
-    MPS6, $D=\{0,5\}$ & $0.003$--$0.1$, 400 & $0.46\pm0.06$ & $0.249\pm0.029$ & $0.101\pm0.014$ & -- \\
-    MPS4, $D=\{0,2\}$ & $10^{-5}$--$0.1$, 1,000 & -- & $0.240\pm0.017$ & $0.095\pm0.006$ & -- \\
-    \multicolumn{2}{@{}l}{prediction $(1-\varrho)/\varrho$ ($n=1$)} & $0.429$ & $0.250$ & $0.111$ & $0.053$ \\
-    \midrule
-    MPS6, $D=\{2,3\}$ (adjacent) & $0.003$--$0.1$, 400 & -- & $0.67\pm0.09$ & $0.22\pm0.03$ & -- \\
-    MPS4, $D=\{1,2\}$ (adjacent) & $10^{-5}$--$0.1$, 1,000 & -- & $0.82\pm0.06$ & $0.31\pm0.02$ & -- \\
-    \multicolumn{2}{@{}l}{conjecture $4(1-\varrho)/\varrho$ ($n=\bd e=4$)} & $1.71$ & $1.00$ & $0.444$ & -- \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+\paragraph{Matrix-like pairs: greedy as $\isc\to0$, slowly} (\cref{fig:order-first}(b)).
+\empirical{} (heuristic mechanism) For the three pairs on non-adjacent cores ($n=1$: odeco binary4, $D=\{0,5\}$ on
+MPS6 and $D=\{0,2\}$ on MPS4), $P(\text{smaller first})$ is consistent with $C\isc^{\gamma}$, $\gamma=(1-w)/w$, for
+$w=0.7$--$0.95$: fits over the whole measured range lie below $(1-w)/w$ in 12 of 13 sets, by up to $24\%$, but fits
+over the three smallest values of $\isc$ (limited range) agree within $1.1$ s.e.\ in all 13: the deficit is
+pre-asymptotic. The wrong-order seeds are nested in all 18 matrix-like sets (a seed wrong at some $\isc$ is wrong at
+every larger $\isc$), as the threshold picture of (ii) predicts. Adjacent pairs ($n=\bd e=4$) are $2.2$--$3.4$
+times steeper; on MPS4 at $w=0.9$ the fit over $\isc=10^{-5}$--$10^{-3}$ gives $0.40\pm0.05$, consistent with
+$n(1-w)/w=0.444$, but at $w=0.8$ and on MPS6 the exponents stay below it: $n=\bd e$ remains a \conjecture{} supported
+at the small-$\isc$ end. Binary4 is far greedier than a race of independent clocks ($0.87$ against $0.73$ at
+$w=0.8$). Fitted exponents: \cref{tab:order-gamma}. \newresult[the power law in $\isc$]
+\knownresult[the limit for binary4: \citealp{jacot2022saddletosaddle}, Thm~2]
 
 \paragraph{After a wrong first escape} (\cref{fig:order-wrong}).
-\empirical{} \newresult[beyond binary4, which is known] \emph{Saddle starts} (the exact wrong saddle plus a fan-in
-perturbation of scale $\isc$, $d=2$, $\chi=4$, Hessian at the plateau midpoint; for $m=2$, 8 seeds at
-$\isc=10^{-7}$--$10^{-2}$) follow the predicted branch in every run: binary4 and MPS4 $D=\{0,2\}$ rotate (192 and 144
-runs), MPS4 $D=\{1,2\}$ adds (144,
-$\ov2$ stays at $1$), the odeco MPS4, MPS6 and binary8 keep the wrong order ($\ov2\ge0.96$). At $\varrho=0.8$ the midpoint
-$\lambda_{\min}$ (raw) is $-0.18559$, $-0.17890$ and $-0.89427$ (three times) against $-0.18566$, $-0.17888$ and
-$-0.89443$, independent of $\isc$; the escape takes $\ln(1/\isc)/\abs{\lambda_{\min}}$ plus a constant, with slopes
-$5.466\pm0.082$, $5.5903\pm0.0045$, $1.1171\pm0.0009$ against $5.386$, $5.590$, $1.118$ (mean $\pm$ s.e.\ over seeds; the
-binary4 excess comes from $\isc=10^{-2}$, and the local slope times $\abs{\lambda_{\min}}$ tends to $1.0000$ at
-$\isc=10^{-7}$), and a power law fits $11$--$88$ times worse in rms residual ($95$--$106$ on the adding branch). On the
-kept branch $\abs{\lambda_{\min}}\propto\isc^{1.999\pm0.014}$, $\isc^{4.22\pm0.09}$, $\isc^{5.2\pm0.3}$ and
-$\tev1\propto\isc^{-1.98\pm0.03}$, $\isc^{-4.26\pm0.13}$, $\isc^{-5.3\pm0.3}$ on MPS4, MPS6, binary8 ($k-2=2$, $4$, $5$; 8, 5, 6
-seeds over factors 10, 4 and 2.3 in $\isc$): higher-order saddles; one MPS6 seed of six stalls. \emph{Natural runs}
-(initializations that learned the smaller component first, up to 40 per $(\varrho,\isc)$) show no $\ln(1/\isc)$ part,
-as (ii) predicts: 296 of 301 binary4 runs and 237 of 240 MPS4 $D=\{0,2\}$ runs rotate, with
-$\abs{\lambda_{\min}}(\tev1-\tev2)=0.98$--$1.38$ on average per $(\varrho,\isc)$, flat in $\isc$ (slope $-0.02\pm0.03$ per unit of
-$\ln(1/\isc)$), and a wrong plateau is resolved in at most $2.5\%$ of runs: the smaller component overshoots and
-falls to zero while the larger rises, then come a plateau at $\frac12\varrho^2$ and the relearning. All 150 adjacent
-runs add, within $0.1$--$1$ time units; on MPS4 odeco the wrong plateau is resolved and 39 of 40 runs add after it,
-while one stalls.
+\empirical{} \emph{Saddle starts} (the exact wrong saddle plus a fan-in perturbation of scale $\isc$, $d=2$,
+$\chi=4$; for $m=2$, 8 seeds at $\isc=10^{-7}$--$10^{-2}$) follow the predicted branch in every run: binary4 and
+MPS4 $D=\{0,2\}$ rotate, MPS4 $D=\{1,2\}$ adds, and the odeco MPS4, MPS6 and binary8 keep the wrong order. On the
+strict branches the midpoint $\lambda_{\min}$ matches the prediction to $0.05\%$ at every $\isc$, and the escape
+takes $\ln(1/\isc)/\abs{\lambda_{\min}}$ plus a constant (slopes within $1.5\%$ of the prediction; a power law fits
+$11$--$88$ times worse). On the kept branch $\abs{\lambda_{\min}}\propto\isc^{k-2}$: $\isc^{1.999\pm0.014}$ on MPS4
+(8 seeds over a decade), and $\isc^{4.22\pm0.09}$ on MPS6 and $\isc^{5.2\pm0.3}$ on binary8 (limited range: 5 and 6
+seeds over factors 4 and 2.3 in $\isc$), against $k-2=2$, $4$, $5$: higher-order saddles. \emph{Natural runs} at
+$\isc=10^{-4}$--$10^{-2}$ (initializations that learned the smaller component first, up to 40 per $(w,\isc)$) show no
+$\ln(1/\isc)$ part, as (ii) predicts: 296 of 301 binary4 runs and 237 of 240 MPS4 $D=\{0,2\}$ runs rotate, with
+$\abs{\lambda_{\min}}(\tev1-\tev2)=0.98$--$1.38$, flat in $\isc$, and a wrong plateau is resolved in at most $2.5\%$
+of runs; at $\isc=0.1$, where the wrong saddle is barely reached, only 30 of 120 binary4 runs rotate. All 150
+adjacent runs add. \newresult[beyond binary4] \knownresult[binary4: \citealp{achour2024loss}, Thm~7;
+\citealp{jacot2022saddletosaddle}, Lemma~15]
 
 \begin{figure}[tbp]
   \centering
   \includegraphics{order/wrong.pdf}
-  \caption{After a wrong first escape, from the wrong saddle ($\U2$ learned, $\varrho=0.8$) plus a fan-in perturbation
-    of scale $\isc$; $d=2$, $\chi=4$. (a)--(c)~Overlaps of one run per branch (seed 0): (a)~binary4 ($\isc=10^{-4}$): the
+  \caption{After a wrong first escape, from the wrong saddle ($\U2$ learned, $w=0.8$) plus a fan-in perturbation of
+    scale $\isc$; $d=2$, $\chi=4$. (a)--(c)~Overlaps of one run per branch (seed 0): (a)~binary4 ($\isc=10^{-4}$): the
     learned bond index turns to $\U1$ at $t\approx57$, $\U2$ is forgotten and relearned at $t\approx1.3\cdot10^4$;
-    (b)~MPS4, $D=\{1,2\}$ ($\isc=10^{-4}$): $\U1$ is added at $t\approx11$, $\ov2$ stays at $1$; (c)~MPS4 odeco ($\isc=0.01$):
-    $\U1$ is added after a $\isc^{-2}$ plateau ($t\approx2.4\cdot10^4$). (d)~Escape time in units of the predicted
-    $1/\abs{\lambda_{\min}}$, mean over 8 seeds for each $\varrho$ (binary4: $0.5$, $0.7$, $0.8$, $0.9$; MPS4: $0.5$, $0.8$, $0.9$;
-    they nearly coincide); lines: slope 1. Takeaway: $m=2$ wrong-order saddles are strict and are left at the predicted
-    rate, by rotation or by adding; for $m\ge3$ nothing corrects the wrong order.}
+    (b)~MPS4, $D=\{1,2\}$ ($\isc=10^{-4}$): $\U1$ is added at $t\approx11$, $\ov2$ stays at $1$; (c)~MPS4 odeco
+    ($\isc=0.01$): $\U1$ is added after a $\isc^{-2}$ plateau ($t\approx2.4\cdot10^4$). (d)~Escape time in units of
+    the predicted $1/\abs{\lambda_{\min}}$, mean over 8 seeds for each $w$ (binary4: $0.5$, $0.7$, $0.8$, $0.9$; MPS4:
+    $0.5$, $0.8$, $0.9$; they nearly coincide); lines: slope 1; legend as in \cref{fig:order-first}. Takeaway: $m=2$
+    wrong-order saddles are strict and are left at the predicted rate, by rotation or by adding; for $m\ge3$ nothing
+    corrects the wrong order (source: \cref{app:experiments}, \cref{tab:exp-order}).}
   \label{fig:order-wrong}
 \end{figure}
 
 \paragraph{Three and four components.}
-\empirical{} \newresult{} Odeco teachers with weights $(1,\varrho,\varrho^2)$, $\varrho=0.8$, $0.9$, $d=\chi=4$, 200 seeds, one
-$\isc$ per tree ($0.05$ binary4, $0.1$ MPS4, $0.2$ MPS6, $0.25$ binary8, keeping dormant components above the float64
-floor; the last two lie outside the checked $\isc$-independence range), compared with a race of independent clocks
-drawn from the pooled $\hat t_{1,r}$ of the same runs. Binary4 ($m=2$) is far greedier (greedy order in $0.705\pm0.032$
-and $0.490\pm0.035$ of runs at $\varrho=0.8$, $0.9$, against $0.518$ and $0.319$). For $m\ge3$ the order is a random permutation favouring the
-larger components, consistent with the model in every case ($\abs z\le1.6$; MPS4: $0.35$ and $0.23$ against $0.36$ and
-$0.25$) and no less greedy than each run's own LO race (41 runs greedy only in gradient flow, 43 only in the race;
-McNemar $p\ge0.45$ in every case; verification review); the own race names the first event in $97$--$100\%$ of runs
-and the whole order in $70$--$89\%$. Runs that stalled or did not finish by $t=10^9$ are excluded from both sides: at
-most 5 of 200 on MPS4 and binary8, about half on MPS6, whose values are conditional on completion. With four
-components and $\chi=4$, most runs stop before learning all four (MPS4 289 of 400, MPS6 396 of 399, binary8 389 of
-393; binary4 none), and none of 22 runs without any stall stop learns all four by $t=10^9$: the stalls of
-\cref{sec:s2s-failure,sec:other-stalled}, here also at $\Kc=4$. Teachers with stars reorder in yet another way: a
-learned larger component is forgotten and relearned last (\cref{sec:teacher-star}).
+\empirical{} Odeco teachers with weights $(1,w,w^2)$, $w=0.8$, $0.9$, $d=\chi=4$, 200 seeds, one $\isc$ per tree,
+compared with a race of independent clocks drawn from the pooled $\hat t_{1,r}$ of the same runs. Binary4 ($m=2$)
+is far greedier (greedy order in $0.705\pm0.032$ and $0.490\pm0.035$ of runs, against $0.518$ and $0.319$). For
+$m\ge3$ the order is a random permutation favouring the larger components, consistent with the model in every case
+($\abs z\le1.6$) and no less greedy than each run's own LO race (McNemar $p\ge0.45$ in every case), which names the
+first event in $97$--$100\%$ of runs and the whole order in $70$--$89\%$ (on MPS6, where about half of the runs did
+not finish, conditional on completion). With four components and $\chi=4$, most runs stop before learning all four (MPS4 289 of 400,
+MPS6 and binary8 nearly all; binary4 none): the stalls of \cref{sec:s2s-failure}, here also at $\Kc=4$. Teachers
+with stars reorder in yet another way: a learned larger component is forgotten and relearned last
+(\cref{sec:teacher-star}). Details: \cref{app:supp-s2s-order}. \newresult
 
 \paragraph{Status.}
-H1 (the order is set by the initialization's basin) holds for tensor-like pairs (\derived{} at LO, exact on MPS;
-\empirical{} on four trees) and fails for matrix-like pairs, which are greedy as $\isc\to0$. H1b (correction through
-a strict saddle in a time $\propto\ln(1/\isc)$) holds only for $m=2$ pairs on non-adjacent cores, and natural runs
-correct in $O(1/\abs{\lambda_{\min}})$; adjacent pairs add the larger component, tensor-like pairs keep the wrong order.
-Open: the prefactor of the $m=2$ law, the exponent of adjacent pairs, and a closed-form race when cores without
-sites couple the components.
+The order is set by the basin of the initial direction for tensor-like pairs (\proven{} at LO on MPS, \derived{}
+elsewhere; \empirical{} on four trees), not for matrix-like pairs, which become greedy as $\isc\to0$. A wrong order
+is corrected through a strict saddle in a time $\propto\ln(1/\isc)$ only from the saddle and only for $m=2$ pairs on
+non-adjacent cores; natural runs correct in $O(1/\abs{\lambda_{\min}})$, adjacent pairs add the larger component,
+and tensor-like pairs keep the wrong order. Open: the prefactor of the $m=2$ law, the exponent of adjacent pairs,
+and a closed-form race when cores without sites couple the components.
 
 \subsection{Failure modes}\label{sec:s2s-failure}
-% Odeco part written from notes/s2s_core.md 2.7 and the s2s-core round-2 verification (safe-to-cite
-% items 12-17; errata E4, E5, E12, E13, E15, E18-E20 applied). Locality part from notes/locality.md 7.5,
-% 7.9, 7.10 (final) and the locality round-2 verification (items b, d). WITHDRAWN, do not reintroduce:
-% "measured decay rates 1.1-5.6x below the single-end estimate" (E5: not reproducible); the
-% balanced-route estimate as an upper bound (E12: exceeded in 4 of 16 escapes); "stalls are ever-longer
-% plateaus" as established (checked on 16 escapes only); K = 7, 8 decay rates and their sigma dependence
-% (E19, E20); "40% at K = 4, fixed per direction" for the close teacher (E15); ">100x drops 3-8%" and
-% "0.6-2% at chi = 6" (E18: 2-8% and 0-2%). Regime-map stalls at chi = R (app:boundaries,
-% notes/theory_regimes.md P14): summarized at the end of the first paragraph from Sec. 5.3
-% (sec:other-stalled), which has the numbers.
+% Odeco part from notes/s2s_core.md 2.7 and the s2s-core round-2 verification (safe-to-cite items 12-17; errata
+% E4, E5, E12, E13, E15, E18-E20). Locality part from notes/locality.md 7.5, 7.9, 7.10 and the locality round-2
+% verification (items b, d). Regime-map stalls: old Sec. 5.3 "Stalled runs" (sec:other-stalled, deleted from
+% 05 by ed-regimes) merged here; its stall-test table is tab:s2s-stall-test in app:supp-s2s-failure. Stall
+% taxonomy of notes/report_style.md: stalled = dead route (trap) / slow / floor; odeco classes "trapped" and
+% "stalled" of app:exp-s2s are "dead route" and "slow". Claims review A: m20 (novelty: the route-end condition;
+% Luo et al.), m23 (hedge on the mechanism); todo item 1 (decay rate constant per seed: separated teacher only).
+% Pending: trap-theory results. WITHDRAWN, do not reintroduce: "measured decay rates 1.1-5.6x below the
+% single-end estimate" (E5); the balanced-route estimate as an upper bound (E12); "stalls are ever-longer
+% plateaus" as established; K = 7, 8 decay rates and their sigma dependence (E19, E20); "40% at K = 4, fixed per
+% direction" for the close teacher (E15); ">100x drops 3-8%" and "0.6-2% at chi = 6" (E18: 2-8% and 0-2%).
 
-Two things end a saddle-to-saddle sequence early: a route dies, its end cores decaying to roundoff under
-the conservation laws (the trap of \cref{prop:A-trap}), or a plateau outlasts the budget. Both appear in
-the odeco runs of \cref{sec:s2s-phenomenology}, whose routes span the tree, and in the pattern-teacher runs
-of \cref{sec:s2s-locality}. An odeco run is \emph{trapped} if a component not yet learned has a route-end
-slice below $10^{-8}\isc$ and \emph{stalled} if its budget ended with every such slice above it
-(\cref{app:exp-s2s}); a pattern-teacher run is flagged \emph{stalled} when its gradient stays below
-$10^{-12}$, and \emph{dead} when a longer run confirms route ends at roundoff. The regime maps meet the
-same trap at $\chi$ equal to the teacher rank, as \cref{app:boundaries} predicts (\empirical{};
-\cref{sec:other-stalled}):
-on binary8 ($\Kc=7$) and MPS8 ($\Kc=8$) most runs never learn the last component, whose route runs
-through all $\Kc$ cores, in the plain as in the centred model; from fan-in initialization that route ends
-dead (28 of 32 stalled plain runs), and balanced initialization removes the dead routes but not the
-stalls. Spare channels remove the stalls where every route end has one (binary8 at $\chi=6$), not where
-the end bonds are capped at the teacher rank (MPS8 at $d=3$).
+A saddle-to-saddle run can end \emph{stalled}, with its loss above $10^{-3}\Loss(0)$ when its budget ends
+(\cref{tab:regimes}), for three reasons (\cref{sec:setup-diagnostics}): a \emph{dead route} (trap), whose route
+ends have decayed to roundoff so that it cannot escape; a \emph{slow} route, live but with a plateau longer than
+the budget; and the \emph{floor} of an unrealizable centred target (\cref{sec:other-lazy}), the only cause
+specific to the centred model. The \emph{ends} of a route are its terminal cores; an end's \emph{slice} is that
+core's entries on the route's new channel. This subsection treats dead and slow routes in the odeco runs of
+\cref{sec:s2s-phenomenology}, whose routes span the tree, in the pattern-teacher runs of
+\cref{sec:s2s-locality}, and in the regime maps of \cref{sec:regime-map}.
 
-\paragraph{Odeco teachers: the trap grows with $\Kc$} (\cref{fig:s2s-dormant}).
-\empirical{} \newresult{} No run traps at $\Kc=3$ (0 of 380). On MPS4 at $\chi=3$ the separated teacher's outcome
-is fixed by the initialization direction: the same 4 of 10 seeds trap at all eight values of
-$\isc\in[0.003,0.1]$ (32 of 80 runs); with the close teacher 14 of 80 runs trap and 8 stall, not fixed by the
-direction (one seed traps at 6 of 8 values). The dormant slices at both route ends decay at a rate
-$\propto\isc^2$, constant per seed to a few percent (at most $2.4\%$ in the committed fits, $5.3\%$ in an
-independent refit), equal at the two ends and seed-dependent ($0.26$ to $1.06\,\isc^2$): the signature of the
-mechanism, whose rate is $\propto\abs{Q_{\nu\nu}}=O(\isc^2)$ (its magnitude is not tested). Decay time
-$\propto\isc^{-2}$ against escape time $\propto\isc^{-(\Kc-2)}$ explains the pattern \derived: at $\Kc=3$ the route
-escapes first, at $\Kc=4$ both are of the same order, at $\Kc\ge5$ the ends are decided long before the route
-could escape. At $\Kc=7,8$ with $\chi=3$ (fan-in, $\isc=0.15$--$0.3$) at least 9 of 30 runs trap on binary8,
-24/30 on HT4 and 14/30 on MPS8 (lower bounds: some stalled runs end with slices still decaying). With $\chi=6$
-none traps on binary8 (0 of 50), but 5 of 50 do on HT4 (one seed, at every $\isc$) and 7 of 50 on MPS8 (34 more
-stall), whose route ends sit on bonds capped at $d=4$, one channel above the teacher rank. The classes are
-unchanged at a 100 times smaller absolute tolerance (9 of 9 runs). The optimizer experiment met the same trap
-on its odeco MPS8: fan-in gradient flow converged in none of 12 runs, with dead route ends in 11
-(\cref{app:exp-optimizers}).
+\paragraph{Mechanism of dead routes.}
+\derived{} (reduced model, \cref{prop:A-trap}) The conservation laws (\cref{prop:conservation}) tie the new
+entries of each route end to the imbalance of its bond, of order $\isc^2$ under fan-in initialization. On a plateau
+the Gauss--Newton term makes the new entries of an end that the imbalance does not favour decay at a rate of order
+$\isc^2$. Decay in a time $\propto\isc^{-2}$ competes with an escape in $\propto\isc^{-(k-2)}$: for $k=3$ the route
+escapes first, for $k=4$ both are of the same order, and for $k\ge5$ the ends are decided long before the route
+could escape. Exactly balanced initialization ($\Q e=0$) is expected to protect the ends \conjecture{} (in
+four-layer matrix factorization exactly balanced initialization can fail, \citealp{luo2025global}).
+\knownresult[related shrinkage of dormant weights: \citealp{jacot2022saddletosaddle}, App.~C.1;
+\citealp{kumar2025towards}; \citealp{kunin2025alternating}, Lemma~B.1]
+
+\paragraph{A criterion from the initialization (pending verification).}
+\derived{} (one learned component, leading order in the small entries, $\isc\to0$) On the plateau only the new
+entries normal to the learned manifold pay a Gauss--Newton cost. For a route end $u$ with route neighbour $w$ this
+conserves $C_u=Q_{\nu\nu}+\norm{Y_{\rm nv}}^2-\norm{X_{\rm nv}}^2$, the Gram of the end's new entries minus its
+partner's ($Q_{\nu\nu}$ the imbalance of their bond on the route's channel; $X_{\rm nv}$, $Y_{\rm nv}$ the new entries of
+$u$ and $w$ that pair with nothing at second order), and the end dies iff $C_u<0$ and the route is long enough
+($k\ge4$ if $w$ carries sites, $k\ge6$ at an HT or binary leaf). A route is dead iff two or more of its ends die;
+with one dying end it is pinned and escapes after a time $\propto\isc^{-(2k-6)}$; routes with $k\le3$ never trap.
+The state at the start of the plateau is $\isc$ times a function of the initialization direction (through the
+$\isc$-free correlation flow of \cref{sec:s2s-escape}), so the criterion is computed from the initialization
+alone, and whether a run traps depends on its direction, not on $\isc$. Under fan-in initialization (saddle start,
+partner with sites) an end dies with probability $I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$ ($I$ the regularized incomplete
+beta function, $F$ the fan-ins, $n$ the numbers of physical directions normal to the learned pattern): $0.392$ at an
+MPS end that is a tree leaf and $0.5$ at the root end ($d=\chi=2$). With balanced initialization ends that are tree
+leaves cannot die, and spare bond dimension protects an end only when it reaches that end's own route edge, which
+reconciles the MPS8 stalls at $\chi=2\ncomp$ with the binary trees. \empirical{} Without any gradient flow the
+criterion separates the 3,492 fan-in locality runs ($89\%$ of the predicted-dead runs stall, against $1.8\%$ of the
+predicted-alive ones); in the pilot 102 of 109 predicted-dead runs die; on MPS4 at $\chi=2$ all 150 predicted-dead
+runs stall or die, and none of the other 344. For the odeco teachers the trap is predicted only from the state
+after the second escape (20 of 20 MPS4 and 6 of 6 HT4 runs checked), not from the initialization. Known failures:
+$k=4$ with spare inner channels, the marginal case $k=6$ on HT4, $\isc\ge0.2$, and the multi-stage odeco traps.
+Details: \cref{app:supp-s2s-trap}. \knownresult[the mechanism overlaps \citealp{furman2026benign}, Thm~G.1, on
+imbalance, and \citealp{kunin2025alternating}, Lemma~B.1]
+
+\paragraph{Odeco teachers: dead routes grow with $\Kc$} (\cref{fig:s2s-dormant}).
+\empirical{} No run has a dead route at $\Kc=3$ (0 of 380). On MPS4 at $\chi=3$ the separated teacher's outcome is
+fixed by the initialization direction: the same 4 of 10 seeds end with a dead route at all eight values of
+$\isc\in[0.003,0.1]$ (32 of 80 runs); with the close teacher 14 of 80 runs have a dead route and 8 are slow, not
+fixed by the direction. For the separated teacher the slices at both route ends decay at a rate $\propto\isc^2$,
+constant per seed to a few percent, equal at the two ends and seed-dependent ($0.26$ to $1.06\,\isc^2$): the
+signature of the mechanism (its magnitude is not tested); for the close teacher the per-seed rates change with
+$\isc$, by factors $1.3$ and $3$. At $\Kc=7,8$ with $\chi=3$ at least 9 of 30 runs end with a dead route on binary8,
+24/30 on HT4 and 14/30 on MPS8 (lower bounds: some slow runs end with slices still decaying). With $\chi=6$ none
+does on binary8 (0 of 50), but 5 of 50 do on HT4 and 7 of 50 on MPS8 (34 more are slow), whose route ends sit on
+bonds capped at $d=4$, one channel above the teacher rank. Re-gauged to $\Q e=0$, the same initializations never
+end with a dead route where fan-in ones do (0 of 120 runs), but 69 of the 90 balanced runs at $\Kc=7,8$ are slow.
+The routes die on the plateaus, not in the escapes (\cref{app:supp-s2s-failure}). \newresult
 
 \begin{figure}[tbp]
   \centering
   \includegraphics{s2s/dormant.pdf}
-  \caption{Odeco runs that do not complete. Left: fractions of run classes, separated teacher, all $\isc$
-    ($\Kc=7,8$: $\isc=0.15$--$0.3$ at $\chi=3$, $0.07$--$0.3$ at $\chi=6$), runs per row in the labels; trapped
-    fractions at $\Kc=7,8$ are lower bounds. Right: decay rate$/\isc^2$ of the route-end slices of the component
-    never learned (mean of the two ends), MPS4, $\chi=3$, one line per trapped seed and teacher (blue: four
-    seeds of the separated teacher, constant in $\isc$; orange: two seeds of the close teacher, not constant),
-    fitted from $1.5$ times the last event (about $\pm4\%$ bias from the post-event transient) to a slice of
-    $10^{-9}$, above the floating-point floor. Data: experiment \texttt{s2s\_core} (\cref{tab:repro-figures}).
-    Takeaway: no trap at $\Kc=3$, fixed by the initialization at $\Kc=4$, frequent at $\Kc=7,8$ unless every
-    bond has spare channels.}
+  \caption{Odeco runs that do not complete. Left: fractions of run classes, separated teacher, all $\isc$ ($\Kc=7,8$:
+    $\isc=0.15$--$0.3$ at $\chi=3$, $0.07$--$0.3$ at $\chi=6$), runs per row in the labels: \emph{dead route} (a
+    component never learned has a route-end slice below $10^{-8}\isc$), \emph{slow} (the budget ended with every such
+    slice above it), \emph{unresolved} (wall-clock limit); dead-route fractions at $\Kc=7,8$ are lower bounds. Right:
+    decay rate$/\isc^2$ of the route-end slices of the component never learned (mean of the two ends), MPS4,
+    $\chi=3$, one line per seed and teacher with a dead route (blue: four seeds of the separated teacher, constant in
+    $\isc$; orange: two seeds of the close teacher, not constant), fitted from $1.5$ times the last event to a slice
+    of $10^{-9}$, above the floating-point floor. Takeaway: no dead route at $\Kc=3$, fixed by the initialization at
+    $\Kc=4$, frequent at $\Kc=7,8$ except where no route end is capped (binary8 at $\chi=6$) (source:
+    \cref{app:experiments}, \cref{tab:exp-s2s}).}
   \label{fig:s2s-dormant}
 \end{figure}
 
-\paragraph{Balanced initialization; the escapes in between.}
-\empirical{} \newresult{} Re-gauged to $\Q e=0$, the same initializations never trap where fan-in ones do (0 of
-120 runs, against 12 of 30 and 47 of 90), but 69 of the 90 balanced runs at $\Kc=7,8$ stall; 17 of the 47
-fan-in-trapped runs complete when re-gauged, and 5 that complete from fan-in initialization stall when
-re-gauged. The routes die on the plateaus, not in
-the escapes: across an escape a dormant amplitude $\abs{\ip{\W}{\U r}}$ changes by a median factor $2.1$--$3.0$
-at $\Kc=3$ (it grows: the head start of \cref{prop:A-head-start}), $0.64$--$0.74$ at $\Kc=4$ and $0.12$--$0.75$ at
-$\Kc=7,8$, and falls by more than $100$ times in at most $1.3\%$ ($\Kc=4$), $2\%$ ($\Kc=7,8$, $\chi=6$) and $8.3\%$
-($\chi=3$; $11\%$ for the later escapes on MPS8 with the separated teacher) of the escapes.
-
-\paragraph{Stalled runs: slow where tested.}
-\empirical{} (prediction \derived) \newresult{} A stalled route with live ends should escape after about the plateau of a
-balanced route at its present amplitude, $b^{-(\Kc-2)}/((\Kc-2)\tw r)$ with $b=(\tw r\abs{\ov r})^{1/\Kc}$.
-Continued from their final state, 16 of 23 stalled or unresolved runs escaped, at $0.24$--$2.19$ times this
-estimate (all 8 with the shortest estimates, 6 of 7 further runs of a seeded random sample, 2 of 8 MPS8 runs
-at $\chi=6$); 2 did not escape within three times it and 5 ran out of wall-clock time or failed. The estimate
-is not a bound (4 escapes came later). For the stalled runs not continued (91 of 106 at $\Kc=7,8$ with
-$\chi=3$, 35 of 43 MPS8 runs at $\chi=6$), ``a long plateau, not a dead route'' is a \conjecture: their
-dormant slices are pinned at $0.01$--$0.04\,\isc$ on binary8 and balanced MPS8, but were still decaying in 6
-of 13 balanced HT4 runs and 17 of 59 fan-in MPS8 runs.
-
 \paragraph{Pattern teachers: dead routes at $k\ge4$.}
-\empirical{} \newresult{} Gradient flow can stop at a learned saddle for good. A run is
-\emph{stalled} when, after a component has been learned, every gradient entry stays below $10^{-12}$
-for 5,000 consecutive evaluations; the loss then sits at a partial fit (for two components
-$\Loss=\tw2^2/2$). Under fan-in initialization at $\chi=2$, 398 of 5,682 two-component runs stall, all
-with $k\ge4$; none of the 5,112 runs with $k\le3$ (two-component and robustness sweeps) does. By $k$,
-both protocols pooled: $130$ of $768$ runs ($k=4$), $62/816$ ($k=5$), $133/360$ ($6$), $29/118$ ($7$),
-$44/60$ ($8$). The rate depends on the tree more than on $k$: for $k=5$, 7 of 624 binary and HT runs
-stall against 55 of 192 MPS runs, and stalls concentrate on MPS routes, especially those ending at
-the ends of the chain. The stalls checked are dead, not slow: in 22 (case, $\isc$) pairs rerun with a
-60 times longer patience (170 runs), all 37 flagged fan-in and saddle-start runs show no escape up to
-$t\approx10^{10}$, with route-end amplitudes at roundoff ($10^{-17}$--$10^{-13}$). The pilot's code found
-the same collapse to the rank-one saddle.
+\empirical{} A pattern-teacher run is stopped as stalled when, after a component has been learned, every gradient
+entry stays below $10^{-12}$ for 5,000 consecutive evaluations; its loss then sits at a partial fit (for two
+components $\Loss=\tw2^2/2$). Under fan-in initialization at $\chi=2$, 398 of 5,682 two-component runs stall, all
+with $k\ge4$; none of the 5,112 runs with $k\le3$ does. The rate depends on the tree more than on $k$: for $k=5$,
+7 of 624 binary and HT runs stall against 55 of 192 MPS runs, and stalls concentrate on MPS routes that end at the
+ends of the chain. The stalls checked are dead routes: in 22 (case, $\isc$) pairs rerun with a 60 times longer
+patience, all 37 flagged fan-in and saddle-start runs show no escape up to $t\approx10^{10}$, with route-end
+amplitudes at roundoff. Balanced initialization cuts the stalls tenfold (from 169 to 16 of 1,008 on the same cases),
+and none of the checked balanced stalls is a dead route: they are slow, some escaping $10^5$ times later than the
+usual plateau. Spare bond channels do \emph{not} remove most stalls ($\chi=4$: 106 of 1,005): they remove them on
+routes with at least one uncapped end, but on routes with both ends capped the stalls rise from 90 to 106. Stalling
+seeds enter the fits with fewer values of $\isc$, which accounts for the off-target saddle-start $k=4$ and HT8 rows
+of \cref{tab:locality-exponents}. Counts by $k$: \cref{tab:locality-stalls}. \newresult
 
-\begin{table}[tbp]
-  \centering
-  \caption{Stalled runs among two-component runs with $k\ge4$: small initialization, $d=2$, the same
-    24 (tree, $D$) cases and $\isc$ grids in every column. Fan-in initialization at $\chi=2$ and
-    $\chi=4$; balanced initialization ($\Q e=0$, same $\Wz$) at $\chi=2$. Bottom rows: split by whether
-    at least one end of the route sits on a bond below the cap \eqref{eq:bond-cap} or both ends sit on
-    bonds capped at $d$ (MPS chain ends, HT leaves).}
-  \label{tab:locality-stalls}
-  \small
-  \begin{tabular}{@{}lccc@{}}
-    \toprule
-    $k$ & fan-in, $\chi=2$ & balanced, $\chi=2$ & fan-in, $\chi=4$ \\
-    \midrule
-    4 & 67/384 & 2/384 & 18/384 \\
-    5 & 20/384 & 5/384 & 0/384 \\
-    6 & 58/180 & 5/180 & 59/180 \\
-    7 & 8/30 & 0/30 & 12/30 \\
-    8 & 16/30 & 4/30 & 17/27 \\
-    \midrule
-    all & 169/1,008 & 16/1,008 & 106/1,005 \\
-    \quad route with an uncapped end (13 cases) & 79 & -- & 0 \\
-    \quad both route ends capped (11 cases) & 90 & -- & 106 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+\paragraph{The regime maps meet the same failures.}\label{sec:s2s-stalls-maps}%
+\LabelUnlessIn{sections/05_other_regimes.tex}{sec:other-stalled}
+\empirical{} (confirming the prediction of \cref{app:boundaries}; mechanism \conjecture, heuristic) With $\chi$
+equal to the teacher rank $\ncomp$ the last component must use the last free channel of every bond, through a
+route of all $\Kc$ cores, which can die for $\Kc\ge5$ (already at $\Kc=4$ for some initializations, see the odeco
+runs above). In a stall test at $\chi=\ncomp=3$ ($d=3$, odeco teacher
+$(3,2,1)$, $\isc=0.3$--$0.6$, six seeds; \cref{tab:s2s-stall-test}) most runs on binary8 and every fan-in run on
+MPS8 never learn the last component, in the plain as in the centred model, so the initial function is not the
+cause; from fan-in initialization the route is dead (28 of 32 stalled plain runs), and balanced initialization
+removes the dead routes but not the stalls (12 of 18 runs do not escape, their route still decaying). In the
+plain-model $\isc\times\Kc$ sweeps, 546 of the 795 stalled runs end with a dead route, 212 with a route still
+decaying and 37 on a long plateau. Spare channels remove the stalls only where no route end is capped: on binary8
+at $d=3$, $\chi=6$ no run stalls at $\isc\le0.63$ (30 runs), but on MPS8 every run stalls (50 of 50), its end bonds
+being capped at $d=3$, the teacher rank, and one spare channel per end is not enough (MPS8 and HT4 at $d=4$ in the
+odeco runs above). With the centred model at $\chi=4$ the stalls below the saddle-to-saddle boundary sit at a partial fit and
+are fixed by the initialization (\cref{sec:regime-K}). At practical budgets stalls thus occupy part of the
+saddle-to-saddle side of every deep tree whose route ends lack spare channels. Some runs of the maps also stop at the
+integrator's step limit (unfinished lazy fits at square bonds, \cref{sec:other-lazy}, and some deep-tree runs).
 
-\paragraph{Balanced initialization and spare channels} (\cref{tab:locality-stalls}).
-Balanced initialization cuts the stalls tenfold, from 169 to 16 of 1,008 on the same cases, all on
-MPS routes, and none of the checked ones is dead: of 10 rerun with longer patience, 6 escaped very
-late (after $2\cdot10^9$--$5\cdot10^{10}$, about $10^5$ times the usual plateau), 3 are pinned (route ends
-at $3\cdot10^{-10}$, $6\cdot10^{-9}$, $4\cdot10^{-8}$ at $t=10^{11}$--$5\cdot10^{11}$) and one was in the
-middle of a late escape when its budget ended. Spare bond channels do \emph{not} remove most stalls:
-$\chi=4$ gives 106 of 1,005. They remove them on routes with at least one uncapped end (79 at $\chi=2$,
-none at $\chi=4$; all 13 such cases escape), but on routes with both ends capped the stalls rise from
-90 to 106, in 7 of the 8 such cases that stall at all (they fall only for MPS4 $\{0,3\}$, from 30 to 6 of
-48). midroot6 and MPS6, the same graph with different roots, share exponents but not stall rates
-($D=\{0,5\}$ at $\chi=4$: 30 and 18 of 30): the root changes the fan-in statistics of $\Q e$. The odeco runs
-are consistent with this: $\chi=6$ removes the trap on binary8, where every bond has twice the teacher rank,
-but not on HT4 and MPS8, whose route ends sit on bonds capped at $d=4$, one channel above it.
+\paragraph{Long plateaus are not barren plateaus.}\label{sec:s2s-barren}
+\derived{} From small initialization the gradient is $O(\isc^{\Kc-1})$ and the first plateau lasts
+$\propto\isc^{-(\Kc-2)}$: deep trees at small $\isc$ stall as if on a barren plateau. The cause differs: the gradient
+is small because the initialization is, not because it concentrates around zero over random initializations of
+fixed norm; with the fan-in normalization at $\isc=1$ the initial function has unit norm on every tree
+(\cref{prop:init-norm}). \knownresult[barren plateaus of tensor networks: global but not local losses of
+unitary-embedded MPS, \citealp{liu2022presence}; absent for isometric MPS, TTNS and MERA,
+\citealp{miao2024isometric,barthel2025absence}]
 
-\paragraph{Effect on the exponents.}
-Stalls depend on $\isc$: in 20 of 33 fan-in rows with stalls a stalling seed escapes at other $\isc$,
-so it enters the fits with fewer points. Restricting each row to seeds that never stall leaves the
-exponent unchanged in 27 of 46 rows with stalls and moves it by $0.1$ or more in 9 fan-in rows (by up
-to $1.38$; four of them keep only 1--3 seeds) and 3 other rows. This accounts for the off-target
-saddle-start $k=4$ and HT8 rows of \cref{tab:locality-exponents}.
-
-\paragraph{Relation to the conservation-law trap.}
-In the reduced model of \cref{prop:A-trap} a route end decays iff $c=Q_{\nu\nu}+\norm{y_{\rm route}}^2<0$
-(an \emph{unfavourable} end), and a route dies for good only if all its ends are unfavourable. The odeco
-runs show the mechanism's signature where it was measured ($\Kc=4$): decay rates $\propto\isc^2$, constant
-per seed and equal at both route ends, and no trap from balanced initialization. The pattern-teacher runs
-test the criterion itself. Evaluated once, at the start of the plateau ($\ov1=0.99$), in the 122 fan-in and
-saddle-start runs of the stall diagnosis, this joint criterion is strongly associated with death (30 of 55 runs with both
-ends unfavourable died, 7 of 67 with a favourable end) but is neither sufficient (25 predicted-dead
-runs escaped) nor necessary: seven dead runs had a live end at the plateau start, which by the
-theory's own refutation criterion (``a dead stall with a live route end'') counts against the
-mechanism as stated, unless $c$ changes sign later in the plateau ($y_{\rm route}$ is not conserved; not
-checked). Further conflicts with the theory remain open: (i)~exactly balanced initialization is
-expected to remove the trap, its route ends not decaying; it leaves no dead route in either experiment
-(consistent), but on the pattern-teacher MPS8 routes the ends shrink to $10^{-10}$--$10^{-8}$ and escapes
-are delayed by $10^5$ or more (inconsistent; the balanced odeco MPS8 runs stall instead with route slices
-near $0.03\,\isc$); (ii)~the heuristic frequencies (about half of the two-ended HT routes dead under
-fan-in initialization, \cref{prop:A-trap}; fewer stalls on MPS with $\chi=d$) are contradicted: 0 of
-144 small-initialization HT4 runs with $k=5$ stall, against 30 of 48 on MPS4 $\{0,3\}$ and 17 of 48 on
-MPS6 $\{0,3\}$ (the odeco HT4 routes, with four leaf ends, trap in at least 24 of 30 runs at $\chi=3$);
-(iii)~spare channels avoided stalls in the runs of \cref{app:boundaries}, here only on routes with an
-uncapped end, and the rise on capped routes has no established mechanism.
-
-\paragraph{Steep MPS routes.}
-\empirical{} (mechanism open) One row stays steep at small $\isc$: MPS8 $\{1,5\}$ ($k=5$) from the
-saddle, $p=3.67\pm0.20$ at $\isc\in[0.012,0.03]$ (median $3.83$; 4 fitted seeds, $0.4$ decades, 10 of 24
-runs stalled), with a matching Hessian exponent ($3.74$ projected, $3.75$ raw). Its fitted seeds escape
-at every $\isc$, so it meets a refutation criterion of the theory (a per-seed exponent off by more than
-$0.2$ at $\isc\le0.05$ in runs without stall or sign correction), on thin evidence. In the steep MPS rows
-the route-end amplitudes at the plateau midpoint scale as $\isc^{\alpha}$ with $\alpha=1.24$--$1.91$ and
-shrink during the plateau (median ratio of midpoint to first event $0.53$--$0.78$, against $0.85$--$1.03$
-in on-target rows); but $\alpha>1$ also occurs in on-target rows (binary8 $\{0,7\}$, balanced: $\alpha=1.34$,
-$p=2.99$), so the steep exponents are associated with shrinking route ends, not shown to be caused by
-them. Neither the logarithmic correction expected if small ends caught up through the conservation
-laws (per seed it fits much worse than a free power law: median residual of $\ln\Delta t_2$ $0.25$--$0.62$
-against $0.05$--$0.12$) nor the pilot's conjecture $\isc^{-(2k-6)}$ (both ends pinned, $\alpha=2$; measured
-$\alpha$ is seed-dependent, between 1 and 2) describes the data.
-
-\subsection{Dependence on each parameter}\label{sec:s2s-parameters}
-% Summary of Secs. 3-6; every entry keeps the tag of the section it comes from. Numbers are quoted
-% only where the section quotes them.
-
-\Cref{tab:s2s-parameters} collects, for each parameter, what it does to the saddle sequence (which
-saddles are visited and in which order), to the plateau durations, and to the regime boundaries of
-\cref{sec:regime-map}, with the sections that give the evidence and its scope.
-
-% A multi-page table (xltabular, as in Appendix C): it breaks between rows and repeats its header.
-\begingroup
-\footnotesize
-\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.12}
-\setlength{\LTcapwidth}{\textwidth}
-\begin{xltabular}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.8cm}
-    *{3}{>{\raggedright\arraybackslash}X}@{}}
-    \caption{How each parameter acts on gradient flow from small initialization, and on the regime
-      boundaries. Summary of \cref{sec:regime-map,sec:s2s,sec:other-regimes,sec:covariance-teacher}, whose
-      sections are given under each parameter; tags as in those sections; binary4: binary tree with
-      $\Ns=4$; $k^*$: cores of the cheapest route; $m$: cores that carry a site on which two components
-      differ.}
-    \label{tab:s2s-parameters} \\
-    \toprule
-    parameter (sections) & saddle sequence & plateau durations & regime boundaries \\
-    \midrule
-    \endfirsthead
-    \caption[]{How each parameter acts (continued).} \\
-    \toprule
-    parameter (sections) & saddle sequence & plateau durations & regime boundaries \\
-    \midrule
-    \endhead
-    \midrule
-    \multicolumn{4}{@{}r@{}}{\itshape continued on the next page} \\
-    \endfoot
-    \bottomrule
-    \endlastfoot
-    initialization scale $\isc$\newline(\ref{sec:s2s-escape}--\ref{sec:s2s-order},
-      \ref{sec:regime-sigma-chi}) & At leading order none: the first escape direction, hence the first
-      component and, on tensor-like trees, the order, depend on the initialization direction only
-      \derived{} \empirical; matrix-like pairs become greedy as $\isc\to0$, and close weights separate only
-      at small $\isc$ \empirical &
-      First plateau $\isc^{-(\Kc-2)}T(Z)$ \proven; later ones none, $\ln(1/\isc)$ or $\isc^{-(k^*-2)}$ for
-      $k^*=1$, $2$, $\ge3$ \derived{} \empirical, with prefactors set by the route amplitudes when each
-      plateau starts &
-      The main knob: saddle-to-saddle, rich, then lazy with full bonds or a floor below them; binary4:
-      $\isc_c\approx0.3/\sqrt\chi$ \empirical, $\isc_{\rm lazy}\approx6.5/\sqrt\chi$ \derived{} \empirical \\
-    cores $\Kc$, tree shape\newline(\ref{sec:s2s-escape}--\ref{sec:s2s-failure}, \ref{sec:regime-K},
-      \ref{sec:teacher-generic}) & The tree sets $k^*$ of every route, hence the next component
-      (\emph{locality beats weight}) and the saddle type; $m$ sets race versus greedy order; generic
-      teachers: strict escapes on MPS, higher-order on binary and HT trees, which grow bottom-up
-      \derived{} \empirical &
-      First plateau: exponent $\Kc-2$, whatever the depth \proven; median prefactor from $0.42$ to $814$
-      over 17 trees with $\Kc=3$--$15$ \empirical; later plateaus: exponent $k^*-2$ (one teacher:
-      logarithmic on MPS8, $\isc^{-3}$ on binary8, about $\isc^{-5}$ on HT8) \empirical &
-      $\isc_c$ rises with $\Kc$ ($0.17$ to $0.75$ for $\Kc=3$--$7$); the rich window narrows; stalls and
-      dead routes grow with $\Kc$ \empirical; the limit $\Kc\to\infty$ is open \conjecture \\
-    bond dimension $\chi$\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-order}, \ref{sec:s2s-failure},
-      \ref{sec:regime-sigma-chi}, \ref{sec:other-large-chi}) & Plateau levels and route degrees do not change with extra channels, as
-      zero-padded critical points stay critical (\cref{lem:A-unused}) \proven; at $\chi=\ncomp$ the last component needs a
-      route through all cores, which can die \empirical; larger uncapped $\chi$ makes the order slowly
-      greedier \empirical &
-      First-escape prefactor falls slowly with $\chi$ (log-log slopes $-0.26$ to $-0.76$) \empirical; route
-      exponents unchanged at $\chi=4$; spare channels remove stalls only on routes with an uncapped end
-      \empirical &
-      Both boundaries $\propto\chi^{-1/2}$ on binary4 \empirical; lazy only with every bond at its cut
-      dimension \derived{} \empirical; large $\chi$: standard and NTK lazy, $\mu$P-TTN not \derived{}
-      \empirical \\
-    local dimension $d$\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-order}, \ref{sec:s2s-failure},
-      \ref{sec:regime-K}) & On an MPS it enters the order only through the bond caps \eqref{eq:bond-cap}
-      \derived; at equal bonds no effect on the order ($\abs{\Delta P}\le0.021$) \empirical; a larger $\chi$
-      gives no spare channel to route ends on bonds capped at $d$ (MPS chain ends, HT leaves), where the
-      remaining stalls sit \empirical &
-      Binary4 at full bonds ($\chi=d^2$): median first-escape prefactor $\approx\pi/2$ for $d=2,3,4$,
-      independent of $d$ \derived{} \empirical, while the norm-based time falls by a factor $1.9$; MPS4:
-      $1.39$--$1.50$ \empirical &
-      Sets the cut dimensions, hence where a lazy regime exists \derived; whether $\isc_c(\Kc)$ tends to $1$
-      or $\sqrt d$ is open (large $\Kc$ run at $d=2$ only) \conjecture \\
-    teacher weights and structure\newline(\ref{sec:s2s-phenomenology}, \ref{sec:s2s-locality},
-      \ref{sec:s2s-order}, \ref{sec:teacher-generic}--\ref{sec:teacher-star}) & Weights decide the order only through the race (prefactor over
-      weight) or, for matrix-like pairs, as $\isc\to0$ \derived{} \empirical; the sites where components
-      differ decide the routes \proven; a star with $\lambda_{\max}(\Gamma)>\tw j$ makes a larger learned
-      component be forgotten \proven{} \empirical; non-orthogonal teachers give blended plateaus and ranks
-      that grow bond by bond \empirical &
-      First plateau $\propto1/\tw1$ at fixed weight ratios \proven; $k=2$: rate $\tw r\tw j^{(\Kc-2)/\Kc}$ and head start
-      $1-\tw r/\tw j$; $k\ge3$: coupling $\tw r\tw j^{(\Kc-k)/\Kc}$ \derived; generic teachers: slopes
-      $(1-\kappa_e)/\gamma_e$ \derived{} \empirical; close weights overlap unless $\isc$ is small
-      \empirical &
-      Aligned initialization: the boundary depends on the weight ratios (\cref{prop:A-s2s-aligned})
-      \proven; lazy boundary through $\xi=\normF{\Wt}/\fsc$; centred floor $\propto\isc^{2\Kc}/\normF{\Wt}^2$
-      \derived \\
-    input covariance\newline(\ref{sec:cov-aligned}, \ref{sec:cov-misaligned},
-      \ref{sec:cov-correlated}) & Aligned: race with weights $\Lambda_r\tw r$, landscape with $\Lambda_r^{1/2}\tw r$,
-      which can reverse the order and, on binary4, swap a learned component \derived{} \empirical;
-      otherwise plateaus at critical points of the $\Sig$-loss \proven{} \empirical &
-      Aligned: exact clocks $\Lambda_rt$, exponents unchanged \proven{} \empirical; non-orthogonal in the
-      $\Sig$-metric: the MPS escape from the rank-one saddle becomes logarithmic, binary4 stays at
-      $\isc^{-1}$ \empirical &
-      Not mapped \\
-    step size and optimizer\newline(\ref{sec:regime-lr}, \ref{sec:other-optim},
-      \ref{sec:other-optimizers}) & GD below $\lr_c$ keeps gradient flow's sequence and order \derived{}
-      \empirical; above it component~1 oscillates, then divergence or a return to the origin \empirical;
-      SGD near its mean-square limit erases learned components \empirical; Adam keeps the order; ALS, DMRG
-      and Riemannian GD have no plateaus \derived{} \empirical &
-      GD: events shifted by $\lr c_e$ \derived{} \empirical; SGD: first-plateau law unchanged \derived,
-      later plateaus lengthened or trapped \empirical; Adam: first escape independent of $\isc$ until
-      $\epsilon$ restores $\isc^{-(\Kc-2)}$ \derived{} \empirical; ALS, DMRG: iterates independent of
-      $\isc$ \proven &
-      $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$ at small $\isc$, from the sharpness of the balanced minimum
-      \proven{} (no stable global minimum above it: \derived{} for $\chi=\ncomp$);
-      $2/\lambda_{\rm GF}\propto\isc^{-3.97}$ on the
-      lazy side, catapults beyond it \empirical; at fixed $\lr/\batch$ SGD stalls where gradient flow is
-      only slow \derived{} (from the heuristic law of \cref{prop:A-sgd-collapse}) \\
-    balanced or fan-in initialization\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-locality},
-      \ref{sec:s2s-failure}, \ref{sec:regime-imbalance}) & Balanced re-gauging keeps the first component in 88 of 94 seeds
-      \empirical; the escape direction is balanced either way \proven; balanced initialization removes the dead routes
-      in the runs checked, but not all stalls \empirical &
-      First-escape prefactor changes per seed by a factor $0.88$--$1.92$, exponents unchanged \empirical;
-      the $k=6,7$ exponents are measured with balanced initialization only; some balanced routes escape
-      $10^5$ times later than usual \empirical &
-      Root at scale $\lambda\isc$, fixed $\fsc$: a light root is lazy at up to $100$ times smaller $\fsc$, with
-      $\dTK\propto\lambda^2$ \derived{} \empirical; a heavy root acts as balance does \empirical; the fan-in
-      default is root-light \\
-\end{xltabular}
-\endgroup
-
-Two kinds of effect run through the table. Some parameters change the landscape: which saddles exist,
-at which levels, and of which type. These are the tree, the teacher and the covariance, and, through the
-bond caps, $\chi$ and $d$. Others change only the clock, the time spent near each saddle: above all
-$\isc$, which at leading order changes neither the direction of the first escape nor the order on
-tensor-like trees, and the step size below its stability limit. Optimizers can change both: Adam keeps
-the saddles but removes the $\isc$-dependence of the first escape (until its $\epsilon$ restores it at
-small $\isc$), while ALS, DMRG and Riemannian gradient descent, which are equivariant under the whole
-gauge group, remove the plateaus (\cref{sec:other-optimizers}). The balance of the initialization leaves
-the landscape and the exponents unchanged, shifts the prefactors and occasionally the first component,
-and decides whether a route survives its plateau. Where an entry rests on one tree, one teacher or a
-single $\isc$, the sections cited give its scope.
+\paragraph{What the mechanism explains, and what it does not.}
+\empirical{} The odeco runs show the signature of the mechanism where it was measured ($\Kc=4$, separated
+teacher): decay rates $\propto\isc^2$, constant per seed and equal at both route ends, and no dead route from
+balanced initialization. The first criterion of the reduced model (\cref{prop:A-trap}), evaluated at the start of
+the plateau, was only weakly associated with death in the pattern-teacher runs (30 of 55 runs with both ends
+unfavourable died, 7 of 67 with a favourable end); the criterion above replaces it, pending its verification. Open:
+the very late escapes of balanced MPS8 routes (delays of $10^5$ and more), the mechanism of the rise of the stalls
+on capped routes with spare channels (the criterion reproduces it per run), and the steep exponents of some MPS
+routes with $k=5$ (MPS8 $\{1,5\}$ from the saddle, $3.67\pm0.20$, limited range), which have a matching Hessian
+exponent and go with shrinking route ends. Details: \cref{app:supp-s2s-failure}.
