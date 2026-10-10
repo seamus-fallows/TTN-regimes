@@ -1,0 +1,260 @@
+{
+ "raw": {
+  "s2s": {
+   "MPS snake|0.05": {
+    "runs": 5,
+    "s2s_fraction": 0.2,
+    "drops_mean": 6.6
+   },
+   "MPS snake|0.07": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 5.6
+   },
+   "MPS snake|0.1": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 5.2
+   },
+   "MPS snake|0.14": {
+    "runs": 5,
+    "s2s_fraction": 0.0,
+    "drops_mean": 4.6
+   },
+   "MPS snake|0.2": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 3.6
+   },
+   "MPS snake|0.3": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 3.2
+   },
+   "MPS snake|0.5": {
+    "runs": 5,
+    "s2s_fraction": 0.2,
+    "drops_mean": 1.8
+   },
+   "binary quadtree|0.05": {
+    "runs": 5,
+    "s2s_fraction": 1.0,
+    "drops_mean": 3.0
+   },
+   "binary quadtree|0.07": {
+    "runs": 5,
+    "s2s_fraction": 1.0,
+    "drops_mean": 4.2
+   },
+   "binary quadtree|0.1": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 5.0
+   },
+   "binary quadtree|0.14": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 5.4
+   },
+   "binary quadtree|0.2": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 4.6
+   },
+   "binary quadtree|0.3": {
+    "runs": 5,
+    "s2s_fraction": 1.0,
+    "drops_mean": 4.2
+   },
+   "binary quadtree|0.5": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 4.0
+   },
+   "binary scrambled|0.05": {
+    "runs": 15,
+    "s2s_fraction": 1.0,
+    "drops_mean": 2.533333333333333
+   },
+   "binary scrambled|0.07": {
+    "runs": 10,
+    "s2s_fraction": 0.8,
+    "drops_mean": 2.8
+   },
+   "binary scrambled|0.1": {
+    "runs": 15,
+    "s2s_fraction": 0.6666666666666666,
+    "drops_mean": 3.6
+   },
+   "binary scrambled|0.14": {
+    "runs": 10,
+    "s2s_fraction": 0.5,
+    "drops_mean": 4.1
+   },
+   "binary scrambled|0.2": {
+    "runs": 15,
+    "s2s_fraction": 0.8666666666666667,
+    "drops_mean": 4.733333333333333
+   },
+   "binary scrambled|0.3": {
+    "runs": 9,
+    "s2s_fraction": 0.7777777777777778,
+    "drops_mean": 5.0
+   },
+   "binary scrambled|0.5": {
+    "runs": 15,
+    "s2s_fraction": 0.6666666666666666,
+    "drops_mean": 4.466666666666667
+   }
+  },
+  "first": {
+   "MPS snake": {
+    "sibling": 0.0,
+    "single": 0.9714285714285714,
+    "kendall": "0.27 \u00b1 0.014",
+    "n": 35
+   },
+   "binary quadtree": {
+    "sibling": 1.0,
+    "single": 0.0,
+    "kendall": "0.307 \u00b1 0.021",
+    "n": 35
+   },
+   "binary scrambled": {
+    "sibling": 0.9662921348314607,
+    "single": 0.033707865168539325,
+    "kendall": "0.171 \u00b1 0.024",
+    "n": 89
+   }
+  }
+ },
+ "white": {
+  "s2s": {
+   "MPS snake|0.05": {
+    "runs": 5,
+    "s2s_fraction": 0.2,
+    "drops_mean": 5.6
+   },
+   "MPS snake|0.07": {
+    "runs": 5,
+    "s2s_fraction": 0.0,
+    "drops_mean": 7.0
+   },
+   "MPS snake|0.1": {
+    "runs": 5,
+    "s2s_fraction": 0.0,
+    "drops_mean": 5.8
+   },
+   "MPS snake|0.2": {
+    "runs": 5,
+    "s2s_fraction": 0.2,
+    "drops_mean": 4.0
+   },
+   "MPS snake|0.5": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 2.0
+   },
+   "binary quadtree|0.05": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 5.2
+   },
+   "binary quadtree|0.07": {
+    "runs": 5,
+    "s2s_fraction": 0.6,
+    "drops_mean": 5.4
+   },
+   "binary quadtree|0.1": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 5.2
+   },
+   "binary quadtree|0.2": {
+    "runs": 5,
+    "s2s_fraction": 0.2,
+    "drops_mean": 4.8
+   },
+   "binary quadtree|0.5": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 2.4
+   },
+   "binary scrambled|0.05": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 6.2
+   },
+   "binary scrambled|0.07": {
+    "runs": 5,
+    "s2s_fraction": 0.6,
+    "drops_mean": 6.8
+   },
+   "binary scrambled|0.1": {
+    "runs": 5,
+    "s2s_fraction": 0.2,
+    "drops_mean": 6.8
+   },
+   "binary scrambled|0.2": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 5.6
+   },
+   "binary scrambled|0.5": {
+    "runs": 5,
+    "s2s_fraction": 0.4,
+    "drops_mean": 2.6
+   }
+  },
+  "first": {
+   "MPS snake": {
+    "sibling": 0.0,
+    "single": 0.6,
+    "kendall": "0.464 \u00b1 0.05",
+    "n": 25
+   },
+   "binary quadtree": {
+    "sibling": 0.64,
+    "single": 0.08,
+    "kendall": "0.614 \u00b1 0.031",
+    "n": 25
+   },
+   "binary scrambled": {
+    "sibling": 0.72,
+    "single": 0.08,
+    "kendall": "0.564 \u00b1 0.054",
+    "n": 25
+   }
+  }
+ },
+ "routes": {
+  "quadtree|raw": {
+   "n": 35,
+   "hit": 0.9714285714285714
+  },
+  "scrambled0|raw": {
+   "n": 35,
+   "hit": 0.8571428571428571
+  },
+  "scrambled1|raw": {
+   "n": 34,
+   "hit": 0.9411764705882353
+  },
+  "scrambled2|raw": {
+   "n": 20,
+   "hit": 0.8
+  }
+ },
+ "route_share": {
+  "quadtree": {
+   "3": "0.147 \u00b1 0.021",
+   "5": "0.732 \u00b1 0.027",
+   "7": "0.122 \u00b1 0.014"
+  },
+  "scrambled (3 orders)": {
+   "3": "0.0265 \u00b1 0.0053",
+   "5": "0.185 \u00b1 0.029",
+   "7": "0.788 \u00b1 0.029"
+  }
+ }
+}

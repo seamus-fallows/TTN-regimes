@@ -111,8 +111,20 @@ def main(summary_json, out_prefix, routes_json=None):
             hits[(r["ordering"], r["features"])].append(pred == obs)
         md.append("\n| ordering | features | runs | first sibling pair = argmax lambda |\n|---|---|---|---|")
         for k, v in sorted(hits.items()):
-            md.append(f"| {k[0]} | {k[1]} | {len(v)} | {np.mean(v):.2f} |")
+            md.append(f"| {k[0]} | {k[1]} | {len(v)} | {np.mean(v):.2f} ({sum(v)}/{len(v)}) |")
             out.setdefault("routes", {})[f"{k[0]}|{k[1]}"] = {"n": len(v), "hit": float(np.mean(v))}
+        # share of the squared route amplitude by route degree (where the residual interaction sits)
+        share = defaultdict(lambda: defaultdict(list))
+        for r in res:
+            lam = np.array([p_["lam"] for p_ in r["pairs"]])
+            kk = np.array([p_["k"] for p_ in r["pairs"]])
+            key = "quadtree" if r["ordering"] == "quadtree" else "scrambled (3 orders)"
+            for k in sorted(set(kk)):
+                share[key][int(k)].append(float((lam[kk == k] ** 2).sum() / (lam ** 2).sum()))
+        md.append("\n| tree order | runs | share of sum lambda^2 on k = 3 | k = 5 | k = 7 |\n|---|---|---|---|---|")
+        for key, d in sorted(share.items()):
+            md.append(f"| {key} | {len(d[3])} | " + " | ".join(mse(d[k]) for k in (3, 5, 7)) + " |")
+            out.setdefault("route_share", {})[key] = {k: mse(v) for k, v in d.items()}
     text = "\n".join(md)
     print(text)
     open(f"{out_prefix}.md", "w").write(text + "\n")

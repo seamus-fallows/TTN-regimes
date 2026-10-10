@@ -77,7 +77,10 @@ def fig_loss_curves(rows, runs_dir, out, feats, seed=0):
         axes[1, j].set_xlabel(r"$\tau = t - t_a$")
     axes[0, 0].set_ylabel("train loss")
     axes[1, 0].set_ylabel("train (solid) / test (dashed)")
-    axes[0, 2].legend(title=r"$\sigma$", fontsize=7, title_fontsize=7, frameon=False, ncol=2)
+    h, lab = axes[0, 2].get_legend_handles_labels()
+    order = np.argsort([float(x) for x in lab])
+    axes[0, 2].legend([h[i] for i in order], [lab[i] for i in order], title=r"$\sigma$", fontsize=7,
+                      title_fontsize=7, frameon=False, ncol=2)
     fig.tight_layout()
     savefig(fig, Path(out) / f"loss_curves_{feats}")
     plt.close(fig)
@@ -321,7 +324,8 @@ def fig_regime(regime_json, out):
     plt.close(fig)
 
 
-def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None):
+def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None, hess_json=None,
+         regime_json=None):
     set_style()
     rows = [r for r in json.load(open(summary_json)) if "error" not in r and not r.get("centred")]
     fig_loss_curves(rows, runs_dir, out_dir, feats)
@@ -334,6 +338,10 @@ def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None):
     print(json.dumps(stats))
     if routes_json:
         fig_routes(routes_json, out_dir)
+    if hess_json:
+        fig_hessians(hess_json, out_dir)
+    if regime_json:
+        fig_regime(regime_json, out_dir)
 
 
 if __name__ == "__main__":

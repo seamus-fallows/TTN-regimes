@@ -121,7 +121,8 @@ one route at a time, from s_k/s_1 ~ 1e-5-1e-3 to O(0.1-1) (figure `bond_spectra_
 ### 4.3 Which route: degree first, then amplitude (R2 + route amplitudes) [empirical]
 At the bond-rank-1 plateau of each quadtree run the route amplitudes lambda_uw (section 3) were computed
 for all 28 pairs of bottom cores. The sibling pair (k = 3) with the largest lambda is the pair that gains
-rank first in 34/35 runs; the largest sibling amplitude exceeds the second by 2-70x. The largest amplitudes
+rank first in 34/35 quadtree runs (best/second sibling amplitude: median ratio 46) and in 78/89 scrambled
+runs (30/35, 32/34, 16/20 for the three orders; median ratio 5.6, closer ties). The largest amplitudes
 overall belong to non-sibling pairs (k = 5, 7; e.g. lambda = 0.35 for k = 5 vs 0.05 for the best k = 3
 pair, sigma = 0.5, seed 0). These routes escape later: route degree beats amplitude, as on teachers
 (theory_saddles.md R8, "locality beats weight"). The plateau state is the same rank-1 critical point
@@ -185,6 +186,13 @@ order 0 at all 7). Train loss and test accuracy at tau = 1e4 (mean +- SE):
 
 Time to reach L <= 0.2 (median; runs reaching it): sigma = 0.1: quadtree 333 (5/5), scrambled 6730 (7/15),
 MPS 56 (5/5); sigma = 0.5: 85, 374, 28.
+- **Where the residual interaction sits (route amplitudes at the rank-1 plateau).** Share of sum_uw lambda_uw^2
+  on routes of degree k = 3 / 5 / 7 (4 / 8 / 16 of the 28 pairs): quadtree 0.15 ± 0.02 / 0.73 ± 0.03 /
+  0.12 ± 0.01 (35 runs); scrambled 0.026 ± 0.005 / 0.19 ± 0.03 / 0.79 ± 0.03 (89 runs, 3 orders). The
+  strongest single route is equally strong in both (median max lambda 0.30 vs 0.33), but the best k = 3
+  route is 2.2x stronger in the quadtree (0.11 vs 0.049). The quadtree puts 88% of the interaction on
+  routes with k <= 5. The scrambled tree puts 79% on k = 7 routes (sigma^-5 plateaus), more than their 57%
+  share of pairs.
 - **Quadtree vs scrambled (the clean locality test, same tree shape): the local tree learns much faster
   at small init.** It reaches lower loss and higher test accuracy at every sigma <= 0.2, and the gap grows
   as sigma decreases. Both have the same route degrees (same shape), so the difference sits in where the
