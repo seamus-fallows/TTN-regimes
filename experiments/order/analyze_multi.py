@@ -125,6 +125,12 @@ def main():
                                          if race_perm_excl else np.nan),
                    race_first_excluded=" ".join(
                        f"{r + 1}:{sum(p[0] == r for p in race_perm_excl)}" for r in range(n_comp)),
+                   race_first_used=" ".join(
+                       f"{r + 1}:{sum(p[0] == r for p in race_perm)}" for r in range(n_comp)),
+                   # which components were not learned by the stop (1 = largest)
+                   unlearned=" ".join(
+                       f"{r + 1}:{int(sum(not np.isfinite(t[r]) for t in g.times))}"
+                       for r in range(n_comp)),
                    kendall_greedy=np.mean(ktau) if ktau else np.nan,
                    kendall_greedy_se=np.std(ktau) / np.sqrt(max(len(ktau), 1)),
                    kendall_greedy_model=model_ktau,

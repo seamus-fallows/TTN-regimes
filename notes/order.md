@@ -1,23 +1,26 @@
 # Order of learning (Q4; hypotheses H1, H1b) — agent `order`
 
-Status: **complete (round 1)**, 2026-10-10. Experiment folder `experiments/order/`
+Status: **complete (round 1 + fix round after review)**, 2026-10-10. Experiment folder `experiments/order/`
 (README there: configs, commands, cost). Tags: **proven**, **derived** (assumptions stated),
 **empirical**, **conjecture**. Companion theory notes: `notes/theory_escape.md` (v2; sections 3, 5 cover
 the same ground from the escape side) and `notes/theory_saddles.md` (v2; section 4, H1b).
 
 ## 0. Results at a glance
 
+Revised in the fix round after `notes/reviews/order_round1.md`; the changed claims are listed in
+section 11.
+
 | # | claim | status | evidence |
 |---|---|---|---|
-| O1 | Near the origin the order is decided by the leading-order (LO) flow of g = <W, W*>, whose outcome does not depend on sigma (exact scaling symmetry) | derived (corollary of Kumar & Haupt 2025a) | per-seed GF = LO race on 40800/40800 MPS runs; P identical for sigma 0.003-0.1 (MPS4, binary8, MPS6 patterns) |
-| O2 | m >= 3 (cores carrying the differing sites): every component is a local max of g on the sphere, order random (H1) | derived | P(larger first) = 0.60-0.88 at rho = 0.5 on MPS4-8 and binary8 (400 seeds per setting) |
-| O3 | Odeco teacher on an MPS: the LO flow decouples into one independent chain per component; winner = argmin tau_r/s_r | derived (exact at leading order) | 40800/40800 MPS GF runs agree with the per-seed race |
-| O4 | P(greedy) falls toward 1/2 with K and rises slowly with chi; d enters only through bond caps (MPS) | empirical (+ derived for d) | sd log tau table, d-pairs chi^2 |
-| O5 | Selection rule: argmax_r s_r X_r^q, X_r = projection of the init on component r's KKT orbit, fitted q ~ K-2, predicts 76-92% of winners on m >= 3 trees | empirical | `results/main_rules.csv` |
-| O6 | m = 2 (binary4 = depth-3 DLN; matrix-like pattern pairs): greedy as sigma -> 0, P(smaller first) ~ sigma^(n(1-rho)/rho), n = 1 (separated) or chi_e (adjacent) | derived (heuristic for the exponent) | 7.2, 7.4, 7.4b: gamma within 1.5 SE of (1-rho)/rho on binary4, MPS6, MPS4 (rho 0.7-0.9); adjacent pairs 3.2-3.4x steeper |
-| O7 | H1b: a wrong order is corrected through a strict saddle (lambda_min = -(s_1-s_2) s_2^((K-2)/K)) only for m = 2; the rotation takes ln(1/delta)/|lambda_min| from the saddle, but only O(1/|lambda_min|) in natural runs | derived; Hessian checked | 7.3: eigenvalue to 5 digits, slopes within 1.5%, natural |lambda| dt = 1.1-1.4 flat in sigma |
-| O8 | Over-parameterized (uncapped) bonds: sd(log tau) ~ (K-2)^0.61 chi^-0.53, greedy order restored only slowly | empirical | 7.5 |
-| O9 | R = 3: the full order is a random permutation close to an iid race (Thurstone) model for m >= 3; R = 4 = chi: GF mostly stalls before learning the last component | empirical | 7.6 |
+| O1 | Near the origin the order is decided by the leading-order (LO) flow of g = <W, W*>, whose outcome does not depend on sigma (exact scaling symmetry) | derived (corollary of Kumar & Haupt 2025a) | per-seed GF = LO race on 40800/40800 MPS runs; P identical for sigma 0.003-0.1 (MPS4), 0.01-0.1 (binary8), MPS6 m = 4 pattern |
+| O2 | m >= 3 (cores carrying the differing sites): every component is a local max of g on the sphere, order random (H1) | derived | P(larger first) = 0.60-0.88 at rho = 0.5, 0.51-0.65 at 0.8 on MPS4-8 and binary8 (sigma = 0.01, 400 seeds per setting) |
+| O3 | Odeco teacher on an MPS: the LO flow decouples into one independent chain per component; winner = argmin tau_r/s_r | derived (exact at leading order) | 40800/40800 MPS GF runs agree with the per-seed race; binary8 96-99% |
+| O4 | P(greedy) falls toward 1/2 with K and rises slowly with chi; on an MPS d enters only through the bond caps | empirical (K, chi); derived (d, MPS); empirical at one chi (d, binary8) | `main_settings.csv`; independent-seed d test (7.1b) |
+| O5 | Selection rule: argmax_r s_r X_r^q, X_r = projection of the init on component r's KKT orbit; q = (0.99-1.25)(K-2) (bootstrap SE 1-9%); predicts 76-92% of winners out of sample on m >= 3 trees, the same with q fixed to K-2 | empirical | `results/main_rules.csv` (columns q_se, order_accuracy_oos, order_accuracy_q_Km2) |
+| O6 | m = 2 (binary4 = depth-3 DLN; matrix-like pattern pairs): greedy as sigma -> 0; P(smaller first) consistent with sigma^(n(1-rho)/rho), n = 1 for non-adjacent pairs; adjacent pairs (shared bond chi_e) are 2-3.4x steeper, n = chi_e is a conjecture not reached by sigma = 1e-5 | heuristic derivation; empirical | 7.2, 7.4, 7.4b |
+| O7 | H1b, after a wrong first escape: m = 2, k >= 3 (non-adjacent pair): strict saddle lambda_min = -(s_1-s_2) s_2^((K-2)/K), rotation to the larger component in ln(1/sigma)/|lambda_min| from the saddle (O(1/|lambda_min|) in natural runs), smaller one forgotten and relearned; m = 2, k = 2 (adjacent pair): strict saddle lambda = -s_1 s_2^((K-2)/K) (multiplicity chi_e - 1), the larger component is added, nothing forgotten; m >= 3: no strict saddle, wrong order kept | derived; Hessians and dynamics checked on binary4 and MPS4 (m = 2); MPS4 and MPS6 (m >= 3) | 7.3 |
+| O8 | Over-parameterized (uncapped) bonds: sd(log tau) ~ sqrt(K-2)/sqrt(chi) at large chi; greedy order restored only slowly | empirical | 7.5 |
+| O9 | R = 3 (d = chi = 4, one sigma per tree): the full order is a random permutation favouring large components, within 1.7 SE of an iid race model per case but less greedy in 6/6 m >= 3 cases (combined z = -1.9); R = 4 = chi: most runs do not learn all four components by t = 1e9 (MPS6 often only 2 of 4) | empirical | 7.6 |
 
 ## 1. Setting
 
@@ -336,90 +339,116 @@ carry), 500 seeds per point (`sweep.py configs/chi_scan.yaml`, `analyze_chi.py`,
 - So the answer to "does larger chi restore greedy order?" is yes in the limit, as for over-parameterized
   CP (Ge et al. 2021), but slowly: the spread of log escape times shrinks only like chi^-1/2.
 
-### 7.6 Step 4: three and four components (complete)
+### 7.6 Step 4: three and four components (revised after review)
 
-Odeco teachers with weights (1, rho, rho^2[, rho^3]), rho = 0.8, 0.9, d = 4, chi = 4 (standard caps:
-every bond has dimension 4), 200 seeds; sigma = 0.05 (binary4), 0.1 (MPS4), 0.2 (MPS6), 0.25 (binary8)
-because at smaller sigma the dormant components of K >= 5 trees fall below the float64 floor. GF with
-LSODA + exact Hessian (rtol 1e-9, atol 1e-14), exact event location for every first crossing a_r = 1/2,
-stopped at L < 1e-8 L(0), at t = 1e9, or when some overlap decays below 1e-25 ("stalled": its route has
-died; any later escape would be seeded by roundoff). Per seed also the LO blow-up time tau_r of every
-component. `multi.py configs/multi.yaml` (raw: multi2), `analyze_multi.py multi2`,
-`results/multi2_summary.csv`, `results/multi2_perms.csv`, `results/multi2_orders.png`. Runs with a
-stalled component or a dormant overlap below 1e-14 before its event are excluded from the order
-statistics and counted. Model = "iid race": each component's blow-up time an independent draw from the
-pooled tau's, order = ranking of tau_r / s_r (a Thurstone-type random-utility model).
+Scope of everything in this section: odeco teachers with weights (1, rho, rho^2[, rho^3]), rho = 0.8,
+0.9, **d = chi = 4** (standard caps: every bond has dimension 4), fan-in init, 200 seeds, **one sigma per
+tree**: 0.05 (binary4), 0.1 (MPS4), 0.2 (MPS6), 0.25 (binary8), chosen so that dormant components stay
+above the float64 floor. The sigma-independence of the first event was checked only for sigma <= 0.1
+(7.2), so MPS6 and binary8 are outside the checked range. GF: LSODA + exact Hessian (rtol 1e-9, atol
+1e-14), exact event location for every first crossing a_r = 1/2, stopped at L < 1e-8 L(0), at t = 1e9
+("unfinished"), or when some component's slice of some core falls to 1e-14 x the largest core norm
+("stalled": its route is dead at float64 roundoff). Per seed also the LO blow-up time tau_r of every
+component. Model = "iid race" (Thurstone type): each component's blow-up time an independent draw from
+the pooled tau's of the **same runs** that enter the GF statistic, order = ranking of tau_r / s_r.
 
-**R = 3** (n used / 200; P(greedy order) GF vs iid race model; mean Kendall tau with the greedy order GF
-vs model; per-seed agreement of the full GF order with the seed's own race order):
+Round 1 (raw `multi2`) used an overlap-based stall stop (|a_r| < 1e-25) and an overlap-based roundoff
+flag (|a_r| < 1e-14), which excluded 18-19 binary8 runs per rho that did learn every component later,
+and compared GF on completed runs with a model built from all runs (review item 3). R = 3 was rerun with
+the slice criterion (`configs/multi3.yaml`, `analyze_multi.py multi3`, `results/multi3_summary.csv`,
+`results/multi3_perms.csv`, `results/multi3_orders.png`).
 
-| tree (m) | rho | n used | P(greedy order) | Kendall tau | race = GF order | P(first = 1 / 2 / 3) |
+**R = 3** (GF vs model on the same runs; z = (P_GF - P_model)/SE; first-event and full-order agreement
+of GF with each seed's own LO race):
+
+| tree (m), sigma | rho | used (excluded) | P(greedy order), GF vs model | z | Kendall tau with greedy, GF vs model | race = GF: first / full order |
 |---|---|---|---|---|---|---|
-| binary4 (2) | 0.8 | 200 | 0.70 vs 0.52 | 0.80 +- 0.02 vs 0.60 | 0.64 | 0.87 / 0.13 / 0.00 |
-| binary4 (2) | 0.9 | 200 | 0.49 vs 0.32 | 0.58 +- 0.03 vs 0.33 | 0.53 | 0.71 / 0.20 / 0.09 |
-| mps4 (4) | 0.8 | 195 | 0.35 vs 0.35 | 0.36 +- 0.04 vs 0.39 | 0.86 | 0.51 / 0.33 / 0.15 |
-| mps4 (4) | 0.9 | 195 | 0.23 vs 0.25 | 0.14 +- 0.05 vs 0.19 | 0.89 | 0.42 / 0.37 / 0.21 |
-| mps6 (6) | 0.8 | 85 | 0.25 vs 0.29 | 0.25 +- 0.06 vs 0.27 | 0.82 | 0.45 / 0.41 / 0.14 |
-| mps6 (6) | 0.9 | 88 | 0.20 vs 0.22 | 0.16 +- 0.06 vs 0.13 | 0.77 | 0.41 / 0.39 / 0.20 |
-| binary8 (4) | 0.8 | 180 | 0.23 vs 0.28 | 0.19 +- 0.05 vs 0.25 | 0.72 | 0.44 / 0.34 / 0.22 |
-| binary8 (4) | 0.9 | 177 | 0.19 vs 0.22 | 0.05 +- 0.05 vs 0.12 | 0.70 | 0.38 / 0.33 / 0.29 |
+| binary4 (2), sigma 0.05 | 0.8 | 200 of 200 (0 stalled, 0 unfinished) | 0.705 +- 0.032 vs 0.518 | +5.29 | 0.80 +- 0.02 vs 0.60 | 0.87 / 0.64 |
+| binary4 (2), sigma 0.05 | 0.9 | 200 of 200 (0 stalled, 0 unfinished) | 0.490 +- 0.035 vs 0.319 | +5.20 | 0.58 +- 0.03 vs 0.32 | 0.81 / 0.53 |
+| binary8 (4), sigma 0.25 | 0.8 | 197 of 199 (1 stalled, 1 unfinished) | 0.223 +- 0.030 vs 0.278 | -1.70 | 0.17 +- 0.04 vs 0.25 | 0.98 / 0.73 |
+| binary8 (4), sigma 0.25 | 0.9 | 196 of 199 (1 stalled, 2 unfinished) | 0.194 +- 0.028 vs 0.214 | -0.70 | 0.05 +- 0.05 vs 0.12 | 0.97 / 0.70 |
+| mps4 (4), sigma 0.1 | 0.8 | 195 of 200 (5 stalled, 0 unfinished) | 0.354 +- 0.034 vs 0.359 | -0.14 | 0.36 +- 0.04 vs 0.39 | 1.00 / 0.86 |
+| mps4 (4), sigma 0.1 | 0.9 | 195 of 200 (5 stalled, 0 unfinished) | 0.226 +- 0.030 vs 0.251 | -0.81 | 0.14 +- 0.05 vs 0.19 | 1.00 / 0.89 |
+| mps6 (6), sigma 0.2 | 0.8 | 91 of 199 (87 stalled, 21 unfinished) | 0.253 +- 0.046 vs 0.303 | -1.04 | 0.27 +- 0.06 vs 0.29 | 1.00 / 0.81 |
+| mps6 (6), sigma 0.2 | 0.9 | 97 of 199 (87 stalled, 15 unfinished) | 0.216 +- 0.042 vs 0.228 | -0.26 | 0.17 +- 0.06 vs 0.15 | 1.00 / 0.77 |
 
-- **m >= 3: the full order is a random permutation favouring large components, close to the iid race
-  (Thurstone) model** [empirical]: P(greedy order) and Kendall tau with the greedy order are within ~1-2
-  SE of the model on MPS4, MPS6 and binary8; the seed's own LO race predicts the complete order in
-  70-89% of runs (the first event in ~100% on MPS). The deviations go in the direction expected from the
-  coupling after the first escape (later components are delayed by different amounts; on MPS4 the
-  second and third escapes come 10% and up to 2x later than their LO blow-up times).
-- **binary4 (m = 2)**: much more greedy than the race model (P(greedy order) 0.71 vs 0.52 at rho = 0.8),
-  consistent with the m = 2 picture; P(first = largest) = 0.87 / 0.71 at rho = 0.8 / 0.9 (sigma = 0.05).
+- **binary4 (m = 2)**: far more greedy than the race model (z ~ +5), as the m = 2 picture predicts.
+- **m >= 3**: per case, GF is within 1.7 SE of the iid race model (P(greedy order) and Kendall tau with
+  the greedy order), but P(greedy order) is below the model in 6/6 cases (combined z = -1.9) and Kendall
+  tau below it in 5/6 [empirical]. Each seed's own race predicts the first event in 97-100% of runs and
+  the complete order in 70-89%; the misorderings are in the later events, where the learned components
+  couple the remaining ones (on MPS4 the second and third escapes come 10% to 2x later than their LO
+  blow-up times). So: a random permutation favouring large components, close to but slightly less greedy
+  than independent clocks (conjecture: the coupling after the first escape).
+- **Exclusions are not order-neutral on MPS6** (half of the runs): there the excluded runs have the
+  smallest component first in their own race more often (24% vs 13% of used runs at rho = 0.8), and the
+  unlearned component is the smallest one most often (rho = 0.8: largest 23, middle 37, smallest 48; rho
+  = 0.9: 33 / 32 / 37). The MPS6 row is therefore a statistic conditional on completion. On MPS4 and
+  binary8 at most 5 of 200 runs are excluded.
 
-**R = 4 with chi = R = 4 (every bond must reach full rank): gradient flow mostly stalls** [empirical].
-Runs that do not learn all four components (stalled, or unfinished at t = 1e9): MPS4 289/400, MPS6
-396/399, binary8 389/393; binary4 0/400 (a DLN). In stalled runs one component's overlap decays exponentially after the others are learned (the
-conservation-law trap of `notes/theory_saddles.md` section 8); the same runs integrated with the library
-integrator to t = 1e9 without a stop (abandoned `multi` run) never learn that component either (stall
-classification identical on all 1679 overlapping runs). With R = 3 < chi stalls are rare on MPS4 (2.5%)
-and binary8 (1-1.5%) but frequent on MPS6 at sigma = 0.2 (~45%). This is outside Q4 (it concerns whether
-later components are learned at all) and is passed on to `s2s-core` / `locality`: a gauge-balanced init,
-which theory_saddles reports removes the trap on HT4, was not tested here.
+**R = 4 = chi (every bond must reach full rank)**. Round 1 said "GF mostly stalls before the last
+component"; corrected:
+- Not all four components are learned by t = 1e9 in most runs [empirical, scope above]: MPS4 289/400
+  (sigma 0.1), MPS6 396/399 (0.2), binary8 389/393 (0.25); binary4 0/400 (a deep linear network).
+- **Without any stall stop** (`configs/multi_nostop.yaml`, rho 0.8, 12 seeds per tree, to t = 1e9,
+  `results/multi_nostop_summary.csv`): NOSTOP_SUMMARY
+- How many components are learned at the stop (multi2 + no-stop): MPS4 3 of 4 in 288/289 incomplete
+  runs; binary8 3 of 4 in all incomplete no-stop runs (the unlearned one is the largest in 6/11); MPS6
+  only **2 of 4** in about half of the incomplete runs (multi2: 88 + 90 runs with 2, 111 + 107 with 3), so
+  "before the last component" was wrong for MPS6.
+- Round 1's "stalled" also included slow, pinned routes that never reach the floor: those are now
+  "unfinished at t = 1e9" (e.g. 21 + 15 of the MPS6 R = 3 runs).
+- This is outside Q4 and agrees with `notes/theory_regimes.md` R10 (K >= 5 with chi = R: very long last
+  plateaus, fan-in init can freeze them; spare channels chi >= 2R cure it), except that **MPS4 (K = 4)
+  also stalls in 72% of runs** at chi = R = 4, sigma = 0.1: R10's "K >= 5" is not a sharp bound. Only one
+  sigma per tree, fan-in init and chi = R were run; gauge-balanced init and spare channels were not.
 
 ## 8. Status of H1 and H1b
 
 **H1 ("the first escape direction is decided by the basin of the init, so the order is random; P(largest
 first) increases with s_1/s_2, decreases with K, may concentrate as chi grows")**
 - **Holds for tensor-like pairs (m >= 3)** [empirical over 5 trees, 28 (d, chi) settings, 67200 GF runs;
-  derived at leading order; exact race on MPS]. Quantitatively: P(larger first) = 0.60-0.88 at rho = 0.5
-  and 0.50-0.65 at rho = 0.8 (sigma = 0.01); independent of sigma (7.2); the per-init winner is the
-  argmin of tau_r/s_r of the leading-order race (100% on MPS).
-- **K and chi** [empirical]: the spread sd(log tau) grows with K (~sqrt(K-2), as in
-  `notes/theory_escape.md` 5.1) and falls with chi; with standard bond caps it saturates at fixed d, with
-  uncapped (over-parameterized) bonds it falls like chi^-1/2 (7.5), so over-parameterized bonds restore
-  greedy order, slowly (the analogue of over-parameterized CP, Ge et al. 2021).
+  derived at leading order; exact race on MPS]. P(larger first) = 0.60-0.88 at rho = 0.5 and 0.51-0.65
+  at rho = 0.8 (sigma = 0.01, 400 seeds; race curves 0.66-0.89 and 0.55-0.66, see 7.1 on the common-seed
+  offset); independent of sigma for sigma <= 0.1 (7.2); the per-init winner is the argmin of tau_r/s_r of
+  the leading-order race (100% on MPS, 96-99% on binary8).
+- **K and chi** [empirical]: sd(log tau) grows with K and falls with chi; with standard bond caps it
+  saturates at fixed d; with uncapped (over-parameterized) bonds sd(log tau) ~ sqrt(K-2)/sqrt(chi) at
+  large chi (7.5), so over-parameterized bonds restore greedy order, slowly (the analogue of
+  over-parameterized CP, Ge et al. 2021).
 - **Fails for matrix-like pairs (m = 2)**, which include binary N = 4 (a depth-3 DLN): only the largest
-  component is a local maximum and the order is greedy as sigma -> 0 [derived; known for DLNs], with a
-  slow power law P(smaller first) ~ sigma^((1-rho)/rho) at finite sigma [derived heuristically; confirmed
-  in GF for rho = 0.7-0.9 on binary4 and MPS6].
+  component is a local maximum and the order is greedy as sigma -> 0 [derived; known for DLNs]. At finite
+  sigma P(smaller first) is consistent with sigma^((1-rho)/rho) for non-adjacent pairs [heuristic
+  derivation; GF on binary4, MPS6 ends, MPS4 cores 0,2 for rho = 0.7-0.9, sigma down to 1e-4..1e-5];
+  adjacent pairs are 2-3.4x steeper, and the conjectured n = chi_e is not reached by sigma = 1e-5.
 - **"init overlap enters with power K-2"** [empirical]: with the overlap defined as the projection of the
-  init onto the component's KKT orbit (nearest balanced bond-rank-one configuration), log tau_r ~ -q log
-  X_r with q ~ K-2, and "argmax s_r X_r^(K-2)" predicts 76-92% of winners (the rest needs the full
-  alignment dynamics, which the LO race captures exactly).
+  init onto the component's KKT orbit, log tau_r ~ -q log X_r with q = (0.99-1.25)(K-2), above K-2 in
+  most settings (bootstrap SE 1-9% of q); "argmax s_r X_r^(K-2)" predicts 76-92% of winners, the same out
+  of sample (2-fold over seeds) and with q fitted; the rest needs the full alignment dynamics, which the
+  LO race captures exactly.
 
 **H1b ("a wrong order is corrected through a strict saddle with lambda = q (s_learned - s_new), in time
-~ log(1/sigma), before the second rank is added")**
-- **Holds for m = 2, with the stated eigenvalue** [derived; checked]: from the wrong saddle the gauge-
-  projected Hessian has lambda_min = -(s_1-s_2) s_2^((K-2)/K) (5-digit agreement), sigma-independent
-  (strict by the primary rule); the learned bond index rotates to the larger component after
-  t_corr = ln(1/sigma)/|lambda_min| + const (slopes within 1.5% / 1 SE), the smaller component is then
-  forgotten (a_2 < 1e-3) and relearned in a new bond index after ~sigma^-(k-2) (k = 3 on binary4).
-- **But in natural runs the "log(1/sigma)" part does not appear** [derived + empirical]: the wrong order
-  itself becomes rare as sigma -> 0, and when it happens the piggyback amplitude is O(1) on arrival, so the
-  correction takes O(1/|lambda_min|) (|lambda| (t_1 - t_2) = 1.1-1.4 at every sigma 1e-4..1e-2) and no
-  wrong plateau is resolved (separation ratio < 3 in 92-100% of runs). The visible signature is an
-  overshoot of the smaller component, then a plateau at s_2^2/2 with the smaller component forgotten.
-- **Fails for m >= 3** [derived; checked]: the wrong-order state is a higher-order saddle (|lambda_min| ~
-  sigma^2 on MPS4), no rotation happens, the larger component is added in a new bond index after
-  ~sigma^-(k-2); the wrong order stays. Rarely (1/40 MPS4 runs at sigma = 0.01) the larger component's
-  route dies and GF stalls at the wrong saddle.
+~ log(1/sigma), before the second rank is added")** — round 1 said "holds for m = 2"; narrowed:
+- **Holds for m = 2 pairs with k >= 3 (non-adjacent cores)** [derived; checked on binary4 (K = 3) and
+  MPS4 cores 0,2 (K = 4)]: from the wrong saddle the gauge-projected Hessian has lambda_min =
+  -(s_1-s_2) s_2^((K-2)/K) (4-5 digits), sigma-independent (strict by the primary rule); the learned bond
+  index rotates to the larger component after t = ln(1/sigma)/|lambda_min| + const (local slope x
+  |lambda| -> 1.0000 at small sigma), the smaller component is forgotten (a_2 < 1e-3) and relearned in a
+  new bond index after ~sigma^-(k-2).
+- **Fails for adjacent m = 2 pairs (k = 2)** [derived; checked on MPS4 cores 1,2]: the wrong saddle is
+  strict, but its most negative direction (-s_1 s_2^((K-2)/K), multiplicity chi_e - 1) adds the larger
+  component on a spare bond index; t1 = ln(1/sigma)/(s_1 s_2^((K-2)/K)) + const; nothing rotates or is
+  forgotten (case 2 of `notes/theory_saddles.md` 4.4).
+- **In natural runs the "log(1/sigma)" part does not appear** [derived + empirical]: the wrong order is
+  rare as sigma -> 0 and, when it happens, the escape route is O(1) on arrival, so the correction takes
+  O(1/|lambda|) (k >= 3: |lambda| (t1 - t2) = 1.0-1.4 flat in sigma 1e-4..1e-2 on binary4 and MPS4;
+  k = 2: 0.2-0.3) and no wrong plateau is resolved.
+- **Fails for m >= 3** [derived; checked on two trees, MPS4 (k = 4: 8 seeds x 5 sigma over one decade, plus
+  40 natural runs) and MPS6 (k = 6: 5 seeds x 5 sigma 0.05-0.2)]: the wrong-order state is a higher-order
+  saddle (|lambda_min| ~ sigma^2.00 on MPS4, ~ sigma^4.2 on MPS6), no rotation happens, the larger
+  component is added in a new bond index after ~sigma^-(k-2); the wrong order stays. Sometimes the larger
+  component's route dies and GF stalls at the wrong saddle (1/40 natural MPS4 runs; 1/6 MPS6 seeds).
+  BINARY8_STATUS
 
 ## 9. Relation to the literature; what is new
 
@@ -433,18 +462,55 @@ New here for TTNs (together with `notes/theory_escape.md` and `notes/theory_sadd
 parts of the same picture independently): the m-count classification of which components are attractors
 of the first escape on a general tree; the exact, sigma-independent race on MPS and its verification on
 40800 GF runs; quantitative P(larger first) tables versus rho, K, tree, chi, d; the finite-sigma
-wrong-order law sigma^((1-rho)/rho) for matrix-like pairs measured in full GF; a measured selection rule
-with exponent K-2 for the KKT-projection overlap; H1b dynamics measured (eigenvalue, log-law correction
-from the saddle, forget-and-relearn, O(1/lambda) correction in natural runs, no correction for m >= 3).
+wrong-order law for non-adjacent matrix-like pairs, consistent with sigma^((1-rho)/rho) in full GF (the
+law itself is a heuristic of `notes/theory_escape.md` 5.3 and of section 5 here); a measured selection
+rule with exponent ~K-2 for the KKT-projection overlap; the after-a-wrong-order dynamics measured for the
+three branches (non-adjacent m = 2: eigenvalue, log-law rotation from the saddle, forget-and-relearn,
+O(1/lambda) correction in natural runs; adjacent m = 2: adding through the k = 2 route; m >= 3: no
+correction), which are the cases of `notes/theory_saddles.md` 4.4.
 
 ## 10. Open issues
 
 - Prefactor C(rho) of the m = 2 law and the pre-asymptotic regime (rho = 0.95 never reaches small P).
-- Adjacent m = 2 pairs: the GF exponent is 3.2-3.4x the separated one down to sigma = 1e-5 and still
-  rising; reaching n = chi_e = 4 needs smaller sigma (or the LO emulation of theory_escape).
-- Why the KKT-projection rule misses 8-24% of winners: the alignment phase mixes the non-aligned part of
-  the init into the escape direction; a closed form for the distribution of tau on a chain is open.
-- R >= 3: stalls of later components at chi = R (7.6): test gauge-balanced inits and larger chi; the
-  order statistics of 7.6 are conditional on completed runs.
+- Adjacent m = 2 pairs: the GF exponent is 2-3.4x the separated one down to sigma = 1e-5 without a clear
+  approach to n = chi_e (conjecture).
+- Why the KKT-projection rule misses 8-24% of winners and why q > K-2: the alignment phase mixes the
+  non-aligned part of the init into the escape direction; a closed form for the distribution of tau on a
+  chain is open.
+- R >= 3: why GF is slightly less greedy than independent clocks after the first event; whether
+  stalls at chi = R disappear with gauge-balanced init or spare channels (theory_regimes R10, P14); the R
+  = 3 statistics on MPS6 are conditional on completion (half of the runs).
 - binary8 / HT trees with shared internal cores: the independent race is 96-99% exact; a coupled
   closed-form race is open.
+
+## 11. Claims changed in the fix round (review `notes/reviews/order_round1.md`)
+
+1. **H1b (O7)**: "holds for m = 2" -> holds for m = 2 pairs with k >= 3 (non-adjacent); adjacent pairs
+   (k = 2) add the larger component on a spare bond index through a strict saddle with lambda = -s_1
+   s_2^((K-2)/K) (multiplicity chi_e - 1) and forget nothing (new runs: MPS4 cores 1,2 and 0,2, saddle and
+   natural). Section 6 rewritten.
+2. **m = 2 law (O6)**: n carried everywhere; n = chi_e tagged conjecture; "still steepening" withdrawn;
+   one fit range (full measured range) for all m = 2 sets with local slopes; "confirmed" -> "consistent
+   with"; wrong-order seeds shown to be exactly nested.
+3. **R = 3 (O9)**: rerun with a slice-norm stall criterion (multi3); GF and model compared on the same
+   runs; excluded runs' race orders and unlearned components reported; sigma, d = chi = 4 stated; GF is
+   below the model in 6/6 m >= 3 cases (combined z = -1.9), "close to an independent race" qualified.
+4. **R = 4 (O9)**: "mostly stalls before the last component" -> most runs do not learn all four by t =
+   1e9 (no-stop check on MPS6 and binary8 added); MPS6 often learns only 2 of 4; scope (one sigma per
+   tree, d = chi = 4, fan-in) stated; cross-reference to theory_regimes R10 (MPS4, K = 4, also stalls).
+5. **m >= 3, no strict saddle**: scope stated; second tree added (MPS6 saddle starts, |lambda_min| ~
+   sigma^4.2).
+6. **d (O4)**: the invalid chi^2 d-pairs test withdrawn; independent-seed test added (no effect at the
+   0.04 level on binary8 and MPS4).
+7. **Unresolved midpoint Hessians**: the 43 natural binary4 runs without one are now resolved (fine record
+   window around the events); full-precision event times (t ~ 1e8 with gaps ~ 10 had lost digits in the
+   CSV, affecting only the round-1 MPS4 adjacent/separated natural runs, which were rerun).
+8. **Smaller corrections**: H1b slope precision (local slope x |lambda| -> 1.0000; the 1.5% was the
+   sigma = 1e-2 point); "lambda_min between 0 and the saddle value" restricted to sigma <= 1e-2; race-curve
+   ranges and the common-seed offset (-0.018) reported; O8 wording (sqrt(K-2) at large chi, the joint
+   power law does not separate); O5 with SE, out-of-sample accuracy and accuracy at q = K-2.
+9. **Code**: --raw/--res reach spawned workers; default worker count = container CPUs; run_queue.sh
+   passes --raw/--res; README fixed (multi2/multi3, integrators, procs); stall criterion uses slice norms
+   (the overlap criterion also fired during a normal forget phase); tol_check now includes MPS8 (400 -> 500
+   inits, all winners equal at rtol 1e-11, |dt1|/t1 <= 1.0e-9); the symmetry check is complete for MPS8
+   (mean log(tau_1/tau_2) = -0.02 +- 0.04).
