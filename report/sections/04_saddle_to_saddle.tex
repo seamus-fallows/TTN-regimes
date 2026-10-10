@@ -64,17 +64,13 @@ genuine tensor networks.
     $\chi=3$, $\isc=0.01$; bottom: binary8, $\chi=6$, $\isc=0.1$. Columns: loss in linear time with the
     partial-fit levels \eqref{eq:s2s-levels} (dotted); overlaps $\ov r$; singular values $\bs ek$ of the middle
     edge (MPS4) and the root edge (binary8), teacher values dashed; effective bond rank
-    (\cref{sec:setup-diagnostics}) of every edge, offset slightly per edge. Dashed verticals: events.
+    (\cref{sec:setup-diagnostics}) of every edge, offset slightly per edge. Dashed verticals: events, at
+    $3.6\cdot10^3$, $4.4\cdot10^4$, $5.6\cdot10^5$ (MPS4) and $1.3\cdot10^5$, $9.8\cdot10^5$, $6.8\cdot10^6$
+    (binary8), with widths below $2$ \empirical.
     Takeaway: one component per event, in the order of the weights; every edge gains one singular value
     at each event, all at the same time, and the next ones stay far below the teacher's in between.}
   \label{fig:s2s-runs}
 \end{figure}
-
-\paragraph{Two runs} (\cref{fig:s2s-runs}).
-\empirical{} The loss falls from $7$ in three steps through $2.5$ and $0.5$, each one component rising, in
-the order of the weights: at $\tev1=3.6\cdot10^3$, $\tev2=4.4\cdot10^4$, $\tev3=5.6\cdot10^5$ on MPS4 and at
-$1.3\cdot10^5$, $9.8\cdot10^5$, $6.8\cdot10^6$ on binary8, with widths below $2$ (smallest separation ratios
-$6.3\cdot10^4$ and $2.1\cdot10^6$). In linear time the last plateau fills most of the run.
 
 \paragraph{Scope.}
 \empirical{} \newresult[MPS4, binary8, HT4; known for binary4] Complete runs: binary4 320 of 320 (fan-in, both teachers, $\chi=3,6$) and 60 of 60 (balanced);
@@ -105,7 +101,7 @@ close teacher at $\isc\ge0.05$, whose events overlap, and 6 HT4 runs.
 all complete runs on MPS4 (326), binary8 (83) and HT4 (74), and in 218 of 220 on binary4 with the separated
 teacher; with the close teacher on binary4 in 5 of 20 runs at $\isc=0.1$, rising to 20 of 20 at
 $\isc=0.003$, as close weights make escapes overlap unless $\isc$ is small. Per-seed fits of
-$\ln(\tev{i+1}-\tev i)$ against $\ln\isc$ (\cref{tab:s2s-gaps,fig:s2s-gaps}; run sets in \cref{app:exp-s2s})
+$\ln(\tev{i+1}-\tev i)$ against $\ln\isc$ (\cref{tab:s2s-gaps}; run sets in \cref{app:exp-s2s})
 give $\Kc-2$ to within $0.1$ per seed on binary4 and $0.04$ on MPS4, over $1.5$ decades. At $\Kc=7,8$ the
 means agree with $\Kc-2$ (binary8 $5.02\pm0.01$ and $4.97\pm0.02$, MPS8 $5.95\pm0.05$ for its only gap) but
 over $0.6$ decade, below the reporting rule of \cref{sec:setup-diagnostics}; binary8 at $\chi=3$, over up to
@@ -114,18 +110,14 @@ $1.1$ decades, gives $4.93\pm0.05$, and HT4 is not a clean confirmation (per see
 \begin{table}[tbp]
   \centering
   \caption{Plateau durations and saddle type, odeco teachers, fan-in initialization. Gaps: per-seed exponent
-    $p$ of $\tev{i+1}-\tev i\propto\isc^{-p}$, mean $\pm$ s.e.\ over seeds, on the runs in which the step is a
-    resolved step of the seed's most frequent order; predicted $\Kc-2$. Two values in a cell: $\chi=3$ and
-    $6$, or the separated and close teachers (rows ``both''). Brackets: range of the per-seed values (binary4
-    and MPS4: over their four cells). $\lambda_{\min}$: mean of the per-seed slopes of
-    $\ln(-\lambda_{\min}(\Hperp))$ against $\ln\isc$ at the first and second plateau midpoints, for $\chi=3$
-    and $6$ separated by a semicolon (rows ``both'': the two teachers, first plateau); predicted $\Kc-2$. Ten
-    seeds per fit except binary4 close (gap 1: 9, 9; gap 2: 8, 7), MPS4 at $\chi=3$, gap 2 (6 separated, 7
-    close), HT4 gap 2 (9), MPS8 (7 at $\chi=6$; 3 at $\chi=3$). $\isc$: $0.003$--$0.1$ (binary4, MPS4);
-    $0.07$--$0.3$ at $\chi=6$ ($\Kc=7,8$); $0.03$--$0.4$ (binary8) and $0.1$ or $0.15$ to $0.4$ (MPS8) at $\chi=3$;
-    $\dagger$: less than one decade; binary8 at $\chi=3$ spans $1.1$ decades for 11 of 20 seeds and
-    $0.5$--$1.0$ for the others. $\Kc=7,8$ at $\chi=6$: long-budget sweep (tolerances $10^{-6}$,
-    $10^{-9}\isc$; \cref{app:exp-s2s}). Source: \texttt{main\_exponents.csv}.}
+    $p$ of $\tev{i+1}-\tev i\propto\isc^{-p}$, mean $\pm$ s.e.\ over seeds (run sets: \cref{app:exp-s2s}),
+    for $\chi=3$ and $6$ or, in rows ``both'', the separated and close teachers; brackets: range of the
+    per-seed values (binary4, MPS4: over their four cells). $\lambda_{\min}$: mean per-seed slope of
+    $\ln(-\lambda_{\min}(\Hperp))$ against $\ln\isc$ at the first and second plateau midpoints ($\chi=3$; $6$, or
+    the two teachers). Predicted: $\Kc-2$. Ten seeds per fit except binary4 close (9, 9; 8, 7), MPS4 gap 2 at
+    $\chi=3$ (6, 7), HT4 gap 2 (9), MPS8 (7; 3). $\isc$: $0.003$--$0.1$ (binary4, MPS4), $0.07$--$0.3$ at
+    $\chi=6$, $0.03$--$0.4$ (binary8) and $0.1$ or $0.15$ to $0.4$ (MPS8) at $\chi=3$; $\dagger$: less than one
+    decade (binary8 at $\chi=3$: $1.1$ decades for 11 of 20 seeds). Source: \texttt{main\_exponents.csv}.}
   \label{tab:s2s-gaps}
   \footnotesize
   \setlength{\tabcolsep}{3pt}
@@ -147,17 +139,6 @@ $1.1$ decades, gives $4.93\pm0.05$, and HT4 is not a clean confirmation (per see
     \bottomrule
   \end{tabular}
 \end{table}
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics{s2s/gaps.pdf}
-  \caption{Plateau durations, separated teacher, $\chi=6$, fan-in initialization, one line per seed: $\tev1$,
-    $\tev2-\tev1$ and $\tev3-\tev2$ against $\isc$, each on the runs where that step is a resolved step of the
-    seed's most frequent order (the run sets of \cref{tab:s2s-gaps}). Panel titles: mean $\pm$ s.e.\ of the
-    per-seed exponents (number of seeds) and the sweep; dashed: slope $-(\Kc-2)$; below each panel, the
-    number of complete runs. Takeaway: every plateau, not only the first, grows as $\isc^{-(\Kc-2)}$.}
-  \label{fig:s2s-gaps}
-\end{figure}
 
 \paragraph{Saddle type.}
 \empirical{} \newresult[MPS4, binary8, HT4, MPS8; known for binary4] At the plateau midpoints
@@ -235,6 +216,20 @@ only the size of the initialization, $\tev1\propto\norm{\params_0}^{-(\Kc-2)}$. 
 computed for each initialization, with no free parameter; the norm gives only a lower bound, low by
 factors from $3$ to $3\cdot10^7$.
 
+\begin{figure}[t]
+  \centering
+  \includegraphics{s2s/first_escape.pdf}
+  \caption{First escape against $\isc$: $\chi=3$, separated teacher, fan-in initialization, ten seeds (one
+    colour per seed). Top: $\tev1$ from gradient flow (dots) and each seed's prediction $\isc^{-(\Kc-2)}T(Z)$
+    (lines), with $T(Z)$ computed from that seed's initialization before training. Bottom: $\tev1$ over the
+    prediction \eqref{eq:s2s-first}, with the offset (solid) and without it (dotted); in the legend
+    $\hat\theta=Z$ and $c_\Kc$ is the offset. Takeaway: one number
+    per initialization, computed before training, predicts the first escape of every run, to within
+    $10^{-5}$ at the smallest $\isc$ in every panel; the deviations at large $\isc$ are the offset and, at
+    $\Kc=7,8$, a direction that has not converged.}
+  \label{fig:s2s-first}
+\end{figure}
+
 \paragraph{Prediction: one blow-up time per initialization.}
 On the first plateau $\normF{\W}$ is far below the teacher's weights, and gradient flow is to leading order
 the flow $\dot\params=\nabla g$ of the correlation $g=\ip{\W}{\Wt}$ (\cref{app:escape}): its direction follows
@@ -272,20 +267,6 @@ separated), $0.990$--$0.996$ (binary4, close: $2.6$--$3.8$ s.e.\ below $1$, as a
 them), $1.9999$--$2.0000$ (MPS4), $4.996$--$4.999$ (binary8, HT4) and $5.9995\pm0.0002$ (MPS8). An
 independent integration of the spherical flow reproduces $T(Z)$ for the 160 binary4 and MPS4 jobs to
 $2\cdot10^{-10}$ (verification review).
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics{s2s/first_escape.pdf}
-  \caption{First escape against $\isc$: $\chi=3$, separated teacher, fan-in initialization, ten seeds (one
-    colour per seed). Top: $\tev1$ from gradient flow (dots) and each seed's prediction $\isc^{-(\Kc-2)}T(Z)$
-    (lines), with $T(Z)$ computed from that seed's initialization before training. Bottom: $\tev1$ over the
-    prediction \eqref{eq:s2s-first}, with the offset (solid) and without it (dotted); in the legend
-    $\hat\theta=Z$ and $c_\Kc$ is the offset. Takeaway: one number
-    per initialization, computed before training, predicts the first escape of every run, to within
-    $10^{-5}$ at the smallest $\isc$ in every panel; the deviations at large $\isc$ are the offset and, at
-    $\Kc=7,8$, a direction that has not converged.}
-  \label{fig:s2s-first}
-\end{figure}
 
 \paragraph{The size of the initialization gives only a lower bound.}
 From an initialization along a maximizer of $g$ the escape takes

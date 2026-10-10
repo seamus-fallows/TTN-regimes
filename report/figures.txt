@@ -19,7 +19,6 @@
 # failure modes of the odeco runs (experiment s2s_core; plot_report.py, plot_scaling.py,
 # plot_aligned.py, plot_dormant.py; commands in the experiment README and Appendix C)
 experiments/s2s_core/results/report_runs.pdf                     s2s/runs.pdf
-experiments/s2s_core/results/fig_d_gaps_chi6_separated.pdf       s2s/gaps.pdf
 experiments/s2s_core/results/fig_a_aligned.pdf                   s2s/aligned.pdf
 experiments/s2s_core/results/fig_c_first_escape_chi3_fanin.pdf   s2s/first_escape.pdf
 experiments/s2s_core/results/report_prefactor.pdf                s2s/prefactor.pdf

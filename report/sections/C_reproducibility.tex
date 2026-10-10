@@ -39,15 +39,12 @@
       \texttt{experiments/s2s\_core/}, run with \texttt{uv run python} and \texttt{-{}-out
       experiments/s2s\_core/results}; full order in the experiment's README
       & \texttt{main}, \texttt{large} (one run each; \cref{tab:exp-s2s}); local copy \texttt{data/s2s\_core/} \\
-    \ref{fig:s2s-gaps} & \texttt{plot\_scaling.py} (\texttt{fig\_d\_gaps\_chi6\_separated}) from the committed
-      tables \texttt{main\_runs.csv} and \texttt{main\_gap\_fits.csv}, written from the raw runs by
-      \texttt{recompute\_hessians.py} and \texttt{analyze\_main.py}
-      & \texttt{main}, \texttt{large} \\
     \ref{fig:s2s-aligned} & \texttt{plot\_aligned.py -{}-raw data/s2s\_core/aligned} (\texttt{fig\_a\_aligned})
       & \texttt{aligned} \\
     \ref{fig:s2s-first} & \texttt{plot\_scaling.py} (\texttt{fig\_c\_first\_escape\_chi3\_fanin}) from
-      \texttt{first\_runs.csv} (\texttt{analyze\_first.py})
-      & \texttt{first}, \texttt{first\_k78} \\
+      \texttt{first\_runs.csv} (\texttt{analyze\_first.py}); \cref{tab:s2s-gaps} is
+      \texttt{main\_exponents.csv}, written by \texttt{recompute\_hessians.py} and \texttt{analyze\_main.py}
+      & \texttt{first}, \texttt{first\_k78}; table: \texttt{main}, \texttt{large} \\
     \ref{fig:s2s-prefactor} & \texttt{plot\_report.py} as above (\texttt{report\_prefactor}), from \texttt{lo\_d.csv},
       \texttt{lo\_chi\_table.csv}, \texttt{lo\_K\_table.csv} (\texttt{lo\_sweep.py}, \texttt{plot\_lo.py})
       & \texttt{lo\_d}, \texttt{lo\_chi}, \texttt{lo\_K} \\
