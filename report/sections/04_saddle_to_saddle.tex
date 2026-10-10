@@ -408,46 +408,6 @@ gives $4.51\pm0.19$, and the other $k\ge6$ rows (limited range) show only that t
 is not measured. Coverage is uneven: $k=2$ occurs only on chains (MPS, midroot6), $k=4$ on chains and star3,
 $k=7$ only on HT trees. \newresult
 
-\begin{table}[!t]
-  \centering
-  \caption{Plateau law after the first component, two-component pattern teachers ($d=\chi=2$, weights
-    $(1,0.5)$): prediction \eqref{eq:locality-rule} against measurement. $p$ is the exponent of
-    $\Delta t_2\propto\isc^{-p}$, fitted per seed; for $k=2$ the slope of $\Delta t_2$ against $\ln(1/\isc)$.
-    Ranges are over rows (one row = tree, $D$, protocol); single rows give mean $\pm$ s.e.\ over seeds (median).
-    $\sep{}$ is the separation ratio \eqref{eq:separation}. $\dagger$: limited range (less than one decade of
-    $\isc$, or fewer than five fitted seeds; the reporting rule of \cref{sec:setup-diagnostics}). Sets $D$ number
-    the sites from $0$ (source: \cref{app:experiments}, \cref{tab:exp-locality}).}
-  \label{tab:locality-exponents}
-  \small
-  \begin{tabularx}{\textwidth}{@{}c>{\raggedright\arraybackslash}p{3.0cm}
-      >{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}X@{}}
-    \toprule
-    $k$ & rows & prediction & measured \\
-    \midrule
-    1 & binary4, binary8, star3 (4 cases) & no plateau & small: $\Delta t_2\propto\isc$, at most
-      $8\cdot10^{-4}$, $\sep{}<5\cdot10^{-4}$; saddle: $\Delta t_2=0.63$--$0.65$, independent of $\isc$, $\sep{}=0.34$--$0.35$ \\
-    2 & MPS, midroot6 (7 cases) & log, slope $1$ (small), $2$ (saddle) & $0.980$--$1.009$ (small),
-      $2.002$--$2.071$ (saddle); log law preferred in 14 of 14 rows \\
-    3 & all nine trees (22 cases) & $1$ & $0.98$--$1.04$ (42 rows) \\
-    4 & MPS, star3, midroot6 (8 cases) & $2$ & small $1.95$--$2.05$ (MPS4 $\{0,3\}$: 3 seeds$^\dagger$), balanced
-      $1.94$--$2.02$, $\chi=4$: $1.99$--$2.03$; saddle $1.48$--$2.39$ ($1.81$--$2.19$ on never-stalling seeds) \\
-    5 & binary8, HT4 (6 cases) & $3$ & $2.89$--$3.13$, all protocols \\
-    5 & HT8 $\{1,2\}$ & $3$ & saddle $2.74\pm0.37$ ($2.96$); $3.10\pm0.11$ on never-stalling seeds \\
-    5 & MPS6 $\{1,3,5\}$, MPS8 $\{1,5\}$ & $3$ & $\isc\in[0.03,0.3]$: $2.86$--$3.76$.
-      $\isc\in[0.012,0.03]^\dagger$: MPS6 $3.05\pm0.06$ (saddle), $3.15\pm0.23$ (balanced); MPS8
-      $3.13\pm0.25$ (balanced, 4 seeds), $\mathbf{3.67\pm0.20}$ (saddle, 4 seeds). MPS8 small, never-stalling
-      seeds: $2.97\pm0.05$. $\chi=4$: $3.19\pm0.15$, $2.97\pm0.04$ \\
-    6 & binary8 $\{0,2,4\}$, HT4 $\{0,1,2\}$ & $4$ & balanced, one decade, 8 and 7 seeds:
-      $4.007\pm0.021$, $4.061\pm0.048$ (fan-in$^\dagger$: $3.68\pm0.20$, $4.23\pm0.10$) \\
-    6 & MPS8 $\{1,6\}$ & $4$ & balanced, one decade: $4.51\pm0.19$ \\
-    7 & HT4, all sites & $5$ & balanced, one decade, 8 seeds: $4.957\pm0.061$ ($5.01$) \\
-    6, 7 & other rows (6 and 3 cases) & $4$, $5$ & fan-in and saddle$^\dagger$, $1$--$5$ fitted seeds:
-      $3.4$--$5.1$ ($k=6$), $5.3$--$6.3$ ($k=7$; HT8 $\{3,4\}$: $5.74\pm1.06$, median $5.01$) \\
-    8 & MPS8 $\{0,7\}$ & $6$ & not measured ($\le2$ fitted seeds per protocol$^\dagger$) \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=0.86\textwidth]{locality/twocomp_exponents.png}
