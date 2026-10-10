@@ -12,22 +12,37 @@
 % Citations and new/known markers revised 2026-10-10 (branch wip/cite-apply) from the citation audit
 % notes/reviews/citation_check.md (rows a1 and section b): "new" tags narrowed where prior or
 % concurrent work exists; do not widen them again without new evidence.
+% Final edit 2026-10-10 (branch wip/ed-appx): notation of notes/report_style.md. Symbols of this
+% appendix for the notation table of Sec. 2 (beyond macros.tex): D_jr, V_D (V_jr), m_jr = |V_jr|,
+% St(.) Steiner subtree, k route size, k* its minimum (eq. A-kstar), w weight ratio (smaller/larger),
+% gamma = n(1-w)/w order exponent (eq. A-matrix-like), n_jr unstable directions, q_j per-core amplitude
+% of the learned component, c_r coupling of the route of r (eq. A-coupling), b route amplitude,
+% Gamma piggyback matrix, Gamma^(l) and lambda_l generalized piggyback operator and its top
+% eigenvalue, r(.) spectral radius, ord(theta_S) saddle order, lambda_e escape rate of bond e at the
+% rank-one MPS saddle (eq. A-gamma-e), s_2(M_e)/sbar its head start, h_e its log slope, kappa_c the
+% head start under correlated inputs (A.6), c input correlation (A.6 only), Lambda_r covariance weight,
+% kappa_n SGD noise factor (eq. A-sgd-first), c_col collapse constant (prop. A-sgd-collapse),
+% delta_K first-event offset (eq. A-first-event), omega_K aligned event width, beta(a_r) local growth
+% exponent (eq. A-growth-exponent). Renamed here: varrho -> w, N(D) -> V_D, rho_X -> r(A_X), gamma_e ->
+% lambda_e, kappa_e -> s_2(M_e)/sbar (as Sec. 6), c_gamma -> c_col (as Sec. 5), gamma(a_r) -> beta(a_r), sigma_k(M)
+% -> s_n(M) and ||.||_2, kappa_K -> the ratio a_0c/sigma_c (A.8), c_e (spare channels) -> chi_e - r_e.
 \section{Derivations}\label{app:derivations}
 
 This appendix derives the theoretical statements of the main text not proved in \cref{sec:setup}.
 
 \paragraph{Conventions.}
-Notation is that of \cref{sec:setup}. Unless stated otherwise inputs are whitened ($\Sig=\Id$),
+Notation is that of \cref{sec:setup} (\cref{tab:notation}). Unless stated otherwise inputs are whitened ($\Sig=\Id$),
 gradient flow has unit multipliers ($\lrm{v}=1$), so that $\Loss=\tfrac12\normF{\W-\Wt}^2$, and the
-teacher is a CP teacher \eqref{eq:cp-teacher}. For two components $j,r$ of a pattern teacher,
-$D_{jr}=\{i:\pi_j(i)\ne\pi_r(i)\}$ is the set of sites where they differ, $N(D_{jr})$ the set of
-(\emph{terminal}) cores carrying a site of $D_{jr}$, $m_{jr}=\abs{N(D_{jr})}$, and $\mathrm{St}(N(D_{jr}))$ the
-smallest subtree of $\tree$ containing $N(D_{jr})$ (its Steiner subtree; compare
+teacher is a CP teacher \eqref{eq:cp-teacher}. Sites are numbered from 0, and a pattern is the string of
+its site values, site 0 first ($0110$). For two components $j,r$ of a pattern teacher,
+$D_{jr}=\{i:\pi_j(i)\ne\pi_r(i)\}$ is the set of sites where they differ, $V_{jr}:=V_{D_{jr}}$ the set of
+(\emph{terminal}) cores carrying a site of $D_{jr}$, $m_{jr}=\abs{V_{jr}}$, and $\mathrm{St}(V_{jr})$ the
+smallest subtree of $\tree$ containing $V_{jr}$ (its Steiner subtree; compare
 \cref{prop:teacher-spectra}(b)). At a learned saddle the learned component is $j$, with per-core
-amplitude $q_j=\tw{j}^{1/\Kc}$ (\cref{prop:aligned}), and $r$ is a component still to be learned. A ratio of
-two teacher weights, smaller over larger, is written $\varrho$. $\sigma_k(M)$ is the $k$-th singular value of
-a matrix $M$; $\isc$ is the initialization scale. ``LO'' means leading order in the small quantities of each
-statement; $\hat\params=\params/\norm{\params}$. A statement that combines a proven identity with a derived
+amplitude $q_j=\tw{j}^{1/\Kc}$ (\cref{prop:aligned}), and $r$ is a component still to be learned. The ratio of
+two teacher weights, smaller over larger, is $w$. $\norm{M}_2$ is the largest singular value of a matrix $M$
+and $s_n(M)$ its $n$-th one; $\isc$ is the initialization scale. ``LO'' means leading order in the small
+quantities of each statement; $\hat\params=\params/\norm{\params}$. A statement that combines a proven identity with a derived
 consequence carries both tags. Arguments the theory notes call \emph{heuristic} (assumptions not
 controlled) are tagged \conjecture, or \empirical{} with the words ``heuristic mechanism'' where experiments
 support them. ``Checked'' refers to the numerical checks of the theory notes
@@ -56,7 +71,11 @@ and only while $g<0$}, i.e.\ only if $\ip{\Wz}{\Wt}<0$. The identity holds for a
 which $g$ is multilinear, e.g.\ the reduced cores of \cref{prop:A-reduced} (checked).
 
 \begin{lemma}[Unused bond channels are invariant]\label{lem:A-unused}
-  \proven{} \newresult[elementary]
+  % TODO-CITE (lead): add zhang2021embedding (Zhang, Zhang, Luo & Xu, NeurIPS 2021, arXiv 2105.14573) and
+  % simsek2021geometry (Simsek et al., ICML 2021, arXiv 2105.12221; notes/literature.md) to references.bib
+  % and replace the plain-text names below by \citealp{zhang2021embedding,simsek2021geometry}.
+  \proven{} \newresult[elementary; the TTN case of the embedding principle of neural networks, Zhang, Zhang,
+  Luo and Xu (2021) and Simsek et al.\ (2021)]
   Let $e=\edge{v}$ with $p=\pa{v}$, and let $\mathcal B$ be a set of channels of $e$ such that every
   entry of $\G{v}$ and of $\G{p}$ whose $e$-index lies in $\mathcal B$ vanishes. Then, for every loss
   of the form $\mathcal L(\W(\params))$ (any input law, population or empirical), the gradient
@@ -139,8 +158,9 @@ limit (\cref{prop:A-kkt}).
   \begin{equation}\label{eq:A-blowup}
     t^*=\norm{\params_0}^{-(\Kc-2)}\int_0^\infty e^{-(\Kc-2)\Kc G(\tau)}\,\dd\tau .
   \end{equation}
-  For $\params_0=\isc Z$, $t^*=\isc^{-(\Kc-2)}\,\hat t_1(Z)/\tw{1}$, where $\hat t_1(Z):=\tw{1}\,t^*|_{\isc=1}$ depends on the
-  initialization direction and on $\Wt/\tw{1}$ but not on $\isc$; the exponent $\Kc-2$ counts every core.
+  For $\params_0=\isc Z$, $t^*=\isc^{-(\Kc-2)}\mathcal T(Z)$ with $\mathcal T(Z)=\hat t_1(Z)/\tw{1}$, where
+  $\hat t_1(Z):=\tw{1}\,t^*|_{\isc=1}$ depends on the initialization direction and on $\Wt/\tw{1}$ but not on $\isc$; the
+  exponent $\Kc-2$ counts every core.
 \end{corollary}
 \begin{proof}
   By \eqref{eq:A-spherical}, $\norm{\params(\tau)}=\norm{\params_0}e^{\Kc G(\tau)}$ and
@@ -166,16 +186,21 @@ There is no separate alignment time: the whole integral is alignment ($g(\hat\pa
   $q_0^{-(\Kc-2)}/((\Kc-2)s)+\delta_\Kc s^{-(2-2/\Kc)}+O(q_0^2)$ (write $b=qs^{-1/\Kc}$ and
   $1/(b^{\Kc-1}(1-b^\Kc))=b^{-(\Kc-1)}+b/(1-b^\Kc)$); the first term is the LO blow-up time.
 \end{proof}
-Checked per initialization (within $0.8\%$ of gradient flow for $\Kc=3,4$, $\isc\le0.03$); for $\Kc=6,7$ at
-$\isc=0.15$--$0.5$ the direction has not converged (heuristically), so a $1\%$ test needs $\isc^{\Kc-2}\le10^{-3}$.
+Checked per initialization: without the offset, gradient flow deviates from $t^*$ by at most $0.8\%$ (binary
+$\Ns=4$, $\isc=0.01$) and $0.1\%$ (MPS $\Ns=4$, $\isc=0.03$), and the deviation equals the $\delta_\Kc$ term to two
+digits; for $\Kc=6,7$ at $\isc=0.15$--$0.5$ the direction has not converged (heuristically), so a $1\%$ test needs
+$\isc^{\Kc-2}\le10^{-3}$.
 
 \begin{remark}[Per-initialization prediction]\label{rem:A-recipe}
-  \proven{} at LO. Integrate in $\tau$ the state $(u,\ell,T)$ from $u(0)=\params_0/\norm{\params_0}$,
-  $\ell(0)=T(0)=0$: $\dd u/\dd\tau=\nabla g(u)-\Kc g(u)u$ (renormalizing $u$), $\dd\ell/\dd\tau=\Kc g(u)$,
-  $\dd T/\dd\tau=e^{-(\Kc-2)\ell}$, up to $\ell=40/(\Kc-2)+5$, and add the tail
-  $e^{-(\Kc-2)\ell}/((\Kc-2)\Kc g(u))$. Then $t^*=\norm{\params_0}^{-(\Kc-2)}T$ for the actual teacher (any
-  number of components), and the dominant component of the final $u$ is the first one learned as
-  $\isc\to0$: a parameter-free prediction of $\tev{1}$ (tested in \cref{sec:s2s-escape}).
+  \proven{} at LO for $t^*$; \derived{} for $\tev1$ (\cref{prop:A-first-event}) and for the first component.
+  Integrate in $\tau$ the state $(u,\ell,\tilde t)$ from $u(0)=\params_0/\norm{\params_0}$,
+  $\ell(0)=\tilde t(0)=0$: $\dd u/\dd\tau=\nabla g(u)-\Kc g(u)u$ (renormalizing $u$), $\dd\ell/\dd\tau=\Kc g(u)$,
+  $\dd\tilde t/\dd\tau=e^{-(\Kc-2)\ell}$, up to $\ell=40/(\Kc-2)+5$, and add the tail
+  $e^{-(\Kc-2)\ell}/((\Kc-2)\Kc g(u))$. Then $t^*=\norm{\params_0}^{-(\Kc-2)}\tilde t$ (so $\mathcal T(Z)=\norm{Z}^{-(\Kc-2)}\tilde t$)
+  for the actual teacher (any number of components), and the dominant component of the final $u$ is the first one learned as
+  $\isc\to0$, provided the KKT point reached is a component configuration (\cref{prop:A-component-hessian};
+  not for stars, \cref{rem:A-sequence}): a parameter-free prediction of $\tev{1}$ (tested in
+  \cref{sec:s2s-escape}).
 \end{remark}
 
 \begin{proposition}[Maximum of $g$ on the sphere]\label{prop:A-gmax}
@@ -195,12 +220,12 @@ $\isc=0.15$--$0.5$ the direction has not converged (heuristically), so a $1\%$ t
 \end{proposition}
 \begin{proof}
   First inequality, by induction on the number of cores: for a leaf $\ell$ with parent $p$ and the SVD
-  $\G{\ell}=\sum_k\mu_kY_k\otimes z_k$ across (physical legs $\mid$ bond leg),
-  $g=\sum_k\mu_k\ip{\W'_k}{\Wt[Y_k]}$, with $\W'_k$ the network without $\ell$ and $\G{p}$ contracted
-  with $z_k$ on the $\ell$-leg, and $\Wt[Y_k]$ the contraction of $\Wt$ with $Y_k$ on the sites of $\ell$.
-  Since $\norm{\Wt[Y_k]}_{\rm inj}\le\norm{\Wt}_{\rm inj}$, induction bounds the sum by
-  $\norm{\Wt}_{\rm inj}\prod_{v\ne\ell,p}\normF{\G{v}}\sum_k\mu_k\normF{\G{p}\times_\ell z_k}$, and Cauchy--Schwarz with
-  $\sum_k\normF{\G{p}\times_\ell z_k}^2\le\normF{\G{p}}^2$ closes the step. The second inequality is AM--GM.
+  $\G{\ell}=\sum_n\mu_nY_n\otimes z_n$ across (physical legs $\mid$ bond leg),
+  $g=\sum_n\mu_n\ip{\W'_n}{\Wt[Y_n]}$, with $\W'_n$ the network without $\ell$ and $\G{p}$ contracted
+  with $z_n$ on the $\ell$-leg, and $\Wt[Y_n]$ the contraction of $\Wt$ with $Y_n$ on the sites of $\ell$.
+  Since $\norm{\Wt[Y_n]}_{\rm inj}\le\norm{\Wt}_{\rm inj}$, induction bounds the sum by
+  $\norm{\Wt}_{\rm inj}\prod_{v\ne\ell,p}\normF{\G{v}}\sum_n\mu_n\normF{\G{p}\times_\ell z_n}$, and Cauchy--Schwarz with
+  $\sum_n\normF{\G{p}\times_\ell z_n}^2\le\normF{\G{p}}^2$ closes the step. The second inequality is AM--GM.
 \end{proof}
 
 \begin{proposition}[KKT points are balanced]\label{prop:A-kkt}
@@ -226,22 +251,24 @@ Hence (checked to $10^{-15}$) the near-origin escape direction is balanced, so o
   component $j$ on the unit sphere (per-core amplitude $\Kc^{-1/2}$, the pattern of $j$ on the physical legs,
   channel~1 on every bond), so that $g(\params_j)=\tw j\Kc^{-\Kc/2}$. (a) If some component $r$ has $m_{jr}=1$,
   $\params_j$ is not a critical point of $g$ on the sphere. (b) Otherwise, assume that no two components $r$
-  with $m_{jr}=2$ share a terminal core. Each such $r$, with terminal cores $v,w$, contributes $n_{jr}$
+  with $m_{jr}=2$ share a terminal core. Each such $r$, with terminal cores $u,v$, contributes $n_{jr}$
   eigenvalues $\Kc^{1-\Kc/2}(\tw r-\tw j)$ to the Riemannian Hessian of $g$ at $\params_j$, where $n_{jr}=\bd{e}$ if
-  $v$ and $w$ share the bond $e$ and $n_{jr}=1$ otherwise; all other eigenvalues are negative, except the
+  $u$ and $v$ share the bond $e$ and $n_{jr}=1$ otherwise; all other eigenvalues are negative, except the
   $\sum_e(\bd{e}-1)$ gauge zero modes. So $\params_j$ is a strict local maximum modulo gauge iff no $m_{jr}=1$ and
   every $r$ with $m_{jr}=2$ has $\tw r<\tw j$; otherwise it has $\sum_{r:\,m_{jr}=2,\,\tw r>\tw j}n_{jr}$ unstable
-  directions. Ties are decided at higher order; partners sharing a terminal core: \cref{prop:A-piggyback-graph}.
+  directions. Ties are decided at higher order. Partners sharing a terminal core give the block
+  $\Kc^{1-\Kc/2}(\Gamma-\tw j\Id)$ on the rotations ($\Gamma$ the piggyback matrix of \cref{prop:A-piggyback-graph}), so
+  $\params_j$ is a local maximum if $\lambda_{\max}(\Gamma)<\tw j$.
 \end{proposition}
 \begin{proof}[Derivation]
   The Riemannian Hessian is $\nabla^2g-\tw j\Kc^{1-\Kc/2}\Id$. As $g$ is linear in each core, $\nabla^2g$ has only
-  cross terms between cores $v\ne w$, which contract $\Wt$ with the pattern of $j$ outside $\sites v\cup\sites w$:
-  only components with $D_{jr}\subseteq\sites v\cup\sites w$ contribute. If $m_{jr}=1$, $\nabla g(\params_j)$ has a
+  cross terms between cores $u\ne v$, which contract $\Wt$ with the pattern of $j$ outside $\sites u\cup\sites v$:
+  only components with $D_{jr}\subseteq\sites u\cup\sites v$ contribute. If $m_{jr}=1$, $\nabla g(\params_j)$ has a
   component along the pattern of $r$ on the terminal core. Component $j$'s own cross terms vanish on the
   gauge orbit and give $-2\tw j\Kc^{1-\Kc/2}$ off it; uncoupled directions give $-\tw j\Kc^{1-\Kc/2}$. For $m_{jr}=2$,
-  rotating $\G{v},\G{w}$ toward the pattern of $r$ (channel $c$ on the bond joining them if adjacent, channel~1
-  elsewhere) gives the cross term $\tw r\Kc^{1-\Kc/2}$ for every $c$ if $v,w$ are adjacent and for $c=1$ only
-  otherwise; each surviving channel gives the block
+  rotating $\G{u},\G{v}$ toward the pattern of $r$ (on any channel of the bond joining them if adjacent, on
+  channel~1 otherwise) gives the cross term $\tw r\Kc^{1-\Kc/2}$ for every channel of that bond if $u,v$ are
+  adjacent and for channel~1 only otherwise; each surviving channel gives the block
   $\Kc^{1-\Kc/2}\big(\begin{smallmatrix}-\tw j&\tw r\\ \tw r&-\tw j\end{smallmatrix}\big)$, with eigenvalues $\Kc^{1-\Kc/2}(\pm\tw r-\tw j)$.
 \end{proof}
 Checked on 19 pattern-teacher cases and 7 odeco settings. For odeco teachers $m_{jr}$ is the number of
@@ -295,38 +322,40 @@ frozen: $\E\normF{H^{(r)}_v}^2=\isc^2\bd{v}d^{-\abs{\sites v}}$, against $\E\nor
   \derived{} \knownresult[the trichotomy: \citealp{rawal2026theory}, Thm~4.2; new: the TTN reduction and
   the constants]
   If the escape follows a rank-one path whose per-core amplitudes $x_v>0$ obey
-  $\dot x_v=s\prod_{w\ne v}x_w$, then the $x_v^2-x_w^2$ are conserved and, with $x_v^2=c_v^2+y$,
+  $\dot x_v=s\prod_{u\ne v}x_u$, then the $x_v^2-x_u^2$ are conserved and, with $x_v^2=x_{v,0}^2+y$,
   \begin{equation}\label{eq:A-product-mode}
-    \hat t=\frac1{2s}\int_0^\infty\prod_{v=1}^{\Kc}\big(y+c_v^2\big)^{-1/2}\dd y .
+    \hat t=\frac1{2s}\int_0^\infty\prod_{v=1}^{\Kc}\big(y+x_{v,0}^2\big)^{-1/2}\dd y .
   \end{equation}
-  Let $m$ internal cores start at amplitude $\gamma$ and the other $\Kc-m$ (the ends) at $c_e\gg\gamma$.
-  As $\gamma\to0$: for $m=0$ and equal amplitudes $c$, $\hat t=c^{-(\Kc-2)}/((\Kc-2)s)$ (integrating the
-  mode equation of \citealp{saxe2014exact}, eq.~15); for $m=1$ and ends at $c$, $\hat t\to\frac12\mathrm{B}(\frac12,\frac{\Kc-2}2)c^{-(\Kc-2)}/s$
-  ($\mathrm B$ is Euler's beta function), a finite limit; for $m=2$,
-  $\hat t=\ln(1/\gamma)/(s\prod_ec_e)+O(1)$; for $m\ge3$,
-  $\hat t\simeq\gamma^{-(m-2)}/((m-2)s\prod_ec_e)$.
+  Let $n_0$ internal cores start at amplitude $\epsilon$ and the other $\Kc-n_0$ (the ends) at $x_{e,0}\gg\epsilon$.
+  As $\epsilon\to0$: for $n_0=0$ and equal amplitudes $x_0$, $\hat t=x_0^{-(\Kc-2)}/((\Kc-2)s)$ (integrating the
+  mode equation of \citealp{saxe2014exact}, eq.~15); for $n_0=1$ and ends at $x_0$,
+  $\hat t\to\frac12\mathrm{B}(\frac12,\frac{\Kc-2}2)x_0^{-(\Kc-2)}/s$ ($\mathrm B$ is Euler's beta function), a finite
+  limit; for $n_0=2$, $\hat t=\ln(1/\epsilon)/(s\prod_ex_{e,0})+O(1)$; for $n_0\ge3$,
+  $\hat t\simeq\epsilon^{-(n_0-2)}/((n_0-2)s\prod_ex_{e,0})$.
 \end{proposition}
-The integral follows from \cref{lem:A-norm-shift} ($\dot y=2s\prod_w(y+c_w^2)^{1/2}$). Binary $\Ns=4$ and MPS
-$\Ns=3$ have $m=1$, MPS $\Ns=4$ $m=2$ (only qualitatively: its internal amplitude is not small), binary $\Ns=8$
-and HT $\Ns=4$ $m=3$, the MPS $m=\Ns-2$. The escape time is set by the internal path amplitudes, while
+The integral follows from \cref{lem:A-norm-shift} ($\dot y=2s\prod_u(y+x_{u,0}^2)^{1/2}$). Binary $\Ns=4$ and MPS
+$\Ns=3$ have $n_0=1$, MPS $\Ns=4$ $n_0=2$ (only qualitatively: its internal amplitude is not small), binary $\Ns=8$
+and HT $\Ns=4$ $n_0=3$, the MPS $n_0=\Ns-2$. The escape time is set by the internal path amplitudes, while
 $\norm{\params_0}$ is dominated by frozen slices and by internal cores whose norm is spread over $\sim\chi^2$
 directions: hence $t_{\rm KH}$ fails most at large $\Kc$. That the end directions stay frozen is empirical
 (median cosine $0.92$--$1.00$; a minority rotate strongly). Given it, on binary $\Ns=4$ (reduced network
 $g=\tw1a\T Cb$, $a,b\in\R^{\bd b}$, $\bd b=\min(\chi,d^2)$) the median is $\tev1\approx\pi d/(2\tw1\isc\sqrt{\bd b})$ for
-$d\le\bd b\le d^2$, with $\mathrm{sd}\ln\hat t_1\approx1/(2\sqrt{\bd b})$ \derived{} \newresult{} ($0.80$--$1.00$ of measured medians \empirical).
+$d\le\bd b\le d^2$, with $\mathrm{sd}\ln\hat t_1\approx1/(2\sqrt{\bd b})$ \derived{} \newresult{} (the measured medians
+are $0.80$--$1.00$ times this value \empirical: the closed form overestimates).
 
 \paragraph{Learning order} is decided in the spherical phase by the basin of the initial direction.
 
 \begin{proposition}[Race on trees whose cores all carry sites]\label{prop:A-race}
-  \proven{} (at LO) \newresult{}
+  \proven{} (at LO) \newresult[the race on trees; the tensor-versus-matrix dichotomy of learning orders is
+  known in multi-spike tensor PCA, \citealp{benarous2025stochastic}]
   Let the teacher be odeco and the tree an MPS. By \cref{prop:A-reduced} the components evolve
   independently at LO, and component $r$ blows up at $\isc^{-(\Kc-2)}\hat t_{1,r}/\tw r$, where the
   $\hat t_{1,r}$ are \iid copies of the prefactor of \cref{cor:A-blowup} for a single component of unit
   weight. The first component learned is $\arg\min_r\hat t_{1,r}/\tw r$, and for two components with
-  $\varrho=\tw2/\tw1<1$
+  $w=\tw2/\tw1<1$
   \begin{equation}\label{eq:A-race}
-    P(\text{larger first})=P\Big(\frac{\hat t_{1,2}}{\hat t_{1,1}}>\varrho\Big)
-    =\frac12+\frac12P\Big(\Big|\ln\frac{\hat t_{1,2}}{\hat t_{1,1}}\Big|<\ln\frac1\varrho\Big),
+    P(\text{larger first})=P\Big(\frac{\hat t_{1,2}}{\hat t_{1,1}}>w\Big)
+    =\frac12+\frac12P\Big(\Big|\ln\frac{\hat t_{1,2}}{\hat t_{1,1}}\Big|<\ln\frac1w\Big),
   \end{equation}
   which does not depend on $\isc$. In the spherical flow the basin of component $r$ is exactly the set of
   initial directions with $\hat t_{1,r}/\tw r<\hat t_{1,r'}/\tw{r'}$ for all $r'\ne r$.
@@ -335,38 +364,44 @@ $d\le\bd b\le d^2$, with $\mathrm{sd}\ln\hat t_1\approx1/(2\sqrt{\bd b})$ \deriv
   The components are independent at LO and the $\hat t_{1,r}$ are exchangeable.
 \end{proof}
 The race agreed with gradient flow on 100 of 100 initializations (MPS, $\Ns=4$). \empirical:
-$P(\text{larger first})\approx F_{\Normal}(\ln(1/\varrho)/S)$ within $\pm0.05$ in all tensor-like settings computed ($F_{\Normal}$ the
-standard normal distribution function, $S$ the standard deviation of $\ln(\hat t_{1,2}/\hat t_{1,1})$), and
-$\mathrm{sd}\ln\hat t_1\approx c\sqrt{\Kc-2}$ on MPS ($c=0.27$--$0.49$). Hence \conjecture: $P(\text{larger first})\to\frac12$ as
-$\Kc\to\infty$ at fixed $\varrho$, $d$, $\chi$, and $P\to1$ needs $d\to\infty$ as well as large $\chi$ (compare the
+$P(\text{larger first})\approx F_{\Normal}(\ln(1/w)/S)$ within $\pm0.05$ in all tensor-like settings computed ($F_{\Normal}$ the
+standard normal distribution function, $S$ the standard deviation of $\ln(\hat t_{1,2}/\hat t_{1,1})$), and on MPS
+the standard deviation of $\ln\hat t_1$ grows like $\sqrt{\Kc-2}$, with prefactor $0.27$--$0.49$. Hence \conjecture:
+$P(\text{larger first})\to\frac12$ as
+$\Kc\to\infty$ at fixed $w$, $d$, $\chi$, and $P\to1$ needs $d\to\infty$ as well as large $\chi$ (compare the
 largest-first (deflation) order of over-parameterized orthogonal tensor decomposition, proven for a modified
 gradient flow and observed for plain gradient flow, \citealp{ge2021understanding}). When some cores carry no
-site (binary $\Ns=8$, HT) the race predicts the first component on $94$--$100\%$ of initializations \empirical.
+site (binary $\Ns=8$, HT) the race names the winner of the two-component leading-order flow on $94$--$100\%$ of
+initializations \empirical{} (gradient flow: \cref{sec:s2s-order}).
 
 \begin{proposition}[Matrix-like pairs]\label{prop:A-matrix-like}
   Let the teacher have two components, the smaller $j$ and the larger $r$, with $m_{jr}=2$, and let
-  $n=n_{jr}$ and $\varrho=\tw j/\tw r$. (a) \derived{} \knownresult[binary $\Ns=4$, the limit $P\to0$:
+  $n=n_{jr}$ and $w=\tw j/\tw r$. (a) \derived{} \knownresult[binary $\Ns=4$, the limit $P\to0$:
   \citealp{jacot2022saddletosaddle}, Thm~2; their probability-one proof for depth three assumes a full-rank
   gradient at the origin] $\params_j$ is a saddle of the spherical flow with $n$ unstable
   directions while $\params_r$ is a local maximum (\cref{prop:A-component-hessian}), so
-  $P(\text{smaller first})\to0$ as $\isc\to0$. (b) \conjecture{} (heuristic) \newresult{} As $\isc\to0$,
+  $P(\text{smaller first})\to0$ as $\isc\to0$. (b) \empirical{} (heuristic mechanism; non-adjacent cores,
+  $n=1$) \conjecture{} (adjacent cores, $n=\bd e$) \newresult{} As $\isc\to0$,
   \begin{equation}\label{eq:A-matrix-like}
-    P(\text{smaller first})\propto\isc^{\,n(1-\varrho)/\varrho}.
+    P(\text{smaller first})\propto\isc^{\gamma},\qquad\gamma=n\,\frac{1-w}{w}.
   \end{equation}
 \end{proposition}
 \begin{proof}[Heuristic argument for (b)]
   A trajectory that escapes near $\params_j$ passes close to it, where the deviations along the $n$ unstable
   directions grow in $\tau$ at rate $\Kc^{1-\Kc/2}(\tw r-\tw j)$ while $\dd\ln\norm{\params}/\dd\tau=\Kc^{1-\Kc/2}\tw j$, i.e.\
-  like $(\norm{\params}/\norm{\params_0})^{(1-\varrho)/\varrho}$. As $\norm{\params}/\norm{\params_0}\sim1/\isc$ at the escape, all $n$
-  initial deviations must be below $\sim\isc^{(1-\varrho)/\varrho}$, which for a smooth density has probability
-  $\propto\isc^{n(1-\varrho)/\varrho}$.
+  like $(\norm{\params}/\norm{\params_0})^{(1-w)/w}$. As $\norm{\params}/\norm{\params_0}\sim1/\isc$ at the escape, all $n$
+  initial deviations must be below $\sim\isc^{(1-w)/w}$, which for a smooth density has probability
+  $\propto\isc^{n(1-w)/w}$.
 \end{proof}
 Checks of (b): in an LO emulation (MPS, $\Ns=4$, $n=1,\dots,4$) the slopes $\dd\ln P/\dd\ln\isc$ are ordered as $n$
-and are $0.67$--$1.03$ of $n(1-\varrho)/\varrho$, steepening toward it as $\isc\to0$. For gradient flow (binary $\Ns=4$,
-$\varrho=0.7$) the estimated $P(\text{smaller first})=0.155$, $0.064$, $0.024$ at $\isc=0.1$, $0.01$, $0.001$ (emulation
-probability times gradient flow's agreement rate) has local slopes $0.38$, $0.43$ against $0.43$ \empirical;
-whether gradient flow has the LO exponent is open. A wrong order is corrected through a strict saddle
-(\cref{rem:A-wrong-order}); tests in \cref{sec:s2s-order}.
+and are $0.67$--$1.03$ of $\gamma$, steepening toward it as $\isc\to0$; for binary $\Ns=4$ at $w=0.7$, the emulation
+probability times gradient flow's agreement rate gives local slopes $0.38$, $0.43$ against $0.43$ between
+$\isc=0.1$, $0.01$ and $0.001$. Gradient flow (\cref{sec:s2s-order}): on the
+three pairs on non-adjacent cores ($n=1$; $w=0.7$--$0.95$, 13 sets) fits over the three smallest $\isc$ agree with
+$\gamma$ within $1.1$ standard errors, while fits over the whole measured range lie up to $24\%$ below it
+(pre-asymptotic); adjacent pairs ($n=\bd e=4$) are $2.2$--$3.4$ times steeper than $n=1$ but reach $\gamma$ only at the
+small-$\isc$ end of one setting (MPS4, $w=0.9$) \empirical. Whether gradient flow has the LO exponent for $n>1$ is
+open. A wrong order is corrected through a strict saddle (\cref{rem:A-wrong-order}).
 
 % ===========================================================================================
 \subsection{Saddles after the first escape}\label{app:saddles}
@@ -380,7 +415,8 @@ lifts criticality from $r_e$ to $\bd{e}$; with one learned component $\params_S$
 has $k=1$, \cref{prop:A-hessian}(c); small initialization gives $\Q{e}=O(\isc^2)$); (A4) $\bd{e}\ge r_e+1$ on
 every bond whose rank must grow; (A5) leading order in the entries that vanish at $\params_S$ (of size
 $\isc_{\rm eff}$ on the plateau). In a basis of each bond with the learned channels first, entries whose bond
-indices are all learned are \emph{old}, the others \emph{new}; $c_e=\bd{e}-r_e$. Let $\mathcal R=\Wt-\W_S$ and
+indices are all learned are \emph{old}, the others \emph{new}; bond $e$ has $\bd{e}-r_e$ new
+(\emph{spare}) channels. Let $\mathcal R=\Wt-\W_S$ and
 $\Loss_S=\frac12\normF{\mathcal R}^2$. With one learned component $j$, balance forces equal core norms: each core is
 $q_j=\tw j^{1/\Kc}$ times the pattern of $j$ on its sites and channel~1 on its bonds \proven.
 
@@ -394,13 +430,14 @@ gives exactly $\W(\params_S+\delta)=\sum_{\mathcal J}\W_{\mathcal J}[\delta]$, $
 \end{equation}
 
 \begin{lemma}[Routes]\label{lem:A-routes}
-  \proven{} \newresult{}
+  \proven{} \newresult[for sub-routes; for a whole connected rank-deficient component:
+  \citealp{furman2026benign}, Lemmas~D.7--D.8]
   (i) If $\delta_v$ has only new entries, $\W_{\{v\}}[\delta_v]=0$: new entries carry no Gauss--Newton cost at
   second order. (ii) For new entries, $\W_{\mathcal J}[\delta]\ne0$ requires every new index of every $\delta_v$ to
   sit on a bond inside $\mathcal J$ and to be matched there; so every bond leaving $\mathcal J$ carries a
   learned index, and every connected component of $\mathcal J$ has at least two cores. For a connected set
   $\mathcal C$ (a \emph{route}), $\W_{\mathcal C}[\delta]=\mathcal W_{\mathcal C}(\delta)\otimes\bigotimes_{f\in\partial\mathcal C}\Sub{f}$,
-  where $\mathcal W_{\mathcal C}(\delta)$ is the small TTN formed by the $\delta_v$ (internal bond dimensions $c_e$),
+  where $\mathcal W_{\mathcal C}(\delta)$ is the small TTN formed by the $\delta_v$ (internal bond dimensions $\bd e-r_e$),
   $\partial\mathcal C$ the set of bonds leaving $\mathcal C$, and $\Sub{f}$ the contraction of the learned network
   beyond $f$ (a map from the $r_f$ learned indices of $f$ to tensors on the sites $H_f$ beyond $f$). Every
   proper subset $\mathcal C'\subsetneq\mathcal C$ has $\W_{\mathcal C'}[\delta]=0$: \emph{a route pays no Gauss--Newton
@@ -452,26 +489,26 @@ component) whether disconnected sets descend before the route is decided by the 
   suppressed escape: their Fig.~4]
   Let $S=\{j\}$. For every route $\mathcal C$,
   \begin{equation}\label{eq:A-steiner}
-    \mathcal R_{\mathcal C}=q_j^{\,\Kc-\abs{\mathcal C}}\sum_{r:\,N(D_{jr})\subseteq\mathcal C}\tw r\,\U r|_{\mathcal C},
+    \mathcal R_{\mathcal C}=q_j^{\,\Kc-\abs{\mathcal C}}\sum_{r:\,V_{jr}\subseteq\mathcal C}\tw r\,\U r|_{\mathcal C},
   \end{equation}
   where $\U r|_{\mathcal C}$ is $\U r$ restricted to the sites of $\mathcal C$. Hence
-  $k^*=\min_r\abs{\mathrm{St}(N(D_{jr}))}$; the route of component $r$ has degree
-  $k=\abs{\mathrm{St}(N(D_{jr}))}$ and coupling
+  $k^*=\min_r\abs{\mathrm{St}(V_{jr})}$; the route of component $r$ has degree
+  $k=\abs{\mathrm{St}(V_{jr})}$ and coupling
   \begin{equation}\label{eq:A-coupling}
     c_r=\tw r\,q_j^{\Kc-k}=\tw r\,\tw j^{(\Kc-k)/\Kc}.
   \end{equation}
-  The bonds whose rank must grow to add $r$ are exactly the bonds of $\mathrm{St}(N(D_{jr}))$, so $k$ is one
+  The bonds whose rank must grow to add $r$ are exactly the bonds of $\mathrm{St}(V_{jr})$, so $k$ is one
   plus their number, and $k=1$ iff $D_{jr}$ lies on a single core. With route entries proportional to
   $t$, $\Loss-\Loss_S=-c_rt^{k}+O(t^{2k})$: the saddle has order at most $k^*$. No curve descends faster if
   the generalized piggyback operator stays below $\tw j$ (\cref{thm:A-order-lower}; always for $k^*=2$, for
-  $k^*\in\{3,4\}$ with a positive definite fixed-rank block, and for two-component teachers in the correct
+  $k^*\in\{3,4\}$ with a fixed-rank block positive definite modulo gauge, and for two-component teachers in the correct
   order); otherwise the order can be smaller, from $k^*=5$ on (\cref{thm:A-order-sharp,cor:A-order}).
 \end{proposition}
 \begin{proof}
   Beyond a boundary bond $f$ the learned network is $\Sub{f}=q_j^{n_f}\U j|_{H_f}$ ($n_f$ cores, sites $H_f$,
   $\sum_fn_f=\Kc-\abs{\mathcal C}$). As $\mathcal R=\sum_{r\ne j}\tw r\U r$ and $\U r$ contracted with $\Sub{f}$ gives
   $q_j^{n_f}\prod_{i\in H_f}\ip{\fac ri}{\fac ji}$ ($q_j^{n_f}$ if $\pi_r=\pi_j$ on $H_f$, else $0$), $\U r$ survives iff
-  $N(D_{jr})\subseteq\mathcal C$, and a connected $\mathcal C$ containing $N(D_{jr})$ contains its Steiner subtree.
+  $V_{jr}\subseteq\mathcal C$, and a connected $\mathcal C$ containing $V_{jr}$ contains its Steiner subtree.
   The rank statement is \cref{prop:teacher-spectra}(b). For the descent curve let $\delta_v$ be $t$ times the
   pattern of $r$ on $\sites v$, with a new channel on the bonds inside $\mathcal C$ and channel~1 on
   $\partial\mathcal C$: then $\W_{\mathcal C}[\delta]=t^kq_j^{\Kc-k}\U r$, every other $\W_{\mathcal J}[\delta]$ vanishes
@@ -483,9 +520,9 @@ when 2, 3 and 4 cores must move (no lower bounds).
 
 \begin{table}[t]
   \centering
-  \caption{Route degree $k=\abs{\mathrm{St}(N(D))}$ (\cref{prop:A-steiner}) for a two-component pattern
+  \caption{Route degree $k=\abs{\mathrm{St}(V_D)}$ (\cref{prop:A-steiner}) for a two-component pattern
     teacher whose components differ on the sites $D$ (numbered from 0), on the trees of \cref{tab:trees};
-    $m=\abs{N(D)}=2$ unless shown. With the larger component learned first, $k=1$: no plateau; $k=2$:
+    $m=\abs{V_D}=2$ unless shown. With the larger component learned first, $k=1$: no plateau; $k=2$:
     strict saddle, plateau $\propto\ln(1/\isc)$; $k\ge3$: higher-order saddle, plateau $\propto\isc^{-(k-2)}$.}
   \label{tab:A-route-degree}
   \small\setlength{\tabcolsep}{4pt}
@@ -531,17 +568,20 @@ When $k^*=k_{\rm ex}$ the coupling is $c_r=\tw r\prod_{f\in\partial\mathcal C}\n
   block is the Hessian of the problem with bond ranks fixed at $r_e$ (Gauss--Newton term plus the
   piggyback couplings of \cref{prop:A-piggyback-graph}). (b) The new (\emph{rank-increasing}) block vanishes
   except on two-core routes: a route $\{u,v\}$ through the bond $e$ contributes
-  $\big(\begin{smallmatrix}0&-B\\-B\T&0\end{smallmatrix}\big)$, $B=\mathcal R_{\{u,v\}}$, for each of the $c_e$ new channels, i.e.\
-  eigenvalues $\pm\sigma_k(B)$ with multiplicity $c_e$; with one learned component the negative one is $-\lambda$,
+  $\big(\begin{smallmatrix}0&-B\\-B\T&0\end{smallmatrix}\big)$, $B=\mathcal R_{\{u,v\}}$, for each of the $\bd e-r_e$ new
+  channels, i.e.\ eigenvalues $\pm s_n(B)$, each with multiplicity $\bd e-r_e$; with one learned component and
+  one residual on the route the negative one is $-\lambda$,
   \begin{equation}\label{eq:A-lambda2}
-    \lambda=\sigma_{\max}(\mathcal R_{\{u,v\}})=\tw r\,\tw j^{(\Kc-2)/\Kc}.
+    \lambda=\norm{\mathcal R_{\{u,v\}}}_2=\tw r\,\tw j^{(\Kc-2)/\Kc}.
   \end{equation}
   (c) Hence $\params_S$ is a strict saddle iff the fixed-rank block has a negative eigenvalue or a route with
   $k^*=2$ exists. If $k^*=1$ it is not critical (one learned component: $\norm{\nabla\Loss(\params_S)}=\tw rq_j^{\Kc-1}$);
   if $k^*\ge3$ and the fixed-rank block is positive semidefinite, the Hessian has no negative eigenvalue: a
-  higher-order saddle. (d) The gauge orbit through $\params_S$ has dimension $\sum_e[\bd{e}^2-(\bd{e}-r_e)^2]$, and
-  the Hessian kernel has dimension $\sum_er_e^2+\dim\params_{\rm new}-2\sum_{k^*=2\text{ routes}}c_e$
-  ($\dim\params_{\rm new}$: the number of new entries).
+  higher-order saddle. (d) The gauge orbit through $\params_S$ has dimension $\sum_e[\bd{e}^2-(\bd{e}-r_e)^2]$. If
+  the fixed-rank block is nondegenerate modulo gauge (one learned component: $\tw j$ is not an eigenvalue of
+  $\Gamma$), the Hessian kernel has dimension
+  $\sum_er_e^2+\dim\params_{\rm new}-2\sum_{\{u,v\}}(\bd e-r_e)\rank\mathcal R_{\{u,v\}}$, summed over the two-core
+  routes ($\dim\params_{\rm new}$: the number of new entries).
 \end{proposition}
 \begin{proof}[Proof sketch]
   An old--new cross term of $\ip{\mathcal R}{\W_{\mathcal J}}$ needs an old index to meet a new one, which gives
@@ -553,23 +593,23 @@ Checked in 21 (tree, $D$) cases ($\lambda$ to six digits); $\lambda$ is also the
 
 \begin{proposition}[Piggyback block and piggyback graph]\label{prop:A-piggyback-graph}
   \proven{} \newresult[the graph criterion on general trees; deep linear networks: \citealp{achour2024loss},
-  Thm~7; odeco components are the isolated local maximizers of $\Wt(u,u,u)$ on the unit ball in the
+  Thm~7; odeco components are the isolated local maximizers of $\Wt(x,x,x)$ on the unit ball in the
   symmetric third-order case: \citealp{anandkumar2014tensor}, Thm.~4.2]
   Let $S=\{j\}$. A \emph{piggyback direction} keeps the learned bond index and rotates the physical vectors
-  of one terminal core $u$ toward a site pattern $w$ on $\sites u$. (i) For one residual $r$ with $m_{jr}=2$
+  of one terminal core $u$ toward a site pattern $\pi$ on $\sites u$. (i) For one residual $r$ with $m_{jr}=2$
   and terminal cores $u,v$ the rotation block has diagonal $q_j^{2(\Kc-1)}$, off-diagonal $-\tw rq_j^{\Kc-2}$ and
   eigenvalues $q_j^{\Kc-2}(\tw j\mp\tw r)$; for $m_{jr}\ge3$ it is $q_j^{2(\Kc-1)}\Id\succ0$. (ii) In general it is
   \begin{equation}\label{eq:A-piggyback}
     H_{\rm rot}=q_j^{\Kc-2}\big(\tw j\Id-\Gamma\big),
   \end{equation}
   where $\Gamma$ is the weighted adjacency matrix of the \emph{piggyback graph}: its nodes are the pairs
-  $(u,w)$ of a terminal core and a rotated site pattern, with one edge between $(u,\pi_r|_u)$ and
-  $(v,\pi_r|_v)$, of weight $\tw r$, for every residual component $r$ with $N(D_{jr})=\{u,v\}$. Hence
+  $(u,\pi)$ of a terminal core and a rotated site pattern, with one edge between $(u,\pi_r|_u)$ and
+  $(v,\pi_r|_v)$, of weight $\tw r$, for every residual component $r$ with $V_{jr}=\{u,v\}$. Hence
   $\lambda_{\min}(H_{\rm rot})=q_j^{\Kc-2}(\tw j-\lambda_{\max}(\Gamma))$, and $\params_j$ is a strict saddle iff
   $\lambda_{\max}(\Gamma)>\tw j$ or a route with $k^*=2$ exists.
 \end{proposition}
 \begin{proof}
-  Rotating core $u$ by $\varepsilon_u$ toward $w$ creates a mixed tensor (pattern $w$ on $\sites u$, $j$ elsewhere) of norm
+  Rotating core $u$ by $\varepsilon_u$ toward $\pi$ creates a mixed tensor (pattern $\pi$ on $\sites u$, $j$ elsewhere) of norm
   $q_j^{\Kc-1}\varepsilon_u$; those of different nodes are orthonormal, so the Gauss--Newton part is diagonal
   ($q_j^{2(\Kc-1)}=\tw jq_j^{\Kc-2}$). A residual $r$ with terminals $\{u,v\}$ couples two rotations through
   $-\ip{\mathcal R}{\W_{\{u,v\}}}=-\tw rq_j^{\Kc-2}\varepsilon_u\varepsilon_v$; residuals with $m_{jr}\ge3$ enter at order $m_{jr}$; the radial part is $\succeq0$.
@@ -579,9 +619,11 @@ $k=2$ ($\lambda_{\min}=-\tw rq_j^{\Kc-2}$), of higher order for $k\ge3$ if $m\ge
 piggyback block ($\lambda_{\min}=-(\tw r-\tw j)q_j^{\Kc-2}$) for $k\ge3$, $m=2$, $\tw j<\tw r$ \proven. A \emph{star}
 (residuals $r_1,\dots,r_n$ sharing one node) has $\lambda_{\max}(\Gamma)=(\sum_i\tw{r_i}^2)^{1/2}$ and a triangle of equal
 weights $s$ has $2s$, so $\params_j$ can be strict although every residual is smaller than $\tw j$ and every route
-has $k^*\ge3$ (checked to six digits). Dynamics \empirical: for $j=0000$ (weight 2) and $r=1010$, $r'=1001$
-(weight $1.6$ each) on MPS $\Ns=4$ ($\lambda_{\max}(\Gamma)=2.263$), gradient flow passes near $j$ in 4 of 5 seeds and in
-all 5 forgets it, learns $r$, $r'$ and relearns $j$; with weights $1.2$ ($\lambda_{\max}(\Gamma)=1.70$) it plateaus at $j$.
+has $k^*\ge3$ (checked to six digits). Dynamics \empirical{} (MPS $\Ns=4$, $\isc=0.05$, five seeds): for $j=0000$
+(weight 2) and $r=1010$, $r'=1001$ (weight $1.6$ each; $\lambda_{\max}(\Gamma)=2.263$), $\ov j$ peaks at $0.68$--$0.99$ in
+four seeds and stays below $0.43$ in the fifth; every seed then learns $r$, $r'$ and relearns $j$, and none sits at
+$\params_j$; in the ten-seed runs of \cref{sec:teacher-star} some near-$j$ seeds keep $j$ (one for $\isc\ge0.025$,
+three more at $\isc=0.1$); with weights $1.2$ ($\lambda_{\max}(\Gamma)=1.70$) gradient flow plateaus at $j$.
 
 \begin{remark}[Binary tree with $\Ns=4$]\label{rem:A-binary4-dln}
   \proven{} \knownresult[\citealp{saxe2014exact,jacot2022saddletosaddle,achour2024loss}]
@@ -596,20 +638,22 @@ all 5 forgets it, learns $r$, $r'$ and relearns $j$; with weights $1.2$ ($\lambd
 \end{remark}
 
 \begin{remark}[After a wrong first escape]\label{rem:A-wrong-order}
-  \derived{} \newresult{} Two-component teachers, smaller component $j$ learned first; $\varepsilon$ and $b$ are the
+  \derived{} \newresult[beyond binary $\Ns=4$; there, a deep linear network, the strict wrong-order saddle is
+  known: \citealp{achour2024loss}, Thm~7] Two-component teachers, smaller component $j$ learned first; $\varepsilon$ and $b$ are the
   piggyback and route amplitudes when the plateau starts. (1) $k\ge3$, $m=2$ (matrix-like pair), if the
   rotation beats the direct add route (always as $\isc\to0$): the learned bond index rotates from $j$ to $r$
   after $\Delta t\approx\ln(1/\varepsilon)/((\tw r-\tw j)\tw j^{(\Kc-2)/\Kc})$, the loss plateaus at $\frac12\tw j^2$ with
   $\ov j\approx0$, and $j$ is relearned through its route after a time $\propto\isc_{\rm eff}^{-(k-2)}$, $\isc_{\rm eff}$ set
   by the largest new-index seed. (2) $k=2$: $r$ is added directly, at the larger rate $\tw r\tw j^{(\Kc-2)/\Kc}$,
   and $j$ is kept. (3) $m\ge3$ (tensor-like pair): no rotation; $r$ is added through its route after
-  $\Delta t\approx b^{-(k-2)}/((k-2)\tw r\tw j^{(\Kc-k)/\Kc})$, and $\ov j$ stays at $1$. This needs $N(D_{jr})$
+  $\Delta t\approx b^{-(k-2)}/((k-2)\tw r\tw j^{(\Kc-k)/\Kc})$, and $\ov j$ stays at $1$. This needs $V_{jr}$
   to have no split into two sets of degree below $k/2$; with one (from $k=5$ on, e.g.\ HT with $\Ns=4$ and
   $D$ = all sites) the order is $2\ell^*<k$ (\cref{cor:A-order}), and at small enough $\isc$ a cluster escape
-  is expected to make $j$ forgotten and relearned (\derived, \cref{app:saddle-order}). So a correction through a
+  is expected to make $j$ forgotten and relearned (\conjecture, \cref{app:saddle-order}; seen in 6 of the 7
+  wrong-order locality runs on that HT tree at $\chi=2$ \empirical). So a correction through a
   strict saddle exists only for matrix-like pairs, where the wrong order becomes rare as $\isc\to0$
   (\cref{prop:A-matrix-like}). Checked on binary and MPS $\Ns=4$, before the random streams of teacher and
-  initialization were separated.
+  initialization were separated, and with separated streams in \cref{sec:s2s-order}.
 \end{remark}
 
 \paragraph{Escape times.}
@@ -629,8 +673,9 @@ a depth-$k$ mode with target $\tw r/A$ that conserves the differences $b_u^2-b_v
   linear networks): \citealp{zhang2026saddletosaddle}, Thm~4; the trichotomy in $k$: \citealp{rawal2026theory},
   Thm~4.2; $k=\Kc$: the decoupled modes of \citealp{saxe2014exact}] \newresult[only the closed forms for
   TTN routes, in particular the effective amplitude for $3\le k<\Kc$]
-  Let the initialization be aligned: every core of the learned component $j$ and of the route starts at
-  amplitude $\isc$, and the hanging cores are aligned with the shared pattern. Let
+  Let $\tw r<\tw j$ (the larger component is learned first) and let the initialization be aligned: every core
+  of the learned component $j$ and of the route starts at amplitude $\isc$, and the hanging cores are aligned
+  with the shared pattern. Let
   $\Delta t_2=t(\ov r=\frac12)-t(\ov j=\frac12)$. As $\isc\to0$,
   \begin{align}
     k=2:&\quad \Delta t_2=\frac{(1-\tw r/\tw j)\ln(1/\isc)+O(1)}{\tw r\,\tw j^{(\Kc-2)/\Kc}},\label{eq:A-dt-k2}\\
@@ -642,18 +687,18 @@ a depth-$k$ mode with target $\tw r/A$ that conserves the differences $b_u^2-b_v
 \end{proposition}
 \begin{proof}[Derivation]
   The route exists from the start, with the then-small learned cores in its hanging part, so it grows
-  during the rise of $j$ with the coupling $c(t)=\tw rq_j(t)^{\Kc-k}$, where $\dot q_j\simeq\tw jq_j^{\Kc-1}$
-  while $q_j$ is small. For $k=2$, $\ln b$ grows by $\int c\,\dd t=\int\tw rq_j^{-1}\dd q_j/\tw j=(\tw r/\tw j)\ln(1/\isc)+O(1)$,
+  during the rise of $j$ with the coupling $c_r(t)=\tw rq_j(t)^{\Kc-k}$, where $\dot q_j\simeq\tw jq_j^{\Kc-1}$
+  while $q_j$ is small. For $k=2$, $\ln b$ grows by $\int c_r\,\dd t=\int\tw rq_j^{-1}\dd q_j/\tw j=(\tw r/\tw j)\ln(1/\isc)+O(1)$,
   so the route enters the plateau at $\ln b_{\rm eff}=-(1-\tw r/\tw j)\ln(1/\isc)+O(1)$ and needs a further
   $\ln(1/b_{\rm eff})/\lambda$, with $\lambda$ from \eqref{eq:A-lambda2}. For $k\ge3$ the balanced route obeys
-  $\ddt b^{-(k-2)}=-(k-2)c(t)$, so at the end of the rise of $j$
-  $b_{\rm eff}^{-(k-2)}=\isc^{-(k-2)}-(k-2)\int c\,\dd t=\isc^{-(k-2)}(1-\tw r/\tw j)+O(1)$, and the plateau lasts
+  $\ddt b^{-(k-2)}=-(k-2)c_r(t)$, so at the end of the rise of $j$
+  $b_{\rm eff}^{-(k-2)}=\isc^{-(k-2)}-(k-2)\int c_r\,\dd t=\isc^{-(k-2)}(1-\tw r/\tw j)+O(1)$, and the plateau lasts
   $b_{\rm eff}^{-(k-2)}/((k-2)\tw r\tw j^{(\Kc-k)/\Kc})$; as $q_j^{\Kc-k}\dd t=q_j^{1-k}\dd q_j/\tw j$, this head start accrues while $q_j\approx\isc$.
 \end{proof}
 The factor $1-\tw r/\tw j$ is the head start (without it the $k=2$ slope would be $1/\lambda$;
 \cref{sec:s2s-locality}). Checked to $10^{-4}$ with aligned initialization; with fan-in initialization the $k=2$
 slope is $1.066$ against $1.065$, per-seed exponents $-0.97$ to $-1.02$ ($k=3$) and $-1.99$ to $-2.00$ ($k=4$).
-An unbalanced route with positive product has $\Delta t=\int_0^\infty\dd\beta/(2c\prod_{v\in\mathcal C}(b_v^2+\beta)^{1/2})$ \derived{}
+An unbalanced route with positive product has $\Delta t=\int_0^\infty\dd y/(2c_r\prod_{v\in\mathcal C}(b_v^2+y)^{1/2})$ \derived{}
 (as in \cref{prop:A-product-mode}); a negative product lengthens the plateau. With random initialization the
 prefactors are set by the route amplitudes at each plateau start (seed-to-seed factors above 20 for $k\ge4$) \empirical.
 
@@ -664,10 +709,10 @@ prefactors are set by the route amplitudes at each plateau start (seed-to-seed f
   (ii) On a balanced route, \eqref{eq:A-route-ode} gives
   $\dot{\ov r}=kA^{2/k}\tw r^{2-2/k}\ov r^{\,2-2/k}(1-\ov r)$, so the local growth exponent is
   \begin{equation}\label{eq:A-growth-exponent}
-    \gamma(\ov r)=\frac{\dd\ln\dot{\ov r}}{\dd\ln\ov r}=2-\frac2k-\frac{\ov r}{1-\ov r},
+    \beta(\ov r)=\frac{\dd\ln\dot{\ov r}}{\dd\ln\ov r}=2-\frac2k-\frac{\ov r}{1-\ov r},
   \end{equation}
   that is $1,\frac43,\frac32,\frac85$ for $k=2,\dots,5$ as $\ov r\to0$. The route is balanced only once
-  $b^2\gg\abs{b_u^2-b_v^2}=O(\isc^2)$, so $k$ is read in the window $\ov r\in[10^{-4},10^{-2}]$ (a smaller $\gamma$ at
+  $b^2\gg\abs{b_u^2-b_v^2}=O(\isc^2)$, so $k$ is read in the window $\ov r\in[10^{-4},10^{-2}]$ (a smaller $\beta$ at
   smaller $\ov r$ indicates an unbalanced route). (iii) At a plateau point (route amplitudes small but
   nonzero) each active route contributes one negative Hessian direction modulo gauge, with
   \begin{equation}\label{eq:A-plateau-lambda}
@@ -680,9 +725,9 @@ prefactors are set by the route amplitudes at each plateau start (seed-to-seed f
   of order $\isc^2$, the same order as the route eigenvalue).
 \end{proposition}
 In (iii) the route block of the Hessian is $-\tw rAb^{k-2}(\mathbf 1\mathbf 1\T-\Id)$, whose $k-1$ positive directions
-are gauge. Checked on MPS $\Ns=4$ ($\gamma$ within $0.01$; $\abs{\lambda_{\min}}/\lambda_{\max}\propto\isc^0,\isc^1,\isc^2$ for $k=2,3,4$;
+are gauge. Checked on MPS $\Ns=4$ ($\beta$ within $0.01$; $\abs{\lambda_{\min}}/\lambda_{\max}\propto\isc^0,\isc^1,\isc^2$ for $k=2,3,4$;
 \eqref{eq:A-plateau-lambda} within a factor 1.4 for $k=3$, 3.5 for $k=4$), so the saddle type is read from the
-$\isc$-scaling of $\lambda_{\min}$ or from $\gamma$.
+$\isc$-scaling of $\lambda_{\min}$ or from $\beta$.
 
 \begin{remark}[The whole sequence]\label{rem:A-sequence}
   \derived{} at LO for each step; \conjecture{} (heuristic) as an algorithm. \newresult{}
@@ -691,51 +736,69 @@ $\isc$-scaling of $\lambda_{\min}$ or from $\gamma$.
   the piggyback graph when several partners share a core); a star with $\lambda_{\max}(\Gamma)>\tw j$ sends the
   flow past $j$ toward a superposition. (2) At a later saddle whose fixed-rank block has a negative
   eigenvalue (wrong order, stars) the next event is a rotation of the learned structure or a $k=2$ route,
-  whichever is more unstable, in time $\propto\ln(1/\isc)$ (\cref{prop:A-escape-degree} does not apply);
+  whichever is more unstable, in time $\ln(1/\varepsilon)/\abs{\lambda_{\min}}$, $\varepsilon$ the unstable deviation when the
+  plateau starts ($O(1)$ after a wrong first escape from small initialization, so $O(1/\abs{\lambda_{\min}})$,
+  \cref{sec:s2s-order}; \cref{prop:A-escape-degree} does not apply);
   otherwise it is the route of smallest $k^*$ (logarithmic beats power law, smaller powers beat larger
-  ones), ties being decided by the coupling and head start $c\,b_{\rm eff}^{k-2}$, dominated for $k\ge3$ by the
-  random route amplitudes, provided the generalized piggyback operator stays below the learned weight; if a
+  ones), ties being decided by the product $c_r\,b_{\rm eff}^{k-2}$ of the coupling and the dormant route
+  amplitude, dominated for $k\ge3$ by the random amplitudes when the couplings are comparable, provided the
+  generalized piggyback operator stays below the learned weight; if a
   level $\ell^*<k^*/2$ exceeds it, the order $2\ell^*$ competes with $k^*$ (\cref{cor:A-order}; a
   leading-order race). (3) The escape raises the bond rank by one on the bonds inside the route, and
   the next saddle is the best approximation of $\Wt$ with the new rank profile (for pattern teachers
   without superpositions, the partial sum of the learned components), whose loss is the plateau level. Since $k^*$
   depends on the tree, \emph{locality beats weight} (teacher B4, \cref{sec:s2s-locality}). The number of cores
   that must change at once plays the role of the leap of \citet{abbe2023sgd} (the number of new support
-  coordinates that SGD must align with at once, which sets a runtime $\tilde\Theta(d^{\max(L,2)})$ in the input
-  dimension $d$ for a leap $L$ in their conjecture; \citealp{furman2026benign}, Remark~D.10, draw the same
+  coordinates that SGD must align with at once, which in their conjecture sets a runtime polynomial in the
+  input dimension, of degree $\max(\text{leap},2)$; \citealp{furman2026benign}, Remark~D.10, draw the same
   analogy for the order of their descent curves); specific to the TTN is that it is set by the tree, and that
   the plateau scales with the initialization, $\isc^{-(k-2)}$, not with the dimension.
 \end{remark}
+A program that applies this rule at every plateau (\path{experiments/saddle_hopper/}, \path{notes/saddle_hopper.md};
+audited in \path{notes/reviews/saddle_hopper_verification.md}) reproduces the worked examples of this appendix and the
+measured sequences, but no better than the weight order where it commits to one sequence (97.0\% against
+95.8\% of the informative locality runs; 96.6\% for both on binary4) \empirical: a consistency check, not an
+independent test. Its accumulated-utility slopes (\cref{prop:A-agf-race}) for teacher TC on MPS8 started at the
+saddle match five plateaus within $3.5\%$ \empirical.
 
 \begin{proposition}[Conservation-law trap]\label{prop:A-trap}
-  \derived{} (mechanism, in a reduced model) \newresult[the route-end condition; in the landscape, a point
-  that is not of minimum norm, with dead leaf columns and live core entries, can be a spurious local
-  minimum: \citealp{furman2026benign}, Thm~G.1]
-  Let a route end at a leaf core, on the bond $e$ (child $v$, parent $p$); let $\nu$ be the new channel used by
-  the route, $Q_{\nu\nu}=\nu\T\Q{e}\nu$, $x$ the leaf's new column, and split the parent's slice along $\nu$ into
-  its route entry $y_{\rm route}$ and the \emph{visible} entries $y_{\rm vis}$, which connect through the other side
-  to learned structure. Conservation gives $\norm{x}^2-\norm{y_{\rm vis}}^2-\norm{y_{\rm route}}^2=Q_{\nu\nu}$. On the
-  plateau the Gauss--Newton term makes $x$ and $y_{\rm vis}$ decay together, at a rate of order
-  $\abs{Q_{\nu\nu}}=O(\isc^2)$, so the leaf column decays to zero iff the end is \emph{unfavourable},
-  $Q_{\nu\nu}+\norm{y_{\rm route}}^2<0$. The route's drive on $x$ is proportional to the product of the other route amplitudes, so while another
-  end is favourable it pins $x$ at a positive value and the route escapes, slowly. In the reduced model a
-  permanent stall ($x\to0$ down to roundoff) therefore requires every end of the route to be unfavourable.
+  \proven{} (the normal blocks; (i) within the reduced flow; the identity in (ii)) \derived{} (the reduced flow,
+  the remainder in (ii), (iii), (iv)) \newresult[the normal-visible blocks, the identity for $C_u$, the rule
+  $k\ge2j$ and the two-end criterion; that a conserved quantity decides which side of a unit can vanish is
+  \citealp{kunin2025alternating}, Lemma~B.1, and (i) is that statement for a route end; related: dormant weights
+  shrink outside the stable set of a KKT point, \citealp{kumar2025early}, Lemma~2; in deep linear networks
+  balanced initialization keeps the leading-order flow from converging to a saddle,
+  \citealp{jacot2022saddletosaddle}, App.~C.1; a non-min-norm point can be a spurious local minimum,
+  \citealp{furman2026benign}, Thm~G.1]
+  One learned component (rank-one plateau). Let a route end at core $u$, with route neighbour (partner) $w$
+  on the bond $e$, and let $X_u^\perp$, $X_w^\perp$ be their new-index blocks whose physical index is normal to the
+  learned pattern; only these pay a Gauss--Newton cost on the plateau. (i) In the reduced flow that keeps
+  them, $C_u=X_u^{\perp\top}X_u^\perp-X_w^{\perp\top}X_w^\perp$ is conserved and $X_u^{\perp\top}X_u^\perp\to[C_u]_+$: the end's route
+  entry survives iff $C_u$ has a positive eigenvalue (one new direction on $e$: iff $C_u>0$). (ii) After a
+  small-initialization escape $C_u=Q_{\nu\nu}+\norm{Y_{\rm nv}}^2-\norm{X_{\rm nv}}^2+O(\isc^3)$, with $Q_{\nu\nu}=\nu\T\Q e\nu$ on
+  the route's new direction $\nu$ and $X_{\rm nv}$, $Y_{\rm nv}$ the new entries of $u$ and $w$ that pair with nothing
+  at second order. (iii) An end with visible degree $j$ ($j=2$ if the partner carries sites, $3$ at an HT or
+  binary leaf of a rank-one saddle) decays at a rate $\propto\isc^{2(j-1)}$, so it can kill its route only if
+  $k\ge2j$; routes with $k\le3$ never trap (0 stalls in 5,744 runs \empirical). (iv) For $2j<k\le5$, as $\isc\to0$, a
+  route with at least two dying ends is dead, and a single dying end is pinned at an amplitude $\propto\isc^{k-3}$;
+  at $k=2j$ ($k=4$, $j=2$) decay and drive are of the same order, and a $\isc$-free reduced model of the route
+  decides (where every route edge has one new direction).
 \end{proposition}
-The dead state is linearly stable if $\gamma_1\gamma_2>\kappa^2$, with decay rates $\gamma_i\sim\abs{Q_i}\sim\isc^2$ and mutual
-drive $\kappa\sim\isc^{k-2}$ (\conjecture, heuristic): stable as $\isc\to0$ for $k\ge5$, never for $k=3$. On HT leaf bonds
-($\bd v=d=2$ below a parent bond of dimension $3$) fan-in initialization gives $Q_{\nu\nu}=\isc^2(X_2/2-X_6/4)$ ($X_n$
-independent chi-squared, $n$ degrees of freedom; $\nu$ independent of the initialization), so
-$\E Q_{\nu\nu}=-\isc^2/2$; then $P(Q_{\nu\nu}>0)\approx0.30$ and about half of the two-ended routes have both ends
-unfavourable (\conjecture, heuristic). Data \empirical{} (HT $\Ns=4$, teacher B4, $\isc=0.2$, nine fan-in
-initializations): all 6 runs with all ends unfavourable stalled with dead leaves, the 2 with one
-favourable end had the other end pinned; balanced initialization ($\Q{e}=0$, same $\Wz$) kept the routes
-alive (3 of 3, before the random streams were separated). \conjecture: balanced initialization always
-avoids the trap (a property of unbalanced initialization, not of the landscape; in another model, four-layer
-matrix factorization of a target with equal singular values, exactly balanced initialization fails to
-converge with probability at least $\frac12$, \citealp{luo2025global}, Thm~2), and for $k\ge5$ the
-stalled fraction tends to $P(\text{all ends unfavourable})$ as $\isc\to0$. The locality experiments contradict
-parts of this picture (dead runs with a live route end, no stall in 144 fan-in HT4 runs with $k=5$;
-\cref{sec:s2s-failure}).
+(i) holds in full gradient flow too (checked); the identity in (ii) is exact up to its remainder. Gap: from
+$k=6$ on, three-core clusters of inner route cores decay at a rate $\propto\isc^4$ and are a further death
+channel, which (iv) does not cover; the escape of a pinned route after $\propto\isc^{-(2k-6)}$ is a \conjecture,
+untested, and unsupported for $k\ge6$ (a full gradient-flow run with $k=6$ decays instead). The plateau-start
+state is $\isc$ times a function of the initialization direction, so whether a run traps depends on its
+direction, not on $\isc$ \derived. With one new direction on the end edge and fan-in noise at a saddle start,
+an end dies with probability $I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$ ($I$ the regularized incomplete beta function, $F$
+the fan-ins, $n$ the numbers of physical directions normal to the learned pattern): $0.392$ at an MPS end that
+is a tree leaf and $0.5$ at the root end for $d=\chi=2$ \proven{} (exact in this Gaussian model; checked). At an
+end bond capped at $d\ge3$ the edge has $d-1$ new directions and death needs $C_u\le0$ on all of them: about
+$0.023$ ($d=3$) and $1.5\cdot10^{-4}$ ($d=4$) \empirical{} (Monte Carlo). With balanced initialization ends that are
+tree leaves cannot die at leading order \derived{} (no balanced odeco run traps, 0 of 150, though 69 of 150
+stall \empirical); ends with extra legs still can, and in four-layer matrix factorization exactly balanced
+initialization can fail \citep[Thm~2]{luo2025global}. Tests and failures: \cref{sec:s2s-failure,app:supp-s2s-trap};
+statements and proofs: \path{notes/theory_trap.md}, verified in \path{notes/reviews/trap_verification.md}.
 
 % ===========================================================================================
 \subsection{Saddle order: lower bound and sharpness}\label{app:saddle-order}
@@ -751,9 +814,10 @@ known in special cases only: in deep linear networks the strict/non-strict class
 
 \paragraph{Setting.} One learned component $j$: $\params_S$ represents $\W_S=\tw j\U j$ (balanced or not),
 $\mathcal R=\Wt-\W_S$ is any residual with $\ip{\U j}{\mathcal R}=0$ (a pattern teacher only where stated),
-inputs are whitened. The \emph{saddle order} of $\params_S$ is the largest $p$ with
-$\Loss(\params)-\Loss_S\ge-C\norm{\params-\params_S}^p$ near $\params_S$; measuring the distance to the
-local gauge orbit instead gives the same $p$, because the gauge acts linearly and preserves $\Loss$. Let
+inputs are whitened. The \emph{saddle order} $\mathrm{ord}(\params_S)$ is the largest exponent with
+$\Loss(\params)-\Loss_S\ge-C\norm{\params-\params_S}^{\mathrm{ord}(\params_S)}$ near $\params_S$ for some $C>0$; measuring
+the distance to the local gauge orbit instead gives the same order, because the gauge acts linearly and
+preserves $\Loss$. Let
 $P_v$ project onto the physical vector of core $v$ in $\U j$ (the pattern of $j$ on $\sites v$),
 $P_v^\perp=\Id-P_v$, and for $B\subseteq\nodes$ let
 $\Pi_B=\bigotimes_{v\in B}P_v^\perp\otimes\bigotimes_{v\notin B}P_v$. These $2^{\Kc}$ \emph{sector}
@@ -762,18 +826,18 @@ satisfies $\mathcal H_{B_1}\otimes\mathcal H_{B_2}\cong\mathcal H_{B_1\sqcup B_2
 $\params_S$ is critical iff $\Pi_{\{v\}}\mathcal R=0$ for every core $v$. The \emph{degree} of a set is
 $\deg B=\abs{\mathrm{St}(B)}$, the number of cores of its Steiner subtree, and
 $k^*=\min\{\deg B:\Pi_B\mathcal R\ne0\}$ (equal to \eqref{eq:A-kstar} for a pattern teacher, where
-$\Pi_B\mathcal R=\sum_{r:N(D_{jr})=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\emptyset:\deg B\le\ell\}$.
+$\Pi_B\mathcal R=\sum_{r:V_{jr}=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\emptyset:\deg B\le\ell\}$.
 
 \begin{definition}[Generalized piggyback operator]\label{def:A-gen-piggyback}
   $\Gamma^{(\ell)}$ is the symmetric operator on $\bigoplus_{B\in\mathcal L_\ell}\mathcal H_B$ whose block
   $(B_1,B_2)$ is the bilinear form $(x,y)\mapsto\ip{\Pi_{B_1\sqcup B_2}\mathcal R}{x\otimes y}$ if
-  $B_1\cap B_2=\emptyset$ and zero otherwise; $\lambda_\ell=\lambda_{\max}(\Gamma^{(\ell)})$, nondecreasing in
-  $\ell$. $\Gamma^{(1)}$ is the piggyback matrix $\Gamma$ of \cref{prop:A-piggyback-graph}. For a pattern
+  $B_1\cap B_2=\emptyset$ and zero otherwise; $\lambda_\ell=\lambda_{\max}(\Gamma^{(\ell)})$ ($\lambda_0:=0$),
+  nondecreasing in $\ell$. $\Gamma^{(1)}$ is the piggyback matrix $\Gamma$ of \cref{prop:A-piggyback-graph}. For a pattern
   teacher with all $\tw r>0$, $\Gamma^{(\ell)}$ is, in the pattern basis, the weighted adjacency matrix of
-  the \emph{generalized piggyback graph}: its nodes are pairs $(B,w)$ of a set $B\in\mathcal L_\ell$ and a
-  pattern $w$ on its sites that differs from $j$ on every core of $B$, and every residual $r$ adds an edge
+  the \emph{generalized piggyback graph}: its nodes are pairs $(B,\pi)$ of a set $B\in\mathcal L_\ell$ and a
+  pattern $\pi$ on its sites that differs from $j$ on every core of $B$, and every residual $r$ adds an edge
   of weight $\tw r$ between $(B_1,\pi_r|_{B_1})$ and $(B_2,\pi_r|_{B_2})$ for every split
-  $N(D_{jr})=B_1\sqcup B_2$ with $B_1,B_2\in\mathcal L_\ell$. A node with $\abs{B}\ge2$ is reached by new
+  $V_{jr}=B_1\sqcup B_2$ with $B_1,B_2\in\mathcal L_\ell$. A node with $\abs{B}\ge2$ is reached by new
   entries on $\mathrm{St}(B)$, a single core by an old rotation (\cref{prop:A-piggyback-graph}).
 \end{definition}
 
@@ -790,47 +854,48 @@ $\Pi_B\mathcal R=\sum_{r:N(D_{jr})=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\em
 \begin{theorem}[Sharpness]\label{thm:A-order-sharp}
   \proven{} \newresult{}
   Let the teacher be a pattern teacher with all $\tw r>0$, let $\ell<k^*/2$, and let $X$ be a set of nodes of
-  the generalized piggyback graph on $\mathcal L_\ell$ whose adjacency matrix has spectral radius
-  $\rho_X>\tw j$. Assume the index condition: on every bond $e$, $\bd e-1$ is at least the number of nodes
-  $(B,w)\in X$ with $\abs{B}\ge2$ and $e$ a bond of $\mathrm{St}(B)$. Then there is a curve with
-  $\norm{\params(t)-\params_S}\le t$ and $\Loss(\params(t))-\Loss_S\le-ct^{2\ell}$: the saddle order is at most
-  $2\ell<k^*$.
+  the generalized piggyback graph on $\mathcal L_\ell$ whose adjacency matrix $A_X$ has spectral radius
+  $r(A_X)>\tw j$. Assume the index condition: on every bond $e$, $\bd e-1$ is at least the number of nodes
+  $(B,\pi)\in X$ with $\abs{B}\ge2$ and $e$ a bond of $\mathrm{St}(B)$. Then there is a curve with
+  $\norm{\params(t)-\params_S}\le t$ and $\Loss(\params(t))-\Loss_S\le-Ct^{2\ell}$ for some $C>0$: the saddle order
+  is at most $2\ell<k^*$.
 \end{theorem}
 \begin{proof}[Proof sketch of \cref{thm:A-order-lower}]
-  (Full proof: \path{notes/theory_saddle_order.md}, sections 3.1-3.5.) Let $\omega=\ip{\U j}{\W}$ ($=\tw j$ at
-  $\params_S$) and $\mu_B=\Pi_B\W/\omega\in\mathcal H_B$. Sector orthogonality gives the exact identity
+  (Full proof: \path{notes/theory_saddle_order.md}, sections 3.1-3.5.) Let $y=\ip{\U j}{\W}$ ($=\tw j$ at
+  $\params_S$) and $\mu_B=\Pi_B\W/y\in\mathcal H_B$. Sector orthogonality gives the exact identity
   \begin{equation}\label{eq:A-sector-identity}
-    \Loss-\Loss_S=\tfrac12(\omega-\tw j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{\omega^2}2\norm{\mu_B}^2-\omega\ip{\Pi_B\mathcal R}{\mu_B}\Big].
+    \Loss-\Loss_S=\tfrac12(y-\tw j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{y^2}2\norm{\mu_B}^2-y\ip{\Pi_B\mathcal R}{\mu_B}\Big].
   \end{equation}
   Families $(f_B)_{B\subseteq\nodes}$, $f_B\in\mathcal H_B$, form a commutative algebra under
-  $(f*g)_B=\sum_{B_1\sqcup B_2=B}f_{B_1}\otimes g_{B_2}$; the cumulants $\kappa=\log\mu$ are given by the
+  $(f*g)_B=\sum_{B_1\sqcup B_2=B}f_{B_1}\otimes g_{B_2}$; the cumulants $\psi=\log\mu$ are given by the
   set-partition moment-cumulant formulas. \emph{Locality of cumulants:} for $\abs B\ge2$,
-  $\norm{\kappa_B}\le C_0\prod_{v\in\mathrm{St}(B)}\norm{\nu_v}$, $\nu_v$ the new entries of core $v$. Indeed, if
+  $\norm{\psi_B}\le C_0\prod_{v\in\mathrm{St}(B)}\norm{\nu_v}$, $\nu_v$ the new entries of core $v$. Indeed, if
   $\nu_v=0$ the contraction factorizes at $v$, $\mu$ is a $*$-product of factors supported on $\{v\}$ and on
   the branches at $v$, its logarithm is a sum of such factors, and none contains $B$; analyticity turns
   this vanishing into the product bound. Now fix $\ell$, call a set \emph{low} if its degree is at most
   $\ell-1$ and \emph{high} otherwise, and let $\varepsilon=\norm{\params-\params_S}$. High cumulants are
   $O(\varepsilon^{\ell})$, low sets carry no residual ($\ell-1<k^*$), and the low part of the
-  Gauss--Newton sum is at least $(1-C\varepsilon)\norm{\kappa_{\rm low}}^2$. In the gain, the terms with two
-  low cumulants sum exactly to $\tfrac12\ip{\kappa_{\rm low}}{\Gamma^{(\ell-1)}\kappa_{\rm low}}$; every other
+  Gauss--Newton sum is at least $(1-C\varepsilon)\norm{\psi_{\rm low}}^2$. In the gain, the terms with two
+  low cumulants sum exactly to $\tfrac12\ip{\psi_{\rm low}}{\Gamma^{(\ell-1)}\psi_{\rm low}}$; every other
   term contains a single cumulant on a set of degree at least $k^*$ ($O(\varepsilon^{k^*})$), or two high
   cumulants ($O(\varepsilon^{2\ell})$, after Young's inequality for one low and one high), or is
   $\varepsilon$ times the quadratic form. So
-  $\Loss-\Loss_S\ge\tfrac{\omega}2(\tw j-\lambda_{\ell-1}-O(\varepsilon))\norm{\kappa_{\rm low}}^2-O(\varepsilon^{\min(k^*,2\ell)})$,
+  $\Loss-\Loss_S\ge\tfrac{y}2(\tw j-\lambda_{\ell-1}-O(\varepsilon))\norm{\psi_{\rm low}}^2-O(\varepsilon^{\min(k^*,2\ell)})$,
   which gives (b); (a) is $\ell=\lceil k^*/2\rceil$. Balance, pattern structure, bond dimensions and the
   gauge are not used.
 \end{proof}
 \begin{proof}[Proof sketch of \cref{thm:A-order-sharp}]
   (Full proof: section 4 of the note.) Take a Perron vector $x\ge0$, $\norm x=1$, of the adjacency matrix on
-  $X$. For $0<\eta\le1$, rotate each single core $v$ of a node $(\{v\},w)$ by $\eta x_{v,w}$ toward $w$ (old
-  entries), and give each node $n=(B,w)$ with $\abs B\ge2$ a \emph{polymer}: new entries of size
-  $q_j(\eta x_n)^{1/\abs{\mathrm{St}(B)}}$ on the cores of $\mathrm{St}(B)$, with the pattern $w$ on $B$, the
+  $X$. For $0<\varepsilon\le1$, rotate each single core $v$ of a node $(\{v\},\pi)$ by $\varepsilon x_{\{v\},\pi}$ toward $\pi$
+  (old entries), and give each node $(B,\pi)$ with $\abs B\ge2$ a \emph{polymer}: new entries of size
+  $q_j(\varepsilon x_{B,\pi})^{1/\abs{\mathrm{St}(B)}}$ on the cores of $\mathrm{St}(B)$, with the pattern $\pi$ on $B$, the
   pattern of $j$ elsewhere, and a spare index on the bonds of $\mathrm{St}(B)$ that no other node of $X$
   uses there (the index condition). A nonzero contraction term then uses whole polymers with disjoint
-  Steiner subtrees, so $\omega=\tw j$ exactly, the Gauss--Newton term at order $\eta^2$ is
-  $\tfrac{\tw j^2}{2}\norm x^2$, and the gain at order $\eta^2$ comes exactly from the edges of the graph,
-  $\tfrac{\tw j}2x\T A_Xx=\tfrac{\tw j}2\rho_X$. Hence $\Loss-\Loss_S=-\tfrac{\tw j}2(\rho_X-\tw j)\eta^2+O(\eta^3)$
-  while $\norm{\params-\params_S}=O(\eta^{1/\ell})$.
+  Steiner subtrees, so $y=\tw j$ exactly, the Gauss--Newton term at order $\varepsilon^2$ is
+  $\tfrac{\tw j^2}{2}\norm x^2$, and the gain at order $\varepsilon^2$ comes exactly from the edges of the graph,
+  $\tfrac{\tw j}2x\T A_Xx=\tfrac{\tw j}2r(A_X)$. Hence
+  $\Loss-\Loss_S=-\tfrac{\tw j}2(r(A_X)-\tw j)\varepsilon^2+O(\varepsilon^3)$ while
+  $\norm{\params-\params_S}=O(\varepsilon^{1/\ell})$.
 \end{proof}
 
 \begin{corollary}[When the saddle order is $k^*$]\label{cor:A-order}
@@ -840,14 +905,14 @@ $\Pi_B\mathcal R=\sum_{r:N(D_{jr})=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\em
   $2$ (strict saddle) if $\lambda_{\max}(\Gamma)>\tw j$; at equality it is $3$ for $k^*=3$ (positive
   semidefinite Hessian) and open for $k^*=4$. (iii) Two-component teachers (one residual $r$): every node of
   the graph has at most one edge, so $\lambda_\ell\in\{0,\tw r\}$. In the correct order ($\tw r<\tw j$) the
-  order is $k^*$ on every tree. In the wrong order it is $k^*$ if no split $N(D_{jr})=B_1\sqcup B_2$ has
+  order is $k^*$ on every tree. In the wrong order it is $k^*$ if no split $V_{jr}=B_1\sqcup B_2$ has
   both degrees below $k^*/2$, and otherwise exactly $2\ell^*<k^*$, $\ell^*$ the smallest
   $\max(\deg B_1,\deg B_2)$ over such splits (lower bound by \cref{thm:A-order-lower}(b) at level
-  $\ell^*$, upper bound by \cref{thm:A-order-sharp}). (iv) In general, for a pattern teacher with the index
-  condition, the order is $\min(k^*,2\ell^*)$, $\ell^*$ the first level below $k^*/2$ with
+  $\ell^*$, upper bound by \cref{thm:A-order-sharp}). (iv) In general, for a pattern teacher with all $\tw r>0$ and
+  the index condition, the order is $\min(k^*,2\ell^*)$, $\ell^*$ the first level below $k^*/2$ with
   $\lambda_{\ell^*}>\tw j$, provided $\lambda_{\ell^*-1}<\tw j$.
 \end{corollary}
-So the order can drop below $k^*$ only for $k^*\ge5$ (given a positive definite fixed-rank block; the
+So the order can drop below $k^*$ only for $k^*\ge5$ (given a fixed-rank block positive definite modulo gauge; the
 boundary case $k^*=4$, $\lambda_{\max}(\Gamma)=\tw j$, is open), and only through a residual with at least
 three terminal cores, two of which lie in a set of degree below $k^*/2$. Two examples on the HT tree with $\Ns=4$ ($\Kc=7$) and wrong order: three-site $D$ have $k^*=6$ and
 no low split (two leaves already have degree $3=k^*/2$), so the order is $6$; $D=\{0,1,2,3\}$ has the split
@@ -866,16 +931,29 @@ cores 4 and 5 of size $t^2$. Measured minimum over the sphere of radius $t$: $-0
 $4.000$), against $-(2\cdot0.8^2-1)/8=-0.0350$; with weights $0.6$ ($\lambda_2=0.85$) the order is $5$
 ($-0.0107\,t^5$, the route of $r_2$). Single wrong-order residuals give counterexamples to ``order $=k$'' for
 two-component teachers: $r=110001$ with weight $1.5$ on the same MPS ($k^*=6$, order $4$) and $r=1111$ with
-weight $1.5$ on the HT tree with $\Ns=4$ ($k^*=7$, order $6$, $-t^6/432$). The orders predicted by
-\cref{thm:A-order-lower,thm:A-order-sharp} were measured on 32 instances ($k^*=2$ to $7$, MPS, binary and HT
-trees, pattern and random residuals), 12 of them with independent code, with slopes within $0.003$ of the
-prediction (one slowly converging case). Dynamics \derived: where \cref{thm:A-order-sharp} applies at level $\ell$, the old rotations
-follow the cluster adiabatically and the cluster obeys $\dot b=c\,b^{2\ell-1}$, so the escape takes
-$\propto\isc^{-(2\ell-2)}$ instead of $\isc^{-(k^*-2)}$ once it beats the route. On the counterexample,
-gradient flow from $\params_S$ plus a perturbation of size $\isc$ escapes in $\propto\isc^{-2}$ (local
-exponents $1.98$ to $2.04$ at the smallest $\isc$, 5 seeds) along $110000$, then forgets $j$ and relearns it later; from small
-initialization only some seeds visit $\params_S$, and in those the $\isc^{-2}$ law sets in at a
-seed-dependent $\isc$ \empirical.
+weight $1.5$ on the HT tree with $\Ns=4$ ($k^*=7$, order $6$, $-t^6/432$). The orders were measured on 32 instances
+($k^*=2$ to $7$, MPS, binary and HT trees, pattern and random residuals): the 30 with a prediction of
+\cref{thm:A-order-lower,thm:A-order-sharp} have slopes within $0.003$ of it (one slowly converging case), and the 2
+at the boundary $\lambda_{\max}(\Gamma)=\tw j$, where the theorems are silent, have order $k^*$; 12 further instances
+computed with independent code agree within $5\cdot10^{-4}$. For the random residuals the upper bound $2\ell^*$ is
+empirical, since \cref{thm:A-order-sharp} needs a pattern teacher.
+
+\paragraph{Dynamics.} \derived{} (reduced model) Where \cref{thm:A-order-sharp} applies at level $\ell$, the old
+rotations follow the cluster adiabatically and the cluster amplitude obeys $\dot b=C\,b^{2\ell-1}$ ($C>0$; one
+multi-core node; with several, e.g.\ HT with $\Ns=4$ and $D$ all sites, a coupled polymer system whose polymers
+must align in sign, not checked), so the escape takes a time $\propto\isc^{-(2\ell-2)}$ instead of $\isc^{-(k^*-2)}$
+once it beats the route. On the
+counterexample, gradient flow from $\params_S$ plus a perturbation of size $\isc$ escapes in $\propto\isc^{-2}$ along
+$110000$ (local exponents $1.98$ to $2.04$ at the smallest $\isc$, 5 seeds; these runs timed only the escape).
+From small initialization only some seeds visit $\params_S$; in those the $\isc^{-2}$ law sets in at a
+seed-dependent $\isc$, and gradient flow then forgets $j$, learns the pair $r_1$, $r_2$ (loss $\frac12\tw j^2$) and
+relearns $j$ \empirical{} (seen from small initialization only). In the matched control
+(weights $0.6$, order $5$) the small-initialization exponents are about $3$ in some seeds and about $4$ in others
+(unexplained; compare the steep MPS routes of \cref{sec:s2s-failure}), and 2 of 12 seeds end with dead routes
+\empirical.
+\placeholder{Pending (remote experiment saddle-dyn, running): the pre-registered test of these escape laws,
+from the saddle plus a perturbation and from small initialization, on the cases with order below $k^*$ and
+their controls.}
 
 % ===========================================================================================
 \subsection{Teachers that are not orthogonally decomposable}\label{app:teachers}
@@ -883,9 +961,9 @@ seed-dependent $\isc$ \empirical.
 For a general teacher the saddles are no longer partial sums of components. $\mathcal M_{\mathbf r}$ is the
 manifold of tensors with bond ranks exactly $\mathbf r=(r_e)_e$ \citep{holtz2012manifolds,uschmajew2013geometry}.
 For $\W\in\mathcal M_{\mathbf r}$ and $e=\edge v$, $p=\pa v$, $U_e$ and $V_e$ are the column and row spaces of
-$\mat{\W}{e}$, the environment spaces of $e$ are $E_e^-=(\bigotimes_{c\in\ch v}U_c)\otimes\R^{d_v}$ and
-$E_e^+=(\bigotimes_{c\in\ch p\setminus\{v\}}U_c)\otimes\R^{d_p}\otimes V_p$ ($d_v=\prod_{i\in\sites v}\pd[i]$; no
-$V_p$ at the root), and $\widetilde W^*_e:=P_{E_e^-}\,\mat{(\Wt)}{e}\,P_{E_e^+}$ is the
+$\mat{\W}{e}$, the environment spaces of $e$ are $E_e^-=(\bigotimes_{u\in\ch v}U_{\edge u})\otimes\R^{d_v}$ and
+$E_e^+=(\bigotimes_{u\in\ch p\setminus\{v\}}U_{\edge u})\otimes\R^{d_p}\otimes V_{\edge p}$ ($d_v=\prod_{i\in\sites v}\pd[i]$; no
+$V_{\edge p}$ when $p$ is the root), and $\widetilde W^*_e:=P_{E_e^-}\,\mat{(\Wt)}{e}\,P_{E_e^+}$ is the
 \emph{environment-projected teacher}.
 
 \begin{proposition}[Critical points of the rank-constrained problem]\label{prop:A-critical-points}
@@ -924,67 +1002,70 @@ frames are first-order rotations of those of $\W$ with the same driving terms, $
 $\mathcal M_{\mathbf r}$ at $\W_c$ and $\W_H-\W_c$ tangent up to curvature (checked for $\varepsilon\le0.2$).
 
 \paragraph{The rank-one plateau.} \derived{} \newresult{} The origin plateau ends along a KKT direction of $g$,
-and the global maximum of $g$ has bond rank one (\cref{prop:A-gmax}). That local maxima do too, and that
+and the global maximum of $g$ has bond rank one (\cref{prop:A-gmax}; in CP factorization:
+\citealp{razin2021implicit}). That local maxima do too, and that
 the flow reaches one, are conjectures (true at every rank-one plateau computed); then the next plateau is
 a critical point of the bond-rank-one problem, not an HSVD truncation. If every core carries at most one
-site (MPS, HT) it is a local best rank-one approximation $\bar s\bigotimes_iw_i$, $\bar s=\ip{\Wt}{\bigotimes_iw_i}$, at level
+site (MPS, HT) it is a local best rank-one approximation $\bar s\bigotimes_iy_i$, $\bar s=\ip{\Wt}{\bigotimes_iy_i}$, at level
 $\frac12(\normF{\Wt}^2-\bar s^2)$; on binary $\Ns=4$ it is the top singular pair of the matricization. In the cases
-computed it lies $6$--$12\%$ below the HSVD truncation \empirical, which is not general.
+computed its loss lies below that of the HSVD truncation (by $6.6\%$ of $\Loss_0$ for a random MPS4 teacher, and by
+$6$--$10\%$ of the plateau value for two-component teachers) \empirical, which is not general: a plateau in a minor
+basin is a worse critical point.
 
 \begin{proposition}[Two non-orthogonal components]\label{prop:A-two-components}
   \proven{} (stationarity; threshold among symmetric critical points) \derived{} (fold)
   \newresult[elementary] Let $\Wt=\tw1\U1+\tw2\U2$ with $\Ns$ sites, $\tw1\ge\tw2$ and overlaps
-  $\ip{\fac1i}{\fac2i}=\cos\phi_i\in[0,1)$, at most one of them zero. Every rank-one critical point has $w_i$
+  $\ip{\fac1i}{\fac2i}=\cos\phi_i\in[0,1)$, at most one of them zero. Every rank-one critical point has $y_i$
   in the plane of $\fac1i,\fac2i$, at angle $\psi_i$ from $\fac1i$, with value $\tw1\prod_i\cos\psi_i+\tw2\prod_i\cos(\phi_i-\psi_i)$.
   For equal weights and overlaps $\cos\phi$, the symmetric point $\psi_i=\phi/2$ has Hessian eigenvalues
-  $-2c^{\Ns-2}[c^2-(\Ns-1)(1-c^2)]$ along $(1,\dots,1)$ and $-2c^{\Ns-2}$ on its complement ($c=\cos\frac\phi2$, unit
-  weight), so there are two local maxima, one near each component, iff $\cos\phi<(\Ns-2)/\Ns$, and one merged
-  maximum otherwise (asymmetric maxima excluded numerically). For $\varrho=\tw2/\tw1<1$ the
-  maximum near $\U2$ disappears at a fold, $\cos\phi_{\rm fold}\approx\frac{\Ns-2}{\Ns-1}(\frac{\varrho}{\Ns-1})^{1/(\Ns-2)}$
-  for small $\varrho$ ($1$--$13\%$ below the exact values). The rank-one plateau is never one of the components.
+  $-2\cos^{\Ns-2}\frac\phi2\,[\cos^2\frac\phi2-(\Ns-1)\sin^2\frac\phi2]$ along $(1,\dots,1)$ and $-2\cos^{\Ns-2}\frac\phi2$ on
+  its complement (unit weight), so there are two local maxima, one near each component, iff $\cos\phi<(\Ns-2)/\Ns$, and one merged
+  maximum otherwise (asymmetric maxima excluded numerically). For $w=\tw2/\tw1<1$ the
+  maximum near $\U2$ disappears at a fold, $\cos\phi_{\rm fold}\approx\frac{\Ns-2}{\Ns-1}(\frac{w}{\Ns-1})^{1/(\Ns-2)}$
+  for small $w$ ($1$--$13\%$ below the exact values). The rank-one plateau is never one of the components.
 \end{proposition}
 
 \begin{proposition}[Rates at the rank-one saddle of an MPS]\label{prop:A-mps-rates}
   \derived{} (rates) \proven{} (bound) \newresult{}
-  Let the student be an MPS ($\Kc=\Ns$, core $k$ carries site $k$) at the balanced, zero-padded rank-one
-  critical point $\W_1=\bar s\bigotimes_iw_i$, a local maximum of the rank-one problem, and let
-  $M_e=\Wt\times_{i\notin\{k,k+1\}}w_i$ be the $d\times d$ matrix of the bond $e$ between cores $k$ and $k+1$. Then
-  $(w_k,w_{k+1})$ is the top singular pair of $M_e$ (singular value $\bar s$), the route block of $e$ is
-  $\bar s^{(\Ns-2)/\Ns}(M_e-\bar s\,w_kw_{k+1}\T)$, with Hessian eigenvalues $-\bar s^{(\Ns-2)/\Ns}\sigma_m(M_e)$, $m=2,\dots,d$ (each
+  Let the student be an MPS ($\Kc=\Ns$, core $i$ carries site $i$) at the balanced, zero-padded rank-one
+  critical point $\W_1=\bar s\bigotimes_iy_i$, a local maximum of the rank-one problem, and let
+  $M_e=\Wt\times_{i'\notin\{i,i+1\}}y_{i'}$ be the $d\times d$ matrix of the bond $e$ between cores $i$ and $i+1$. Then
+  $(y_i,y_{i+1})$ is the top singular pair of $M_e$ (singular value $\bar s$), the route block of $e$ is
+  $\bar s^{(\Ns-2)/\Ns}(M_e-\bar s\,y_iy_{i+1}\T)$, with Hessian eigenvalues $-\bar s^{(\Ns-2)/\Ns}s_n(M_e)$, $n=2,\dots,d$ (each
   $\bd e-1$ times), and the escape rate of bond $e$ is
   \begin{equation}\label{eq:A-gamma-e}
-    \gamma_e=\bar s^{(\Ns-2)/\Ns}\,\sigma_2(M_e),\qquad\text{with}\quad
-    \sigma_m(M_e)\le\sigma_m\big(\mat{(\Wt)}{e}\big)
+    \lambda_e=\bar s^{(\Ns-2)/\Ns}\,s_2(M_e),\qquad\text{with}\quad
+    s_n(M_e)\le\bst{e}{n}
   \end{equation}
-  by interlacing ($M_e$ compresses $\mat{(\Wt)}{e}$ by isometries).
+  by interlacing ($M_e$ compresses $\mat{(\Wt)}{e}$, whose singular values are $\bst{e}{n}$, by isometries).
 \end{proposition}
-For two components with $d=2$, $\sigma_2(M_e)=\det M_e/\bar s$ with $\det M_e=\tw1\tw2\sin\phi_k\sin\phi_{k+1}a_eb_e$,
-$a_e=\prod_{i\ne k,k+1}\cos\psi_i$, $b_e=\prod_{i\ne k,k+1}\cos(\phi_i-\psi_i)$: \emph{the bond that grows first is the one
+For two components with $d=2$, $s_2(M_e)=\det M_e/\bar s$ with $\det M_e=\tw1\tw2\sin\phi_i\sin\phi_{i+1}a_eb_e$,
+$a_e=\prod_{i'\ne i,i+1}\cos\psi_{i'}$, $b_e=\prod_{i'\ne i,i+1}\cos(\phi_{i'}-\psi_{i'})$: \emph{the bond that grows first is the one
 whose two sites differ most while the other sites agree most}, not the one with the largest teacher
 Schmidt value (checked to four digits).
 
 \begin{corollary}[Second escape]\label{cor:A-second-escape}
   \derived{} \knownresult[the degree-two case of the activation rule of alternating gradient flows, with
   carried-over amplitudes: \citealp{kunin2025alternating}, Eq.~3] \newresult[the TTN rates:
-  \cref{prop:A-head-start} with $\tw j\to\bar s$ and $\tw r\to\sigma_2(M_e)$]
-  Assume $\isc\to0$, balanced cores and route projections $\propto\isc$ at initialization, and let
-  $\kappa_e=\sigma_2(M_e)/\bar s$. During the first escape the route of bond $e$ grows by the factor
-  $\isc^{-\kappa_e}$, so the first bond to gain rank is $e^*=\arg\min_eh_e=\arg\max_e\sigma_2(M_e)$, and
+  \cref{prop:A-head-start} with $\tw j\to\bar s$ and $\tw r\to s_2(M_e)$]
+  Assume $\isc\to0$, balanced cores and route projections $\propto\isc$ at initialization. During the first
+  escape the route of bond $e$ grows by the factor $\isc^{-s_2(M_e)/\bar s}$ (the head start), so the first bond to
+  gain rank is $e^*=\arg\min_eh_e=\arg\max_es_2(M_e)$, and
   \begin{equation}\label{eq:A-second-escape}
-    \tev{e^*}-\tev1=h_{e^*}\ln(1/\isc)+O(1),\qquad h_e=\frac{1-\kappa_e}{\gamma_e}.
+    \tev{e^*}-\tev1=h_{e^*}\ln(1/\isc)+O(1),\qquad h_e=\frac{1-s_2(M_e)/\bar s}{\lambda_e}.
   \end{equation}
 \end{corollary}
-Here $\tev e$ is when $\sigma_2$ across $e$ first exceeds $f\in[0.03,0.1]$ times the teacher's (slopes checked to $1\%$).
+Here $\tev e$ is when $\bs e2$ first exceeds $f\bst e2$, $f\in[0.03,0.1]$ (slopes checked to $1\%$).
 
 \begin{proposition}[Later escapes on an MPS: an accumulated-utility race]\label{prop:A-agf-race}
   \derived{} (as $\isc\to0$, under (A-carry)) \knownresult[the rule: alternating gradient flows,
   \citealp{kunin2025alternating}; new: the TTN routes and their rates]
-  Give every pending two-core route $\rho$ the log-amplitude $\ell_\rho=\ln x_\rho/\ln(1/\isc)\in[-1,0]$ and use
-  the clock $\vartheta=(t-\tev1)/\ln(1/\isc)$. Then $\ell_\rho(0)=-1+\kappa_\rho$; while the flow sits at the
-  saddle $S_n$, $\dd\ell_\rho/\dd\vartheta=\gamma_\rho(S_n)$, the rate of the route at the exact critical point $S_n$;
-  $\rho$ escapes when $\ell_\rho=0$, and the flow moves in time $O(1)$ to $S_{n+1}$, with the rank of its bond raised
-  by one. (A-carry): at each transition a pending route's amplitude projects onto its new unstable
-  direction with a $\isc$-independent factor $p\ne0$.
+  Give the pending two-core route of every bond $e$ (amplitude $x_e$) the log-amplitude
+  $\ell_e=\ln x_e/\ln(1/\isc)\in[-1,0]$ and use the clock $\vartheta=(t-\tev1)/\ln(1/\isc)$. Then $\ell_e(0)=-1+s_2(M_e)/\bar s$;
+  while the flow sits at the saddle $S_n$, $\dd\ell_e/\dd\vartheta=\lambda_e(S_n)$, the rate of the route at the exact
+  critical point $S_n$; the route escapes when $\ell_e=0$, and the flow moves in time $O(1)$ to $S_{n+1}$, with the
+  rank of bond $e$ raised by one. (A-carry): at each transition a pending route's amplitude projects onto its
+  new unstable direction with a nonzero factor that does not depend on $\isc$.
 \end{proposition}
 Event times are $\tev e-\tev1=\vartheta_e\ln(1/\isc)+C_e+o(1)$ with initialization-dependent offsets $C_e$ (up to
 about 50 time units), so near-tied later escapes come in a seed-dependent order at accessible $\isc$
@@ -1007,8 +1088,8 @@ routes join two sibling bottom cores through their parent ($k=3$): escapes from 
 polynomial even for generic teachers, and the root bipartition grows only after both halves (bottom-up
 order); two-core routes can open later on bottom edges, never for the root bipartition. (iii) Odeco and
 pattern teachers suppress two-core routes by orthogonality, so power-law later plateaus need components
-orthogonal on the relevant site blocks; for nearly orthogonal ones (overlaps below a crossover
-$c_\times=O(\isc)$ up to logarithms) they persist at accessible $\isc$ (\conjecture, heuristic). Checked on one
+orthogonal on the relevant site blocks; for nearly orthogonal ones (overlaps $\cos\phi$ below a crossover
+of order $\isc$, up to logarithms) they persist at accessible $\isc$ (\conjecture, heuristic). Checked on one
 random CP teacher: strict saddles with logarithmic gaps on MPS $\Ns=4$, $\lambda_{\min}\propto\isc$ and gaps
 $\propto\isc^{-1}$ on the binary tree.
 
@@ -1016,11 +1097,11 @@ $\propto\isc^{-1}$ on the binary tree.
 \citealp{grasedyck2011introduction}, Lemmas~7--8]
 A student bond $e$ must reach $\rank\mat{(\Wt)}{e}$, which for a TTN teacher is at most the minimum, over
 cuts of the teacher's tree that separate the two sides of $e$, of the product of the cut dimensions; a
-binary student with $\Ns=8$ of an MPS teacher with bond dimension $r$, for example, needs rank
-$\min(d^2,r^2)$ on the bonds of sites $\{2,3\}$, $\{4,5\}$, i.e.\ about $r^2$ separate saddles. A binary student
-with $\Ns=4$ is the deep linear network of \cref{rem:A-binary4-dln} for any teacher: plateaus at
-$\frac12\sum_{i>m}\sigma_i(\mat{(\Wt)}{(01|23)})^2$, escapes of degree three ($\propto\isc^{-1}$), as many plateaus as the rank
-of the matricization. One teacher thus has different plateau levels and exponents on an MPS and on
+binary student with $\Ns=8$ of an MPS teacher with bond dimension $\chi^*$, for example, needs rank
+$\min(d^2,\chi^{*2})$ on the bonds of sites $\{2,3\}$, $\{4,5\}$, i.e.\ about $\chi^{*2}$ separate saddles. A binary student
+with $\Ns=4$ is the deep linear network of \cref{rem:A-binary4-dln} for any teacher: after $n$ escapes the loss
+plateaus at $\frac12\sum_{i>n}(\bst{e}{i})^2$, $e$ either bond (both cut $01|23$), each escape of degree three
+($\propto\isc^{-1}$), with as many plateaus as the rank of the matricization. One teacher thus has different plateau levels and exponents on an MPS and on
 a binary tree \derived{} \newresult{} (tests:
 \cref{sec:teacher-cp,sec:teacher-ttn,sec:teacher-mismatch}).
 
@@ -1043,9 +1124,9 @@ $\W(\Xi\params)=\Sig^{1/2}\W(\params)$.
   eigenvalues of $\Xi^2\nabla^2\tilde\Loss$, not of $\nabla^2\tilde\Loss$.
   (d) The gauge group acts on bond legs only, so \cref{prop:conservation} holds unchanged in $\params$: small
   initialization is balanced in $\params$, not in $\tilde\params$.
-  (e) Plain whitened gradient flow is recovered iff $\Xi^2\propto\Id$, i.e.\ iff every $\Sigi i=\kappa_i\Id$ and
-  $\prod_{i\in\sites v}\kappa_i$ is the same for every core (equal to 1 on binary and HT trees, whose internal
-  cores have factor 1); for $\Sigi i=\kappa_i\Id$ time is rescaled by $\prod_i\kappa_i$.
+  (e) Plain whitened gradient flow is recovered iff $\Xi^2\propto\Id$, i.e.\ iff every $\Sigi i=\lambda_i\Id$ and
+  $\prod_{i\in\sites v}\lambda_i$ is the same for every core (equal to 1 on binary and HT trees, whose internal
+  cores have factor 1); for $\Sigi i=\lambda_i\Id$ time is rescaled by $\prod_i\lambda_i$.
 \end{proposition}
 \begin{proof}
   (a) is $\W(\Xi\params)=\Sig^{1/2}\W(\params)$; (b) and (c) are the chain rule through the symmetric map $\Xi$
@@ -1073,8 +1154,8 @@ the whitened one by $\tw r$. With $\tw1>\tw2$ and aligned initialization, compon
 $\Lambda_2/\Lambda_1>\tw1/\tw2$ (LO in $q_0$); in the \emph{mismatch window} $\tw1/\tw2<\Lambda_2/\Lambda_1<(\tw1/\tw2)^2$ the faster
 component is the smaller loss drop, so the first plateau lies above the reduced-rank-regression optimum:
 the visited saddles are not the reduced-rank solutions of \citet{gidel2019implicit}, whose Corollary~2
-states no ordering condition. With power-law spectra $\lambda_k\propto k^{-\beta}$ and component $r$ on eigenvector
-$k_r$ at every site, $\Lambda_2/\Lambda_1=(k_1/k_2)^{\beta\Ns}$, so the pairing $k_r=r$ reinforces the whitened order.
+states no ordering condition. With power-law spectra $\lambda_n\propto n^{-\beta}$ and component $r$ on eigenvector
+$n_r$ at every site, $\Lambda_2/\Lambda_1=(n_1/n_2)^{\beta\Ns}$, so the pairing $n_r=r$ reinforces the whitened order.
 
 \begin{proposition}[Random initialization: what replaces the teacher]\label{prop:A-escape-cov}
   \derived{} \newresult[TTN form of the covariance-weighted first escape of
@@ -1094,25 +1175,27 @@ exponent $-1.000$ (binary, MPS, HT), offset $-0.2218$ against $-0.2219$. The ord
 (\cref{prop:A-race}), at rate ratio $\Lambda_2\tw2/(\Lambda_1\tw1)$.
 
 \begin{proposition}[Piggyback block under aligned covariance]\label{prop:A-piggyback-cov}
-  \proven{} (at the saddle) \newresult{}
+  \proven{} (at the saddle) \newresult[for TTNs; on binary $\Ns=4$, a deep linear network, it follows from
+  \citealp{achour2024loss}, Thm~7, with \cref{prop:A-precond}]
   Let $j$ be learned (balanced, $q_j=\tw j^{1/\Kc}$) and let $r$ differ from $j$ on $D=D_{jr}$, with two terminal
-  cores $c_1,c_2$. With $\mu_x=\prod_{i\in D\cap\sites{c_1}}\lambda_{x,i}$, $\nu_x=\prod_{i\in D\cap\sites{c_2}}\lambda_{x,i}$ for
+  cores $u,v$. With $\mu_x=\prod_{i\in D\cap\sites{u}}\lambda_{x,i}$, $\nu_x=\prod_{i\in D\cap\sites{v}}\lambda_{x,i}$ for
   $x\in\{j,r\}$ and $\lambda_{\rm sh}=\prod_{i\notin D}\lambda_{j,i}$, the Hessian on the two rotations is
   \begin{equation}\label{eq:A-piggyback-cov}
     H_{\rm pb}=\frac{\lambda_{\rm sh}}{\tw j^{2/\Kc}}\begin{pmatrix}\tw j^2\mu_r\nu_j&-\tw r\tw j\mu_r\nu_r\\
     -\tw r\tw j\mu_r\nu_r&\tw j^2\mu_j\nu_r\end{pmatrix}.
   \end{equation}
   It has a negative eigenvalue iff $\Lambda_r\tw r^2>\Lambda_j\tw j^2$, for any split of the eigenvalues over the cores.
-  If $c_1,c_2$ are adjacent ($k=2$), its rate is below the add-route rate $b=\Lambda_r\tw r\tw j^{(\Kc-2)/\Kc}$, so with
+  If $u,v$ are adjacent ($k=2$), its rate is below the add-route rate $\lambda_{\rm add}=\Lambda_r\tw r\tw j^{(\Kc-2)/\Kc}$, so with
   comparable seeds $r$ is added directly: a rotation needs $m=2$ and $k\ge3$.
 \end{proposition}
 \begin{proof}
   At the learned amplitude, up to constants,
   $\Loss=\frac12\tw j^2\lambda_{\rm sh}(\mu_j\cos^2\varphi+\mu_r\sin^2\varphi)(\nu_j\cos^2\psi+\nu_r\sin^2\psi)
   -\tw j(\Lambda_j\tw j\cos\varphi\cos\psi+\Lambda_r\tw r\sin\varphi\sin\psi)$ in the terminal-core rotations $\varphi,\psi$, so
-  $\det H_{\rm pb}\propto\Lambda_j\tw j^2-\Lambda_r\tw r^2$. For adjacent terminals the off-diagonal entry is $-b$
-  ($\lambda_{\rm sh}\mu_r\nu_r=\Lambda_r$), and a symmetric $2\times2$ matrix with positive diagonal $h_1,h_2$ and off-diagonal $-b$
-  has $\lambda_{\min}>-b$, since $(\frac{h_1+h_2}2+b)^2-(\frac{h_1-h_2}2)^2-b^2=h_1h_2+b(h_1+h_2)>0$.
+  $\det H_{\rm pb}\propto\Lambda_j\tw j^2-\Lambda_r\tw r^2$. For adjacent terminals the off-diagonal entry is $-\lambda_{\rm add}$
+  ($\lambda_{\rm sh}\mu_r\nu_r=\Lambda_r$), and a symmetric $2\times2$ matrix with positive diagonal $h_1,h_2$ and off-diagonal
+  $-\lambda_{\rm add}$ has $\lambda_{\min}>-\lambda_{\rm add}$, since
+  $(\frac{h_1+h_2}2+\lambda_{\rm add})^2-(\frac{h_1-h_2}2)^2-\lambda_{\rm add}^2=h_1h_2+\lambda_{\rm add}(h_1+h_2)>0$.
 \end{proof}
 In the mismatch window, if the faster component wins the first escape \derived: on binary $\Ns=4$ ($m=2$,
 $k=3$) the learned term rotates to the other component at bond rank one, the loss plateaus at
@@ -1130,13 +1213,13 @@ and then realign to $\U r$ without an extra plateau (the TTN form of the early a
 reverse the order. It also opens routes of degree below $k^*$ \derived, with couplings of order $\epsilon^{n_{\rm out}}$ at
 per-site misalignment $\epsilon$ ($n_{\rm out}$ sites outside the route).
 
-\paragraph{Cross-site correlations.} In the one-factor model $x^{(i)}=\sqrt{1-c}\,z_i+\sqrt c\,z_0$, with
-independent $z_0,\dots,z_\Ns\sim\Normal(0,\Id_d)$, every marginal is standard and two sites have covariance $c\Id$.
-(i) \proven{} \newresult[the model is the standard one-factor Gaussian model; new: its tree
-contraction] Given $z_0$ the sites are independent with second moments $M_i(z_0)=(1-c)\Id+cz_0z_0\T$, so
-$\Loss=\E_{z_0}[\frac12\norm{\W-\Wt}^2_{\otimes_iM_i(z_0)}]$, a polynomial of degree $2\Ns$ in $z_0$, is exact by
+\paragraph{Cross-site correlations.} In the one-factor model $x^{(i)}=\sqrt{1-c}\,z_i+\sqrt c\,z$, with
+independent $z,z_0,\dots,z_{\Ns-1}\sim\Normal(0,\Id_d)$ (common factor $z$), every marginal is standard and two
+sites have covariance $c\Id$. (i) \proven{} \newresult[the model is the standard one-factor Gaussian model; new:
+its tree contraction] Given $z$ the sites are independent with second moments $M_i(z)=(1-c)\Id+czz\T$, so
+$\Loss=\E_{z}[\frac12\norm{\W-\Wt}^2_{\otimes_iM_i(z)}]$, a polynomial of degree $2\Ns$ in $z$, is exact by
 Gauss--Hermite quadrature with $(\Ns+1)^d$ product-metric tree contractions; a site-aligned component has
-the weight $\Lambda_{\rm eff}(c,\Ns)=\sum_k\binom{\Ns}{k}(1-c)^{\Ns-k}c^k(2k-1)!!$. (ii) \derived{} The first plateau survives
+the weight $\Lambda_{\rm eff}(c,\Ns)=\sum_{n=0}^{\Ns}\binom{\Ns}{n}(1-c)^{\Ns-n}c^n(2n-1)!!$. (ii) \derived{} The first plateau survives
 for every $c<1$ (the origin is a degree-$\Kc$ critical point for any input law; rank-constrained critical
 points remain critical, \cref{lem:A-unused}). (iii) \proven{} (rates at the saddle) \newresult{} On an MPS
 with even $\Ns$ and a site-aligned odeco teacher, the correlations open strict two-core routes at the
@@ -1160,13 +1243,13 @@ online SGD as in \cref{sec:setup-dynamics}, recorded at $t=\lr\times(\text{numbe
   \citealp{ghosh2025learning}, Lemma~1; top eigenvalue at the flattest minimum, \citealp{mulayoff2020unique},
   Thm~1; new: general trees]
   At a global minimum $\Hess=J\T J$, $J=\partial\W/\partial\params$. At an aligned minimum (\cref{prop:aligned}
-  with $\prodamp r=\tw r$), an elementary perturbation of core $w$ changes $\W$ by a gain times a unit rank-one
-  \emph{pattern}: the chosen vectors at the sites of $w$, the teacher vector $\ell_c$ at every site below a
-  child $c$ whose bond index is $\ell_c$, and $\ell_p$ at every site outside the subtree of $w$. The gain is
-  $\prod_{u\ne w}\amp u{\ell(u)}$, $\ell(u)$ the label of the branch of $w$ that contains $u$ (zero if a label
+  with $\prodamp r=\tw r$), an elementary perturbation of core $v$ changes $\W$ by a gain times a unit rank-one
+  \emph{pattern}: the chosen vectors at the sites of $v$, the teacher vector $\ell_u$ at every site below a
+  child $u$ whose bond index is $\ell_u$, and $\ell_p$ at every site outside the subtree of $v$ ($p=\pa v$). The gain is
+  $\prod_{u\ne v}\amp u{\ell(u)}$, $\ell(u)$ the label of the branch of $v$ that contains $u$ (zero if a label
   exceeds $\ncomp$). Distinct patterns are orthonormal, so
   \begin{equation}\label{eq:A-pattern-rule}
-    \mathrm{spec}(\Hess)\setminus\{0\}=\Big\{\lambda_P=\sum_{w\in\mathrm{prod}(P)}\mathrm{gain}_w(P)^2\ :\ P\text{ a pattern}\Big\},
+    \mathrm{spec}(\Hess)\setminus\{0\}=\Big\{\lambda_P=\sum_{v\in\mathrm{prod}(P)}\mathrm{gain}_v(P)^2\ :\ P\text{ a pattern}\Big\},
   \end{equation}
   where $\mathrm{prod}(P)$ is the set of cores that can produce $P$. The radial mode of component $r$ (pattern
   $\U r$, produced by every core) has $\lambda=\tw r^2\sum_v\amp vr^{-2}\ge\Kc\tw r^{2-2/\Kc}$, with equality iff the
@@ -1184,8 +1267,9 @@ global minimum is linearly stable (\derived{} for $\bd e=\ncomp$; for binary $\N
 from \citealp[Thm~1]{mulayoff2020unique}; \conjecture{} otherwise). The minimum
 reached by gradient flow, and its sharpness $\lambda_{\rm GF}$, are fixed by $\Q e(0)$ (a strongly imbalanced weaker
 component can carry the top mode); for $2/\lambda_{\rm GF}<\lr<\lr_c$ GD oscillates, the imbalance contracts
-(\cref{lem:A-gd-identity}), and GD converges to a flatter, more balanced minimum, with sharpness just below
-$2/\lr$ on binary $\Ns=4$ (\empirical; \knownresult[scalar networks: \citealp{kreisler2023gradient},
+(\cref{lem:A-gd-identity}), and GD converges to a flatter, more balanced minimum, with sharpness at most $3\%$
+below $2/\lr$ for imbalanced small initializations of binary $\Ns=4$, but $0.58$--$1.00$ times $2/\lr$ after a
+catapult from larger initialization (\cref{sec:other-optim}) (\empirical; \knownresult[scalar networks: \citealp{kreisler2023gradient},
 Thms~3.2--3.3; two-factor factorization, limit sharpness at most $2/\lr$: \citealp{wang2022large}, Thm~3.2;
 beyond the edge, deep matrix factorization balances while oscillating: \citealp{ghosh2025learning},
 Prop.~2]). Hessians checked to $6\cdot10^{-15}$ on five trees.
@@ -1212,8 +1296,10 @@ time-averaged loss is
 \begin{equation}\label{eq:A-eos-loss}
   \Loss_{\rm EoS}\simeq\frac{3\Kc^2\tw1^2}{4(\Kc-1)(5\Kc-4)}\Big(\frac{\lr}{\lr_c}-1\Big).
 \end{equation}
-Later events still occur and lower the loss. Checked (binary $\Ns=4$, $\lr=1.05\lr_c$): late loss $1.45\cdot10^{-2}$
-against $1.452\cdot10^{-2}$ (map) and $1.53\cdot10^{-2}$ \eqref{eq:A-eos-loss}; divergence at $1.5$--$1.65\lr_c$.
+Later events still occur and lower the loss. Checked (binary $\Ns=4$, teacher $(1,0.6,0.3)$, $\isc=0.05$,
+$\lr=1.05\lr_c$): late loss $1.45\cdot10^{-2}$ against $1.452\cdot10^{-2}$ (map) and $1.53\cdot10^{-2}$ \eqref{eq:A-eos-loss};
+with the teacher $(3,2,1)$ of \cref{sec:other-optim}: $0.1306$ against $0.1306$ (map) and $0.138$
+\eqref{eq:A-eos-loss}; divergence at $1.5$--$1.65\lr_c$ ($1.5$--$1.75\lr_c$ in \cref{sec:other-optim}).
 
 \begin{proposition}[Shift of event times under gradient descent]\label{prop:A-gd-shift}
   \derived{} \newresult[for TTNs; the modified flow is known: \citealp{barrett2021implicit}]
@@ -1249,7 +1335,9 @@ motion, $\kappa_{\rm n}=3^\Ns-1+\sum_{r\ge2}\tw r^2/\tw1^2$), whose hitting time
   \mathrm{sd}\big(\tev1^{\rm SGD}\big)\simeq\Big(\kappa_{\rm n}\frac\lr\batch\tev1^{\rm GF}\Big)^{1/2},
 \end{equation}
 with $a_{1/2}=(\tw1/2)^{1/\Kc}$. Both corrections vanish relative to $\tev1^{\rm GF}\propto a_0^{-(\Kc-2)}$: the exponent is
-unchanged. Checked: within 10--15\% for aligned, order of magnitude for generic initialization.
+unchanged. Checked: within 10--15\% for aligned, order of magnitude for generic initialization. The It\^o drift
+printed in \citet[eq.~6]{corlouer2026stochastic} would dominate near the origin, but it is not covariant under
+the rescaling symmetry of SGD; the drift implied by their diffusion, eq.~7, is subdominant, as here.
 
 \paragraph{SGD at the minimum.} \derived{} (exact mean-square threshold) \proven{} (the inequality)
 \newresult[the reduction to the pattern basis; general criteria are known: \citealp{ziyin2024typeii}; exact
@@ -1262,40 +1350,43 @@ positive semidefinite cone, which gives the exact mean-square threshold
 \begin{equation}\label{eq:A-ms-threshold}
   \lr^*_{\rm ms}(\batch)=\frac{2}{\lambda_{\max}(G_\batch)},\qquad
   G_\batch=\Big(1-\frac1\batch\Big)\Lambda_\Hess+\frac1\batch\Lambda_\Hess^{1/2}\mathcal K\Lambda_\Hess^{1/2},\qquad
-  \mathcal K_{PQ}=\prod_im(t_{P,i},t_{Q,i}),
+  \mathcal K_{PQ}=\prod_i\E\big[(t_{P,i}\cdot x^{(i)})^2(t_{Q,i}\cdot x^{(i)})^2\big],
 \end{equation}
-with $\Lambda_\Hess=\diag(\lambda_P)$, $m=3$ if the two site vectors coincide and $1$ if they are orthogonal (Gaussian
-sites). Jensen's inequality gives $\lr_{\rm as}\ge\lr^*_{\rm ms}$ for the almost-sure divergence threshold; \empirical: the
-ratios are about $2$ ($\Ns=4$, $\batch\le16$) and $8$--$21$ (binary $\Ns=8$), and SGD near the minimum diverges at $\lr_{\rm as}$.
+with $\Lambda_\Hess=\diag(\lambda_P)$; for Gaussian sites each factor is $3$ if the two site vectors coincide and
+$1$ if they are orthogonal. Jensen's inequality gives $\lr_{\rm as}\ge\lr^*_{\rm ms}$ for the almost-sure divergence threshold; \empirical: the
+ratios are about $2$ ($\Ns=4$, $\batch\le16$) and $8$--$21$ (binary $\Ns=8$), and SGD near the minimum diverges at
+$\lr_{\rm as}$ (checked on $\Ns=4$).
 
 \begin{proposition}[SGD lengthens later plateaus]\label{prop:A-sgd-collapse}
   \conjecture{} (heuristic law) \knownresult[mechanism: stochastic collapse, \citealp{chen2023stochastic}]
   At a later saddle with a route of degree $k\ge3$ the population Hessian vanishes on the route and the
   per-sample gradients vanish at zero route amplitude. Zero-mean multiplicative noise coupling the route
-  entries to mixed learned entries gives the log-amplitude of the coherent route a drift $-\gamma_c$,
-  $\gamma_c=c_\gamma\lr/\batch$; added to the route equation, $\dot b=\tw rb^{k-1}-\gamma_cb$. For $k=3$, with $T_{\rm GF}=1/(\tw rb_0)$,
+  entries to mixed learned entries gives the log-amplitude of the coherent route a drift $-c_{\rm col}\lr/\batch$,
+  with a constant $c_{\rm col}$; added to the route equation, $\dot b=\tw rb^{k-1}-(c_{\rm col}\lr/\batch)b$. For $k=3$, with
+  $T_{\rm GF}=1/(\tw rb_0)$,
   \begin{equation}\label{eq:A-sgd-collapse}
-    \frac{T_{\rm SGD}}{T_{\rm GF}}=\frac{-\ln(1-x)}{x},\qquad x=\gamma_cT_{\rm GF},
+    \frac{T_{\rm SGD}}{T_{\rm GF}}=\frac{-\ln(1-x)}{x},\qquad x=c_{\rm col}\frac{\lr}{\batch}T_{\rm GF},
   \end{equation}
-  and the route is trapped (decays) for $x\ge1$; for general $k$ escape needs roughly $(k-2)\gamma_cT_{\rm GF}<1$. As
+  and the route amplitude decays (the route dies) for $x\ge1$; for general $k$ escape needs roughly $(k-2)x<1$. As
   $b_0$ scales with the initialization, at fixed $\lr/\batch$ SGD stalls on a later degenerate plateau once $\isc$ is
-  small enough; strict saddles escape if $\abs{\lambda_-}>\gamma_c$.
+  small enough; strict saddles escape if $\abs{\lambda_-}>c_{\rm col}\lr/\batch$.
 \end{proposition}
-Solving $\dot w=-\tw r+\gamma_cw$ for $w=1/b$ gives \eqref{eq:A-sgd-collapse}. Checked on binary $\Ns=4$ only (weights
-$(1,0.6)$, Gaussian sites; 21 runs): delays $1.02$--$2$ times $T_{\rm GF}$, trapping for $x\ge1$, never faster than
-gradient flow, $c_\gamma\approx1.35$ \empirical{} ($1.08$ from a commuting-pair estimate; about 33 for weights
-$(3,2,1)$, $d=\chi=3$: $c_\gamma$ depends on teacher and tree). Near the stability limit SGD breaks the saddle
-sequence instead \empirical: with weights $(1,0.6)$ no learned component was erased in 13 runs at
-$\lr\le0.25\lr^*_{\rm ms}$, but with $(3,2,1)$ one was erased (mostly relearned) in 20 of 36 longer runs at
-$0.25$--$0.30\,\lr^*_{\rm ms}$ (\cref{sec:other-optim}); at $0.7$--$1.2\,\lr^*_{\rm ms}$ components were repeatedly erased and
-relearned, or runs diverged.
+Solving $\dot z=-\tw r+(c_{\rm col}\lr/\batch)z$ for $z=1/b$ gives \eqref{eq:A-sgd-collapse}. Checked on binary $\Ns=4$ only (weights
+$(1,0.6)$, $\chi=2$, Gaussian sites; 21 runs): delays $1.02$--$2$ times $T_{\rm GF}$, no escape for $x\ge1$, never faster than
+gradient flow on this aligned route, $c_{\rm col}\approx1.35$ \empirical{} ($1.08$ from the commuting-pair estimate of
+\path{notes/theory_optimizer.md}, which gives $26$ for weights $(3,2,1)$, $d=\chi=3$, where the fit gives $32.6$,
+\cref{sec:other-optim}; $c_{\rm col}$ depends on the teacher, other trees untested). Near the stability limit SGD
+breaks the saddle sequence instead \empirical: with weights $(1,0.6)$ no learned component was erased in 13 runs
+at up to $0.25$--$0.32$ of the learned-block threshold, but with $(3,2,1)$ one was erased (mostly relearned) in
+20 of 36 runs of up to 1000 time units at $0.25$--$0.30\,\lr^*_{\rm ms}$ (\cref{sec:other-optim}); at
+$0.7$--$1.2\,\lr^*_{\rm ms}$ components were repeatedly erased and relearned, or runs diverged.
 
 % ===========================================================================================
 \subsection{Regime boundaries}\label{app:boundaries}
 
 Here $\pd[i]=d$, and $\TK=\sum_v\lrm vJ_vJ_v\T$ on $\R^{d^\Ns}$, $J_v=\partial\W/\partial\G v$, is the tensor-space
 tangent kernel that drives the function-space dynamics of \eqref{eq:gf} (for whitened inputs the probe-set
-kernel of \cref{tab:raw-diagnostics} is $\Feat(x_p)\T\TK\Feat(x_{p'})$). Recall $\mat{\W}{\edge v}=\Sub vC_v\T$
+kernel of \cref{sec:setup-diagnostics} is $\Feat(x_p)\T\TK\Feat(x_{p'})$). Recall $\mat{\W}{\edge v}=\Sub vC_v\T$
 (\cref{sec:setup-model}); the initialization is \eqref{eq:init} with scales $\iscv v$, $\fsc=\prod_v\iscv v$. A bond
 $e$ is \emph{full} if $\bd e$ reaches its cut dimension $\min(d^{n_e},d^{\Ns-n_e})$ ($n_e$ sites below $e$).
 
@@ -1303,7 +1394,7 @@ $e$ is \emph{full} if $\bd e$ reaches its cut dimension $\min(d^{n_e},d^{\Ns-n_e
   \proven{} \newresult[on every tree; for MPS and TT the bond-dimension-independent mean kernel is implicit
   in \citealp{guo2021neural,wesel2025tensor}; the rank in (c) is the manifold dimension of
   \citealp{uschmajew2013geometry}]
-  (a) $J_vJ_v\T=\bigotimes_{c\in\ch v}\Sub c\Sub c\T\otimes\Id_{d_v}\otimes C_vC_v\T$ (legs in site order).
+  (a) $J_vJ_v\T=\bigotimes_{u\in\ch v}\Sub u\Sub u\T\otimes\Id_{d_v}\otimes C_vC_v\T$ (legs in site order).
   (b) For all bond dimensions, $\E\,\TK=\frac{\fsc^2}{d^\Ns}\sum_v\frac{\lrm v\fanin v}{\iscv v^2}\,\Id$ and
   $\E[\Wz\otimes\Wz]=\frac{\fsc^2}{d^\Ns}\Id$; with $\iscv v=\isc$ and $\lrm v=1$ the kernel scale is
   $\bar\lambda:=\E\tr\TK/d^\Ns=\isc^{2(\Kc-1)}\sum_v\fanin v/d^\Ns$ (core $v$ contributes the term $\fanin v$).
@@ -1314,7 +1405,7 @@ $e$ is \emph{full} if $\bd e$ reaches its cut dimension $\min(d^{n_e},d^{\Ns-n_e
   dimensions, first reduce each $\bd e$ to its effective value); $\rank\TK=d^\Ns$ iff every bond is full.
 \end{proposition}
 \begin{proof}[Proof sketch]
-  (a) $\W$ is linear in $\G v$. (b) The cores are independent, $\Sub c$ and $C_v$ involve disjoint cores, and the
+  (a) $\W$ is linear in $\G v$. (b) The cores are independent, $\Sub u$ and $C_v$ involve disjoint cores, and the
   initialization law is invariant under orthogonal maps of each physical leg (irreducible); the traces
   follow by induction from the leaves (\cref{prop:init-norm}). (c) $\rank\TK$ is the dimension of the tangent
   space of $\mathcal M_\chi$ at $\Wz$, parameters minus gauge \citep[Thms~2 and~4]{uschmajew2013geometry}.
@@ -1324,8 +1415,10 @@ projection of the target on the range of $\TK$ and stops at $\frac12\normF{P_\pe
 $\E\normF{P_\perp\Wt}^2/\normF{\Wt}^2=(1-\chi/d^2)^2$ for binary $\Ns=4$ (compare \citealp{chizat2019lazy}, Thm~2.5
 and the remark after it, and \citealp{ghorbani2019limitations}, Thm~2). $\TK\approx\bar\lambda\Id$ needs every $\bd e$
 far above its cut dimension; at
-capped full bonds $\lambda_{\min}(\TK)/\bar\lambda\sim10^{-4}$ \empirical, so lazy runs need uncapped $\chi\ge2d^2$
-(\cref{sec:other-lazy}); at practical $\chi$ the lazy regime follows a random, tree-dependent kernel.
+capped full bonds $\lambda_{\min}(\TK)/\bar\lambda\sim10^{-4}$ \empirical, so lazy fits at bonds equal to their cut
+dimension converge slowly (binary $\Ns=4$, $\chi=9$: lazy, some runs ending between $10^{-6}$ and $10^{-3}$ of the
+initial loss; binary $\Ns=8$, $\chi=16$: not within the step limit, \cref{sec:other-lazy}); uncapped $\chi\ge2d^2$
+avoids this. At practical $\chi$ the lazy regime follows a random, tree-dependent kernel.
 
 \begin{proposition}[Lazy boundary of the centred model, $\Ns=4$]\label{prop:A-lazy}
   \derived{} \newresult[the TTN constants; the criterion is a threshold on the relative kernel change, as in
@@ -1350,8 +1443,10 @@ capped full bonds $\lambda_{\min}(\TK)/\bar\lambda\sim10^{-4}$ \empirical, so la
   $\isc^{(2)}_{\rm lazy}=2^{-1/3}\isc_{\rm lazy}$.
 \end{proposition}
 Checked \empirical: predicted $\xi_c\in[2.17,2.81]$, $[6.67,7.31]$ at $\chi=32$, $64$ against $2.25$--$2.82$, $6.73$--$7.53$ in
-gradient flow. The boundary moves with the threshold as $\isc_{\rm lazy}\propto\delta_*^{-1/(\Kc s)}$, $s=\dd\ln\dTK/\dd\ln\xi\in[1,2]$
-($1.5$--$1.8$ measured); the root can move by more than $100\%$ while $\dTK<0.1$.
+gradient flow (two seeds; $7.53$ is $3\%$ outside the bracket; the six-seed test with the tensor kernel is in
+\cref{sec:regime-sigma-chi}). The boundary moves with the threshold as $\isc_{\rm lazy}\propto\delta_*^{-1/(\Kc\beta)}$,
+$\beta=\dd\ln\dTK/\dd\ln\xi\in[1,2]$ ($1.5$--$1.8$ measured); the root can move by more than $100\%$ while
+$\dTK<0.1$ (one run).
 
 \paragraph{Deficient bonds.} \derived{} \newresult{} If some bond is not full, $\Wt+\Wz$ generically has more
 bond rank than the student can carry: the centred model is unrealizable at every $\isc$. At small $\isc$
@@ -1362,12 +1457,17 @@ with mean, by \cref{prop:A-kernel}(b),
 \begin{equation}\label{eq:A-centred-floor}
   \frac{\E\Loss_{\rm end}}{\Loss(0)}\approx\Big(1-\frac{\dim\mathcal M_\chi}{d^\Ns}\Big)\frac{\isc^{2\Kc}}{\normF{\Wt}^2}.
 \end{equation}
-A typical run meets the convergence rule $\Loss<10^{-3}\Loss(0)$ only below
+The formula needs $\bd e=\rank\mat{(\Wt)}{e}$. Measured floors on binary $\Ns=4$ ($d=3$, weights $(3,2,1)$, six seeds,
+$\isc\le0.63$) are $0.57$ times it on average at $\chi=3$ (median $0.48$), and $0.20$ and $0.072$ times it at $\chi=4$,
+$6$, where spare bond rank absorbs part of $\Wz$ \empirical. A typical run meets the convergence rule
+$\Loss<10^{-3}\Loss(0)$ only below
 $\isc_{\rm floor}=[10^{-3}\normF{\Wt}^2/(1-\dim\mathcal M_\chi/d^\Ns)]^{1/(2\Kc)}$ ($0.56$ for binary $\Ns=4$, $0.74$ for $\Ns=8$;
-$d=\chi=3$, weights $(3,2,1)$); runs above it are stalled (unrealizable). At large $\isc$ the floor tends to
+$d=\chi=3$, weights $(3,2,1)$); runs well above it are stalled, at a floor (median seed from $\isc\approx0.64$,
+every seed from $1.0$ on binary $\Ns=4$). At large $\isc$ the floor tends to
 $\normF{P_\perp\Wt}^2/\normF{\Wt}^2$ ($P_\perp$ at $\Wz$). In the two-copy model (realizable iff $2\bd e\ge\rank\mat{(\Wt)}{e}$) a
 deficient bond gives, at large $\isc$, a lazy plateau at that level and then a saddle-free escape by rotation
-of the bond subspaces: adiabatic elimination gives $t_{\rm esc}=2\vartheta\isc^2/\normF{\Wt}^2$, $\vartheta=0.37$--$0.70$, a kernel
+of the bond subspaces: adiabatic elimination gives $t_{\rm esc}=C\isc^2/\normF{\Wt}^2$, $C=0.74$--$1.40$ ($t_{\rm esc}$ the
+time to $\Loss/\Loss(0)=0.3$; two seeds), a kernel
 time $\propto\isc^{2\Kc}$ (\derived{} for $\Ns=4$; \conjecture{}, heuristic, for general $\Kc$; compare
 \citealp{tu2024mixed,lyu2024dichotomy}).
 
@@ -1377,14 +1477,15 @@ time $\propto\isc^{2\Kc}$ (\derived{} for $\Ns=4$; \conjecture{}, heuristic, for
   \citealp{gissin2020implicit}, Thm~2, with the $\Kc\to\infty$ mode solution in their Thm~1; new: the
   constants for the criterion of \cref{sec:setup-diagnostics}, including their $\Kc\to\infty$ limits]
   Let every component of an odeco teacher start at product amplitude $u_0=q_0^\Kc$, let
-  $I_\Kc(v_0,v_1)=\frac1\Kc\int_{v_0}^{v_1}v^{-2+2/\Kc}(1-v)^{-1}\dd v$ and $\omega_\Kc=I_\Kc(0.1,0.9)$. Then
-  $\tev r=\tw r^{-(2-2/\Kc)}I_\Kc(u_0/\tw r,\frac12)$ and $\wev r=\tw r^{-(2-2/\Kc)}\omega_\Kc$, so, with $\varrho_i=\tw{i+1}/\tw i$,
+  $I_\Kc(x_0,x_1)=\frac1\Kc\int_{x_0}^{x_1}x^{-2+2/\Kc}(1-x)^{-1}\dd x$ and $\omega_\Kc=I_\Kc(0.1,0.9)$. Then
+  $\tev r=\tw r^{-(2-2/\Kc)}I_\Kc(u_0/\tw r,\frac12)$ and $\wev r=\tw r^{-(2-2/\Kc)}\omega_\Kc$, so, with the weight ratio
+  $w=\tw{i+1}/\tw i$,
   \begin{equation}\label{eq:A-s2s-ratio}
-    \sep i=\frac{I_\Kc(u_0/\tw{i+1},\frac12)-\varrho_i^{\,2-2/\Kc}I_\Kc(u_0/\tw i,\frac12)}{\omega_\Kc}
-    \simeq\Big(\frac{u_0}{\tw{i+1}}\Big)^{-(1-2/\Kc)}\frac{1-\varrho_i}{(\Kc-2)\,\omega_\Kc}\quad(u_0\to0),
+    \sep i=\frac{I_\Kc(u_0/\tw{i+1},\frac12)-w^{\,2-2/\Kc}I_\Kc(u_0/\tw i,\frac12)}{\omega_\Kc}
+    \simeq\Big(\frac{u_0}{\tw{i+1}}\Big)^{-(1-2/\Kc)}\frac{1-w}{(\Kc-2)\,\omega_\Kc}\quad(u_0\to0),
   \end{equation}
-  and the boundary $\sep i=3$ lies at $u_{0c}\simeq\tw{i+1}[(1-\varrho_i)/(3(\Kc-2)\omega_\Kc)]^{\Kc/(\Kc-2)}$. As $\Kc\to\infty$,
-  $\Kc I_\Kc(v_0,v_1)\to\frac1{v_0}-\frac1{v_1}+\ln\frac{v_1}{v_0}+\ln\frac{1-v_0}{1-v_1}$ and $\Kc\omega_\Kc\to\frac{80}9+2\ln9=13.283$:
+  and the boundary $\sep i=3$ lies at $u_{0c}\simeq\tw{i+1}[(1-w)/(3(\Kc-2)\omega_\Kc)]^{\Kc/(\Kc-2)}$. As $\Kc\to\infty$,
+  $\Kc I_\Kc(x_0,x_1)\to\frac1{x_0}-\frac1{x_1}+\ln\frac{x_1}{x_0}+\ln\frac{1-x_0}{1-x_1}$ and $\Kc\omega_\Kc\to\frac{80}9+2\ln9=13.283$:
   $u_{0c}$ stays finite ($1.306\cdot10^{-2}$ for weights $(3,2,1)$), and $a_{0c}=u_{0c}^{1/\Kc}=1+\ln u_{0c}/\Kc+O(\Kc^{-2})\to1$.
 \end{proposition}
 Values: $\omega_3=2.009$, $\omega_5=1.612$, $\omega_7=1.318$; for weights $(3,2,1)$, $a_{0c}=0.066$, $0.324$, $0.480$
@@ -1393,30 +1494,41 @@ at $\Kc=3,5,7$. Aligned gradient flow reproduces \eqref{eq:A-s2s-ratio} to four 
 \paragraph{Random initialization.} \derived{} ($\tev1$) \conjecture{} (later gaps; large $\Kc$) \empirical{}
 (boundary) By \cref{cor:A-blowup,prop:A-first-event}, $\tev1=\isc^{-(\Kc-2)}\hat t_1(Z)/\tw1+O(1)$. For teachers whose
 escape routes span the whole tree (odeco), later gaps scale the same way if the dormant amplitudes
-entering each plateau stay $\propto\isc$ (exact for aligned initialization), so $\sep i\approx R_i\isc^{-(\Kc-2)}$ with
-seed-dependent $R_i$; in general a later gap scales as $\isc^{-(k-2)}$, $k$ the route degree (\cref{app:saddles}).
+entering each plateau stay $\propto\isc$ (exact for aligned initialization), so $\sep i\approx C_i\isc^{-(\Kc-2)}$ with
+seed-dependent $C_i$; in general a later gap scales as $\isc^{-(k-2)}$, $k$ the route degree (\cref{app:saddles}).
 The boundary is a seed distribution: median per-seed $\isc_c=0.27$--$0.31$ for binary $\Ns=4$, $d=\chi=3$, weights
-$(3,2,1)$, and $0.71$ for $\Ns=8$, $d=2$, $\chi=16$, weights $(3,2)$; as aligned initialization with per-core
-amplitude $\kappa_\Kc\isc$, $\kappa_3\approx0.22$ ($d=3$) and $\kappa_7\approx0.69$ ($d=2$).
-\conjecture: $\kappa_\Kc\to1$, so $\isc_c(\Kc)\to a_{0c}(\Kc)\to1$; the data (all at $d=2$ for large $\Kc$) do not distinguish
-this from $\kappa_\Kc\to d^{-1/2}$, i.e.\ $\isc_c\to\sqrt d$ (\cref{sec:regime-K}). For matrix-like pairs the transient
-overlap of a component not yet learned peaks at a value $\propto\isc^{2(1-\varrho)}$ (\conjecture, heuristic), hence
+$(3,2,1)$, and $0.71$ for $\Ns=8$, $d=2$, $\chi=16$, weights $(3,2)$ (plain model). These match aligned initialization
+with per-core amplitude $a_{0c}$ at $a_{0c}/\isc_c\approx0.22$ ($\Kc=3$, $d=3$) and $0.69$ ($\Kc=7$, $d=2$). That
+$a_{0c}(\Kc)\to1$ does not carry over to random initialization at large $\Kc$: in the plain model with spare
+channels (binary trees, $\chi=4$, weights $(3,2)$, $d=2$, $3$, $\Kc=8$--$15$) 85 of 96 seeds stay saddle-to-saddle
+up to the domain limit of the event rule or the end of the budget, with lower bounds $1.07$--$2.03$ on $\isc_c$, all
+above 1, and 11 cross at $\isc_c=0.86$--$1.37$ \empirical; the domain limit tends to about $1.15\sqrt d$. The plain
+model's cores shrink on the plateau (it unlearns $\Wz$), consistent with, but not shown to cause, the high
+boundary (\conjecture). In the centred model with full bonds $\isc_c$ rises from $0.16$ to $0.83$ over $\Kc=3$--$8$
+($d=2$), and its limit is open; \conjecture: $\isc_c\to\sqrt d$ (\cref{sec:regime-K}). For matrix-like pairs the transient
+overlap of a component not yet learned peaks at a value $\propto\isc^{2(1-w)}$ (\conjecture, heuristic), hence
 events are timed by their final rise. With $\chi$ equal to the teacher rank $\ncomp$ and $\Kc\ge5$, the last
 component needs a route through all $\Kc$ cores, which the child-heavy root bonds of fan-in
-initialization (\cref{app:conservation}) can kill before it escapes (\conjecture, heuristic). \empirical: it
-was not learned in 2 of 4 runs at $\Kc=5$ and 2 of 2 at $\Kc=7$ ($d=3$); balanced initialization removed these
-stalls at $\Kc=5$ (leaving long plateaus) but not at $\Kc=7$; spare channels ($\chi\ge2\ncomp$) avoided stalls in
-the runs made (one at $d=3$; 26 at $d=2$).
+initialization (\cref{app:conservation}) can kill before it escapes (\conjecture, heuristic; already at $\Kc=4$
+for some initializations, \cref{sec:s2s-failure}). \empirical: it was not learned in 2 of 4 runs at $\Kc=5$ and 2
+of 2 at $\Kc=7$ ($d=3$); balanced initialization removed these stalls at $\Kc=5$ (leaving long plateaus) but not
+at $\Kc=7$; spare channels removed the stalls only where no route end is capped (binary $\Ns=8$: 30 runs at
+$d=3$, $\chi=6$; 26 at $d=2$), not where end bonds are capped at $\ncomp$ or $\ncomp+1$ (MPS with $\Ns=8$ at $d=3$,
+$\chi=6$: 50 of 50 stall; \cref{sec:s2s-failure}).
 
 \paragraph{Large bond dimension.} \derived{} \newresult[the spectral condition is
 \citealp{yang2024spectral}; factor-wise rules for structured layers:
 \citealp{qiu2024compute,potapczynski2024searching}] The input of a core is always a product of vectors, so
 its signals are controlled by its injective norm, not by the spectral norm of its matricization. The
 spectral condition with the injective norm keeps the fan-in initialization of every non-root core,
-multiplies the root by $(\sum_\ell m_\ell)^{-1/2}$ ($m_\ell$: its child-leg dimensions) and sets $\lrm v\propto\bd v/\fanin v$
-(``$\mu$P-TTN''). At fixed $\xi$ ($\Ns=4$) this gives $\dTK\propto\chi^0$, against $\chi^{-3}$ (standard) and $\chi^{-1}$ (NTK
-parameterization; compare \citealp{guo2021neural}); the factor-wise rule makes the initial kernel of binary
-$\Ns=8$ vanish like $\chi^{-2}$ and slows the initial fit about linearly in $\chi$ \empirical.
+multiplies the root by the inverse square root of the sum of its child-leg dimensions and sets $\lrm v\propto\bd v/\fanin v$
+(``$\mu$P-TTN''). At fixed $\isc$ (fixed $\xi$ under the standard and NTK parameterizations; $\Ns=4$, centred,
+isotropic limit) this gives $\dTK\propto\chi^0$, against $\chi^{-3}$ (standard) and $\chi^{-1}$ (NTK
+parameterization; compare \citealp{guo2021neural}); the relative parameter change scales as $\chi^{-3/2}$,
+$\chi^{-1/2}$, $\chi^0$, the root as $\chi^{-1}$, $\chi^{-1}$, $\chi^{-1/2}$ (Frobenius; $\chi^0$ in spectral norm) and
+the bottom cores as $\chi^{-5/2}$, $\chi^{-1/2}$, $\chi^0$ under the standard, NTK and $\mu$P-TTN
+parameterizations. The factor-wise rule makes the initial kernel of binary $\Ns=8$ vanish like $\chi^{-2}$ and
+slows the initial fit about linearly in $\chi$ \empirical{} (theory checks, two seeds, $\chi=4$--$16$).
 
 \paragraph{Imbalance.} \derived{} (aligned mode) \newresult[compare two-layer linear networks:
 \citealp{kunin2024get}] With the root at scale $\lambda_{\rm root}\isc$ and the other cores at $\isc$ (fixed $\fsc$), the
