@@ -134,21 +134,24 @@
 \maketitle
 
 \begin{abstract}
-  % About 200 words. Status words (prove, derived, confirmed) follow the tags of Sections 3-6.
+  % About 230 words. Status words (prove, derived, confirmed) follow the tags of Sections 3-6.
   How do gradient methods train tree tensor networks? We study the model
-  $f(x)=\langle W,\phi_1(x_1)\otimes\cdots\otimes\phi_N(x_N)\rangle$, with $W$ contracted from $K$ cores on
+  $f(x)=\langle W,\phi_0(x_0)\otimes\cdots\otimes\phi_{N-1}(x_{N-1})\rangle$, with $W$ contracted from $K$ cores on
   a tree, trained on the exact population loss of a teacher. From small initialization (scale $\sigma$),
   gradient flow is saddle-to-saddle: plateaus sit at critical points of the problem with fixed bond ranks,
-  and each escape raises the bond ranks along a route, a set of cores that must move together. The first
-  plateau lasts $\propto\sigma^{-(K-2)}$, as in other homogeneous models, with a prefactor computed per
-  initialization. Later, the tree decides: the smallest route, of $k^*$ cores, gives no plateau
-  ($k^*=1$), a logarithmic one ($k^*=2$) or one $\propto\sigma^{-(k^*-2)}$ (derived; confirmed up to
-  $k^*=5$). We prove that $k^*$ is the saddle order under a spectral condition, which every
+  and each escape raises the bond ranks along a route, a connected set of cores that must move together;
+  on large trees a route often dies first, and the sequence ends early. The first plateau lasts
+  $\propto\sigma^{-(K-2)}$, as in other homogeneous models, with a prefactor computed per initialization.
+  Later, the tree decides: the smallest route, of $k^*$ cores, gives no plateau ($k^*=1$), a logarithmic
+  one ($k^*=2$) or one $\propto\sigma^{-(k^*-2)}$ (derived; confirmed up to $k^*=5$). At a saddle with one
+  learned component and a spare bond channel along the route, we prove that $k^*$ is the saddle order (the
+  power of the distance at which the loss first decreases) under a spectral condition, which every
   two-component teacher learned in weight order satisfies, and that the order can be lower from $k^*=5$
   on. With non-orthogonal teachers, the saddle after the first escape is strict on matrix product states,
-  not on binary trees. The learning order is a race set by the initialization unless competing components
-  differ on only two cores. Larger $\sigma$ leads through a rich regime to a lazy one, which needs every
-  bond at its cut dimension.
+  not on binary or hierarchical Tucker trees whose internal cores carry no site. The learning order is a
+  race set by the initialization unless competing components differ on only two cores. With the initial
+  function removed, larger $\sigma$ leads through a rich regime to a lazy one, which exists only when every
+  bond dimension reaches the rank of the matricization it cuts.
 \end{abstract}
 
 \tableofcontents
@@ -157,8 +160,10 @@
 Every claim carries a status tag: \proven{} (proof given or cited), \derived{} (derivation
 under stated assumptions), \empirical{} (supported by experiments only) or \conjecture{} (stated
 without sufficient derivation or evidence). Results we believe to be new are marked \newresult{},
-known results \knownresult{} with a reference; unmarked statements are definitions or standard
-background. Notation is defined in \cref{sec:setup} and collected in \texttt{macros.tex}.
+known results \knownresult{} with a reference; \cref{sec:intro-prior} discusses both. Unmarked
+statements are definitions or standard background. Sites are numbered from $0$, and a pattern is a
+digit string with site $0$ first ($0110$: basis vector $1$ at sites $1$ and $2$, basis vector $0$
+elsewhere). Notation is defined in \cref{sec:setup} and collected in \cref{tab:notation}.
 
 \input{sections/01_introduction}
 \input{sections/02_setup}
