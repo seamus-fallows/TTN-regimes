@@ -48,7 +48,8 @@ $X/finalize.sh /tmp/locality_results 8     # every table and figure, into a fres
   to `$LOCALITY_OUT/traj/*.npz`.
 - Portability: `LOCALITY_OUT` sets the raw-output directory (default `/root/outputs/locality`);
   `LOCALITY_EAGER=1` disables `torch.compile` (identical numbers; needed without a C++ compiler, e.g. on
-  Windows).
+  Windows). Run records store the remote trajectory path; `plot_trees.py` and `plot_bonds.py` fall back to
+  `$LOCALITY_OUT/traj/<file>` when it does not exist (local copy: `LOCALITY_OUT=data/locality`).
 - `finalize.sh` never writes into `results/` unless that directory is passed; tables are restricted to the runs
   of the committed configs (`--config`), so they are regenerable.
 - Case keys: `kind`, `n`, `S` (two-component teacher) or `name` + `patterns` + `weights`, `d`, `chi`, `start`

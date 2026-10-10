@@ -66,9 +66,11 @@ genuine tensor networks.
     edge (MPS4) and the root edge (binary8), teacher values dashed; effective bond rank
     (\cref{sec:setup-diagnostics}) of every edge, offset slightly per edge. Dashed verticals: events, at
     $3.6\cdot10^3$, $4.4\cdot10^4$, $5.6\cdot10^5$ (MPS4) and $1.3\cdot10^5$, $9.8\cdot10^5$, $6.8\cdot10^6$
-    (binary8), with widths below $2$ \empirical.
-    Takeaway: one component per event, in the order of the weights; every edge gains one singular value
-    at each event, all at the same time, and the next ones stay far below the teacher's in between.}
+    (binary8), with widths below $2$ \empirical. Edges are named by the sites on either side (sites numbered
+    from 1). Data: experiment \texttt{s2s\_core}, sweeps \texttt{main} and \texttt{large}
+    (\cref{tab:repro-figures}). Takeaway: one component per event, in the order of the weights; every edge
+    gains one singular value at each event, all at the same time, and the next ones stay far below the
+    teacher's in between.}
   \label{fig:s2s-runs}
 \end{figure}
 
@@ -194,9 +196,11 @@ detection on all five trees.
   \includegraphics{s2s/aligned.pdf}
   \caption{Aligned balanced initialization: overlaps from gradient flow on the full TTN (solid,
     Dormand--Prince, tolerances $10^{-10}$ and $10^{-14}$) and the exact mode solutions (dashed); separated
-    teacher $(3,2,1)$, $d=4$, $\chi=3$. Panel titles: largest deviation over time and components.
-    Takeaway: with aligned initialization every tree learns the components in the order of their
-    weights, at times $\propto1/\tw r$, as the decoupled modes of a deep linear network do.}
+    teacher $(3,2,1)$, $d=4$, $\chi=3$; one run per tree, with per-core amplitude $q_0=0.01$ (binary4), $0.07$
+    (MPS4), $0.29$ (binary8, HT4) and $0.34$ (MPS8). Panel titles: largest deviation over time and components.
+    Data: experiment \texttt{s2s\_core}, sweep \texttt{aligned} (\cref{tab:repro-figures}). Takeaway: with
+    aligned initialization every tree learns the components in the order of their weights, at times
+    $\propto1/\tw r$, as the decoupled modes of a deep linear network do.}
   \label{fig:s2s-aligned}
 \end{figure}
 
@@ -220,13 +224,14 @@ factors from $3$ to $3\cdot10^7$.
   \centering
   \includegraphics{s2s/first_escape.pdf}
   \caption{First escape against $\isc$: $\chi=3$, separated teacher, fan-in initialization, ten seeds (one
-    colour per seed). Top: $\tev1$ from gradient flow (dots) and each seed's prediction $\isc^{-(\Kc-2)}T(Z)$
-    (lines), with $T(Z)$ computed from that seed's initialization before training. Bottom: $\tev1$ over the
-    prediction \eqref{eq:s2s-first}, with the offset (solid) and without it (dotted); in the legend
-    $\hat\theta=Z$ and $c_\Kc$ is the offset. Takeaway: one number
-    per initialization, computed before training, predicts the first escape of every run, to within
-    $10^{-5}$ at the smallest $\isc$ in every panel; the deviations at large $\isc$ are the offset and, at
-    $\Kc=7,8$, a direction that has not converged.}
+    shade of blue per seed). Top: $\tev1$ from gradient flow (dots) and each seed's prediction
+    $\isc^{-(\Kc-2)}T(Z)$ (lines), with $T(Z)$ computed from that seed's initialization before training.
+    Bottom: $\tev1$ over the prediction \eqref{eq:s2s-first}, with the offset $\delta_\Kc\tw{r_1}^{-(2-2/\Kc)}$
+    (solid) and without it (dotted). Data: experiment \texttt{s2s\_core}, sweeps \texttt{first} and
+    \texttt{first\_k78} (\cref{tab:repro-figures}). Takeaway: one number per initialization, computed before
+    training, predicts the first escape of every run, to within $10^{-5}$ at the smallest $\isc$ in every
+    panel; the deviations at large $\isc$ are the offset and, at $\Kc=7,8$, a direction that has not
+    converged.}
   \label{fig:s2s-first}
 \end{figure}
 
@@ -307,13 +312,16 @@ $\Q e=0$ changes $T$ per seed by a factor $0.88$--$1.92$ (cell medians $0.99$--$
   \centering
   \includegraphics{s2s/prefactor.pdf}
   \caption{Prefactor $T=\lim_{\isc\to0}\isc^{\Kc-2}\tev1$ from the leading-order flow, medians over
-    initializations with 95\% bootstrap intervals. (a)~Against $\chi$: one component of weight $1$, $d=4$, 100
-    initializations per point; dashed: median Kumar--Haupt time $t_{\rm KH}$, same colours. (b)~Against $d$
-    at full bond $\chi=d^2$, binary4 and MPS4 (colours as in (a)), 200 initializations; dotted: $\pi/2$.
-    (c)~Against $\Kc$, 17 trees, $\chi=3$, $d=4$, weights $(3,2,1)$, 50 initializations; dotted: the
-    RMS-overlap heuristic $P_3$; dashed: $t_{\rm KH}$. Takeaway: weak $\chi$-dependence, none on $d$ at full
-    bond, $P_3$ follows the growth with $\Kc$, and $t_{\rm KH}$, which uses only the norm of the
-    initialization, is low by factors that grow with $d$, $\chi$ and $\Kc$.}
+    initializations with 95\% bootstrap intervals. Colour: tree family (MPS blue, binary orange, HT green);
+    marker in (a), (b): circles $\Ns=4$, squares $\Ns=8$. (a)~Against $\chi$: one component of weight $1$,
+    $d=4$, 100 initializations per point; dashed (open markers): median Kumar--Haupt time $t_{\rm KH}$.
+    (b)~Against $d$ at full bond $\chi=d^2$, binary4 and MPS4, 200 initializations; dotted: $\pi/2$; dashed:
+    $t_{\rm KH}$. (c)~Against $\Kc$, 17 trees (diamonds; binary, MPS and HT with $\Ns=3$--$16$), $\chi=3$, $d=4$,
+    weights $(3,2,1)$, 50 initializations; dotted: the RMS-overlap heuristic $P_3$; dashed: $t_{\rm KH}$. Data:
+    experiment \texttt{s2s\_core}, sweeps \texttt{lo\_chi}, \texttt{lo\_d}, \texttt{lo\_K}
+    (\cref{tab:repro-figures}). Takeaway: weak $\chi$-dependence, none on $d$ at full bond, $P_3$ follows the
+    growth with $\Kc$, and $t_{\rm KH}$, which uses only the norm of the initialization, is low by factors that
+    grow with $d$, $\chi$ and $\Kc$.}
   \label{fig:s2s-prefactor}
 \end{figure}
 
@@ -523,15 +531,16 @@ on chains (MPS, midroot6), $k=4$ on chains and star3, $k=7$ only on HT trees.
   \includegraphics[width=0.86\textwidth]{locality/twocomp_exponents.png}
   \caption{Plateau law after the first component: two-component pattern teachers, $d=\chi=2$,
     weights $(1,0.5)$, all rows of the main sweep. Left: per-seed exponent $p$ of
-    $\Delta t_2\propto\isc^{-p}$ (mean $\pm$ s.e.\ over seeds) against the prediction $k-2$, with
-    $k=\abs{\mathrm{St}(N(D))}$, for every row with $k\ge3$; filled circles: small initialization,
-    open squares: saddle start; colour: tree family; points are offset horizontally by family and
-    protocol. Right: slope of $\Delta t_2$ against $\ln(1/\isc)$ for the $k=2$ rows, against
-    $(1-\tw2/\tw1)/\lambda_2=1$ (small initialization) and $1/\lambda_2=2$ (saddle start). Dashed: equality.
-    The points at $k-2\ge4$ span $0.5$--$0.8$ decades of $\isc$ with $1$--$5$ fitted seeds and are not
-    measurements of the exponent (one-decade values in \cref{tab:locality-exponents}). Takeaway: up to
-    $k=5$ the exponent is set by the number of cores of the Steiner subtree, on every tree; for $k=2$
-    the head start halves the slope.}
+    $\Delta t_2\propto\isc^{-p}$ (mean $\pm$ s.e.\ over the fitted seeds, at most eight) against the prediction
+    $k-2$, with $k=\abs{\mathrm{St}(N(D))}$, for every row with $k\ge3$; filled circles: small initialization,
+    open squares: saddle start; colour: tree family (as in all figures: MPS blue, binary orange, HT green);
+    points are offset horizontally by family and protocol. Right: slope of $\Delta t_2$ against $\ln(1/\isc)$
+    for the $k=2$ rows, against $(1-\tw2/\tw1)/\lambda_2=1$ (small initialization) and $1/\lambda_2=2$ (saddle
+    start). Dashed: equality. The points at $k-2\ge4$ span $0.5$--$0.8$ decades of $\isc$ with $1$--$5$ fitted
+    seeds and are not measurements of the exponent (one-decade values in \cref{tab:locality-exponents}). Data:
+    experiment \texttt{locality}, sweep \texttt{twocomp} (\cref{tab:repro-figures}). Takeaway: up to $k=5$ the
+    exponent is set by the number of cores of the Steiner subtree, on every tree; for $k=2$ the head start
+    halves the slope.}
   \label{fig:locality-exponents}
 \end{figure}
 
@@ -582,7 +591,8 @@ with $k^*\ge3$ by \cref{prop:A-piggyback-graph}, were not tested.
     $\lambda_{\min}=-\lambda_2$ at every $\isc$: a strict saddle (the small-initialization curves drop
     at the largest $\isc$, where the plateau is too short to reach the saddle). For $k\ge3$,
     $\lambda_{\min}\to0$ as $\isc\to0$, roughly as $\isc^{k-2}$: higher-order saddles. Lines for
-    $k\ge6$ come from the short rows of \cref{fig:locality-exponents}. Takeaway: negative curvature
+    $k\ge6$ come from the short rows of \cref{fig:locality-exponents}. Data: as \cref{fig:locality-exponents},
+    with the Hessians of \texttt{hessians.csv} (\cref{tab:repro-figures}). Takeaway: negative curvature
     that survives $\isc\to0$ exists only for two-core routes.}
   \label{fig:locality-hessian}
 \end{figure}
@@ -631,11 +641,12 @@ for $k^*=3$, $92$--$100\%$ for $k^*=4$--$6$, $86$--$97\%$ for $k^*=2$).
     $0.6$, $0.35$), $d=\chi=2$, small fan-in initialization. Columns: MPS4 ($\Kc=4$), binary4
     ($\Kc=3$), HT4 ($\Kc=7$). Top: loss of one run (seed 0, $\isc$ in the panel title) against time
     since the first event (symmetric-log axis), with the plateau levels predicted by the route rule
-    (dashed, labelled with $k^*$ and the predicted law). Middle: effective bond rank of every edge
-    in that run (threshold $0.1$ times the smallest nonzero teacher singular value of the edge; edges
-    offset vertically by $0.05$). Bottom: duration of each predicted level against $1/\isc$, median
+    (dashed; labels: $k^*$ and the predicted law). Middle: effective bond rank of every edge in that run,
+    one colour per edge (threshold $0.1$ times the smallest nonzero teacher singular value of the edge;
+    edges offset vertically by $0.05$). Bottom: duration of each predicted level against $1/\isc$, median
     over 8 seeds with the range shaded; solid: detected plateaus, dotted: time spent within $2\%$ of a
-    level too short to be detected; dashed: slope $k^*-2$. Measured: MPS4 two short levels (the
+    level too short to be detected; dashed: slope $k^*-2$. Data: experiment \texttt{locality}, sweep
+    \texttt{multicomp} (\cref{tab:repro-figures}). Measured: MPS4 two short levels (the
     second logarithmic in $\isc$; for the first the fair comparison favours a power below $1$, so its
     law is undetermined); binary4 one $\isc^{-1}$ plateau ($p=1.02$), where the first escape already
     fits $\U1$, $\U2$ and part of $\U3$; HT4 $\isc^{-1}$ and $\isc^{-2}$ plateaus ($1.09$, $2.08$).
@@ -665,10 +676,12 @@ tests that they rise as one route, not the timing of the event.
   \caption{Bond spectra through the second event, two-component teachers, $d=\chi=2$, weights
     $(1,0.5)$. Second singular value $\bs e2$ of every edge, relative to $\tw2$, against the time since
     the first event (symmetric-log axis); coloured: the edges of the Steiner subtree
-    $\mathrm{St}(N(D))$ (legend: the sites below each edge), grey dashed: all other edges; dotted
+    $\mathrm{St}(N(D))$ (legend: the sites below each edge, numbered from 0), grey dashed: all other edges,
+    drawn on top (edges with equal values, such as the two root edges of a binary tree, coincide); dotted
     vertical line: the second event. Left: MPS8, $D=\{2,5\}$, $k=4$, small initialization; middle:
     binary8, $D=\{3,4\}$, $k=5$, small initialization; right: HT8, $D=\{1,2\}$, $k=5$, saddle start
-    (one run each, $\isc$ and seed in the panel titles). Before the event every edge sits at the
+    (one run each, $\isc$ and seed in the panel titles). Data: experiment \texttt{locality}, sweep
+    \texttt{twocomp}, saved trajectories (\cref{tab:repro-figures}). Before the event every edge sits at the
     initialization-noise level, Steiner edges included; at the event exactly the Steiner edges rise,
     together. Takeaway: the escape uses the cores of the Steiner subtree and no others.}
   \label{fig:locality-bonds}
@@ -973,12 +986,14 @@ on its odeco MPS8: fan-in gradient flow converged in none of 12 runs, with dead 
   \centering
   \includegraphics{s2s/dormant.pdf}
   \caption{Odeco runs that do not complete. Left: fractions of run classes, separated teacher, all $\isc$
-    ($\Kc=7,8$: $\isc=0.15$--$0.3$ at $\chi=3$, $0.07$--$0.3$ at $\chi=6$); trapped fractions at $\Kc=7,8$ are lower
-    bounds. Right: decay rate$/\isc^2$ of the route-end slices of the component never learned, MPS4, $\chi=3$,
-    one line per seed and teacher (upper four: separated, lower two: close), fitted from $1.5$ times the last
-    event (about $\pm4\%$ bias from the post-event transient) to a slice of $10^{-9}$, above the
-    floating-point floor. Takeaway: no trap at $\Kc=3$, fixed by the initialization at $\Kc=4$, frequent at
-    $\Kc=7,8$ unless every bond has spare channels.}
+    ($\Kc=7,8$: $\isc=0.15$--$0.3$ at $\chi=3$, $0.07$--$0.3$ at $\chi=6$), runs per row in the labels; trapped
+    fractions at $\Kc=7,8$ are lower bounds. Right: decay rate$/\isc^2$ of the route-end slices of the component
+    never learned (mean of the two ends), MPS4, $\chi=3$, one line per trapped seed and teacher (blue: four
+    seeds of the separated teacher, constant in $\isc$; orange: two seeds of the close teacher, not constant),
+    fitted from $1.5$ times the last event (about $\pm4\%$ bias from the post-event transient) to a slice of
+    $10^{-9}$, above the floating-point floor. Data: experiment \texttt{s2s\_core} (\cref{tab:repro-figures}).
+    Takeaway: no trap at $\Kc=3$, fixed by the initialization at $\Kc=4$, frequent at $\Kc=7,8$ unless every
+    bond has spare channels.}
   \label{fig:s2s-dormant}
 \end{figure}
 

@@ -32,9 +32,11 @@ from ttn import diagnostics as dg  # noqa: E402
 from ttn import plotting as tp  # noqa: E402
 
 HERE = Path(__file__).parent
-RUNS = [  # (run name, raw folder option, edge whose spectrum is shown: the middle / root edge)
-    ("mps4_chi3_w3-2-1_fanin_s0.01_seed0", "main", "{0,1} | {2,3}"),
-    ("binary8_chi6_w3-2-1_fanin_s0.1_seed0", "large", "{0–3} | {4–7}"),
+# (run name, raw folder option, edge whose spectrum is shown: the middle / root edge, as named by
+# tp.edge_label with sites counted from 0, and as printed with sites counted from 1 as in the report)
+RUNS = [
+    ("mps4_chi3_w3-2-1_fanin_s0.01_seed0", "main", "{0,1} | {2,3}", r"$\{1,2\}|\{3,4\}$"),
+    ("binary8_chi6_w3-2-1_fanin_s0.1_seed0", "large", "{0–3} | {4–7}", r"$\{1$–$4\}|\{5$–$8\}$"),
 ]
 TREE_NAMES = {"mps": "MPS", "binary": "binary", "ht": "HT"}
 
@@ -45,8 +47,8 @@ def load_run(raw: Path, name: str):
 
 
 def fig_runs(raws: dict[str, Path], out: Path):
-    fig, axes = plt.subplots(len(RUNS), 4, figsize=(tp.TEXT_WIDTH, 3.5), layout="constrained")
-    for i, (name, sweep, edge_name) in enumerate(RUNS):
+    fig, axes = plt.subplots(len(RUNS), 4, figsize=(tp.TEXT_WIDTH, 3.7), layout="constrained")
+    for i, (name, sweep, edge_name, edge_title) in enumerate(RUNS):
         row = axes[i]
         summ, d = load_run(raws[sweep], name)
         spec, _ = s2s.setup(
@@ -88,7 +90,7 @@ def fig_runs(raws: dict[str, Path], out: Path):
         tp.plot_bond_spectra(
             [ax], t, {edges[j]: sp[:, j, :]}, tree=spec.tree, teacher=w, legend=False
         )
-        ax.set_title(f"spectrum, edge {edge_name}", fontsize=8)
+        ax.set_title(f"spectrum, edge {edge_title}", fontsize=8)
         ax.set_ylabel("singular value")
 
         ax = row[3]
@@ -106,7 +108,13 @@ def fig_runs(raws: dict[str, Path], out: Path):
                 axx.axvline(x, color=tp.MUTED, lw=0.6, ls="--", zorder=0)
     # One legend for the figure: component r and singular-value index k share colour slot r = k.
     handles = [
-        plt.Line2D([], [], color=tp.PALETTE[k], lw=1.5, label=f"$a_{k + 1}$, $s^e_{k + 1}$ ($s_{k + 1}={x:g}$)")
+        plt.Line2D(
+            [],
+            [],
+            color=tp.PALETTE[k],
+            lw=1.5,
+            label=f"$a_{k + 1}$, $s^e_{k + 1}$ ($s_{k + 1}={x:g}$)",
+        )
         for k, x in enumerate((3, 2, 1))
     ]
     handles += [
@@ -114,7 +122,7 @@ def fig_runs(raws: dict[str, Path], out: Path):
         plt.Line2D([], [], color=tp.MUTED, lw=0.9, ls="--", label="teacher values / events"),
         plt.Line2D([], [], color=tp.MUTED, lw=0.7, ls=":", label="partial-fit levels $L_S$"),
     ]
-    fig.legend(handles=handles, loc="outside lower center", ncols=6, fontsize=6.5)
+    fig.legend(handles=handles, loc="outside lower center", ncols=3, fontsize=8)
     tp.savefig(fig, out / "report_runs")
 
 
@@ -129,12 +137,15 @@ def fig_prefactor(res: Path, out: Path):
     fig, axes = plt.subplots(
         1,
         3,
-        figsize=(tp.TEXT_WIDTH, 2.45),
+        figsize=(tp.TEXT_WIDTH, 2.9),
         layout="constrained",
         gridspec_kw={"width_ratios": [1.25, 0.75, 1.1]},
     )
-    trees = ["binary4", "mps4", "binary8", "ht4", "mps8"]
-    colors = dict(zip(trees, tp.palette(5)))
+    trees = ["binary4", "binary8", "mps4", "mps8", "ht4"]
+    # colour = tree family (MPS blue, binary orange, HT aqua, as in every report figure); marker = N
+    fam_col = dict(zip(["mps", "binary", "ht"], tp.palette(3)))
+    colors = {t: fam_col[t.rstrip("0123456789")] for t in trees}
+    marker = {t: "o" if t.endswith("4") else "s" for t in trees}
     names = {
         "binary4": "binary4 ($K=3$)",
         "mps4": "MPS4 ($K=4$)",
@@ -154,19 +165,26 @@ def fig_prefactor(res: Path, out: Path):
             g.T_median,
             yerr=[g.T_median - g.T_ci_lo, g.T_ci_hi - g.T_median],
             color=colors[tree],
-            marker="o",
-            ms=2.5,
+            marker=marker[tree],
+            ms=3,
             lw=1.1,
             capsize=1.2,
-            label=names[tree],
         )
-        ax.plot(g.chi, g.tKH_median, color=colors[tree], lw=0.8, ls="--")
+        ax.plot(
+            g.chi,
+            g.tKH_median,
+            color=colors[tree],
+            lw=0.8,
+            ls="--",
+            marker=marker[tree],
+            ms=2.5,
+            mfc="white",
+        )
     ax.set_xscale("log", base=2)
     ax.set_yscale("log")
     ax.set_xlabel(r"bond dimension $\chi$ ($d=4$, $s=1$)")
     ax.set_ylabel(r"$T=\lim_{\sigma\to0}\sigma^{K-2}t_1$")
     ax.set_title("(a)", loc="left", fontsize=8)
-    ax.legend(fontsize=5.5, loc="lower left", ncols=2)
 
     # (b) physical dimension at full bond chi = d^2, single component s = 1
     ax = axes[1]
@@ -180,14 +198,23 @@ def fig_prefactor(res: Path, out: Path):
             st[:, 0],
             yerr=[st[:, 0] - st[:, 1], st[:, 2] - st[:, 0]],
             color=colors[tree],
-            marker="o",
-            ms=2.5,
+            marker=marker[tree],
+            ms=3,
             lw=1.1,
             capsize=1.2,
         )
-        ax.plot(ds, [np.median(g[g.d == x].t_KH) for x in ds], color=colors[tree], lw=0.8, ls="--")
-    ax.axhline(np.pi / 2, color=colors["binary4"], lw=0.7, ls=":")
-    ax.text(2.05, np.pi / 2 * 1.08, r"$\pi/2$", fontsize=6.5, color=colors["binary4"])
+        ax.plot(
+            ds,
+            [np.median(g[g.d == x].t_KH) for x in ds],
+            color=colors[tree],
+            lw=0.8,
+            ls="--",
+            marker=marker[tree],
+            ms=2.5,
+            mfc="white",
+        )
+    ax.axhline(np.pi / 2, color=tp.INK, lw=0.7, ls=":")
+    ax.text(3.0, np.pi / 2 * 1.12, r"$\pi/2$", fontsize=8, color=tp.INK, ha="center")
     ax.set_yscale("log")
     ax.set_xticks([2, 3, 4])
     ax.set_xlabel(r"$d$ (full bond, $\chi=d^2$)")
@@ -197,7 +224,6 @@ def fig_prefactor(res: Path, out: Path):
     # (c) number of cores, chi = 3, d = 4, s = (3, 2, 1)
     ax = axes[2]
     kt = pd.read_csv(res / "lo_K_table.csv")
-    fam_col = {"binary": colors["binary4"], "mps": colors["mps4"], "ht": colors["ht4"]}
     for fam in ("binary", "mps", "ht"):
         g = kt[kt.family == fam].sort_values("K")
         ax.errorbar(
@@ -205,26 +231,37 @@ def fig_prefactor(res: Path, out: Path):
             g.T_median,
             yerr=[g.T_median - g.T_ci_lo, g.T_ci_hi - g.T_median],
             color=fam_col[fam],
-            marker="o",
-            ms=2.5,
+            marker="D",
+            ms=2.8,
             lw=1.1,
             capsize=1.2,
-            label=TREE_NAMES[fam],
         )
-        ax.plot(g.K, g.P3, color=fam_col[fam], lw=0.8, ls=":")
+        ax.plot(g.K, g.P3, color=fam_col[fam], lw=0.9, ls=":")
         ax.plot(g.K, g.tKH_median, color=fam_col[fam], lw=0.8, ls="--")
     ax.set_yscale("log")
     ax.set_xlabel(r"cores $K$ ($\chi=3$, $d=4$, $s=(3,2,1)$)")
     ax.set_ylabel("$T$")
     ax.set_title("(c)", loc="left", fontsize=8)
-    h, lab = ax.get_legend_handles_labels()
-    h += [
-        plt.Line2D([], [], color="k", lw=1.1, marker="o", ms=2.5),
-        plt.Line2D([], [], color="k", lw=0.8, ls="--"),
-        plt.Line2D([], [], color="k", lw=0.8, ls=":"),
+
+    # One legend below the panels: trees of (a), (b) (marker = N; in (c) diamonds, colour = family)
+    # and the line styles.
+    h = [
+        plt.Line2D([], [], color=colors[t], marker=marker[t], ms=3, lw=1.1, label=names[t])
+        for t in trees
     ]
-    lab += ["median $T$ (95% CI)", "median $t_{\\rm KH}$", "heuristic P3"]
-    ax.legend(h, lab, fontsize=5.5, loc="lower left", ncols=2)
+    h += [
+        plt.Line2D([], [], color=tp.INK, lw=1.1, label="median $T$ (95% CI)"),
+        plt.Line2D([], [], color=tp.INK, lw=0.8, ls="--", label=r"median $t_{\rm KH}$"),
+        plt.Line2D([], [], color=tp.INK, lw=0.9, ls=":", label=r"heuristic $P_3$"),
+    ]
+    fig.legend(
+        handles=h,
+        loc="outside lower center",
+        ncols=4,
+        fontsize=8,
+        columnspacing=1.2,
+        handlelength=1.8,
+    )
     tp.savefig(fig, out / "report_prefactor")
 
 

@@ -124,8 +124,8 @@ $\isc$, against $18$--$23$ at $\Kc=3$ (with another $d$ and teacher).
   \centering
   \includegraphics{regime_map/map.pdf}
   \caption{Map of regimes: gradient flow, centred model, fan-in initialization; regions in (a), majority labels
-    of six seeds in (b), (c) (pale: at most three runs agree). (a)~Binary $\Ns=4$, $d=3$, teacher $(3,2,1)$;
-    per-seed boundaries (dots) and geometric means. Blue: saddle-to-saddle boundary from the $\isc\times\chi$
+    of six seeds in (b), (c) (pale: at most three runs agree; binary16 has 2--5 runs in 7 of its cells). (a)~Binary $\Ns=4$, $d=3$, teacher $(3,2,1)$;
+    per-seed boundaries (dots, six seeds) and geometric means. Blue: saddle-to-saddle boundary from the $\isc\times\chi$
     sweep (filled, $\min_i\sep i=3$) and the $\chi$ sweep (open, label bracket); dashed: $0.30\,\chi^{-1/2}$ (a
     guide). Green: lazy boundary ($\dTK=0.1$; filled: tensor kernel, open: probe kernel), bracket of
     \cref{prop:A-lazy} (band) and its asymptote (dotted). Triangles: $\isc$ from which every seed stalls on the
@@ -136,10 +136,11 @@ $\isc$, against $18$--$23$ at $\Kc=3$ (with another $d$ and teacher).
     saddle-to-saddle runs, on the floor of the unrealizable target; plain grey: stalled below them, at a partial
     fit. (c)~Root at scale $\lambda\isc$, other cores at $\isc$, fixed $\fsc=\lambda\isc^3$, $\chi=24$; dashed:
     balance ($\E\Q e=0$ on the root bonds); dotted: fan-in default $\lambda=1$. (d)~$\dTK$ against $\lambda$ at
-    $\chi=16$, $\fsc=3.375$: medians and range; dashed: $\propto\lambda^2$; grey band: predicted saturation; vertical:
-    balance. Takeaway: on binary4 both boundaries scale like $\chi^{-1/2}$ and only full bonds give a lazy regime;
-    with more cores the saddle-to-saddle boundary rises and stalls invade its side; a light root makes training
-    lazy.}
+    $\chi=16$, $\fsc=3.375$: medians and range of six seeds; dashed: $\propto\lambda^2$; grey band: predicted
+    saturation; grey line: the lazy threshold $\dTK=0.1$; vertical: balance. Data: experiment \texttt{regime\_map}
+    (\cref{tab:repro-figures}). Takeaway: on binary4 both boundaries scale like $\chi^{-1/2}$ and only full bonds
+    give a lazy regime; with more cores the saddle-to-saddle boundary rises and stalls invade its side; a light
+    root makes training lazy.}
   \label{fig:regime-map}
 \end{figure}
 

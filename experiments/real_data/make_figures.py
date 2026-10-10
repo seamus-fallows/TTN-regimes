@@ -32,10 +32,21 @@ import numpy as np  # noqa: E402
 sys.path.insert(0, str(Path(__file__).parent))
 from analysis import load  # noqa: E402
 
-from ttn.plotting import MUTED, TEXT_WIDTH, ordinal_colors, palette, savefig, set_style  # noqa: E402
+from ttn.plotting import (  # noqa: E402
+    INK_SECONDARY,
+    MUTED,
+    TEXT_WIDTH,
+    ordinal_colors,
+    palette,
+    savefig,
+    set_style,
+)
 
-TREES = [("binary", "quadtree", "binary, quadtree"), ("binary", "scrambled", "binary, scrambled"),
-         ("mps", "snake", "MPS, snake")]
+TREES = [
+    ("binary", "quadtree", "binary, quadtree"),
+    ("binary", "scrambled", "binary, scrambled"),
+    ("mps", "snake", "MPS, snake"),
+]
 TREE_COLOR = dict(zip([t[2] for t in TREES], palette(3)))
 K_CORES = {"binary": 15, "mps": 16}
 
@@ -72,8 +83,9 @@ def fig_loss_curves(rows, runs_dir, out, feats, seed=0):
                 continue
             run = load(run_path(runs_dir, r))
             lg = run["p2"]
-            axes[0, j].semilogx(lg["t"], lg["loss"], color=colors[r["sigma"]], lw=1.0,
-                                label=f"{r['sigma']:g}")
+            axes[0, j].semilogx(
+                lg["t"], lg["loss"], color=colors[r["sigma"]], lw=1.0, label=f"{r['sigma']:g}"
+            )
             axes[1, j].plot(lg["t"], lg["loss"], color=colors[r["sigma"]], lw=1.0)
             lt = run["p2_log"]
             axes[1, j].plot(lt["t"], lt["test"][:, 0], color=colors[r["sigma"]], lw=0.8, ls="--")
@@ -85,8 +97,15 @@ def fig_loss_curves(rows, runs_dir, out, feats, seed=0):
     axes[1, 0].set_ylabel("train (solid) / test (dashed)")
     h, lab = axes[0, 2].get_legend_handles_labels()
     order = np.argsort([float(x) for x in lab])
-    axes[0, 2].legend([h[i] for i in order], [lab[i] for i in order], title=r"$\sigma$", fontsize=7,
-                      title_fontsize=7, frameon=False, ncol=2)
+    axes[0, 2].legend(
+        [h[i] for i in order],
+        [lab[i] for i in order],
+        title=r"$\sigma$",
+        fontsize=7,
+        title_fontsize=7,
+        frameon=False,
+        ncol=2,
+    )
     fig.tight_layout()
     savefig(fig, Path(out) / f"loss_curves_{feats}")
     plt.close(fig)
@@ -102,8 +121,15 @@ def fig_bond_spectra(rows, runs_dir, out, feats, sigma=0.1, seed=0):
     styles = ["-", "--", ":"]
     cmap = sequential_cmap()
     for j, (_, _, label) in enumerate(TREES):
-        cand = [r for r in rows if tree_key(r) == label and r["seed"] == seed and r["features"] == feats
-                and abs(r["sigma"] - sigma) < 1e-9 and r["ordering"] in ("quadtree", "snake", "scrambled0")]
+        cand = [
+            r
+            for r in rows
+            if tree_key(r) == label
+            and r["seed"] == seed
+            and r["features"] == feats
+            and abs(r["sigma"] - sigma) < 1e-9
+            and r["ordering"] in ("quadtree", "snake", "scrambled0")
+        ]
         if not cand:
             continue
         r = cand[0]
@@ -114,21 +140,41 @@ def fig_bond_spectra(rows, runs_dir, out, feats, sigma=0.1, seed=0):
         norm = Normalize(0.5, lv.max() + 0.5)
         for e in range(fs.shape[1]):
             for k in range(1, fs.shape[2]):
-                axes[j].loglog(p2["t"], fs[:, e, k] / fs[:, e, 0], color=cmap(0.25 + 0.75 * norm(lv[e])),
-                               ls=styles[k - 1], lw=0.7)
+                axes[j].loglog(
+                    p2["t"],
+                    fs[:, e, k] / fs[:, e, 0],
+                    color=cmap(0.25 + 0.75 * norm(lv[e])),
+                    ls=styles[k - 1],
+                    lw=0.7,
+                )
         axes[j].set_title(label, fontsize=9)
         axes[j].set_xlim(1, p2["t"][-1])
         axes[j].set_ylim(1e-5, 2)
         axes[j].axhline(0.05, color=MUTED, lw=0.6)
         axes[j].set_xlabel(r"$\tau$")
-        axes[j].text(0.03, 0.03, f"levels 1-{lv.max()}", transform=axes[j].transAxes, fontsize=6,
-                     color=MUTED)
+        axes[j].text(
+            0.03, 0.03, f"levels 1-{lv.max()}", transform=axes[j].transAxes, fontsize=6, color=MUTED
+        )
     axes[0].set_ylabel(r"$s_k^e/s_1^e$ (data-weighted)")
-    handles = [Line2D([], [], color="k", ls=s_, lw=0.8, label=f"$k = {k + 2}$") for k, s_ in enumerate(styles)]
-    fig.legend(handles=handles, fontsize=7, frameon=False, loc="upper center", ncol=3,
-               bbox_to_anchor=(0.5, 1.06))
-    fig.text(0.5, -0.03, r"colour: edge level, light = bottom edges, dark = next to the root; grey line: 0.05",
-             ha="center", fontsize=7)
+    handles = [
+        Line2D([], [], color="k", ls=s_, lw=0.8, label=f"$k = {k + 2}$")
+        for k, s_ in enumerate(styles)
+    ]
+    fig.legend(
+        handles=handles,
+        fontsize=7,
+        frameon=False,
+        loc="upper center",
+        ncol=3,
+        bbox_to_anchor=(0.5, 1.06),
+    )
+    fig.text(
+        0.5,
+        -0.03,
+        r"colour: edge level, light = bottom edges, dark = next to the root; grey line: 0.05",
+        ha="center",
+        fontsize=7,
+    )
     fig.tight_layout()
     savefig(fig, Path(out) / f"bond_spectra_{feats}_s{sigma:g}")
     plt.close(fig)
@@ -144,10 +190,22 @@ def fig_growth_order(rows, out, feats, sigma=0.1):
             ev = np.array(r["rank_events"], dtype=float)[:, 0]
             lv = np.array(r["edge_levels"])
             ok = np.isfinite(ev)
-            axes[j].scatter(lv[ok] + rng.uniform(-0.2, 0.2, ok.sum()), np.maximum(ev[ok], 0.3),
-                            s=6, color=TREE_COLOR[label], alpha=0.6, lw=0)
-            axes[j].scatter(lv[~ok] + rng.uniform(-0.2, 0.2, (~ok).sum()),
-                            np.full((~ok).sum(), 3e4), s=6, marker="x", color=MUTED, lw=0.6)
+            axes[j].scatter(
+                lv[ok] + rng.uniform(-0.2, 0.2, ok.sum()),
+                np.maximum(ev[ok], 0.3),
+                s=6,
+                color=TREE_COLOR[label],
+                alpha=0.6,
+                lw=0,
+            )
+            axes[j].scatter(
+                lv[~ok] + rng.uniform(-0.2, 0.2, (~ok).sum()),
+                np.full((~ok).sum(), 3e4),
+                s=6,
+                marker="x",
+                color=MUTED,
+                lw=0.6,
+            )
         axes[j].set_yscale("log")
         axes[j].set_title(label, fontsize=9)
         axes[j].set_xlabel("edge level (1 = bottom)")
@@ -166,6 +224,7 @@ def per_seed_fit(xs, ys):
 
 def _sigma_ticks(ax):
     from matplotlib.ticker import FixedLocator, NullLocator, ScalarFormatter
+
     ax.xaxis.set_major_locator(FixedLocator([0.05, 0.1, 0.2, 0.5]))
     ax.xaxis.set_minor_locator(NullLocator())
     ax.xaxis.set_major_formatter(ScalarFormatter())
@@ -200,17 +259,37 @@ def fig_scaling(rows, out, feats):
             axes[0].loglog(s_, t1, color=TREE_COLOR[label], lw=0.5, alpha=0.6)
             if len(s_) >= 3:
                 slopes.append(per_seed_fit(s_, t1))
-        stats[label] = (float(np.mean(slopes)), float(np.std(slopes) / np.sqrt(max(len(slopes), 1))), len(slopes))
-        axes[0].plot([], [], color=TREE_COLOR[label], label=f"{label}: {-stats[label][0]:.3f} ({stats[label][2]})")
+        stats[label] = (
+            float(np.mean(slopes)),
+            float(np.std(slopes) / np.sqrt(max(len(slopes), 1))),
+            len(slopes),
+        )
+        axes[0].plot(
+            [],
+            [],
+            color=TREE_COLOR[label],
+            label=f"{label}: {-stats[label][0]:.3f} ({stats[label][2]})",
+        )
     axes[0].set_xlabel(r"$\sigma$")
     axes[0].set_ylabel(r"$t_1$ (first escape)")
-    axes[0].legend(fontsize=5.5, frameon=False, title=r"exponent of $t_1 \propto \sigma^{-p}$", title_fontsize=6)
+    axes[0].legend(
+        fontsize=5.5,
+        frameon=False,
+        title=r"exponent of $t_1 \propto \sigma^{-p}$",
+        title_fontsize=6,
+    )
     # (b) classified first-route gap on binary trees
     for label in ("binary, quadtree", "binary, scrambled"):
         for pts in classified_first_route(rows, label).values():
             if len(pts) >= 4:
-                axes[1].loglog([p_[0] for p_ in pts], [p_[1] for p_ in pts], color=TREE_COLOR[label],
-                               lw=0.7, marker="o", ms=2)
+                axes[1].loglog(
+                    [p_[0] for p_ in pts],
+                    [p_[1] for p_ in pts],
+                    color=TREE_COLOR[label],
+                    lw=0.7,
+                    marker="o",
+                    ms=2,
+                )
         axes[1].plot([], [], color=TREE_COLOR[label], marker="o", ms=2, label=label)
     xs = np.array([0.05, 0.5])
     axes[1].plot(xs, 15 / xs, color=MUTED, lw=0.8, ls="--", label=r"$\propto\sigma^{-1}$ ($k=3$)")
@@ -226,8 +305,15 @@ def fig_scaling(rows, out, feats):
                 by_seed[r["seed"]].append((r["sigma"], t_e))
         for pts in by_seed.values():
             pts.sort()
-            axes[2].plot([np.log(1 / p_[0]) for p_ in pts], [p_[1] for p_ in pts],
-                         color=TREE_COLOR["MPS, snake"], lw=0.7, ls=ls, marker="o", ms=2)
+            axes[2].plot(
+                [np.log(1 / p_[0]) for p_ in pts],
+                [p_[1] for p_ in pts],
+                color=TREE_COLOR["MPS, snake"],
+                lw=0.7,
+                ls=ls,
+                marker="o",
+                ms=2,
+            )
         axes[2].plot([], [], color=TREE_COLOR["MPS, snake"], ls=ls, label=f"MPS edge {e}")
     axes[2].set_xlabel(r"$\ln(1/\sigma)$")
     axes[2].set_ylabel("time of first rank increase")
@@ -243,8 +329,11 @@ def fig_scaling(rows, out, feats):
 def fig_locality(rows, runs_dir, out, feats, sigma=0.1, t_max=1e4):
     fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.4 * TEXT_WIDTH), sharey=True)
     for label in [t[2] for t in TREES]:
-        sel = [r for r in rows if tree_key(r) == label and r["features"] == feats
-               and abs(r["sigma"] - sigma) < 1e-9]
+        sel = [
+            r
+            for r in rows
+            if tree_key(r) == label and r["features"] == feats and abs(r["sigma"] - sigma) < 1e-9
+        ]
         if not sel:
             continue
         runs = [load(run_path(runs_dir, r)) for r in sel]
@@ -429,6 +518,8 @@ def fig_regime(regime_json, out):
     fig.tight_layout()
     savefig(fig, Path(out) / "regime_sweep")
     plt.close(fig)
+
+
 ORDER_COLOR = dict(zip(["quadtree", "scrambled0", "scrambled1", "scrambled2"], palette(4)))
 
 
@@ -452,15 +543,16 @@ def fig_first_route_clean(fix1_json, out):
         axes[1].plot(xs, s["A"] + s["B"] * xs, color=col, lw=0.8)
     xs = np.array([0.05, 0.5])
     axes[0].plot(xs, 10 / xs, color=MUTED, lw=0.8, ls="--", label=r"$\propto\sigma^{-1}$")
-    axes[0].set_ylabel(r"gap drop 1 $-$ drop 0 ($\tau$)")
+    axes[0].set_ylabel(r"gap between loss drops 0 and 1 ($\tau$)")
     axes[1].set_ylabel(r"$\sigma\times$ gap")
-    axes[0].set_title(r"lines: $A/\sigma + B$ fits", fontsize=8)
+    axes[0].set_title(r"lines: fits $A/\sigma + B$", fontsize=8)
     axes[1].set_title(r"$A/\sigma+B$ is a line of slope $B<0$", fontsize=8)
     for ax in axes:
         ax.set_xlabel(r"$\sigma$")
     _sigma_ticks(axes[0])
-    axes[0].legend(fontsize=6, frameon=False)
-    fig.tight_layout()
+    # legend below the panels: inside, it would cover the series
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=5, fontsize=8)
+    fig.tight_layout(rect=(0, 0.1, 1, 1))
     savefig(fig, Path(out) / "first_route_gaps")
     plt.close(fig)
 
@@ -548,7 +640,11 @@ def fig_scaling_fix1(fix1_json, regime_json, out):
         fits = {e["edge"]: {f["seed"]: f for f in e["per_seed"]} for e in mr["edge_fits"]}
         for e, ls in ((4, "-"), (3, "--")):
             for seed in sorted({r["seed"] for r in mr["runs"]}):
-                rs = [r for r in mr["runs"] if r["seed"] == seed and r["rise"][e] is not None and r["rise"][e] > r["drop0"]]
+                rs = [
+                    r
+                    for r in mr["runs"]
+                    if r["seed"] == seed and r["rise"][e] is not None and r["rise"][e] > r["drop0"]
+                ]
                 x = np.log(1 / np.array([r["sigma"] for r in rs]))
                 y = np.array([r["rise"][e] - r["drop0"] for r in rs])
                 axes[1].plot(x, y, ls="", marker="o" if e == 4 else "^", ms=2.5, color=m_col)
@@ -585,6 +681,8 @@ def fig_scaling_fix1(fix1_json, regime_json, out):
     fig.tight_layout()
     savefig(fig, Path(out) / "scaling_fix1")
     plt.close(fig)
+
+
 def fig_order_test(order_json, out):
     """Pre-registered order test (order_test.json): per order, the final loss (left) and log10 of the time to
     L <= 0.25 (right, censored at the horizon) against the data-only predictor S; points = mean over seeds 0-2,
@@ -624,26 +722,59 @@ def fig_order_test(order_json, out):
                     zorder=3,
                 )
                 if g == "structured":
+                    # labels placed by hand in empty parts of the panel (orders with the same
+                    # pixel pairs share S and would overlap), with a leader line to the point
+                    lx, ly = ORDER_LABEL_POS[key].get(o, (v["S"] + 0.03, v[key]))
                     ax.annotate(
                         o,
                         (v["S"], v[key]),
-                        fontsize=5.5,
-                        xytext=(3, 2),
-                        textcoords="offset points",
-                        color=MUTED,
+                        xytext=(lx, ly),
+                        textcoords="data",
+                        fontsize=8,
+                        color=INK_SECONDARY,
+                        va="center",
+                        arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.5, shrinkA=1, shrinkB=2),
                     )
         r = res["primary"]["all"][key]
+        lo, hi = r["ci95"]
         ax.set_title(
-            f"all orders: Spearman {r['rho']:+.2f} [{r['ci95'][0]:+.2f}, {r['ci95'][1]:+.2f}]",
+            rf"all 27 orders: Spearman $\rho={r['rho']:.2f}$ $[{lo:.2f}, {hi:.2f}]$",
             fontsize=8,
         )
         ax.set_xlabel(r"predictor $S$ (share on $k\leq5$ routes, best rank-1 fit)")
+        ax.set_xlim(-0.05, 1.3)
+        ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
     axes[0].set_ylabel(r"train loss at $\tau=10^4$ (mean of 3 seeds)")
     axes[1].set_ylabel(r"$\log_{10}\tau(L\leq0.25)$ (mean; censored at 4)")
-    axes[0].legend(fontsize=6, frameon=False)
-    fig.tight_layout()
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=3, fontsize=8)
+    fig.tight_layout(rect=(0, 0.1, 1, 1))
     savefig(fig, Path(out) / "order_test")
     plt.close(fig)
+
+
+# Label positions (data coordinates) of the structured orders in fig_order_test, per outcome.
+ORDER_LABEL_POS = {
+    "O1": {
+        "quadtree": (1.03, 0.104),
+        "snake": (1.03, 0.119),
+        "rowmajor": (1.03, 0.134),
+        "colmajor": (0.40, 0.262),
+        "quadtreeT": (0.47, 0.105),
+        "hilbert": (0.065, 0.147),
+        "mortonrev": (0.53, 0.236),
+    },
+    "O2": {
+        "quadtree": (1.03, 2.25),
+        "rowmajor": (1.03, 1.88),
+        "snake": (1.03, 1.55),
+        "colmajor": (0.40, 2.55),
+        "quadtreeT": (0.40, 2.05),
+        "hilbert": (0.05, 1.30),
+        "mortonrev": (0.56, 2.95),
+    },
+}
+
+
 def json_figures(results_dir, out_dir):
     """Figures that need only committed JSON files (no raw trajectories)."""
     from analysis import ERR_MAX
@@ -659,8 +790,11 @@ def json_figures(results_dir, out_dir):
         fig_scaling_fix1(R / "fix1_analysis.json", R / "regime_analysis.json", out_dir)
     if (R / "order_test.json").exists():
         fig_order_test(R / "order_test.json", out_dir)
-def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None, hess_json=None,
-         regime_json=None):
+
+
+def main(
+    summary_json, runs_dir, out_dir, feats="raw", routes_json=None, hess_json=None, regime_json=None
+):
     set_style()
     rows = [r for r in json.load(open(summary_json)) if "error" not in r and not r.get("centred")]
     fig_loss_curves(rows, runs_dir, out_dir, feats)
