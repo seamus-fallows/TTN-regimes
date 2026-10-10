@@ -51,7 +51,8 @@ ARMS = {
         # finished after 20 min under full load; P <= 1152 keeps the exact Hessian affordable
         base=dict(model="centred", kind="binary", chi=10**6, cap=True, weights=WEIGHTS,
                   method="lsoda", direct_alpha=1e6, l_floor=1e-6, max_steps=30000),
-        cells=[(n, 2) for n in range(4, 10)] + [(n, 3) for n in range(4, 6)],
+        # (10, 2) and (6, 3) (P = 3264, 2349) added at 14:25 on cores left idle by arm P's slow walkers
+        cells=[(n, 2) for n in range(4, 11)] + [(n, 3) for n in range(4, 7)],
     ),
 }
 
