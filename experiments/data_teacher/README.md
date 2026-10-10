@@ -114,7 +114,7 @@ explicit list. `variant: white_mapped` (step 2) runs the absorbed white problem 
   saddle type by the sign of lambda_min (the library's relative label is kept as `type_lib`).
 - misaligned8_20: event at an intermediate level (s_2 >= 1.8e-4) that the f-rule misses.
 - Step 4(c): P11 counted as discriminating only where the root cut beats both bottom bonds of a half;
-  distinct runs only (`count_p11.py`); 5 teachers with the root cut strongest (`scan_cross_teachers.py`).
+  distinct runs only (`count_p11.py`); 5 teachers whose root s_2 exceeds every bottom bond by 5.5-13% (`scan_cross_teachers.py`).
 - Stars: departure rule a_q < 0.99 alongside a_q < 0.9; blended rank-1 point and its Hessian
   (`star_blended.py`); random-init runs classified by init direction.
 - Correlated inputs: increments by per-seed regression on log2(1/sigma) with the actual sigma.
@@ -160,5 +160,9 @@ covariance only reweights (race by Lambda s, landscape by sqrt(Lambda) s; extra 
 binary-4). Misalignment, overlapping CP components, cross-site correlations and generic TTN
 teachers turn the escape of MPS students from the rank-one saddle from sigma^-(K-2) into log(1/sigma),
 with slopes as predicted by theory_teachers.md (asymptotic fits: <= 0.4% from a saddle start, <= 1.3%
-from random init); binary and HT students keep sigma^-1 there. Plateaus are always critical points of the bond-rank-constrained
-loss (not HSVD truncations). Binary students learn bottom-up.
+from random init; this covers misalignment, CP overlap and TTN teachers; cross-site correlations follow
+theory_covariance.md: +0.2% at rho = 0.4, +2% at rho = 0.2, still falling); binary and HT students keep
+sigma^-1 there (for cross-site correlations only binary-4 was run). Rank-one plateaus converge to the
+bond-rank-1 critical point; they are distinguishable from every SVD-type truncation for 3 of 5 random
+MPS-4 teachers (102, 104, 105), and at higher ranks the two coincide for these teachers. Binary students
+learn bottom-up (P11 in 163/168 discriminating runs, N = 8, sigma = 0.3-0.5).

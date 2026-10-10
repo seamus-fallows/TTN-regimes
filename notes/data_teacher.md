@@ -19,8 +19,10 @@ changes the *law* of the later plateaus on MPS students: misaligned covariance, 
 components, cross-site correlations and random TTN teachers all do it. The rank-one
 saddle becomes a strict saddle, escaped in log(1/sigma) time with slope 1/gamma of the edge that grows
 (<= 0.4% from a saddle start, <= 1.3% from random init with the head start of R6), instead of the odeco
-sigma^-(K-2). Binary and HT students keep a higher-order saddle with sigma^-1 escape for the same
-teachers: there the escape needs a 3-core route through an internal core. These laws are measured for
+sigma^-(K-2). For cross-site correlations the MPS-4 escape is two-stage, with ln2 [(1 - kappa)/lambda_2 + 1/lambda'']
+per halving of sigma (theory_covariance.md 7.4). Binary and HT students keep a higher-order saddle with
+sigma^-1 escape for the same teachers (for cross-site correlations only binary-4 was run, never HT):
+there the escape needs a 3-core route through an internal core. These laws are measured for
 the escape from the rank-one saddle (N = 4, 8); later saddles at higher ranks were not timed. Plateaus sit at
 critical points of the bond-rank-constrained loss; for generic teachers these are blends, not
 partial sums of components. The first escape keeps its sigma^-(K-2) law throughout. *Empirical,
@@ -31,10 +33,10 @@ for the tested teachers and trees, N <= 8; derived in theory_teachers.md R9 / th
 | 1. Aligned anisotropic product covariance | H5; simplest non-white data | **Quantitative only.** Order and escape times follow Lambda_r s_r (order reversals in 78-98% of runs; P(first) as for (I, Lambda s) except binary T2 at sigma = 0.02, 0.800 vs 0.825). Plateau levels 1/2 sum Lambda_r s_r^2. First-escape exponent unchanged (-1.010, -1.999); t_1 ~ (Lambda s)^-1.000 within each teacher direction. Extra event on binary-4: a wrongly learned component is unlearned and replaced, only if the other has the larger Lambda s^2 (probability 0.33-0.94, rising as sigma decreases); never on MPS-4 | **Yes, with two substitutions**: race = whitened with weights Lambda s (paired runs agree to < 1%); landscape = absorbed white problem with sqrt(Lambda) s (swap Hessian = derived formula to 1e-15). Aligned init solved exactly (clock Lambda_r t) |
 | 2. Misaligned product covariance | non-commuting covariance (Atanasov 2022) | Saddles are rank-1 critical points of the Sigma-loss (blends). On binary-4 the escape first aligns with Sigma W*, then realigns. **MPS-4: the later plateau becomes logarithmic**: theta = 20 deg, A = 12.6 +- 0.1 (log wins 10/10, sigma over 3 decades); strict (plateau lambda_min -0.081, sigma-independent), vs sigma^-2.00 at theta = 0. Asymptotic slopes: theta = 20 deg, A = 12.14 +- 0.03; theta = 5 deg, 194.9 +- 1.2 (bound 193.2). Saddle-start, d = 2: A = 53.04 +- 0.06 vs 1/abs(lambda_min) = 52.94; N = 8, theta = 45: 57.49 vs 57.39; theta = 20 (re-timed at its intermediate saddle): 1980 vs 1975; binary / HT: eps^-1 | **Yes**: exact landscape map (Fact B) to a whitened non-orthogonal teacher, plus the strict-saddle rate 1/abs(lambda_min) (saddle start). The slope with random init is not predicted (preconditioned flow) |
 | 3. Cross-site correlated inputs (shared latent factor) | breaks the product structure; no whitening substitution | Binary-4: the first saddle picks up non-teacher pairing features (level 0.33 -> 0.10 L(0) at rho = 0.5); the later law stays sigma^-1 (p = 1.005-1.011). **MPS-4: the later plateau becomes logarithmic** with the predicted two-stage increments (per-seed regression, 3 smallest sigma, 4 seeds): 2.133 +- 0.003 per halving at rho = 0.4 (pred 2.128), 14.67 +- 0.06 at rho = 0.2 (pred 14.39, still falling); a replication of theory_covariance.md N14. Separation ratio grows only like ln(1/sigma) (2.6 -> 11 at rho = 0.4). Online SGD reproduces the exact population flow (binary-4, rho = 0.3) | **Yes** for the law and the increments (theory_covariance.md section 7); plateaus are critical points of the non-product loss |
-| 4a. Non-orthogonal CP components | generic teachers are not odeco | First plateau = rank-1 critical point (blend); rank-1 saddle count on MPS-4 drops 2 -> 1 at c* = 1/2. **MPS-4 later plateau logarithmic**: c = 0.2: A = 33.95 +- 0.18 (random init, d = 2; pred R6 34.14) / 34.40 +- 0.20 (d = 4); c = 0.45: 5.67 +- 0.06 / 5.686 +- 0.016 (pred 5.682); asymptotic per-seed slopes (sigma down to 3e-4); strict plateau lambda_min. c = 0.05: 595 +- 11 vs 570 (not yet asymptotic). c = 0: sigma^-2.00. Binary-4: sigma^-1 for every c | **Yes**, quantitatively (theory_teachers.md R6), within 1% for c >= 0.2 |
-| 4b. Random TTN teacher on the student's tree | HSVD truncations? order of bond growth | MPS students: later plateaus logarithmic (per seed over sigma 1e-3 ... 0.2: log law in 26/26 seeds; asymptotic slopes of seeds that keep one route within 0.3-1.6% of R6 for that edge); bond ranks grow one bond at a time; the predicted first edge wins as sigma -> 0 (6/6 at sigma = 1e-3). Rank-1 plateaus converge to the bond-rank-1 critical point (distance ~sigma^0.41-0.93 per teacher, 0.07-0.15 above the P1 heuristic for each), not to any SVD-type truncation (separated for 3 of 5 teachers at sigma = 1e-3; for the other 2 a TT-SVD truncation lies within 0.003 of the critical point). Binary / HT students on random TTN teachers: sigma^-1 (R2.1) | **Yes** (R1-R6, P1) |
-| 4c. Teacher on a different tree (N = 8) | locality: which bonds first | Binary-8 student, MPS-8 teacher: the root bipartition (the teacher's middle bond) grows only after a bottom bond on each half (P11) in 163/168 runs over the 7 teachers where this differs from a weight-order rule (sigma = 0.3, 0.4, 0.5; 56/56 at sigma = 0.3), including 117/120 for 5 teachers whose root cut carries the largest teacher Schmidt value of all cuts; 249/256 runs over all 12 teachers. Which bottom bond grows first is not a simple rule ("sibling pair first" in 30-98% depending on the teacher). MPS-8 student: first bond random at sigma = 0.45 (asymptotic rule out of reach) | **Yes for P11** (theory_teachers.md 5.2: the root needs a k >= 3 route); the naive "largest teacher Schmidt value first" fails |
-| R2. Same generic teacher on mps / binary / ht students (N = 4, 8) | the tree-shape contrast | Exact rank-1 saddle strict (by sign) on all 13 MPS students, no negative eigenvalue on all 26 binary / HT students. Escape from it (saddle start, eps over 6.7 decades on MPS, 3.7 on binary / HT; 5 seeds): log law on MPS in 65/65 seeds, asymptotic slope = 1/gamma of the realized edge to <= 0.4% for all 13 teachers (misaligned8_20 re-timed at an intermediate saddle the f = 0.05 rule misses); eps^-1 on binary / HT (asymptotic p = 0.9998-1.0036, 24 cases; log law never preferred). Random init on mps4 / binary4: same contrast, mps4 slopes = R6 within 1.3% (5 teachers), plateau lambda_min sigma-independent on mps4 and ~sigma on binary4. Scope: escape from the rank-one saddle | **Yes** (theory_teachers R9, theory_saddles R13), quantitatively |
+| 4a. Non-orthogonal CP components | generic teachers are not odeco | First plateau = rank-1 critical point (blend); rank-1 saddle count on MPS-4 drops 2 -> 1 at c* = 1/2. **MPS-4 later plateau logarithmic**: c = 0.2: A = 33.95 +- 0.18 (random init, d = 2; pred R6 34.14) / 34.40 +- 0.20 (d = 4); c = 0.45: 5.67 +- 0.06 / 5.686 +- 0.016 (pred 5.682); asymptotic per-seed slopes (sigma down to 3e-4); strict plateau lambda_min. c = 0.05: 595 +- 11 vs 570 (not yet asymptotic). c = 0: sigma^-2.00. Binary-4: sigma^-1 for c = 0.2 and 0.45 (random init and saddle start); no binary-4 sigma law at other c | **Yes**, quantitatively (theory_teachers.md R6), within 1% for c >= 0.2 |
+| 4b. Random TTN teacher on the student's tree | HSVD truncations? order of bond growth | MPS students: the escape from the rank-one saddle (the first rank increase) is logarithmic (per seed over sigma 1e-3 ... 0.2: log law in 26/26 seeds; asymptotic slopes of seeds that keep one route within 0.3-1.6% of R6 for that edge); bond ranks grow one bond at a time; the predicted first edge wins as sigma -> 0 (6/6 at sigma = 1e-3). Rank-1 plateaus converge to the bond-rank-1 critical point (distance ~sigma^0.41-0.93 per teacher, 0.07-0.15 above the P1 heuristic for each), not to any SVD-type truncation (separated for 3 of 5 teachers at sigma = 1e-3; for the other 2 a TT-SVD truncation lies within 0.003 of the critical point). Binary / HT students on random TTN teachers: sigma^-1 (R2.1) | **Yes** (R1-R6, P1) |
+| 4c. Teacher on a different tree (N = 8) | locality: which bonds first | Binary-8 student, MPS-8 teacher: the root bipartition (the teacher's middle bond) grows only after a bottom bond on each half (P11) in 163/168 runs over the 7 teachers where this differs from a weight-order rule (sigma = 0.3, 0.4, 0.5; 56/56 at sigma = 0.3), including 117/120 for the 5 new teachers whose root s_2 exceeds every bottom bond by 5.5-13%; 249/256 runs over all 12 teachers. Which bottom bond grows first is not a simple rule ("sibling pair first" in 30-48% per sigma for the r2_cross teachers, 90-98% for the new teachers; 8-100% per teacher). MPS-8 student: first bond random at sigma = 0.45 (asymptotic rule out of reach) | **Yes for P11** (theory_teachers.md 5.2: the root needs a k >= 3 route); the naive "largest teacher Schmidt value first" fails |
+| R2. Same generic teacher on mps / binary / ht students (N = 4, 8) | the tree-shape contrast | Exact rank-1 saddle strict (by sign) on all 13 MPS students, no negative eigenvalue on all 26 binary / HT students. Escape from it (saddle start, eps over 6.7 decades on MPS, 3.7 on binary / HT; 5 seeds): log law on MPS in 65/65 seeds, asymptotic slope = 1/gamma of the realized edge to <= 0.4% for all 13 teachers (misaligned8_20 re-timed at an intermediate saddle the f = 0.05 rule misses); eps^-1 on binary / HT (asymptotic p = 0.9998-1.0009 over eps <= 1e-3 in 23 cases; nonorth8_c0.45 on ht8, fitted out to eps = 2e-2: 1.0036; log law never preferred). Random init on mps4 / binary4: same contrast, mps4 slopes = R6 within 1.3% (5 teachers), plateau lambda_min sigma-independent on mps4 and ~sigma on binary4. Scope: escape from the rank-one saddle | **Yes** (theory_teachers R9, theory_saddles R13), quantitatively |
 | R2. Star teachers | three components sharing a piggyback node (theory_saddles P8) | Exact Hessian at "q learned": -0.3716 / -0.3310 / -0.4311 (mps4 / binary4 / ht4) = -a^(K-2)(rho(S) - s_q) to 1e-15 (replicates theory_saddles C11). Threshold rho(S) = s_q confirmed to 3e-4 (saddle start, eps = 1e-6; ht4 bracketed between w = 1.40 and 1.42). Escape from theta_q in log time with slope 1/abs(lambda_q) (<= 0.2%); near threshold on mps4 the event times two strict stages (theta_q -> blended rank-1 point -> on) and the slope is 1/abs(lambda_q) + 1/abs(lambda_b) (0.1-0.2%). On ht4 the blended point is higher-order: left only in ~1/eps time. Random init never sits at "q learned": depending on the init direction q is learned last, or a_q peaks at 0.55-0.99 and then decays steeply (no power law) before q is relearned; sub-critical stars keep q | **Yes** (Hessian, threshold, escape rates incl. the two-stage case); random-init behaviour empirical |
 
 ## 0. Notation and two structural facts used throughout
@@ -155,7 +157,8 @@ landscape AND same start, so only the gradient-flow metric differs). Files:
 3. **Covariance reverses the order** — *empirical*. T1: the 0.8 component (high variance) is learned
    first in 90-98% of binary-4 runs and 78% of MPS-4 runs (whitened (I, s) baseline: the 1.0 component
    is favoured). P(first) under (Sigma, s) equals P(first) under (I, Lambda s) in every setting
-   (identical seeds pick identical components).
+   (identical seeds pick identical components) [corrected in R2.0: except binary T2 at sigma = 0.02,
+   0.800 vs 0.825].
 4. **Landscape decides the swaps** (1.3) — *empirical confirmation of the derived criterion*. On binary-4
    a wrongly-learned first component is later *unlearned* and replaced (a strict-saddle rotation) iff
    the other component has the larger Lambda s^2 ("only if": necessity holds in all 24 binary settings,
@@ -190,8 +193,9 @@ landscape AND same start, so only the gradient-flow metric differs). Files:
    prefactor. Paired ratio t_1(Sigma, s) / t_1(I, Lambda s) = 0.994-0.9999 at every sigma (vs 0.65-0.70
    for t_1(Sigma, s) / t_1(I, s)). One-component teachers with Lambda s from 0.008 to 33 (3.6 decades):
    t_1 ~ (Lambda s)^p with p = -0.960 +- 0.007 (binary-4) and -1.009 +- 0.001 (MPS-4); prediction -1 at
-   leading order (the binary deviation is the O(1) saturation time, relatively larger at K = 3; the
-   paired (I, Lambda s) runs give the same -0.952 +- 0.007). The second-learning time follows the
+   leading order [corrected in R2.0: the pooled binary -0.960 is not the O(1) saturation time but a
+   prefactor jump between the e1 and e4 sub-series; within each the slope is -1.000; the paired
+   (I, Lambda s) runs give the same -0.952 +- 0.007]. The second-learning time follows the
    same exponents (binary -1.05 +- 0.01, MPS -2.002 +- 0.001).
 9. **Swap criterion checked on the exact saddle** (`e1_hessian_check.py`, `results/e1_hessian_check.csv`)
    — *empirical confirmation of the derived Hessian (1.3)*: at the exact critical point "component a
@@ -204,7 +208,8 @@ landscape AND same start, so only the gradient-flow metric differs). Files:
    d log(da/dt)/d log a of the first-learned component is the same for all four variants
    (binary 1.26-1.28, MPS 1.32-1.35 averaged over the window a in [1e-4, 1e-2]; up to 1.30 and 1.44 in
    the cleanest windows, vs 2 - 2/K = 1.33 and 1.5; limited by the output grid on the steep escape).
-   `results/e1_kexp.csv`.
+   `results/e1_kexp.csv`. [Superseded by the R2.0 / R2.4 row: with a window starting at 10 abs(a(0)) the
+   degree approaches 2 - 2/K as sigma falls but does not reach it.]
 
 **Step 1 verdict.** Aligned covariance changes the picture *quantitatively* only, and in a way the
 baseline theory predicts after two different substitutions: the *race* (which component escapes
@@ -267,6 +272,8 @@ Sigma-loss; "race" tensor = best bond-rank-1 approximation of Sigma W*). Results
    `e2_sigma_law.png`) — *empirical*: theta = 0: Dt_2 ~ sigma^-p with p = 1.98 +- 0.005 (prediction 2);
    theta = 20 deg: logarithmic, Dt_2 = A log(1/sigma) + B with A = 15.0 +- 0.4 (relative rms 1.6%,
    vs 7.5% for the best power law, p = 0.46); theta = 5 deg: crossover (A = 264 +- 15, rms 7%).
+   [Superseded by R2.0 / R2.4: asymptotic per-seed slopes over sigma 3e-4 ... 3e-3: theta = 20 deg
+   12.14 +- 0.03, theta = 5 deg 194.9 +- 1.2.]
    Misalignment changes the law of the later plateau, exactly as non-orthogonal components do (4a),
    which is Fact B at work. (The slope is not predicted here: theory_teachers.md R6 is for whitened
    flow, and the Sigma problem is the whitened one with preconditioned physical legs.)
@@ -300,7 +307,8 @@ plateaus are critical points of the rank-constrained M-loss; we compute them num
 binary-4 at sigma = 0.05, MPS-4 at sigma = 0.1, 20 seeds. Results `results/e3_correlated_plateaus.csv`,
 figure `results/e3_correlated_summary.png`; predictions `results/rank1_predictions_e3_correlated.csv`.
 
-1. **S2S survives** — *empirical*: every run has the plateau-escape-plateau structure and converges
+1. **S2S survives** [superseded by the R2.0 row: on MPS-4 the separation ratio grows only like
+   ln(1/sigma) and is below 3 at sigma = 0.05, rho = 0.4] — *empirical*: every run has the plateau-escape-plateau structure and converges
    (L < 1e-6 L(0)); the first-plateau level matches the predicted rank-1 critical value of the M-loss
    with median relative error <= 5e-4 (binary) and <= 5e-3 (MPS; the plateau gets short, see 3).
 2. **binary-4: the first saddle changes content and depth** — *empirical, explained*: the rank-1
@@ -373,7 +381,7 @@ predictions `rank1_predictions_e2_misaligned_e4a_nonorth.csv`.
 
 ### 4(a).2 Plateau law of the second escape — library integrator (LSODA, rtol 1e-9, atol 1e-14), dense grid
 
-**[Superseded by the per-seed re-analysis over 3 decades in R2.0 (A = 5.76 +- 0.04 at c = 0.45, 36.5 +- 0.8 at c = 0.2); the table below is the round-1 analysis, kept for the record.]**
+**[Superseded by the per-seed re-analysis over 3 decades in R2.0 / R2.4: asymptotic A = 5.686 +- 0.016 at c = 0.45, 34.40 +- 0.20 at c = 0.2; the table below is the round-1 analysis, kept for the record.]**
 
 `configs/e4a_sigma.yaml`, `run_dense.py`: MPS-4, s2 = 0.7, c in {0, 0.05, 0.2, 0.45}, sigma = 0.03 ... 0.3
 (6 values, one decade), 10 seeds; two-stage integration with a dense grid after the first escape.
@@ -402,6 +410,10 @@ and spread spectra (5 teacher seeds, `teacher_generator`), sigma = 0.02 ... 0.2 
 Results `results/e4b_ttn_plateaus.csv` (states vs HSVD vs critical points), `e4b_order.csv`,
 `e4b_order_fits.csv`, `e4b_theory.csv`, figure `e4b_law.png`.
 
+**[Items 1-3 are the round-1 analysis, superseded by R2.0 / R2.4: the slopes "3-25%", the median distances
+"0.042 / 0.005 / 0.004" (a composition artefact of which plateaus were detected at each sigma) and the
+first-edge percentages at sigma >= 0.02 are replaced by the sigma-extended per-seed analysis.]**
+
 1. **Visited saddles are rank-constrained critical points, not HSVD truncations** — *empirical,
    confirming theory_teachers.md R1-R3/P1*: at the rank-1 plateau (speed minimum), the state is closer
    to the local minimum of the rank-(1,1,1)-constrained loss than to the HSVD truncation in 19/20
@@ -420,9 +432,10 @@ Results `results/e4b_ttn_plateaus.csv` (states vs HSVD vs critical points), `e4b
 3. **Which bond first**: the predicted e* = argmax_e s2(M_e) (and, for these teachers, also the naive
    argmax_e s_2^e(W*)) is the first to grow in 93%, 67%, 100%, 43%, 97% of runs; the 43% case has two
    rates within 12% (0.143 vs 0.163).
-So, compared with the odeco baseline, a generic TTN teacher keeps S2S but makes **every plateau after
-the first a strict saddle with a log(1/sigma) duration** (MPS student), and the saddles are critical
-points of the bond-rank-constrained problem.
+So, compared with the odeco baseline, a generic TTN teacher keeps S2S, and **the first rank increase
+after the first escape (the escape from the rank-one saddle) is a strict saddle with a log(1/sigma)
+duration** on MPS-4; later plateaus were not timed against sigma. The visited saddles are critical
+points of the bond-rank-constrained problem. [Revised wording, R2.4 / verification E12.]
 
 ## 4(c). Teacher on a different tree — results
 
@@ -464,17 +477,17 @@ point vs sigma (`analyze_law_v2.py`).
 | round-1 claim | status now | evidence |
 |---|---|---|
 | Single-sigma plateau durations in steps 2, 3, 4a ("540 -> < 1", "137 -> 0.14", "137 -> 8.2 -> 2.2 -> 1.7") | **Withdrawn**: they were mostly one output-grid step or false events of the fixed s_2 > 1e-2 rule | replaced by dense sigma sweeps below (R2.1, R2.3, and the 4a / 2 re-analyses) |
-| 4a log law, "A = 31.9 +- 1.6 (pred 34.1) at c = 0.2, 4.7-5.6 (pred 5.68) at c = 0.45, within the statistical error" | **Corrected** (sigma extended to 3e-4: 9 values over 3 decades, 10 seeds; major-saddle runs only, per seed, f = 0.05). Asymptotic slopes, per seed through the 3 smallest sigma [fix round 2, R2.4]: c = 0.45: A = 5.686 +- 0.016 (pred 5.682); c = 0.2: 34.40 +- 0.20 (pred 34.14, +0.8%), minor saddle 25.6 (pred 25.7); c = 0.05: 595 +- 11 (pred 570, +4.4%: not yet asymptotic at sigma >= 3e-4); log law preferred in 9/9, 8/8, 8/8 seeds; c = 0: power law p = 2.000 (log wins 0/7). (Global fits over all sigma, which include pre-asymptotic points: 5.76 +- 0.04, 36.5 +- 0.8, 527 +- 50.) Plateau lambda_min sigma-independent for c > 0 (-0.0285 / -0.039 and -0.151 / -0.170 at the smallest / largest sigma; raw -0.0285 / -0.042, -0.151 / -0.195), -> 0 for c = 0: strict vs higher order by the sweep-level rule | `results/e4a_sigma_v2_summary.csv`, `e4a_sigma_v2_perseed.csv`, `e4a_sigma_v2.png` |
+| 4a log law, "A = 31.9 +- 1.6 (pred 34.1) at c = 0.2, 4.7-5.6 (pred 5.68) at c = 0.45, within the statistical error" | **Corrected** (sigma extended to 3e-4: 9 values over 3 decades, 10 seeds; major-saddle runs only, per seed, f = 0.05). Asymptotic slopes, per seed through the 3 smallest sigma [fix round 2, R2.4]: c = 0.45: A = 5.686 +- 0.016 (pred 5.682); c = 0.2: 34.40 +- 0.20 (pred 34.14, +0.8%), minor saddle 25.6 (pred 25.7); c = 0.05: 595 +- 11 (pred 570, +4.4%: not yet asymptotic at sigma >= 3e-4); log law preferred in 9/9, 8/8, 8/8 seeds; c = 0: power law p = 2.004 (7 seeds; log wins 0/7). (Global fits over all sigma, which include pre-asymptotic points: 5.76 +- 0.04, 36.5 +- 0.8, 527 +- 50.) Plateau lambda_min sigma-independent for c > 0 (-0.0285 / -0.039 and -0.151 / -0.170 at the smallest / largest sigma; raw -0.0285 / -0.042, -0.151 / -0.195), -> 0 for c = 0: strict vs higher order by the sweep-level rule | `results/e4a_sigma_v2_summary.csv`, `e4a_sigma_v2_perseed.csv`, `e4a_sigma_v2.png` |
 | Step 2 log law at theta = 20 | **Confirmed with per-seed errors** (sigma 3e-4 ... 0.3, 10 seeds; asymptotic slopes through the 3 smallest sigma [R2.4]): theta = 20: A = 12.14 +- 0.03 (1/abs(lambda_min) at the plateau: 12.31), log wins 10/10; theta = 5: A = 194.9 +- 1.2 (193.2), log wins 10/10; theta = 0: p = 2.000 +- 0.000 (global fits: 12.6 +- 0.1 and 251 +- 4, pre-asymptotic); plateau lambda_min -0.081 at theta = 20 (sigma-independent), -> 0 at theta = 0 | `results/e2_sigma_v2_summary.csv`, `e2_sigma_v2.png` |
 | "Binary-4 stays polynomial" (never measured) | **Now measured** (R2.1): sigma^-1 escape from the rank-one saddle on binary-4, binary-8, ht4, ht8 for 13 generic teachers (escape from the rank-one saddle only); binary-4 also under correlated inputs (R2.3) | `results/r2_saddle_fits.csv`, `r2_corr_fits.csv` |
 | "Later plateaus are strict saddles" (no Hessian computed) | **Now computed**: exact-saddle Hessians (R2.1: strict on MPS, non-strict on binary / HT) and plateau-point lambda_min vs sigma (4a, 2 re-analyses) | `results/r2_saddle_hessian.csv`, `*_v2_summary.csv` |
 | Correlated-input log law (a conjecture in round 1) | **Now measured** (R2.3; a replication of theory_covariance.md N14): MPS-4 increments per halving, per-seed regression over the 3 smallest sigma [R2.4]: 14.67 +- 0.06 (pred 14.39) at rho = 0.2 and 2.133 +- 0.003 (pred 2.128) at rho = 0.4; binary-4 stays sigma^-1 | `results/r2_corr_fits.csv` |
 | "S2S survives" correlated inputs (MPS-4 unresolved in 55-90% of runs at rho >= 0.2) | **Restated**: on a dense grid the separation ratio of MPS-4 grows like ln(1/sigma) (rho = 0.4: 2.6 at sigma = 0.05 -> 11.4 at 0.0016); binary-4 separates like 1/sigma (13-19 -> 135-185) | `results/r2_corr_runs.csv` |
-| 4b "critical points, not HSVD truncations" | **Narrowed, then strengthened with the sigma extension** (sigma 1e-3 ... 0.2, 6 seeds; 94 rank-1 plateaus): each plateau is compared with the bond-rank-1 critical point and with every SVD-type truncation (HSVD, TT-SVD in both sweep directions). The distance to the critical point falls with sigma (teacher 104: 0.0042 -> 0.0002 from sigma = 0.036 to 0.001); per seed it scales as sigma^alpha with alpha = 0.72, 0.83, 0.41, 0.93, 0.80 (teachers 101-105), against the P1 prediction min(alpha_r, alpha_a) = 0.64, 0.68, 0.34, 0.80, 0.72 computed for each teacher [R2.4]: 0.07-0.15 above it in every case, same ordering; the distance to the nearest truncation stays at the critical-point-to-truncation gap. At sigma = 1e-3 the plateau is 0.0002-0.0008 from the critical point against 0.0015-0.027 from the nearest truncation for teachers 102, 104, 105: clearly a critical point, not an SVD-type truncation. For 101 and 103 the nearest truncation lies within 0.0014 / 0.0032 of the critical point, which the plateau (0.0018 / 0.0072 at sigma = 1e-3) does not resolve | `results/e4b_ttn_plateaus.csv` |
+| 4b "critical points, not HSVD truncations" | **Narrowed, then strengthened with the sigma extension** (sigma 1e-3 ... 0.2, 6 seeds; 94 rank-1 plateaus): each plateau is compared with the bond-rank-1 critical point and with every SVD-type truncation (HSVD, TT-SVD in both sweep directions). The distance to the critical point falls with sigma (teacher 104: 0.0042 -> 0.0002 from sigma = 0.036 to 0.001); per seed it scales as sigma^alpha with alpha = 0.72, 0.83, 0.41, 0.93, 0.80 (teachers 101-105), against the P1 prediction min(alpha_r, alpha_a) = 0.64, 0.68, 0.34, 0.80, 0.72 computed for each teacher [R2.4]: 0.07-0.15 above it in every case (the ordering of 102 and 105 is swapped, within errors); the distance to the nearest truncation stays at the critical-point-to-truncation gap. At sigma = 1e-3 the plateau is 0.0002-0.0008 from the critical point (per-teacher medians; per run 0.0001-0.0025, below the nearest truncation in every run) against 0.0015-0.027 from the nearest truncation for teachers 102, 104, 105: clearly a critical point, not an SVD-type truncation. For 101 and 103 the nearest truncation lies within 0.0014 / 0.0032 of the critical point, which the plateau (0.0018 / 0.0072 at sigma = 1e-3) does not resolve | `results/e4b_ttn_plateaus.csv` |
 | 4b slopes "within 3-25% of A_e*" (residual SEs) | **Redone per seed** (f = 0.05, sigma 1e-3 ... 0.2, log law wins 26/26 seeds). Asymptotic slopes through the 3 smallest sigma, seeds whose first edge is the same at those sigma [R2.4]: A = 2.500 +- 0.007 (pred 2.488; 6 seeds), 3.024 +- 0.016 (3.010; 4), 0.854 +- 0.007 (0.868; 4), 5.188 +- 0.008 (5.175; 5), 3.679 +- 0.019 (3.657; 6): within 0.3-1.6%. (Global fits, which mix routes where the first edge switches with sigma: 2.541, 3.30, 0.866, 5.63, 3.717.) The first edge is the predicted e* = argmax s2(M_e) in 6/6 seeds at sigma = 1e-3 for both teachers (as sigma -> 0, as the race rule says); plateau lambda_min sigma-independent (strict) | `results/e4b_ttn_v2_summary.csv`, `e4b_ttn_v2_runs.csv`, `e4b_ttn_v2.png` |
 | 4c "first two increments always a sibling pair", "naive rule 0/24", "root last, confirming P11" | **Corrected with the f-rule and 5 new teachers** whose root cut is NOT the weakest (`configs/r2_cross.yaml`: root-cut teacher s_2 / weakest other cut = 1.9-7.3), at sigma = 0.3, 0.4, 0.5, 8 seeds each, library LSODA with fine rows: P11 (the root bipartition gets its second singular value only after a bottom bond on each half) holds in 117/120 runs (40/40 at sigma = 0.3 and at 0.4, 37/40 at 0.5; f = 0.05). [R2.4: only 2 of these 5 teachers (209, 212; 46/48 runs) discriminate P11 from a weight-order rule; with 5 further teachers whose root cut is the strongest cut, P11 holds in 117/120 runs; all discriminating runs: 163/168 over 7 teachers.] **"Sibling pair first" does not generalize**: 30% / 40% / 48% of runs at sigma = 0.3 / 0.4 / 0.5 (round-1 teachers: 19-20/24); the bonds of one sibling route cross their (different) f-thresholds at different times and another route's event often falls in between. Round-1 runs with the f-rule: sibling first 20/24, P11 8/8 for teacher 203 (the same runs as r2_cross at sigma = 0.4; not discriminating by the corrected flag) | `results/r2_cross_v2_summary.csv`, `e4c_cross_v2_summary.csv` |
 | Early alignment with Sigma W* then realignment | **Narrowed to binary-4** (MPS-4 only at theta = 45) | review M5 |
-| Escape degree "consistent with 2 - 2/K" (1.32 vs 1.5) | **Restated** [R2.4]: window starting at 10 abs(a(0)) per sigma: binary-4 1.23 / 1.28 / 1.32 at sigma = 0.1 / 0.05 / 0.02 (pred 1.333), MPS-4 1.38 / 1.43 / 1.465 at 0.2 / 0.1 / 0.05 (pred 1.5), same for all four variants: approaching the prediction as sigma falls but not reached (9-29 s.e. below at the smallest sigma) | `results/e1_kexp.csv` |
+| Escape degree "consistent with 2 - 2/K" (1.32 vs 1.5) | **Restated** [R2.4]: window starting at 10 abs(a(0)) per sigma: binary-4 1.23 / 1.28 / 1.32 at sigma = 0.1 / 0.05 / 0.02 (pred 1.333), MPS-4 1.38 / 1.43 / 1.465 at 0.2 / 0.1 / 0.05 (pred 1.5), same for all four variants: approaching the prediction as sigma falls but not reached (at the smallest sigma 7-9 s.e. below on binary-4 (sigma = 0.02) and 17-29 s.e. below on MPS-4 (sigma = 0.05)) | `results/e1_kexp.csv` |
 | Lambda-scaling slope -0.96 "saturation" | **Corrected explanation**: within each teacher direction the slope is -1.000 (1.0001-1.0016 per seed); the pooled -0.96 is a prefactor jump between the e1 and e4 sub-series | review L1, rechecked |
 | Swap "iff Lambda_b s_b^2 > Lambda_a s_a^2"; "0 of 30" | **Wording**: "only if" (necessity: 0 swaps after a landscape-correct first component in all 24 binary settings; sufficiency with probability 0.33-0.94); 0 of 27 | |
 | "P(first) identical under (Sigma, s) and (I, Lambda s) in every setting" | **Except** binary T2 at sigma = 0.02 (0.800 vs 0.825) | |
@@ -529,7 +542,7 @@ what matters here.
 | randbin_302 (4) | -0.0764; 5 | e0: 13.09 | 13.117 +- 0.011 (+0.18%) | 13.04 +- 0.11 | 1.0002 +- 0.0001 | 1.0001 +- 0.0002 |
 | randbin_303 (4) | -0.3598; 5 | e2: 2.78 | 2.786 +- 0.002 (+0.27%) | 2.79 +- 0.02 | 1.0001 +- 0.0001 | 1.0001 +- 0.0001 |
 | randmps_301 (4) | -0.3762; 5 | e1: 2.66 | 2.662 +- 0.001 (+0.15%) | 2.64 +- 0.02 | 1.0000 +- 0.0001 | 1.0002 +- 0.0001 |
-| nonorth8_c0.45 (8) | -0.0048; 17 | e1: 209.70, e2: 209.70, e4: 209.70, e5: 209.70 | 209.602 +- 0.047 (-0.05%) | 232.08 +- 2.74 | 1.0001 +- 0.0001 | 1.0036 +- 0.0006 |
+| nonorth8_c0.45 (8) | -0.0048; 17 | e1: 209.70, e2: 209.70, e4: 209.70, e5: 209.70 | 209.602 +- 0.047 (-0.05%) | 232.08 +- 2.74 | 1.0001 +- 0.0001 | 1.0036 +- 0.0006 (window up to eps = 2e-2) |
 | nonorth8_c0.7 (8) | -0.0574; 17 | e1: 17.41, e2: 17.41, e3: 17.41, e4: 17.41, e6: 17.41 | 17.450 +- 0.022 (+0.24%) | 17.50 +- 0.07 | 1.0001 +- 0.0001 | 0.9998 +- 0.0001 |
 | misaligned8_45 (8) | -0.0174; 17 | e0: 57.39, e6: 57.39 | 57.487 +- 0.027 (+0.16%) | 57.41 +- 0.26 | 1.0003 +- 0.0000 | 0.9999 +- 0.0001 |
 | misaligned8_20 (8) | -0.0005; 17 | e1: 1974.82, e2: 1974.82, e3: 1974.82, e4: 1974.82 | 1979.557 +- 1.781 (+0.24%) | 1986.70 +- 2.09 | 1.0714 +- 0.0042 | 1.0477 +- 0.0119 |
@@ -538,9 +551,10 @@ what matters here.
 | randmps8_303 (8) | -0.1642; 17 | e1: 6.18 | 6.202 +- 0.007 (+0.34%) | 6.34 +- 0.11 | 1.0003 +- 0.0001 | 0.9999 +- 0.0001 |
 
 misaligned8_20 is re-timed (fix round): its strict escape (growth rate as predicted) ends at an
-intermediate saddle with s_2 ~ 3.6e-4 on every bond (0.5% of the teacher value), below the f = 0.05
+intermediate saddle with s_2 = 3.7-3.9e-4 on every bond (about 0.6% of the teacher value), below the f = 0.05
 threshold, so the f-rule timed the next, slower escape (slope 24x the prediction in round 2). Event
-here: max_e s_2^e >= 1.8e-4, used where s_2(0) <= 1.8e-5 (MPS eps = 1e-6 ... 5e-3, including 15 new runs
+here: max_e s_2^e >= 1.8e-4, used where s_2(0) <= 1.8e-5 (MPS eps = 1e-6 ... 5e-3 valid, fitted over the 5
+smallest, eps = 1e-6 ... 2e-3, including 15 new runs
 at eps = 1e-6, 1e-5, 1e-4, `configs/r2_saddle_m20.yaml`; binary / HT eps = 1e-3 ... 2e-2). This is a
 failure mode of the f-rule: it misses an escape whose end point has s_2 below f s_2^*.
 
@@ -548,11 +562,13 @@ failure mode of the f-rule: it misses an escape whose end point has s_2 below f 
 rank-one saddle*: on MPS students the escape follows the log law with slope 1/gamma of the realized
 edge, to <= 0.4% for all 13 teachers (asymptotic fits); the log law is preferred over the power law
 in 65/65 seeds (60/60 for the 12 f-rule teachers, 5/5 for misaligned8_20 with the re-timed event); on binary and HT students it
-follows eps^-1, p = 0.9998-1.0036 for the 12 f-rule teachers (24 tree x teacher cases; the log law is
-never preferred: 0/5 in every case); misaligned8_20 on binary8 / ht8 gives p = 1.07 / 1.05 over
+follows eps^-1, p = 0.9998-1.0009 over eps <= 1e-3 in 23 of the 24 tree x teacher cases of the 12 f-rule
+teachers (nonorth8_c0.45 on ht8, whose small-eps runs were stopped, is fitted over each seed's 5 smallest
+available eps, up to 2e-2: 1.0036 +- 0.0006; 1.0009 +- 0.0002 from the 2 seeds with 3 points at
+eps <= 1e-3); the log law is never preferred: 0/5 in every case; misaligned8_20 on binary8 / ht8 gives p = 1.07 / 1.05 over
 eps = 1e-3 ... 2e-2 (1.03 / 1.02 over the 3 smallest eps), approaching 1 from above over a short range.
 The global fits over all eps deviate by up to +11% (nonorth8_c0.45: 232 vs 210; misaligned_20: 53.9 vs
-52.9) and give p = 1.003-1.013: these are pre-asymptotic large-eps points, not a crossover in the law
+52.9) and give p = 0.999-1.013: these are pre-asymptotic large-eps points, not a crossover in the law
 (the collapse figure is a slope-1 line below eps ~ 1e-3). Event-threshold sensitivity: asymptotic MPS
 slopes change by <= 0.4% between f = 0.03 and 0.1 (global fits: up to 1.8%).
 When a teacher has several edges with the same gamma (symmetric teachers), the realized edge varies
@@ -586,7 +602,8 @@ runs excluded from the global fits; asymptotic slope per seed through the 3 smal
 | randmps_301 | mps4 | major | 5 / 3; 23/45 | 1.401 +- 0.013 (1.39) | 1.38 +- 0.00 | - | -0.3757 / -0.3405 (-0.3758 / -0.3561) |
 
 *Verdict* — *empirical, confirming theory_teachers R6 / P4 / P9*: with random init the MPS-4 second
-escape follows the log law in every seed, with asymptotic slopes within 1.3% of R6 for all 5 teachers
+escape follows the log law in every seed with >= 4 resolved sigma (23 seeds; randbin_303 has 1 such seed,
+randmps_301 3), with asymptotic slopes within 1.3% of R6 for all 5 teachers
 with a prediction (c = 0.2: 33.95 vs 34.14; c = 0.45: 5.67 vs 5.68; randbin_302: 12.01 vs 12.01;
 randbin_303: 1.038 vs 1.051; randmps_301: 1.40 vs 1.39; the head start matters: randbin_303 without it
 would be 2.78). misaligned_20 (no R6 prediction under the metric): 52.46 +- 0.10, just below the bound
@@ -697,7 +714,9 @@ known; the tree-specific content is mps4 and ht4.
    *empirical; rewritten in the fix round*. Super-critical (w = 1.6) random-init runs **never sit at
    theta_q**: the time spent at the "q learned" loss level is <= 0.13 (one mps4 seed <= 1.7), against
    up to 538 at the "q forgotten" level. So random init does not test P8 forgetting of a learned component;
-   it shows what the flow does near q. What happens is fixed by the init direction (seed), at every sigma:
+   it shows what the flow does near q. The class (by peak a_q) is fixed by the init direction (seed), at
+   every sigma; the outcome is not (near-q mps4 seeds 3, 5 and 8 keep q, min a_q > 0.5, at sigma = 0.1, and
+   seed 6 at sigma >= 0.025):
    - *q last* (binary4 7/10 seeds, mps4 1/10): r and r' are learned first, then q, which is never lost;
    - *near q* (binary4 3/10, mps4 4/10): a_q peaks at 0.78-0.99 and then decays while r, r' are learned;
    - *blended* (mps4 5/10): a_q peaks at 0.55-0.68 (the flow passes near the blended rank-1 point, a strict
@@ -709,9 +728,10 @@ known; the tree-specific content is mps4 and ht4.
    and 7 a_q crosses zero at sigma <= 0.016 (min a_q < 0; the round-2 fit window dropped these points, and
    its "deepest 3e-11" was one of them). The time on the "q forgotten" plateau grows as sigma decreases
    (per-seed exponents 1.2-1.6 in the blended class, 2.4-3.7 near q, 1.3-2.3 on binary4); no single law.
-   Sub-critical (w = 1.2): q is never lost (min a_q >= 0.993) and the plateau at "q learned" lasts
+   Sub-critical (w = 1.2): q is never lost (min a_q >= 0.9918, mps4 at sigma = 0.1) and the plateau at "q learned" lasts
    ~ sigma^-1 (mps4: 16 -> 227 from sigma = 0.1 to 0.01; the add route of r has k = 3).
-   Float64 check: the smallest |a_q| while forgotten, 2.4e-12 (envelope), is above the floor
+   Float64 check: the smallest |a_q| while forgotten, 3.1e-12 (envelope), is above the floor (the
+   smallest dormant signal of these runs, 2.4e-12, is a_r' in a sub-critical w = 1.2 run)
    (`results/float_floor_check.csv`).
 
 ### R2.4 Fix round 2: response to the review of round 2 (notes/reviews/data_teacher_round2.md) — claims changed
@@ -721,20 +741,22 @@ fitted (asymptotic per-seed lines instead of global fits), several counts and la
 the star random-init runs, and the scope statements. New runs: 120 step-4(c) runs with 5 new teachers
 (`configs/r2_cross_b.yaml`), 15 misaligned8_20 saddle-start runs at eps = 1e-6 ... 1e-4
 (`configs/r2_saddle_m20.yaml`), 5 ht4 star runs (w = 1.42, eps = 1e-6). Sections R2.1-R2.3 and the summary
-table are updated in place; R2.0 rows carry the revised numbers.
+table are updated in place; R2.0 rows carry the revised numbers. The errata E1-E16 of the verification
+(notes/reviews/data_teacher_round3_verification.md, section 2) are applied in place, including markers on
+the superseded round-1 body text (sections 1.4, 2.1, 3.1, 4(a).2, 4(b)).
 
 | round-2 claim | status now | evidence |
 |---|---|---|
-| 4c: "P11 holds in 125/128 runs over 6 discriminating teachers" | **Corrected**. The flag "root cut not the weakest cut" was too loose: P11 differs from a weight-order rule only if the root cut's teacher s_2 exceeds both bottom bonds of at least one half; of the round-2 teachers only 209 and 212 qualify (46/48 runs); teacher 203 at sigma = 0.4 was counted in two sweeps. Distinct runs: 117/120 over 5 teachers (r2_cross), 249/256 over all 12 teachers. **New** (5 teachers whose root s_2 exceeds EVERY bottom bond by 5-13%, so a weight-order rule predicts the root bond first): P11 holds in 117/120 runs (40/40 at sigma = 0.3, 39/40 at 0.4, 38/40 at 0.5; the 3 exceptions grow the root bond after a bottom bond on one half only). All discriminating runs: **163/168 over 7 teachers**. "Sibling pair first" depends on the teacher: 30-48% (r2_cross teachers), 90-98% (new teachers) | `analyze_cross_v2.py`, `count_p11.py`, `results/p11_counts.csv`, `p11_totals.csv`, `r2_cross_b_v2_summary.csv` |
+| 4c: "P11 holds in 125/128 runs over 6 discriminating teachers" | **Corrected**. The flag "root cut not the weakest cut" was too loose: P11 differs from a weight-order rule only if the root cut's teacher s_2 exceeds both bottom bonds of at least one half; of the round-2 teachers only 209 and 212 qualify (46/48 runs); teacher 203 at sigma = 0.4 was counted in two sweeps. Distinct runs: 117/120 over 5 teachers (r2_cross), 249/256 over all 12 teachers. **New** (5 teachers whose root s_2 exceeds EVERY bottom bond by 5.5-13%, so a weight-order rule predicts the root bond first; 209 and 212 also have the strongest root cut, by only 0.3-0.5%, so the class "root above all bottoms" is all 7 discriminating teachers): P11 holds in 117/120 runs (40/40 at sigma = 0.3, 39/40 at 0.4, 38/40 at 0.5; the 3 exceptions grow the root bond after a bottom bond on one half only). All discriminating runs: **163/168 over 7 teachers**. "Sibling pair first" depends on the teacher: 30-48% per sigma (r2_cross teachers), 90-98% (new teachers); 8-100% per teacher | `analyze_cross_v2.py`, `count_p11.py`, `results/p11_counts.csv`, `p11_totals.csv`, `r2_cross_b_v2_summary.csv` |
 | Saddle start: "MPS slopes within 0.04-4% of 1/abs(lambda_min) for 11 teachers; nonorth8_c0.45 +11%, a slow crossover" | **Corrected (stronger)**: asymptotic per-seed slopes (eps <= 1e-4) agree with 1/gamma of the realized edge to <= 0.4% for all 13 teachers (nonorth8_c0.45: 209.60 +- 0.05 vs 209.70, -0.05%); the "+11% slow crossover" is withdrawn: it came from pre-asymptotic large-eps points in the global fit | R2.1, `results/r2_saddle_fits.csv` |
-| Binary / HT: "p = 0.999-1.013 in 26 cases" | **Corrected**: asymptotic p (eps <= 1e-3) = 0.9998-1.0036 in 24 cases (12 f-rule teachers x binary, HT); misaligned8_20 counted apart (re-timed: p = 1.07 / 1.05 over eps 1e-3 ... 2e-2, approaching 1) | R2.1 |
-| "misaligned8_20 is degenerate (no escape law)"; "log law in 65/65 seeds" | **Withdrawn / restated**: the teacher escapes at the predicted rate to an intermediate saddle (s_2 ~ 3.6e-4) below the f = 0.05 threshold, so the f-rule timed the next escape (slope 24x). Re-timed at s_2 = 1.8e-4: A = 1979.6 +- 1.8 vs 1974.8 (+0.24%) over eps = 1e-6 ... 5e-3. Tally: log law in 60/60 seeds over the 12 f-rule teachers, plus 5/5 for misaligned8_20 re-timed. The f-rule misses an escape whose end point has s_2 < f s_2^* | R2.1, `configs/r2_saddle_m20.yaml` |
+| Binary / HT: "p = 0.999-1.013 in 26 cases" | **Corrected**: asymptotic p (eps <= 1e-3) = 0.9998-1.0009 in 23 cases; nonorth8_c0.45 on ht8 (small-eps runs stopped, window up to eps = 2e-2): 1.0036 +- 0.0006 (24 cases = 12 f-rule teachers x binary, HT); misaligned8_20 counted apart (re-timed: p = 1.07 / 1.05 over eps 1e-3 ... 2e-2, approaching 1) | R2.1 |
+| "misaligned8_20 is degenerate (no escape law)"; "log law in 65/65 seeds" | **Withdrawn / restated**: the teacher escapes at the predicted rate to an intermediate saddle (s_2 = 3.7-3.9e-4) below the f = 0.05 threshold, so the f-rule timed the next escape (slope 24x). Re-timed at s_2 = 1.8e-4: A = 1979.6 +- 1.8 vs 1974.8 (+0.24%), fitted over eps = 1e-6 ... 2e-3 (the 5 smallest valid eps). Tally: log law in 60/60 seeds over the 12 f-rule teachers, plus 5/5 for misaligned8_20 re-timed. The f-rule misses an escape whose end point has s_2 < f s_2^* | R2.1, `configs/r2_saddle_m20.yaml` |
 | randbin8_303, randmps8_303 "+3.6%, +4.2%" | **Corrected**: compared with the wrong (fastest) edge; with the realized edge per seed: +0.08%, +0.34% | R2.1 |
 | Random init mps4 "slopes within 0.1-6% of R6 (c = 0.2: 36.3, +6%)"; "fits for randbin_303 / randmps_301 rest on 1-3 seeds" | **Corrected**: asymptotic slopes (3 smallest sigma) within 1.3% of R6 for all 5 teachers with a prediction (c = 0.2: 33.95 +- 0.18 vs 34.14), with 5 seeds each; misaligned_20: 52.46 +- 0.10, below the hard bound 52.94 (the global 58.85 exceeded it) | R2.1, `results/r2_random_v2_summary.csv` |
 | 4a "c = 0.2: 36.5 +- 0.8 (+7%)"; "c = 0.45: 5.76 +- 0.04 (+1.4%)" | **Corrected**: asymptotic 34.40 +- 0.20 (+0.8%) and 5.686 +- 0.016 (+0.07%); c = 0.05: 595 +- 11 vs 570 (+4.4%, not asymptotic at sigma >= 3e-4) | R2.0, `results/e4a_sigma_v2_summary.csv` |
 | Step 2 "theta = 5: A = 251 +- 4"; "theta = 20: 12.6 +- 0.1" | **Corrected**: asymptotic 194.9 +- 1.2 (1/abs(lambda_min) at the plateau, smallest sigma: 193.2) and 12.14 +- 0.03 (12.31) | R2.0, `results/e2_sigma_v2_summary.csv` |
 | 4b slopes "per seed by realized edge within 0.1-3%" | **Corrected**: seeds whose first edge switches between the fitted sigma mix routes; asymptotic slopes of single-edge seeds: 2.500 +- 0.007 (2.488), 3.024 +- 0.016 (3.010), 0.854 +- 0.007 (0.868), 5.188 +- 0.008 (5.175), 3.679 +- 0.019 (3.657): within 0.3-1.6% | R2.0, `results/e4b_ttn_v2_summary.csv`, `e4b_ttn_v2_perseed_local.csv` |
-| 4b "distance ~ sigma^0.85, the P1 exponent 0.8-0.9" (teacher 104 only, compared with another teacher's value) | **Corrected**: predicted alpha = min(alpha_r, alpha_a) computed for all 5 teachers (0.64, 0.68, 0.34, 0.80, 0.72; the code reproduces theory_teachers.md 7.6 for sym(0.5)); measured per seed 0.72 +- 0.01, 0.83 +- 0.02, 0.41 (1 seed), 0.93 +- 0.03, 0.80 +- 0.03: above the prediction by 0.07-0.15 for every teacher, same ordering. *Empirical*; P1 is a heuristic | `p1_exponents.py`, `results/e4b_p1_exponents.csv` |
+| 4b "distance ~ sigma^0.85, the P1 exponent 0.8-0.9" (teacher 104 only, compared with another teacher's value) | **Corrected**: predicted alpha = min(alpha_r, alpha_a) computed for all 5 teachers (0.64, 0.68, 0.34, 0.80, 0.72; the code reproduces theory_teachers.md 7.6 for sym(0.5)); measured per seed 0.72 +- 0.01, 0.83 +- 0.02, 0.41 (1 seed), 0.93 +- 0.03, 0.80 +- 0.03: above the prediction by 0.07-0.15 for every teacher. Measured order 103 < 101 < 105 < 102 < 104, predicted 103 < 101 < 102 < 105 < 104: 102 and 105 swap, within errors. *Empirical*; P1 is a heuristic | `p1_exponents.py`, `results/e4b_p1_exponents.csv` |
 | Stars: "super-critical random-init runs forget q down to min a_q ~ sigma^(5.7 +- 0.3)"; "relearning ~ sigma^-1.4" | **Withdrawn as stated**: these runs never sit at "q learned" (<= 0.13 time units there), so it is not P8 forgetting; two kinds of runs were pooled and the points where a_q crosses zero were dropped; the relearning exponent was in no CSV. Now: runs classified by init direction (q last / near q / blended); a_q decays steeply but not as a power law (local exponents drift; whole-range 2.4-6.7 per seed) | R2.2 item 5, `results/r2_star_random_classes.csv`, `r2_star_depth_exponents.csv` |
 | Stars: "escape from theta_q with slope 1/abs(lambda_min)" (w = 1.6 only); "near threshold not 1/abs(lambda_min)" | **Extended**: 1/abs(lambda_q) to <= 0.2% at w = 1.48, 1.6 on all trees and at every w on binary4; near threshold on mps4 (w = 1.42, 1.44) the event times two strict stages, and the slope equals 1/abs(lambda_q) + 1/abs(lambda_b) (blended point) to 0.1-0.2%; on ht4 the second stage is polynomial (eps^-1) | R2.2 item 3, `star_blended.py`, `results/r2_star_blended.csv` |
 | Stars: ht4 threshold at eps = 1e-6 without w = 1.42 | **Completed** with the departure rule a_q < 0.99 (identical outcomes to a_q < 0.9 wherever both fire): step between 1.40 and 1.42 | R2.2 item 2 |
@@ -743,6 +765,6 @@ table are updated in place; R2.0 rows carry the revised numbers.
 | "Binary and HT students keep sigma^-1"; "later plateaus on MPS become log-time" | **Narrowed**: measured for the escape from the rank-one saddle only (N = 4, 8; d = 2; random init N = 4 only; no HT run with correlated inputs); strict 2-core routes can appear on binary / HT at higher ranks (theory_saddles.md 5.6) | summary table, R2.1 |
 | r2_saddle_hessian.csv labels (non-strict / n_negative = 0 for weakly negative MPS-8 saddles; 2 for randbin_302 mps4) | **Fixed**: labels by sign; 5 / 17 / 17 negatives as stated; the library's relative label kept as `type_lib` | `results/r2_saddle_hessian.csv` |
 | Summary row 2 "55.5 +- 1.1"; "f-sensitivity < 1.5%" | **Fixed**: 53.04 +- 0.06 asymptotic (global 53.90 +- 0.41); f-sensitivity up to 1.8% for global fits, <= 0.4% asymptotic | summary table, R2.1 |
-| Escape degree "fixed" | **Restated**: approaching 2 - 2/K, not reached: 1.32-1.33 (binary4) and 1.465 (MPS4) at the smallest sigma vs 1.333 / 1.5, still 9-29 s.e. below and rising as sigma falls | R2.0, `results/e1_kexp.csv` |
+| Escape degree "fixed" | **Restated**: approaching 2 - 2/K, not reached: 1.32-1.33 (binary4) and 1.465 (MPS4) at the smallest sigma vs 1.333 / 1.5, still 7-9 s.e. below (binary4, sigma = 0.02) and 17-29 s.e. below (MPS4, sigma = 0.05), rising as sigma falls | R2.0, `results/e1_kexp.csv` |
 | Float-floor scan covers the claims | **Extended** to the star random-init runs (0 flags, smallest dormant signal 2.4e-12) and the correlated runs (0 flags, 6.7e-10); the star saddle-start runs start at eps >= 1e-6 (strict route seeded at ~eps, polynomial at ~eps^2 >= 1e-12) | `results/float_floor_check.csv` |
 | Reproducibility | randbin_302 / nonorth8_c0.7 per-run times depended on which gauge copy of the saddle a platform picks (1-ulp loss ties): the saddles used are now stored (`results/r2_saddle_cores.pt`; on this machine recomputation reproduces the committed t_esc to 2e-10). Spawn-safe runners: `t_cap`, `stop_s2`, `stop_aq` travel with each job; spawn pools. `r2_star.py hessian` uses 1 thread. `run_round2.sh` (PROCS, DATA_TEACHER_LOGS) replaces the machine-specific `r2_chain*.sh`; README run order includes the star threshold / completion runs | README |

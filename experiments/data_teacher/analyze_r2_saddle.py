@@ -5,7 +5,7 @@ r2_saddle_b.yaml, the eps extension r2_saddle_ext.yaml and the misaligned8_20 su
 r2_saddle_m20.yaml; all in <OUT_ROOT>/r2_saddle/).
 Escape event (notes/diagnostics.md): first time some edge has s_2^e >= f s_2^{e,*}, f = 0.05
 (sensitivity 0.03, 0.1), and at least 10x its starting value; the edge that fires is the realized edge.
-misaligned8_20 (fix round 2): its escape ends at an intermediate saddle with s_2 ~ 3.6e-4 on every bond,
+misaligned8_20 (fix round 2): its escape ends at an intermediate saddle with s_2 = 3.7-3.9e-4 on every bond,
 below f s_2^* (the f-rule then times the NEXT escape), so its event is max_e s_2^e >= S2_INT = 1.8e-4,
 used where s_2(0) <= S2_INT / 10.
 For every (teacher, tree), per seed (the same seed = the same noise direction at every eps):
