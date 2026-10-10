@@ -26,6 +26,7 @@
 % inputs on MPS-4 at every rho (separation only logarithmic).
 % Note: the verification quotes p = 0.9998-1.0009 for the 23 binary/HT cases; r2_saddle_fits.csv gives
 % 0.9998-1.0005 (means over seeds, f = 0.05), which is what is printed below.
+% final_review_round2.md applied: other-cov-1 (post-hoc order comparisons labelled descriptive), -6, -7, -10.
 \section{Input covariance and teacher structure}\label{sec:covariance-teacher}
 
 \Cref{sec:s2s,sec:other-regimes} use whitened inputs and orthogonally decomposable or pattern teachers.
@@ -35,9 +36,9 @@ whether the saddle-to-saddle picture changes, and whether the baseline theory pr
 a substitution. An aligned covariance only reweights the components (\cref{sec:cov-aligned}). Each of
 the four ways we tried of making the components non-orthogonal in the metric of the loss (overlapping CP
 components, a misaligned covariance, random TTN teachers, correlated sites) changes the law of the escape
-from the rank-one saddle ($\Ns=4$, $8$), and the tree decides how: strict and logarithmic on an MPS, of
-higher order on binary and HT trees, with escapes $\propto\varepsilon^{-1}$ from the saddle and, on binary4,
-$\propto\isc^{-1}$ from random initialization; correlated sites were not run on HT. This is the central result
+from the rank-one saddle ($\Ns=4$, $8$; correlated sites only at $\Ns=4$ and not on HT), and the tree decides
+how: strict and logarithmic on an MPS, of higher order on binary and HT trees, with escapes
+$\propto\varepsilon^{-1}$ from the saddle and, on binary4, $\propto\isc^{-1}$ from random initialization. This is the central result
 (\cref{sec:teacher-generic,sec:cov-misaligned}). Rank-one plateaus sit at critical points of the
 bond-rank-constrained loss, blends rather than partial sums of components (on binary4 and MPS4; under
 correlated inputs only on binary4, under misalignment up to $30^\circ$; \cref{sec:cov-misaligned,sec:teacher-ttn});
@@ -481,7 +482,7 @@ seeds (over series for the free gap exponent below).
 \begin{table}[t]
   \centering
   \caption{Input covariance and teacher structure: what changes, and what predicts it. ``Escape'': the
-    escape from the rank-one saddle.}
+    escape from the rank-one saddle (sources: \cref{tab:exp-data-teacher,tab:exp-real-data}).}
   \label{tab:cov-summary}
   \footnotesize
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}X
@@ -510,7 +511,8 @@ seeds (over series for the free gap exponent below).
       on HT4 & piggyback graph; rates within $0.21\%$ \\
     real data (MNIST) & as for a generic teacher: binary first route a sibling pair, gap $A/\isc+t_0$;
       MPS later routes logarithmic (6 of 9 edges); plateaus creep; the pixel order sets the final loss at
-      small $\isc$ (locality in the image neither necessary nor sufficient) & route counting with
+      small $\isc$ (locality in the image neither necessary nor sufficient; descriptive, not registered) &
+      route counting with
       $Y=\E[y\Feat]$ for $\Wt$; route couplings (first route; ranking of orders, pre-registered) \\
     \bottomrule
   \end{tabularx}
@@ -551,8 +553,8 @@ and the test is reported here as registered.
 \end{itemize}
 The pixel order thus sets how low a binary TTN ends at fixed training time, and a route-coupling share
 computed from the data before training predicts the ranking of the orders by that loss (Spearman
-correlation $-0.60$; $-0.55$ within random orders), but not by their early speed. Locality in the image is
-neither necessary nor sufficient: the three orders with horizontal pixel pairs (quadtree, snake, row-major;
+correlation $-0.60$; $-0.55$ within random orders), but not by their early speed. \emph{Descriptive, not
+registered} \empirical: locality in the image is neither necessary nor sufficient. The three orders with horizontal pixel pairs (quadtree, snake, row-major;
 $\mathcal S=0.989$) rank 1, 2 and 4 of 27 by O1, but the equally local orders with vertical or mixed pairs (quadtreeT,
 column-major, Hilbert) rank 13--21; the transposed quadtree ends at twice the loss of the quadtree ($0.189$
 against $0.097$; the quadtree's outcome, the lowest, and two of the three transposed-quadtree seeds were
@@ -576,7 +578,8 @@ strongly ($r_S=-0.83$ $[-0.91,-0.66]$; $-0.85$ $[-0.95,-0.60]$ within random ord
     time to $\Loss\le0.25$ (O2), censored at 4. Titles: Spearman correlation $r_S$ over the 27 orders, 95\%
     bootstrap intervals. Takeaway: $\mathcal S$ predicts the ranking of the orders by their final loss
     ($r_S=-0.60$), not by their early speed; orders with the same pixel pairs share $\mathcal S$, and local orders with
-    vertical or mixed pairs rank only 13--21 of 27 (source: \cref{tab:exp-real-data}).}
+    vertical or mixed pairs rank only 13--21 of 27, a descriptive comparison that was not registered (source:
+    \cref{tab:exp-real-data}).}
   \label{fig:real-order}
 \end{figure}
 
@@ -600,5 +603,5 @@ MNIST the same tree contrast appears with the label tensor $Y$ in place of $\Wt$
 of the pixel order is only ranked, by a data-only route-coupling share (pre-registered). The baseline
 theory predicts each change after a substitution, except the slope under a misaligned covariance from
 random initialization, which is only bounded, and, on MNIST, the creep of the plateaus and the power-law
-rises of MPS edges 0--2, which it does not explain.
+rises of MPS edges 1 and 2 (edge 0 mixed), which it does not explain.
 
