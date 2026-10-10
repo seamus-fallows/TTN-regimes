@@ -1,0 +1,14 @@
+# sigma x chi at K = 7 with full bonds: binary N = 8, d = 2 (cut dimensions 4 and 16), odeco teacher
+# [3, 2] (d = 2 allows two orthogonal components), centred model. chi = 2 (= teacher rank), 4, 8
+# (capped: bottom bonds 4), 16 (capped: every bond full, square cores), 'full2x' = bonds 8 / 32
+# (twice the cut dimension on every edge, recorded as chi = 32). Theory_regimes P15 (plain, chi = 16):
+# S2S fraction 0.83 / 0.58 / 0 at sigma = 0.5 / 0.7 / 0.9, sigma_c median 0.71.
+exp: sigma_chi_b8_d2
+base: {kind: binary, n: 8, d: 2, cap: true, model: centred, weights: [3.0, 2.0], l_floor: 1.0e-6, max_steps: 20000}
+grid: {seed: [0, 1, 2, 3, 4, 5]}
+variants:
+  - {chi: 2, method: auto, sigmas: {geomspace: [0.3, 10, 13]}}
+  - {chi: 4, method: auto, sigmas: {geomspace: [0.3, 10, 13]}}
+  - {chi: 8, method: auto, sigmas: {geomspace: [0.3, 10, 13]}}
+  - {chi: 16, method: auto, sigmas: {geomspace: [0.3, 10, 13]}}
+  - {chi: 32, cap: false, bonds: {2: 8, 4: 32}, method: dopri5, sigmas: {geomspace: [0.35, 10, 13]}}

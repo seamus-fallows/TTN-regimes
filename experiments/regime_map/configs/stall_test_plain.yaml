@@ -1,0 +1,11 @@
+# Is the chi = 3 stall caused by the centred model (W_0 in the target occupies bond capacity at
+# deficient bonds)? Same points with the plain model (target W*).
+exp: stall_test
+base: {kind: binary, n: 8, d: 3, cap: true, model: plain, method: auto, l_floor: 1.0e-6}
+grid:
+  seed: [0, 1, 2, 3, 4, 5]
+  sigma: [0.3, 0.45, 0.6]
+variants:
+  - {chi: 3}
+  - {chi: 3, balance: true}
+  - {kind: mps, chi: 3}

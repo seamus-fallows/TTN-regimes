@@ -1,0 +1,10 @@
+# sigma x K at d = 2, the large trees (MPS N = 10, 12; binary N = 16): same experiment as
+# `sigma_K_d2.yaml` (same exp, same results file), run in a separate, lower-priority pool with a
+# smaller step cap (1e4): most of these runs stall (dead routes or astronomically long plateaus).
+exp: sigma_K_d2
+base: {d: 2, cap: true, model: plain, weights: [3.0, 2.0], method: lsoda, l_floor: 1.0e-6, max_steps: 10000}
+grid: {seed: [0, 1, 2, 3, 4, 5], chi: [2, 4]}
+variants:
+  - {kind: mps, n: 10, sigmas: {geomspace: [0.16, 2, 12]}}
+  - {kind: mps, n: 12, sigmas: {geomspace: [0.22, 2, 11]}}
+  - {kind: binary, n: 16, sigmas: {geomspace: [0.29, 2, 11]}}

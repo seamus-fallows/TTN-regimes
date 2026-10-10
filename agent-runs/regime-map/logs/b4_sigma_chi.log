@@ -1,0 +1,252 @@
+b4_sigma_chi: 2736 runs to do (0 done)
+20/2736 done
+40/2736 done
+60/2736 done
+80/2736 done
+100/2736 done
+120/2736 done
+140/2736 done
+160/2736 done
+180/2736 done
+200/2736 done
+220/2736 done
+240/2736 done
+260/2736 done
+280/2736 done
+300/2736 done
+320/2736 done
+340/2736 done
+360/2736 done
+380/2736 done
+400/2736 done
+420/2736 done
+440/2736 done
+460/2736 done
+480/2736 done
+500/2736 done
+520/2736 done
+540/2736 done
+560/2736 done
+580/2736 done
+600/2736 done
+620/2736 done
+640/2736 done
+660/2736 done
+680/2736 done
+700/2736 done
+720/2736 done
+740/2736 done
+760/2736 done
+780/2736 done
+800/2736 done
+820/2736 done
+840/2736 done
+860/2736 done
+880/2736 done
+900/2736 done
+920/2736 done
+940/2736 done
+960/2736 done
+980/2736 done
+1000/2736 done
+1020/2736 done
+1040/2736 done
+1060/2736 done
+1080/2736 done
+1100/2736 done
+1120/2736 done
+1140/2736 done
+1160/2736 done
+1180/2736 done
+1200/2736 done
+1220/2736 done
+1240/2736 done
+1260/2736 done
+1280/2736 done
+1300/2736 done
+1320/2736 done
+1340/2736 done
+1360/2736 done
+1380/2736 done
+1400/2736 done
+1420/2736 done
+1440/2736 done
+1460/2736 done
+1480/2736 done
+1500/2736 done
+1520/2736 done
+1540/2736 done
+1560/2736 done
+1580/2736 done
+1600/2736 done
+1620/2736 done
+1640/2736 done
+1660/2736 done
+1680/2736 done
+1700/2736 done
+1720/2736 done
+1740/2736 done
+1760/2736 done
+1780/2736 done
+1800/2736 done
+1820/2736 done
+1840/2736 done
+1860/2736 done
+1880/2736 done
+1900/2736 done
+1920/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+1940/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+1960/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+1980/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2000/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2020/2736 done
+2040/2736 done
+2060/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2080/2736 done
+2100/2736 done
+2120/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2140/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2160/2736 done
+2180/2736 done
+2200/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2220/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2240/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2260/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2280/2736 done
+2300/2736 done
+2320/2736 done
+2340/2736 done
+2360/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2380/2736 done
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/linalg/_linalg.py:2767: RuntimeWarning: overflow encountered in dot
+  sqnorm = x.dot(x)
+2400/2736 done
+2420/2736 done
+2440/2736 done
+2460/2736 done

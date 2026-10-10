@@ -1,0 +1,10 @@
+# sigma x chi, binary N = 4 (K = 3), d = 3, odeco [3, 2, 1]; uncapped chi (chi = 9 is the cut
+# dimension; chi > 9 overparameterized bonds); centred (main), plain and two-copy models;
+# gradient flow dopri5 (rtol 1e-8, atol 1e-12) with linear-time event refinement.
+exp: sigma_chi_b4
+base: {kind: binary, n: 4, d: 3, cap: false, l_floor: 1.0e-6}
+sigmas: {geomspace: [0.01, 40, 19]}
+grid:
+  model: [centred, plain, twocopy]
+  chi: [3, 4, 6, 9, 12, 18, 24, 36]
+  seed: [0, 1, 2, 3, 4, 5]

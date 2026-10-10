@@ -1,0 +1,22 @@
+# sigma x K in the CENTRED model (the one-knob family of H4) at d = 2, odeco teacher [3, 2]:
+# chi = 4 = 2 x teacher rank for every tree (deficient bonds for K >= 6: the centred target is then
+# unrealizable and floored above sigma_floor ~ (1e-3 ||W*||^2)^(1/(2K)) -> 1, theory_regimes P4) and
+# full bonds where affordable (MPS 6: chi = 8; binary 8 and MPS 8: chi = 16). The plain-model sweep
+# (`sigma_K_d2.yaml`) is not a test of H4 at large sigma: there the run first collapses W_0 and then
+# learns saddle-to-saddle from the small residual scale.
+exp: sigma_K_centred_d2
+base: {d: 2, cap: true, model: centred, weights: [3.0, 2.0], method: lsoda, l_floor: 1.0e-6, max_steps: 20000}
+grid: {seed: [0, 1, 2, 3, 4, 5]}
+variants:
+  - {kind: binary, n: 4, chi: 4, sigmas: {geomspace: [0.02, 2, 14]}}
+  - {kind: mps, n: 4, chi: 4, sigmas: {geomspace: [0.02, 2, 14]}}
+  - {kind: mps, n: 5, chi: 4, sigmas: {geomspace: [0.025, 2, 14]}}
+  - {kind: mps, n: 6, chi: 4, sigmas: {geomspace: [0.05, 2, 13]}}
+  - {kind: mps, n: 6, chi: 8, sigmas: {geomspace: [0.05, 2, 13]}}
+  - {kind: binary, n: 8, chi: 4, sigmas: {geomspace: [0.07, 2, 13]}}
+  - {kind: binary, n: 8, chi: 16, sigmas: {geomspace: [0.07, 2, 13]}}
+  - {kind: mps, n: 8, chi: 4, sigmas: {geomspace: [0.1, 2, 12]}}
+  - {kind: mps, n: 8, chi: 16, sigmas: {geomspace: [0.1, 2, 12]}}
+  - {kind: mps, n: 10, chi: 4, max_steps: 10000, sigmas: {geomspace: [0.16, 2, 12]}}
+  - {kind: mps, n: 12, chi: 4, max_steps: 10000, sigmas: {geomspace: [0.22, 2, 11]}}
+  - {kind: binary, n: 16, chi: 4, max_steps: 10000, sigmas: {geomspace: [0.29, 2, 11]}}

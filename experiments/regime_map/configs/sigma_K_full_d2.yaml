@@ -1,0 +1,11 @@
+# sigma x K with every bond full (chi = cut dimension; no dead routes expected, theory_regimes P14):
+# d = 2, odeco teacher [3, 2], plain model, LSODA. K = 3..5 are already full at chi = 4 in
+# sigma_K_d2; here MPS N = 6 (chi = 8), binary N = 8 (16), MPS N = 8 (16). Larger trees (MPS 10:
+# cut 32, P = 2.7e3, LSODA Hessians too slow under load; MPS 12: 64; binary 16: 256) are not affordable.
+exp: sigma_K_full_d2
+base: {d: 2, cap: true, model: plain, weights: [3.0, 2.0], method: lsoda, l_floor: 1.0e-6, max_steps: 30000}
+grid: {seed: [0, 1, 2, 3, 4, 5]}
+variants:
+  - {kind: mps, n: 6, chi: 8, sigmas: {geomspace: [0.05, 2, 13]}}
+  - {kind: binary, n: 8, chi: 16, sigmas: {geomspace: [0.07, 2, 13]}}
+  - {kind: mps, n: 8, chi: 16, sigmas: {geomspace: [0.1, 2, 12]}}
