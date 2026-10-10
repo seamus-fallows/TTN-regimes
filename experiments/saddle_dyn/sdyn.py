@@ -367,7 +367,8 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
     res.y.append(y0.copy())
     g_old = [ev.g(0.0, y0) for ev in evs]
     # The ODE is autonomous: the solver runs on a local clock (absolute t = off + local t) that is
-    # re-zeroed when its step falls below 1e-7 of the local time, so that fast transitions at late
+    # re-zeroed when its step falls below 1e-11 of the local time (float64 spacing is 2e-16 t; a restart
+    # starts nonstiff, so it must not fire on plateau hiccups), so that fast transitions at late
     # absolute times (escapes at t ~ 1e13-1e20, where float64 spacing in t is O(0.01-1e4)) stay resolved.
     off, t_loc_old, n_restart = 0.0, 0.0, 0
     fails = []  # (absolute t, LSODA istate) of failed steps; each is retried from the last good step
@@ -420,7 +421,7 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
         if solver.status == "finished":
             res.status = "t_max"
             break
-        if t_loc > 0 and solver.step_size < 1e-7 * t_loc:
+        if t_loc > 0 and solver.step_size < 1e-11 * t_loc:
             off += t_loc
             t_loc_old = 0.0
             n_restart += 1
