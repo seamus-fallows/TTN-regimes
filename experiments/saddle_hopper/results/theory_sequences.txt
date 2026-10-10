@@ -1,0 +1,89 @@
+== B4 mps4  (wall 6.5 s)
+   candidate g=1.0000 n_unstable=0 gamma=0.000 overlaps=[1.0, 0.0, 0.0]
+   candidate g=0.6000 n_unstable=1 gamma=0.667 overlaps=[0.0, 0.0, 1.0]
+   candidate g=0.3000 n_unstable=3 gamma=7.000 overlaps=[0.0, 1.0, 0.0]
+   main [sigma^-2] L=0.225 +0 -> [log 2.33] L=0.18 +1 -> [sigma^-2] L=3.255e-28 +2  (converged)
+   rare [sigma^-2] L=0.545 +2 -> [rot 0.31] L=0.225 +0-2 -> [log 3.33] L=0.18 +1 -> [sigma^-2] L=8.383e-25 +2  (converged)
+   rare [sigma^-2] L=0.68 +1 -> [log 0] L=0.18 +0 -> [sigma^-2] L=1.078e-26 +2  (converged)
+== B4 binary4  (wall 6.6 s)
+   candidate g=1.0000 n_unstable=0 gamma=0.000 overlaps=[1.0, 0.0, 0.0]
+   candidate g=0.6000 n_unstable=1 gamma=0.667 overlaps=[0.0, 0.0, 1.0]
+   candidate g=0.3000 n_unstable=2 gamma=3.333 overlaps=[0.0, 1.0, 0.0]
+   main [sigma^-1] L=0.225 +0 -> [sigma^-1] L=0.045 +2 -> [sigma^-1] L=1.331e-25 +1  (converged)
+   rare [sigma^-1] L=0.225 +0 -> [sigma^-1] L=0.18 +1 -> [rot 0.201] L=0.045 +2-1 -> [sigma^-1] L=4.856e-25 +1  (converged)
+   rare [sigma^-1] L=0.545 +2 -> [rot 0.337] L=0.225 +0-2 -> [sigma^-1] L=0.045 +2 -> [sigma^-1] L=3.69e-25 +1  (converged)
+   rare [sigma^-1] L=0.545 +2 -> [rot 0.337] L=0.225 +0-2 -> [sigma^-1] L=0.18 +1 -> [rot 0.201] L=0.045 +2-1 -> [sigma^-1] L=6.771e-25 +1  (converged)
+   rare [sigma^-1] L=0.68 +1 -> [rot 0.469] L=0.225 +0-1 -> [sigma^-1] L=0.045 +2 -> [sigma^-1] L=2.238e-25 +1  (converged)
+   rare [sigma^-1] L=0.68 +1 -> [rot 0.469] L=0.225 +0-1 -> [sigma^-1] L=0.18 +1 -> [rot 0.201] L=0.045 +2-1 -> [sigma^-1] L=1.14e-25 +1  (converged)
+== B4 ht4  (wall 17.2 s)
+   candidate g=1.0000 n_unstable=0 gamma=0.000 overlaps=[1.0, 0.0, 0.0]
+   candidate g=0.6000 n_unstable=1 gamma=0.667 overlaps=[0.0, 0.0, 1.0]
+   candidate g=0.3000 n_unstable=1 gamma=2.333 overlaps=[0.0, 1.0, 0.0]
+   main [sigma^-5] L=0.225 +0 -> [sigma^-3] L=0.045 +2 -> [sigma^-3] L=4.169e-28 +1  (converged)
+   main [sigma^-5] L=0.225 +0 -> [sigma^-3] L=0.18 +1 -> [sigma^-3] L=1.936e-25 +2  (converged)
+   rare [sigma^-5] L=0.545 +2 -> [rot 0.278] L=0.225 +0-2 -> [sigma^-3] L=0.045 +2 -> [sigma^-3] L=4.701e-28 +1  (converged)
+   rare [sigma^-5] L=0.545 +2 -> [rot 0.278] L=0.225 +0-2 -> [sigma^-3] L=0.18 +1 -> [sigma^-3] L=3.568e-25 +2  (converged)
+   rare [sigma^-5] L=0.68 +1 -> [rot 0.296] L=0.225 +0-1 -> [sigma^-3] L=0.045 +2 -> [sigma^-3] L=8.189e-25 +1  (converged)
+   rare [sigma^-5] L=0.68 +1 -> [rot 0.296] L=0.225 +0-1 -> [sigma^-3] L=0.18 +1 -> [sigma^-3] L=8.662e-25 +2  (converged)
+== E8 mps8  (wall 18.7 s)
+   candidate g=1.0000 n_unstable=0 gamma=0.000 overlaps=[1.0, 0.0, 0.0]
+   candidate g=0.7000 n_unstable=1 gamma=0.429 overlaps=[0.0, 0.0, 1.0]
+   candidate g=0.4000 n_unstable=3 gamma=4.500 overlaps=[0.0, 1.0, 0.0]
+   main [sigma^-6] L=0.325 +0 -> [log 1.5] L=0.245 +1 -> [sigma^-4] L=1.496e-26 +2  (converged)
+   rare [sigma^-6] L=0.58 +2 -> [rot 0.23] L=0.325 +0-2 -> [log 2.5] L=0.245 +1 -> [sigma^-4] L=6.054e-25 +2  (converged)
+   rare [sigma^-6] L=0.745 +1 -> [log 0] L=0.245 +0 -> [sigma^-4] L=1.652e-26 +2  (converged)
+== E8 binary8  (wall 19.8 s)
+   candidate g=1.0000 n_unstable=0 gamma=0.000 overlaps=[1.0, 0.0, 0.0]
+   candidate g=0.7000 n_unstable=1 gamma=0.429 overlaps=[0.0, 0.0, 1.0]
+   candidate g=0.4000 n_unstable=1 gamma=1.500 overlaps=[0.0, 1.0, 0.0]
+   main [sigma^-5] L=0.325 +0 -> [sigma^-3] L=0.08 +2 -> [sigma^-3] L=4.128e-28 +1  (converged)
+   main [sigma^-5] L=0.325 +0 -> [sigma^-3] L=0.245 +1 -> [sigma^-3] L=1.927e-27 +2  (converged)
+   rare [sigma^-5] L=0.58 +2 -> [rot 0.233] L=0.325 +0-2 -> [sigma^-3] L=0.08 +2 -> [sigma^-3] L=6.908e-28 +1  (converged)
+   rare [sigma^-5] L=0.58 +2 -> [rot 0.233] L=0.325 +0-2 -> [sigma^-3] L=0.245 +1 -> [sigma^-3] L=4.672e-26 +2  (converged)
+   rare [sigma^-5] L=0.745 +1 -> [rot 0.312] L=0.325 +0-1 -> [sigma^-3] L=0.08 +2 -> [sigma^-3] L=4.994e-27 +1  (converged)
+   rare [sigma^-5] L=0.745 +1 -> [rot 0.312] L=0.325 +0-1 -> [sigma^-3] L=0.245 +1 -> [sigma^-3] L=1.111e-24 +2  (converged)
+== N4 mps4  (wall 9.6 s)
+   candidate g=1.0000 n_unstable=0 gamma=0.000 overlaps=[1.0, 0.0, 0.0]
+   candidate g=0.6000 n_unstable=2 gamma=1.333 overlaps=[0.0, 1.0, 0.0]
+   candidate g=0.4000 n_unstable=2 gamma=1.000 overlaps=[0.0, 0.0, 1.0]
+   main [sigma^-2] L=0.26 +0 -> [log 0.667] L=0.08 +1 -> [log 5.27] L=0.05689 -> [log 7.27] L=7.609e-28 +2  (converged)
+   rare [sigma^-2] L=0.58 +1 -> [log 0] L=0.08 +0 -> [log 1.76] L=0.05689 -> [log 7.27] L=7.262e-28 +2  (converged)
+   rare [sigma^-2] L=0.68 +2 -> [log 0] L=0.5 +1 -> [log 1.67] L=0.05689 +0-2 -> [log 7.27] L=8.462e-28 +2  (converged)
+== N4 binary4  (wall 4.5 s)
+   candidate g=1.1858 n_unstable=0 gamma=0.000 overlaps=[0.9642383463202427, 1.0880352356360743, 0.31430466066819407]
+   main [sigma^-1] L=0.05689 +0,1 -> [sigma^-1] L=2.513e-27 +2  (converged)
+== star mps4  (wall 10.4 s)
+   candidate g=2.0496 n_unstable=0 gamma=0.000 overlaps=[0.6732411762895012, 0.29454314628188843, 0.29454315679139514]
+   candidate g=2.0000 n_unstable=1 gamma=0.131 overlaps=[1.0, 0.0, 0.0]
+   candidate g=1.6000 n_unstable=1 gamma=0.601 overlaps=[0.0, 1.0, 0.0]
+   candidate g=1.6000 n_unstable=1 gamma=0.601 overlaps=[0.0, 0.0, 1.0]
+   main [sigma^-2] L=2.459 +0 -> [log 1.22] L=2 +1,2-0 -> [sigma^-1] L=2.007e-25 +0  (converged)
+   rare [sigma^-2] L=2.56 +0 -> [rot 0.372] L=2.459 -> [log 1.56] L=2 +1,2-0 -> [sigma^-1] L=2.012e-25 +0  (converged)
+   rare [sigma^-2] L=3.28 +1 -> [log 0] L=2 +2 -> [sigma^-1] L=4.643e-26 +0  (converged)
+   rare [sigma^-2] L=3.28 +2 -> [log 0] L=2 +1 -> [sigma^-1] L=4.69e-26 +0  (converged)
+== star binary4  (wall 0.7 s)
+   candidate g=2.2627 n_unstable=0 gamma=0.000 overlaps=[0.0, 0.9999999999999999, 0.9999999999999999]
+   candidate g=2.0000 n_unstable=1 gamma=0.131 overlaps=[1.0, 0.0, 0.0]
+   main [sigma^-1] L=2 +1,2 -> [sigma^-1] L=1.972e-31 +0  (converged)
+   rare [sigma^-1] L=2.56 +0 -> [rot 0.331] L=2 +1,2-0 -> [sigma^-1] L=1.711e-26 +0  (converged)
+== star control mps4  (wall 4.2 s)
+   candidate g=2.0000 n_unstable=0 gamma=0.000 overlaps=[1.0, 0.0, 0.0]
+   candidate g=1.2000 n_unstable=1 gamma=0.944 overlaps=[0.0, 1.0, 0.0]
+   candidate g=1.2000 n_unstable=1 gamma=0.944 overlaps=[0.0, 0.0, 1.0]
+   main [sigma^-2] L=1.44 +0 -> [sigma^-1] L=0.72 +1 -> [log 0.947] L=3.129e-27 +2  (converged)
+   rare [sigma^-2] L=2.72 +1 -> [log 0] L=2 +2 -> [rot 0.446] L=1.44 +0-1,2 -> [sigma^-1] L=0.72 +1 -> [log 0.947] L=5.88e-26 +2  (converged)
+   rare [sigma^-2] L=2.72 +2 -> [log 0] L=2 +1 -> [rot 0.446] L=1.44 +0-1,2 -> [sigma^-1] L=0.72 +1 -> [log 0.947] L=2.978e-27 +2  (converged)
+== star mps4 at q  (wall 0.7 s)
+   main [saddle] L=2.56 +0 -> [rot 0.372] L=2.459 -> [log 1.56] L=2 +1,2-0 -> [sigma^-1] L=2.012e-25 +0  (converged)
+== star ht4 at q  (wall 2.7 s)
+   main [saddle] L=2.56 +0 -> [rot 0.431] L=2.459 -> [sigma^-1] L=2 +1,2-0 -> [sigma^-2] L=7.356e-27 +0  (converged)
+== odeco wrong order binary4  (wall 0.2 s)
+   main [saddle] L=0.5 +1 -> [rot 0.397] L=0.125 +0-1 -> [sigma^-1] L=9.31e-27 +1  (converged)
+== odeco wrong order mps4  (wall 0.2 s)
+   main [saddle] L=0.5 +1 -> [sigma^-2] L=1.166e-29 +0  (converged)
+== mixed mps4  (wall 1.5 s)
+   candidate g=1.0167 n_unstable=0 gamma=0.000 overlaps=[0.9983465974152081, 0.06103350802686783]
+   main [sigma^-2] L=0.1758 +0 -> [log 6.82] L=0.1664 -> [log 5.36] L=0.1599 -> [log 2.29] L=1.152e-26 +1  (converged)
+== sym0.5 mps4  (wall 1.0 s)
+   candidate g=1.0499 n_unstable=0 gamma=0.000 overlaps=[0.9927853044488583, 0.18205912719700956]
+   main [sigma^-2] L=0.1663 +0 -> [log 5.85] L=1.459e-25 +1  (converged)

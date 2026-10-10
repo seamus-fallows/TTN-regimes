@@ -1,0 +1,6 @@
+tree,w,cls,runs,predicted,sigmas
+binary4,1.6,near q,18,gamma=0.131 / rare: P ~ sigma^0.131,0.005-0.05
+binary4,1.6,q last,42,gamma=0 / main,0.005-0.05
+mps4,1.6,blended,30,gamma=0 / main,0.01-0.1
+mps4,1.6,near q,24,gamma=0.131 / rare: P ~ sigma^0.131,0.01-0.1
+mps4,1.6,q last,6,gamma=0.601 / rare: P ~ sigma^0.601,0.01-0.1

@@ -1,0 +1,15 @@
+example,quantity,stated,hopper
+B4 mps4,q_A log slope (theory_saddles P10),2.333,2.3333333333333335
+B4 mps4,q_B degree,4,4
+B4 binary4,degrees,"3, 3","3, 3"
+B4 ht4,tie q_A / q_B (k = 5),random,random (tie: 2 routes with k=5)
+E8 mps8,q_A log slope (1 - 0.4)/0.4,1.5,1.4999999999999998
+E8 mps8,q_B coupling 0.7 x 1.088,0.7616,0.7614301141560379
+E8 binary8,q_A after q_B coupling 0.4 x 0.837,0.3348,0.3346474475237367
+N4 mps4,"levels 0.26, 0.08, 0.0569","0.26, 0.08, 0.0569","0.26, 0.08, 0.05689"
+N4 mps4,partial-step rate 0.4 x 0.474,0.1897,0.18973665961009978
+star mps4 at q,lambda_min = -a^(K-2)(rho - s_q),-0.371573,-0.37157287525381083
+star ht4 at q,lambda_min,-0.431073,-0.4310726116819722
+odeco wrong order binary4,piggyback lambda -(1-0.5) 0.5^(1/3),-0.39685,-0.39685026299204984
+mixed mps4,"edge order 0 -> 2 -> 1, slopes 6.823 / 12.178 / 14.467 (cumulative)","6.823, 12.178, 14.467","edge [0] 6.821, edge [2] 12.178, edge [1] 14.467"
+sym0.5 mps4,"rank-one plateau 0.16631, A = 5.853",5.853,5.853407335061326

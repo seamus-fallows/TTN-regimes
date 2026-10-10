@@ -1,0 +1,13 @@
+teacher,tree,sigma,runs,first_hopper,first_det,P_first_pred,swap_hopper_main,P_swap,rare_gamma
+T1_clean_reversal,binary,0.02,40,[1],True,0.975,[False],0.025,[0.6]
+T1_clean_reversal,binary,0.05,40,[1],True,0.925,[False],0.05,[0.6]
+T1_clean_reversal,binary,0.1,40,[1],True,0.9,[False],0.075,[0.6]
+T1_clean_reversal,mps,0.05,40,"[0, 1]",False,,[False],0.0,[]
+T1_clean_reversal,mps,0.1,40,"[0, 1]",False,,[False],0.0,[]
+T1_clean_reversal,mps,0.2,40,"[0, 1]",False,,[False],0.0,[]
+T2_race_vs_greedy,binary,0.02,40,[1],True,0.8,[True],0.75,[0.2]
+T2_race_vs_greedy,binary,0.05,40,[1],True,0.775,[True],0.525,[0.2]
+T2_race_vs_greedy,binary,0.1,40,[1],True,0.75,[True],0.25,[0.2]
+T2_race_vs_greedy,mps,0.05,40,"[0, 1]",False,,[False],0.0,[]
+T2_race_vs_greedy,mps,0.1,40,"[0, 1]",False,,[False],0.0,[]
+T2_race_vs_greedy,mps,0.2,40,"[0, 1]",False,,[False],0.0,[]
