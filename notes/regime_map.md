@@ -230,8 +230,8 @@ per-seed values (each (chi, seed) is an independent init), errors from the resid
   fixed factor ~21 in sigma (~10^4 in alpha = sigma^3). **Collapse test** of the candidate variables
   suggested in `notes/literature.md` (H4, correction 2): sigma^K (slope 0) and the per-path amplitude
   times the number of paths (sigma^K chi^(K-1) in iid normalization = sigma^3 chi / d^2 in fan-in
-  variables, slope -1/3) are rejected (the S2S slope differs from -1/3 by 4 standard errors, the lazy
-  slope by 12); the per-bond Gram scale (slope -1/2) is consistent with both boundaries.
+  variables, slope -1/3) are rejected (the S2S slope differs from -1/3 by 4.2 standard errors, the lazy
+  slope by 9.4, chi >= 32); the per-bond Gram scale (slope -1/2) is consistent with both boundaries.
   **Empirical** for binary N = 4 (a 3-factor matrix product) only; deeper trees untested at large chi.
 - Why the S2S boundary moves like the Gram scale is not derived here. A heuristic: the near-origin
   escape is set by the initial amplitude of the best rank-one direction of each core; the leaf cores'
