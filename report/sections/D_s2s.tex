@@ -113,13 +113,13 @@ $0.990$--$0.996$ (binary4, close: $2.6$--$3.8$ s.e.\ below $1$, as an unconverge
 $1.9999$--$2.0000$ (MPS4), $4.996$--$4.999$ (binary8, HT4) and $5.9995\pm0.0002$ (MPS8).
 
 \paragraph{Dependence of the prefactor on $d$, $\chi$ and $\Kc$} (\cref{fig:s2s-prefactor}).
-The leading-order flow gives $T=\lim_{\isc\to0}\isc^{\Kc-2}\tev1$ per initialization cheaply, so these were measured
+The leading-order flow gives $\mathcal{T}=\lim_{\isc\to0}\isc^{\Kc-2}\tev1$ per initialization cheaply, so these were measured
 on many initializations ($d=4$, one component of weight $1$, unless stated). \emph{Physical dimension}
 \empirical{} \newresult[the closed form]: at full bond $\chi=d^2$ (200 initializations per point) the binary4
 medians are $1.544$ $[1.468,1.594]$, $1.569$ $[1.525,1.615]$ and $1.563$ $[1.525,1.587]$ (95\% bootstrap intervals)
 for $d=2,3,4$, independent of $d$ and equal to $\pi/2$, the full-bond value of the closed form of
 \cref{prop:A-product-mode} (\derived{} given end directions that do not rotate), while $t_{\rm KH}$ falls by a factor
-$1.9$; $\mathrm{sd}\ln T=0.218\pm0.010$, $0.157\pm0.009$, $0.135\pm0.006$ against the closed form's
+$1.9$; $\mathrm{sd}\ln\mathcal{T}=0.218\pm0.010$, $0.157\pm0.009$, $0.135\pm0.006$ against the closed form's
 $1/(2\sqrt\chi)=0.250$, $0.167$, $0.125$ ($\pm0.02$). MPS4 gives $1.39$ $[1.27,1.58]$, $1.41$ $[1.30,1.52]$ and $1.50$
 $[1.43,1.60]$ (another set of initializations: $1.30$, $1.35$, $1.46$) while $t_{\rm KH}$ falls by $2.9$.
 \emph{Bond dimension} \empirical{} \newresult: the median falls slowly, with log-log slopes $-0.335\pm0.028$
@@ -131,15 +131,15 @@ initializations each) the median ranges from $0.42$ (HT3, $\Kc=5$) to $814$ (bin
 within each family (binary4 $0.86$, MPS4 $0.67$; at $\Kc=7$, HT4 $0.58$ and binary8 $3.04$). The RMS-overlap
 heuristic $P_3=d^{\Ns(\Kc-2)/(2\Kc)}/((\Kc-2)\tw1)$, the escape time of a balanced aligned mode started at the
 root-mean-square overlap $\isc^\Kc d^{-\Ns/2}$ of a fan-in $\Wz$ with a unit rank-one tensor, tracks it within a
-factor $0.87$--$2.13$ with no free parameter, while the median of $T/t_{\rm KH}$ grows from $3.1$ to $2.9\cdot10^7$.
-\emph{Gauge balance} \empirical{} \newresult[minor]: re-gauging the same $\Wz$ to $\Q e=0$ changes $T$ per seed by
+factor $0.87$--$2.13$ with no free parameter, while the median of $\mathcal{T}/t_{\rm KH}$ grows from $3.1$ to $2.9\cdot10^7$.
+\emph{Gauge balance} \empirical{} \newresult[minor]: re-gauging the same $\Wz$ to $\Q e=0$ changes $\mathcal{T}$ per seed by
 a factor $0.88$--$1.92$ (cell medians $0.99$--$1.18$), keeps $r_1$ in 88 of 94 seeds and leaves the exponent
 unchanged.
 
 \begin{figure}[tbp]
   \centering
   \includegraphics{s2s/prefactor.pdf}
-  \caption{Prefactor $T=\lim_{\isc\to0}\isc^{\Kc-2}\tev1$ from the leading-order flow, medians over initializations
+  \caption{Prefactor $\mathcal{T}=\lim_{\isc\to0}\isc^{\Kc-2}\tev1$ from the leading-order flow, medians over initializations
     with 95\% bootstrap intervals. Colour: tree family (MPS blue, binary orange, HT green); marker in (a), (b):
     circles $\Ns=4$, squares $\Ns=8$. (a)~Against $\chi$: one component of weight $1$, $d=4$, 100 initializations
     per point; dashed (open markers): median Kumar--Haupt time $t_{\rm KH}$. (b)~Against $d$ at full bond
@@ -312,7 +312,8 @@ teacher, balanced, seed 6, $\isc=0.1$) learns the weakest component first. On bi
 first in 639 of 640 first-escape runs and in all 380 full runs, which have 20 independent initialization
 directions. On the tensor-like trees the largest component is first in 400 of 640 runs on MPS4, 264/328 on binary8,
 104/160 on HT4 and 64/80 on MPS8; for a given seed it is the same at every $\isc$ (10 of 10 seeds in every cell of
-the full runs). The race names it in all 640 MPS4 and 80 MPS8 runs.
+the full runs). It is the LO flow's $r_1$ in all 231 runs at the smallest $\isc$. The race names it in all 640 MPS4
+and 80 MPS8 runs, in 328 of 328 binary8 and 152 of 160 HT4 runs, and in 537 of 640 binary4 runs.
 
 \paragraph{Tensor-like pairs.}
 \empirical{} The race curves \eqref{eq:order-race} lie at $0.66$--$0.89$ ($w=0.5$) and $0.55$--$0.66$ ($w=0.8$), with
@@ -332,7 +333,9 @@ $\ln\hat t_{1,r}\approx\mathrm{const}-q\ln X_r$ with $q=(0.99$--$1.25)(\Kc-2)$ (
 \paragraph{Matrix-like pairs.}
 \empirical{} \Cref{tab:order-gamma} lists the fitted exponents. Fits over the whole measured range lie below
 $(1-w)/w$ in 12 of 13 sets, by up to $24\%$: $2.5$--$3.3$ s.e.\ at $w=0.95$ and for MPS4 $D=\{0,2\}$ at $w=0.9$,
-otherwise within $1.8$ s.e.
+otherwise within $1.8$ s.e. For the adjacent pairs the fit over $\isc=10^{-5}$--$10^{-3}$ on MPS4 at $w=0.9$ gives
+$0.40\pm0.05$; at $w=0.8$ and on MPS6 (down to $\isc=0.003$) the exponents stay below $n(1-w)/w$. With two components
+binary4 is far greedier than a race of independent clocks ($0.87$ against $0.73$ at $w=0.8$).
 
 \begin{table}[tbp]
   \centering
@@ -370,18 +373,19 @@ $1.1171\pm0.0009$ against $5.386$, $5.590$, $1.118$ (mean $\pm$ s.e.\ over seeds
 $\isc=10^{-2}$, and the local slope times $\abs{\lambda_{\min}}$ tends to $1.0000$ at $\isc=10^{-7}$), and a power law
 fits $11$--$88$ times worse in rms residual ($95$--$106$ on the adding branch). On the kept branch the escape times
 scale as $\tev1\propto\isc^{-1.98\pm0.03}$, $\isc^{-4.26\pm0.13}$, $\isc^{-5.3\pm0.3}$ on MPS4, MPS6, binary8 (MPS6 and
-binary8 limited range); one MPS6 seed of six stalls. Natural runs: the scaled correction time
-$\abs{\lambda_{\min}}(\tev1-\tev2)$ has slope $-0.02\pm0.03$ per unit of $\ln(1/\isc)$; the smaller component overshoots
+binary8 limited range); one MPS6 seed of six stalls. Natural runs (up to 40 per $(w,\isc)$): the scaled correction
+time $\abs{\lambda_{\min}}(\tev1-\tev2)$ has slope $-0.02\pm0.03$ per unit of $\ln(1/\isc)$, and a wrong plateau is
+resolved in at most $2.5\%$ of the runs at $\isc=10^{-4}$--$10^{-2}$; the smaller component overshoots
 and falls to zero while the larger rises, then come a plateau at $\frac12w^2$ and the relearning. At $\isc=0.1$, 17,
 12 and 1 of 40 binary4 runs rotate at $w=0.7$, $0.8$, $0.9$ (52 of 120 are in another class), with scaled times
-$0.85$, $1.16$, $0.38$, and $5$--$7.5\%$ show a wrong plateau. The adjacent runs add within $0.1$--$1$ time units; on
+$0.85$, $1.16$, $0.38$, and $5$--$7.5\%$ show a wrong plateau. All 150 adjacent runs add, within $0.1$--$1$ time units; on
 MPS4 odeco the wrong plateau is resolved and 39 of 40 runs add after it, while one stalls.
 
 \paragraph{Three and four components.}
 \empirical{} One $\isc$ per tree ($0.05$ binary4, $0.1$ MPS4, $0.2$ MPS6, $0.25$ binary8), keeping dormant components
 above the float64 floor; the last two lie outside the checked range of $\isc$-independence. MPS4: $0.35$ and $0.23$
 greedy against $0.36$ and $0.25$ for the model. Paired with each run's own LO race, 41 runs are greedy only in
-gradient flow and 43 only in the race. Runs that stalled or did not finish by $t=10^9$ are excluded from both sides:
+gradient flow and 43 only in the race; the own race names the first event in $97$--$100\%$ of the runs. Runs that stalled or did not finish by $t=10^9$ are excluded from both sides:
 at most 5 of 200 on MPS4 and binary8, about half on MPS6. With four components and $\chi=4$, MPS6 stops before the
 fourth in 396 of 399 runs and binary8 in 389 of 393, and none of 22 runs without any stall stop learns all four by
 $t=10^9$.
@@ -414,7 +418,8 @@ plateau, not a dead route'' is a \conjecture: their dormant slices are pinned at
 balanced MPS8, but were still decaying in 6 of 13 balanced HT4 runs and 17 of 59 fan-in MPS8 runs.
 
 \paragraph{Pattern teachers.}
-\empirical{} Stalls by $k$, both protocols pooled, fan-in initialization at $\chi=2$: $130$ of $768$ runs ($k=4$),
+\empirical{} A stalled two-component run sits at the partial fit $\Loss=\tw2^2/2$. Stalls by $k$, both protocols pooled,
+fan-in initialization at $\chi=2$: $130$ of $768$ runs ($k=4$),
 $62/816$ ($k=5$), $133/360$ ($6$), $29/118$ ($7$), $44/60$ ($8$). The dead-route check reran 22 (case, $\isc$) pairs
 with a 60 times longer patience (170 runs); the 37 flagged runs end with route-end amplitudes of
 $10^{-17}$--$10^{-13}$. The pilot, with separate code, found the same collapse to the rank-one saddle. Of 10 balanced
@@ -495,11 +500,13 @@ describes the data.
 initialization makes the root bonds child-heavy, $\E\Q e=\isc^2(1-1/\chi)\Id\succ0$, so with $\chi=\ncomp$ the route
 ends of the last component decay at a rate $\propto\isc^2$ while its escape needs a time $\propto\isc^{-(\Kc-2)}$. From
 fan-in initialization the stalled route is dead: its third bond singular value ends below $10^{-12}$ in 28 of 32
-stalled plain runs. With balanced initialization the route still decays: its third singular value is
-$1.4\cdot10^{-5}$ (median) at the end. In the plain-model $\isc\times\Kc$ sweeps the stalled runs are typed by the
-$\ncomp$-th bond singular value at the end, with the thresholds of \cref{tab:s2s-stall-test} and $10^{-4}$; at $d=2$
-the MPS with full bonds still stall in up to 3 of 6 seeds. Runs stopped by the step limit include some on MPS with
-$\Ns=8$ at $\isc=0.1$ (after $2\cdot10^4$ steps, at $t=1.4\cdot10^9$ of a budget of $5.7\cdot10^9$).
+stalled plain runs. With balanced initialization the route still decays and 12 of 18 runs do not escape: the third
+singular value is $1.4\cdot10^{-5}$ (median) at the end. In the plain-model $\isc\times\Kc$ sweeps the stalled runs are
+typed by the $\ncomp$-th bond singular value at the end, with the thresholds of \cref{tab:s2s-stall-test} and
+$10^{-4}$: 546 of 795 end with a dead route, 212 with a route still decaying and 37 on a long plateau. At $d=2$ the
+MPS with full bonds still stall in up to 3 of 6 seeds. Some runs of the maps stop at the integrator's step limit:
+unfinished lazy fits at square bonds (\cref{sec:other-lazy}) and some deep-tree runs, for example on MPS with $\Ns=8$
+at $\isc=0.1$ (after $2\cdot10^4$ steps, at $t=1.4\cdot10^9$ of a budget of $5.7\cdot10^9$).
 
 \begin{table}[tbp]
   \centering
@@ -607,7 +614,7 @@ the independent recomputation of the order experiment (scripts in \path{notes/re
 over the three smallest values of $\isc$ (\path{v_sigma.py}, \path{v_sigma2.py}, \path{v_sigma3.py}), the paired McNemar
 comparison of each run's order with its own LO race (\path{v_multi.py}), and the margin of the stall rule of the
 order runs, which had no false positive in 22 runs without any stall stop (\path{v_multi.py}). The same review
-reproduced $T(Z)$ for the 160 binary4 and MPS4 first-escape jobs with an independent integration of the spherical
+reproduced $\mathcal{T}(Z)$ for the 160 binary4 and MPS4 first-escape jobs with an independent integration of the spherical
 flow, to $2\cdot10^{-10}$. The independent cross-check of the locality results is the pilot
 \path{experiments/pilot_h2_locality/} (its own code). Corrections after review: the norm law
 $\tev1\propto\norm{\params_0}^{-(\Kc-2)}$, the first guess of the research plan, is only a lower bound

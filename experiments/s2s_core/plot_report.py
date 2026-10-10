@@ -184,7 +184,7 @@ def fig_prefactor(res: Path, out: Path):
     ax.set_xscale("log", base=2)
     ax.set_yscale("log")
     ax.set_xlabel(r"bond dimension $\chi$ ($d=4$, $s=1$)")
-    ax.set_ylabel(r"$T=\lim_{\sigma\to0}\sigma^{K-2}t_1$")
+    ax.set_ylabel(r"$\mathcal{T}=\lim_{\sigma\to0}\sigma^{K-2}t_1$")
     ax.set_title("(a)", loc="left", fontsize=8)
 
     # (b) physical dimension at full bond chi = d^2, single component s = 1
@@ -219,7 +219,7 @@ def fig_prefactor(res: Path, out: Path):
     ax.set_yscale("log")
     ax.set_xticks([2, 3, 4])
     ax.set_xlabel(r"$d$ (full bond, $\chi=d^2$)")
-    ax.set_ylabel("$T$")
+    ax.set_ylabel(r"$\mathcal{T}$")
     ax.set_title("(b)", loc="left", fontsize=8)
 
     # (c) number of cores, chi = 3, d = 4, s = (3, 2, 1)
@@ -241,7 +241,7 @@ def fig_prefactor(res: Path, out: Path):
         ax.plot(g.K, g.tKH_median, color=fam_col[fam], lw=0.8, ls="--")
     ax.set_yscale("log")
     ax.set_xlabel(r"cores $K$ ($\chi=3$, $d=4$, $s=(3,2,1)$)")
-    ax.set_ylabel("$T$")
+    ax.set_ylabel(r"$\mathcal{T}$")
     ax.set_title("(c)", loc="left", fontsize=8)
 
     # One legend below the panels: trees of (a), (b) (marker = N; in (c) diamonds, colour = family)
@@ -251,7 +251,7 @@ def fig_prefactor(res: Path, out: Path):
         for t in trees
     ]
     h += [
-        plt.Line2D([], [], color=tp.INK, lw=1.1, label="median $T$ (95% CI)"),
+        plt.Line2D([], [], color=tp.INK, lw=1.1, label=r"median $\mathcal{T}$ (95% CI)"),
         plt.Line2D([], [], color=tp.INK, lw=0.8, ls="--", label=r"median $t_{\rm KH}$"),
         plt.Line2D([], [], color=tp.INK, lw=0.9, ls=":", label=r"heuristic $P_3$"),
     ]
