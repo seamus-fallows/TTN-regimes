@@ -356,7 +356,7 @@ def fig_chi_b4(exp="chi_b4", lazy_csv=None):
     axes[1].plot(xx, 5.16 * xx ** -0.5, ":", color="#eb6834", lw=1.5, label=r"theory P6: $5.16\,\chi^{-1/2}$ (two-copy)")
     if lazy_csv:
         lp = pd.read_csv(lazy_csv)
-        fo = lp.groupby("chi").kappa.median()
+        fo = lp[lp.chi >= 9].groupby("chi").kappa.median()  # full bonds only (below: lazy residual)
         axes[1].plot(fo.index, (fo.values / 0.1) ** (1 / 3), "k-.", lw=1, label=r"first order $(\kappa/0.1)^{1/3}$")
     for ax, title in zip(axes, ("S2S boundary (per seed)", "lazy boundary (per seed)")):
         ax.set_xscale("log")
@@ -583,6 +583,13 @@ def fig_large_chi(exp="large_chi_b4", model="centred", sigma=1.5, chi_fit_min=16
             ax.loglog(med.index, med.values, "o-", color=c, ms=4, lw=1.2, label=PARAM_NAMES[lr])
             ax.scatter(s.chi, s[col], s=6, color=c, alpha=0.35, lw=0)
         fit = s[s.chi >= chi_fit_min]
+        # theory slopes (P16) as dotted reference lines through the largest-chi median
+        for ax, col, th in zip(axes, ("dK", "dth", "root_change"),
+                               (THEORY_EXP[lr][0], THEORY_EXP[lr][1], {"sp": -1.0, "ntk": -1.0, "mup": -0.5}[lr])):
+            med = s.groupby("chi")[col].median()
+            if len(med) and model == "centred" and s.n.iloc[0] == 4:
+                xx = np.array([chi_fit_min, med.index.max()], float)
+                ax.loglog(xx, med.iloc[-1] * (xx / xx[-1]) ** th, ":", color=c, lw=1.2)
         for col in ("dK", "dth", "root_change", "leaf_change"):
             b, e = pooled_slope(fit.chi, fit[col])
             rows.append(dict(exp=exp, model=model, sigma=sigma, lr=lr, quantity=col, slope=b, se=e,
@@ -592,7 +599,8 @@ def fig_large_chi(exp="large_chi_b4", model="centred", sigma=1.5, chi_fit_min=16
         ax.set_xlabel(r"bond dimension $\chi$")
         ax.set_title(t, fontsize=9, loc="left")
     axes[0].legend(fontsize=7, frameon=False)
-    fig.suptitle(f"{exp}, {model}, sigma = {sigma} (dots: seeds; lines: medians)", fontsize=9, x=0.01, ha="left")
+    fig.suptitle(f"{exp}, {model}, sigma = {sigma} (dots: seeds; lines: medians; dotted: theory_regimes P16 slopes)",
+                 fontsize=9, x=0.01, ha="left")
     fig.tight_layout()
     save_fig(fig, f"large_chi_{exp}_{model}_sigma{sigma}.png")
     tab = pd.DataFrame(rows)
