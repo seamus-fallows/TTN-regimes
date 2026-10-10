@@ -113,3 +113,22 @@ here too.
 - **Machines:** s2s-core and real-data deleted after byte-verified copies (real-data's 45 remote symlinks are listed in
   data/real_data/SYMLINKS_on_remote.txt; all targets were copied). regime-map restarted on its own (queued start):
   copy its raw outputs for the local fix round, then delete.
+
+## 2026-10-10 (afternoon) — Results merged; saddle-order theorem; regime-map round 2
+
+- **Merged:** s2s-core errata (E1-E21), data-teacher errata (E1-E16), regime-map fix round (local, on the copied raw
+  outputs), real-data fix round + round 2 (pre-registered order test), citation fixes, report Sec. 4.1-4.3 + 4.6
+  (s2s-core), Sec. 6 (data-teacher). Report builds at 89 pages.
+- **Saddle order (theory, UNVERIFIED until the two verifications land):** the claim "saddle order = k*" (old R2) is
+  false in general. New Theorem 1: order = k* if the generalized piggyback operator has lambda_max < s_q (proven per the
+  note); corollaries cover k* <= 4 and two-component teachers in the correct order; Theorem 2: above the threshold the
+  order drops to 2l < k*; counterexample MPS6 (k* = 5, PSD Hessian, order 4; GF escape ~ sigma^-2). Two independent
+  verifications (proof; numerics) run before notes/theory_saddles.md and the report are changed.
+- **Saddle hopper (UNVERIFIED):** an adversarial audit checks for post-hoc "rare branches" and uninformative matches
+  before any number is cited.
+- **Regime map decisions:** regime labels and delta_K use the tensor kernel wherever feasible (N <= 8); overlap events
+  are dated at the last upward 1/2-crossing before the component first reaches 0.9 (to be made consistent in
+  notes/diagnostics.md and Sec. 2 in the final consistency pass); the library's `tensor_tangent_kernel` needs a
+  memory-light (reverse-mode) version (34 GB at chi = 128, two-copy) — library task for the cleanup pass.
+- **regime-map round 2 (remote, restarted):** realizable K sweep (spare channels or full bonds), d = 2 and 3,
+  pre-registered comparison of sigma^K vs sigma^K/sqrt(D), to settle sigma_c at large K (now: brackets, conjecture).

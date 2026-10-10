@@ -27,3 +27,7 @@ Running fix rounds: s2s-core ($0.74/h), order ($0.84/h), data-teacher ($0.47/h).
 Sessions ended 2026-10-10 midday: s2s-core fix round $0.43 (0.58 h; DELETED after verified copy), real-data restart
 $0.16 (0.32 h; DELETED after verified copy). regime-map restarted (queued start succeeded) at $1.04/h for the raw copy.
 Running: order ($0.84/h, fix round), data-teacher ($0.47/h, errata pass). Estimated total so far: about $32.
+
+2026-10-10 afternoon: data-teacher DELETED after verified copy (errata session $0.47, 1.02 h); regime-map restarted for
+round 2 at $1.04/h (the earlier copy session cost < $0.5). Running: order ($0.84/h), regime-map ($1.04/h).
+Estimated total so far: about $34.
