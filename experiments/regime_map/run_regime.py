@@ -447,6 +447,10 @@ def run_point(cfg: dict) -> dict:
         rhos_old=rhos_old.tolist(),
         label_old=label_old,
         dormant_min=dormant,
+        # overlaps at the first recorded time (round 2: the event rule needs every |a_r(0)| < 0.1,
+        # which fails for the plain model at large sigma, where W_0 projects on the components)
+        t0=float(t[0]),
+        a0=[float(x) for x in A[0]],
         refined=refined,
         wall=time.time() - tic,
     )

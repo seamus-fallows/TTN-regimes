@@ -869,3 +869,30 @@ brackets or came from floor-stalled runs, and only d = 2 was run (section 3.2 it
 
 About 3 h of wall-clock on this machine (384 cores). Arm P has priority over arm C. If the large-K
 runs do not finish, the report gives the largest K reached and how the run time scales with K.
+
+### 4.6 Amendments (made after the timing pilots; none uses arm results)
+
+1. **Time budget.** run_regime's default T = 50 t_esc + 1e4 / max(lambda_bar, 1) is short at large
+   sigma: the plain model first shrinks W_0 and then escapes from a small residual scale. The pilot
+   (binary 16, d = 3, sigma = 2) stopped at T = 1.5e3 with nothing learned. Round 2 therefore uses
+   T = max(50 t_esc + 1e4, 1e6), and max_steps (3e4 in arm P) bounds the cost.
+2. **Domain of the event rule.** The final rise starts at a_r = 0.1. In the plain model at large sigma,
+   W_0 itself projects on component r with amplitude a_r(0) ~ N(0,1) sigma^K / (sqrt(D) s_r), so a
+   component can start above 0.1 or even above 0.9.
+   - Pilot: binary 16, d = 2, sigma = 2 has a_1(0) ~ 40, which the rule recorded as an "event" at
+     t = 0.
+   - Runs with max_r |a_r(0)| >= 0.1 are therefore outside the rule's domain. They are classified 'D'
+     and carry no information; rows now store a0 = a(t_0).
+   - A seed that is S2S-like up to its first out-of-domain sigma is reported as censored, with status
+     'domain' (sigma_c > the last S2S-like sigma).
+   - The domain limit is sigma_dom ~ (0.1 s_2 sqrt(D) / |z|)^(1/K). It tends to sqrt(d) as K grows,
+     e.g. about 1.3 (d = 2) and 1.6 (d = 3) at K = 15.
+   - H_B's boundary sigma_c^K / sqrt(D) ~ 0.86 u_0c ~ 0.01 lies inside the domain, so H_B stays
+     testable.
+   - Arm C (centred) is not affected: there the overlaps of W - W_0 start at 0. Its direct loss
+     records the overlaps of W, which are offset by a_r(0) ~ 0.005 near the boundary; the effect on
+     the event times is negligible.
+3. **Process pool.** Workers are forked on Linux. A spawned worker holds its own copy of torch
+   (~440 MB RSS), so 330 spawned workers ran out of the 125 GB of memory: the first launch died with
+   BrokenProcessPool. The first 22 rows of arm P were discarded because they used the pre-amendment
+   event handling (`/root/outputs/regime_map_r2/r2_plain_discarded_eventbug/`).

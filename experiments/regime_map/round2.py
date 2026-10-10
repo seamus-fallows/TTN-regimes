@@ -64,24 +64,31 @@ def step_factor(K: int) -> float:
     return min(4 ** (1 / max(K - 2, 1)), 2.5)
 
 
-def run_class(r: dict, thr: float = 3.0):
-    """('S', rho) S2S-like, ('R', rho) rich-like, or (None, nan) no information on the separation.
+def run_class(r: dict, thr: float = 3.0, domain: bool = True):
+    """('S', rho) S2S-like, ('R', rho) rich-like, ('D', nan) outside the event rule's domain, or
+    (None, nan) no information on the separation.
 
-    rho = the single separation ratio (R = 2). Without a ratio: a run in which exactly one component
-    reached 0.9 is S2S-like if (t_end - t_1) / w_1 > thr (a lower bound on rho, returned as -value);
-    a converged run (L < 1e-3 1/2||W*||^2) without a ratio is rich-like (events merged or overlaps
-    never below 0.1); anything else carries no information."""
+    rho = the single separation ratio (R = 2). Domain: the final rise starts at a_r = 0.1, so a run
+    whose initial overlap max_r |a_r(0)| >= 0.1 (plain model at large sigma, where W_0 itself
+    projects on the components with amplitude ~ sigma^K / (sqrt(D) s_r)) has no defined events
+    ('D'; checked only when `domain`, i.e. for the plain model). Without a ratio: a run that did not
+    converge and in which exactly one component reached 0.9 is S2S-like if (t_end - t_1) / w_1 > thr
+    (a lower bound on rho, returned as -value); a converged run without a ratio is rich-like (events
+    merged); anything else carries no information."""
+    if domain and "a0" in r and np.max(np.abs(r["a0"])) >= 0.1:
+        return "D", np.nan
     rho = r["rhos"][0] if r.get("rhos") else np.nan
     if rho is not None and np.isfinite(rho):
         return ("S" if rho > thr else "R"), float(rho)
     w = np.asarray(r["event_widths"], float)
     t = np.asarray(r["event_times"], float)
-    if np.isfinite(w).sum() == 1:
+    converged = r["l_end"] < 1e-3
+    if not converged and np.isfinite(w).sum() == 1:
         i = int(np.flatnonzero(np.isfinite(w))[0])
-        lb = (r["t_end"] - t[i]) / w[i] if np.isfinite(t[i]) else np.nan
+        lb = (r["t_end"] - t[i]) / w[i] if np.isfinite(t[i]) and w[i] > 0 else np.nan
         if np.isfinite(lb) and lb > thr:
             return "S", -float(lb)
-    if r["l_end"] < 1e-3:
+    if converged:
         return "R", np.nan
     return None, np.nan
 
@@ -93,13 +100,21 @@ def sigma_limits(K: int, d: int):
     return smin, min(3.0, 1e6 ** (1 / K))
 
 
-def walker_next(rows: list[dict], K: int, d: int, thr: float = 3.0):
+def walker_next(rows: list[dict], K: int, d: int, thr: float = 3.0, domain: bool = True):
     """(new sigmas, status) for one seed. status: 'ok' (bracket <= target), 'never_s2s' (no S2S-like
-    run down to sigma_min), 'all_s2s' (S2S-like up to sigma_max), or 'open'."""
+    run down to sigma_min), 'all_s2s' (S2S-like up to sigma_max), 'domain' (S2S-like up to the
+    smallest sigma whose initial overlaps leave the event rule's domain, bracketed within the
+    target), or 'open'."""
     smin, smax = sigma_limits(K, d)
     f = step_factor(K)
     target = min(2 ** (1 / max(K - 2, 1)), 1.5)
-    pts = sorted((r["sigma"], *run_class(r, thr)) for r in rows)
+    pts = sorted((r["sigma"], *run_class(r, thr, domain)) for r in rows)
+    dom = [p[0] for p in pts if p[1] == "D"]
+    if dom:  # nothing above the smallest out-of-domain sigma is informative
+        smax = min(smax, min(dom))
+        pts = [p for p in pts if p[0] < smax]
+        if not pts:
+            return [smax / f, smax / f**2], "open"
     sig = np.array([p[0] for p in pts])
     cls = [p[1] for p in pts]
     rho = np.array([p[2] for p in pts])
@@ -117,13 +132,22 @@ def walker_next(rows: list[dict], K: int, d: int, thr: float = 3.0):
     after = [j for j in range(first + 1, len(pts)) if cls[j] == "R"]
     if not after:
         hi = sig[-1]
+        if dom:
+            if smax / hi <= target * 1.0001:
+                return [], "domain"
+            if hi < smax / f**2:  # far below the domain limit: keep stepping up
+                pass
+            else:
+                ratio = smax / hi
+                return [hi * ratio ** (1 / 3), hi * ratio ** (2 / 3)], "open"
         if hi >= smax * 0.9999:
             return [], "all_s2s"
         step = f
         last = S[-1]
         if rho[last] > 0 and np.isfinite(rho[last]):
             step = max(f**0.5, min((rho[last] / thr) ** (1 / max(K - 2, 1)) * 1.05, f**3))
-        return [min(hi * step, smax), min(hi * step * f, smax)], "open"
+        new = sorted({min(hi * step, smax), min(hi * step * f, smax)})
+        return [x for x in new if x < smax * 0.9999] if dom else new, "open"
     j = after[0]
     i = max(k for k in S if k < j)
     lo, hi = sig[i], sig[j]
@@ -170,14 +194,17 @@ def run(arms, n_proc: int, out: str, stop_at: float | None):
     futures = {}
     log = lambda *x: print(dt.datetime.now(dt.timezone.utc).strftime("%H:%M:%S"), *x, flush=True)  # noqa: E731
 
-    with ProcessPoolExecutor(n_proc, mp_context=get_context("spawn"), initializer=rr._init_worker,
+    # fork on Linux: a spawned worker holds its own copy of torch (~440 MB RSS), so 330 spawned
+    # workers exceed the 125 GB of this machine (the first launch died with BrokenProcessPool)
+    ctx = get_context("fork" if sys.platform == "linux" else "spawn")
+    with ProcessPoolExecutor(n_proc, mp_context=ctx, initializer=rr._init_worker,
                              initargs=(out,)) as pool:
 
         def advance(key):
             w = walkers[key]
             arm, n, d, seed = key
             K = n - 1
-            if w["pending"] or w["status"] in ("ok", "never_s2s", "all_s2s"):
+            if w["pending"] or w["status"] in ("ok", "never_s2s", "all_s2s", "domain"):
                 return
             if stop_at is not None and time.time() > stop_at:
                 w["status"] = "stopped"
@@ -188,7 +215,7 @@ def run(arms, n_proc: int, out: str, stop_at: float | None):
                 new = sorted({min(max(g * f**j, smin), smax) for j in (-1, 0, 1, 2, 3)})
                 status = "open"
             else:
-                new, status = walker_next(w["rows"], K, d)
+                new, status = walker_next(w["rows"], K, d, domain=(arm == "P"))
             w["status"] = status
             done = {round(r["sigma"], 4) for r in w["rows"]}
             for s in new:
