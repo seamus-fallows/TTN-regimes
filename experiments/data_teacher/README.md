@@ -95,6 +95,34 @@ explicit list. `variant: white_mapped` (step 2) runs the absorbed white problem 
 - Event times from merged log + fine rows (`ttn.dynamics.merged_rows`) for every run made with the
   final library.
 
+## Analysis and figures (each figure from saved results by the script named)
+
+| figure / table in `results/` | script | content |
+|---|---|---|
+| `e1_exact_aligned.{png,csv}` | `e1_exact_aligned.py` | aligned init: TTN GF vs scalar ODE vs substitution s -> Lambda s |
+| `e1_order_probs.png`, `e1_examples.png`, `e1_paired_times.png`, `e1_order_table.csv`, `e1_paired_agg.csv`, `e1_plateaus.csv` | `analyze_e1_order.py` | step 1: order, swaps, paired comparisons, plateau levels |
+| `e1_scaling.png`, `e1_scaling_fits.csv` | `analyze_e1_scaling.py` | t_1 vs sigma and vs Lambda s |
+| `e1_kexp.csv` | `analyze_e1_kexp.py` | escape degree per sigma (window above the init transient) |
+| `e1_hessian_check.csv` | `e1_hessian_check.py` | swap Hessian at the exact saddle vs formula (raw and projected) |
+| `e2_misaligned_summary.png`, `e2_misaligned_plateaus.csv`, `e3_correlated_*`, `e4a_nonorth_*` | `analyze_plateaus.py`, `plot_cp_steps.py` | round-1 single-sigma plateau levels and alignment (durations there are WITHDRAWN, see notes R2.0) |
+| `e4a_sigma_v2_{runs,perseed,summary}.csv`, `e4a_sigma_v2.png` (also `e2_sigma_v2_*`, `e4b_ttn_v2_*`, `r2_random_v2_*`) | `analyze_law_v2.py <config>` | per-seed log vs power law, saddle classification, plateau lambda_min (raw and projected) vs sigma |
+| `e4a_sigma_law*.{csv,png}`, `e2_sigma_law*` | `analyze_sigma_law.py` | round-1 analysis, superseded by the v2 files (kept for the record) |
+| `e4a_theory_slopes.csv` | `theory_log_slope.py` | predicted R6 slopes for the 4a teachers |
+| `e4b_ttn_plateaus.csv`, `e4b_ttn_growth.csv` | `analyze_ttn.py e4b_ttn` | plateau states vs the rank-constrained critical point and every SVD-type truncation |
+| `e4b_law.png`, `e4b_order{,_fits}.csv`, `e4b_theory.csv` | `analyze_e4b_order.py` | round-1 order analysis (fixed threshold; superseded by `e4b_ttn_v2_*`; `e4b_theory.csv` still used) |
+| `e4c_cross_v2_*`, `r2_cross_v2_*`, `e4c_theory.csv` | `analyze_cross_v2.py [e4c_cross / r2_cross]`, `analyze_e4c_theory.py` | cross-tree teachers: P11, sibling-first, naive rule (f-rule events) |
+| `r2_saddle_hessian.csv`, `r2_saddle_b_hessian.csv` | `recompute_saddle_hessians.py`, `r2_saddle_runs.py` | exact rank-1 saddle Hessians (13 teachers x 3 trees) |
+| `r2_saddle_law.png`, `r2_saddle_collapse.png`, `r2_saddle_fits.csv`, `r2_saddle_perseed.csv`, `r2_saddle_runs_all.csv` | `analyze_r2_saddle.py` | round 2 item 1: tree contrast (saddle start) |
+| `r2_saddle_resolution_check.csv` | `check_resolution.py` | log-row vs fine-row escape times (<= 0.5%) |
+| `r2_corr_{runs,fits}.csv`, `r2_corr_law.png` | `r2_corr.py`, `analyze_r2_corr.py` | round 2 item 3: correlated inputs, sigma law |
+| `r2_star_hessian.csv`, `r2_star_saddle.csv`, `r2_star_threshold{,_scan}.csv`, `r2_star_rotation_law.csv`, `r2_star_depth{,_exponents}.csv`, `r2_star.png` | `r2_star.py {hessian,saddle,threshold,random}`, `analyze_r2_star.py` | round 2 item 2: stars |
+| `e3_sgd_check.{png,csv}` | `e3_sgd_check.py` | online SGD vs exact population GF (binary-4, rho = 0.3) |
+| `crosscheck_library.csv` | `crosscheck_library.py` | pilot vs library integrator |
+| `float_floor_check.csv` | `check_float_floor.py` | dormant signals after the first escape vs the float64 floor |
+
+`pilots/` holds the throwaway pilot (`pilot_reversal.py`) and the pilot integrator used by the
+single-sigma runners and by `r2_corr.py`.
+
 ## Results
 
 Summary table, the one-line answer, all numbers, and the list of round-1 claims changed after the
