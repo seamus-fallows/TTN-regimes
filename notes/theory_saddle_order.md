@@ -38,7 +38,8 @@ order 6). Numerics on 32 instances (section 5; trees mps4-6, binary4/6, ht4, $k^
 general residuals) agree with Theorems 1-2 everywhere. Gradient flow on the pair-star escapes with
 $t_{\rm esc}\propto\sigma^{-2}$ instead of the route law $\sigma^{-3}$, toward a non-residual pattern,
 and then forgets $q$ (section 6; derived, with the verifier's caveats: from small initialization only
-some seeds visit $\theta_S$, and the $\sigma^{-2}$ law appears only at small $\sigma$). Among the
+some seeds visit $\theta_S$, and the $\sigma^{-2}$ law sets in at a seed-dependent, often small,
+$\sigma$). Among the
 project's experiments Theorem 2 applies only to wrong-order two-component runs whose differing sites
 cover two leaf pairs: HT4 with $D$ = all sites (locality) and binary8 odeco from the wrong saddle
 (`order` agent), order 6, not 7. The HT4 runs were excluded from the locality fits; 6 of the 7 with
@@ -122,9 +123,9 @@ bookkeeping. Without the index condition: derived, not proven.)
 **Corollary 0 (exact order; proven for pattern teachers).** Let $\ell^*<k^*/2$ be the smallest level
 with $\lambda_{\max}(\mathcal S\vert_{\mathcal L_{\ell^*}})>s_q$, and assume
 $\lambda_{\max}(\mathcal S\vert_{\mathcal L_{\ell^*-1}})<s_q$ (strict; this is what "generic" means
-below) and the index condition for a set $X\subseteq\mathcal L_{\ell^*}$ with $\rho>s_q$. Then the order
-is exactly $2\ell^*$ (Theorem 1' at level $\ell^*$ gives $\ge\min(k^*,2\ell^*)=2\ell^*$, Theorem 2
-gives $\le2\ell^*$). If no level below $k^*/2$ exceeds $s_q$ and $\lambda_{\max}(\mathcal S)<s_q$, the
+below) and the index condition for a set $X$ of level-$\ell^*$ nodes with $\rho>s_q$. Then the order
+is exactly $2\ell^*$ (for $\ell^*\ge2$, Theorem 1' at level $\ell^*$ gives $\ge\min(k^*,2\ell^*)=2\ell^*$
+and Theorem 2 gives $\le2\ell^*$; for $\ell^*=1$ the old block has a negative eigenvalue: strict, order 2). If no level below $k^*/2$ exceeds $s_q$ and $\lambda_{\max}(\mathcal S)<s_q$, the
 order is $k^*$ (Theorem 1, with the route). For a general (non-pattern) $R$ the lower bounds hold
 unchanged; the upper bound $2\ell^*$ is empirical (three random-$R$ cases, section 5).
 
@@ -270,7 +271,7 @@ Four facts replace the ones used for $\mathcal L$:
   all unordered splits $B=C_1\sqcup C_2$ with $C_1,C_2$ low gives exactly
   $\tfrac12\langle\kappa_{\rm low},\mathcal S\vert_{\mathcal L_{\ell-1}}\kappa_{\rm low}\rangle$, because
   each unordered pair of disjoint low sets occurs once (for $B=C_1\sqcup C_2$) and the operator counts
-  ordered pairs. Hence it is $\le\tfrac12\lambda_\ell\lVert\kappa_{\rm low}\rVert^2$, $\lambda_\ell:=\lambda_{\max}(\mathcal S\vert_{\mathcal L_{\ell-1}})$.
+  ordered pairs. Hence it is $\le\tfrac12\lambda_{<\ell}\lVert\kappa_{\rm low}\rVert^2$, $\lambda_{<\ell}:=\lambda_{\max}(\mathcal S\vert_{\mathcal L_{\ell-1}})$.
 
 *(i) Gauss-Newton part.* By (F2), for low $B$, $m_B-\kappa_B$ is a sum of products of $\ge2$ low
 cumulants, each product at most $C_0\varepsilon\,y_C$ for one of its blocks. As in 3.4,
@@ -289,9 +290,9 @@ $m_B=\kappa_B+\sum_{\lvert\pi\rvert=2}+\sum_{\lvert\pi\rvert\ge3}$ and bound eac
 
 Every remainder is $O(\varepsilon^{2\ell})$ or $O(\varepsilon^{k^*})$, i.e. $O(\varepsilon^{p})$. Summing
 (finitely many terms; each $y_C^2$ used at most $M$ times):
-$\sum_B\langle R_B,m_B\rangle\le\tfrac12(\lambda_\ell+M\gamma+Mr_{\max}C_0\varepsilon)\lVert\kappa_{\rm low}\rVert^2+C_1(\gamma)\varepsilon^{p}$.
+$\sum_B\langle R_B,m_B\rangle\le\tfrac12(\lambda_{<\ell}+M\gamma+Mr_{\max}C_0\varepsilon)\lVert\kappa_{\rm low}\rVert^2+C_1(\gamma)\varepsilon^{p}$.
 
-*(iii) Conclusion.* Exactly as in 3.4(iii) with $g_\ell=s_q-\lambda_\ell>0$, $\gamma=g_\ell/(4M)$:
+*(iii) Conclusion.* Exactly as in 3.4(iii) with $g_\ell=s_q-\lambda_{<\ell}>0$, $\gamma=g_\ell/(4M)$:
 $L-L_S\ge-2s_qC_1\varepsilon^{p}$. $\square$
 
 What changes compared with Theorem 1 is only the exponent in (F1): with the cut at degree $\ell$
@@ -463,8 +464,21 @@ $q$ first). Caveats, all from that review:
    initialization appears in the locality experiments (report Sec. 4, failure modes). No control seed
    has exponent near 2, so in the dynamics the dichotomy $\rho>s_q$ versus $\rho<s_q$ is sharp.
 
+**Partial update (2026-10-10, 15:50; NOT final).** Five of the verifier's `gf_origin.py` processes
+(pair-star 0.8: seeds 0-11 and 7-11 at $\sigma=0.1\to0.01$; seed 2 down to $\sigma=0.0025$; seeds 3-6 and
+9-11 at $\sigma=0.01,0.005,0.0025$) were still running when this revision was written. A read-only copy
+of `analyze_gf.py` on the files present then gives: seeds 0-9 have results, seeds 10-11 none yet;
+$q$-first: seeds 2, 4, 7 (3 of 10); residual pair first: seeds 0, 1, 3, 5, 6, 8, 9 (7 of 10). New $q$-first
+data: seed 4 has the $\sigma^{-2}$ law already from $\sigma=0.1$ (local exponents 2.115, 2.06, 2.035,
+2.022, 2.015, 2.01, 2.007 for $\sigma=0.1\to0.01$; $\Delta t=401$ at $\sigma=0.1$, a long $q$ plateau even
+there), and seed 2 continues 3.50, 2.48, 2.19, 2.09 ($\sigma=0.035\to0.01$). So caveat 2 should read: the
+$\sigma^{-2}$ law holds asymptotically in all three $q$-first seeds, and where it sets in depends on the
+seed ($\sigma\lesssim0.005$ for seed 7, $\le0.1$ for seed 4), consistent with an onset set by the dormant
+amplitudes at $\theta_S$. Escape direction in seed 4 as in 2 and 7 ($W[110000]=0.085$, rotations 0.065).
+Rerun `analyze_gf.py` when the processes have finished to replace these numbers.
+
 Status of S9: **derived** (reduced model); checked from $\theta_S+\sigma\xi$ on 5 seeds of one teacher,
-and from small initialization on the $q$-first seeds only, asymptotically.
+and from small initialization on the $q$-first seeds only (3 of 10 seeds so far), asymptotically.
 
 ## 7. Changes to `notes/theory_saddles.md` (applied there in v3, 2026-10-10)
 
@@ -554,7 +568,7 @@ and from small initialization on the $q$-first seeds only, asymptotically.
 | S6 | Theorem 2: generalized graph with $\rho>s_q$ at level $\ell<k^*/2$ $\Rightarrow$ order $\le2\ell$ | proven (pattern teacher, $s_r>0$, index condition) |
 | S7 | Corollary 0: order $=\min(k^*,2\ell^*)$ ($\lambda_{\max}<s_q$ strictly at level $\ell^*-1$) | proven for pattern teachers with $s_r>0$ under the index condition (Theorems 1', 2); general $R$: lower bound proven, upper bound empirical (3 random-$R$ cases) |
 | S8 | "Order $=k^*$" fails from $k^*=5$ on. MPS6 pair-star (order 4, $k^*=5$, correct order, two residuals) refutes the multi-residual use; MPS6 $110001$ wrong order (4 vs 6) and HT4 $1111$ wrong order (6 vs 7) refute R2 itself and 4.1's "$m\ge3$: no escape route" | proven: upper bounds by Theorem 2 alone, exact orders with Theorem 1'; checked numerically to 3 digits by the note and both verifiers |
-| S9 | Escape time $\propto\sigma^{-(2\ell-2)}$ when the generalized mechanism wins | derived (reduced model); checked for one teacher: 5 seeds from $\theta_S+\sigma\xi$, and from small init only on $q$-first seeds, for $\sigma\lesssim0.005$ (section 6 caveats) |
+| S9 | Escape time $\propto\sigma^{-(2\ell-2)}$ when the generalized mechanism wins | derived (reduced model); checked for one teacher: 5 seeds from $\theta_S+\sigma\xi$, and from small init only on the $q$-first seeds (3 of 10 so far), asymptotically, with a seed-dependent onset (section 6 caveats; verifier runs still going) |
 | S10 | Numerical saddle orders on 32 instances equal the predictions | empirical (12 instances reproduced independently) |
 | S11 | After a generalized-piggyback escape the learned $q$ is forgotten, the competing structure is learned, and $q$ is relearned (pair-star; HT4 wrong order) | empirical (pair-star: numerics verifier; HT4 $D$ = all sites, $\chi=2$: 6 of 7 wrong-order locality runs, all at $\sigma\ge0.4$); consistent with rule 5.1-3 |
 | S12 | Wrong-order HT4 and binary8 with $D$ = all sites: order 6 $<k^*=7$, escape exponent 4 below the crossover $b\approx4\kappa/(5s_r)$ | order proven (Cor. 2c); exponent derived; untested below the crossover |
