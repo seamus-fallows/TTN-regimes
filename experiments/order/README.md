@@ -31,9 +31,11 @@ corrected through a strict saddle (H1b)? With R >= 3 components, what is the dis
   - R >= 3 (`multi.py` -> `common.gf_events`): LSODA with the exact Hessian (as
     `ttn.dynamics.integrate_gf(method="lsoda")`), rtol 1e-9, atol 1e-14, exact event location for every
     crossing, stop at L < 1e-8 L(0), at t_max, or when a component's slice of some core falls to 1e-14 x
-    the largest core norm ("stalled"; `stall_stop: false` disables it). (The round-1 `multi` run used
-    the library integrator on a log grid; it was replaced by `multi2`, then by `multi3` with the
-    slice-norm stall criterion.) Full trajectories (`h1b.py` -> `gf_trajectory`) use the same stall
+    the largest core norm ("stalled"; `stall_stop: false` disables it; the threshold is justified
+    empirically, with no false positive in the 22 no-stop runs, not by a roundoff floor). (The round-1
+    `multi` run used the library integrator on a log grid; it was replaced by `multi2`, then by `multi3`
+    with the slice-norm stall criterion. multi3 reproduces multi2 run for run, with the same status and
+    event times; only the roundoff flag changed.) Full trajectories (`h1b.py` -> `gf_trajectory`) use the same stall
     criterion; the round-1 overlap criterion (|a_r| < 1e-25) also fired during a normal forget phase.
     1500 log-spaced records.
 
@@ -92,12 +94,12 @@ scripts. Every script accepts `--raw DIR` (raw outputs, default /root/outputs/or
 | `b4_sigma.yaml` | binary4 (m = 2), chi {2,4}, 5 rho x 7 sigma (1e-4..0.1) x 1000 seeds | ~30 min |
 | `m4_sigma.yaml`, `b8_sigma.yaml` | m >= 3 sigma-independence, 400 seeds | ~15 min |
 | `pat_mps6_*.yaml` | control: MPS6 pattern teachers differing on m = 2 (ends / adjacent), 3, 4 cores; 3 rho x 4 sigma x 400 seeds | ~15 min each |
-| `pat_mps4_adj.yaml`, `pat_mps4_sep.yaml` | multiplicity test: MPS4 m = 2 pairs, adjacent (n = chi_e = 4) vs separated (n = 1), sigma down to 1e-5, 1000 seeds | ~20 min each |
+| `pat_mps4_adj.yaml`, `pat_mps4_sep.yaml` | multiplicity test: MPS4 m = 2 pairs, adjacent (conjectured n = chi_e = 4) vs separated (n = 1), sigma down to 1e-5, 1000 seeds | ~20 min each |
 | `symmetry_check.yaml` | exchangeability check of the two components' blow-up times on fresh seeds | ~5 min |
 | `chi_scan.yaml`, `chi_gf.yaml` | over-parameterization: uncapped chi 1..32, LO race (500 seeds) and GF check (chi 16, 32) | ~30 min |
 | `h1b_*.yaml` | H1b: saddle starts (binary4, MPS4) and natural wrong-order runs | ~20 min |
 | `multi.yaml` | step 4: R = 3, 4 components, 200 seeds, sigma per tree (0.05-0.25); raw folder `multi2` (overlap-based stall stop, round 1) | ~2.5 h |
-| `multi3.yaml` | R = 3 rerun with the slice-norm stall criterion and slice flags (review round 1) | ~1 h |
+| `multi3.yaml` | R = 3 rerun with the slice-norm stall criterion and slice flags (review round 1); reproduces multi2 run for run, only the roundoff flag changed | ~1 h |
 | `multi_nostop.yaml` | R = 4 = chi on MPS6 and binary8 without any stall stop, to t = 1e9, 12 seeds | ~1 h |
 | `h1b_saddle_mps4_adj.yaml`, `h1b_saddle_mps4_sep.yaml`, `h1b_natural_mps4_adj.yaml`, `h1b_natural_mps4_sep.yaml` | H1b on adjacent (k = 2) and separated (k = 3) m = 2 pairs on MPS4 | ~15 min |
 | `h1b_saddle_mps6.yaml`, `h1b_saddle_b8.yaml` | m >= 3 wrong-saddle starts on MPS6 and binary8 | ~1 h (slow runs) |
@@ -109,4 +111,8 @@ Variants: any key of a config can be changed (trees as `"kind:N"`, `d`, `chi`, `
 ## Results
 
 See `notes/order.md` (section 7) and `agent-runs/order/REPORT.md`; summary tables are in
-`results/*.csv`.
+`results/*.csv`. The errata of the verification (`notes/reviews/order_round2_verification.md`) are
+applied there and listed in `notes/order.md` section 12 (among them: the R = 3 "less greedy than
+independent clocks" claim is withdrawn; n = chi_e for adjacent pairs remains a conjecture; the d test
+excludes differences larger than about 0.06). The verification's "Safe to cite" table (C1-C17) is the
+final list of citable claims.

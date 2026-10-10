@@ -94,6 +94,20 @@ component (order H1b, data-teacher swaps on binary 4, locality rotation runs) an
 gradient-flow runs (the 6 regime-map runs with K = 7 above). The first crossing differs from the
 recommended rule only when a transient crosses 1/2 and falls back before the final rise.
 
+**Known inconsistency (found by the cleanup pass, 2026-10-10).** In a dip-and-relearn case the library
+(`ttn.runner.learning_events`, hence `summary`), optim-samples (`common.record_events`, `gradient_flow`)
+and optimizers (`analysis.component_events`, sampled traces) take the event time from the relearning but
+the width from the first rise (`rise_times`), so their separation ratios mix two rises. Only runs with
+dips can be affected: star teachers, SGD erasures, rotations after a wrong order, the six regime-map
+K = 7 runs above, and some discrete-optimizer runs. No reported number is known to depend on it (checked
+on `data/`, 2026-10-10): the runner serves only 00_smoke (one dipping benchmark run, no width reported);
+s2s-core, regime-map, locality, order and data-teacher use the other rules; none of optim-samples' 225
+gradient-flow references dips (its only use of widths; GD and SGD widths are unused, and SGD runs that
+forgot are excluded from P9); 45 optimizer trace runs dip (Adam, RMSProp, GD, heavy ball), but the width
+of the rise around the event changes none of their S2S labels and no median ratio in
+`scaling_b4_order.csv`. Fix if needed: take the width of the rise that contains the event, as
+optimizers' `exact_events` does.
+
 ### Spectral (bond) events (non-orthogonal CP teachers, TTN teachers)
 
 One escape can raise several overlaps and later escapes none, so events come from the bond spectra.
