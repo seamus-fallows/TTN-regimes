@@ -18,10 +18,11 @@ import torch
 from scipy.integrate import solve_ivp
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import RES, loss_grad_fn, make_spec, make_teacher, overlaps, single_thread, unit_init  # noqa: E402
+from common import RES, default_procs, loss_grad_fn, make_spec, make_teacher, overlaps, single_thread, unit_init  # noqa: E402
 from ttn.network import conserved_quantities  # noqa: E402
 
-SETTINGS = [("binary", 4, 2, 4), ("mps", 4, 2, 4), ("mps", 6, 2, 4), ("binary", 8, 2, 4)]
+SETTINGS = [("binary", 4, 2, 4), ("mps", 4, 2, 4), ("mps", 6, 2, 4), ("binary", 8, 2, 4),
+            ("mps", 8, 2, 4)]
 RHO, SIGMA, SEEDS = 0.8, 0.01, 100
 
 
@@ -32,8 +33,14 @@ def first_event(spec, teacher, y0, rtol, atol):
         return overlaps(spec, teacher, y).max() - 0.5
 
     ev.terminal, ev.direction = True, 1
-    sol = solve_ivp(rhs, (0, 1e20), y0, method="RK45", rtol=rtol, atol=atol, events=ev)
-    return sol.t[-1], sol.y[:, -1]
+    # clock restart when the step size reaches the float64 resolution of t (as common.gf_first_event)
+    offset, y = 0.0, y0
+    for _ in range(21):
+        sol = solve_ivp(rhs, (0, 1e20 - offset), y, method="RK45", rtol=rtol, atol=atol, events=ev)
+        if sol.status != -1 or sol.t[-1] == 0.0:
+            break
+        offset, y = offset + sol.t[-1], sol.y[:, -1]
+    return offset + sol.t[-1], sol.y[:, -1]
 
 
 def drift(spec, y0, y1):
@@ -60,7 +67,8 @@ def job(args):
 
 
 def main():
-    procs = int(sys.argv[sys.argv.index("--procs") + 1]) if "--procs" in sys.argv else os.cpu_count()
+    procs = (int(sys.argv[sys.argv.index("--procs") + 1]) if "--procs" in sys.argv
+             else default_procs())
     jobs = [s + (seed,) for s in SETTINGS for seed in range(SEEDS)]
     with Pool(procs) as pool:
         df = pd.DataFrame(pool.map(job, jobs, chunksize=1))

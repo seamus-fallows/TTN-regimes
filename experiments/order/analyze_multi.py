@@ -25,7 +25,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 import style  # noqa: E402
 
 from common import RAW, RES  # noqa: E402
-FLOOR = 1e-14
+FLOOR = 1e-14  # multi2 only: overlap-product flag (superseded; see SLICE_FLAG)
+# multi3: completed runs whose component slice ratio fell below this before its event are flagged
+# as possibly roundoff-seeded (the stall stop itself fires at 1e-14)
+SLICE_FLAG = 1e-12
 
 
 def load(name):
@@ -37,7 +40,10 @@ def load(name):
         rows.append(dict(tree=r["tree"].replace(":", ""), R=r["R"], rho=r["rho"], seed=r["seed"],
                          times=times, tau=np.array(r["tau"]), weights=weights,
                          stalled=bool(np.any(~np.isfinite(times))),
-                         floor=bool(np.nanmin(r["min_dormant"]) < FLOOR),
+                         floor=(bool(np.nanmin(r["min_slice"]) < SLICE_FLAG) if "min_slice" in r
+                                else bool(np.nanmin(r["min_dormant"]) < FLOOR)),
+                         min_slice=np.nanmin(r["min_slice"]) if "min_slice" in r else np.nan,
+                         n_learned=int(np.isfinite(times).sum()),
                          tie=bool(unresolved(times, exact="n_steps" in r)),
                          status=r.get("status"),
                          drift=r.get("drift", np.nan)))
@@ -56,6 +62,10 @@ def unresolved(times, exact=False):
     return len(t) > 1 and np.any(np.diff(np.log(t)) < (1e-9 if exact else TIE))
 
 
+def n_ok_check(ok):
+    return len(ok) > 0
+
+
 def perm(x):
     return tuple(int(i) for i in np.argsort(x, kind="stable"))
 
@@ -69,39 +79,66 @@ def race_perm_distribution(taus, weights, n_samples=200000, seed=0):
     return Counter(map(tuple, order.tolist())), n_samples
 
 
+SIGMA_OF = {"binary4": 0.05, "mps4": 0.1, "mps6": 0.2, "binary8": 0.25}
+
+
 def main():
-    name = sys.argv[1] if len(sys.argv) > 1 else "multi2"
+    name = sys.argv[1] if len(sys.argv) > 1 else "multi3"
     df = load(name)
     summary, perms = [], []
     for (tree, n_comp, rho), g in df.groupby(["tree", "R", "rho"]):
         ok = g[~g.stalled & ~g.floor & ~g.tie]
+        excl = g[g.stalled | g.floor | g.tie]
         greedy = tuple(range(n_comp))
+        weights = rho ** np.arange(n_comp)
         gf_perm = [perm(t) for t in ok.times]
         race_perm = [perm(tau / w) for tau, w in zip(ok.tau, ok.weights)]
+        race_perm_excl = [perm(tau / w) for tau, w in zip(excl.tau, excl.weights)]
         ktau = [kendalltau(np.arange(n_comp), t).statistic for t in ok.times]
         ktau_race = [kendalltau(t, tau / w).statistic for t, tau, w in
                      zip(ok.times, ok.tau, ok.weights)]
-        pooled = np.concatenate(g.tau.values)
-        model, n_mod = race_perm_distribution(pooled, rho ** np.arange(n_comp))
+        # iid race model from the blow-up times of (a) the same runs as GF, (b) all runs
+        model, n_mod = race_perm_distribution(
+            np.concatenate(ok.tau.values) if n_ok_check(ok) else np.concatenate(g.tau.values), weights)
+        model_all, n_all = race_perm_distribution(np.concatenate(g.tau.values), weights)
         model_ktau = sum(c * kendalltau(np.arange(n_comp), np.argsort(p)).statistic
                          for p, c in model.items()) / n_mod
         first = Counter(p[0] for p in gf_perm)
-        rec = dict(tree=tree, R=n_comp, rho=rho, n=len(g), n_used=len(ok),
-                   stalled=int(g.stalled.sum()), floor=int(g.floor.sum()),
+        p_gf = np.mean([p == greedy for p in gf_perm]) if gf_perm else np.nan
+        p_mod = model[greedy] / n_mod
+        n_ok = len(ok)
+        rec = dict(tree=tree, R=n_comp, rho=rho, sigma=SIGMA_OF.get(tree, np.nan), n=len(g),
+                   n_used=n_ok, n_converged=int((g.status == "converged").sum()),
+                   n_stalled=int((g.status == "stalled").sum()),
+                   n_tmax=int((g.status == "t_max").sum()),
+                   n_floor_flag=int((g.floor & ~g.stalled).sum()),
                    unresolved_ties=int(g.tie.sum()),
-                   p_greedy_order=np.mean([p == greedy for p in gf_perm]),
-                   p_greedy_order_model=model[greedy] / n_mod,
-                   kendall_greedy=np.mean(ktau), kendall_greedy_se=np.std(ktau) / np.sqrt(len(ktau)),
+                   learned_at_stop=" ".join(f"{k}:{int((g.n_learned == k).sum())}"
+                                            for k in range(n_comp + 1) if (g.n_learned == k).any()),
+                   p_greedy_order=p_gf,
+                   p_greedy_order_se=np.sqrt(p_gf * (1 - p_gf) / max(n_ok, 1)),
+                   p_greedy_order_model=p_mod,
+                   p_greedy_order_model_all=model_all[greedy] / n_all,
+                   z_vs_model=(p_gf - p_mod) / np.sqrt(max(p_mod * (1 - p_mod) / max(n_ok, 1), 1e-12)),
+                   race_greedy_used=np.mean([p == greedy for p in race_perm]) if race_perm else np.nan,
+                   race_greedy_excluded=(np.mean([p == greedy for p in race_perm_excl])
+                                         if race_perm_excl else np.nan),
+                   race_first_excluded=" ".join(
+                       f"{r + 1}:{sum(p[0] == r for p in race_perm_excl)}" for r in range(n_comp)),
+                   kendall_greedy=np.mean(ktau) if ktau else np.nan,
+                   kendall_greedy_se=np.std(ktau) / np.sqrt(max(len(ktau), 1)),
                    kendall_greedy_model=model_ktau,
                    race_exact_order=np.mean([a == b for a, b in zip(gf_perm, race_perm)]),
-                   race_kendall=np.mean(ktau_race), max_drift=g.drift.max())
+                   race_first_agree=np.mean([a[0] == b[0] for a, b in zip(gf_perm, race_perm)]),
+                   race_kendall=np.mean(ktau_race) if ktau_race else np.nan)
         for r in range(n_comp):
-            rec[f"p_first_{r + 1}"] = first[r] / max(len(ok), 1)
+            rec[f"p_first_{r + 1}"] = first[r] / max(n_ok, 1)
         summary.append(rec)
         counts = Counter(gf_perm)
         for p in itertools.permutations(range(n_comp)):
             perms.append(dict(tree=tree, R=n_comp, rho=rho, order="".join(str(i + 1) for i in p),
-                              gf=counts[p] / max(len(ok), 1), race_model=model[p] / n_mod))
+                              gf=counts[p] / max(n_ok, 1), race_model=model[p] / n_mod,
+                              race_model_all=model_all[p] / n_all))
     summary, perms = pd.DataFrame(summary), pd.DataFrame(perms)
     summary.to_csv(RES / f"{name}_summary.csv", index=False, float_format="%.4g")
     perms.to_csv(RES / f"{name}_perms.csv", index=False, float_format="%.4g")

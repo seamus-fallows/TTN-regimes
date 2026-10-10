@@ -62,6 +62,15 @@ def main():
     cov = np.linalg.inv(X.T @ X) * (resid @ resid) / (len(j) - 3)
     joint = dict(c=np.exp(coef[0]), a=coef[1], a_se=np.sqrt(cov[1, 1]), b=-coef[2],
                  b_se=np.sqrt(cov[2, 2]), rms_log_resid=np.sqrt(np.mean(resid**2)))
+    # the joint fit does not separate cleanly (review): K-exponent per chi on the MPS trees alone
+    kexp = []
+    for chi, g in df[df.tree.str.startswith("mps") & (df.chi >= 1)].groupby("chi"):
+        a_k, _ = np.polyfit(np.log(g.K - 2), np.log(g.sd_log_tau), 1)
+        kexp.append(dict(chi=chi, K_exponent_mps=a_k))
+    kexp = pd.DataFrame(kexp)
+    kexp.to_csv(RES / "chi_scan_K_exponent.csv", index=False, float_format="%.4g")
+    print(kexp.to_string(index=False))
+    joint["binary8_resid_mean"] = float(np.mean(resid[(j.tree == "binary8").values]))
     pd.DataFrame([joint]).to_csv(RES / "chi_scan_joint_fit.csv", index=False, float_format="%.4g")
     print("joint fit sd(log tau) = c (K-2)^a chi^-b:", {k: round(v, 3) for k, v in joint.items()})
     df.to_csv(RES / "chi_scan.csv", index=False, float_format="%.4g")
