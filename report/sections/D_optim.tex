@@ -2,6 +2,8 @@
 % samples) and Sec. 5.5 (optimizers used in practice): the checks, numbers and figures moved out of the main text,
 % then the provenance and corrections after review. Sources as for Secs. 5.4 and 5.5; final claims review B
 % (C1, M6-M8, M10-M13, m17-m43 for these subsections) applied.
+% final_review_round2.md applied: setup-regimes-09 (lambda_2(H) defined in place), -11 (chi-square in words),
+% -12 / global-15 (the SGD class is "stalled", as in App. B; no "trapped" label).
 \subsection{Steps, gradient noise, finite samples and optimizers}\label{app:D-optim}
 
 Details behind \cref{sec:other-optim,sec:other-optimizers}; settings in \cref{app:exp-optim,app:exp-optimizers}.
@@ -16,7 +18,8 @@ $1.2\cdot10^{-5}$ (57 events). At $0.9\lr_c$ the relative error of $\tev1$ is $0
 $0.0036$ for $\isc=0.3$, $0.1$, $0.03$, $0.01$, $0.003$ (five seeds).
 
 \paragraph{Above the limit: edge of stability.}
-\derived{} \empirical{} For $\lr_c<\lr<2/\lambda_2(\Hess)$ only the radial mode of component 1 is unstable, and GD on
+\derived{} \empirical{} For $\lr_c<\lr<2/\lambda_2(\Hess)$, with $\lambda_2(\Hess)$ the second-largest Hessian eigenvalue at
+the minimum, only the radial mode of component 1 is unstable, and GD on
 it is the balanced scalar map of \cref{fig:optim-gd}a (\cref{app:optimizer}): a two-cycle from $\lr_c$, period four
 from $1.245\lr_c$, chaos from $1.32\lr_c$, then returns to the origin interleaved with divergence ($\Kc=3$). On binary
 $\Ns=4$ component 1 oscillates while components 2 and 3 are still learned, and the time-averaged excess loss equals
@@ -64,11 +67,11 @@ of the 1,529 runs that kept the first component; on the aligned route no escaped
 \empirical{} The aligned-route test starts with component 1 learned and the route at per-core amplitude
 $b_0=0.002$--$0.01$, so that $T_{\rm GF}=50$--$250$ is exact; $\lr/\batch=3.1\cdot10^{-5}$--$2.5\cdot10^{-4}$, six noise
 seeds per point. One fitted $c_{\rm col}=32.6$ (the commuting-pair estimate of \path{notes/theory_optimizer.md} gives
-about 26 for this teacher) yields $\chi^2=379$ for 18 degrees of freedom, against 535 for a pole $1/(1-x)$ and 929 for
-$1+x/2$; but the effective $c_{\rm col}$ grows from 30 at small $x$ to 45 near the trap. $\batch=16$ and $64$ agree
+about 26 for this teacher) yields a chi-square statistic of 379 for 18 degrees of freedom, against 535 for a pole
+$1/(1-x)$ and 929 for $1+x/2$; but the effective $c_{\rm col}$ grows from 30 at small $x$ to 45 near the stall at $x=1$. $\batch=16$ and $64$ agree
 within $1.8$ combined s.e.\ at eight matched points, although $\batch=64$ is higher at all three escaped points with
 $b_0=0.003$. At $\lr/\batch=1.25\cdot10^{-4}$, $T_{\rm SGD}/T_{\rm GF}=1.13$, $1.37$ and $2.5$--$2.7$ for $b_0=0.01$, $0.005$,
-$0.003$, and all runs are trapped at $0.002$. From random initialization the second plateau is lengthened by
+$0.003$, and all runs stall at $0.002$ (no persistent event by $4T_{\rm GF}$; the route amplitude decays). From random initialization the second plateau is lengthened by
 $19.8\pm5.1\%$ at $\isc=0.03$, $\batch=1$ (the 16 of 30 runs that kept component 1), against $17.7\%$ from
 \eqref{eq:optim-collapse} with no further fit, but by $10.8\pm0.6\%$ against $4.4\%$ at $\isc=0.1$.
 
@@ -93,11 +96,11 @@ seen with another teacher (\cref{app:optimizer}) does not carry over.
     component 1), mean $\pm$ s.e.\ across initializations, $\isc=0.03$, $0.1$, $0.3$ from light to dark; dotted:
     \eqref{eq:optim-collapse} with $c_{\rm col}$ from (b). (b)~Second plateau from the aligned route, mean $\pm$ s.e.\
     over the escaped runs of six noise seeds; per-core route amplitude $b_0=0.01$, $0.005$, $0.003$, $0.002$ from light
-    to dark ($T_{\rm GF}=50$--$250$); circles $\batch=64$, squares $\batch=16$; triangles: all runs trapped; grey: three
+    to dark ($T_{\rm GF}=50$--$250$); circles $\batch=64$, squares $\batch=16$; triangles: all runs stalled; grey: three
     laws, one fitted collapse constant $c_{\rm col}$ each. (c)~Minimum of $\ov1$ during each run of (b) (colours as in
     (b)) against $\lr/\lr^*_{\rm ms}(\batch)$, with $\lr^*_{\rm ms}(\batch)$ the mean-square stability limit
     \eqref{eq:A-ms-threshold}; dashed: $\frac12$. Takeaway: SGD lengthens later plateaus as the collapse law predicts and
-    traps at $x\ge1$; near its stability limit it also erases the learned component. (source: \cref{tab:exp-optim})}
+    stalls at $x\ge1$; near its stability limit it also erases the learned component. (source: \cref{tab:exp-optim})}
   \label{fig:optim-sgd}
 \end{figure}
 
@@ -213,7 +216,7 @@ in its \path{results/} folder; the binary $\Ns=8$ gradient-flow exponent $4.991\
 \path{later_b8_summary.csv}, the order agreement from \path{order_agreement_with_gf.csv}. Reviews:
 \path{notes/reviews/optim_samples_round1.md}, \path{optim_samples_round2_verification.md} (errata 1--7 applied),
 \path{optimizers_round1.md} and \path{final_review_claims_B.md}. Corrections after review: SGD is compared with
-gradient flow on means, since single runs scatter to both sides; the trapped aligned-route runs are counted
+gradient flow on means, since single runs scatter to both sides; the stalled aligned-route runs are counted
 separately from those that also forgot; the consequences of the SGD drift law carry its \conjecture{} tag; the GD order
 check on the deep trees compares only the components that gradient flow learns within the budget; Adam is credited
 with gradient flow's first component, not its full order; and the small-$\isc$ statements of the synthesis are

@@ -1,6 +1,8 @@
 % sections/D_regimes.tex -- App. D: supplementary results of Sec. 3 (map of regimes) and Secs. 5.1-5.4
 % (lazy, rich, large chi): per-chi and per-K values, fits, secondary checks and the threshold sensitivity
 % moved out of the main text, then the provenance and corrections after review. Sources as for Sec. 3.
+% notes/reviews/final_review_round2.md applied: setup-regimes-01, -02 (verified against round2/per_seed_*.csv),
+% -11 (chi-square in words, delta_* named), other-cov-4 (median exponent from report/runs_sigma_chi_b4.csv).
 \subsection{Map of regimes and the lazy and rich regimes}\label{app:D-regimes}
 
 Values behind \cref{sec:regime-map} and \cref{sec:other-lazy,sec:other-rich,sec:other-large-chi}; settings in
@@ -62,9 +64,9 @@ $\Kc=10$ and $12$ such runs persist up to $\isc\approx1.0$--$1.3$ and the next r
 so a crossing to rich is seen in 2 of 6 seeds at $\Kc=10$ (both at $0.90$) and in none at $\Kc=12$. All these runs
 end on the floor ($\Loss/\Loss(0)=0.001$--$0.074$), and 9 of the 13 learn the smaller component first: they do not
 measure the boundary of a realizable problem. On $\Kc=4$--$7$ both $\isc_c^\Kc=\text{const}$ and
-$\isc_c^\Kc/\sqrt{d^\Ns}=\text{const}$ fit the medians ($\chi^2=0.79$ and $0.59$, three degrees of freedom); adding the
+$\isc_c^\Kc/\sqrt{d^\Ns}=\text{const}$ fit the medians (chi-square statistics $0.79$ and $0.59$, three degrees of freedom); adding the
 per-seed values whose bracket ends at a crossing ($\Kc=8$, two seeds at $\Kc=10$) leaves them indistinguishable
-($\chi^2=7.5$ and $7.3$, five degrees of freedom). At the smallest $\isc$, 0, 1, 0, 3, 0, 5, 3 and 6 of six seeds
+(chi-square statistics $7.5$ and $7.3$, five degrees of freedom). At the smallest $\isc$, 0, 1, 0, 3, 0, 5, 3 and 6 of six seeds
 stall on binary4, MPS4, MPS5, MPS6, binary8, MPS8, MPS10 and MPS12, and 5 of 5 on binary16, each at a partial fit
 with one component learned ($\Loss/\Loss(0)=4/13$ or $9/13$).
 
@@ -77,7 +79,7 @@ level for $\lambda\ge10$ is $0.59$--$0.61$ in the medians and $0.51$--$0.75$ ove
 \empirical{} (predictions \derived) Raising the separation threshold from $2$ to $5$ moves the saddle-to-saddle
 boundary of binary4 by a factor $2.14$--$2.34$ ($\chi=3$--$36$; means of six seeds, s.e.\ at most $0.08$), against
 $(5/2)^{1/(\Kc-2)}=2.5$: the $O(1)$ part of $\sep{}$ lowers the ratio at finite $\isc$. Raising the kernel threshold
-from $0.05$ to $0.2$ moves the lazy boundary by $1.97\pm0.08$ at $\chi=9$, down to $1.33\pm0.01$ at $\chi=36$ and
+$\delta_*$ (default $0.1$) from $0.05$ to $0.2$ moves the lazy boundary by $1.97\pm0.08$ at $\chi=9$, down to $1.33\pm0.01$ at $\chi=36$ and
 $1.30$--$1.35$ at $\chi=32$--$128$: with $\isc_{\rm lazy}\propto\delta_*^{-1/(\Kc\beta)}$ (\cref{app:boundaries}), the local slope
 $\beta=\dd\ln\dTK/\dd\ln\xi$ grows from 1 (first order, ratio $1.59$) towards 2 (second order, $1.26$), and the slopes
 $1.5$--$1.8$ at $\chi\ge32$ predict $1.27$--$1.36$. Only the boundaries move: across the nine threshold pairs at most
@@ -91,19 +93,22 @@ saddle-to-saddle side is not comparable (merged first events, \cref{sec:other-ri
 $d=2$ and $3$, six seeds per cell; per seed, $\isc_c$ is the first crossing of $\sep{}=3$ coming from small $\isc$, on
 an adaptive grid refined until the bracket is a factor $2^{1/(\Kc-2)}$ in $\isc$. A run whose initial function
 already overlaps a teacher component by $0.1$ is outside the domain of the event rule, and a seed that is
-saddle-to-saddle up to that scale gives only a lower bound. Plain model, $\chi=4=2\ncomp$ (1,070 runs, 156 seeds): at
+saddle-to-saddle up to that scale gives only a lower bound (this domain rule is an amendment, made after the
+first plain-model runs, which were discarded and re-run; it depends only on the initial overlaps, so it cannot
+select on outcomes). Plain model, $\chi=4=2\ncomp$ (1,070 runs, 156 seeds): at
 $\Kc\ge8$, 85 of the 96 seeds are censored from above, 76 at the domain limit and 9 still saddle-to-saddle when the
 budget ended (at $d=3$, 47 of 48); the other 11 cross at $\isc_c=0.86$--$1.37$ ($d=2$, $\Kc=8$--$12$, including 4 of 6
 seeds at $\Kc=12$; and $1.08$ at $d=3$, $\Kc=10$). Every censored lower bound at $\Kc\ge8$ ($1.07$--$2.03$;
 $1.18$--$2.03$ at $\Kc\ge11$) exceeds 1 and both laws extrapolated from the resolved cells, so $\isc_c\to1$ is rejected
-for the plain model at $\Kc\le15$. The bounds sit a median $3\%$ below each seed's own domain limit, whose medians are
+for the plain model at $\Kc\le15$ (binary trees, $\chi=4$, teacher $(3,2)$, $d=2$, $3$); this comparison of the bounds
+with the extrapolated laws was not pre-registered, and it relies on the amended domain rule. The bounds sit a median $3\%$ below each seed's own domain limit, whose medians are
 $1.50$ ($d=2$) and $1.80$ ($d=3$) at $\Kc\ge11$, still rising: the domain limit is a product of $\Kc$ per-core factors
 and tends to about $1.15\sqrt d$ \derived{} (checked by simulation), and only 38 of the 85 bounds exceed $\sqrt d$.
 The bounds rest on the sampled $\isc$ (a median of four runs inside the domain per seed); 14 of them, at $d=3$,
 $\Kc=12$--$15$, rest on the rule for runs whose second component was not learned by the end of the budget. On the
 resolved cells ($d=2$: $\Kc=3$--$7$ and $12$; $d=3$: $\Kc=3$--$5$) the slope of $\ln(\isc_c^\Kc/a_{0c}^\Kc)$ against
 $\ln\sqrt{d^\Ns}$ is $1.21\pm0.22$ at the separation threshold 3, favouring the fixed per-component amplitude by the
-pre-registered rule; at threshold 5 it favours it only with standard errors scaled by the fit's $\chi^2$, which was
+pre-registered rule; at threshold 5 it favours it only with standard errors scaled by the fit's chi-square statistic, which was
 not pre-registered (unresolved without); it is $0.72\pm0.56$ at threshold 2 and $0.61\pm0.51$ without the cells where
 the cores shrink (both unresolved): a censored selection that does not answer the large-$\Kc$ question.
 
@@ -118,8 +123,15 @@ plateaus and lifts the plain boundary above both laws is consistent with these d
 which it did not (slope $-0.07\pm0.51$, $2.1$ standard errors from 1). Centred model, full bonds (360 runs): medians
 $0.16$, $0.39$, $0.50$, $0.65$, $0.81$, $0.83$ at $\Kc=3$--$8$ ($d=2$) and $0.15$, $0.28$ at $\Kc=3$, $4$ ($d=3$, every seed
 resolved); per-seed exponents of $\sep{}$ against $\isc$ are $-1.05$, $-2.13$, $-3.21$, $-4.93$, $-5.18$, $-6.93$ at
-$\Kc=3$--$8$, against $-(\Kc-2)$ \knownresult[the scaling; new as a check]. The plain model agrees with the centred one
-up to $\Kc=4$ and lies above it from $\Kc=5$.
+$\Kc=3$--$8$, against $-(\Kc-2)$ \knownresult[the scaling; new as a check]. At $d=2$, $\Kc=3$, $4$ the two arms have the
+same bonds ($\chi=4$ is full there) and agree seed by seed (within $2\%$; one seed $8\%$). From $\Kc=5$, where the centred
+bonds exceed 4, the plain medians are higher at $\Kc=5$, $6$, $8$ ($0.59$ against $0.50$; $0.85$ against $0.65$ over the
+resolved seeds, with one more plain seed censored above $0.97$; every plain seed at least $1.07$ against $0.83$) and about
+equal at $\Kc=7$ ($0.78$ against $0.81$ over the resolved seeds, $0.86$ with the censored plain seed at its bound). At
+$d=3$ (centred bonds 9) they are higher already at $\Kc=3$, $4$ ($0.20$ against $0.15$; $0.44$ against $0.28$ over the
+resolved seeds, with two more plain seeds censored above $1.0$ and $1.6$). The arms differ in $\chi$ as well as in $\Wz$,
+so this comparison does not isolate the unlearning of $\Wz$; at equal $\chi=4$ the first sweep gives the same
+boundaries up to $\Kc=7$ (\cref{sec:regime-K}).
 
 \paragraph{Transients.}
 \empirical{} During an escape, components not yet learned rise transiently (for matrix-like pairs the peak falls
@@ -148,7 +160,8 @@ four seeds).
 \paragraph{Two-copy model at small $\isc$.}
 \empirical{} On binary4 at $\chi=18$, $24$, $36$ every two-copy run at $\isc\le0.04$ still has three events, but
 $\min_i\sep i$ at $\isc=0.010$ is only $2.7$--$14$ (centred: $12$--$29$) and grows per seed like $\isc^{-0.1}$ to
-$\isc^{-1.0}$ between $\isc=0.04$ and $0.01$ (centred: about $\isc^{-1}$); the labels (5, 4 and 5 of six seeds
+$\isc^{-1.0}$ between $\isc=0.04$ and $0.01$ (median $\isc^{-0.5}$, exponent below $0.75$ in 16 of the 18 seeds;
+centred: about $\isc^{-1}$); the labels (5, 4 and 5 of six seeds
 saddle-to-saddle at $\isc=0.010$, 4, 3 and 2 at $0.016$) do not follow the $\isc^{-(\Kc-2)}$ law.
 
 \paragraph{Large bond dimension.}

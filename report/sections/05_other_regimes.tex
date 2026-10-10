@@ -10,6 +10,8 @@
 % approaches -1 as c2 x^2 fades"; probe-kernel levels as tests of P16/P20 ("delta_K ~ 4-5" under muP-TTN);
 % "delta_K ~ chi^0.03 (muP)" and "chi^-0.84 (NTK)" as the tensor-kernel result; the interim scipy two-copy
 % numbers ("rich at every sigma", 0.80 vs 1.13).
+% final_review_round2.md applied: other-cov-4, -5, -8, setup-regimes-11/global-19 (L_S notation),
+% setup-regimes-12/global-15 (SGD runs "stalled", not "trapped"), global-13 (Interpretation -> pointer to 7.1).
 \section{Other regimes}\label{sec:other-regimes}
 
 This section gives the detail of the regimes other than saddle-to-saddle that \cref{sec:regime-map} maps: lazy
@@ -101,8 +103,9 @@ seed checked (\cref{app:boundaries}) \empirical.
 \paragraph{Crowded first escapes.}
 \empirical{} In the two-copy model at small $\isc$ the two copies start identical, so their near-origin escapes
 start together and the first two events crowd: on binary4 at $\chi=18$--$36$, $\min_i\sep i$ at $\isc=0.010$ is only
-$2.7$--$14$ (centred: $12$--$29$) and grows far more slowly than $\isc^{-(\Kc-2)}$, so the two-copy sweep is no
-quantitative check of the boundary (\cref{app:D-regimes}). On binary4 Adam's runs are rich, non-incremental for
+$2.7$--$14$ (centred: $12$--$29$) and grows per seed like $\isc^{-0.1}$ to $\isc^{-1.0}$ (median about
+$\isc^{-0.5}$), in most seeds far more slowly than $\isc^{-(\Kc-2)}$, so the two-copy sweep is no quantitative
+check of the boundary (\cref{app:D-regimes}). On binary4 Adam's runs are rich, non-incremental for
 another reason: the first escape is as wide as its own time (\cref{sec:other-optimizers}).
 
 \subsection{Large bond dimension: NTK versus \texorpdfstring{$\mu$P}{muP}}\label{sec:other-large-chi}
@@ -185,7 +188,7 @@ Gradient flow is the limit of gradient descent (GD) as the step $\lr\to0$ and of
 $\lr/\batch\to0$, and the population loss is the limit of the empirical loss as $\nsamp\to\infty$. How much of
 \cref{sec:s2s} survives finite values? GD keeps gradient flow's saddle sequence up to a sharp stability limit,
 with event times shifted by a computable $O(\lr)$; gradient noise does not shorten plateaus on average, but it
-lengthens later ones and can trap the dynamics at a saddle; and from a finite training set small initialization
+lengthens later ones and can stall the dynamics at a saddle; and from a finite training set small initialization
 recovers the teacher with its bond ranks, while the lazy limit fails as dimension counting predicts. Setup
 (\cref{app:exp-optim}): odeco teacher $(3,2,1)$, $d=\chi=3$, fan-in initialization (five seeds) on the binary trees
 with $\Ns=4$ ($\Kc=3$) and $\Ns=8$ ($\Kc=7$) and the MPS with $\Ns=8$ ($\Kc=8$); GD and online SGD (fresh inputs at
@@ -227,7 +230,7 @@ stable step thus reproduces gradient flow, the more closely the smaller $\isc$.
   \includegraphics[width=\textwidth]{optim/gd.pdf}
   \caption{Gradient descent against gradient flow: binary tree, $\Ns=4$ ($\Kc=3$), $d=\chi=3$, odeco teacher
     $(3,2,1)$, five seeds. (a)~Top: attractor of the balanced scalar map $x\mapsto x+hx^{\Kc-1}(1-x^\Kc)$,
-    $x=q/\tw1^{1/\Kc}$ with $q$ the per-core amplitude of component 1, $h=\lr\tw1^{2-2/\Kc}$ (points at 0: returns to
+    $x$ the per-core amplitude of component 1 divided by $\tw1^{1/\Kc}$, $h=\lr\tw1^{2-2/\Kc}$ (points at 0: returns to
     the origin). Bottom: outcome classes at the
     18 steps marked below the axis, pooled over $\isc=0.003$--$0.3$ (15--25 runs per step). GF-like:
     monotone loss ending at gradient flow's loss (within $5\%$ plus $10^{-3}\Loss_0$); catapult: the same
@@ -246,9 +249,10 @@ stable step thus reproduces gradient flow, the more closely the smaller $\isc$.
 \derived{} \empirical{} \knownresult[the scalar map and its two-cycle: \citealp{ghosh2025learning}, Thm~1,
 \citealp{macdonald2025convergence}, Thm~5.3; edge of stability: \citealp{cohen2021gradient}; catapults:
 \citealp{lewkowycz2020large}] Just above $\lr_c$ only the radial mode of component 1 is unstable, and GD on it is the
-balanced scalar map of \cref{fig:optim-gd}a (\cref{app:optimizer}): a two-cycle, then chaos, whose time-averaged
-excess loss the network matches to $0.9\%$ while it learns the other components; from $1.5\lr_c$ on it diverges or
-is thrown back to the origin saddle (binary $\Ns=4$). At larger $\isc$ the minimum that gradient flow reaches is
+balanced scalar map of \cref{fig:optim-gd}a (\cref{app:optimizer}): a two-cycle (period four from $1.245\lr_c$),
+whose time-averaged excess loss the network matches to $0.9\%$ at $1.05$--$1.3\lr_c$ while it learns the other
+components. The map's chaotic window (from $1.32\lr_c$) does not survive: from $1.5\lr_c$ on GD diverges or is
+thrown back to the origin saddle (binary $\Ns=4$). At larger $\isc$ the minimum that gradient flow reaches is
 sharper and $2/\lambda_{\rm GF}$ replaces $\lr_c$, with $\lambda_{\rm GF}\propto\isc^{3.965\pm0.014}$ on the lazy side
 (centred binary $\Ns=4$, $\chi=9$), close to the scale $\isc^{2(\Kc-1)}$ of the tangent kernel; from $\isc=1$ on, steps up
 to $1.5$--$3$ times $2/\lambda_{\rm GF}$ catapult to a flatter minimum and still reach gradient flow's loss
@@ -265,7 +269,7 @@ $\batch=1$--$256$): on average no setting shortened the first plateau beyond its
 runs scatter to both sides of gradient flow (earlier in 787 of the 1,600 runs from random initialization, by more
 than $5\%$ in 141).
 
-\paragraph{SGD: later plateaus lengthen, and can trap.}
+\paragraph{SGD: later plateaus lengthen, and can stall.}
 \conjecture{} (heuristic law) \knownresult[mechanism: stochastic collapse, \citealp{chen2023stochastic}]
 Once a component is learned, a route of $k\ge3$ cores (\cref{sec:s2s-locality}) has no curvature, but its entries are
 coupled to the learned cores by zero-mean multiplicative noise of order one, which drives their log-amplitude down
@@ -274,18 +278,19 @@ at a rate $c_{\rm col}\lr/\batch$, with a collapse constant $c_{\rm col}$ that d
 \begin{equation}\label{eq:optim-collapse}
   \frac{T_{\rm SGD}}{T_{\rm GF}}=\frac{-\ln(1-x)}{x},\qquad x=c_{\rm col}\frac{\lr}{\batch}T_{\rm GF},
 \end{equation}
-for a $k=3$ plateau of gradient-flow length $T_{\rm GF}$, and trapping for $x\ge1$. Test \empirical{} on binary
-$\Ns=4$ from the aligned route (component 1 learned, the route started at an amplitude that makes $T_{\rm GF}=50$--$250$
+for a $k=3$ plateau of gradient-flow length $T_{\rm GF}$, and a stall for $x\ge1$: the route amplitude decays
+(stochastic collapse), a mechanism other than the dead routes of gradient flow (\cref{sec:s2s-failure}).
+Test \empirical{} on binary $\Ns=4$ from the aligned route (component 1 learned, the route started at an amplitude that makes $T_{\rm GF}=50$--$250$
 exact; 144 runs; \cref{fig:optim-sgd}b): every escaped run was slower than gradient flow (114 of 114), none of the
-30 runs at $(\lr/\batch)T_{\rm GF}\gtrsim0.025$ escaped (29 trapped, one diverged), and with one fitted
-$c_{\rm col}=32.6$ the condition $x=1$ separates escaped from trapped settings in 23 of 24 cases; the law holds to
+30 runs at $(\lr/\batch)T_{\rm GF}\gtrsim0.025$ escaped (29 stalled, one diverged), and with one fitted
+$c_{\rm col}=32.6$ the condition $x=1$ separates escaped from stalled settings in 23 of 24 cases; the law holds to
 about $10\%$ for $T_{\rm SGD}/T_{\rm GF}\lesssim1.5$, and within the errors only $\lr/\batch$ matters. At the largest
-$\lr/\batch$ the learned component also fell below $\frac12$ in 19 of 24 runs, so the clean trap is the longest
+$\lr/\batch$ the learned component also fell below $\frac12$ in 19 of 24 runs, so the clean stall is the longest
 plateau ($T_{\rm GF}=250$) at half that $\lr/\batch$ (6 of 6 runs, one dip). From random initialization the second
 plateau is lengthened as \eqref{eq:optim-collapse} predicts at $\isc=0.03$ but more than predicted at $\isc=0.1$
 (\cref{app:D-optim}). Consequence: at fixed $\lr/\batch$ a later plateau grows faster than
 $\isc^{-(k-2)}$ and, by the law, becomes infinite at a finite $\isc$ \conjecture; on the aligned route the ratio
-$T_{\rm SGD}/T_{\rm GF}$ rises from $1.13$ to $2.7$ and then every run traps as $T_{\rm GF}$ grows \empirical: SGD stalls
+$T_{\rm SGD}/T_{\rm GF}$ rises from $1.13$ to $2.7$ and then no run escapes as $T_{\rm GF}$ grows \empirical: SGD stalls
 where gradient flow is only slow. By the same drift model a strict ($k=2$) route still escapes if
 $\abs{\lambda_-}>c_{\rm col}\lr/\batch$ \conjecture: on the MPS with $\Ns=4$ and a pattern teacher $(3,0.3)$ whose second
 component needs $k=2$, SGD at $\batch=1$ learned it in 5 of 5 runs, on average $8\pm5\%$ later than gradient flow
@@ -421,7 +426,7 @@ $\Ns=8$ most are saddle-to-saddle.
     ($\lr=10^{-3}$), GD re-gauged at every step ($\lr=0.02$), Riemannian GD ($\lr=0.1$), one-site ALS,
     each on its own clock. Rows: normalized loss, overlaps $\ov r$, bond singular values of the cut $01|23$
     (colour: component $r$ and singular-value index $j$). Gradient flow and Adam learn one component at a time in
-    the same order, with plateaus at the partial-fit levels $\Lpart1/\Lpart0=0.36$ and $\Lpart2/\Lpart0=0.07$; the
+    the same order, with plateaus at the partial-fit levels $\Loss_{\{1\}}/\Loss_0=0.36$ and $\Loss_{\{1,2\}}/\Loss_0=0.07$ \eqref{eq:partial-fit}; the
     other three have none. This Adam run is saddle-to-saddle ($\sep i=7.1$, $45$), which is atypical: most binary4
     Adam runs are rich. The ALS run is the only one of the 60 ALS and DMRG runs (problem, method and seed
     combinations) in which no two components cross $\ov r=\frac12$ in the same micro-step. Takeaway: Adam keeps the
@@ -469,10 +474,7 @@ again with $\isc$-free event times. Gram preconditioning has no flat plateau but
 depends on $\isc$ (\cref{tab:optimizers}; details in \cref{app:D-optim}).
 
 \paragraph{Interpretation.}
-Two properties of an update decide what survives (\cref{tab:optimizers}, second column): how its step scales with
-the gradient, which near the origin is $O(\isc^{\Kc-1})$ (a step proportional to the gradient needs a time
-$\isc^{-(\Kc-2)}$, a step invariant under its rescaling does not, and an absolute scale such as Adam's $\epsilon$ brings
-the law back, \derived), and the metric: ALS, DMRG and Riemannian GD see $\W_0$ only through its frames, so they keep
-no $\isc$ (\proven{} for ALS and DMRG, exact for Riemannian GD at $\lr=1$), and because they move $\W$ at a rate of order
-one they keep no plateaus \derived; re-gauged GD shares the equivariance and the $\isc$-independence but not the rate
-(details in \cref{app:D-optim}).
+Two properties of an update decide what survives (\cref{tab:optimizers}, second column), how its step scales with
+the gradient and the metric in which it moves $\W$; the reading is given with the other parameters in
+\cref{sec:summary-parameters} (``Landscape and clock''). Re-gauged GD shares the equivariance and the
+$\isc$-independence of ALS, DMRG and Riemannian GD but not their rate of order one (\cref{app:D-optim}).
