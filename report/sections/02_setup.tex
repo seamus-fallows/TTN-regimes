@@ -69,7 +69,7 @@ genuine tensor; a deep linear network is a chain with physical legs only at its 
 setting in which \citet{saxe2014exact} solved deep linear networks. (iii)~The matrix product state
 (MPS) classifiers of \citet{stoudenmire2016supervised} compute, for each class label $\ell$,
 $f^\ell(x)=\ip{\W^\ell}{\bigotimes_i\feat{i}(x)}$ (the label index sits on one core), with non-Gaussian
-local features $(\cos\frac{\pi\xs{i}}{2},\sin\frac{\pi\xs{i}}{2})$ that are correlated across sites.
+local features $(\cos(\pi\xs{i}/2),\sin(\pi\xs{i}/2))$ that are correlated across sites.
 (iv)~Training is then a fully observed tensor factorization. On HT trees it has the mode tree of the
 hierarchical tensor factorization of \citet{razin2022implicit} (one leaf matrix per site), but there
 each internal node is a local CP factorization (their Eq.~3),
