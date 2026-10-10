@@ -1,0 +1,12 @@
+# d test with independent seeds (review item 6): mps:4, d = 4, chi = 2 (the same bond dimensions for
+# d = 2 and d = 4), seeds 300000+ (disjoint from every other run, so no shared random draws).
+name: d_test_mps4_d4
+trees: ["mps:4"]
+d: [4]
+chi: [2]
+rho: [0.5, 0.8]
+sigma: [0.01]
+seeds: 1000
+seed0: 300000
+proxies: false
+lo_race: false

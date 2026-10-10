@@ -1,6 +1,6 @@
 """Order-statistics sweep: P(larger component learned first) over trees, d, chi, rho, sigma, seeds.
 
-Usage: uv run python experiments/order/sweep.py experiments/order/configs/<name>.yaml [--procs 90]
+Usage: uv run python experiments/order/sweep.py experiments/order/configs/<name>.yaml [--procs N] [--raw DIR] [--res DIR]
 
 One job = one (tree, d, chi, seed). It computes, from the same unit-scale init u0:
   - per component r: init statistics (`common.init_proxies`) and, if `lo_race`, the blow-up time
@@ -29,6 +29,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (  # noqa: E402
+    default_procs,
     single_thread,
     RAW as OUT,
     RES,
@@ -94,7 +95,7 @@ def job(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
-    ap.add_argument("--procs", type=int, default=int(os.environ.get("PROCS", 90)))
+    ap.add_argument("--procs", type=int, default=default_procs())
     args = ap.parse_args()
     cfg = yaml.safe_load(open(args.config))
     out_dir = OUT / cfg["name"]

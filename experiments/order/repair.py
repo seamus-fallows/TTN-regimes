@@ -20,7 +20,7 @@ import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import RAW, single_thread, gf_first_event, make_spec, make_teacher, unit_init  # noqa: E402
+from common import RAW, default_procs, single_thread, gf_first_event, make_spec, make_teacher, unit_init  # noqa: E402
 
 
 def fix(args):
@@ -41,7 +41,8 @@ def fix(args):
 
 def main():
     name = sys.argv[1]
-    procs = int(sys.argv[sys.argv.index("--procs") + 1]) if "--procs" in sys.argv else os.cpu_count()
+    procs = (int(sys.argv[sys.argv.index("--procs") + 1]) if "--procs" in sys.argv
+             else default_procs())
     path = RAW / name / "runs.jsonl"
     recs = [json.loads(line) for line in open(path)]
     bad = [r for r in recs if any(run["status"] != 1 for run in r["runs"])]

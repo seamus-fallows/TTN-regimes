@@ -33,6 +33,7 @@ from scipy.optimize import brentq, minimize_scalar
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (  # noqa: E402
+    default_procs,
     single_thread,
     RAW as OUT,
     RES,
@@ -83,7 +84,7 @@ def event_crossings(spec, teacher, sol, r):
     return out, a
 
 
-def analyse(spec, teacher, sol, rho):
+def analyse(spec, teacher, sol, rho, pred_kind="rotation"):
     loss, _ = loss_grad_fn(spec, teacher)
     t_end = sol.t[-1]
     a1x, a1_steps = event_crossings(spec, teacher, sol, 0)
@@ -91,12 +92,18 @@ def analyse(spec, teacher, sol, rho):
     t1 = next((t for t, s in a1x if s > 0), np.inf)
     # saddle starts begin with a_2 ~ 1 (component 2 learned at t = 0)
     t2 = 0.0 if a2_steps[0] >= 0.5 else next((t for t, s in a2x if s > 0), np.inf)
-    # record grid: log-spaced, uniform, and dense around the first two events
+    # record grid: log-spaced, uniform, dense around the first two events, and a fine window just
+    # around them (at t ~ 1e8 the gap t1 - t2 can be ~10, far below a uniform spacing)
     t_lo = 0.7 * min(t1, t2) if np.isfinite(min(t1, t2)) else 0.0
     t_hi = max(t for t in (t1, t2, 0.0) if np.isfinite(t))
-    t_hi = min(t_end, t_hi + 2 * (abs(t1 - t2) if np.isfinite(t1 - t2) else 0) + 20)
+    gap = abs(t1 - t2) if np.isfinite(t1 - t2) else 0.0
+    t_hi = min(t_end, t_hi + 2 * gap + 20)
+    pad = max(5 * gap, 50.0)
+    f_lo = max(0.0, min(t for t in (t1, t2) if np.isfinite(t)) - pad) if np.isfinite(min(t1, t2)) else 0.0
+    f_hi = min(t_end, t_hi + pad)
     grid = np.unique(np.concatenate([np.geomspace(max(t_end * 1e-8, 1e-3), t_end, 600),
-                                     np.linspace(0, t_end, 1000), np.linspace(t_lo, t_hi, 2000)]))
+                                     np.linspace(0, t_end, 1000), np.linspace(t_lo, t_hi, 2000),
+                                     np.linspace(f_lo, f_hi, 1500)]))
     edge = spec.tree.edges[0]
     rows = []
     for t in grid:
@@ -136,13 +143,20 @@ def analyse(spec, teacher, sol, rho):
             tm = res.x
             ev, gauge_rank, raw = projected_hessian(spec, teacher, sol.sol(tm))
             q = rho ** (1.0 / spec.n_cores)
+            lam_rot = -(1 - rho) * q ** (spec.n_cores - 2)  # piggyback rotation (m = 2, k >= 3)
+            lam_add = -q ** (spec.n_cores - 2)  # adding the larger component on a spare bond index
+            # (k = 2 route: adjacent pair; multiplicity chi_e - 1), notes/theory_saddles.md 4.3
+            pred = {"rotation": lam_rot, "add": lam_add, "none": 0.0}[pred_kind]
             rec["eigs"] = ev.tolist()
             rec.update(t_mid=tm, loss_mid=loss(torch.from_numpy(sol.sol(tm))).item(),
                        a_mid=overlaps(spec, teacher, sol.sol(tm)).tolist(),
                        grad_mid=res.fun, lam_min=ev[0], lam_2=ev[1], lam_max=ev[-1],
                        lam_min_raw=raw[0], lam_2_raw=raw[1], lam_max_raw=raw[-1],
                        n_neg=int((ev < -1e-3 * ev[-1]).sum()), gauge_rank=gauge_rank,
-                       lam_pred=-(1 - rho) * q ** (spec.n_cores - 2))
+                       lam_pred=pred, lam_pred_rot=lam_rot, lam_pred_add=lam_add,
+                       n_near_add=int(np.sum(np.abs(ev - lam_add) < 0.02 * abs(lam_add))),
+                       n_near_rot=int(np.sum(np.abs(ev - lam_rot) < 0.02 * abs(lam_rot))),
+                       lam_3=ev[2], lam_4=ev[3])
             # loss on the plateau after the rotation (if any): minimum speed between t1 and re-up
             if np.isfinite(rec["a2_reup"]):
                 res2 = minimize_scalar(speed, bounds=(t1, rec["a2_reup"]), method="bounded")
@@ -161,7 +175,7 @@ def job(args):
     else:
         y0 = saddle_init(spec, teacher, rho, sigma, seed)
     sol = gf_trajectory(spec, teacher, y0, t_max=cfg.get("t_max", 1e9))
-    rec, traj = analyse(spec, teacher, sol, rho)
+    rec, traj = analyse(spec, teacher, sol, rho, cfg.get("prediction", "rotation"))
     rec.update(kind=cfg["kind"], n=cfg["n"], d=cfg["d"], chi=cfg["chi"], rho=rho, sigma=sigma,
                seed=seed, mode=cfg["mode"], status=sol.status, wall=time.time() - t0)
     out = OUT / cfg["name"]
@@ -173,7 +187,7 @@ def job(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
-    ap.add_argument("--procs", type=int, default=int(os.environ.get("PROCS", 90)))
+    ap.add_argument("--procs", type=int, default=default_procs())
     args = ap.parse_args()
     cfg = yaml.safe_load(open(args.config))
     (OUT / cfg["name"]).mkdir(parents=True, exist_ok=True)
@@ -190,7 +204,8 @@ def main():
         recs = pool.map(job, jobs, chunksize=1)
     RES.mkdir(exist_ok=True)
     df = pd.DataFrame(recs)
-    df.to_csv(RES / f"{cfg['name']}.csv", index=False, float_format="%.6g")
+    df["gap"] = df.t1 - df.t2  # computed before rounding: t1, t2 can be ~1e8 with gaps ~10
+    df.to_csv(RES / f"{cfg['name']}.csv", index=False, float_format="%.15g")
     print(df.drop(columns=["a_mid"], errors="ignore").describe().T.to_string(), flush=True)
 
 

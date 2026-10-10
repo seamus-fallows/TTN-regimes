@@ -1,0 +1,15 @@
+# Step 4, R = 3 rerun after review order_round1 (item 3): same runs as multi.yaml (raw multi2) but
+# the stall stop and the roundoff flag use slice norms (a component's slice of some core at 1e-14 x
+# the largest core norm), not the overlap product, and the minimum slice ratio before every event
+# is stored. GF: LSODA + exact Hessian (rtol 1e-9, atol 1e-14), exact event location; stop at
+# L < 1e-8 L(0), slice stall, or t = 1e9. d = chi = 4; sigma per tree (first-event sigma
+# independence checked only for sigma <= 0.1: binary8 at 0.25 and MPS6 at 0.2 are outside it).
+name: multi3
+trees: ["binary:4", "mps:4", "mps:6", "binary:8"]
+d: [4]
+chi: [4]
+R: [3]
+rho: [0.8, 0.9]
+sigma: {"binary:4": 0.05, "mps:4": 0.1, "mps:6": 0.2, "binary:8": 0.25}
+t_max: 1.0e+9
+seeds: 200
