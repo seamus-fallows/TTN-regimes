@@ -66,3 +66,15 @@ here too.
 - Open check before the final report: theorem/lemma numbers cited from preprints with several arXiv versions
   (e.g. "Thm 8" of Kumar & Haupt "Neuron Pursuit", whose v2 is twice the length of v1; Furman et al. 2026
   lemma numbers) must be re-checked against the version listed in references.bib.
+
+## 2026-10-10 — Monitoring failure and wrap-up plan
+
+- **Missed completions.** The background watcher that flags remote-agent state changes hung (no timeout on
+  `crab-student list`), so six agents that finished between 01:30 and 08:00 UTC sat idle until the user asked.
+  Nothing was lost (every agent autosaved and pushed). Fix: polling commands get hard timeouts, and the lead
+  checks in manually at least every ~2 h instead of relying on a single watcher.
+- **Wrap-up plan.** All research agents are done. Remaining: (1) reviews of s2s-core, order, regime-map,
+  data-teacher (round 2) and real-data (running in parallel locally); (2) small fix rounds where needed —
+  analysis/wording fixes by local agents on the committed code and CSVs, restarting a remote machine only if new
+  runs are required; (3) copy + verify raw outputs, then delete machines (user's standing OK); (4) write the
+  remaining report sections from reviewed results, final consistency pass, compile PDF.
