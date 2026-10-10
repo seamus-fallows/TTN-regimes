@@ -208,7 +208,7 @@ P(smaller first) at sigma = 0.01 (Wilson 95% CI half-width <= 0.05):
 
 ### 7.4b MPS4 multiplicity test (pending)
 
-### 7.5 Over-parameterized bonds restore greedy order, slowly (complete for the LO race)
+### 7.5 Over-parameterized bonds restore greedy order, slowly (complete)
 
 Leading-order race (per-component blow-up times; exact for odeco on MPS, 96-99% for binary8), d = 2,
 uncapped bond dimension chi = 1..32 on every edge (`cap: false`: the end bonds exceed the rank they can
@@ -222,6 +222,9 @@ carry), 500 seeds per point (`sweep.py configs/chi_scan.yaml`, `analyze_chi.py`,
   (MPS8) at rho = 0.5 / 0.8 / 0.9. With a log-normal tau, P = Phi(ln(1/rho)/(sqrt 2 sd)), so P >= 0.9 needs
   sd <= ln(1/rho)/1.81, i.e. chi >= [1.03 (K-2)^0.61 / ln(1/rho)]^1.89 by the fit: for rho = 0.9,
   chi ~ 160 (K = 4) and ~570 (K = 8) [extrapolation of the empirical fit].
+- **GF check** (sigma = 0.01, 400 seeds, `chi_gf.yaml`, `results/chi_gf.csv`): MPS4 chi = 32: P = 0.84 /
+  0.68 / 0.58 at rho = 0.8 / 0.9 / 0.95 (race curve 0.86 / 0.70 / 0.60), per-seed race agreement 100%;
+  binary8 chi = 32: 0.745 / 0.62 / 0.565 (race 0.72 / 0.61 / 0.55), agreement 99.5%; chi = 16 likewise.
 - So the answer to "does larger chi restore greedy order?" is yes in the limit, as for over-parameterized
   CP (Ge et al. 2021), but slowly: the spread of log escape times shrinks only like chi^-1/2.
 
