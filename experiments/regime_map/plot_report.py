@@ -120,7 +120,9 @@ def panel_sigma_chi(ax):
     ax.plot(lazy_t.index, lazy_t.values, "D-", ms=3.2, lw=1.1, color=COL["lazy"])
     ax.plot(lazy_p.index, lazy_p.values, "D--", ms=3.0, lw=0.8, mfc="white", color=COL["lazy"])
     ax.plot(fl.chi, fl.sigma_all_stalled, "v-", ms=3.5, lw=1.1, color=tp.INK_SECONDARY)
-    ax.plot(fl.chi, fl.sigma_floor_P4, "v", ms=3.5, mfc="white", color=tp.INK_SECONDARY)
+    # the small-sigma floor estimate assumes chi = teacher bond rank (a smooth point): chi = 3 only
+    f3 = fl[fl.chi == 3]
+    ax.plot(f3.chi, f3.sigma_floor_P4, "v", ms=3.5, mfc="white", color=tp.INK_SECONDARY)
 
     ax.text(4.2, 0.03, "S2S", ha="center", fontsize=8)
     ax.text(16, 0.45, "rich", ha="center", fontsize=8)
@@ -292,9 +294,12 @@ def panel_floor(ax):
         if chi < 9:
             eb = g.l_best.median()
             ax.plot(eb.index, eb.values, "-", lw=0.9, color=c)
-            dim_m, D = 18 * chi - chi * chi, 81
-            s = np.geomspace(0.01, 0.6, 30)
-            ax.plot(s, 0.7 * (1 - dim_m / D) * s**6 / 14, ls=(0, (1, 1.2)), lw=0.8, color=c)
+            if (
+                chi == 3
+            ):  # the small-sigma mean floor (eq. A-centred-floor) holds at chi = rank only
+                dim_m, D = 18 * chi - chi * chi, 81
+                s = np.geomspace(0.01, 0.6, 30)
+                ax.plot(s, (1 - dim_m / D) * s**6 / 14, ls=(0, (1, 1.2)), lw=0.8, color=c)
         else:
             ax.plot(med.index, med.values, "-", lw=0.6, color=c)
     ax.axhline(1e-3, color=tp.MUTED, lw=0.7, ls=(0, (3, 1.5)))
