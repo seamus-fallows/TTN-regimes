@@ -218,7 +218,9 @@ def fig_first(first: pd.DataFrame, out: Path, chi: int, init: str = "fanin"):
         plt.Line2D(
             [], [], color="k", lw=0, marker="o", ms=3, label=r"gradient flow $t_1$ (shade: seed)"
         ),
-        plt.Line2D([], [], color="k", lw=0.6, label=r"prediction $\sigma^{-(K-2)}T(Z)$, per seed"),
+        plt.Line2D(
+            [], [], color="k", lw=0.6, label=r"prediction $\sigma^{-(K-2)}\mathcal{T}(Z)$, per seed"
+        ),
         plt.Line2D(
             [],
             [],
@@ -236,7 +238,7 @@ def fig_first(first: pd.DataFrame, out: Path, chi: int, init: str = "fanin"):
             ls=":",
             marker="x",
             ms=2,
-            label=r"ratio to $\sigma^{-(K-2)}T(Z)$ (no offset)",
+            label=r"ratio to $\sigma^{-(K-2)}\mathcal{T}(Z)$ (no offset)",
         ),
     ]
     fig.legend(handles=handles, loc="outside lower center", ncols=2, fontsize=8)
