@@ -18,10 +18,10 @@ fan-in init, gradient flow; centred model (target W* + W_0) unless stated; 6 see
 
 | parameter | S2S boundary sigma_c | lazy boundary sigma_lazy | other effects |
 |---|---|---|---|
-| bond dimension chi (binary N = 4, full bonds, chi = 16-128, < 1 decade) | ~ chi^(-0.53 +- 0.05); measured sigma_c sqrt(chi) = 0.26-0.33 (**empirical**; not derived) | ~ chi^(-0.50 +- 0.01) (tensor kernel, chi 32-128); inside P5's bracket at chi = 24-96 and 0.07% below its lower edge at chi = 128 (sigma_lazy sqrt(chi) = 6.40-6.56 at chi >= 32; asymptote 6.50); probe kernel ~5% lower (**empirical**, confirms **derived** P5) | both boundaries ~ chi^-1/2 at N = 4: the map collapses in sigma sqrt(chi), the TTN analogue of known width scales (Tu et al. 2024, Geiger et al. 2020); sigma^K chi^(K-1) disfavoured at 3.7 SE (chi >= 16), 2.8 SE (chi >= 32) (2.1b, 3.2 item 2) |
+| bond dimension chi (binary N = 4, full bonds, chi = 16-128, < 1 decade) | ~ chi^(-0.53 +- 0.05); measured sigma_c sqrt(chi) = 0.26-0.33 (**empirical**; not derived) | ~ chi^(-0.50 +- 0.01) (tensor kernel, chi 32-128); inside P5's bracket at chi = 24-96 and 0.07% below its lower edge at chi = 128 (sigma_lazy sqrt(chi) = 6.40-6.56 at chi >= 32; asymptote 6.50); probe kernel ~5% lower (**empirical**, confirms **derived** P5) | both boundaries ~ chi^-1/2 at N = 4: the map collapses in sigma sqrt(chi), the TTN analogue of known width scales (Tu et al. 2024, Geiger et al. 2020); sigma^K chi^(K-1) disfavoured at 2.7-2.9 SE (per-seed fits; 3.7 SE pooled) (2.1b, 3.2 item 2) |
 | chi below the cut dimension | moves down with chi (0.24 at chi = 3 -> 0.14 at chi = 9, N = 4) | **no lazy regime**: centred runs stall at the Eckart-Young floor of W_0 + W* (**derived** R7, **empirical** 44/44 runs) | the stall onset (sigma = 1.0-1.6) is 1.6-2.2x above P4's small-sigma estimate; plain model converges instead (2.1) |
 | chi = teacher rank, K >= 7 | masked by stalls (dead routes, fan-in) | - | balanced init removes dead routes, not the stall (2.2) |
-| number of cores K (centred, d = 2, chi = 4) | label rule: 0.17, 0.49, 0.61, 0.68, 0.75 for K = 3-7 (resolved seeds); K >= 8 only brackets (5/6, 5/6, 6/6, 5/6 seeds unresolved at K = 8, 10, 12, 15). Floor-stalled runs classified by rho: K = 8, 10, 12 medians 1.01, 1.16, 1.15 (5/6, 4/6, 5/6 seeds; deficient bonds, floor-stalled runs); sigma_c -> sqrt(d) is a **conjecture** | not mapped beyond K = 7 (K = 7: lazy only with 2x-overparameterized full bonds, kernel boundary 1.45) | sigma^K = const and sigma^K / sqrt(D) = const fit equally on K = 4-7; stalls take over the S2S side for MPS at K >= 8 (2.3, 3.2 item 4) |
+| number of cores K (centred, d = 2, chi = 4) | label rule: 0.17, 0.49, 0.61, 0.68, 0.75 for K = 3-7 (resolved seeds); K >= 8 only brackets (5/6, 5/6, 6/6, 5/6 seeds unresolved at K = 8, 10, 12, 15). Floor-stalled runs classified by rho: K = 8: 1.01 (5/6 seeds, rho crossings; deficient bonds, floor-stalled runs); at K = 10 and 12 the brackets mostly end at runs that learned nothing (no S2S -> rich crossing at K = 12, 2/6 seeds at K = 10, both 0.90; verification E1); sigma_c -> sqrt(d) is a **conjecture**. **Round 2 (section 4)**: realizable versions | not mapped beyond K = 7 (K = 7: lazy only with 2x-overparameterized full bonds, kernel boundary 1.45) | sigma^K = const and sigma^K / sqrt(D) = const fit equally on K = 4-7 and, with crossing-terminated brackets only, on K = 4-10 (chi^2 7.7 vs 6.9, 5 dof; verification E2); stalls take over the S2S side for MPS at K >= 8 (2.3, 3.2 item 4) |
 | root imbalance lambda at fixed alpha (N = 4, chi = 16-24) | S2S majority up to alpha = 1e-4 for 0.1 <= lambda / sqrt(chi) <= 10, lower at strong imbalance (coarse grid) | light root moves the lazy boundary down by ~100x in alpha; a heavy root is lazy from alpha = 10, as at balance | delta_K ~ lambda^2 (local slope 1.85 +- 0.06 vs P20's 1.8-1.9), saturating at 0.59-0.61 (P20: 0.6-0.7; tensor kernel) (2.4) |
 | parameterization at large chi (N = 4, tensor kernel, chi = 16-128) | - | SP: delta_K ~ chi^(-3.02 +- 0.06); NTK: chi^(-0.79 +- 0.04), -1.01 between chi = 64 and 128; muP-TTN: delta_K -> 6.2 (slope +0.09 +- 0.02) | matches theory P16 (2.5) |
 | construction (two-copy vs centred) | two-copy: events 1-2 merge at large chi (not comparable) | two-copy lower by 0.79 (tensor kernel, chi 32-128; P6: 2^(-1/3) = 0.79); two-copy boundary within 2% of P6 at chi >= 32 | two-copy escapes from the lazy residual at deficient bonds (2.x) |
@@ -258,9 +258,9 @@ per-seed fits are given too), errors from the residual scatter (`results/fix1/sl
   1.13, 0.94, 0.82, 0.66, 0.571 at chi = 32, 48, 64, 96, 128 lie inside P5's bracket [1.10, 1.20],
   [0.92, 0.96], [0.80, 0.82], [0.66, 0.67] and 0.07% below the lower edge of [0.5712, 0.5773] at
   chi = 128 (sigma_lazy sqrt(chi) = 6.40, 6.49, 6.56, 6.48, 6.46 against the asymptote 6.50); at
-  chi = 9-16 they are 2-6% above the bracket. Two-copy: 0.90,
+  chi = 9-16 they are 1.5-6.3% above the bracket (+6.3, +2.9, +1.5%; chi = 9 has 3 seeds with a tensor boundary). Two-copy: 0.90,
   0.65, 0.45 at chi = 32, 64, 128 against P6's 0.91, 0.65, 0.46 (sigma sqrt(chi) = 5.06, 5.21, 5.13 vs
-  5.16), and two-copy / centred = 0.79, 0.80, 0.79 (P6: 2^(-1/3) = 0.79). delta_K(x) near the boundary
+  5.16), and two-copy / centred = 0.791, 0.794, 0.794 (P6: 2^(-1/3) = 0.79). delta_K(x) near the boundary
   (0.03 < delta_K < 0.3, chi >= 32, 43 runs) is 0.96 (median; 0.69-1.82) of R4's
   sqrt((c_1 x)^2 + (c_2 x^2)^2), i.e. delta_K ~ c_2 x^2 there (`lazy_r4_check_chi_b4.csv`). The probe
   kernel (label rule) gives 0.54-1.11 (median 0.78) of the tensor-space delta_K there, hence probe-kernel
@@ -333,20 +333,22 @@ K = 12 and a "derived" sqrt(d) limit.*
 - **Floor-stalled runs classified by min_i rho_i** (the review's rule; `results/fix1/k_sweep_*.csv`,
   from the copied raw outputs; rule in section 3.2 item 4): the first floor-stalled run above the label
   bracket is S2S-like (rho > 3) in 13 of the 18 unresolved MPS seeds. Resolved seeds and medians then:
-  K = 6: 6/6, 0.80; K = 8: 5/6, 1.01; K = 10: 4/6, 1.16; K = 12: 5/6, 1.15; K = 15: none (missing grid
-  points). These runs end on the floor of the unrealizable centred target (chi = 4 is deficient for
+  K = 6: 6/6, 0.80; K = 8: 5/6, 1.01 (rho crossings); K = 15: none (missing grid points). *Erratum E1
+  (verification of fix round 1):* the old "K = 10: 1.16; K = 12: 1.15" are not S2S -> rich crossings: at
+  K = 12 all 5 brackets end at a run that learned nothing within its budget (0/6 seeds reach rho <= 3);
+  at K = 10 only 2 seeds end at a crossing (both 0.90). MPS 10/12 S2S-like floor-stalled runs persist up
+  to sigma ~ 1.0 (5/6 seeds) or 1.3 (1 seed) at K = 12, and the next runs learn nothing. These runs end on the floor of the unrealizable centred target (chi = 4 is deficient for
   MPS 6-12), so they do not measure the H4 boundary of a realizable problem. **Empirical.**
 - **Scaling laws** (`results/fix1/k_sweep_laws.csv`, per-K medians with bootstrap errors over seeds):
   on K = 4-7 both u_0 = sigma_c^K = const and u_0 = sigma_c^K / sqrt(D) = const fit (chi^2 0.79 and
-  0.59 for 3 dof; spreads 4.6x and 3.7x); with the rho-classified K = 8-12, sigma^K = const fails
-  (chi^2 22.5, 6 dof, spread 98x) and sigma^K / sqrt(D) is acceptable (6.3, spread 12x) with a constant
-  that drifts from ~0.01 (K <= 7) to 0.07-0.10 (K = 8-12). The old "within 20% in sigma" test was weak
+  0.59 for 3 dof; spreads 4.6x and 3.7x), and with only label- or rho-terminated brackets also on
+  K = 4-10 (chi^2 7.7 vs 6.9, 5 dof; erratum E2: the old "sigma^K = const fails (chi^2 22.5)" came from
+  stall-terminated brackets and is withdrawn). The old "within 20% in sigma" test was weak
   (sigma_c = u^(1/K) compresses a factor 2-9 in u into 20% in sigma). **Empirical**; neither law is
   established.
 - **H4 and sqrt(d): conjecture.** "sigma_c(K) -> sqrt(d), not 1" was tagged "derived from R9"; R9's
   effective-amplitude law is heuristic, only d = 2 was run, and the K >= 8 values are brackets or
-  floor-limited, so sqrt(d) and 1 cannot be distinguished (the rho-classified medians at K = 10-12,
-  1.15-1.16, lie between them). **Conjecture** (as R9 / P15 in `notes/theory_regimes.md`); a test needs
+  floor-limited, so sqrt(d) and 1 cannot be distinguished. Round 2 (section 4) tests realizable versions. **Conjecture** (as R9 / P15 in `notes/theory_regimes.md`); a test needs
   full bonds (or spare channels with the plain model), longer budgets at K >= 8, and d = 3.
 - **Stalls take over at large K.** Even with spare channels, MPS trees stall on the S2S side (MPS 8:
   5/6 seeds stall at the smallest sigma; MPS 12: no seed reaches a resolved label boundary; centred floor
@@ -373,12 +375,12 @@ chi = 16, alpha = 3.375, lambda = 0.01..100; `results/phase_imbalance_b4.png`.
   of the theory 1.1e-4, 9.9e-4, 0.0096, 0.052, 0.22, 0.51, 0.61, 0.60, 0.59. Per-seed local slopes
   d ln delta_K / d ln lambda (tensor kernel, mean +- SE, 6 seeds) 1.97 +- 0.01, 1.85 +- 0.06, 1.55 +- 0.11,
   1.22 +- 0.09 from the smallest lambda up: delta_K ~ lambda^2 as lambda -> 0 (P20: 1.8-1.9 between 0.03
-  and 0.1), saturating at 0.59-0.61 for lambda >= 10 (P20: 0.6-0.7). Labels: lazy for lambda <= 0.3 (6/6),
+  and 0.1), saturating at 0.59-0.61 for lambda >= 10 (at the lower edge of P20's 0.6-0.7). Labels: lazy for lambda <= 0.3 (6/6),
   rich for lambda >= 1 (5/6 at lambda = 1). **Empirical**, confirming theory R13 / P20 (slope and
   saturation; the old "~20% below the prediction" was the probe kernel).
 - **Map, chi = 24 (majority labels, 6 seeds; one-decade alpha grid).** The lazy boundary moves to
   smaller alpha as the root shrinks: lazy for alpha >= 0.1 at lambda / sqrt(chi) = 0.01 (4/6 at 0.1) and
-  for alpha >= 1 at 0.03-0.1, against alpha >= 10 at balance (a factor ~100 in alpha). A heavy root
+  for alpha >= 1 at 0.03 (at 0.1 and alpha = 1 a 3/3 tie), against alpha >= 10 at balance (a factor ~100 in alpha). A heavy root
   (lambda >= sqrt(chi)) is lazy from alpha = 10 (3/6-4/6; 6/6 at 100), as at balance: it neither makes
   training lazier nor prevents laziness. S2S majority up to alpha = 1e-4 for 0.1 <= lambda / sqrt(chi)
   <= 10, up to 1e-5 at 0.01, 0.03 and 32, only at 1e-6 at 100. *Withdrawn in fix round 1:* "the S2S
@@ -399,7 +401,7 @@ centred and plain, sigma = 1.0 and 1.5, 6 seeds; `results/large_chi_large_chi_b4
 `large_chi_exponents_*.csv`, `results/fix1/large_chi_slopes_tensor.csv` and `large_chi_levels.csv`.
 Slopes of log(quantity) vs log chi over chi = 16..128 (4 values, 0.9 decade; 24 runs each; error from
 the residual scatter). sigma = 1.5 is the theory's check point (x = 1.11). Fix round 1: delta_K with
-the tensor-space kernel of the theory (the 128-probe kernel gives 0.68-0.83 of it at chi >= 32).
+the tensor-space kernel of the theory (the 128-probe kernel gives 0.68-0.83 of it at chi >= 32 as per-(lr, chi) medians; single runs span 0.50-1.05).
 
 | centred, sigma = 1.5 | delta_K (tensor) | delta_K (probe) | delta_theta | root (rel. Frobenius change) | leaf cores |
 |---|---|---|---|---|---|
@@ -475,8 +477,8 @@ the library numbers come from the committed CSVs of the `sigma_chi_b4` library s
   -0.502, 0) at t = 32; `pilots/twocopy_mechanism.py`). Events 1 and 2 then merge: t_2 - t_1 stays
   ~2 for sigma from 0.01 to 0.04 (instead of growing like 1/sigma) and rho_1 ~ 2 (interim runs). In the
   library sweep (fix round 1, committed CSVs) the two smallest sigma (0.010, 0.016) are labelled S2S in
-  4-5 of 6 seeds at chi = 18-36 (majority-label boundary 0.018, 0.016, 0.014 at chi = 18, 24, 36; the
-  interim "rich at every sigma" is superseded), but min_i rho_i never exceeds 5 there (the rho = 5
+  5, 4, 5 seeds at sigma = 0.010 and 4, 3, 2 seeds at 0.016 (chi = 18, 24, 36; majority-label boundary 0.018, 0.016, 0.014; the
+  interim "rich at every sigma" is superseded), but min_i rho_i stays small there (largest value at sigma <= 0.016: 7.1, 14.4, 4.8 at chi = 18, 24, 36; erratum E4) (the rho = 5
   crossing exists for 2, 3, 0 of 6 seeds at chi = 18, 24, 36), so the scaling check (iii) of
   `notes/diagnostics.md` fails. So the two-copy model is a faithful cross-check of the lazy boundary (up
   to the predicted shift) but **not of the S2S boundary at large chi**: its incremental structure is
@@ -561,7 +563,7 @@ delta_K to 7e-7 (`validation_local_vs_remote.csv`).
 
 Numbering as in the review's fix list; status tags as in the project.
 
-**Relabel (review fix 2; all copied runs, `results/fix1/relabel_runs.csv` for N = 4).** 130 of the 9,094 runs
+**Relabel (review fix 2; all copied runs, `results/fix1/relabel_runs.csv` for N = 4).** 116 of the 9,094 runs (erratum E5; 14 more have repeated crossings only in a component that is never learned, all stalled)
 have a transient above 1/2 before the component is learned; 15 labels change, all rich -> S2S: chi_b4 3
 (chi = 12 seed 4 at sigma = 0.015-0.029), sigma_chi_b4 8 (the same chi = 12 seed 4 at 0.010-0.025 and
 chi = 4 seed 3 at 0.040, centred and plain), sigma_K_d2 1 (binary 4, chi = 2, seed 4, sigma = 0.24),
@@ -610,7 +612,7 @@ table are unchanged. As the review found, the effect is rare and confined to a f
    - S2S slope vs chi (per-seed label boundaries, pooled fit, SE from the scatter): -0.528 +- 0.053 for
      chi 16-128 (42 values, 0.9 decade; per-seed fits -0.528 +- 0.073), -0.548 +- 0.078 for chi 32-128
      (0.6 decade), -0.552 +- 0.049 for chi 9-128 (1.15 decades; was -0.528 +- 0.061 before the
-     relabel). -1/3 (per-path amplitude x number of paths) differs by 3.7 SE (chi >= 16) and 2.8 SE
+     relabel). -1/3 (per-path amplitude x number of paths) differs by 2.7 SE (chi >= 16) and 2.9 SE (chi >= 32) in the per-seed fits (erratum E3; the pooled fit, which treats seeds sharing teachers across chi as independent, gives 3.7 SE and 2.8 SE
      (chi >= 32), not "4.2 SE at chi >= 32"; -1/2 is within 0.6 SE.
    - Lazy slope: probe kernel -0.543 +- 0.015 (chi 16-128; per-seed fits -0.543 +- 0.012, 3.6 SE from
      -1/2) and -0.522 +- 0.020 (chi 32-128); tensor-space kernel -0.553 +- 0.013 (chi 16-128) and
@@ -643,8 +645,8 @@ table are unchanged. As the review found, the effect is rare and confined to a f
      grid step are not counted as resolved). The first floor-stalled run above the label bracket is
      S2S-like in 13 of the 18 unresolved MPS seeds (K = 6-12; rho = 4-642, L/L_0 = 0.001-0.074).
      Resolved seeds and medians: K = 6: 6/6, 0.80 (the two reclassified seeds at [1.47, 2.0] and
-     [1.08, 1.47]); K = 8: 5/6, 1.01 (seed 1: S2S-like at 1.16, open); K = 10: 4/6, 1.16 (two seeds at
-     [0.80, 1.00], two at [1.26, 1.59]; two brackets [1.00, 1.59] too wide); K = 12: 5/6, 1.15 (four at
+     [1.08, 1.47]); K = 8: 5/6, 1.01 (seed 1: S2S-like at 1.16, open); K = 10: 4/6, "1.16" (two seeds at
+     [0.80, 1.00], two at [1.26, 1.59]; two brackets [1.00, 1.59] too wide; erratum E1: only the two 0.90 seeds end at a rho crossing); K = 12: 5/6, "1.15" (erratum E1: all five end at no-learning stalls, not crossings; four at
      [1.03, 1.29], one at [1.29, 1.60]); K = 15: 0/6 (the points 0.76 and 0.92 were not finished at the
      cut-off and the next runs learned nothing, L/L_0 = 1, so the brackets span 3-5 grid steps).
    - Caveat (why this does not settle H4): at chi = 4 the bonds of MPS 6-12 are deficient, the centred
@@ -656,13 +658,13 @@ table are unchanged. As the review found, the effect is rare and confined to a f
    - Laws (`results/fix1/k_sweep_laws.csv`; per-K medians of resolved seeds, bootstrap errors over
      seeds, crude with 4-6 seeds): on K = 4-7 sigma_c^K = const has chi^2 = 0.79 and
      sigma_c^K / sqrt(D) = const 0.59 (3 dof; spreads 4.6x and 3.7x): indistinguishable. With the
-     rho-classified K = 8-12: chi^2 = 22.5 (law A) and 6.3 (law B) for 6 dof, spreads 98x and 12x:
+     rho-classified K = 8-12 [withdrawn, erratum E2: stall-terminated brackets; with crossing-terminated brackets only the laws are indistinguishable on K = 4-10, chi^2 7.7 vs 6.9, 5 dof]: chi^2 = 22.5 (law A) and 6.3 (law B) for 6 dof, spreads 98x and 12x:
      sigma^K = const fails, sigma^K / sqrt(D) is acceptable but its constant drifts from ~0.01 (K <= 7)
      to 0.07-0.10 (K = 8-12). The old "within ~20% in sigma" test was weak (sigma_c = u^(1/K): 20% in
      sigma is a factor 1.2^K = 2-9 in u).
    - Status: "sigma_c -> sqrt(d), not 1" was tagged "derived from R9"; R9's effective-amplitude law is
      heuristic, only d = 2 was run, and the K >= 8 values rest on floor-stalled runs at deficient bonds:
-     **conjecture**. The measured sigma_c exceeds 1 at K = 10-12 (medians 1.15-1.16) in this
+     **conjecture**. [Withdrawn, erratum E1: "the measured sigma_c exceeds 1 at K = 10-12 (medians 1.15-1.16)"; those brackets end at no-learning stalls.] In this
      deficient-bond setting, below sqrt(2) = 1.41. A test needs full bonds or spare channels with the
      plain model, longer budgets at K >= 8, and d = 3.
 5. **Claim 5 (large chi: delta_K ~ chi^-3.09 (SP), chi^-0.84 (NTK, "approaching -1"), chi^+0.03
@@ -672,7 +674,7 @@ table are unchanged. As the review found, the effect is rare and confined to a f
      pulled by chi = 16-32, where delta_K = 0.4-0.6 (pre-asymptotic): between chi = 64 and 128 the local
      slope is -1.01 and the levels 0.250 and 0.124 match R4's 0.240 and 0.120. muP-TTN levels 5.1, 5.7,
      6.1, 6.2 at chi = 16, 32, 64, 128 (P16: -> 6.2-6.3; local slope +0.04 between 64 and 128); the old
-     "delta_K ~ 4-5" was the probe kernel, which gives 0.68-0.83 of the tensor value at chi >= 32.
+     "delta_K ~ 4-5" was the probe kernel, which gives 0.68-0.83 of the tensor value at chi >= 32 (per-(lr, chi) medians; single runs 0.50-1.05).
      **Empirical**, confirms P16 for SP, for the muP-TTN level and for NTK at chi >= 64.
    - Withdrawn: "NTK slope approaching -1 as the second-order term c_2 x^2 fades": in R12 both orders
      scale as chi^-1; the shallow fit is the pre-asymptotic chi = 16-32.
@@ -693,14 +695,14 @@ table are unchanged. As the review found, the effect is rare and confined to a f
      text, 2.18, was the log-ratio without the division by ln 3; it is 1.98 from the medians. P20's
      1.8-1.9 between 0.03 and 0.1: 1.85 +- 0.06. **Empirical**, confirms P20.
    - Saturation for lambda >= 10: median delta_K = 0.61, 0.60, 0.59 at lambda = 10, 30, 100 with the
-     tensor kernel (range over seeds 0.51-0.75), against P20's 0.6-0.7: **confirmed**. The "20% below the
+     tensor kernel (range over seeds 0.51-0.75), at the lower edge of P20's 0.6-0.7: **confirmed**. The "20% below the
      prediction" of the old text (0.53, 0.50, 0.50) is the probe kernel. **Empirical.**
    - Labels at the check point: lazy 6/6 for lambda <= 0.3, lambda = 1: 5 rich / 1 lazy, rich 6/6 for
      lambda >= 3.
    - Map at chi = 24 (`phase_imbalance_b4.png`, regenerated; the relabel changes three chi = 3 runs and no
      chi = 24 run; majority labels, one-decade alpha grid): a
      light root lowers the lazy boundary (lazy from alpha = 0.1 at lambda / sqrt(chi) = 0.01, 4/6 seeds,
-     and from alpha = 1 at 0.03-0.1), i.e. by up to ~100x in alpha against alpha = 10 at balance. A heavy
+     and from alpha = 1 at 0.03; at 0.1 and alpha = 1 a tie, 3 lazy / 3 rich, erratum E6), i.e. by up to ~100x in alpha against alpha = 10 at balance. A heavy
      root does **not** make training lazier, and it does not prevent laziness either: for
      lambda / sqrt(chi) >= 1 the runs are lazy from alpha = 10 (majority 3/6-4/6; 6/6 at 100) as at
      balance; at the P20 point (alpha = 3.375) a heavy root is rich (delta_K ~ 0.6). **Empirical.**
@@ -715,8 +717,8 @@ table are unchanged. As the review found, the effect is rare and confined to a f
    `boundaries_sigma_chi_b4_twocopy.csv`; `results/fix1/csv_checks_sigma_chi_b4.csv`):
    - Old: "labelled rich at every sigma in the grid for chi >= 18 (S2S boundary 0.015 vs 0.075 centred
      at chi = 24)". New: the two-copy runs are labelled S2S at the two smallest sigma (0.010, 0.016) in
-     4-5 of 6 seeds at chi = 18-36 (majority-label boundary 0.018, 0.016, 0.014 at chi = 18, 24, 36), but
-     min_i rho_i never exceeds 5 there (rho = 5 crossing found for 2, 3, 0 of 6 seeds at chi = 18, 24, 36),
+     5, 4, 5 seeds at sigma = 0.010 and 4, 3, 2 seeds at 0.016 (chi = 18, 24, 36; majority-label boundary 0.018, 0.016, 0.014), but
+     min_i rho_i stays small there (largest 7.1, 14.4, 4.8 at chi = 18, 24, 36; erratum E4) (rho = 5 crossing found for 2, 3, 0 of 6 seeds at chi = 18, 24, 36),
      so the sweep-level scaling check (iii) of `notes/diagnostics.md` fails: these are not S2S runs in the
      sense of the diagnostics, and events 1-2 merge as described. **Empirical** (the relabel changes no
      two-copy label: one run has a transient above 1/2).
@@ -758,6 +760,28 @@ table are unchanged. As the review found, the effect is rare and confined to a f
   keep the probe kernel for labels (current) or switch to the tensor kernel for N <= 8.
 - Not re-analysed: the interim scipy sweep (`b4_sigma_chi`, superseded), `large_chi_b8` (K = 7, not
   interpreted), the stall test (no label changes).
+
+### 3.4 Errata from the verification of fix round 1 (`notes/reviews/regime_map_round2_verification.md`)
+
+Applied in place in sections 0-3, marked "erratum E1-E6":
+- **E1.** The K = 10 / 12 medians (1.16, 1.15) are not S2S -> rich crossings. At K = 12 all 5 brackets
+  end at no-learning stalls; at K = 10, 2 seeds end at a crossing (0.90). "sigma_c > 1 at K = 10-12" is
+  withdrawn.
+- **E2.** "sigma^K = const fails (chi^2 22.5)" is withdrawn. With crossing-terminated brackets only, the
+  two laws are indistinguishable on K = 4-10 (chi^2 7.7 vs 6.9, 5 dof).
+- **E3.** sigma^K chi^(K-1) is disfavoured at 2.7-2.9 SE in the per-seed fits (3.7 SE pooled).
+- **E4.** Two-copy runs at small sigma:
+  - the largest min_i rho_i at sigma <= 0.016 is 7.1, 14.4 and 4.8 at chi = 18, 24, 36;
+  - S2S-labelled seeds are 5, 4, 5 at sigma = 0.010 and 4, 3, 2 at 0.016.
+- **E5.** 116 runs have a transient above 1/2 before the component is learned. 14 more have repeated
+  crossings only in a never-learned component.
+- **E6.** Minor corrections:
+  - two-copy / centred ratio 0.791 / 0.794 / 0.794;
+  - 1.5-6.3% above P5's bracket at chi = 9-16;
+  - probe / tensor kernel 0.68-0.83 as medians (single runs 0.50-1.05);
+  - P20 saturation at the lower edge of 0.6-0.7;
+  - imbalance map tie at lambda / sqrt(chi) = 0.1, alpha = 1.
+
 
 ## 4. Round 2: sigma_c(K) at large depth in realizable problems (pre-registered 2026-10-10 12:50 UTC)
 
