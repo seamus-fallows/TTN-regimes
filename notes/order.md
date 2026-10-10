@@ -1,6 +1,7 @@
 # Order of learning (Q4; hypotheses H1, H1b) — agent `order`
 
-Status: **complete (round 1 + fix round after review)**, 2026-10-10. Experiment folder `experiments/order/`
+Status: **complete (round 1 + fix round after review + errata after verification, section 12)**,
+2026-10-10. Experiment folder `experiments/order/`
 (README there: configs, commands, cost). Tags: **proven**, **derived** (assumptions stated),
 **empirical**, **conjecture**. Companion theory notes: `notes/theory_escape.md` (v2; sections 3, 5 cover
 the same ground from the escape side) and `notes/theory_saddles.md` (v2; section 4, H1b).
@@ -8,7 +9,9 @@ the same ground from the escape side) and `notes/theory_saddles.md` (v2; section
 ## 0. Results at a glance
 
 Revised in the fix round after `notes/reviews/order_round1.md`; the changed claims are listed in
-section 11.
+section 11. The errata of the verification (`notes/reviews/order_round2_verification.md`, E1-E10) are
+applied in place and listed in section 12; its "Safe to cite" table (C1-C17) is the final list of
+citable claims.
 
 | # | claim | status | evidence |
 |---|---|---|---|
@@ -16,11 +19,11 @@ section 11.
 | O2 | m >= 3 (cores carrying the differing sites): every component is a local max of g on the sphere, order random (H1) | derived | P(larger first) = 0.60-0.88 at rho = 0.5, 0.51-0.65 at 0.8 on MPS4-8 and binary8 (sigma = 0.01, 400 seeds per setting) |
 | O3 | Odeco teacher on an MPS: the LO flow decouples into one independent chain per component; winner = argmin tau_r/s_r | derived (exact at leading order) | 40800/40800 MPS GF runs agree with the per-seed race; binary8 96-99% |
 | O4 | P(greedy) falls toward 1/2 with K and rises slowly with chi; on an MPS d enters only through the bond caps | empirical (K, chi); derived (d, MPS); empirical at one chi (d, binary8) | `main_settings.csv`; independent-seed d test (7.1b) |
-| O5 | Selection rule: argmax_r s_r X_r^q, X_r = projection of the init on component r's KKT orbit; q = (0.99-1.25)(K-2) (bootstrap SE 1-9%); predicts 76-92% of winners out of sample on m >= 3 trees, the same with q fixed to K-2 | empirical | `results/main_rules.csv` (columns q_se, order_accuracy_oos, order_accuracy_q_Km2) |
-| O6 | m = 2 (binary4 = depth-3 DLN; matrix-like pattern pairs): greedy as sigma -> 0; P(smaller first) consistent with sigma^(n(1-rho)/rho), n = 1 for non-adjacent pairs; adjacent pairs (shared bond chi_e) are 2-3.4x steeper, n = chi_e is a conjecture not reached by sigma = 1e-5 | heuristic derivation; empirical | 7.2, 7.4, 7.4b |
+| O5 | Selection rule: argmax_r s_r X_r^q, X_r = projection of the init on component r's KKT orbit; q = (0.99-1.25)(K-2) (bootstrap SE 1-4%); predicts 76-92% of winners out of sample on m >= 3 trees, the same with q fixed to K-2 | empirical | `results/main_rules.csv` (columns q_se, order_accuracy_oos, order_accuracy_q_Km2) |
+| O6 | m = 2 (binary4 = depth-3 DLN; matrix-like pattern pairs): greedy as sigma -> 0; P(smaller first) consistent with sigma^(n(1-rho)/rho), n = 1 for non-adjacent pairs (fits over the three smallest sigma agree with (1-rho)/rho within 1.1 SE in all 13 non-adjacent sets; the full-range fits are low in 12/13, pre-asymptotic); adjacent pairs (shared bond chi_e) are 2-3.4x steeper; n = chi_e is a conjecture, supported at the small-sigma end on MPS4 (rho = 0.9: 0.40 +- 0.05 for sigma = 1e-3..1e-5 vs 0.444), not reached on MPS6 down to sigma = 0.003 | heuristic derivation; empirical | 7.2, 7.4, 7.4b |
 | O7 | H1b, after a wrong first escape: m = 2, k >= 3 (non-adjacent pair): strict saddle lambda_min = -(s_1-s_2) s_2^((K-2)/K), rotation to the larger component in ln(1/sigma)/|lambda_min| from the saddle (O(1/|lambda_min|) in natural runs), smaller one forgotten and relearned; m = 2, k = 2 (adjacent pair): strict saddle lambda = -s_1 s_2^((K-2)/K) (multiplicity chi_e - 1), the larger component is added, nothing forgotten; m >= 3: no strict saddle, wrong order kept | derived; Hessians and dynamics checked on binary4 and MPS4 (m = 2); MPS4, MPS6 and binary8 (m >= 3) | 7.3 |
 | O8 | Over-parameterized (uncapped) bonds: sd(log tau) ~ sqrt(K-2)/sqrt(chi) at large chi; greedy order restored only slowly | empirical | 7.5 |
-| O9 | R = 3 (d = chi = 4, one sigma per tree): the full order is a random permutation favouring large components, within 1.7 SE of an iid race model per case but less greedy in 6/6 m >= 3 cases (combined z = -1.9); R = 4 = chi: most runs do not learn all four components by t = 1e9 (MPS6 often only 2 of 4) | empirical | 7.6 |
+| O9 | R = 3 (d = chi = 4, one sigma per tree): the full order is a random permutation favouring large components, consistent with an iid race model in every m >= 3 case (\|z\| <= 1.6) and, paired against each run's own LO race on the same runs, no less greedy (41 vs 43 discordant runs; the fix round's "less greedy in 6/6, combined z = -1.9" is withdrawn, section 12); R = 4 = chi: most runs do not learn all four components by t = 1e9 (seen directly in the t_max and no-stop runs, inferred for the others; MPS6 often only 2 of 4) | empirical | 7.6 |
 
 ## 1. Setting
 
@@ -106,7 +109,10 @@ iff the two cores are adjacent) (`notes/theory_saddles.md` 4.3-4.4):
   Gradient flow adds component 1 on the spare index after ln(1/sigma)/(s_1 s_2^((K-2)/K)); nothing rotates
   and nothing is forgotten (a_2 stays 1). This branch was missed in round 1 (the reviewers found it).
 - **m >= 3: no strict saddle** toward the larger component (gain O(eps^m)); the larger component is added
-  in a new bond index by a k-core route after ~sigma^-(k-2); the wrong order is kept.
+  in a new bond index by a k-core route after ~sigma^-(k-2); the wrong order is kept. (Exception found
+  later: when the differing sites cover two leaf pairs of a binary tree, e.g. binary8 odeco, the saddle
+  order is 6 < k = 7 and below a crossover sigma the smaller component is forgotten; section 8 and
+  `notes/theory_saddle_order.md` v2, section 7 item 5.)
 
 Checks of the eigenvalues at the exact wrong saddle (library gauge projection, fixed cut 6c42d85; raw
 values identical here): binary4 s = (0.8, 1): -0.18566, (0.5, 1): -0.39685 (both = prediction); MPS4
@@ -162,8 +168,10 @@ d = 2 vs d = 4 at identical bond dimensions, full GF, sigma = 0.01, 1000 seeds e
 | binary8, 4-4-4-4-4-4 | 0.5 / 0.8 | 0.774 / 0.591 | 0.774 / 0.572 | 0.00 / -0.86 |
 | MPS4, 2-2-2 | 0.5 / 0.8 | 0.788 / 0.606 | 0.809 / 0.621 | +1.17 / +0.69 |
 
-No d dependence is detected at equal bonds (|difference| <= 0.021, two-sample SE ~0.018-0.020):
-derived for MPS, empirical (at this resolution, one chi) for binary8.
+No d dependence is detected at equal bonds (|difference| <= 0.021, two-sample SE 0.018-0.022);
+differences larger than about 0.06 are excluded at 95% (95% CIs on the difference, in table order:
+[-0.037, +0.037], [-0.062, +0.024], [-0.014, +0.056], [-0.028, +0.058]; verification E3): derived for
+MPS, empirical (at this resolution, one chi) for binary8.
 
 ### 7.2 sigma dependence: m = 2 versus m >= 3 (complete)
 
@@ -191,10 +199,12 @@ Full GF (RK45 with event location, rtol 1e-9, atol 1e-14), d = 2. Commands `swee
   Within 1.8 SE for rho = 0.7-0.9; rho = 0.95 is 2.6-3.2 SE low (P(smaller first) >= 0.33 at all sigma,
   far from the small-P regime of the derivation). Local slopes between consecutive sigma (seed bootstrap
   SE in `results/sigma_fits.csv`) scatter around the prediction without a trend, e.g. rho = 0.8, chi = 2:
-  0.28, 0.22, 0.22, 0.23, 0.23, 0.25 (+-0.04-0.07). The binomial deviance of the power-law fit is far
-  below its degrees of freedom (p = 0.86-1.0) because the seeds are shared across sigma, so it is only an
-  indication of an adequate fit. rho = 0.5: wrong order only at sigma >= 3e-3 (P = 0.033 / 0.021 at sigma =
-  0.1 for chi 2 / 4; 0 of 1000 at sigma <= 1e-3). The wrong-order seeds are exactly nested: every seed
+  0.28, 0.22, 0.22, 0.23, 0.23, 0.25 (+-0.04-0.07). Goodness of fit (verification E5; replaces the
+  binomial deviance, which is uninformative because the seeds are shared across sigma): fits over the
+  three smallest sigma agree with (1-rho)/rho within 1.1 SE in all 13 non-adjacent m = 2 sets (binary4
+  here, MPS6 ends in 7.4, MPS4 cores 0,2 in 7.4b), while the full-range fits are low in 12/13, so the
+  full-range deficit is pre-asymptotic. rho = 0.5: wrong order only at sigma >= 3e-3 (P = 0.033 /
+  0.021 at sigma = 0.1 for chi 2 / 4; 0 of 1000 at sigma <= 1e-3). The wrong-order seeds are exactly nested: every seed
   that comes out in the wrong order at a smaller sigma does so at all larger sigma (100% in all 8 (chi,
   rho) sets; column `nested_frac_min`), as the threshold picture delta_0 < sigma^gamma predicts. Values
   agree with the independent GF table of `notes/theory_escape.md` 5.5 (rho = 0.7, d = chi = 2: 0.137 /
@@ -225,7 +235,8 @@ norm. d = 2, chi = 4. `h1b.py configs/h1b_*.yaml`, `analyze_h1b.py`; `results/h1
   primary rule. The fitted slopes of binary4 are 1.4% above 1/|lambda| only because the fit includes
   sigma = 1e-2: the local slope x |lambda| between consecutive sigma is 1.07, 1.018, 1.002, 1.0002,
   1.0000 from sigma = 1e-2 down to 1e-7 (all rho); for MPS4 cores 0,2 it is 1.0000 +- 0.0005 throughout.
-  A power law t = c sigma^-p fits 10-80x worse in the same space (rms 1.5-6.0 vs 0.02-0.56).
+  A power law t = c sigma^-p fits 11-88x worse in the same space for the rotation sets (104-110x for
+  the adjacent set; verification E9) (rms 1.5-6.0 vs 0.02-0.56).
 - **Adding (m = 2, k = 2; MPS4 cores 1,2)**: lambda_min = -s_2^(1/2) = -s_1 s_2^((K-2)/K) with multiplicity
   3 = chi_e - 1 (4 negative eigenvalues: those three plus the piggyback one, e.g. -0.161 at rho = 0.8);
   component 1 is added on a spare index of the shared bond, a_2 stays 1 (minimum 1.0000 in 144/144), and
@@ -260,9 +271,11 @@ pattern sweeps; up to 40 per (rho, sigma)):
   wrong plateau is resolved; the visible signature is an overshoot of the smaller component, then a
   plateau at s_2^2/2 with it forgotten, then its relearning. All 421 + 240 runs now have a resolved
   minimum-speed point (round 1 left 43 binary4 runs at sigma = 1e-4 without one; they are included now, and
-  the means barely move: 1.08-1.15 at sigma = 1e-4). lambda_min there lies between 0 and the saddle
-  value for sigma <= 1e-2 (at sigma = 0.1 it is about -0.30, below the saddle value: the point is not near
-  the saddle); see `results/h1b_natural.png`.
+  the means barely move: 1.08-1.15 at sigma = 1e-4); the adjacent (k = 2) natural set has 57/150 without
+  one (near-ties, median gap 0.06; not used; verification E6). For sigma <= 1e-2, lambda_min there lies
+  at or above the saddle value to within 1.3% (26 of 296 binary4 runs and 12 of 237 MPS4 0,2 runs sit
+  0-1.3% below it; verification E4; at sigma = 0.1 it is about -0.30, below the saddle value: the point
+  is not near the saddle); see `results/h1b_natural.png`.
 - **k = 2 (adding)**: the larger component follows within 0.1-1 time units of the smaller (a near-tie);
   a_2 never falls back below 1/2 (median minimum after t1: 0.62-0.68); nothing is forgotten.
 - **m >= 3**: the wrong plateau is resolved (separation 750-1080 median); the larger component is added
@@ -296,7 +309,8 @@ P(smaller first) at sigma = 0.01 (Wilson 95% CI half-width <= 0.05):
 - **Adjacent m = 2 pairs are steeper than non-adjacent ones**: gamma = 0.67 +- 0.09 / 0.22 +- 0.03 (rho =
   0.8 / 0.9), 2.7x and 2.2x the non-adjacent ones, but below n (1-rho)/rho with n = chi_e = 4 (1.0 /
   0.444), the conjectured asymptotic multiplicity of `notes/theory_escape.md` 5.3. Local slopes at
-  rho = 0.9: 0.28, 0.18, 0.20 (+-0.05) over sigma 0.1 -> 0.003, i.e. no approach to 0.444 is visible here.
+  rho = 0.9: 0.28, 0.18, 0.20 (+-0.05) over sigma 0.1 -> 0.003, i.e. no approach to 0.444 is visible here
+  (MPS6 down to sigma = 0.003; on MPS4 the small-sigma end does approach it, 7.4b).
 
 ### 7.4b Adjacent versus separated m = 2 pairs on MPS4, down to sigma = 1e-5 (complete)
 
@@ -311,12 +325,18 @@ differ on the adjacent cores 1, 2, which share a bond of dimension chi_e = 4; `p
 | adjacent (n = chi_e = 4?) | 0.8 | 0.182 | 0.031 | 0.004 | 0 | 0 | 0.82 +- 0.06 | 0.77, 0.89 (+-0.07, 0.23) | 1.0 |
 | adjacent (n = chi_e = 4?) | 0.9 | 0.336 | 0.189 | 0.093 | 0.035 | 0.016 | 0.31 +- 0.02 | 0.25, 0.31, 0.42, 0.34 (+-0.02, 0.03, 0.06, 0.09) | 0.444 |
 
-[empirical] The separated pair is consistent with (1-rho)/rho (rho = 0.9: 2.5 SE low over the full range;
-its local slopes rise from 0.08 to 0.13 across the range). The adjacent pair's exponent is 3.2-3.4x the
-separated one, but it does not reach n (1-rho)/rho with n = chi_e by sigma = 1e-5, and the local slopes
-at rho = 0.9 (0.25, 0.31, 0.42, 0.34) do not show a steady approach (round 1 wrote "still steepening":
-withdrawn). **n = chi_e is a conjecture**, supported qualitatively (adjacent pairs are 2-3.4x steeper on
-MPS4 and MPS6) and by the LO emulation of `notes/theory_escape.md` 5.6, not quantitatively by GF here.
+[empirical] The separated pair is consistent with (1-rho)/rho (rho = 0.9: 2.5 SE low over the full range,
+but its local slopes rise from 0.08 to 0.13 across the range and the fit over the three smallest sigma
+gives 0.115 +- 0.011; rho = 0.8: 0.231 +- 0.032). The adjacent pair's full-range exponent is 3.2-3.4x the
+separated one. At rho = 0.9 its local exponent rises as sigma falls (curvature of log P in ln sigma
+-0.013 +- 0.005, 2.4 SE), and the fit over sigma = 1e-3..1e-5 gives **0.40 +- 0.05**: consistent with
+n (1-rho)/rho = 0.444 for n = chi_e = 4, and 5 SE above (1-rho)/rho. At rho = 0.8 (0.79 +- 0.07 over the
+three smallest sigma with P > 0) and on MPS6 (0.19 +- 0.03 at rho = 0.9 and 0.78 +- 0.15 at 0.8, sigma
+>= 0.003; 7.4) the exponent stays below the n = chi_e value. **n = chi_e remains a conjecture**: supported
+at the small-sigma end on MPS4 (rho = 0.9), not reached on MPS6 down to sigma = 0.003; qualitatively,
+adjacent pairs are 2-3.4x steeper on both trees, as the LO emulation of `notes/theory_escape.md` 5.6
+says. (Round 1 wrote "still steepening"; the fix round wrote "not reached by sigma = 1e-5, no steady
+approach", which was too pessimistic for MPS4 at rho = 0.9: both superseded, verification E2.)
 
 ### 7.5 Over-parameterized bonds restore greedy order, slowly (complete)
 
@@ -351,7 +371,10 @@ above the float64 floor. The sigma-independence of the first event was checked o
 (7.2), so MPS6 and binary8 are outside the checked range. GF: LSODA + exact Hessian (rtol 1e-9, atol
 1e-14), exact event location for every first crossing a_r = 1/2, stopped at L < 1e-8 L(0), at t = 1e9
 ("unfinished"), or when some component's slice of some core falls to 1e-14 x the largest core norm
-("stalled": its route is dead at float64 roundoff). Per seed also the LO blow-up time tau_r of every
+("stalled": its route is decaying exponentially; this is not a roundoff floor, since unlearned slices
+keep falling to 1e-21-1e-35 and then underflow; the threshold is justified empirically: in the 22
+no-stop runs no learned component's slice fell below 6.7e-6 before its event, while 25 of the 29
+unlearned ones fell below 1e-14; verification). Per seed also the LO blow-up time tau_r of every
 component. Model = "iid race" (Thurstone type): each component's blow-up time an independent draw from
 the pooled tau's of the **same runs** that enter the GF statistic, order = ranking of tau_r / s_r.
 
@@ -359,7 +382,10 @@ Round 1 (raw `multi2`) used an overlap-based stall stop (|a_r| < 1e-25) and an o
 flag (|a_r| < 1e-14), which excluded 18-19 binary8 runs per rho that did learn every component later,
 and compared GF on completed runs with a model built from all runs (review item 3). R = 3 was rerun with
 the slice criterion (`configs/multi3.yaml`, `analyze_multi.py multi3`, `results/multi3_summary.csv`,
-`results/multi3_perms.csv`, `results/multi3_orders.png`). Three of the 1600 runs (MPS6 rho 0.8 seed 46,
+`results/multi3_perms.csv`, `results/multi3_orders.png`). The rerun reproduces multi2 run for run
+(same status and identical event times in all 1597 runs; the slice stop fires later, median x1.27 in
+t): only the roundoff flag changed, and with it the 18-19 binary8 runs per rho are back (verification
+E10). Three of the 1600 runs (MPS6 rho 0.8 seed 46,
 rho 0.9 seed 94; binary8 rho 0.9 seed 130) were still integrating after 1.5 h and were stopped; they are
 missing from the tables (n = 199).
 
@@ -378,28 +404,39 @@ of GF with each seed's own LO race):
 | mps6 (6), sigma 0.2 | 0.9 | 97 of 199 (87 stalled, 15 unfinished) | 0.216 +- 0.042 vs 0.228 | -0.26 | 0.17 +- 0.06 vs 0.15 | 1.00 / 0.77 |
 
 - **binary4 (m = 2)**: far more greedy than the race model (z ~ +5), as the m = 2 picture predicts.
-- **m >= 3**: per case, GF is within 1.7 SE of the iid race model (P(greedy order) and Kendall tau with
-  the greedy order), but P(greedy order) is below the model in 6/6 cases (combined z = -1.9) and Kendall
-  tau below it in 5/6 [empirical]. Each seed's own race predicts the first event in 97-100% of runs and
-  the complete order in 70-89%; the misorderings are in the later events, where the learned components
-  couple the remaining ones (on MPS4 the second and third escapes come 10% to 2x later than their LO
-  blow-up times). So: a random permutation favouring large components, close to but slightly less greedy
-  than independent clocks (conjecture: the coupling after the first escape).
-- **Exclusions are not order-neutral on MPS6** (half of the runs): there the excluded runs have the
-  smallest component first in their own race more often (24% vs 13% of used runs at rho = 0.8), and the
-  unlearned component is the smallest one most often (rho = 0.8: largest 23, middle 37, smallest 48; rho
-  = 0.9: 33 / 32 / 37). The MPS6 row is therefore a statistic conditional on completion. On MPS4 and
-  binary8 at most 5 of 200 runs are excluded.
+- **m >= 3**: GF is consistent with the iid race model in every case (|z| <= 1.6 for P(greedy order);
+  Kendall tau with the greedy order within 1.7 SE) [empirical]. Paired against each run's own LO race
+  on the same runs, GF is no less greedy: in 41 runs GF is greedy and the race is not, in 43 the reverse
+  (per row 11/13, 10/8, 10/7, 4/4, 2/5, 4/6; McNemar p >= 0.45 in every row; verification). Each seed's
+  own race predicts the first event in 97-100% of runs and the complete order in 70-89%; the
+  misorderings are in the later events, where the learned components couple the remaining ones (on MPS4
+  the second and third escapes come 10% to 2x later than their LO blow-up times). So: a random
+  permutation favouring large components, consistent with independent clocks; the coupling after the
+  first escape changes the full order in 11-30% of runs but not its greediness. **Withdrawn after
+  verification (E1):** the fix round's "less greedy than the iid race in 6/6 m >= 3 cases (combined z =
+  -1.9)". The 6/6 sign comes from the realized seed sets (their own race orders are already below the
+  pooled model in 5/6 cases), and the combined z treated rho = 0.8 and 0.9 as independent although they
+  share the 200 seeds per tree (GF-greedy indicators correlate 0.73-0.90); allowing for that gives
+  z = -1.4.
+- **Exclusions on MPS6** (half of the runs): the excluded runs have the smallest component first in their
+  own race more often (24% vs 13% of used runs at rho = 0.8), but the race-first distributions differ
+  only marginally (chi^2 p ~ 0.05 at rho = 0.8, 0.2 at 0.9) and the race-greedy fraction is the same
+  (0.31 vs 0.29; 0.235 vs 0.237; verification). The unlearned component is the smallest one most often
+  (rho = 0.8: largest 23, middle 37, smallest 48; rho = 0.9: 33 / 32 / 37). The MPS6 row is therefore a
+  statistic conditional on completion. On MPS4 and binary8 at most 5 of 200 runs are excluded.
 
 **R = 4 = chi (every bond must reach full rank)**. Round 1 said "GF mostly stalls before the last
 component"; corrected:
 - Not all four components are learned by t = 1e9 in most runs [empirical, scope above]: MPS4 289/400
   (sigma 0.1), MPS6 396/399 (0.2), binary8 389/393 (0.25); binary4 0/400 (a deep linear network).
+  "Not learned by t = 1e9" is observed directly only for the runs that reached t_max and for the 22
+  no-stop runs below; for the other multi2 runs (stopped by the round-1 overlap criterion) it is
+  inferred from those 22 runs and from the reviewer's MPS4 no-stop check (verification E10).
 - **Without any stall stop** (`configs/multi_nostop.yaml`, rho 0.8, 12 seeds per tree, to t = 1e9; one
   run per tree still integrating after 1.5 h was stopped, so 11 per tree,
   `results/multi_nostop_summary.csv`): binary8: 0 of 11 runs learn all four components; learned at t = 1e9 (count:runs) 3:11; unlearned component (rank:runs) 1:6 2:1 3:1 4:3; mps6: 0 of 11 runs learn all four components; learned at t = 1e9 (count:runs) 2:7 3:4; unlearned component (rank:runs) 1:2 2:3 3:6 4:7.
-- How many components are learned at the stop (multi2 + no-stop): MPS4 3 of 4 in 288/289 incomplete
-  runs; binary8 3 of 4 in all incomplete no-stop runs (the unlearned one is the largest in 6/11); MPS6
+- How many components are learned at the stop (multi2 + no-stop; counts at the stop time, not at
+  t = 1e9, for the multi2 runs): MPS4 3 of 4 in 288/289 incomplete runs; binary8 3 of 4 in all incomplete no-stop runs (the unlearned one is the largest in 6/11); MPS6
   only **2 of 4** in about half of the incomplete runs (multi2: 88 + 90 runs with 2, 111 + 107 with 3), so
   "before the last component" was wrong for MPS6.
 - Round 1's "stalled" also included slow, pinned routes that never reach the floor: those are now
@@ -425,11 +462,13 @@ first) increases with s_1/s_2, decreases with K, may concentrate as chi grows")*
 - **Fails for matrix-like pairs (m = 2)**, which include binary N = 4 (a depth-3 DLN): only the largest
   component is a local maximum and the order is greedy as sigma -> 0 [derived; known for DLNs]. At finite
   sigma P(smaller first) is consistent with sigma^((1-rho)/rho) for non-adjacent pairs [heuristic
-  derivation; GF on binary4, MPS6 ends, MPS4 cores 0,2 for rho = 0.7-0.9, sigma down to 1e-4..1e-5];
-  adjacent pairs are 2-3.4x steeper, and the conjectured n = chi_e is not reached by sigma = 1e-5.
+  derivation; GF on binary4, MPS6 ends, MPS4 cores 0,2 for rho = 0.7-0.9, sigma down to 1e-4..1e-5;
+  fits over the three smallest sigma agree within 1.1 SE in all 13 sets]; adjacent pairs are 2-3.4x
+  steeper, and the conjectured n = chi_e is supported at the small-sigma end on MPS4 (rho = 0.9: 0.40 +-
+  0.05 vs 0.444) but not reached on MPS6 down to sigma = 0.003 (7.4b).
 - **"init overlap enters with power K-2"** [empirical]: with the overlap defined as the projection of the
   init onto the component's KKT orbit, log tau_r ~ -q log X_r with q = (0.99-1.25)(K-2), above K-2 in
-  most settings (bootstrap SE 1-9% of q); "argmax s_r X_r^(K-2)" predicts 76-92% of winners, the same out
+  most settings (bootstrap SE 1-4% of q); "argmax s_r X_r^(K-2)" predicts 76-92% of winners, the same out
   of sample (2-fold over seeds) and with q fitted; the rest needs the full alignment dynamics, which the
   LO race captures exactly.
 
@@ -456,7 +495,13 @@ first) increases with s_1/s_2, decreases with K, may concentrate as chi grows")*
   component is added in a new bond index after ~sigma^-(k-2); the wrong order stays. Sometimes the larger
   component's route dies and GF stalls at the wrong saddle (1/40 natural MPS4 runs; 1/6 MPS6 seeds).
   binary8 (k = 7) behaves the same over a narrow sigma range (|lambda_min| ~ sigma^5.2 +- 0.3, no
-  rotation).
+  rotation). *Cross-reference (2026-10-10):* by the saddle-order theorem (`notes/theory_saddle_order.md`
+  v2, Theorem 2, section 7 item 5, claim S12) the binary8 odeco wrong saddle, whose differing sites cover
+  two leaf pairs, has order 6, not k = 7: below a crossover (aligned amplitude b ~ 0.155) the escape is
+  predicted ~sigma^-4, along non-residual patterns, followed by forgetting of the smaller component
+  (derived; untested). The binary8 runs here (sigma 0.15-0.35) sit at or above that crossover and follow
+  the route law, as expected; so "the wrong order stays" is shown for binary8 only above the crossover.
+  MPS4 and MPS6 are not affected.
 
 ## 9. Relation to the literature; what is new
 
@@ -480,14 +525,18 @@ correction), which are the cases of `notes/theory_saddles.md` 4.4.
 ## 10. Open issues
 
 - Prefactor C(rho) of the m = 2 law and the pre-asymptotic regime (rho = 0.95 never reaches small P).
-- Adjacent m = 2 pairs: the GF exponent is 2-3.4x the separated one down to sigma = 1e-5 without a clear
-  approach to n = chi_e (conjecture).
+- Adjacent m = 2 pairs: n = chi_e (conjecture) is supported at the small-sigma end on MPS4 at rho = 0.9
+  (0.40 +- 0.05 over sigma = 1e-3..1e-5 vs 0.444) but not reached at rho = 0.8 or on MPS6 (down to
+  sigma = 0.003); smaller sigma on MPS6 or more seeds at rho = 0.8 would decide it.
 - Why the KKT-projection rule misses 8-24% of winners and why q > K-2: the alignment phase mixes the
   non-aligned part of the init into the escape direction; a closed form for the distribution of tau on a
   chain is open.
-- R >= 3: why GF is slightly less greedy than independent clocks after the first event; whether
-  stalls at chi = R disappear with gauge-balanced init or spare channels (theory_regimes R10, P14); the R
-  = 3 statistics on MPS6 are conditional on completion (half of the runs).
+- R >= 3: whether stalls at chi = R disappear with gauge-balanced init or spare channels (theory_regimes
+  R10, P14); the R = 3 statistics on MPS6 are conditional on completion (half of the runs). (The issue
+  "why GF is slightly less greedy than independent clocks" is dropped: the paired test detects no such
+  effect, E1.)
+- binary8 below the saddle-order crossover (sigma well below 0.15): order-6 escape ~sigma^-4 with
+  forgetting of the smaller component, predicted by `notes/theory_saddle_order.md` v2, not run.
 - binary8 / HT trees with shared internal cores: the independent race is 96-99% exact; a coupled
   closed-form race is open.
 
@@ -503,18 +552,21 @@ correction), which are the cases of `notes/theory_saddles.md` 4.4.
 3. **R = 3 (O9)**: rerun with a slice-norm stall criterion (multi3); GF and model compared on the same
    runs; excluded runs' race orders and unlearned components reported; sigma, d = chi = 4 stated; GF is
    below the model in 6/6 m >= 3 cases (combined z = -1.9), "close to an independent race" qualified.
+   [Superseded: the "less greedy" reading is withdrawn after verification, section 12 E1.]
 4. **R = 4 (O9)**: "mostly stalls before the last component" -> most runs do not learn all four by t =
    1e9 (no-stop check on MPS6 and binary8 added); MPS6 often learns only 2 of 4; scope (one sigma per
    tree, d = chi = 4, fan-in) stated; cross-reference to theory_regimes R10 (MPS4, K = 4, also stalls).
 5. **m >= 3, no strict saddle**: scope stated; two trees added (MPS6 saddle starts, |lambda_min| ~
    sigma^4.2; binary8, ~sigma^5.2 over sigma 0.15-0.35).
 6. **d (O4)**: the invalid chi^2 d-pairs test withdrawn; independent-seed test added (no effect at the
-   0.04 level on binary8 and MPS4).
+   0.04 level on binary8 and MPS4). [Corrected after verification, E3: differences larger than about
+   0.06 are excluded at 95%.]
 7. **Unresolved midpoint Hessians**: the 43 natural binary4 runs without one are now resolved (fine record
    window around the events); full-precision event times (t ~ 1e8 with gaps ~ 10 had lost digits in the
    CSV, affecting only the round-1 MPS4 adjacent/separated natural runs, which were rerun).
 8. **Smaller corrections**: H1b slope precision (local slope x |lambda| -> 1.0000; the 1.5% was the
-   sigma = 1e-2 point); "lambda_min between 0 and the saddle value" restricted to sigma <= 1e-2; race-curve
+   sigma = 1e-2 point); "lambda_min between 0 and the saddle value" restricted to sigma <= 1e-2 (refined
+   after verification, E4: at or above the saddle value to within 1.3%); race-curve
    ranges and the common-seed offset (-0.018) reported; O8 wording (sqrt(K-2) at large chi, the joint
    power law does not separate); O5 with SE, out-of-sample accuracy and accuracy at q = K-2.
 9. **Code**: --raw/--res reach spawned workers; default worker count = container CPUs; run_queue.sh
@@ -522,3 +574,41 @@ correction), which are the cases of `notes/theory_saddles.md` 4.4.
    (the overlap criterion also fired during a normal forget phase); tol_check now includes MPS8 (400 -> 500
    inits, all winners equal at rtol 1e-11, |dt1|/t1 <= 1.0e-9); the symmetry check is complete for MPS8
    (mean log(tau_1/tau_2) = -0.02 +- 0.04).
+
+## 12. Errata after the verification of the fix round (2026-10-10)
+
+Source: `notes/reviews/order_round2_verification.md` (all 7 MUST and 5 SHOULD items fixed; every
+recomputed number reproduces). Applied in place in the notes-cleanup pass; its "Safe to cite" table
+(C1-C17) is the final list of citable claims, and its "Not safe to cite" list stands.
+
+- **E1 (withdrawn claim; O9, 7.6, 10).** "GF is less greedy than independent clocks in 6/6 m >= 3 cases
+  (combined z = -1.9)" is withdrawn with its open issue. The R = 3 data are consistent with the iid race
+  model (|z| <= 1.6 per case); paired against each run's own LO race, 41 runs are greedy for GF only and
+  43 for the race only (McNemar p >= 0.45 in every row); the combined z corrected for the seeds shared
+  by rho = 0.8 and 0.9 is -1.4.
+- **E2 (O6, 7.4, 7.4b, 8, 10).** n = chi_e stays a conjecture, but "not reached by sigma = 1e-5, no
+  steady approach" was too pessimistic: on MPS4 at rho = 0.9 the small-sigma fit (sigma = 1e-3..1e-5)
+  is 0.40 +- 0.05 against 0.444; MPS6 (to sigma = 0.003) and both rho = 0.8 cases stay below.
+- **E3 (7.1b, 11 item 6).** d test: differences larger than about 0.06 are excluded at 95% (not "no effect
+  at the 0.04 level"); two-sample SE 0.018-0.022.
+- **E4 (7.3).** Natural runs: lambda_min at the minimum-speed point is at or above the saddle value to
+  within 1.3% (26/296 binary4 and 12/237 MPS4 0,2 runs sit 0-1.3% below it).
+- **E5 (7.2, O6, 8).** Goodness of fit of the m = 2 law: fits over the three smallest sigma agree with
+  (1-rho)/rho within 1.1 SE in all 13 non-adjacent sets; the full-range fits are low in 12/13
+  (pre-asymptotic). Replaces the deviance p-values.
+- **E6 (7.3).** The adjacent (k = 2) natural set has 57/150 runs without a resolved minimum-speed point
+  (near-ties, median gap 0.06; not used).
+- **E7 (O5, 8).** Bootstrap SE of q: 1-4%, not 1-9%.
+- **E8 (REPORT log).** The 21:25 ("+-1.5%") and 01:13 ("steepening toward n = chi_e = 4") entries are
+  marked superseded in `agent-runs/order/REPORT.md`.
+- **E9 (7.3).** The power law fits 11-88x worse than the log law for the rotation sets (104-110x for the
+  adjacent set), not 10-80x.
+- **E10 (7.6).** "Not learned by t = 1e9" is observed directly only in the t_max and no-stop runs and
+  inferred for the other multi2 runs; the "learned at the stop" counts are at the stop time; multi3
+  reproduces multi2 run for run (only the roundoff flag changed).
+- **Wording (7.6, no erratum number).** The slice stall rule is justified empirically (no false
+  positive in the 22 no-stop runs, margin of 8 orders of magnitude), not by a float64 roundoff floor.
+- **Cross-reference (6, 8, 10; not from the verification).** The saddle-order theorem
+  (`notes/theory_saddle_order.md` v2) gives order 6 < k = 7 for the binary8 odeco wrong saddle; the
+  binary8 runs here lie at or above the predicted crossover, so the m >= 3 "wrong order kept" result
+  holds for binary8 only there.
