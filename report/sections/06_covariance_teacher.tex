@@ -174,6 +174,54 @@ plateau is a predicted critical point of the rank-constrained loss, a blend rath
 misalignment), and each turns the $\isc^{-2}$ second plateau of MPS4 into a logarithmic one
 (\cref{tab:cov-slopes,fig:dt-mps-laws}).
 
+\begin{table}[t]
+  \centering
+  \caption{Second escape on MPS4 from random initialization when the components are not orthogonal:
+    slope of $\Delta t_2$ against $\ln(1/\isc)$ over the three smallest $\isc$ (mean $\pm$ s.e.\ over seeds), for
+    correlated sites its increment per halving of $\isc$, against the prediction: $h_e$ of
+    \cref{sec:teacher-generic} (CP overlap), the bound $1/\abs{\lambda_{\min}}$ at the plateau (misalignment) and
+    the two-stage law (correlation). ``Log law'': seeds in which it fits better than a power law. The
+    orthogonal baselines (overlap $0$, angle $0$, $c=0$) give $\Delta t_2\propto\isc^{-2.00}$. $^\dagger$\,Not yet
+    asymptotic near the crossover overlap of order $\isc$ (\cref{app:teachers}; \conjecture). Settings as in
+    \cref{fig:dt-mps-laws}.}
+  \label{tab:cov-slopes}
+  \footnotesize
+  \begin{tabular}{@{}llccl@{}}
+    \toprule
+    non-orthogonality & value & log law & measured & predicted \\
+    \midrule
+    CP overlap $\cos\phi$ & $0.45$       & 9 of 9   & $5.686\pm0.016$ & $5.682$ \\
+                          & $0.2$        & 8 of 8   & $34.40\pm0.20$  & $34.14$ \\
+                          & $0.05$       & 8 of 8   & $595\pm11$      & $570^\dagger$ \\
+    misalignment angle    & $20^\circ$   & 10 of 10 & $12.14\pm0.03$  & bound $12.31$ \\
+                          & $5^\circ$    & 10 of 10 & $194.9\pm1.2$   & bound $193.2$, approached from above \\
+    correlation $c$ (per halving) & $0.4$ & 4 of 4 & $2.133\pm0.003$ & $2.128$ \\
+                          & $0.3$        & 4 of 4   & $4.616\pm0.010$ & -- \\
+                          & $0.2$        & 4 of 4   & $14.67\pm0.06$  & $14.39$, still falling \\
+                          & $0.1$        & 4 of 4   & $113.9\pm0.7$   & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics{data_teacher/mps_laws.pdf}
+  \caption{MPS4 from random initialization: the second escape $\Delta t_2$ (onset events; runs on the major
+    rank-one saddle with a resolved plateau; geometric mean over seeds with its standard error) when the
+    components of the teacher are made non-orthogonal in three ways. (a)~CP overlap $\cos\phi$ ($d=4$, weights
+    $(1,0.7)$, ten seeds, not all of which qualify at every $\isc$); dashed: $h_e\ln(1/\isc)$ (\cref{cor:A-second-escape}),
+    anchored at the smallest $\isc$ since the intercept is not predicted. (b)~Misaligned covariance, angle in
+    degrees ($d=4$, ten seeds); dashed: slope $1/\abs{\lambda_{\min}}$, an upper bound. (c)~Correlated sites,
+    correlation $c$ ($d=3$, weights $(1,0.6)$, the four of five seeds on the major saddle, events on the
+    singular values across $01|23$); dashed: the two-stage law (\cref{app:covariance}; not computed for
+    $c=0.1$, $0.3$). Black: the orthogonal baseline, dashed $\propto\isc^{-2}$; open markers: runs flagged by the
+    float64-floor scan (dormant overlap $10^{-21}$--$10^{-12}$); without them the baseline exponents are
+    $2.008\pm0.002$ (overlap $0$) and $2.000\pm0.002$ (angle $0$). Takeaway: each of the three non-orthogonalities
+    tested turns the $\isc^{-2}$ second plateau into a logarithmic one, with the predicted slope where there is
+    a prediction (overlap $0.05$: $+4\%$, not yet asymptotic) (source: \cref{tab:repro-figures}).}
+  \label{fig:dt-mps-laws}
+\end{figure}
+
 \paragraph{Overlapping CP components.}\label{sec:teacher-cp}
 The rank-one critical points are those of $g(x)=\ip{\bigotimes_ix_i}{\Wt}$ on unit rank-one tensors \proven. With
 two components of equal weight and overlap $\cos\phi$ at every site, an MPS has two rank-one maxima (one near
@@ -222,54 +270,6 @@ $\isc^{-2.00}$. Under misalignment the slope is only bounded, by $1/\abs{\lambda
 the head start under the preconditioned flow was not derived. Binary4 keeps $\isc^{-1}$: with
 correlated inputs (fitted exponents $1.005$--$1.011$) and, in \cref{sec:teacher-generic}, for overlaps $0.2$ and
 $0.45$ and a $20^\circ$ misalignment.
-
-\begin{table}[t]
-  \centering
-  \caption{Second escape on MPS4 from random initialization when the components are not orthogonal:
-    slope of $\Delta t_2$ against $\ln(1/\isc)$ over the three smallest $\isc$ (mean $\pm$ s.e.\ over seeds), for
-    correlated sites its increment per halving of $\isc$, against the prediction: $h_e$ of
-    \cref{sec:teacher-generic} (CP overlap), the bound $1/\abs{\lambda_{\min}}$ at the plateau (misalignment) and
-    the two-stage law (correlation). ``Log law'': seeds in which it fits better than a power law. The
-    orthogonal baselines (overlap $0$, angle $0$, $c=0$) give $\Delta t_2\propto\isc^{-2.00}$. $^\dagger$\,Not yet
-    asymptotic near the crossover overlap of order $\isc$ (\cref{app:teachers}; \conjecture). Settings as in
-    \cref{fig:dt-mps-laws}.}
-  \label{tab:cov-slopes}
-  \footnotesize
-  \begin{tabular}{@{}llccl@{}}
-    \toprule
-    non-orthogonality & value & log law & measured & predicted \\
-    \midrule
-    CP overlap $\cos\phi$ & $0.45$       & 9 of 9   & $5.686\pm0.016$ & $5.682$ \\
-                          & $0.2$        & 8 of 8   & $34.40\pm0.20$  & $34.14$ \\
-                          & $0.05$       & 8 of 8   & $595\pm11$      & $570^\dagger$ \\
-    misalignment angle    & $20^\circ$   & 10 of 10 & $12.14\pm0.03$  & bound $12.31$ \\
-                          & $5^\circ$    & 10 of 10 & $194.9\pm1.2$   & bound $193.2$, approached from above \\
-    correlation $c$ (per halving) & $0.4$ & 4 of 4 & $2.133\pm0.003$ & $2.128$ \\
-                          & $0.3$        & 4 of 4   & $4.616\pm0.010$ & -- \\
-                          & $0.2$        & 4 of 4   & $14.67\pm0.06$  & $14.39$, still falling \\
-                          & $0.1$        & 4 of 4   & $113.9\pm0.7$   & -- \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{figure}[t]
-  \centering
-  \includegraphics{data_teacher/mps_laws.pdf}
-  \caption{MPS4 from random initialization: the second escape $\Delta t_2$ (onset events; runs on the major
-    rank-one saddle with a resolved plateau; geometric mean over seeds with its standard error) when the
-    components of the teacher are made non-orthogonal in three ways. (a)~CP overlap $\cos\phi$ ($d=4$, weights
-    $(1,0.7)$, ten seeds, not all of which qualify at every $\isc$); dashed: $h_e\ln(1/\isc)$ (\cref{cor:A-second-escape}),
-    anchored at the smallest $\isc$ since the intercept is not predicted. (b)~Misaligned covariance, angle in
-    degrees ($d=4$, ten seeds); dashed: slope $1/\abs{\lambda_{\min}}$, an upper bound. (c)~Correlated sites,
-    correlation $c$ ($d=3$, weights $(1,0.6)$, the four of five seeds on the major saddle, events on the
-    singular values across $01|23$); dashed: the two-stage law (\cref{app:covariance}; not computed for
-    $c=0.1$, $0.3$). Black: the orthogonal baseline, dashed $\propto\isc^{-2}$; open markers: runs flagged by the
-    float64-floor scan (dormant overlap $10^{-21}$--$10^{-12}$); without them the baseline exponents are
-    $2.008\pm0.002$ (overlap $0$) and $2.000\pm0.002$ (angle $0$). Takeaway: each of the three non-orthogonalities
-    tested turns the $\isc^{-2}$ second plateau into a logarithmic one, with the predicted slope where there is
-    a prediction (overlap $0.05$: $+4\%$, not yet asymptotic) (source: \cref{tab:repro-figures}).}
-  \label{fig:dt-mps-laws}
-\end{figure}
 
 % ===========================================================================================
 \subsection{Random TTN teachers: plateaus are rank-constrained critical points}\label{sec:teacher-ttn}
