@@ -48,9 +48,12 @@ def lam_predicted(rho, k_cores, kind):
 
 
 def run_class(df):
+    """rotated: a_2 falls below 0.1 after t1 (forgotten); added: a_2 never falls back below 1/2
+    after its own crossing (nothing forgotten); none: no event t1 (e.g. stalled)."""
     a = df.a2_min_after_t1
-    return np.where(a < 0.1, "rotated", np.where(a > 0.9, "added", np.where(a.isna(), "none",
-                                                                             "other")))
+    down = df.a2_down if "a2_down" in df else pd.Series(np.nan, df.index)
+    return np.where(a.isna(), "none", np.where(a < 0.1, "rotated",
+                                               np.where(down.isna(), "added", "other")))
 
 
 def saddle_fits(df, cls):
@@ -250,6 +253,7 @@ def natural_table(name, cls):
     g = w.groupby(["rho", "sigma"]).agg(
         n=("seed", "size"), n_rotated=("cls", lambda c: int((c == "rotated").sum())),
         n_added=("cls", lambda c: int((c == "added").sum())),
+        a2_min_after_t1_median=("a2_min_after_t1", "median"),
         n_stalled=("stalled", "sum"),
         n_unresolved_hessian=("lam_min", lambda v: int(v.isna().sum())),
         scaled_mean=("scaled", "mean"),
