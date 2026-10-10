@@ -104,9 +104,11 @@ citation / prior-work audit running (`notes/reviews/citation_check.md`). Paralle
   components sharing a terminal core the saddle is strict iff rho(S) > s_q ("star" teachers: a larger learned
   component is forgotten and relearned); gradient flow can trap when ALL route ends are gauge-unfavourable.
   General machinery overlaps Kumar & Haupt 2025c, Rawal & DeWeese 2026, Furman 2026 (section 9 of the note).
-- Experiments (interim, pending review): order: on matrix-like pairs (binary4 = depth-3 DLN) P(wrong order) ~ sigma^gamma
-  with gamma = 0.42/0.25/0.10/0.04 vs (1-rho)/rho = 0.43/0.25/0.11/0.05, and the wrong order is corrected through a strict
-  saddle (slope 5.39 vs 5.386 predicted); on tensor-like trees (MPS4) P(greedy) is sigma-independent (0.815/0.605/0.51).
+- Experiments: order (reviewed, fixed, verified; safe-to-cite list C1-C17 in notes/reviews/order_round2_verification.md):
+  on matrix-like pairs (binary4 = depth-3 DLN) P(wrong order) ~ sigma^gamma with gamma close to (1-rho)/rho (m = 2 law with
+  n = chi_e: conjecture); for NON-ADJACENT pairs (k >= 3) the wrong order is corrected through a strict saddle (H1b), adjacent
+  pairs (k = 2) add instead; tensor-like trees (MPS4): P(greedy) sigma-independent (race); R = 3 consistent with the race
+  model (the "less greedy than independent clocks" claim was withdrawn after verification).
   regime-map: lazy regime exists only when chi reaches the cut dimension; below it centred runs stall at the best fit.
   optimizers: Adam/RMSProp keep weight-ordered sequential learning but REMOVE the sigma^-(K-2) plateau scaling (first
   escape in a sigma-independent number of steps); re-gauged GD, Riemannian GD, Gram preconditioning, ALS, DMRG remove
