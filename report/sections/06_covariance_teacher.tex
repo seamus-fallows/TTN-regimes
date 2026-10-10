@@ -385,15 +385,15 @@ $\varepsilon=10^{-6}$--$10^{-2}$, five seeds; random initialization at $\tw r=1.
 % Kendall tau on the MPS as evidence of bottom-up growth; "L(1e4)" for runs stopped earlier.
 
 Do the teacher--student results survive real inputs, with a non-product input law and no teacher? The
-empirical loss is $\Loss=\frac12\ip{\W}{C\W}-\ip{T}{\W}+\mathrm{const}$, with the second-moment operator $C$
-of the features, which is not a product, and $T=\E[y\Feat]$ (averages over the training set). Two
-predictions need no product law \derived. Near the origin $\Loss\approx\Loss(0)-\ip{T}{\W}$, so the first
+empirical loss is $\Loss=\frac12\ip{\W}{C\W}-\ip{Y}{\W}+\mathrm{const}$, with the second-moment operator $C$
+of the features, which is not a product, and the label tensor $Y=\E[y\Feat]$ (averages over the training set). Two
+predictions need no product law \derived. Near the origin $\Loss\approx\Loss(0)-\ip{Y}{\W}$, so the first
 escape is that of \cref{sec:s2s-escape} with $\Wt\to T$ (\cref{prop:A-escape-cov}). At a bond-rank-one
 critical point the routes that can open depend only on bond ranks and site dimensions (\cref{app:teachers},
 ``Generic teachers''): on a binary tree, whose internal cores carry no pixel, the cheapest routes join
 two sibling bottom cores ($k=3$: a higher-order saddle, a plateau $\propto\isc^{-1}$); on an MPS any adjacent
 pair of cores can open one ($k=2$: strict, $\propto\ln(1/\isc)$). These are the generic-teacher predictions
-of \cref{sec:teacher-generic}, with $T$ for $\Wt$ in the first escape; the route counting at the rank-one
+of \cref{sec:teacher-generic}, with $Y$ for $\Wt$ in the first escape; the route counting at the rank-one
 point does not depend on the target. The data decide which of the cheapest routes goes first,
 and the assignment of pixels to sites decides which pixel interactions lie on short routes.
 
@@ -419,7 +419,7 @@ seeds (over series for the free gap exponent below).
   \item \emph{First plateau: an identity, not evidence.} $t_a\isc^{\Kc-2}$ is constant per seed to four
     digits or better (exponents $13.000\pm0.000$ on binary16, $14.000\pm0.000$ on MPS16). As $\isc\to0$ it tends to a
     per-seed constant for any input law: with $\params=\isc\tilde\params$ and $s=\isc^{\Kc-2}t$, $\tilde\params$ follows the
-    flow of $\ip{T}{\W}$ from $Z$ up to terms of relative order $\isc^{\Kc}$ \proven{} \knownresult[the exponent:
+    flow of $\ip{Y}{\W}$ from $Z$ up to terms of relative order $\isc^{\Kc}$ \proven{} \knownresult[the exponent:
     \citealp{jacot2022saddletosaddle,kumar2025early}]. It checks the integrator and the clock, not the theory.
   \item \emph{The first binary route is a sibling pair} \empirical{} \newresult. After the escape, 96 of
     the 124 binary states lie within $0.05$ (relative) of a rank-one product, the others mostly at
@@ -511,7 +511,7 @@ seeds (over series for the free gap exponent below).
     real data (MNIST) & as for a generic teacher: binary first route a sibling pair, gap $A/\isc+B$;
       MPS later routes logarithmic (6 of 9 edges); plateaus creep; the pixel order sets the final loss at
       small $\isc$ (locality in the image neither necessary nor sufficient) & route counting with
-      $T=\E[y\Feat]$ for $\Wt$; route couplings (first route; ranking of orders, pre-registered) \\
+      $Y=\E[y\Feat]$ for $\Wt$; route couplings (first route; ranking of orders, pre-registered) \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -596,7 +596,7 @@ complication tested breaks the orthogonality of the teacher's components in the 
 (overlap, misalignment, correlated sites, random TTN teachers), the student's tree decides whether the
 escape from the rank-one saddle is logarithmic (MPS) or polynomial (binary; HT from the saddle start,
 never with correlated inputs). Stars, whose components are orthogonal, change which saddle is strict. On
-MNIST the same tree contrast appears with the data's escape tensor $T$ in place of $\Wt$, while the effect
+MNIST the same tree contrast appears with the label tensor $Y$ in place of $\Wt$, while the effect
 of the pixel order is only ranked, by a data-only route-coupling share (pre-registered). The baseline
 theory predicts each change after a substitution, except the slope under a misaligned covariance from
 random initialization, which is only bounded, and, on MNIST, the creep of the plateaus and the power-law
