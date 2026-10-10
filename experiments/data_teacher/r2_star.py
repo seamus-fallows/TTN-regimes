@@ -177,7 +177,7 @@ def saddle_job(args):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("mode", choices=["hessian", "random", "saddle"])
+    ap.add_argument("mode", choices=["hessian", "random", "saddle", "threshold"])
     ap.add_argument("--procs", type=int, default=28)
     a = ap.parse_args()
     if a.mode == "hessian":
@@ -192,6 +192,15 @@ if __name__ == "__main__":
         with Pool(a.procs) as pool:
             rows = pool.map(random_job, jobs, chunksize=1)
         pd.DataFrame(rows).to_csv(RESULTS / "r2_star_random.csv", index=False)
+    elif a.mode == "threshold":
+        # fine scan around w* = s_q / sqrt(2) = 1.41421 (rho(S) = s_q) at small noise
+        jobs = [(tree, n, w, s, seed)
+                for tree, n in (("mps", 4), ("binary", 4))
+                for w in (1.410, 1.412, 1.413, 1.4138, 1.4146, 1.4155, 1.417, 1.419)
+                for s in (1e-6,) for seed in range(3)]
+        with Pool(a.procs) as pool:
+            rows = pool.map(saddle_job, jobs, chunksize=1)
+        pd.DataFrame(rows).to_csv(RESULTS / "r2_star_threshold_scan.csv", index=False)
     else:
         jobs = [(tree, n, w, s, seed)
                 for tree, n in (("mps", 4), ("binary", 4), ("ht", 4))
