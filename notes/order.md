@@ -206,7 +206,22 @@ P(smaller first) at sigma = 0.01 (Wilson 95% CI half-width <= 0.05):
   same slow approach: local slope 0.24 at sigma ~ 10^-1.5 rising to ~0.45 at 1e-4 for n = 4, rho = 0.9).
   A full-GF test down to sigma = 1e-5 on MPS4 is in 7.4b.
 
-### 7.4b MPS4 multiplicity test (pending)
+### 7.4b Multiplicity of the unstable directions (complete)
+
+MPS4, d = 2, chi = 4 (bonds 2-4-2), full GF, 1000 seeds, sigma 1e-5..0.1 (`pat_mps4_adj.yaml`: components
+differ on the adjacent cores 1, 2, which share a bond of dimension chi_e = 4, predicted n = 4;
+`pat_mps4_sep.yaml`: cores 0, 2, n = 1). P(smaller first):
+
+| pair | rho | sigma = 1e-1 | 1e-2 | 1e-3 | 1e-4 | 1e-5 | gamma (seed bootstrap) | n (1-rho)/rho |
+|---|---|---|---|---|---|---|---|---|
+| separated | 0.8 | 0.263 | 0.150 | 0.085 | 0.051 | 0.029 | 0.240 +- 0.017 | 0.25 |
+| separated | 0.9 | 0.382 | 0.317 | 0.261 | 0.205 | 0.153 | 0.095 +- 0.006 (0.103 +- 0.007 at sigma <= 0.01) | 0.111 |
+| adjacent | 0.8 | 0.182 | 0.031 | 0.004 | 0 | 0 | 0.82 +- 0.06 | 1.0 |
+| adjacent | 0.9 | 0.336 | 0.189 | 0.093 | 0.035 | 0.016 | 0.31 +- 0.02 (0.35 +- 0.03 at sigma <= 0.01) | 0.444 |
+
+[empirical] The separated pair follows (1-rho)/rho; the adjacent pair's exponent is 3.2-3.4 times
+larger and still steepening (local slope 0.42 between sigma = 1e-3 and 1e-4 at rho = 0.9), consistent with
+n = chi_e = 4 as sigma -> 0 (`notes/theory_escape.md` 5.3), with a slow pre-asymptotic approach.
 
 ### 7.5 Over-parameterized bonds restore greedy order, slowly (complete)
 
