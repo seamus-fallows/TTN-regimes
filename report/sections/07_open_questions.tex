@@ -45,7 +45,7 @@ saddles are visited and in which order), to the plateau durations, and to the re
       function-space scale, the product of the core scales); $\Kc$: number of cores; $\chi$: bond
       dimension; $d$: local dimension; $\ncomp$: number of teacher components; $k^*$: cores of the cheapest
       route; $\tw1$: largest teacher weight; $\tw j$, $\tw r$: weights of a learned and a residual
-      component; $T(Z)$: first-escape time computed from the initialization direction $Z$; $\isc_c$,
+      component; $\mathcal{T}(Z)$: first-escape time computed from the initialization direction $Z$; $\isc_c$,
       $\isc_{\rm lazy}$: saddle-to-saddle and lazy boundaries; $\Lambda_r$: input variance along component
       $r$ (aligned covariance $\Sig$); $\lr$: step size; $\batch$: batch size; $\lambda$: scale of the root
       core relative to the others; $\dTK$: relative change of the tangent kernel; binary4: binary tree with
@@ -71,7 +71,7 @@ saddles are visited and in which order), to the plateau durations, and to the re
       component and, for pairs differing on three or more cores, the order, depend on the initialization
       direction only \derived{} \empirical; two-core pairs become greedy as $\isc\to0$, and close weights
       separate only at small $\isc$ \empirical &
-      First plateau $\isc^{-(\Kc-2)}T(Z)$ \proven; later ones none, $\ln(1/\isc)$ or $\isc^{-(k^*-2)}$ for
+      First plateau $\isc^{-(\Kc-2)}\mathcal{T}(Z)$ \proven; later ones none, $\ln(1/\isc)$ or $\isc^{-(k^*-2)}$ for
       $k^*=1$, $2$, $\ge3$ \derived{} \empirical, with prefactors set by the route amplitudes when each
       plateau starts &
       The main knob: saddle-to-saddle, rich, then lazy with full bonds or a floor below them; binary4:
