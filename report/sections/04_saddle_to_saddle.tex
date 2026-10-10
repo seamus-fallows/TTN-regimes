@@ -412,10 +412,10 @@ $110000$, together with old rotations of cores 4 and 5, descend at order 4 ($-0.
 predicted); gradient flow escapes in $\propto\isc^{-2}$ instead of $\isc^{-3}$ and then forgets the first
 component \derived{} (checked on this teacher; from small initialization only some seeds visit the
 saddle). Which of our experiments satisfy the condition: every two-component row of
-\cref{tab:locality-exponents} (the fits use the runs that learn the larger component first), and the
-first learned saddle of every multi-component teacher below (there the operator reduces to the
-piggyback graph, with $\lambda_{\max}(\Gamma)<\tw j$). Saddles with two or more learned components are
-not covered by the theorem. The condition fails for the runs on HT4 with $D=\{0,1,2,3\}$ that learn the
+\cref{tab:locality-exponents} (the fits use the runs that learn the larger component first), and every
+saddle with one learned component of the multi-component teachers below (there the operator reduces to
+the piggyback graph, with $\lambda_{\max}(\Gamma)\le0.7<\tw j$). Saddles with two or more learned
+components are not covered by the theorem. The condition fails for the runs on HT4 with $D=\{0,1,2,3\}$ that learn the
 smaller component first (order $6$, not $k=7$; excluded from the fits): in 6 of the 7 such runs with
 $\chi=2$ ($\isc\ge0.4$) the smaller component is forgotten when the larger one is learned and then
 relearned, as the cluster mechanism predicts \empirical.
