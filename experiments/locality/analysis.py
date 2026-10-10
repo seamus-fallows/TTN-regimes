@@ -191,6 +191,8 @@ def classify(rec):
     st = rec.get("status")
     if st in ("stalled", "timeout", "error"):
         return st
+    if "weights" not in rec:
+        return "error"
     ev = rec.get("events", [])
     n05 = [len(c) for k, c in rec.get("crossings", {}).items() if k.endswith("_0.5")]
     if len(ev) < len(rec["weights"]):
@@ -213,8 +215,14 @@ def run_classes(paths, config=None) -> pd.DataFrame:
         if rec.get("patterns") is None and rec.get("S") is None:
             continue
         tree, case = case_label(rec)
-        rows.append(dict(tree=tree, case=case, start=rec.get("start", "small"), d=rec.get("d", 2),
-                         chi=rec.get("chi", 2), w=tuple(rec.get("weights", [1.0, 0.5])), cls=classify(rec)))
+        d, chi, w = rec.get("d"), rec.get("chi"), rec.get("weights")
+        if (d is None or chi is None or w is None) and rec.get("_key"):
+            # error records carry no model fields: take them from the run key
+            k = json.loads(rec["_key"])
+            d, chi, w = k[5], k[6], k[7]
+        rows.append(dict(tree=tree, case=case, start=rec.get("start", "small"), d=d if d is not None else 2,
+                         chi=chi if chi is not None else 2, w=tuple(w if w is not None else [1.0, 0.5]),
+                         cls=classify(rec)))
     df = pd.DataFrame(rows)
     out = df.groupby(["tree", "case", "start", "d", "chi", "w", "cls"]).size().unstack(fill_value=0)
     for c in CLASSES:

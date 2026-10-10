@@ -70,20 +70,24 @@ $X/finalize.sh /tmp/locality_results 8     # every table and figure, into a fres
 | `bond_events2.py`, `plot_bonds.py` | step 4: rank changes at events, per-saddle rank profiles, figure |
 | `route_amps.py`, `logcorr.py` | route-entry amplitudes at plateau midpoints; log-correction test |
 | `r12.py` | stall diagnosis: dead vs slow, theory R12's criterion at the route ends |
+| `stall_tables.py` | run classes per sweep, sigma-dependent stall dropout and its effect on fits, stalls vs capped route ends |
 | `finalize.sh` | regenerate all results into a given directory |
 | `bond_events.py`, `pilot/`, `fit.py`, `plot_escape.py` | round-1 / pilot code (superseded) |
 
-## Results (details: `notes/locality.md` sections 7-9; round 2 after review notes/reviews/locality_round1.md)
+## Results (details: `notes/locality.md` sections 7-10; round 3 after notes/reviews/locality_round2_verification.md)
 - Two components: plateau exponent k - 2 (k = Steiner subtree size) for k = 1-5 on all 9 trees (no plateau for
-  k = 1; log law with head-start slope for k = 2), except MPS k = 5 rows at chi = 2 and saddle-start k = 4 rows
-  with partially stalling seeds; k = 6-7 = k - 2 on binary8 and ht4 with balanced init over one decade; k = 8 not
-  measured. `results/twocomp_table.md`, `extensions_table.md`, `twocomp_exponents.png`.
+  k = 1; log law with head-start slope for k = 2); deviating rows are carried by partially stalling seeds or
+  return to k - 2 at small sigma, except mps8 {1,5} from the saddle start (3.67 ± 0.20, 4 seeds, 0.4 decades);
+  k = 6-7 = k - 2 on binary8 and ht4 with balanced init only, over one decade; k = 8 not measured. `results/twocomp_table.md`, `extensions_table.md`, `twocomp_exponents.png`.
 - Hessian at plateau midpoints (fixed gauge projection and raw): λ_min = -λ2 = -s2 s1^((K-2)/K) for k = 2,
-  ∝ sigma^(k-2) for k >= 3. `results/twocomp_hessian.png`, `hessians.csv`.
+  ∝ sigma^x -> 0 for k >= 3 (x within 0.2 of k - 2 for k = 3-5; raw quoted where the projection is biased).
+  `results/twocomp_hessian.png`, `hessians.csv`.
 - Several components: the route rule at rank-constrained optima predicts every k* >= 3 plateau (detected
-  plateaus, exponents within 0.2) and the rank profiles at the predicted saddles; TD and TC separate it from
+  plateaus, exponents within 0.2; one exception, B4 on ht4 with fan-in init) and the rank profiles at the
+  predicted saddles; TD and TC separate it from
   the literal H2 rule and the bond-rank rule. `results/trees_*.png`, `levels_summary.csv`, `bond_profiles_multicomp.csv`.
-- Bond spectra: rank rises at each event on exactly the Steiner edges (99.75% of resolved events), together,
-  other edges stay at noise level. `results/bond_events2_twocomp.csv`, `bond_spectra.png`.
-- Dead routes (fan-in init, chi = 2, k >= 4 only): 397 / 5,682 runs; balanced init 16 / 1,008; chi = 4 103 / 1,002.
-  `results/run_classes_by_sweep.csv`, `stall_dropout*.csv`, `r12.csv`.
+- Bond spectra: leakage bound (non-Steiner edges <= 4.3 sigma^2 s2 through every event) plus single-route
+  consistency (all Steiner edges rise, together). `results/bond_events2_twocomp.csv`, `bond_spectra.png`.
+- Dead routes (fan-in init, chi = 2, k >= 4 only): 398 / 5,682 runs; balanced init 16 / 1,008; chi = 4 106 / 1,005
+  (vs 169 / 1,008 at chi = 2 on the same cases: removed on routes with an uncapped end, more on routes with both
+  ends capped). `results/run_classes_by_sweep.csv`, `stall_dropout_*.csv`, `stall_capped_ends.csv`, `r12.csv`.
