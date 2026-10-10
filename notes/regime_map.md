@@ -273,7 +273,7 @@ chi = 16, alpha = 3.375, lambda = 0.01..100; `results/phase_imbalance_b4.png`.
   0.53, 0.50, 0.50 for lambda = 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30, 100. Local slope d ln delta_K / d ln lambda
   = 2.18, 1.86, 1.51, 1.27 from the smallest lambda up: delta_K ~ lambda^2 as lambda -> 0 (theory: 1.8-1.9
   between 0.03 and 0.1; measured 1.86), saturating at 0.50-0.53 for lambda >= 3 (theory: 0.6-0.7). Labels:
-  lazy for lambda <= 0.3 (6/6, 4/6 at 0.01 where the lazy fit had not finished), rich for lambda >= 1.
+  lazy for lambda <= 0.3 (all finished runs), rich for lambda >= 1 (5/6 at lambda = 1).
   **Empirical**, confirming theory R13 (a small root makes training lazy; a large root freezes the root
   and leaves a degree-(K-1) model that is not lazy); the saturation level is ~20% below the prediction.
 - **Map, chi = 24 (majority labels, 6 seeds).** The lazy boundary moves to smaller alpha as the root
