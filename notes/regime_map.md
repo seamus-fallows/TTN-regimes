@@ -202,6 +202,42 @@ where delta_K(T) drops below 0.1 (converged runs).
   sigma_floor = 0.56, 0.60, 0.71 is lower, increasingly so at chi = 6 where the floor is reached only at
   sigma ~ 1, outside the small-sigma expansion. **Empirical**, confirming theory R7 qualitatively.
 
+### 2.1b Boundaries vs bond dimension and the collapse variable (binary N = 4)
+
+`configs/chi_b4.yaml`: chi = 9..128 (uncapped; full / overparameterized bonds), 6 seeds, centred model
+over sigma in [0.004, 4] (22 values) and two-copy over [0.25, 4]; library GF with event refinement;
+figure `results/boundaries_vs_chi_chi_b4.png`, per-seed table `results/boundaries_per_seed_chi_b4.csv`.
+Boundaries per seed as in 2.1 (rho = 3 crossing; delta_K = 0.1 crossing); slopes fitted to all
+per-seed values (each (chi, seed) is an independent init), errors from the residual scatter.
+
+| | slope vs chi | chi range | per-seed values | prediction |
+|---|---|---|---|---|
+| S2S boundary (centred) | -0.524 +- 0.045 | 16-128 | 42 | (none derived) |
+| S2S boundary (centred) | -0.535 +- 0.060 | 9-128 | 54 | |
+| lazy boundary (centred) | -0.543 +- 0.015 | 16-128 | 42 | -1/2 (theory P5, second order) |
+| lazy boundary (centred) | -0.522 +- 0.020 | 32-128 | 30 | -1/2 |
+| lazy boundary (two-copy) | -0.514 +- 0.023 | 32-128 | 18 | -1/2 (P6) |
+
+- **Lazy boundary vs theory P5/P6 (empirical, quantitative).** sigma_lazy sqrt(chi) = 6.29, 6.14, 6.18,
+  6.12, 6.10 at chi = 32, 48, 64, 96, 128 (median of seeds), against the predicted asymptote 6.50; the
+  two-copy model gives 4.96, 4.91, 4.83 at chi = 32, 64, 128 against 5.16. Measured boundaries are
+  5-8% below the asymptotic formulas, as in the theory note's own GF checks (0.82 / 0.79 vs
+  [0.81, 0.83] at chi = 64). Threshold ratio (delta_K 0.05 vs 0.2) 1.30-1.33 at chi >= 48 (P7: 1.3-1.36).
+- **The S2S boundary scales the same way (new, empirical).** sigma_c sqrt(chi) = 0.29, 0.29, 0.31,
+  0.30, 0.27 at chi = 32..128. So at large chi both boundaries depend on sigma and chi only through
+  sigma sqrt(chi), i.e. through the per-bond Gram scale p = chi sigma^2 / d^2 (the eigenvalue scale of
+  the subtree Gram matrices B B^T): S2S below p ~ 0.01, lazy above p ~ 4.3, and the rich window is a
+  fixed factor ~21 in sigma (~10^4 in alpha = sigma^3). **Collapse test** of the candidate variables
+  suggested in `notes/literature.md` (H4, correction 2): sigma^K (slope 0) and the per-path amplitude
+  times the number of paths (sigma^K chi^(K-1) in iid normalization = sigma^3 chi / d^2 in fan-in
+  variables, slope -1/3) are rejected (the S2S slope differs from -1/3 by 4 standard errors, the lazy
+  slope by 12); the per-bond Gram scale (slope -1/2) is consistent with both boundaries.
+  **Empirical** for binary N = 4 (a 3-factor matrix product) only; deeper trees untested at large chi.
+- Why the S2S boundary moves like the Gram scale is not derived here. A heuristic: the near-origin
+  escape is set by the initial amplitude of the best rank-one direction of each core; the leaf cores'
+  Gram B B^T ~ p grows with chi, while the root is light by sqrt(chi) (E Q = sigma^2 (1 - 1/chi) on the root
+  edges), so the effective per-core amplitude grows like sigma sqrt(chi). **Conjecture.**
+
 ### 2.2 Stalls at chi = teacher rank (K >= 7)
 
 Stall test (`configs/stall_test*.yaml`; binary N = 8 (K = 7) and MPS N = 8 (K = 8), d = 3, chi = 3 =
