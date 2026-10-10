@@ -66,6 +66,19 @@
       (\cref{tab:exp-optimizers}) \\
     \ref{fig:optimizers-adam-escape} & as above, with target \texttt{eps} & \texttt{scaling\_b4},
       \texttt{eps\_mps8}, and \texttt{deep} for the gradient-flow reference times \\
+    \ref{fig:dt-contrast} & \texttt{uv run python experiments/data\_teacher/\allowbreak plot\_report.py} draws
+      this figure and the next from committed tables, here \texttt{r2\_saddle\_runs\_all.csv},
+      \texttt{r2\_saddle\_fits.csv} (\texttt{analyze\_r2\_saddle.py}) and \texttt{r2\_random\_v2\_runs.csv}
+      (\texttt{analyze\_law\_v2.py r2\_random}); it also writes the tables \texttt{report\_first\_escape.csv},
+      \texttt{report\_lambda\_scaling.csv} and \texttt{report\_float\_floor\_refit.csv} quoted in
+      \cref{sec:covariance-teacher} (order of all steps in the experiment's README)
+      & \texttt{r2\_saddle} (with \texttt{\_b}, \texttt{\_ext}, \texttt{\_m20}), \texttt{r2\_random}
+      (\cref{tab:exp-data-teacher}); local copy \texttt{data/data\_teacher/} \\
+    \ref{fig:dt-mps-laws} & as above; tables \texttt{e4a\_sigma\_v2\_runs.csv}, \texttt{e2\_sigma\_v2\_runs.csv},
+      \texttt{e2\_sigma\_v2\_summary.csv} (\texttt{analyze\_law\_v2.py}), \texttt{r2\_corr\_runs.csv},
+      \texttt{r2\_corr\_fits.csv} (\texttt{analyze\_r2\_corr.py}), \texttt{float\_floor\_check.csv}
+      (\texttt{check\_float\_floor.py})
+      & \texttt{e4a\_sigma}, \texttt{e2\_sigma}, \texttt{r2\_corr.py} \\
     \bottomrule
   \end{tabularx}
 \end{table}

@@ -31,3 +31,8 @@ experiments/locality/results/bond_spectra.png        locality/bond_spectra.png
 experiments/optim_samples/results/report_gd.pdf        optim/gd.pdf
 experiments/optim_samples/results/report_sgd.pdf       optim/sgd.pdf
 experiments/optim_samples/results/report_samples.pdf   optim/samples.pdf
+
+# Section 6, input covariance and teacher structure (experiment data_teacher; plot_report.py, from the
+# committed summary CSVs)
+experiments/data_teacher/results/report_contrast.pdf   data_teacher/contrast.pdf
+experiments/data_teacher/results/report_mps_laws.pdf   data_teacher/mps_laws.pdf
