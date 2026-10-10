@@ -35,3 +35,7 @@ Estimated total so far: about $34.
 2026-10-10 ~14:30 UTC: order DELETED after verified copy (fix-round session $2.16, 2.59 h). regime-map round 2 running
 ($1.04/h). locality still stopped (disk only, ~$0.71/day; cannot restart; raw copy verified earlier, re-check pending).
 Estimated total so far: about $36.
+
+2026-10-10 ~15:00 UTC: locality DELETED after verified copy (incl. obsolete_prefix; restart session $0.01). New agent
+saddle-dyn launched (192 vCPU Threadripper, Norway, $1.02/h; expected $8-12). regime-map round 2 running ($1.04/h,
+$2.65 so far this session). Estimated total so far: about $38.
