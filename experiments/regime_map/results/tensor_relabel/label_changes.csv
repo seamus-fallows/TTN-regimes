@@ -1,0 +1,7 @@
+exp,model,n_runs,n_changed,missing_tensor_converged,lazy->rich,rich->lazy,s2s->lazy
+sigma_chi_b4,centred,912,9,0,9,0,0
+sigma_chi_b4,plain,912,9,0,3,3,3
+sigma_chi_b4,twocopy,912,6,0,6,0,0
+chi_b4,centred,1188,15,0,15,0,0
+chi_b4,twocopy,240,4,0,4,0,0
+imbalance_b4,all,1134,22,0,22,0,0
