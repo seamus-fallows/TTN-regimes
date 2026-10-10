@@ -128,3 +128,76 @@ pair, sigma = 0.5, seed 0). These routes escape later: route degree beats amplit
 for all sigma at a given seed (relative distance from an exact rank-1 product <= 0.03 for sigma <= 0.2).
 There are at least two such points (seeds land on the (3,4) or (0,1) one), so the first escape is a
 seed-dependent choice among KKT points of <T, W>.
+
+### 4.4 Plateau durations scale with the route degree [empirical; prediction derived]
+Gaps are measured event to event: the loss drop that carries a route's rise minus the previous drop
+(times = rate peaks, merged rows). Runs are classified before pooling: a seed's series keeps only the sigma
+values at which the same route (same edges) rises first. Fits are per seed (sigma rescales the same init
+direction). Power and log laws are fitted in linear-gap space with relative residuals (`scaling.py`).
+- **k = 3 (first route on binary trees): gap ∝ sigma^-1.** Per-seed exponents (mean +- SE), raw features,
+  sigma = 0.05-0.5 (6-7 values per seed): quadtree 1.01 +- 0.14 (4 seeds), scrambled0 0.97 +- 0.11 (4),
+  scrambled1 1.27 +- 0.02 (4), scrambled2 0.91 +- 0.23 (2, 4 sigma values). Relative rms residual: power law
+  0.03-0.14, log law 0.56-0.91. Excluded (seed, sigma) where another route went first: quadtree seed 4 at
+  sigma >= 0.2 and seed 2 at 0.5; listed in `results/scaling_raw.json`. Example (quadtree seed 0): gaps 298,
+  209, 143, 100, 69, 45, 29 for sigma = 0.05 ... 0.5, exponent 1.01.
+- **k = 2 (MPS, edges next to the first one): gap linear in log(1/sigma).** Time of each edge's first rank
+  increase after the first drop, per seed (5 seeds, sigma = 0.05-0.5): edge 4 log-law rms 0.09 vs power-law
+  rms 0.35, slope 15.3 +- 1.5 per unit ln(1/sigma); edge 3 rms 0.14 vs 0.25, slope 31.4 +- 1.1. On the teacher
+  the slope is (1 - s_r/s_q)/lambda (head start). Here the measured |lambda_min| at that plateau
+  (0.056-0.077, section 4.5) gives 1/lambda ~ 15, so the edge-4 slope is consistent with a small head start.
+- **Later routes have higher degree on binary trees.** Quadtree seed 0, 4th drop: 5637, 1818, 626, 144, 44 for
+  sigma = 0.07 ... 0.3, exponent 3.3, close to a k = 5 route (3). At sigma = 0.05 this event lies beyond
+  tau = 1e4, consistent with the extrapolation (~1.5e4). Per-edge fits on binary trees for edges that rise
+  later give exponents 2.1-2.4 (k = 4-5). These are not classified by route and are only indicative.
+- **Not explained:** MPS edges far from the first one (0-2, 6-9) rise with power-law-like sigma dependence
+  (exponent 0.9-1.3, 4-5 seeds). This is not what rank-1 counting predicts (every MPS pair has free modes,
+  so k = 2). Possible causes are vanishing degree-2 residuals on those pairs (escape through 3-core routes)
+  or dormant entries rescaled by earlier events. Open.
+
+### 4.5 Saddle type at the first plateau (H3) [empirical]
+Exact Hessian (dense residual tensor) at the plateau midpoint, raw and gauge-projected (fixed projection,
+rtol 1e-3); the two agree within ~10%. Runs at the common plateau level only (same saddle).
+- MPS (plateau L = 0.230, 26 runs, sigma = 0.05-0.3): lambda_min = -0.056 ... -0.077 with exponent
+  0.04 +- 0.03 in sigma (`saddle_scaling`: strict). Per seed 0.038 +- 0.025 (3 seeds with >= 4 sigma).
+- Binary quadtree (plateau L = 0.270, 20 runs, sigma = 0.05-0.3): lambda_min ∝ sigma^0.877+-0.005 per seed
+  (3 seeds; pooled 0.73 +- 0.16): higher order. The prediction for k = 3 is exponent 1 (teachers: 0.98-1.03);
+  measured 12% lower. At sigma <= 0.14 there is exactly one eigenvalue below -1e-3 lambda_max (one active
+  route); more appear at larger sigma.
+
+### 4.6 The S2S signature on real data [empirical]
+Plateaus are not flat: between events the loss keeps decreasing slowly (fitting within the current rank
+profile). With rate-peak drops (section 3), quadtree runs are S2S (>= 2 drops, every rho > 3) in 100% of
+runs at sigma <= 0.07 and 40% at sigma = 0.5. The median smallest rho grows from 2.8 (sigma = 0.5) to 24
+(sigma = 0.05), so plateaus grow without bound as sigma -> 0 (condition iii). Scrambled trees behave the
+same way (median min rho 37 at sigma = 0.05). The MPS is mostly not S2S (fraction 0-0.4, median min rho
+1.9-3.2). Its escapes are strict saddles with short log-time gaps, and drops overlap.
+
+### 4.7 Locality: quadtree vs scrambled vs MPS [empirical]
+Same data, chi = 4, raw features, 5 seeds (scrambled: 3 orders x 5 seeds at sigma in {0.05, 0.1, 0.2, 0.5},
+order 0 at all 7). Train loss and test accuracy at tau = 1e4 (mean +- SE):
+
+| sigma | quadtree L / acc | scrambled L / acc | MPS L / acc |
+|---|---|---|---|
+| 0.05 | 0.167 ± 0.019 / 0.903 | 0.241 ± 0.008 / 0.841 | 0.090 ± 0.0002 / 0.956 |
+| 0.1 | 0.098 ± 0.001 / 0.954 | 0.207 ± 0.008 / 0.872 | 0.089 ± 0.0001 / 0.957 |
+| 0.2 | 0.0954 ± 0.00002 / 0.950 | 0.154 ± 0.011 / 0.908 | 0.089 ± 0.0001 / 0.960 |
+| 0.5 | 0.090 ± 0.003 / 0.955 | 0.078 ± 0.001 / 0.962 | 0.086 ± 0.0005 / 0.959 |
+
+Time to reach L <= 0.2 (median; runs reaching it): sigma = 0.1: quadtree 333 (5/5), scrambled 6730 (7/15),
+MPS 56 (5/5); sigma = 0.5: 85, 374, 28.
+- **Quadtree vs scrambled (the clean locality test, same tree shape): the local tree learns much faster
+  at small init.** It reaches lower loss and higher test accuracy at every sigma <= 0.2, and the gap grows
+  as sigma decreases. Both have the same route degrees (same shape), so the difference sits in where the
+  strong label-relevant interactions lie. In the quadtree they lie on short routes (inside bottom cores,
+  k = 1, and between nearby blocks, k = 3-5). In the scrambled tree they mostly sit on long routes
+  (k = 5-7, sigma^-3 ... sigma^-5 plateaus): its first k = 3 route captures little (loss 0.33 -> 0.29-0.30),
+  and the next escapes take thousands of time units. At sigma = 0.5 the escapes are fast for both trees and
+  the advantage disappears (scrambled even ends lower at tau = 1e4). **Locality is a small-init dynamical
+  effect here, not an expressivity limit at chi = 4.**
+- **MPS vs binary: the brief's ordering fails.** The snake MPS is the fastest tree at every sigma and its
+  learning times are nearly sigma-independent. Every MPS core carries a pixel, so its routes are 2-core
+  strict saddles (log-time). Binary trees have pixel-free internal cores and need k >= 3 routes
+  (power-law plateaus). Route degree (tree shape) dominates locality at small sigma.
+- **Bottom-up order:** Kendall tau between an edge's level and the time of its first rank increase is
+  positive on every tree (quadtree 0.31 +- 0.02, scrambled 0.17 +- 0.02, MPS 0.27 +- 0.01, raw): ranks grow
+  from the leaves towards the root on average (R3), with exceptions.

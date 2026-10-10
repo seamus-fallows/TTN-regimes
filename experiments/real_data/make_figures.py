@@ -260,6 +260,67 @@ def fig_routes(routes_json, out):
     plt.close(fig)
 
 
+def fig_hessians(hess_json, out, levels=(("mps", 0.225, 0.235), ("binary", 0.265, 0.275))):
+    """|lambda_min| of the Hessian at the first plateau's midpoint vs sigma; filled = gauge-projected,
+    open = raw; only runs at the common plateau level (same saddle)."""
+    res = [r for r in json.load(open(hess_json)) if "raw_min" in r]
+    fig, ax = plt.subplots(figsize=(TEXT_WIDTH / 2, 0.75 * TEXT_WIDTH / 2))
+    labels = {"mps": "MPS, snake", "binary": "binary, quadtree"}
+    for tree, lo, hi in levels:
+        sel = [r for r in res if r["tree"] == tree and lo <= r["loss_mid"] <= hi]
+        col = TREE_COLOR[labels[tree]]
+        sig = np.array([r["sigma"] for r in sel])
+        ax.scatter(sig, [-r["proj_min"] for r in sel], s=10, color=col, lw=0,
+                   label=f"{labels[tree]} (L = {np.mean([r['loss_mid'] for r in sel]):.2f})")
+        ax.scatter(sig * 1.04, [-r["raw_min"] for r in sel], s=10, facecolors="none", edgecolors=col, lw=0.6)
+    xs = np.array([0.05, 0.3])
+    ax.plot(xs, 0.3 * xs, color=MUTED, lw=0.8, ls="--")
+    ax.text(0.31, 0.09, r"$\propto\sigma$", fontsize=7, color=MUTED)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"$\sigma$")
+    ax.set_ylabel(r"$|\lambda_{\min}|$ at the first plateau")
+    ax.legend(fontsize=6, frameon=False, loc="lower right")
+    fig.tight_layout()
+    savefig(fig, Path(out) / "plateau_hessians")
+    plt.close(fig)
+
+
+def fig_regime(regime_json, out):
+    """Regime sweep: delta_K(T), train loss vs the linearized-model loss at the same time, test accuracy."""
+    from ttn.plotting import regime_colors
+
+    rows = [r for r in json.load(open(regime_json)) if r.get("delta_K_end") is not None]
+    cats = ["S2S", "rich", "lazy"]
+    cols = regime_colors(cats)
+    fig, axes = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 0.33 * TEXT_WIDTH))
+    rng = np.random.default_rng(2)
+    for r in rows:
+        x = r["sigma"] * np.exp(rng.uniform(-0.04, 0.04))
+        mk = "o" if r.get("model") == "centred" else "s"
+        c = cols.get(r["label"], MUTED)
+        axes[0].scatter(x, r["delta_K_end"], s=10, color=c, marker=mk, lw=0)
+        axes[1].scatter(x, r["loss_end"], s=10, color=c, marker=mk, lw=0)
+        axes[1].scatter(x, r["L_lin_T"], s=10, facecolors="none", edgecolors=MUTED, marker=mk, lw=0.6)
+        axes[2].scatter(x, r["test_acc_end"], s=10, color=c, marker=mk, lw=0)
+    axes[0].axhline(0.1, color=MUTED, lw=0.6, ls="--")
+    axes[0].set_yscale("log")
+    axes[0].set_ylabel(r"$\delta_K(T)$")
+    axes[1].set_ylabel("train loss at T (open: linearized)")
+    axes[2].set_ylabel("test accuracy at T")
+    for ax in axes:
+        ax.set_xscale("log")
+        ax.set_xlabel(r"$\sigma$")
+    from matplotlib.lines import Line2D
+    handles = [Line2D([], [], color=cols[k], marker="o", ls="", ms=4, label=k) for k in cats]
+    handles += [Line2D([], [], color=MUTED, marker="s", ls="", ms=4, label="plain model"),
+                Line2D([], [], color=MUTED, marker="o", ls="", ms=4, label="centred model")]
+    fig.legend(handles=handles, fontsize=7, frameon=False, loc="upper center", ncol=5, bbox_to_anchor=(0.5, 1.08))
+    fig.tight_layout()
+    savefig(fig, Path(out) / "regime_sweep")
+    plt.close(fig)
+
+
 def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None):
     set_style()
     rows = [r for r in json.load(open(summary_json)) if "error" not in r and not r.get("centred")]
