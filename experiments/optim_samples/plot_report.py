@@ -290,7 +290,7 @@ def fig_sgd():
     ax_p9.set(
         xscale="log",
         ylim=(0.95, 5.9),
-        xlabel=r"$z=(\eta/B)\,T_{\rm GF}$",
+        xlabel=r"$(\eta/B)\,T_{\rm GF}$",
         ylabel=r"$T_{\rm SGD}/T_{\rm GF}$ (escaped runs)",
     )
     ax_p9.set_title("(b) later plateau, aligned route", fontsize=8.5)

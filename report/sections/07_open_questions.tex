@@ -8,8 +8,7 @@
 % (notes/reviews/saddle_hopper_verification.md, sections 6 and 8).
 \section{Summary by parameter and open questions}\label{sec:summary}
 
-\subsection{How each parameter acts}\label{sec:summary-parameters}%
-\label{sec:s2s-parameters}
+\subsection{How each parameter acts}\label{sec:summary-parameters}
 
 \Cref{tab:s2s-parameters} collects, for each parameter, what it does to the saddle sequence (which
 saddles are visited and in which order), to the plateau durations, and to the regime boundaries of
@@ -108,8 +107,7 @@ saddles are visited and in which order), to the plateau durations, and to the re
       Aligned initialization: the boundary depends on the weight ratios (\cref{prop:A-s2s-aligned})
       \proven; lazy boundary through $\normF{\Wt}/\fsc$; centred floor $\propto\isc^{2\Kc}/\normF{\Wt}^2$
       \derived \\
-    input covariance\newline(\ref{sec:cov-aligned}, \ref{sec:cov-misaligned},
-      \ref{sec:cov-correlated}) & Aligned: race with weights $\Lambda_r\tw r$, landscape with
+    input covariance\newline(\ref{sec:cov-aligned}, \ref{sec:cov-misaligned}) & Aligned: race with weights $\Lambda_r\tw r$, landscape with
       $\Lambda_r^{1/2}\tw r$, which can reverse the order and, on binary4, swap a learned component \derived{}
       \empirical; otherwise plateaus at critical points of the $\Sig$-weighted loss \proven{} \empirical &
       Aligned: exact clocks $\Lambda_rt$, exponents unchanged \proven{} \empirical; non-orthogonal in the
@@ -156,7 +154,7 @@ scales with the gradient, which near the origin is $O(\isc^{\Kc-1})$ while the p
 their own size: a step proportional to the gradient needs a time $\isc^{-(\Kc-2)}$, a step invariant
 under its rescaling (Adam) does not, and an absolute scale in the preconditioner, such as Adam's
 $\epsilon$, brings the law back \derived; Adam still follows the sign of the gradient, which one
-component dominates, so learning stays sequential (\conjecture). The second is the metric. Under
+component dominates, so learning stays sequential and its first component is gradient flow's (\conjecture). The second is the metric. Under
 gradient flow $\W$ moves through $\Jac\Jac\T$ ($\Jac=\partial\W/\partial\params$), which vanishes like
 $\isc^{2(\Kc-1)}$ at the origin, whereas Riemannian gradient descent (in continuous time the
 Gauss--Newton flow $\dot\params=\Jac^+(\Wt-\W)$) and the exact block minimizations of ALS and DMRG move
@@ -167,9 +165,9 @@ a parametrization, and the better behaviour of the natural gradient there, are k
 perceptrons \knownresult[\citealp{amari2006singularities}]. Equivariance alone is not enough: Gram
 preconditioning is gauge-equivariant up to damping \derived{} but moves all cores at once from their
 current values. Balance and the flattest minimum (\cref{prop:A-pattern-rule}) rest on the conserved
-$\Q e$, the charges of the gauge symmetry under Euclidean gradient flow (\cref{prop:conservation}); their
-measured relative drift is $10^{-11}$, $10^{-5}$ and $3\cdot10^{-4}$ under gradient flow, GD and heavy
-ball (momentum flows conserve fewer quantities, with time- and velocity-dependent laws,
+$\Q e$, the charges of the gauge symmetry under Euclidean gradient flow (\cref{prop:conservation}); on
+binary4 their measured relative drift is about $10^{-11}$ under gradient flow and, growing with $\isc$,
+$4\cdot10^{-5}$--$2\cdot10^{-3}$ under GD and $10^{-3}$--$5\cdot10^{-2}$ under heavy ball (momentum flows conserve fewer quantities, with time- and velocity-dependent laws,
 \citealp{marcotte2024keep}), while Adam, equivariant only under coordinate permutations and sign flips,
 breaks them at order one \empirical. Where an entry of the table rests on one tree, one teacher or a
 single $\isc$, the sections cited give its scope.

@@ -166,7 +166,7 @@ trees are genuine tensor networks.
     the sites on either side, numbered from 0); effective bond rank of every edge, offset slightly per edge.
     Dashed verticals: events. Takeaway: one component per event, in the order of the weights; every edge gains
     one singular value at each event, all at the same time, and the next ones stay far below the teacher's in
-    between (source: \cref{app:experiments}, \cref{tab:exp-s2s}).}
+    between (source: \cref{tab:exp-s2s}).}
   \label{fig:s2s-runs}
 \end{figure}
 
@@ -246,7 +246,7 @@ free parameter; the norm of the initialization gives only a lower bound, low by 
     (solid) and without it (dotted). Takeaway: one number per initialization, computed before training,
     predicts the first escape of every run, to within $10^{-5}$ at the smallest $\isc$ in every panel; the
     deviations at large $\isc$ are the offset and, at $\Kc=7,8$, a direction that has not converged (source:
-    \cref{app:experiments}, \cref{tab:exp-s2s}).}
+    \cref{tab:exp-s2s}).}
   \label{fig:s2s-first}
 \end{figure}
 
@@ -394,13 +394,14 @@ $k=7$ only on HT trees. \newresult
     $(1,0.5)$, all rows of the main sweep. Left: per-seed exponent of $\Delta t_2$ as a power of $1/\isc$ (mean $\pm$
     s.e.\ over the fitted seeds, at most eight) against the prediction $k-2$, $k=\abs{\mathrm{St}(V_D)}$, for every
     row with $k\ge3$; filled circles: small initialization, open squares: saddle start; colour: tree family (MPS
-    blue, binary orange, HT green); points are offset horizontally by family and protocol. Right: slope of
+    blue, binary orange, HT green, star3 purple, midroot6 pink); points are offset horizontally by family and
+    protocol. Right: slope of
     $\Delta t_2$ against $\ln(1/\isc)$ for the $k=2$ rows, against $(1-\tw2/\tw1)/\lambda_2=1$ (small
     initialization) and $1/\lambda_2=2$ (saddle start). Dashed: equality. The points at $k-2\ge4$ have limited
     range ($0.5$--$0.8$ decades of $\isc$, $1$--$5$ fitted seeds) and are not measurements of the exponent
     (one-decade values in \cref{tab:locality-exponents}). Takeaway: up to $k=5$ the exponent is set by the number
     of cores of the Steiner subtree, on every tree; for $k=2$ the head start halves the slope (source:
-    \cref{app:experiments}, \cref{tab:exp-locality}).}
+    \cref{tab:exp-locality}).}
   \label{fig:locality-exponents}
 \end{figure}
 
@@ -459,8 +460,7 @@ times differ by a median $5\cdot10^{-5}$ event widths. \newresult
     $k=4$, small initialization; middle: binary8, $D=\{3,4\}$, $k=5$, small initialization; right: HT8,
     $D=\{1,2\}$, $k=5$, saddle start (one run each). Before the event every edge sits at the initialization-noise
     level, Steiner edges included; at the event exactly the Steiner edges rise, together. Takeaway: the escape
-    uses the cores of the Steiner subtree and no others (source: \cref{app:experiments},
-    \cref{tab:exp-locality}).}
+    uses the cores of the Steiner subtree and no others (source: \cref{tab:exp-locality}).}
   \label{fig:locality-bonds}
 \end{figure}
 
@@ -581,7 +581,7 @@ $2.018\pm0.017$. \newresult
     $k^*-2$. Measured: MPS4 two short levels (the second logarithmic in $\isc$; the law of the first is
     undetermined); binary4 one $\isc^{-1}$ plateau, where the first escape already fits $\U1$, $\U2$ and part of
     $\U3$; HT4 $\isc^{-1}$ and $\isc^{-2}$ plateaus ($1.09$, $2.08$). Takeaway: the tree, not the teacher alone,
-    sets the number of plateaus and their laws (source: \cref{app:experiments}, \cref{tab:exp-locality}).}
+    sets the number of plateaus and their laws (source: \cref{tab:exp-locality}).}
   \label{fig:locality-trees}
 \end{figure}
 
@@ -696,7 +696,7 @@ grows (MPS6, $w=0.8$: $0.17$, $0.32$, $0.41$, $0.46$ for $m=2$, $3$, $4$, $6$).
     of pattern teachers; ``adj.'', a pair whose two cores share a bond; ``LO race / fit'', the race in (a) and (c)
     and the fitted power law in (b). Takeaway: for $m\ge3$ a race set by the initialization, independent of $\isc$
     and slowly greedier with $\chi$; for $m=2$ the wrong order dies out as a power of $\isc$ (source:
-    \cref{app:experiments}, \cref{tab:exp-order}).}
+    \cref{tab:exp-order}).}
   \label{fig:order-first}
 \end{figure}
 
@@ -748,7 +748,7 @@ reached, only 30 of 120 binary4 runs rotate (\cref{app:supp-s2s-order}). \newres
     the predicted $1/\abs{\lambda_{\min}}$, mean over 8 seeds for each $w$ (binary4: $0.5$, $0.7$, $0.8$, $0.9$; MPS4:
     $0.5$, $0.8$, $0.9$; they nearly coincide); lines: slope 1; legend as in \cref{fig:order-first}. Takeaway: $m=2$
     wrong-order saddles are strict and are left at the predicted rate, by rotation or by adding; for $m\ge3$ nothing
-    corrects the wrong order (source: \cref{app:experiments}, \cref{tab:exp-order}).}
+    corrects the wrong order (source: \cref{tab:exp-order}).}
   \label{fig:order-wrong}
 \end{figure}
 
@@ -863,7 +863,7 @@ The routes die on the plateaus, not in the escapes (\cref{app:supp-s2s-failure})
     $\isc$; orange: two seeds of the close teacher, not constant), fitted from $1.5$ times the last event to a slice
     of $10^{-9}$, above the floating-point floor. Takeaway: no dead route at $\Kc=3$, fixed by the initialization at
     $\Kc=4$, frequent at $\Kc=7,8$ except where no route end is capped (binary8 at $\chi=6$) (source:
-    \cref{app:experiments}, \cref{tab:exp-s2s}).}
+    \cref{tab:exp-s2s}).}
   \label{fig:s2s-dormant}
 \end{figure}
 

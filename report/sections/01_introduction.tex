@@ -77,8 +77,8 @@ can be compared with experiment number by number. The main focus is the saddle-t
     regime exists only when every bond reaches its cut dimension; below it training stalls on a loss
     floor.
   \item Gradient descent (GD) with steps below a sharp stability limit, $2/(\Kc\tw1^{2-2/\Kc})$ with $\tw1$
-    the largest teacher weight, keeps the saddle sequence on a shifted clock; gradient noise (SGD)
-    lengthens later plateaus on average and can trap; Adam keeps the first component but leaves the
+    the largest teacher weight, keeps the saddle sequence on a shifted clock; gradient noise (SGD) does
+    not shorten the first plateau, lengthens later ones on average and can trap; Adam keeps the first component but leaves the
     origin in a number of steps that does not depend on $\isc$; ALS, DMRG and Riemannian gradient descent
     remove the plateaus. What decides is invariance: steps proportional to the gradient vanish near the
     origin, steps invariant under rescaling the gradient do not, and methods equivariant under the gauge
@@ -206,8 +206,9 @@ sections cited, and novelty is discussed in \cref{sec:intro-prior}.
   \item\label{it:intro-optim} \textbf{Steps, noise and practical optimizers}
     (\cref{sec:other-optim,sec:other-optimizers}). Gradient descent is stable at the balanced global
     minimum only below $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$ \proven, and below it keeps gradient flow's sequence
-    on a clock shifted by $O(\lr)$ \derived{} \empirical. SGD lengthens later plateaus on average and can
-    trap \empirical{} (law: \conjecture). Adam keeps the first component, and mostly the order, with a
+    on a clock shifted by $O(\lr)$ \derived{} \empirical. SGD keeps the law of the first plateau \derived{} and
+    shortens it in no setting beyond noise; it lengthens later plateaus on average and can trap \empirical{}
+    (law: \conjecture). Adam keeps the first component, and mostly the order, with a
     $\isc$-independent first escape until $\epsilon$ restores the law \derived{} \empirical; ALS, DMRG and
     Riemannian GD have no plateaus \derived, and ALS and DMRG do not see $\isc$ \proven.
   \item\label{it:intro-cov} \textbf{Covariance, teacher structure and real data}

@@ -134,24 +134,21 @@
 \maketitle
 
 \begin{abstract}
-  % About 230 words. Status words (prove, derived, confirmed) follow the tags of Sections 3-6.
-  How do gradient methods train tree tensor networks? We study the model
-  $f(x)=\langle W,\phi_0(x_0)\otimes\cdots\otimes\phi_{N-1}(x_{N-1})\rangle$, with $W$ contracted from $K$ cores on
-  a tree, trained on the exact population loss of a teacher. From small initialization (scale $\sigma$),
-  gradient flow is saddle-to-saddle: plateaus sit at critical points of the problem with fixed bond ranks,
-  and each escape raises the bond ranks along a route, a connected set of cores that must move together;
-  on large trees a route often dies first, and the sequence ends early. The first plateau lasts
-  $\propto\sigma^{-(K-2)}$, as in other homogeneous models, with a prefactor computed per initialization.
-  Later, the tree decides: the smallest route, of $k^*$ cores, gives no plateau ($k^*=1$), a logarithmic
-  one ($k^*=2$) or one $\propto\sigma^{-(k^*-2)}$ (derived; confirmed up to $k^*=5$). At a saddle with one
-  learned component and a spare bond channel along the route, we prove that $k^*$ is the saddle order (the
-  power of the distance at which the loss first decreases) under a spectral condition, which every
-  two-component teacher learned in weight order satisfies, and that the order can be lower from $k^*=5$
-  on. With non-orthogonal teachers, the saddle after the first escape is strict on matrix product states,
-  not on binary or hierarchical Tucker trees whose internal cores carry no site. The learning order is a
-  race set by the initialization unless competing components differ on only two cores. With the initial
-  function removed, larger $\sigma$ leads through a rich regime to a lazy one, which exists only when every
-  bond dimension reaches the rank of the matricization it cuts.
+  % At most 200 words. Status words (provably, confirmed) follow the tags of Sections 3-6.
+  We study how gradient flow trains tree tensor networks,
+  $f(x)=\langle W,\phi_0(x_0)\otimes\cdots\otimes\phi_{N-1}(x_{N-1})\rangle$ with $W$ contracted from $K$ cores on a
+  tree, on the population loss of a teacher. From small initialization (scale $\sigma$) it is
+  saddle-to-saddle: it rests at critical points with fixed bond ranks, and each escape raises the ranks along a
+  route, a connected set of cores that move together; on large trees, routes often die first. The first
+  plateau lasts $\propto\sigma^{-(K-2)}$, with a prefactor computed per initialization. Later the tree decides:
+  the smallest route, of $k^*$ cores, gives no plateau ($k^*=1$), a logarithmic one ($k^*=2$) or one
+  $\propto\sigma^{-(k^*-2)}$ (confirmed to $k^*=5$). With one learned component and a spare bond channel,
+  $k^*$ is provably the saddle order under a spectral condition, met by two-component teachers learned in
+  weight order; from $k^*=5$ on the order can be lower. Non-orthogonal teachers make the next saddle strict on
+  matrix product states, not on binary or hierarchical Tucker trees. The learning order is a race set by the
+  initialization unless competing components differ on two cores only. Without the initial function,
+  larger $\sigma$ leads through a rich regime to a lazy one, which needs every bond at the rank of the
+  matricization it cuts.
 \end{abstract}
 
 \tableofcontents

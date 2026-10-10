@@ -176,7 +176,7 @@ def main():
     lim = [0.5, base["p_pred"].max() + 0.5]
     ax.plot(lim, lim, "k--", lw=0.8)
     ax.set_xlabel(r"predicted exponent $k-2$")
-    ax.set_ylabel(r"measured exponent $p$ of $\Delta t_2$")
+    ax.set_ylabel(r"measured exponent of $\Delta t_2$")
     ax = axes[1]
     k2 = t[(t["k_rank"] == 2)]
     for start, mk in (("small", "o"), ("saddle", "s")):

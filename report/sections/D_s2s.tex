@@ -47,8 +47,7 @@ $\abs{\lambda_{\min}}$ to the balanced-route value reaches $20$ at $\Kc=7,8$.
     $\chi=3$ (6, 7), HT4 gap 2 (9), MPS8 (7; 3). $\isc$: $0.003$--$0.1$ (binary4, MPS4), $0.07$--$0.3$ at
     $\chi=6$, $0.03$--$0.4$ (binary8) and $0.1$ or $0.15$ to $0.4$ (MPS8) at $\chi=3$; $\dagger$: limited range
     (less than one decade, or fewer than five seeds; binary8 at $\chi=3$: $1.1$ decades for 11 of 20 seeds; some
-    binary4 close-teacher seeds keep four or five values of $\isc$, about $0.8$ decade). Source:
-    \texttt{experiments/s2s\_core/results/main\_exponents.csv}.}
+    binary4 close-teacher seeds keep four or five values of $\isc$, about $0.8$ decade) (source: \cref{tab:exp-s2s}).}
   \label{tab:s2s-gaps}
   \footnotesize
   \setlength{\tabcolsep}{3pt}
@@ -96,7 +95,7 @@ $7.1\cdot10^{-7}$. The test checks contractions, gradients, integrators and even
     $\chi=3$; one run per tree, with per-core amplitude $q_0=0.01$ (binary4), $0.07$ (MPS4), $0.29$ (binary8, HT4)
     and $0.34$ (MPS8). Panel titles: largest deviation over time and components. Takeaway: with aligned
     initialization every tree learns the components in the order of their weights, at times $\propto1/\tw r$, as
-    the decoupled modes of a deep linear network do (source: \cref{app:experiments}, \cref{tab:exp-s2s}).}
+    the decoupled modes of a deep linear network do (source: \cref{tab:exp-s2s}).}
   \label{fig:s2s-aligned}
 \end{figure}
 
@@ -147,8 +146,7 @@ unchanged.
     trees (diamonds; binary, MPS and HT with $\Ns=3$--$16$), $\chi=3$, $d=4$, weights $(3,2,1)$, 50 initializations;
     dotted: the RMS-overlap heuristic $P_3$; dashed: $t_{\rm KH}$. Takeaway: weak $\chi$-dependence, none on $d$ at
     full bond, $P_3$ follows the growth with $\Kc$, and $t_{\rm KH}$, which uses only the norm of the
-    initialization, is low by factors that grow with $d$, $\chi$ and $\Kc$ (source: \cref{app:experiments},
-    \cref{tab:exp-s2s}).}
+    initialization, is low by factors that grow with $d$, $\chi$ and $\Kc$ (source: \cref{tab:exp-s2s}).}
   \label{fig:s2s-prefactor}
 \end{figure}
 
@@ -162,7 +160,7 @@ unchanged.
     Ranges are over rows (one row = tree, $D$, protocol); single rows give mean $\pm$ s.e.\ over seeds (median).
     $\sep{}$ is the separation ratio \eqref{eq:separation}. $\dagger$: limited range (less than one decade of
     $\isc$, or fewer than five fitted seeds; the reporting rule of \cref{sec:setup-diagnostics}). Sets $D$ number
-    the sites from $0$ (source: \cref{app:experiments}, \cref{tab:exp-locality}).}
+    the sites from $0$ (source: \cref{tab:exp-locality}).}
   \label{tab:locality-exponents}
   \small
   \begin{tabularx}{\textwidth}{@{}c>{\raggedright\arraybackslash}p{3.0cm}
@@ -225,7 +223,7 @@ median difference from the row's plateau exponent is $0.02$; raw and projected e
     For $k\ge3$, $\lambda_{\min}\to0$ as $\isc\to0$, roughly as $\isc^{k-2}$: higher-order saddles. Lines for
     $k\ge6$ come from the rows of limited range of \cref{fig:locality-exponents}. Takeaway: with the larger component
     learned first, negative curvature that survives $\isc\to0$ exists only for two-core routes (source:
-    \cref{app:experiments}, \cref{tab:exp-locality}).}
+    \cref{tab:exp-locality}).}
   \label{fig:locality-hessian}
 \end{figure}
 
@@ -342,8 +340,8 @@ binary4 is far greedier than a race of independent clocks ($0.87$ against $0.73$
   \caption{Matrix-like pairs: exponent $\gamma$ of $P(\text{smaller first})=C\isc^{\gamma}$, binomial maximum likelihood
     over the whole $\isc$ range, s.e.\ from a bootstrap over seeds (shared across $\isc$); $d=2$, $\chi=4$ for the pattern
     pairs; weights $(1,w)$. Prediction \eqref{eq:A-matrix-like}: $n(1-w)/w$, $n=1$ for non-adjacent cores, $n=\bd e=4$
-    (conjectured) for adjacent ones. --: not run, or (MPS6 $\{2,3\}$, $w=0.7$) events at two values of $\isc$ only.
-    Source: \texttt{experiments/order/results/sigma\_fits.csv}.}
+    (conjectured) for adjacent ones. --: not run, or (MPS6 $\{2,3\}$, $w=0.7$) events at two values of $\isc$ only
+    (source: \cref{tab:exp-order}).}
   \label{tab:order-gamma}
   \footnotesize
   \setlength{\tabcolsep}{4pt}
@@ -438,8 +436,8 @@ rank, but not on HT4 and MPS8, whose route ends sit on bonds capped at $d=4$, on
   \caption{Stalled runs among two-component runs with $k\ge4$: small initialization, $d=2$, the same 24 (tree, $D$)
     cases and $\isc$ grids in every column. Fan-in initialization at $\chi=2$ and $\chi=4$; balanced initialization
     ($\Q e=0$, same $\Wz$) at $\chi=2$. Bottom rows: split by whether at least one end of the route sits on a bond
-    below the cap \eqref{eq:bond-cap} or both ends sit on bonds capped at $d$ (MPS chain ends, HT leaves). Source:
-    \texttt{experiments/locality/results/stall\_capped\_ends.csv} and \texttt{run\_classes\_by\_sweep.csv}.}
+    below the cap \eqref{eq:bond-cap} or both ends sit on bonds capped at $d$ (MPS chain ends, HT leaves)
+    (source: \cref{tab:exp-locality}).}
   \label{tab:locality-stalls}
   \small
   \begin{tabular}{@{}lccc@{}}
@@ -517,8 +515,8 @@ at $\isc=0.1$ (after $2\cdot10^4$ steps, at $t=1.4\cdot10^9$ of a budget of $5.7
   \caption{Stall test at $\chi$ equal to the teacher rank: $d=3$, $\chi=3$, odeco teacher $(3,2,1)$,
     $\isc\in\{0.3,0.45,0.6\}$, six seeds; ``balanced'': the same $\Wz$ with $\Q e=0$ on every bond. Types of the stalled
     runs from the third bond singular value of $\W$ at the end, minimized over edges: dead route below $10^{-12}$,
-    decaying up to $10^{-4}$ (no stalled run is above); the centred runs did not record the spectra of $\W$. Source:
-    \texttt{experiments/regime\_map/results/report/stall\_test\_summary.csv}.}
+    decaying up to $10^{-4}$ (no stalled run is above); the centred runs did not record the spectra of $\W$
+    (source: \cref{tab:exp-regimes}).}
   \label{tab:stall-test}
   \footnotesize
   \begin{tabular}{@{}lllcccc@{}}
@@ -639,7 +637,11 @@ dormant entries.
 \subsubsection{Provenance and corrections after review}\label{app:supp-s2s-provenance}
 The numbers of \cref{sec:s2s} come from the committed result tables of the experiments \path{s2s_core},
 \path{locality}, \path{order} and \path{regime_map} (\cref{app:reproducibility}), checked against them in two
-verification reviews per experiment and a final review of the claims. Three numbers of \cref{sec:s2s-order} exist only in
+verification reviews per experiment and a final review of the claims. The tables of this appendix are
+\path{s2s_core/results/main_exponents.csv} (\cref{tab:s2s-gaps}), \path{order/results/sigma_fits.csv}
+(\cref{tab:order-gamma}), \path{locality/results/stall_capped_ends.csv} and \path{run_classes_by_sweep.csv}
+(\cref{tab:locality-stalls}) and \path{regime_map/results/report/stall_test_summary.csv} (\cref{tab:stall-test}),
+all under \path{experiments/}. Three numbers of \cref{sec:s2s-order} exist only in
 the independent recomputation of the order experiment (scripts in \path{notes/reviews/scripts/verify_order/}): the fits
 over the three smallest values of $\isc$ (\path{v_sigma.py}, \path{v_sigma2.py}, \path{v_sigma3.py}), the paired McNemar
 comparison of each run's order with its own LO race (\path{v_multi.py}), and the margin of the stall rule of the
