@@ -102,8 +102,8 @@ is built.
     \ref{fig:locality-exponents}, \ref{fig:locality-hessian} & \texttt{bash
       experiments/locality/finalize.sh R} writes every figure and table of
       \cref{sec:s2s-locality,sec:s2s-failure} into directory \texttt{R} (\texttt{LOCALITY\_EAGER=1}
-      without a C++ compiler; its steps open the absolute trajectory paths stored in the run records,
-      \texttt{/root/outputs/locality/traj/}, so on another machine that directory must link to the copy).
+      without a C++ compiler; on another machine set \texttt{LOCALITY\_OUT} to the copy: stored
+      trajectory paths fall back to \texttt{\$LOCALITY\_OUT/traj/}; the script stops at the first failing step).
       Single steps, with scripts in \texttt{experiments/locality/} run by \texttt{uv run python}: these
       two by \texttt{make\_figures.py \$O/twocomp -{}-config experiments/locality/\allowbreak
       configs/twocomp.yaml -{}-hessians R/hessians.csv -{}-out R/twocomp}
