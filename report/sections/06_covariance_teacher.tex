@@ -195,13 +195,14 @@ two-core routes can open on bottom edges at higher ranks, never for the root bip
   \includegraphics{data_teacher/contrast.pdf}
   \caption{One generic teacher, three trees. (a)~Saddle start, MPS students, 13 teachers: escape time
     rescaled by the predicted slope (mean over five seeds, $\gamma_e$ of the realized edge) against
-    $\ln(1/\varepsilon)$; dashed: the prediction. (b)~Saddle start, binary and HT students, the same teachers
-    except the misaligned one with $\Ns=8$, $\theta=20^\circ$: $\varepsilon\,t_{\rm esc}$ relative to its value at
-    $\varepsilon=10^{-3}$ (per seed, then geometric mean); flat means $t_{\rm esc}\propto\varepsilon^{-1}$. (c),~(d)~Random
-    initialization, the six teachers with $\Ns=4$ on MPS4 and binary4 (runs on the major rank-one saddle
-    with a resolved plateau, geometric means over seeds): $-\lambda_{\min}$ of the gauge-projected Hessian at the
-    plateau, and the second escape $\Delta t_2$. Takeaway: the same teachers give a strict saddle with a
-    logarithmic escape at the predicted rate on the MPS, and a higher-order saddle
+    $\ln(1/\varepsilon)$; dashed: the prediction. (b)~Saddle start, binary (solid) and HT students (dashed), the
+    same teachers except the misaligned one with $\Ns=8$, $\theta=20^\circ$: $\varepsilon\,t_{\rm esc}$ relative to
+    its value at $\varepsilon=10^{-3}$ (per seed, five seeds, then geometric mean); flat means
+    $t_{\rm esc}\propto\varepsilon^{-1}$. (c),~(d)~Random initialization, the six teachers with $\Ns=4$ on MPS4 and
+    binary4 (runs on the major rank-one saddle with a resolved plateau, geometric means over four or five seeds):
+    $-\lambda_{\min}$ of the gauge-projected Hessian at the plateau, and the second escape $\Delta t_2$. Data:
+    experiment \texttt{data\_teacher} (\cref{tab:repro-figures}). Takeaway: the same teachers give a strict
+    saddle with a logarithmic escape at the predicted rate on the MPS, and a higher-order saddle
     ($\lambda_{\min}\propto\isc$, escape $\propto\varepsilon^{-1}$ or $\isc^{-1}$) on binary and HT trees.}
   \label{fig:dt-contrast}
 \end{figure}
@@ -237,15 +238,16 @@ $\theta\in\{0,5,20\}^\circ$, nine $\isc$ from $3\cdot10^{-4}$ to $0.3$, ten seed
   \includegraphics{data_teacher/mps_laws.pdf}
   \caption{MPS4 from random initialization: the second escape $\Delta t_2$ (onset events; runs on the major
     rank-one saddle with a resolved plateau; geometric mean over seeds with its standard error) when the
-    teacher's components are made non-orthogonal in three ways. (a)~CP overlap $c$ ($d=4$, weights $(1,0.7)$,
-    ten seeds); dashed: $h_e\ln(1/\isc)$ (\cref{cor:A-second-escape}), anchored at the smallest $\isc$ since the
-    intercept is not predicted. (b)~Misaligned covariance at angle $\theta$ ($d=4$, ten seeds); dashed: slope
-    $1/\abs{\lambda_{\min}}$, an upper bound. (c)~Correlated sites ($d=3$, four seeds); dashed: the two-stage law
-    (\cref{app:covariance}; not computed for $\rho=0.1$, $0.3$). Black: the orthogonal baseline, dashed
-    $\propto\isc^{-2}$; open markers: runs flagged by the float64-floor scan (dormant overlap $10^{-21}$--$10^{-12}$);
-    without them the baseline exponents are $2.008\pm0.002$ ($c=0$) and $2.000\pm0.002$ ($\theta=0$). Takeaway: any
-    non-orthogonality in the metric of the loss turns the $\isc^{-2}$ second plateau into a logarithmic
-    one, with the predicted slope where there is a prediction.}
+    components of the teacher are made non-orthogonal in three ways. (a)~CP overlap $c$ ($d=4$, weights
+    $(1,0.7)$, ten seeds, of which 7--10 per $c$ qualify); dashed: $h_e\ln(1/\isc)$ (\cref{cor:A-second-escape}),
+    anchored at the smallest $\isc$ since the intercept is not predicted. (b)~Misaligned covariance at angle
+    $\theta$ ($d=4$, ten seeds); dashed: slope $1/\abs{\lambda_{\min}}$, an upper bound. (c)~Correlated sites
+    ($d=3$, the four of five seeds on the major saddle); dashed: the two-stage law (\cref{app:covariance}; not
+    computed for $\rho=0.1$, $0.3$). Black: the orthogonal baseline, dashed $\propto\isc^{-2}$; open markers: runs
+    flagged by the float64-floor scan (dormant overlap $10^{-21}$--$10^{-12}$); without them the baseline exponents
+    are $2.008\pm0.002$ ($c=0$) and $2.000\pm0.002$ ($\theta=0$). Data: experiment \texttt{data\_teacher}
+    (\cref{tab:repro-figures}). Takeaway: any non-orthogonality in the metric of the loss turns the $\isc^{-2}$
+    second plateau into a logarithmic one, with the predicted slope where there is a prediction.}
   \label{fig:dt-mps-laws}
 \end{figure}
 
@@ -544,11 +546,12 @@ $\pm$ is the standard error over seeds.
   \centering
   \includegraphics{real_data/first_route_gaps.pdf}
   \caption{First route after the escape on binary16 (MNIST 3 against 5, $\chi=4$): gap between the
-    first two loss drops ($\tau$ clock) against $\isc$, for the 11 series (one per order and seed; colour:
-    order) whose first route, one sibling pair, rises inside the second drop at every $\isc$. Left:
+    first two loss drops ($\tau$ clock) against $\isc$, for the 11 series (one per order and seed; colour and
+    marker: order) whose first route, one sibling pair, rises inside the second drop at every $\isc$. Left:
     log--log axes; lines: $A/\isc+B$ fitted with relative residuals; dashed: $\propto\isc^{-1}$. Right:
-    $\isc$ times the gap, in which $A/\isc+B$ is a line of slope $B$. Takeaway: every series follows the
-    $k=3$ law with a negative $O(1)$ offset; a logarithmic law fails.}
+    $\isc$ times the gap, in which $A/\isc+B$ is a line of slope $B$. Data: experiment \texttt{real\_data},
+    \texttt{fix1\_analysis.json} (\cref{tab:repro-figures}). Takeaway: every series follows the $k=3$ law with
+    a negative $O(1)$ offset; a logarithmic law fails.}
   \label{fig:real-gaps}
 \end{figure}
 
@@ -606,8 +609,9 @@ strongly ($\rho=-0.83$ $[-0.91,-0.66]$; $-0.85$ $[-0.95,-0.60]$ within random or
     three round-0 scrambled orders (secondary analysis only). Horizontal axis: the predictor $S$, computed
     from the data before training. Left: training loss at $\tau=10^4$ (O1). Right: $\log_{10}$ of the time to
     $\Loss\le0.25$ (O2), censored at 4. Titles: Spearman $\rho$ over the 27 orders, 95\% bootstrap
-    intervals. Takeaway: $S$ ranks the orders by their final loss, not by their early speed; orders with
-    the same pixel pairs share $S$, and local orders with vertical or mixed pairs rank only 13--21 of 27.}
+    intervals. Data: experiment \texttt{real\_data}, \texttt{order\_test.json} (\cref{tab:repro-figures}).
+    Takeaway: $S$ ranks the orders by their final loss, not by their early speed; orders with the same pixel
+    pairs share $S$, and local orders with vertical or mixed pairs rank only 13--21 of 27.}
   \label{fig:real-order}
 \end{figure}
 

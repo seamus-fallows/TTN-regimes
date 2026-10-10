@@ -295,8 +295,8 @@ def law_panel(ax, groups, title, legend_title):
     ax.set_title(title, fontsize=9)
     ax.legend(
         title=legend_title,
-        fontsize=7.5,
-        title_fontsize=7.5,
+        fontsize=8,
+        title_fontsize=8,
         loc="upper center",
         bbox_to_anchor=(0.5, -0.24),
         ncol=len(groups),
