@@ -216,7 +216,7 @@ $\lr$, GD follows the modified flow $\dot\params=-(\Id+\frac\lr2\Hess)\nabla\Los
 $\Loss$: the saddles are gradient flow's, and each event moves by $\lr c_e+O(\lr^2)$, with $c_e$ computed without
 free parameter from the variational equation along the gradient-flow path (\cref{prop:A-gd-shift,app:exp-optim}).
 Measured \empirical: over 526 comparisons at $\lr\le0.1\lr_c$ the shift agrees with $\lr c_e$ within $0.3\%$, $1\%$
-and $5\%$ in $66\%$, $90\%$ and $97\%$ of the cases, all 202 first events within $1\%$. Since $c_1$ grows like
+and $5\%$ in $66\%$, $90\%$ and $97\%$ of the cases, all 202 first events within $1\%$. Since the shift constant of the first event grows like
 $\ln(1/\isc)$ (asymptotically, \conjecture{} in \cref{app:optimizer}; confirmed here) while $\tev1\propto\isc^{-(\Kc-2)}$,
 the relative shift of $\tev1$ vanishes as $\isc\to0$: at $0.9\lr_c$ it falls from $0.11$ at $\isc=0.3$ to $0.0036$ at
 $\isc=0.003$ (\cref{fig:optim-gd}b). At small initialization every
@@ -233,7 +233,7 @@ stable step thus reproduces gradient flow, the more closely the smaller $\isc$.
     monotone loss ending at gradient flow's loss (within $5\%$ plus $10^{-3}\Loss_0$); catapult: the same
     after a rise of the loss; thrown back: loss above $0.9\Loss_0$ after the first event; bounded oscillation:
     a loss that keeps oscillating above gradient flow's level; diverged: above $10^6\Loss_0$. (b)~Relative error
-    of the first event time, mean $\pm$ s.e.\ over the five seeds; lines: $\lr c_1/\tev1^{\rm GF}$, no fit.
+    of the first event time, mean $\pm$ s.e.\ over the five seeds; lines: $\lr c_e/\tev1^{\rm GF}$ for the first event, no fit.
     (c)~All runs in the $(\isc,\lr)$ plane, coloured by outcome class as in (a) (plain model with $\chi=3$ and
     $9$, $\isc\le0.3$; centred, $\chi=9$, $\isc\ge1$): dotted, $\lr_c$; solid, $2/\lambda_{\rm GF}$ (mean over
     seeds); dashed, the largest step at which a run still reaches gradient flow's loss. Takeaway: below $\lr_c$
@@ -317,7 +317,7 @@ $\Ns=4$) GD follows gradient flow whenever $\lr<2/\lambda_{\rm GF}(\isc)$, with 
 small initialization, the same saddle sequence; this limit is $\lr_c$ at small initialization and falls like
 $\isc^{-2(\Kc-1)}$ on the lazy side (measured at $\Kc=3$: $\isc^{-3.97}$), where steps up to $1.5$--$3$ times larger still
 reach gradient flow's loss through a catapult. SGD needs in addition $\lr<\lr^*_{\rm ms}(\batch)$ (about
-$10^{-3}\batch$ here for $\batch\le16$), $c_{\rm col}(\lr/\batch)T\ll1$ for every later plateau of length $T$, and $\lr$
+$10^{-3}\batch$ here for $\batch\le16$), $c_{\rm col}(\lr/\batch)T_{\rm GF}\ll1$ for every later plateau of gradient-flow length $T_{\rm GF}$, and $\lr$
 a small fraction of $\lr^*_{\rm ms}$ when learned components must survive long plateaus (no erasure in 72 runs of up
 to 400 time units at $\lr\le0.076\lr^*_{\rm ms}$; one in six runs of 1000 time units at $0.15\lr^*_{\rm ms}$). Because
 plateaus grow like $\isc^{-(k-2)}$, at fixed $\lr/\batch$ SGD eventually stalls or forgets where gradient flow is
@@ -396,7 +396,7 @@ and $1.01$--$1.11$ times gradient flow's time.
 as the initialization vanishes: \citealp{sabanayagam2026optimizer}, Thm~2 and Prop.~6] With $\epsilon=0$ Adam's step
 $-\lr\hat m_n/\sqrt{\hat v_n}$ is invariant under a common rescaling of past gradients
 \knownresult[\citealp{kingma2015adam}], and near the origin $\nabla\Loss$ is homogeneous of degree $\Kc-1$; so the
-iterates from $c\params_0$ with step $c\lr$ are $c$ times those from $\params_0$ with step $\lr$, and Adam sees $\isc$
+iterates from $\kappa\params_0$ with step $\kappa\lr$ are $\kappa$ times those from $\params_0$ with step $\lr$ ($\kappa>0$), and Adam sees $\isc$
 only through $\isc/\lr$. Its first step is $-\lr\,\mathrm{sign}\,\nabla\Loss(\params_0)$, after which $\abs{\params}\sim\lr$
 and the initial gradient weighs $\sim(\isc/\lr)^{\Kc-1}$ in the averages, so the trajectory has a limit as
 $\isc/\lr\to0$ and the number $n_1$ of steps to the first escape stays bounded as $\isc\to0$ (in the sign-flow limit
@@ -449,11 +449,13 @@ form. Only $\Kc=8$ was tested.
 
 \paragraph{No plateaus: sweeps and Riemannian GD.}
 \proven{} \newresult[elementary] In the canonical form centred at core $v$ the environment of $v$ is an isometry, so
-the least-squares core is $\nabla_{\G v}\ip{\W}{\Wt}$, a function of the other cores' frames, which are $Q$ factors of
+the least-squares core is $\nabla_{\G v}\ip{\W}{\Wt}$, a function of the other cores' frames, which are the orthonormal factors of
 QR decompositions and do not change when a core is multiplied by a positive number: every ALS and DMRG iterate is
-independent of $\isc$. Riemannian GD, $\W\leftarrow\mathrm{HSVD}_\chi(\W-\lr P_{T(\W)}(\W-\Wt))$ with $P_{T(\W)}$ the
-projector onto the tangent space of the fixed-rank manifold, maps $\W_0$ at $\lr=1$ to $\mathrm{HSVD}_\chi(P_{T(\W_0)}\Wt)$,
-and that tangent space is the same at $c\W_0$: it is exactly $\isc$-free too. Measured \empirical: ALS and DMRG fit the
+independent of $\isc$. Riemannian GD, $\W\leftarrow\mathrm{HSVD}_\chi(\W-\lr P_{\W}(\W-\Wt))$ with $P_{\W}$ the
+projector onto the tangent space at $\W$ of the fixed-rank manifold and $\mathrm{HSVD}_\chi$ the truncation of the
+hierarchical singular value decomposition to bond dimension $\chi$, maps $\W_0$ at $\lr=1$ to
+$\mathrm{HSVD}_\chi(P_{\W_0}\Wt)$, and that tangent space is the same at every positive multiple of $\W_0$: it is exactly
+$\isc$-free too. Measured \empirical: ALS and DMRG fit the
 teacher within one sweep, with two components crossing $\ov r=\frac12$ in the same micro-step in 59 of 60 runs: no
 resolved order. Riemannian GD needs 2--7 steps; on binary $\Ns=4$ it fits all components within two steps (all three
 cross $\frac12$ at step 1 in 5 of 6 seeds), but it stages them on binary $\Ns=8$, the weakest strictly last in 5 of 6

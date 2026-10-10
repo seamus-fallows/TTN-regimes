@@ -104,8 +104,8 @@ its cores have other legs of dimension above its rank. For odeco and pattern tea
 residual vanishes by orthogonality, which gives the $\isc^{-(k-2)}$ laws of \cref{sec:s2s-locality}; for a
 generic teacher it does not. On an MPS every core carries a site, so $\W_1$ is a strict saddle. Let $M_e$
 be the $d\times d$ matrix that $\Wt$ leaves on the two sites of the cores of edge $e$ when the other sites
-are contracted with the factors of $\W_1$, with singular values $s_j(M_e)$. Edge $e$ contributes the Hessian
-eigenvalues $-\bar s^{(\Ns-2)/\Ns}s_j(M_e)$, $j\ge2$, each $\bd e-1$ times, in all $\sum_e(d-1)(\bd e-1)$ negative
+are contracted with the factors of $\W_1$, with singular values $s_n(M_e)$ (indexed by $n$, as in \cref{app:derivations}). Edge $e$ contributes the Hessian
+eigenvalues $-\bar s^{(\Ns-2)/\Ns}s_n(M_e)$, $n\ge2$, each $\bd e-1$ times, in all $\sum_e(d-1)(\bd e-1)$ negative
 ones, and it escapes at the rate $\lambda_e=\bar s^{(\Ns-2)/\Ns}s_2(M_e)$, the analogue of $\lambda_2$ in
 \eqref{eq:locality-rule}: from the saddle start in a time $\lambda_e^{-1}\ln(1/\varepsilon)+O(1)$, and from random
 initialization with the slope $h_e=(1-s_2(M_e)/\bar s)/\lambda_e$ in $\ln(1/\isc)$, where $s_2(M_e)/\bar s$ is the head
@@ -385,10 +385,10 @@ $\varepsilon=10^{-6}$--$10^{-2}$, five seeds; random initialization at $\tw r=1.
 % Kendall tau on the MPS as evidence of bottom-up growth; "L(1e4)" for runs stopped earlier.
 
 Do the teacher--student results survive real inputs, with a non-product input law and no teacher? The
-empirical loss is $\Loss=\frac12\ip{\W}{C\W}-\ip{Y}{\W}+\mathrm{const}$, with the second-moment operator $C$
-of the features, which is not a product, and the label tensor $Y=\E[y\Feat]$ (averages over the training set). Two
+empirical loss is $\Loss=\frac12\ip{\W}{\Sig\W}-\ip{Y}{\W}+\mathrm{const}$, with the second-moment operator
+$\Sig=\E[\Feat\otimes\Feat]$ of the features, which is not a product, and the label tensor $Y=\E[y\Feat]$ (averages over the training set). Two
 predictions need no product law \derived. Near the origin $\Loss\approx\Loss(0)-\ip{Y}{\W}$, so the first
-escape is that of \cref{sec:s2s-escape} with $\Wt\to T$ (\cref{prop:A-escape-cov}). At a bond-rank-one
+escape is that of \cref{sec:s2s-escape} with $Y$ in place of $\Wt$ (\cref{prop:A-escape-cov}). At a bond-rank-one
 critical point the routes that can open depend only on bond ranks and site dimensions (\cref{app:teachers},
 ``Generic teachers''): on a binary tree, whose internal cores carry no pixel, the cheapest routes join
 two sibling bottom cores ($k=3$: a higher-order saddle, a plateau $\propto\isc^{-1}$); on an MPS any adjacent

@@ -39,7 +39,7 @@ $\abs{\lambda_{\min}}$ to the balanced-route value reaches $20$ at $\Kc=7,8$.
 \begin{table}[tbp]
   \centering
   \caption{Plateau durations and saddle type, odeco teachers, fan-in initialization. Gaps: per-seed exponent
-    $p$ of $\tev{i+1}-\tev i\propto\isc^{-p}$, mean $\pm$ s.e.\ over seeds (run sets: \cref{app:exp-s2s}),
+    of $\tev{i+1}-\tev i$ as a power of $1/\isc$, mean $\pm$ s.e.\ over seeds (run sets: \cref{app:exp-s2s}),
     for $\chi=3$ and $6$ or, in rows ``both'', the separated and close teachers; brackets: range of the
     per-seed values (binary4, MPS4: over their four cells). $\lambda_{\min}$: mean per-seed slope of
     $\ln(-\lambda_{\min}(\Hperp))$ against $\ln\isc$ at the first and second plateau midpoints ($\chi=3$; $6$, or
@@ -157,8 +157,8 @@ unchanged.
 \begin{table}[tbp]
   \centering
   \caption{Plateau law after the first component, two-component pattern teachers ($d=\chi=2$, weights
-    $(1,0.5)$): prediction \eqref{eq:locality-rule} against measurement. $p$ is the exponent of
-    $\Delta t_2\propto\isc^{-p}$, fitted per seed; for $k=2$ the slope of $\Delta t_2$ against $\ln(1/\isc)$.
+    $(1,0.5)$): prediction \eqref{eq:locality-rule} against measurement. Measured: the exponent of
+    $\Delta t_2$ as a power of $1/\isc$, fitted per seed; for $k=2$ the slope of $\Delta t_2$ against $\ln(1/\isc)$.
     Ranges are over rows (one row = tree, $D$, protocol); single rows give mean $\pm$ s.e.\ over seeds (median).
     $\sep{}$ is the separation ratio \eqref{eq:separation}. $\dagger$: limited range (less than one decade of
     $\isc$, or fewer than five fitted seeds; the reporting rule of \cref{sec:setup-diagnostics}). Sets $D$ number
@@ -208,11 +208,11 @@ $0.595\pm0.003$ against $1/\lambda_2=0.707$, $0.630$, $0.595$.
 \cref{sec:setup-diagnostics} would call $k=3$ plateaus strict for $\isc\gtrsim0.01$--$0.04$. For $k=2$ from the
 saddle, $\lambda_{\min}=-0.5000$, projected and raw ($-0.2500$ and $-0.7500$ for $\tw2=0.25$, $0.75$). From small
 initialization the raw value departs from $-\lambda_2$ where the plateau is too short to reach the saddle ($-0.437$
-for MPS8 $\{3,4\}$ at $\isc=0.008$; $-0.581$ against $-0.75$ for $\tw2=0.75$). For $k\ge3$ the exponent $x$ of
-$\lambda_{\min}\propto\isc^x$ ranges over rows from $0.81$ to $1.06$ for $k=3$ (raw $0.92$--$1.06$), $1.64$--$2.16$ for
+for MPS8 $\{3,4\}$ at $\isc=0.008$; $-0.581$ against $-0.75$ for $\tw2=0.75$). For $k\ge3$ the exponent of
+$\lambda_{\min}$ as a power of $\isc$ ranges over rows from $0.81$ to $1.06$ for $k=3$ (raw $0.92$--$1.06$), $1.64$--$2.16$ for
 $k=4$, $2.82$--$3.76$ for $k=5$, $4.00$ and $4.04$ for $k=6$ (balanced binary8 and HT4, one decade; $4.27$ on MPS8;
 $3.19$--$5.23$ in the rows of limited range), and $5.01$ (balanced HT4) up to $6.5$ (limited range) for $k=7$; the
-median of $\abs{x-p}$ is $0.02$; raw and projected exponents differ by up to $0.11$.
+median difference from the row's plateau exponent is $0.02$; raw and projected exponents differ by up to $0.11$.
 
 \begin{figure}[tbp]
   \centering
@@ -237,14 +237,14 @@ percentile of $0.25$ event widths and grows as $\isc^{1.94}$.
 
 \paragraph{Reading $k$ from a single run.}
 On a balanced route the new overlap grows as $\dot{\ov2}\propto\ov2^{\,2-2/k}$ at small $\ov2$, so the local growth
-exponent $\zeta=\dd\ln\dot{\ov2}/\dd\ln\ov2$ gives $k=2/(2-\zeta)$ (\cref{eq:A-growth-exponent}) \derived{}
+exponent $\beta(\ov2)=\dd\ln\dot{\ov2}/\dd\ln\ov2$ gives $k=2/(2-\beta)$ (\cref{eq:A-growth-exponent}) \derived{}
 \knownresult[the exponent $2-2/k$ of a balanced product of $k$ factors: \citealp{arora2019implicit,razin2022implicit}].
 Fitted over $\ov2\in[10^{-4},10^{-2}]$, the medians per row give $k=2.00$, $3.0$, $4.0$, $5.1$--$5.3$, $6.0$,
 $7.0$--$7.7$ for $k=2$ (saddle start) to $7$ \empirical{} \newresult[as a meter of $k$]. Validity range: from the
 saddle, or from small initialization if the plateau is long enough for the window to lie after the escape
 transient. The estimate fails for small-initialization $k=2$ on MPS6 and MPS8 ($2.4$--$3.3$; plateau shorter than
 the transient), is biased high for $k\ge5$ (HT8: $5.3$ for $k=5$, $7.7$ for $k=7$), and cannot separate $k=7$ from
-$8$, since $\dd k/\dd\zeta=k^2/2$ (per-run 5--95\% ranges $\pm1$ at $k=7$; MPS8 $\{0,7\}$, $k=8$: $7.9$ from small
+$8$, since $\dd k/\dd\beta=k^2/2$ (per-run 5--95\% ranges $\pm1$ at $k=7$; MPS8 $\{0,7\}$, $k=8$: $7.9$ from small
 initialization, 3 runs, $6.1$ from the saddle, 2 runs).
 
 \paragraph{Independent cross-check.}
@@ -252,7 +252,7 @@ initialization, 3 runs, $6.1$ from the saddle, 2 runs).
 initialization; mean $\pm$ s.d.\ of per-seed fits over 3--8 seeds) gives the first escape $\tev1\propto\isc^{-(\Kc-2)}$
 to within $0.003$ in the exponent for every seed; no plateau for $k=1$; a logarithmic $k=2$ plateau with slope
 $1.01\pm0.01$ on MPS4 ($\isc=10^{-3}$--$0.1$; predicted $1$), rising to $2.3\pm0.4$ from the saddle (predicted $2$);
-and $p=1.00$--$1.01$ for $k=3$, $2.00$ (MPS4) and $2.05\pm0.06$ (MPS6) for $k=4$, $3.00\pm0.11$ (binary8) for $k=5$
+and plateau exponents $1.00$--$1.01$ for $k=3$, $2.00$ (MPS4) and $2.05\pm0.06$ (MPS6) for $k=4$, $3.00\pm0.11$ (binary8) for $k=5$
 and $4.97\pm0.05$ (binary8, limited range: under one decade) for $k=7$. It also met the failure modes of
 \cref{sec:s2s-failure}: 95 of 332 runs with $k\ge4$ (none with $k\le3$) never learn the second component, and on
 MPS6 the exponents for $k=5$ and $6$ are seed-dependent and up to two units steeper than $k-2$ ($3.75\pm0.24$ for
@@ -328,7 +328,7 @@ $0.73$, $0.76$ at $\chi=2$, $4$, $8$). With uncapped bonds $\mathrm{sd}\ln\hat t
 ($\chi\ge4$), and its growth with $\Kc$ approaches $\sqrt{\Kc-2}$. The test of $d$ at equal bonds (binary8 and MPS4,
 independent seed sets) excludes differences above about $0.06$ at 95\%. With $X_r$ the projection of the
 initialization onto the orbit of component $r$'s balanced rank-one configuration,
-$\ln\hat t_{1,r}\approx\mathrm{const}-q\ln X_r$ with $q=(0.99$--$1.25)(\Kc-2)$ (s.e.\ $1$--$4\%$).
+$\ln\hat t_{1,r}$ is linear in $\ln X_r$ with slope $-(0.99$--$1.25)(\Kc-2)$ (s.e.\ $1$--$4\%$).
 
 \paragraph{Matrix-like pairs.}
 \empirical{} \Cref{tab:order-gamma} lists the fitted exponents. Fits over the whole measured range lie below
@@ -484,16 +484,17 @@ full criterion (\cref{app:supp-s2s-trap}) resolves (ii) and the drop in (iii).
 
 \paragraph{Steep MPS routes.}
 \empirical{} (mechanism open) One row stays steep at small $\isc$: MPS8 $\{1,5\}$ ($k=5$) from the saddle,
-$p=3.67\pm0.20$ at $\isc\in[0.012,0.03]$ (median $3.83$; limited range: 4 fitted seeds, $0.4$ decade; 10 of 24 runs
+exponent $3.67\pm0.20$ at $\isc\in[0.012,0.03]$ (median $3.83$; limited range: 4 fitted seeds, $0.4$ decade; 10 of 24 runs
 stalled), with a matching Hessian exponent ($3.74$ projected, $3.75$ raw). Its fitted seeds escape at every $\isc$, so
 it meets a refutation criterion of the theory (a per-seed exponent off by more than $0.2$ at $\isc\le0.05$ in runs
 without stall or sign correction), on thin evidence. In the steep MPS rows the route-end amplitudes at the plateau
-midpoint scale as $\isc^{a}$ with $a=1.24$--$1.91$ and shrink during the plateau (median ratio of midpoint to first
-event $0.53$--$0.78$, against $0.85$--$1.03$ in on-target rows); but $a>1$ also occurs in on-target rows (binary8
-$\{0,7\}$, balanced: $a=1.34$, $p=2.99$), so the steep exponents are associated with shrinking route ends, not shown
+midpoint scale as a power of $\isc$ with exponent $1.24$--$1.91$ and shrink during the plateau (median ratio of midpoint to first
+event $0.53$--$0.78$, against $0.85$--$1.03$ in on-target rows); but exponents above 1 also occur in on-target rows
+(binary8 $\{0,7\}$, balanced: $1.34$, with plateau exponent $2.99$), so the steep exponents are associated with shrinking route ends, not shown
 to be caused by them. Neither the logarithmic correction expected if small ends caught up through the conservation
 laws (per seed it fits much worse than a free power law: median residual of $\ln\Delta t_2$ $0.25$--$0.62$ against
-$0.05$--$0.12$) nor a law $\isc^{-(2k-6)}$ (both ends pinned, $a=2$; measured $a$ is seed-dependent, between 1 and 2)
+$0.05$--$0.12$) nor a law $\isc^{-(2k-6)}$ (pinned ends, amplitude exponent 2; the measured exponents are seed-dependent, between 1
+and 2)
 describes the data.
 
 \paragraph{Stall test of the regime maps.}
@@ -539,9 +540,9 @@ at $\isc=0.1$ (after $2\cdot10^4$ steps, at $t=1.4\cdot10^9$ of a budget of $5.7
 Source: \path{notes/theory_trap.md} (v1) and \path{experiments/theory_checks/trap/} (README there), verified in
 \path{notes/reviews/trap_verification.md}: tables reproduced, verdicts recomputed with independent code for a stratified
 sample of 96 runs with $k\ge4$ (94 agree), the conservation law checked in full gradient flow; its errata are applied
-here and in \cref{prop:A-trap}. Setting: a learned rank-one saddle of component $q$ (every core
-$a\,p_v\otimes\bigotimes_fw_f$, $a=\tw q^{1/\Kc}$), the dormant component $r$ with route $C$, $k=\abs C$; an \emph{end} $u$
-of $C$ has one route neighbour, its \emph{partner} $w$, on the route edge $e$.
+here and in \cref{prop:A-trap}. Setting: a learned rank-one saddle of component $q$ (every core the product of its pattern vector and unit bond
+vectors, with per-core amplitude $\tw q^{1/\Kc}$), the dormant component $r$ with route $\mathcal C$, $k=\abs{\mathcal C}$;
+an \emph{end} $u$ of $\mathcal C$ has one route neighbour, its \emph{partner} $w$, on the route edge $e$.
 
 \paragraph{Statements.}
 (1)~On the plateau the entries with all bond indices learned relax fast; the entries with one new bond index form

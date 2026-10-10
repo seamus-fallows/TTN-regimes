@@ -367,7 +367,7 @@ with $\Ns=6$, \emph{star3} (a root without sites, three children with two sites 
 MPS6 chain rooted at a middle core). Protocols: \emph{small} (fan-in initialization at scale $\isc$, first
 plateau included), \emph{saddle} (the exact balanced saddle $\tw1\U1$ plus a fan-in perturbation of scale
 $\isc$; $\Delta t_2=\tev2$ times the escape alone) and \emph{balanced} (the fan-in $\Wz$ re-gauged to $\Q e=0$).
-Per seed (seeds $0$--$7$) we fit $\ln\Delta t_2$ against $\ln(1/\isc)$ (exponent $p$), or $\Delta t_2$ against
+Per seed (seeds $0$--$7$) we fit $\ln\Delta t_2$ against $\ln(1/\isc)$ (the plateau exponent), or $\Delta t_2$ against
 $\ln(1/\isc)$ (the $k=2$ slope), over the values of $\isc$ at which the seed escapes (at least three; fewer than
 the row's six or seven for seeds that stall at some $\isc$, \cref{sec:s2s-failure}), and report mean $\pm$ s.e.\
 over seeds (median). Log and power laws are compared by the residual of $\ln\Delta t_2$ on the same data
@@ -391,7 +391,7 @@ $k=7$ only on HT trees. \newresult
   \centering
   \includegraphics[width=0.86\textwidth]{locality/twocomp_exponents.png}
   \caption{Plateau law after the first component: two-component pattern teachers, $d=\chi=2$, weights
-    $(1,0.5)$, all rows of the main sweep. Left: per-seed exponent $p$ of $\Delta t_2\propto\isc^{-p}$ (mean $\pm$
+    $(1,0.5)$, all rows of the main sweep. Left: per-seed exponent of $\Delta t_2$ as a power of $1/\isc$ (mean $\pm$
     s.e.\ over the fitted seeds, at most eight) against the prediction $k-2$, $k=\abs{\mathrm{St}(V_D)}$, for every
     row with $k\ge3$; filled circles: small initialization, open squares: saddle start; colour: tree family (MPS
     blue, binary orange, HT green); points are offset horizontally by family and protocol. Right: slope of
@@ -420,8 +420,8 @@ dependence on $\Kc$]
 type from its scaling with $\isc$ (\cref{prop:A-signatures}). For $k=2$, $\lambda_{\min}=-0.5000=-\lambda_2$ from
 the saddle at every $\isc$, with one negative eigenvalue per active route (also at $\chi=4$, $8$, and for other
 weights); from small initialization the raw value is $-0.498$ to $-0.499$ for $\isc\le10^{-3}$. For $k\ge3$,
-$\lambda_{\min}\propto\isc^{x}\to0$, with $x$ within $0.2$ of $k-2$ in 126 of 135 rows with $k=3$--$5$, and the raw
-$x$ is within $0.2$ of the row's duration exponent $p$ in $95\%$ of 169 rows with $k\ge3$: where the plateau law
+$\lambda_{\min}$ vanishes as a power of $\isc$ whose exponent lies within $0.2$ of $k-2$ in 126 of 135 rows with
+$k=3$--$5$, and the raw exponent lies within $0.2$ of the row's plateau exponent in $95\%$ of 169 rows with $k\ge3$: where the plateau law
 deviates, the curvature deviates the same way. No plateau with $k\ge3$ has $\isc$-independent negative curvature,
 as predicted for saddles visited in the greedy order; wrong-order saddles
 (\cref{sec:s2s-phenomenology,sec:s2s-order}) and star saddles (\cref{sec:teacher-star}) were not part of this
@@ -433,7 +433,7 @@ sweep. Per-row values and \cref{fig:locality-hessian}: \cref{app:supp-s2s-locali
 $D=\{3,4\}$ and $\Ns=8$ the route has $k=2$ on MPS8, $5$ on binary8 and $7$ on HT8 (\cref{tab:A-route-degree}).
 MPS8 shows a logarithmic plateau (saddle slope $2.002\pm0.010$ against $2$; residuals $0.003$ for the log law,
 $0.064$ for a power law), binary8 a $\isc^{-3}$ plateau ($2.998\pm0.078$ small, $3.106\pm0.057$ saddle), and HT8
-$p=5.74\pm1.06$ (median $5.01$; saddle start, limited range: $0.6$ decade, one seed with a pinned route),
+an exponent of $5.74\pm1.06$ (median $5.01$; saddle start, limited range: $0.6$ decade, one seed with a pinned route),
 consistent with $5$ but unable to separate $k=6$, $7$, $8$. The order of learning changes too (teacher B4, box
 and \cref{sec:s2s-several}). \newresult
 
@@ -550,7 +550,7 @@ resolved (run, level) pairs. \newresult
 
 \paragraph{Locality beats weight.}
 \empirical{} On MPS4 all 60 runs learn B4's $0.3$ component before its $0.6$ component, after a $k^*=2$ level too
-short to be detected as a plateau; the $0.6$ component follows after a $\isc^{-2}$ plateau ($p=2.015\pm0.013$, 5
+short to be detected as a plateau; the $0.6$ component follows after a $\isc^{-2}$ plateau (exponent $2.015\pm0.013$, 5
 seeds). On binary4 all 48 runs learn them in weight order, after two $\isc^{-1}$
 plateaus ($1.051\pm0.008$ and $1.028\pm0.005$, 8 seeds). As $\isc\to0$ a logarithmic route beats a power-law
 route whatever the weights (\cref{rem:A-sequence}) \derived; at finite $\isc$ weights and prefactors compete.
