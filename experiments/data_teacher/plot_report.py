@@ -2,7 +2,8 @@
 
 Two figures at the report's text width in the `ttn.plotting` style, plus three small tables:
   report_contrast   the tree-shape contrast for generic teachers: (a) saddle start, MPS students,
-                    escape time rescaled by the predicted slope 1/gamma_e (13 teachers); (b) saddle
+                    escape time rescaled by the predicted slope 1/lambda_e (the report's name for
+                    the edge rate gamma_e of the notes; 13 teachers); (b) saddle
                     start, binary and HT students, eps * t_esc (flat = eps^-1); (c) random init, N = 4,
                     lambda_min at the rank-one plateau against sigma; (d) random init, N = 4, second
                     escape against sigma (r2_saddle_runs_all.csv, r2_saddle_fits.csv,
@@ -116,9 +117,7 @@ def panel_saddle_mps(ax, runs):
     ax.set_xlim(*lim)
     ax.set_ylim(*lim)
     ax.set_xlabel(r"$\ln(1/\varepsilon)$")
-    ax.set_ylabel(
-        r"$\gamma_e\,[t_{\rm esc}(\varepsilon)-t_{\rm esc}(\varepsilon_{\min})]+\ln(1/\varepsilon_{\min})$"
-    )
+    ax.set_ylabel("escape time rescaled\nby the predicted slope")
     ax.set_title("(a) saddle start, MPS students", fontsize=9)
 
 
@@ -329,7 +328,7 @@ def fig_mps_laws():
     for c in (0.0, 0.05, 0.2, 0.45):
         g = runs[runs.case == f"overlap{c}"]
         groups.append((f"{c:g}", g, None if c == 0 else g.A_pred.iloc[0], c == 0))
-    law_panel(axes[0], groups, "(a) overlapping CP components", r"overlap $c$")
+    law_panel(axes[0], groups, "(a) overlapping CP components", r"overlap $\cos\phi$")
     axes[0].set_ylabel(r"second escape $\Delta t_2$")
 
     runs = dense_runs("e2_sigma_v2_runs.csv")
@@ -340,7 +339,7 @@ def fig_mps_laws():
         case = f"theta_deg{th}"
         bound = None if th == 0 else 1.0 / abs(summ.loc[case, "lam_small_sigma"])
         groups.append((f"{th}", runs[runs.case == case], bound, th == 0))
-    law_panel(axes[1], groups, "(b) misaligned covariance", r"angle $\theta$ (deg)")
+    law_panel(axes[1], groups, "(b) misaligned covariance", "misalignment angle (deg)")
 
     runs = pd.read_csv(RES / "r2_corr_runs.csv")
     runs = runs[(runs.tree == "mps") & (runs.saddle == "major")].copy()
@@ -352,7 +351,7 @@ def fig_mps_laws():
         inc = pred.get(rho, np.nan)
         slope = None if not np.isfinite(inc) else inc / np.log(2.0)
         groups.append((f"{rho:g}", runs[runs.rho == rho], slope, rho == 0))
-    law_panel(axes[2], groups, "(c) correlated sites", r"correlation $\rho$")
+    law_panel(axes[2], groups, "(c) correlated sites", r"correlation $c$")
     ticks = [0.002, 0.005, 0.01, 0.02, 0.05]  # sigma spans 1.5 decades only
     axes[2].set_xticks(ticks, [f"{t:g}" for t in ticks])
     tp.savefig(fig, RES / "report_mps_laws")
