@@ -156,6 +156,15 @@ summary CSVs in git suffice); they are needed only to recompute summaries from s
 - **Finite samples:** one teacher per setting, capped steps; larger centred inits are not converged.
   The small-init threshold (~250 samples, 5-9x the teacher manifold dimension) is unexplained.
 - **Collapse with label noise** remains untested (the learned block is erased first at eta = 5e-4).
+- **For the lead:** the project `CLAUDE.md` still states round-1 claims: "GD event shift predicted to
+  3 digits" and "generalization degrades monotonically with init scale". I left it alone because
+  that file is yours. A suggested replacement for the optim-samples bullet:
+  > eta_max = 2/(K s_1^(2-2/K)) exact at small init; below it GD keeps the GF saddle sequence (765/765)
+  > with event shift eta c_e + O(eta^2) (exact limit; first events within 1% at <= 0.1 eta_max);
+  > 2/lambda_GF(sigma) ~ sigma^4 ends monotone GD, with a catapult window up to ~3x on the lazy side
+  > (chi = 9); SGD never shortens plateaus and lengthens/traps later ones (P9 shape, c_gamma ~ 33;
+  > eta/B only); finite samples (one teacher): small init recovers W* with its bond ranks from
+  > n ~ 256, and the lazy limit fails as dimension counting predicts.
 
 ## Log
 - 18:20 Read brief and project docs; merged origin/main; set up report.
