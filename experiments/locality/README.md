@@ -48,7 +48,14 @@ $X/finalize.sh /tmp/locality_results 8     # every table and figure, into a fres
   to `$LOCALITY_OUT/traj/*.npz`.
 - Portability: `LOCALITY_OUT` sets the raw-output directory (default `/root/outputs/locality`);
   `LOCALITY_EAGER=1` disables `torch.compile` (identical numbers; needed without a C++ compiler, e.g. on
-  Windows).
+  Windows). The run records store each trajectory's absolute path (`"traj":
+  "/root/outputs/locality/traj/<run>.npz"`), and the steps that read trajectories (`hess_recompute.py`,
+  `growth.py`, `route_amps.py`, `levels.py`, `plot_trees.py`, `bond_events2.py`, `plot_bonds.py`, `r12.py`)
+  open that path, not `$LOCALITY_OUT/traj`: on another machine make `/root/outputs/locality` a link to the
+  copy of the raw outputs (Linux: `ln -s <copy> /root/outputs/locality`; Windows, on the drive of the working
+  directory: `mklink /J C:\root\outputs\locality <copy>` after creating `C:\root\outputs`). Without the link
+  `hess_recompute.py` skips every run (an empty `hessians.csv`), and `finalize.sh` does not stop when a step
+  fails.
 - `finalize.sh` never writes into `results/` unless that directory is passed; tables are restricted to the runs
   of the committed configs (`--config`), so they are regenerable.
 - Case keys: `kind`, `n`, `S` (two-component teacher) or `name` + `patterns` + `weights`, `d`, `chi`, `start`

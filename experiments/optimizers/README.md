@@ -73,7 +73,9 @@ Any key of a config row can be swept: optimizer hyperparameters (`lr`, `beta`, `
    GF times of `deep` as the reference). Process count: `--workers` (one thread per process).
 2. `adam_probe.py configs/adam_probe.yaml` (Adam internals).
 3. `make_figures.py --results-dir experiments/optimizers/results` (summaries are built on demand from the
-   raw runs, cached as `<sweep>_summary.csv`; delete them to rebuild).
+   raw runs, cached as `<sweep>_summary.csv`; delete them to rebuild). Set `OPTIMIZERS_OUT` to the raw-output
+   root (e.g. `OPTIMIZERS_OUT=data/optimizers` for the local copy): targets `b4`, `deep` (side-by-side
+   figures), `balance` and `probe` read raw trajectories even when the summaries are cached.
 4. `consistency.py` with `OPTIMIZERS_RESULTS=experiments/optimizers/results` (theory_optimizer P1/P2/P6 and the
    R12 route-end check; needs the summaries of step 3; `p6` adds the coarse path-form P6 table).
 Default output of steps 3-4 is `/root/outputs/optimizers/results` (outside git), so re-running never
