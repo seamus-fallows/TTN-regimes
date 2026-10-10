@@ -1,6 +1,6 @@
 # saddle-dyn: test the dynamical consequence of the saddle-order theorem
 
-Status: working - Branch: agent/saddle-dyn - Updated: 2026-10-10 18:51 UTC
+Status: done - Branch: agent/saddle-dyn - Updated: 2026-10-10 19:13 UTC
 
 ## Summary
 The brief asked whether the escape time from a learned rank-one saddle scales as eps^-(p-2), with p the
@@ -29,7 +29,7 @@ Evidence: `experiments/saddle_dyn/results/*.csv` (from `analyze.py`), tables by 
 | B8W05 binary8 rho 0.5 | 6 (7) | 3.998 ± 0.007 (12) | SUPPORTED | - |
 | B8W binary8 rho 0.8 | 6 (7) | 4.48 ± 0.15 (7 seeds at 4, 5 at 5) | INCONCLUSIVE; route law at sigma >= 0.1: SUPPORTED (5.10) | 4.31 ± 0.12 (13: 9 at 4.0-4.2, 1 at 4.55, 3 at 5): INCONCLUSIVE; route law above 0.1: SUPPORTED (4.87) |
 | HT4S s2s_core close teacher | 6 (7) | 4.72 ± 0.14 (3 at 4, 8 at 5) | REFUTED (window above crossover) | - |
-| PS06 control (0.6) | 5 | 3.000 (4 complete seeds) | INCONCLUSIVE (traps) | 5 of 12 seeds visit; INCONCLUSIVE |
+| PS06 control (0.6) | 5 | 3.20 ± 0.20 (5 complete seeds: 4 at 3.00, 1 at 4.00) | INCONCLUSIVE (traps) | 5 of 12 seeds visit; INCONCLUSIVE |
 | C1 MPS6 110001 (0.7) | 6 | 3.97 ± 0.04 (3) | INCONCLUSIVE | - |
 | C2 MPS5 10101 (1.5) | 5 | 3.40 ± 0.24 (5: three at 3, two at 4) | INCONCLUSIVE | - |
 | C3 HT4 1111 (0.5) | 7 | 6.0 (1) | INCONCLUSIVE | - |
@@ -92,6 +92,8 @@ Figures: experiments/saddle_dyn/results/ha_escape.png, ha_local.png, hb_dt.png, 
   classification artefact plus the integer shift (D6, D8); the crossover estimate b should be called qualitative.
 - Numerics for others: solve_ivp events with LSODA rely on an unreliable dense output; a fresh LSODA started on
   a plateau may never turn stiff.
+- 34 H-A runs (C1 23, PS06 6, C3 3, HT4S seed 6 at two eps) and 6 checks were stopped at the end of the
+  compute budget (results/unfinished.json); none can change a decision.
 
 ## Log
 - 15:00 read brief, notes, saddle_order code; wrote pre-registration; merged origin/main (lead's hopper results)
@@ -102,4 +104,5 @@ Figures: experiments/saddle_dyn/results/ha_escape.png, ha_local.png, hb_dt.png, 
 - 16:21 H-A re-reference after relaxation, small first step on restarts, floor-index quadrature fixed; earlier attempts set aside; final H-A and H-B sweeps started
 - 17:06 H-B done except 10 long runs; PS08 from small init: 14 seeds fitted, gamma = 2.0017 +- 0.0008 (SUPPORTED); PS06 control: 7/12 seeds learn the residual pair first (the verifier's q-first test misclassifies these); H-A at 831/1836; checks running
 - 18:04 stall found (fresh LSODA on a plateau stays nonstiff); in-solver reference switch; 88 runs without outcome rerun (deviation 7)
-- 18:51 final analysis; note Part II, README, report written; waiting for the last 40 control runs
+- 18:51 final analysis; note Part II, README, report written
+- 19:13 compute budget reached; 34 H-A runs (controls, HT4S seed 6) and 6 checks stopped and listed in results/unfinished.json; final analysis, tables, figures; done

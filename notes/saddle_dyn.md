@@ -307,8 +307,8 @@ is INCONCLUSIVE** (4.48 ± 0.15; 7 seeds at 4.0-4.2, 5 at 5.0-5.2). The register
 reason; the per-seed data (9.2-9.4) say that in both cells the window is not below the crossover for
 every seed (the route law, or the reduced law shifted by one power, competes there), not that the order
 is wrong. **Controls (p = k*):** all four are **INCONCLUSIVE** for the registered reason "fewer than 10
-seeds escape at every window point": many seeds are trapped (dead routes: PS06 31 of 104 window runs,
-C1 42/74, C2 39/107, C3 49/79). The seeds that escape show the route law k* - 2 exactly (PS06: 4 complete
+seeds escape at every window point": many seeds are trapped (dead routes: PS06 31 of 107 window runs,
+C1 42/74, C2 39/108, C3 49/81). The seeds that escape show the route law k* - 2 exactly (PS06: 4 of 5 complete
 seeds at 3.000; C1: 3 at 4.0; C2: 3 of 5 at 3.00) or the route law **plus exactly one** (PS06, C2: 4.00;
 C3: 6.0) or plus two (C1: ~6), never a smaller exponent.
 
@@ -339,9 +339,9 @@ the seed-to-seed spread is not scatter but integer shifts of the exponent (+1, i
 | HT4S | 6, 7 | 4 (5) | 11 | 4.723 ± 0.141 | 4.995 [3.97, 5.02] | 0.27 | 74.6 / 29.2 | 4.703 ± 0.149, 4.713 ± 0.143 | REFUTED |
 | B8W | 6, 7 | 4 (5) | 12 | 4.479 ± 0.147 | 4.187 [3.97, 5.22] | 0.58 | 52.2 / 57 | 4.428 ± 0.147, 4.417 ± 0.145 | INCONCLUSIVE (fails: mean, seeds within 0.3, RSS vs alternative) |
 | B8W05 | 6, 7 | 4 (5) | 12 | 3.998 ± 0.007 | 3.990 [3.97, 4.05] | 1.00 | 0.0931 / 112 | 3.997 ± 0.003, 3.998 ± 0.002 | SUPPORTED |
-| PS06 | 5, 5 | 3 (2, 4) | 4 | 3.000 ± 0.001 | 3.000 [3.00, 3.00] | 1.00 | 0.000697 / 79.5, 79.6 | 3.333 ± 0.211, 3.000 ± 0.000 | INCONCLUSIVE (fails: >=10 seeds) |
+| PS06 | 5, 5 | 3 (2, 4) | 5 | 3.200 ± 0.200 | 3.000 [3.00, 4.00] | 0.80 | 19.9 / 159, 79.6 | 3.333 ± 0.211, 3.200 ± 0.200 | INCONCLUSIVE (fails: RSS vs alternative, >=10 seeds) |
 | C1 | 6, 6 | 4 (3) | 3 | 3.967 ± 0.038 | 4.001 [3.89, 4.01] | 1.00 | 0.378 / 26.4 | 3.986 ± 0.016, 3.992 ± 0.009 | INCONCLUSIVE (fails: >=10 seeds) |
-| C2 | 5, 5 | 3 (2) | 5 | 3.396 ± 0.242 | 3.002 [3.00, 4.00] | 0.60 | 38.9 / 217 | 3.571 ± 0.202, 3.400 ± 0.245 | INCONCLUSIVE (fails: seeds within 0.3, RSS vs alternative, >=10 seeds) |
+| C2 | 5, 5 | 3 (2) | 5 | 3.396 ± 0.242 | 3.002 [3.00, 4.00] | 0.60 | 38.9 / 217 | 3.624 ± 0.183, 3.400 ± 0.245 | INCONCLUSIVE (fails: seeds within 0.3, RSS vs alternative, >=10 seeds) |
 | C3 | 7, 7 | 5 (4) | 1 | 6.000 | 6.000 [6.00, 6.00] | 0.00 | 9.28 / 37.1 | 6.645 ± 0.645, 6.000 | INCONCLUSIVE (fails: mean, seeds within 0.3, RSS vs alternative, >=10 seeds) |
 
 Run inventory (every run; "trapped" = deviation 1; "failed" = LSODA failure after 5 retries, all at
@@ -357,10 +357,10 @@ binary8) were still unfinished when the compute budget ended, see 9.7):
 | HT4S | 154 | 154 | 0 | 0 | 0 | 0 | 82 / 0 / 0 | 57 / 1 / 24 | 0.00 |
 | B8W | 132 | 132 | 0 | 0 | 0 | 0 | 84 / 0 / 0 | 73 / 9 / 2 | 0.00 |
 | B8W05 | 132 | 132 | 0 | 0 | 0 | 0 | 84 / 0 / 0 | 84 / 0 / 0 | 0.00 |
-| PS06 | 195 | 151 | 44 | 0 | 0 | 3 | 73 / 31 / 0 | 0 / 0 / 73 | 0.00 |
+| PS06 | 198 | 154 | 44 | 0 | 0 | 3 | 76 / 31 / 0 | 0 / 0 / 76 | 0.00 |
 | C1 | 133 | 74 | 58 | 1 | 0 | 14 | 32 / 42 / 0 | 0 / 0 / 32 | 0.00 |
-| C2 | 203 | 132 | 71 | 0 | 0 | 0 | 68 / 39 / 0 | 0 / 0 / 68 | 0.00 |
-| C3 | 127 | 51 | 75 | 1 | 0 | 8 | 29 / 49 / 1 | 0 / 0 / 29 | 0.00 |
+| C2 | 204 | 133 | 71 | 0 | 0 | 0 | 69 / 39 / 0 | 0 / 0 / 69 | 0.00 |
+| C3 | 129 | 53 | 75 | 1 | 0 | 10 | 31 / 49 / 1 | 0 / 0 / 31 | 0.00 |
 
 Notes: "within 0.3" = fraction of fitted seeds with |gamma_i - prediction| <= 0.3; RSS = summed squared
 log residuals of the fixed-exponent fits (prediction / alternative: route law for test cells; k* - 3 (and
@@ -494,10 +494,15 @@ wrong saddle); "wall" = 3600 s cap (the machine was oversubscribed, see 9.7).
   (largest: B8W 1.3e-5), <= 2e-6 in H-B; 16 escaped control runs are flagged (C1 7, C3 7, PS06 2: the
   slowest, shifted escapes with t_esc = 1e18-1e21) and excluded from the fits, as registered.
 - **Unfinished runs.** All runs ended with an outcome (escaped, trapped, or LSODA failure in a dead state)
-  except FINAL_UNFINISHED.
-- **Budget.** Compute 15:21-END_TIME (about BUDGET_H h of wall clock). The first two attempts (15:21-16:13)
+  except 34 H-A runs and 6 checks stopped at the end of the compute budget (19:12; list in
+  `results/unfinished.json`): PS06 6 (4 at eps >= 0.018, outside the window), C1 23 (14 outside the window;
+  the others are seeds 2, 5, 7, 10, 11 at eps = 10^-2.75 ... 10^-3.5, all of them seeds whose route dies),
+  C3 3 (seeds 2, 8, 10 at 10^-3.25 ... 10^-3.5) and HT4S seed 6 at eps = 10^-3.75 and 1e-4 (the seed at 6.0).
+  None of them can change a decision: the controls stay below 10 complete seeds, and HT4S stays REFUTED
+  with or without seed 6.
+- **Budget.** Compute 15:21-19:12 (3.85 h of wall clock). The first two attempts (15:21-16:13)
   were discarded (deviations 3, 6). The final sweeps ran 16:21-18:04 with each worker inheriting a 64-thread
-  BLAS pool (load ~250 on 192 cores); 88 runs without outcome (wall cap, solver stalls) were rerun 18:04-END_TIME
+  BLAS pool (load ~250 on 192 cores); 88 runs without outcome (wall cap, solver stalls) were rerun 18:04-19:12
   with the in-solver reference switch (deviation 7).
 
 ## 9.8 Claims and status

@@ -1907,3 +1907,19 @@
   solver._y, solver.t = integrator.run(
 /root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
   solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[1797/1836    1863s] HA PS06 seed=2 x=3.162e-05  escaped t_esc=8.29399345742764e+19 (1863s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[1798/1836    1931s] HA C3 seed=8 x=0.0005623  escaped t_esc=5.612360091638237e+21 (1930s)
+[1799/1836    2001s] HA PS06 seed=10 x=1e-05  escaped t_esc=1.1490603953739458e+20 (2000s)
+[1800/1836    2026s] HA PS06 seed=8 x=3.162e-05  escaped t_esc=7.713700690768775e+19 (2025s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[1801/1836    2104s] HA C3 seed=5 x=0.0003162  escaped t_esc=1.4192530570068776e+23 (2104s)
+[1802/1836    2131s] HA C2 seed=9 x=1.778e-05  escaped t_esc=5.044790611099479e+20 (2131s)
