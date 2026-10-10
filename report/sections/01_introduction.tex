@@ -1,72 +1,439 @@
-% sections/01_introduction.tex -- Introduction and summary of findings. SKELETON.
-% Write last, from the results sections. Every finding listed here must point to the section,
-% figure and status tag that support it, and be marked \newresult or \knownresult.
+% sections/01_introduction.tex -- Introduction and summary of findings.
+% Written from Sections 2-6 and Appendix A; every finding points to the section that supports it and
+% keeps that section's status tags and new/known markers. Novelty follows the citation audit
+% notes/reviews/citation_check.md (part b) and the narrowed tags of App. A and Sec. 5: do not widen
+% them. Two placeholders mark results still pending (saddle-dyn; regime-map round 2).
 \section{Introduction and summary of findings}\label{sec:intro}
 
-\placeholder{Skeleton. To be written once the results sections exist; intended content is in the
-TODO comments of this file.}
-
 \subsection{Question and motivation}\label{sec:intro-question}
-\placeholder{Which training regimes do tree tensor networks show under gradient methods, which
-parameters select them, and how far theory predicts them; the main focus is saddle-to-saddle
-dynamics.}
-% TODO(intro): motivation in three steps.
-%  1. TTNs (MPS/tensor trains, HT, binary trees) are used as ML models (Stoudenmire & Schwab 2016;
-%     Novikov et al.; Cheng et al. 2019; Liu et al. 2019) and their training is delicate (init
-%     scale; barren plateaus for global, but not local, losses of unitary-embedded MPS: Liu et al.
-%     2022; none in the energy optimization of isometric MPS/TTNS/MERA: Miao & Barthel 2024, Barthel
-%     & Miao 2025), but their training dynamics is not characterized.
-%  2. A TTN regression model is multilinear and degree-K homogeneous in the cores, like a deep linear
-%     network, where small init gives saddle-to-saddle / incremental learning (Saxe et al. 2014;
-%     Jacot et al. 2021) and large init gives lazy training (Chizat et al. 2019). What does the
-%     *tree* add? Locality of components relative to the tree, number of cores K vs depth, bond
-%     dimension as width, genuinely tensorial teachers (many local maxima of <W, W*> on the sphere).
-%  3. State the questions Q1-Q8 of PLAN.md compactly (S2S existence and saddles; plateau-time
-%     scaling; locality; order; regime map; covariance; teacher structure; LR/SGD/samples).
+
+Tensor networks whose contraction pattern is a tree (\emph{tree tensor networks}, TTNs), among them
+matrix product states (MPS, or tensor trains), hierarchical Tucker formats and binary trees, are used as
+machine-learning models for classification and generative modelling
+\citep{stoudenmire2016supervised,novikov2018exponential,han2018unsupervised,stoudenmire2018learning,%
+cheng2019tree,liu2019machine,glasser2019expressive}, and their expressive power has been related to
+that of deep networks \citep{cohen2016expressive,levine2018deep}. How they train is less understood.
+Work on their trainability has focused on barren plateaus, which occur for global but not for local
+losses of unitary-embedded MPS \citep{liu2022presence} and are absent from the energy optimization of
+isometric MPS, TTNS and MERA \citep{miao2024isometric,barthel2025absence}. Which dynamics gradient
+methods produce on a TTN, from which initializations, and why, has not been characterized
+(\cref{sec:intro-prior}).
+
+A TTN regression model, $f(x)=\ip{\W}{\feat1(x)\otimes\dots\otimes\feat\Ns(x)}$ with $\W$ contracted from
+$\Kc$ cores (\cref{sec:setup-model}), is multilinear in the cores and homogeneous of degree $\Kc$ in
+them, like a deep linear network. There, small initialization gives saddle-to-saddle (incremental)
+learning, in which the components of the target are learned one at a time after plateaus that lengthen
+as the initialization shrinks \citep{saxe2014exact,jacot2022saddletosaddle}, and large initialization
+gives lazy training, in which the model stays close to its linearization
+\citep{jacot2018neural,chizat2019lazy}. What does the tree add? Four things that a product of matrices
+lacks. (i)~A component of the target can be \emph{local} on the tree: it can differ from what has been
+learned on a few sites only, carried by a few cores. (ii)~The number of cores $\Kc$ and the depth of the
+tree are different quantities (an MPS with $\Ns$ sites has depth $\Ns-1$, a binary tree $\log_2\Ns-1$).
+(iii)~The bond dimension $\chi$ plays the role of width, but what it can carry is capped by the
+dimension of the cut each bond makes. (iv)~Teachers can be genuinely tensorial, so that the correlation
+$\ip{\W}{\Wt}$ has many local maxima on the sphere.
+
+We ask, for gradient flow on the exact population loss of a teacher (\cref{sec:setup}): (Q1)~which
+saddles are visited from small initialization; (Q2)~how the plateau durations scale with the
+initialization scale $\isc$, the number of cores $\Kc$ and the bond dimension $\chi$; (Q3)~how the
+position of a component on the tree sets its escape (\emph{locality}); (Q4)~which component is learned
+first; (Q5)~which regimes occur as $\isc$, $\chi$, $\Kc$ and the balance of the cores vary, and where
+their boundaries lie; (Q6)~what an input covariance changes; (Q7)~what the structure of the teacher
+changes; and (Q8)~what discrete steps, gradient noise and finite samples change. Two further questions
+concern practice: (B1)~the optimizers used for tensor networks (Adam, sweeps, Riemannian methods), and
+(B5)~real data. The model is kept minimal (whitened Gaussian inputs unless stated, realizable teachers,
+double precision; \cref{sec:setup-model} says why), so that theory can be compared with experiment
+number by number. The main focus is the saddle-to-saddle regime (\cref{sec:s2s}).
 
 \subsection{Summary of findings}\label{sec:intro-summary}
-\placeholder{One table with one row per question (Q1--Q8 of the research plan): finding, status
-tag, new or known, and where it is shown.}
-% TODO(intro): table columns: question | finding (one sentence) | status tag | new/known | section,
-% figure. Fill from sections 3-6 and the agents' notes (notes/s2s_core.md, notes/locality.md,
-% notes/order.md, notes/regime_map.md, notes/data_teacher.md, notes/optim_samples.md).
-% Expected rows (from PLAN.md hypotheses; replace by actual results):
-%  Q1 S2S from small fan-in init: plateaus at partial-fit levels L_k, bond spectra grow one value at
-%     a time, saddles = critical points of the bond-rank-constrained problem (H1).
-%  Q2 first escape t_1 ~ rho_0^{-(K-2)} [tau_align + K^{K/2-1}/((K-2) s_1)]; t_1 ~ sigma^{-(K-2)};
-%     decreases with chi at fixed sigma.
-%  Q3 later escapes: exponent set by k = cores in the Steiner subtree of the differing sites (H2);
-%     strict saddle iff k = 2 (H3); same teacher, different saddle sequences on MPS vs binary.
-%  Q4 learning order random for tensorial teachers; P(greedy) vs s2/s1, K, chi (H1); wrong order
-%     corrected through a strict saddle (H1b).
-%  Q5 regime map: sigma moves S2S -> rich -> lazy (centred model); boundary sigma_c(K) -> 1;
-%     imbalance as second knob; NTK vs muP at large chi (H4).
-%  Q6 aligned covariance acts through Lambda_r s_r (H5).
-%  Q7 teacher structure (non-orthogonal CP, random TTN teachers, tree mismatch).
-%  Q8 GD stability limit, EoS, SGD noise, finite samples.
+
+\paragraph{The answer in one paragraph.}
+From small initialization, gradient flow on a TTN is saddle-to-saddle. It rests near critical points of
+the problem with all bond ranks fixed, and each escape raises the bond ranks along a \emph{route}, a
+connected set of cores that must move together \derived{} \empirical. The first escape takes a time
+$\propto\isc^{-(\Kc-2)}$ \proven, whose prefactor one leading-order integration predicts for each
+initialization \empirical. After it, the tree decides: with one component learned, the cheapest route
+has $k^*$ cores, the Steiner subtree of the cores that carry the sites where the next component differs
+\proven, and the next plateau
+is absent, logarithmic in $1/\isc$, or $\propto\isc^{-(k^*-2)}$ for $k^*=1$, $2$, $\ge3$ \derived{}
+\empirical, so one teacher has different plateau laws on different trees \empirical; $k^*$ is the order
+of the saddle under a spectral condition, and the order can be lower from $k^*=5$ on \proven. Which
+component comes first is a race set by the initialization when two components differ on three or more
+cores, and greedy as $\isc\to0$ when they differ on two \derived{} \empirical. Non-orthogonal teachers
+make the saddle after the first escape strict and logarithmic on an MPS but leave it of higher order on
+binary and hierarchical Tucker trees \derived{} \empirical. Raising $\isc$ moves training through a rich,
+non-incremental window into the lazy regime \empirical, which exists only when every bond reaches its cut
+dimension \derived{} \empirical. Discrete steps below a sharp stability limit keep the saddle sequence
+\derived{} \empirical; gradient noise lengthens later plateaus and can trap \empirical; Adam removes the
+$\isc$-dependence of the first escape until its $\epsilon$ restores it at small $\isc$ \derived{}
+\empirical; ALS, DMRG and Riemannian gradient descent
+remove the plateaus \derived{} \empirical. \Cref{tab:intro-summary} gives one row per question, and the
+numbered list below states the main findings with their novelty.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Findings by research question (sections in brackets give details and scope). Status tags as
+    in the conventions above; ``new'' means that no prior statement was found (\cref{sec:intro-prior});
+    binary4 is the binary tree with $\Ns=4$, a depth-3 linear network (\cref{rem:A-binary4-dln}).}
+  \label{tab:intro-summary}
+  \footnotesize
+  \setlength{\tabcolsep}{2.5pt}\renewcommand{\arraystretch}{1.04}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}p{2.35cm}>{\raggedright\arraybackslash}p{2.9cm}@{}}
+    \toprule
+    question & finding & status & new or known \\
+    \midrule
+    Q1 saddle sequence (\ref{sec:s2s-phenomenology}) & An odeco teacher is learned one component at a
+      time; plateaus sit at the critical points with all bond ranks fixed (loss within $2\cdot10^{-2}$,
+      relative); each event raises every bond rank by one (497 of 531 runs); complete sequences on four
+      trees, $\Kc=3$--$7$ & \derived{} (prediction), \empirical & \knownresult[binary4] \newresult[MPS4,
+      binary8, HT4] \\
+    Q2 plateau scaling (\ref{sec:s2s-escape}) & First escape at $\isc^{-(\Kc-2)}T(Z)$ plus an offset, $T(Z)$ computed from each
+      initialization before training; the norm of the initialization gives only a lower bound, low by $3$ to
+      $3\cdot10^7$; weak dependence on $\chi$, none on $d$ at full bonds (binary4) & \proven{} (scaling, bound),
+      \derived{} (offset), \empirical & \knownresult[exponent; the identity is the activation law of
+      \citealp{kunin2025alternating}] \newresult[TTN form, tests] \\
+    Q3 locality (\ref{sec:s2s-locality}) & With one component learned, the next escape uses the smallest
+      route with a nonzero local residual, $k^*$ cores: no plateau, $\ln(1/\isc)$ (strict saddle) or
+      $\isc^{-(k^*-2)}$ (higher-order saddle); confirmed for $k\le5$ on trees with $\Kc=3$--$15$; $k^*$ is the
+      saddle order under a spectral condition, not always from $k^*=5$ on & \proven{} (Steiner identity,
+      order), \derived{} (escape, times), \empirical & \knownresult[mechanism] \newresult[Steiner route,
+      rates, order theorem, tree dependence] \\
+    Q4 learning order (\ref{sec:s2s-order}) & Components differing on $m\ge3$ cores: a race set by the initialization,
+      independent of $\isc$; on $m=2$ cores: greedy as $\isc\to0$, consistent with
+      $P(\text{wrong})\propto\isc^{(1-\varrho)/\varrho}$ (non-adjacent cores); only then is a wrong order corrected, through a strict
+      saddle & \proven{} (race), \derived, \conjecture{} (rate), \empirical & \knownresult[binary4]
+      \newresult[classification by $m$, race, rate] \\
+    Q5 regime map (\ref{sec:regime-map}, \ref{sec:other-lazy}--\ref{sec:other-large-chi}) &
+      Saddle-to-saddle, rich, then lazy as $\isc$ grows (centred model); lazy only with full
+      bonds; on binary4 both boundaries scale as $\chi^{-1/2}$, the lazy one as predicted ($\chi\ge32$); the
+      saddle-to-saddle boundary rises with $\Kc$; a light root makes training lazy & \empirical,
+      \derived{} (lazy constants), \conjecture{} (large $\Kc$) & \knownresult[in other models]
+      \newresult[for TTNs] \\
+    Q6 input covariance (\ref{sec:cov-aligned}--\ref{sec:cov-correlated}) & A product covariance is a preconditioned whitened problem; aligned covariance
+      reweights the race by $\Lambda_r\tw r$ and the landscape by $\Lambda_r^{1/2}\tw r$; misalignment and
+      cross-site correlations make the MPS escape from the rank-one saddle logarithmic & \proven{} (reduction), \derived,
+      \empirical & \newresult[for TTNs; two-layer analogue: \citealp{gidel2019implicit}] \\
+    Q7 teacher structure (\ref{sec:teacher-generic}, \ref{sec:teacher-cp}--\ref{sec:teacher-star}) &
+      Plateaus at rank-constrained critical points (blends of components,
+      generically not SVD truncations); escape from the rank-one saddle strict and logarithmic on MPS, of higher order on
+      binary and HT trees; bottom-up growth on binary trees; star teachers forget a larger learned
+      component & \proven{} (Hessians), \derived, \empirical & \knownresult[critical points, in substance]
+      \newresult[the rest] \\
+    Q8 steps, noise, samples (\ref{sec:other-optim}) & GD keeps the saddle sequence below $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$, with
+      event times shifted by a computable $O(\lr)$; SGD never shortened a plateau, lengthens later ones and
+      can trap; small initialization recovers the teacher with its bond ranks from finite samples, the lazy
+      limit only at full bonds with $\nsamp\ge d^\Ns$ & \proven{} (sharpness), \derived, \empirical,
+      \conjecture{} (SGD law) &
+      \knownresult[analogues] \newresult[TTN forms] \\
+    B1 optimizers (\ref{sec:other-optimizers}) & GD, heavy ball: as gradient flow; Adam, RMSProp: same order, first escape in a
+      $\isc$-independent number of steps until $\epsilon$ restores $\isc^{-(\Kc-2)}$; ALS, DMRG,
+      Riemannian GD: no plateaus & \derived, \proven{} (ALS, DMRG), \empirical & \newresult[for TTNs;
+      Adam's $\epsilon$ law concurrently: \citealp{sabanayagam2026optimizer}] \\
+    B5 real data (\ref{sec:real-data}) & MNIST: first route a sibling pair of a binary tree, gap $A/\isc+B$; later MPS routes
+      mostly logarithmic; the pixel order sets the final loss, ranked before training by a route-amplitude
+      share & \empirical{} (pre-registered test), \conjecture{} (mechanism) & \newresult \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+\paragraph{Main findings.}
+Each item gives its evidence and its novelty: \emph{known} (with a reference), a \emph{TTN instance} of a
+known mechanism (with the mechanism's reference), or \emph{new} (no prior statement found by the searches
+of \cref{sec:intro-prior}).
+\begin{enumerate}[label=\arabic*.,leftmargin=*,itemsep=3pt]
+  \item \textbf{Saddle-to-saddle learning on genuine tensor networks} (\cref{sec:s2s-phenomenology}).
+    From small fan-in initialization, gradient flow learns an odeco teacher one component at a time on
+    binary4, MPS4, binary8 and HT4 (MPS8: the first two components). Each plateau is the critical point
+    with all bond ranks fixed at the number of components learned, each event raises every bond rank by
+    one, and the plateaus grow as $\isc^{-(\Kc-2)}$ (over $1.5$ decades of $\isc$ for $\Kc=3,4$; at
+    $\Kc=7,8$ mostly over less than a decade, and not cleanly on HT4) at higher-order saddles,
+    $\lambda_{\min}(\Hperp)\propto\isc^{\Kc-2}$ \empirical{}
+    (predicted \derived). \emph{Novelty:} on binary4, a depth-3 linear network, this is known
+    \knownresult[\citealp{saxe2014exact,jacot2022saddletosaddle,achour2024loss}]; on the genuine tensor
+    networks it is new \newresult.
+  \item \textbf{The first escape: a known exponent, a prefactor for each initialization}
+    (\cref{sec:s2s-escape}). On the first plateau gradient flow is, to leading order, the flow of the
+    correlation $g=\ip{\W}{\Wt}$: its norm blows up at the time $\isc^{-(\Kc-2)}T(Z)$, an integral along
+    the spherical flow from the initialization direction $Z$ \proven, to which an $O(1)$ offset is added
+    \derived, and its direction converges to an exactly balanced KKT point of $g$ \proven, for the odeco
+    teachers used the rank-one configuration of one component \derived{} \empirical. Computed before
+    training, this predicts the first escape of every run (relative error $4\cdot10^{-8}$ to
+    $2.2\cdot10^{-3}$ at the smallest $\isc$, 231 initialization--teacher pairs) and its first component
+    (1,847 of 1,848 runs) \empirical. The time computed from the norm of the initialization alone is a
+    lower bound \proven, low by factors from $3$ to $3\cdot10^7$ that grow with $d$, $\chi$ and $\Kc$
+    \empirical. \emph{Novelty:} a TTN instance of known results: the exponent
+    \knownresult[\citealp{jacot2022saddletosaddle,kumar2025early}], the blow-up identity, which is the
+    activation law of alternating gradient flows \knownresult[\citealp{kunin2025alternating}], the
+    norm-based time, which is the escape time from a maximizer \knownresult[\citealp{kumar2025towards}],
+    and the balance of the escape direction \knownresult[linear chains: \citealp{kumar2025early},
+    Lemma~5]. New \newresult[TTN form]: their evaluation on trees, the per-run tests, and the size of the
+    gap to the norm-based time.
+  \item \textbf{Later escapes follow the tree: the route rule} (\cref{sec:s2s-locality}). Once a
+    component is learned, new parameters lower the loss only along routes, connected sets of cores whose
+    new entries combine into a term of the residual at no Gauss--Newton cost. The cheapest route has
+    $k^*$ cores; for two components that differ on the sites $D$ it is the Steiner subtree of the cores
+    that carry $D$ \proven. The next plateau is then absent ($k^*=1$), logarithmic in $1/\isc$ with a head
+    start at a strict saddle of rate $\tw2\tw1^{(\Kc-2)/\Kc}$ ($k^*=2$), or $\propto\isc^{-(k^*-2)}$ at a
+    higher-order saddle ($k^*\ge3$) \derived. In about 11,600 runs on nine trees with $\Kc=3$--$15$ the
+    exponent is $k-2$ for $k=3,4,5$ with named exceptions (for $k=6,7$ only on binary8 and HT4 with
+    balanced initialization), the $k=2$ slopes and
+    curvatures follow the predicted rate including its dependence on $\Kc$, and one teacher has a
+    logarithmic plateau on MPS8, a $\isc^{-3}$ one on binary8 and one consistent with $\isc^{-5}$ on HT8
+    \empirical. With three or four components the rule, applied at the saddle actually reached, predicts
+    the plateau levels and their laws, also where a literal reading of the Steiner count fails
+    \empirical{} (as an algorithm: \conjecture, \cref{rem:A-sequence}). \emph{Novelty:} a TTN instance of
+    known mechanisms, dormant weights of lowest homogeneity degree
+    \knownresult[\citealp{kumar2026learning,rawal2026theory}] and, in our model, descent curves through
+    connected rank-deficient components, the smallest of which gives the least suppressed escape
+    \knownresult[\citealp{furman2026benign}, a landscape result]; the $k=2$ head start is known in
+    two-layer linear networks \knownresult[\citealp{zhang2026saddletosaddle}], and the case $k=\Kc$ is the
+    decoupled-mode law \knownresult[\citealp{saxe2014exact}]. New \newresult: that the route is the
+    Steiner subtree of the residual's sites, which can be far smaller than a rank-deficient component; its
+    coupling and rate; the closed-form head start for routes with $3\le k<\Kc$; and the measured dependence
+    on the tree.
+  \item \textbf{When the route gives the saddle order: a theorem} (\cref{app:saddle-order};
+    \cref{sec:s2s-locality}). The route always descends at order $k^*$, so the saddle order is at most
+    $k^*$. At a saddle with one learned component $j$ we prove a matching lower bound \proven{}
+    \newresult: if the largest eigenvalue of a \emph{generalized piggyback operator}, which couples the
+    parts of the residual living on sets of cores whose Steiner subtrees have fewer than $k^*/2$ cores,
+    is below the learned weight $\tw j$, the order is exactly $k^*$ (\cref{thm:A-order-lower}). The
+    condition always holds for $k^*=2$; for $k^*=3,4$ it reduces to the piggyback graph,
+    $\lambda_{\max}(\Gamma)<\tw j$, above which the saddle is strict; and it holds for every two-component
+    teacher learned in weight order, on every tree (\cref{cor:A-order}). From $k^*=5$ on it can fail, and
+    for pattern teachers with spare bond channels the order is then lower (\cref{thm:A-order-sharp}): on
+    MPS6 a teacher with $k^*=5$ and a positive semidefinite Hessian has order~4, through new entries that
+    point at a non-residual pattern together with rotations of two learned cores. From that saddle
+    gradient flow escapes in $\propto\isc^{-2}$ instead of $\isc^{-3}$ \derived{} and then forgets the
+    learned component \empirical{} (both checked on this teacher, from the saddle and on the seeds that
+    visit it from small initialization). Scope: one learned component;
+    saddles with two or more learned components are not covered. \emph{Novelty:} new; lower bounds on
+    saddle orders were known for deep linear networks, order two or more
+    \knownresult[\citealp{achour2024loss}, Thm~7], and for one parity saddle of a binary tree
+    \knownresult[\citealp{furman2026benign}, Prop.~5.3].
+    \placeholder{Pending (remote experiment saddle-dyn, running): one sentence on the pre-registered test
+    of the theorem's dynamical prediction, escape times $\propto\varepsilon^{-(\text{order}-2)}$ from the
+    saddle plus a perturbation of size $\varepsilon$ and the reduced exponent from small initialization,
+    on the cases with order below $k^*$ and their controls.}
+  \item \textbf{Strict or higher-order: the tree decides} (\cref{sec:s2s-locality,sec:teacher-generic}).
+    With one learned component of a pattern teacher the saddle is strict iff a two-core route exists or
+    the piggyback graph has $\lambda_{\max}(\Gamma)>\tw j$ (a wrong order, or a \emph{star} of smaller
+    components sharing a core) \proven{} \newresult[for general trees; deep linear networks:
+    \citealp{achour2024loss}]; otherwise $\lambda_{\min}(\Hperp)$ vanishes on the plateau like $\isc^{k-2}$
+    \empirical. Non-orthogonal teachers (overlapping components, misaligned covariance, random TTN
+    teachers) open two-core routes wherever two adjacent cores have free legs: on an MPS the escape from
+    the rank-one saddle becomes strict and logarithmic, with slopes within $0.4\%$ (from the saddle) and
+    $1.3\%$ (from random initialization, MPS4) of the predicted rates, while binary and HT trees, whose
+    internal cores carry no site, keep a higher-order saddle, with an escape $\propto\varepsilon^{-1}$ from
+    the saddle plus a perturbation of size $\varepsilon$ and $\propto\isc^{-1}$ from random initialization
+    (binary4) \derived{} \empirical{} \newresult. Correlated sites give the same contrast between MPS4 and
+    binary4 (they were not run on HT trees). The landscape bound of \citet{furman2026benign} allows order $\Kc$ at such a
+    point of an MPS; for generic teachers it is $2$.
+  \item \textbf{Order of learning: a race or greedy} (\cref{sec:s2s-order}). As $\isc\to0$ the first
+    component learned is the local maximum of $g$ on the sphere whose basin contains the initial direction
+    \derived. When two components differ on sites carried by $m\ge3$ cores (\emph{tensor-like} pairs, such
+    as every odeco pair on MPS, HT and binary8), each is such a maximum and the order is a race set by the
+    initialization, independent of $\isc$: exact at leading order on MPS \proven, with
+    $P(\text{larger first})=0.60$--$0.88$ at weight ratio $0.5$ over 23 settings, the same winner per seed
+    at every $\isc$, more random as $\Kc$ grows and slowly greedier as $\chi$ grows \empirical. When they
+    differ on $m=2$ cores (\emph{matrix-like}, e.g.\ on binary4), learning becomes greedy as $\isc\to0$,
+    the wrong order dying out consistently with $\isc^{(1-\varrho)/\varrho}$ for non-adjacent cores
+    \conjecture{} (heuristic exponent) \empirical; only then is a wrong order corrected, through a strict saddle or by
+    adding the larger component on a spare channel. A smaller component with a shorter route is learned
+    first (\emph{locality beats weight}, \cref{sec:s2s-locality}). \emph{Novelty:} the greedy limit and
+    the strict wrong-order saddle of binary4 are known
+    \knownresult[\citealp{jacot2022saddletosaddle,achour2024loss}], and the same tensor-versus-matrix
+    dichotomy is known in multi-spike tensor PCA \knownresult[\citealp{benarous2025stochastic}]; the
+    classification by $m$, the race on trees, the order statistics and the power law in $\isc$ are new
+    \newresult.
+  \item \textbf{Failure modes: dead routes} (\cref{sec:s2s-failure,sec:other-stalled}). A sequence can
+    end early because a route dies: under the conservation laws its end cores decay at a rate
+    $\propto\isc^2$ while its escape needs a time $\propto\isc^{-(k-2)}$, so for odeco teachers, whose
+    routes span all $\Kc$ cores, the ends are decided long before the route could escape once $\Kc\ge5$
+    \derived{} (reduced model); that a dead route stays dead for $k\ge5$ in general is a \conjecture.
+    Measured \empirical: no trap at $\Kc=3$; on MPS4 the outcome is fixed by the initialization direction
+    (separated teacher); with the
+    bond dimension equal to the teacher rank most runs on trees with $\Kc=7,8$ never learn the last
+    component; with pattern teachers 398 of 5,682 fan-in runs stall, all with $k\ge4$. Balanced
+    initialization removes the dead routes in the runs checked but not all stalls, spare bond channels
+    help only where a route end is not capped, and the mechanism's criterion is strongly associated with
+    death but neither necessary nor sufficient. \emph{Novelty:} new \newresult[the route-end condition
+    and the measurements]; spurious minima away from
+    the minimum-norm set are known in the landscape of our model \knownresult[\citealp{furman2026benign},
+    Thm~G.1], and exactly balanced initialization can fail in four-layer matrix factorization
+    \knownresult[\citealp{luo2025global}].
+  \item \textbf{The map of regimes} (\cref{sec:regime-map}; \cref{sec:other-lazy,sec:other-rich,%
+    sec:other-stalled,sec:other-large-chi}). With the centred model, raising $\isc$ moves training from
+    saddle-to-saddle through a rich, non-incremental window to lazy training \empirical. A lazy regime
+    exists only when every bond reaches its cut dimension; below it the centred target is unrealizable
+    and runs end on a floor \derived{} \empirical, the TTN form of a linearized model that fits only its
+    tangent space \knownresult[\citealp{chizat2019lazy,ghorbani2019limitations}]. On binary4 both
+    boundaries scale as $\chi^{-1/2}$; the lazy one is predicted, $\isc_{\rm lazy}\sqrt\chi=6.40$--$6.56$
+    against $6.50$ \derived{} \newresult[the TTN constants], the saddle-to-saddle one is not derived. The
+    saddle-to-saddle boundary rises with $\Kc$ ($0.17$ to $0.75$ for $\Kc=3$--$7$ at $d=2$, $\chi=4$),
+    and stalled runs invade its side \empirical. A light root makes training lazy at an up to 100 times
+    smaller function-space scale, a heavy one does not \empirical{} \derived{} (two-layer linear networks
+    share the first effect, \knownresult[\citealp{kunin2024get,domine2025lazy}]). At large bond
+    dimension the standard and NTK parameterizations become lazy, while a $\mu$P-type parameterization
+    built on the injective norms of the cores keeps the kernel moving \derived{} \empirical.
+    \emph{Novelty:} such maps are known for linear and diagonal networks
+    \knownresult[\citealp{woodworth2020kernel,tu2024mixed,kunin2024get,domine2025lazy}]; for TTNs they
+    are new \newresult, mapped in detail on one tree and with brackets only beyond seven cores.
+    \placeholder{Pending (regime-map round 2, running): one sentence on the saddle-to-saddle boundary at
+    large $\Kc$ from a realizable sweep at $d=2$ and $d=3$, and on whether $\isc_c^{\Kc}$ or
+    $\isc_c^{\Kc}/\sqrt{d^{\Ns}}$ stays constant.}
+  \item \textbf{Steps, noise and practical optimizers} (\cref{sec:other-optim,sec:other-optimizers}).
+    At the balanced global minimum the largest Hessian eigenvalue is $\Kc\tw1^{2-2/\Kc}$ \proven, so
+    gradient descent is stable there only for $\lr<\lr_c=2/(\Kc\tw1^{2-2/\Kc})$, and above $\lr_c$ no global
+    minimum is stable (\derived{} for $\chi=\ncomp$, \conjecture{} in general). Below $\lr_c$ gradient
+    descent learns in gradient flow's order (765 of 765 runs) with event times shifted by a
+    computable $\lr c_e$ \derived{} \empirical, and above it the learned component oscillates at the edge
+    of stability. Gradient noise never shortened a plateau; it lengthens later ones and can trap the
+    dynamics at a saddle where gradient flow is only slow \empirical{} (its law: \conjecture). Adam and
+    RMSProp keep the order but escape the origin in a number of steps that does not depend on $\isc$,
+    until $\epsilon$ restores the gradient-flow law \derived{} \empirical; ALS, DMRG and Riemannian
+    gradient descent have no plateaus, and ALS and DMRG iterates do not depend on $\isc$ at all \proven.
+    \emph{Novelty:} the stability limit is known for deep linear networks
+    \knownresult[\citealp{mulayoff2020unique}]; the modified flow behind the event shift
+    \knownresult[\citealp{barrett2021implicit}], the two-cycle at the edge of stability
+    \knownresult[\citealp{ghosh2025learning,macdonald2025convergence}] and stochastic collapse
+    \knownresult[\citealp{chen2023stochastic}] are known mechanisms; Adam's bounded first escape and its
+    $\epsilon$ law were found concurrently in aligned deep matrix factorization
+    \knownresult[\citealp{sabanayagam2026optimizer}]. New for TTNs \newresult: the stability limit on
+    general trees, the event shift, the SGD delay and trap laws, the order kept by Adam, and the
+    $\isc$-independence of sweeps.
+  \item \textbf{Covariance, teacher structure and real data} (\cref{sec:covariance-teacher}). A product
+    covariance turns the problem into a whitened one with a preconditioned flow \proven: with an aligned
+    covariance the race is that of the whitened problem with weights $\Lambda_r\tw r$ and the landscape
+    that with weights $\Lambda_r^{1/2}\tw r$, which can reverse the order \derived{} \empirical. Plateaus
+    of random TTN teachers sit at critical points of the rank-constrained problem, not at SVD truncations
+    where the two differ, and the bond ranks grow one bond at a time; binary students learn bottom-up;
+    star teachers make the flow forget a larger learned component \empirical. On MNIST the first route
+    after the escape on a binary tree is a pair of sibling cores with the $k=3$ gap law $A/\isc+B$, and a
+    route-amplitude share computed from the data before training ranks pixel orders by their final loss
+    in a pre-registered test, but not by their early speed \empirical; why the order matters is a
+    \conjecture. \emph{Novelty:} the reweighting has a two-layer analogue
+    \knownresult[\citealp{gidel2019implicit}], the critical points of the rank-constrained problem are known
+    in substance \knownresult[\citealp{elden2011perturbation,holtz2012alternating}], and early alignment is
+    known in linear networks \knownresult[\citealp{atanasov2022neural}]; new \newresult{} are the reduction
+    on trees, the tree contrast for generic teachers, the bottom-up order, the forgetting by stars and the
+    tests on real data.
+\end{enumerate}
 
 \subsection{Relation to prior work}\label{sec:intro-prior}
-\placeholder{What is known (deep linear networks, diagonal networks, tensor factorization, lazy
-versus rich, tensor networks for learning) and what is new here.}
-% TODO(lit): draw from notes/literature.md once final. Anchor papers (already in references.bib):
-%  - DLN exact dynamics and S2S: saxe2014exact, saxe2019mathematical, jacot2022saddletosaddle,
-%    gidel2019implicit, gissin2020implicit, arora2019implicit, li2021towards.
-%  - Diagonal networks / kernel-rich: woodworth2020kernel, pesme2023saddletosaddle, berthier2023incremental.
-%  - Lazy vs rich: chizat2019lazy, jacot2018neural, geiger2020disentangling, kunin2024get.
-%  - Tensor factorization: razin2021implicit, razin2022implicit, ge2021understanding,
-%    wang2020beyond, hariz2022implicit.
-%  - Homogeneous nets near small init: kumar2024directional, kumar2025early.
-%  - Tensor networks for ML: stoudenmire2016supervised, novikov2018exponential, cohen2016expressive,
-%    levine2018deep; barren plateaus for global, not local, losses of unitary-embedded MPS:
-%    liu2022presence; none in the energy optimization of isometric MPS/TTNS/MERA: miao2024isometric,
-%    barthel2025absence.
-%  State explicitly which of our results are new (mark \newresult) and which reproduce known
-%  results in the TTN setting (mark \knownresult with the reference). Prior and concurrent work for
-%  each "new" claim: notes/reviews/citation_check.md, section (b); keep the narrowed tags of App. A
-%  and Sec. 5 (e.g. KKT balance, blow-up identity, head start, Adam's epsilon law, EoS amplitude).
+% Sources: notes/literature.md v1.2 (sections 1.4, 2, 5) and notes/reviews/citation_check.md (part b,
+% rows B1-B27). Pointers to theorems are given where the sections cite them.
+The literature review behind this report (\path{notes/literature.md}, seven clusters) and an audit of
+every citation and of possible prior work for every new result (\path{notes/reviews/citation_check.md};
+about 270 searches in all, arXiv listings up to October 2026) found no paper that characterizes the
+saddle-to-saddle dynamics of gradient flow on TTNs with dense cores and $\Kc\ge3$. The closest work, by
+cluster, is the following.
+
+\paragraph{Deep linear networks.} Exact solutions from decoupled (aligned) initialization
+\citep{saxe2014exact,saxe2019mathematical}, incremental learning and its thresholds
+\citep{gidel2019implicit,gissin2020implicit,arora2019implicit,li2021towards}, and saddle-to-saddle
+dynamics from generic small initialization, where the first escape is proven and the later saddles are
+conjectured \citep{jacot2022saddletosaddle}. The full sequence from small random initialization is
+proven at depth two \citep{jiang2023algorithmic}, which covers the TTN with two cores; deeper
+factorizations are solved for decoupled or identity-type initializations
+\citep{saxe2014exact,chou2024gradient}. Critical points are classified as strict or non-strict
+\citep{achour2024loss}, and balance is the conservation law of gradient flow
+\citep{arora2018optimization,du2018algorithmic,kunin2021neural,marcotte2023abide}. The binary tree with
+four sites is a depth-3 linear network (\cref{rem:A-binary4-dln}), so our binary4 results are checks.
+
+\paragraph{Homogeneous models near the origin.} From small initialization the weights of a homogeneous
+model first converge in direction to a KKT point of the correlation with the target and escape after a
+time that grows as a negative power of the initialization \citep{kumar2025early,kumar2025towards}.
+Dormant weights of the lowest homogeneity degree stay small for a time of the same order
+\citep{kumar2026learning}; escapes that need $1$, $2$ or $r\ge3$ small layers take a time of order one,
+logarithmic, or $\propto\epsilon^{-(r-2)}$ \citep{rawal2026theory}; alternating gradient flows describe
+saddle-to-saddle dynamics by an activation law with dormant amplitudes carried across phases
+\citep{kunin2025alternating}; weaker directions get a head start in two-layer linear networks
+\citep{zhang2026saddletosaddle}; and the leap of \citet{abbe2023sgd} counts the coordinates that must be
+learned at once. These results supply the mechanism of our first and later escapes; the tree decides
+which cores are dormant, how many, and with which coupling.
+
+\paragraph{The landscape of our model.} \Citet{furman2026benign} study exactly our model and loss, on any
+tree, as a landscape: minimum-norm local minima are global; non-global critical points lack full Tucker
+rank; at a minimum-norm critical point, every connected component of rank-deficient bonds gives a
+descent curve whose order is its number of cores, and with several components ``the smallest core
+delivers the least suppressed escape''; one parity saddle has a lower bound on its order; points off the
+minimum-norm set can be spurious minima; and polynomial-size TTNs are hard for statistical-query
+learners. They do not treat dynamics. Our routes can be proper subtrees of one such component, our lower
+bound on the saddle order holds at every saddle with one learned component that meets a spectral
+condition (\cref{app:saddle-order}), and our results are dynamical.
+
+\paragraph{Tensor factorization.} Small initialization biases CP factorization towards low rank, learned
+one rank-one term at a time \citep{razin2021implicit}, and hierarchical tensor factorization towards low
+hierarchical rank \citep{razin2022implicit}; the latter shares the mode tree of our HT trees, but its
+internal nodes are local CP factorizations, not dense cores (\cref{sec:setup-model}). Over-parameterized
+orthogonal tensor decomposition learns the largest component first (proven for a modified gradient flow,
+observed for plain gradient flow, \citealp{ge2021understanding}); lazy
+training of a tensor decomposition needs many components \citep{wang2020beyond}; in deep CP
+factorization the growth exponent of a component depends on the depth of its factors
+\citep{hariz2022implicit}; the Tucker landscape has descents
+of order 2, 3 and 4 at balanced points \citep{frandsen2022optimization}; and gradient descent on
+tensor-train completion shows a long plateau followed by abrupt rank growth
+\citep{milanesi2021implicit}. In multi-spike tensor PCA the recovery order is a greedy selection on
+(weight)$\times$(initial correlation)$^{p-2}$ for tensors of order $p\ge3$ and follows the
+signal-to-noise ratios for $p=2$ \citep{benarous2025stochastic,benarous2025permutation}, the dichotomy we
+find between tensor-like and matrix-like pairs.
+
+\paragraph{Lazy and rich training.} Lazy training and the tangent kernel
+\citep{jacot2018neural,chizat2019lazy,lee2019wide}, its failure when the tangent space misses the target
+\citep{ghorbani2019limitations}, the crossover read from the change of the kernel
+\citep{geiger2020disentangling} and its coherent second-order part \citep{bordelon2022selfconsistent},
+the kernel-to-rich transition of diagonal networks with an explicit saddle-to-saddle algorithm
+\citep{woodworth2020kernel,pesme2023saddletosaddle,berthier2023incremental}, imbalance as a second knob
+\citep{kunin2024get,domine2025lazy}, mixed and lazy-then-rich dynamics \citep{tu2024mixed,lyu2024dichotomy},
+and the parameterizations of wide networks \citep{yang2021tensor,yang2024spectral}. For tensor networks,
+Gaussian-process and tangent-kernel limits are known for MPS and tensor trains
+\citep{guo2021neural,wesel2025tensor}, and factor-wise scaling rules for structured layers
+\citep{qiu2024compute,potapczynski2024searching}; we found no map of regimes and no feature-learning
+parameterization for TTNs.
+
+\paragraph{Tensor networks for learning.} Beyond the models cited above, TTNs rest on the numerical
+analysis of hierarchical formats, their manifolds and their alternating and sweeping algorithms
+\citep{hackbusch2009new,grasedyck2010hierarchical,oseledets2011tensor,holtz2012manifolds,%
+uschmajew2013geometry,holtz2012alternating,white1992density}, which also underlie Riemannian training
+\citep{novikov2018exponential,steinlechner2016riemannian}. Their trainability has been studied through
+barren plateaus \citep{liu2022presence,miao2024isometric,barthel2025absence}; the long plateaus here are
+of another kind, since the gradient is small because the initialization is, not because it
+concentrates over random initializations (\cref{sec:other-stalled}).
+
+\paragraph{Steps, noise and optimizers.} The edge of stability and catapults
+\citep{cohen2021gradient,lewkowycz2020large}; stability limits, two-cycles and the selection of flat
+minima in deep linear and scalar networks
+\citep{mulayoff2020unique,kreisler2023gradient,ghosh2025learning,macdonald2025convergence}; the modified
+flow of gradient descent \citep{barrett2021implicit}; SGD as a stochastic differential equation, its
+stability and stochastic collapse \citep{li2017stochastic,mulayoff2024exact,chen2023stochastic};
+experiments with SGD in the saddle-to-saddle regime of deep linear networks
+\citep{corlouer2026stochastic}; and, concurrently with this work, the plateau dynamics of Adam and other
+optimizers in deep matrix factorization \citep{sabanayagam2026optimizer}.
+
+\paragraph{What is new.} Known results that hold in our setting are marked \knownresult{} where they
+appear and are shown in our setting: the exponent $\Kc-2$ of the first escape, its blow-up identity
+and the balance of the escape direction (\cref{sec:s2s-escape}), the decoupled modes of aligned
+initialization (\cref{sec:s2s-aligned}), the head start of two-core routes and the strict wrong-order
+saddles of binary4 (\cref{sec:s2s-locality,sec:s2s-order}), the stability limit and edge-of-stability
+cycle of gradient descent and, concurrently, Adam's $\epsilon$ law (\cref{sec:other-optim,%
+sec:other-optimizers}). New, as far as these searches found, are: the route rule with its Steiner
+subtree, rates and measured dependence on the tree; the theorem on the saddle order with its
+counterexample; the classification of the learning order by the number of cores that separate two
+components, and the race on trees; the contrast between MPS and binary trees for generic teachers;
+the failure modes; the TTN constants and measurements of the regime map; and the tests on real data
+(the novelty notes of the list above give the details). The searches are weakest for 2025--2026 work on the training of MPS
+and tensor trains (\path{notes/literature.md}, section 1.2).
 
 \subsection{Outline}\label{sec:intro-outline}
-\placeholder{Roadmap of the report.}
-% TODO(intro): Section 2 setup; Section 3 regime map; Section 4 saddle-to-saddle (main);
-% Section 5 other regimes; Section 6 covariance and teacher; Section 7 open questions; appendices:
-% derivations, experimental details, reproducibility.
+
+\Cref{sec:setup} fixes the model, the teachers, the initializations, the dynamics and the diagnostics
+by which regimes are assigned. \Cref{sec:regime-map} maps the regimes over the initialization scale, the
+bond dimension, the number of cores and the balance of the cores. \Cref{sec:s2s}, the main section,
+treats the saddle-to-saddle regime: phenomenology, an exactly solvable case, the first escape, later
+escapes and their locality (with the theorem on the saddle order), the order of learning, failure
+modes, and how each parameter acts (\cref{tab:s2s-parameters}). \Cref{sec:other-regimes} treats the other
+regimes (lazy, rich, stalled, large bond dimension) and what discrete steps, gradient noise, finite
+samples and the optimizers used in practice change. \Cref{sec:covariance-teacher} adds input covariance,
+teacher structure and real data, and \cref{sec:open} collects the open questions. \Cref{app:derivations}
+derives the theory, \cref{app:experiments} gives the settings of every experiment, and
+\cref{app:reproducibility} says how every figure is regenerated.

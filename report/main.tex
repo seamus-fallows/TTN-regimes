@@ -134,13 +134,21 @@
 \maketitle
 
 \begin{abstract}
-  \placeholder{Abstract to be written last: question, model (TTN regression with exact
-  population loss), the regimes found and the parameters that select them, main new results with
-  their status.}
-  % TODO(abstract): 150-200 words. State: TTN regression f(x) = <W, phi_1 (x) ... (x) phi_N>,
-  % gradient flow from small/large init; which regimes occur (S2S, lazy, rich non-incremental);
-  % the main new results (escape-time scaling with K, locality of later escapes, random learning
-  % order) with their status; the regime map.
+  % About 200 words. Status words (prove, derived, confirmed) follow the tags of Sections 3-6.
+  How do gradient methods train tree tensor networks? We study the model
+  $f(x)=\langle W,\phi_1(x_1)\otimes\cdots\otimes\phi_N(x_N)\rangle$, with $W$ contracted from $K$ cores on
+  a tree, trained on the exact population loss of a teacher. From small initialization (scale $\sigma$),
+  gradient flow is saddle-to-saddle: plateaus sit at critical points of the problem with fixed bond ranks,
+  and each escape raises the bond ranks along a route, a set of cores that must move together. The first
+  plateau lasts $\propto\sigma^{-(K-2)}$, as in other homogeneous models, with a prefactor computed per
+  initialization. Later, the tree decides: the smallest route, of $k^*$ cores, gives no plateau
+  ($k^*=1$), a logarithmic one ($k^*=2$) or one $\propto\sigma^{-(k^*-2)}$ (derived; confirmed up to
+  $k^*=5$). We prove that $k^*$ is the saddle order under a spectral condition, which every
+  two-component teacher learned in weight order satisfies, and that the order can be lower from $k^*=5$
+  on. With non-orthogonal teachers, the saddle after the first escape is strict on matrix product states,
+  not on binary trees. The learning order is a race set by the initialization unless competing components
+  differ on only two cores. Larger $\sigma$ leads through a rich regime to a lazy one, which needs every
+  bond at its cut dimension.
 \end{abstract}
 
 \tableofcontents

@@ -1,18 +1,145 @@
-% sections/B_experimental_details.tex -- Appendix B: experimental details. SKELETON.
+% sections/B_experimental_details.tex -- Appendix B: experimental details.
 % One subsection per experiment folder. Pull the numbers from the experiment READMEs and configs
 % (experiments/<name>/configs/*.yaml); never retype them by hand if a script can print them.
+% B.1 (common settings) summarizes Sec. 2, the library (ttn/) and the per-experiment subsections below.
 \section{Experimental details}\label{app:experiments}
 
-\placeholder{Skeleton. For every experiment: trees, dimensions, teachers, initialization, dynamics
-and tolerances, sweeps, seeds, time budgets, compute cost.}
+This appendix gives the settings of every experiment: the problems (trees, dimensions, teachers), the
+initializations, the dynamics and their tolerances, the sweeps, seeds and budgets, how runs are
+classified, and which runs were excluded. \Cref{app:exp-common} lists what all experiments share.
+Each later subsection names its experiment folder, whose README lists every command in order and whose
+\path{configs/} holds the YAML configurations, the notes with its findings, and the reviews whose
+errata are applied in the main text. Run counts are of finished runs. Raw outputs are not in the
+repository; \cref{app:reproducibility} says how to regenerate them.
 
 \subsection{Common settings}\label{app:exp-common}
-\placeholder{Double precision; Dormand--Prince 5(4) with relative and absolute tolerances
-$10^{-8}$ and $10^{-12}$ unless stated; recording grid; conservation-drift threshold $10^{-6}$;
-event detection; Hessian and kernel computations.}
-% TODO: how crossing times are located (interpolation on the log grid vs dense output / root
-% finding as in experiments/pilot_h2_locality/h2sim.py); Hessian by autodiff + gauge projection;
-% probe set seed; machines used (vCPU type), wall times, total cost from notes/spend.md.
+
+\paragraph{Model and loss.}
+Every experiment trains the model of \cref{sec:setup-model} on the exact population loss
+\eqref{eq:loss}, computed by tree contractions (\cref{sec:setup-loss}), except where stated: the
+finite-sample sweeps (empirical loss), the correlated-input runs (dense second-moment matrix) and the
+real-data runs (empirical loss on a fixed training set). Inputs are whitened Gaussians ($\Sigi i=\Id$)
+unless stated, so the loss is half the squared Frobenius distance to the teacher, and only the second
+moments of the features enter.
+
+\paragraph{Precision and processes.}
+All computations are in double precision: with $\isc=10^{-2}$ and $\Kc=7$ the initial tensor has norm
+about $10^{-14}$ and the gradients are of order $10^{-12}$. A dormant component whose escape signal falls
+below about $10^{-15}$ relative is seeded by roundoff, not by the initialization; the experiments that can
+reach this floor scan for it and flag such runs (\cref{sec:setup-dynamics}). Every process runs PyTorch
+with a single thread (\path{torch.set_num_threads(1)}): the tensors are small, and many threads slow
+their linear algebra down by large factors on a loaded machine. Parallelism comes from running many
+single-threaded processes.
+
+\paragraph{Integrators and tolerances.}
+The reference integrator is the adaptive Dormand--Prince 5(4) pair of \path{ttn.dynamics.integrate_gf}
+with relative and absolute tolerances $10^{-8}$ and $10^{-12}$ (\cref{sec:setup-dynamics}). Past the first
+escape the flow is stiff: learned directions have Hessian eigenvalues of order one while a plateau lasts
+$\propto\isc^{-(k-2)}$, so an explicit method needs a number of steps that grows with the plateau. Most
+experiments therefore integrate with SciPy's LSODA and the exact Hessian (by automatic differentiation)
+as its Jacobian; short runs and references use Dormand--Prince or DOP853; Radau is a fallback.
+\Cref{tab:exp-common} gives each experiment's choice. Event times come from root finding on the
+integrator's dense output, from re-integrating the event window on a fine linear grid, or from dense
+merged records (log-spaced and linear output times plus the fine rows of \cref{sec:setup-dynamics});
+each subsection says which. Accuracy is checked by the conservation drift \eqref{eq:drift},
+below $10^{-6}$ (exceptions are reported per experiment), by the exact aligned solutions
+(\cref{sec:s2s-aligned}), by reruns at tighter tolerances, and by independent implementations in the
+reviews.
+
+\paragraph{Seeds and random streams.}
+Teacher and initialization draw from independent random streams: the teacher's generator is
+\path{ttn.teachers.teacher_generator}$(s)$, which mixes the teacher seed $s$ through a seed sequence, so
+that a teacher and an initialization with equal seeds share no Gaussian draws. Before this separation
+(library commit 57d5262), equal seeds made a random TTN teacher proportional to the student's
+initialization and tied an odeco teacher's first site basis to the first core; experiment runs from
+that time support no claim and were discarded or rerun (each subsection lists its exclusions), and two
+numerical checks of the theory that predate the separation are marked as such in
+\cref{rem:A-wrong-order,prop:A-trap}. Initialization seeds are consecutive integers, the same at every
+$\isc$ of a sweep, so that a seed fixes the initialization direction while $\isc$ varies.
+
+\paragraph{Initializations.}
+\emph{Fan-in}: \eqref{eq:init} with one scale $\isc$ for all cores, or per-core scales where stated.
+\emph{Balanced}: the same tensor $\Wz$ in the gauge with $\Q e=0$ on every bond. For each bond, with
+$M=\Gm{v}{e}\Gm{v}{e}\T$ and $N=\Gm{p}{e}\Gm{p}{e}\T$, the symmetric positive definite $P$ with $PMP=N$
+gives the gauge transformation $P^{1/2}$ that makes the two Gram matrices equal; since balancing one bond
+changes its neighbours, sweeps over the bonds repeat until $\max_e\normmax{\Q e}<10^{-13}\max_v\normF{\G v}^2$
+(\path{gauge_balance} in \path{experiments/s2s_core/s2s.py}; the locality, regime-map and optimizer
+experiments have their own implementations). A gauge transformation leaves $\W$ unchanged, so a balanced run and its fan-in twin start
+from the same function and differ only in the conserved quantities. \emph{Aligned}: cores diagonal in
+the teacher's basis (\cref{prop:aligned}; \path{ttn.network.aligned_init}). \emph{Saddle starts}: an exact
+balanced saddle, aligned for pattern teachers or found by L-BFGS on the rank-constrained problem for
+generic teachers, plus a fan-in perturbation of scale $\isc$ or $\varepsilon$.
+
+\paragraph{Centred and two-copy models.}
+The centred model trains on the target $\Wt+\Wz$ (\path{ttn.teachers.ShiftedTeacher}), so that
+$f_\params-f_{\params_0}$ is trained on $f^*$ (\cref{sec:setup-init}). Written directly, its loss is a
+difference of terms of size $\normF{\Wz}^2$, with a cancellation error of about $10^{-16}\normF{\Wz}^2$
+that is harmless at small $\fsc$ but ruins large ones. The library therefore writes $\W(\params)-\Wz$ as
+one TTN on doubled bonds, in half-sums and half-differences of the two networks, so that nothing cancels
+(\path{ttn.dynamics.Problem}); the regime map uses the direct form only for $\fsc<10^{-2}$
+(\cref{app:exp-regimes}). The two-copy model $\W(\params^+)-\W(\params^-)$ is one TTN with doubled bonds
+and block-diagonal cores (\path{ttn.network.antisymmetric_double}), trained with the gradient mask of
+\cref{rem:two-copy-mask} and contracted in the same half-sum and half-difference form
+(\path{ttn.network.sum_difference_cores}).
+
+\paragraph{Recording, events and Hessians.}
+Diagnostics are recorded on a logarithmic time grid (200 times by default; other grids where a subsection
+says so) plus the fine rows of \cref{sec:setup-dynamics}, and merged for events
+(\path{ttn.dynamics.merged_rows}). Events and widths follow
+\cref{sec:setup-diagnostics}; which of its crossing rules an experiment uses is given in
+\cref{tab:exp-common}. Hessians are computed by automatic differentiation at plateau midpoints (minimum
+parameter speed between two events), raw and with the gauge directions projected out
+(\path{ttn.diagnostics.project_out_gauge}, relative cutoff $10^{-3}$), and the saddle type is read from
+how $\lambda_{\min}$ scales with $\isc$. The relative kernel change uses the probe kernel (in the regime
+map, 128 Gaussian inputs from generator seed 12345; on real data, the first 128 test images) and, where
+the dense Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$), the tensor-space kernel
+$\Jac\Pre\Jac\T$.
+
+\paragraph{Compute.}
+Each remote experiment ran on one rented CPU machine with 32 to 384 virtual cores, as many
+single-threaded processes in parallel; some fix rounds ran on the same machines (machines, hours and
+costs in \path{notes/spend.md}). Pilots, reviews, the fix rounds of the regime-map and real-data
+experiments, and the pre-registered order test of \cref{sec:real-data} ran on a local workstation. No GPU
+was used.
+
+\begin{table}[ht]
+  \centering
+  \caption{Integrators, event rules and seeds by experiment (details in the subsections named). LSODA:
+    SciPy's LSODA with the exact Hessian as Jacobian; DP5(4): Dormand--Prince 5(4); tolerances relative,
+    absolute. Event rules for overlaps (\cref{sec:setup-diagnostics}): \emph{final rise}, the last upward
+    crossing of $\frac12$ before $\ov r$ first reaches $0.9$; \emph{persistent}, the last upward crossing
+    after which $\ov r$ stays above $\frac12$; \emph{first}, the first crossing.}
+  \label{tab:exp-common}
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{2.9cm}@{}}
+    \toprule
+    experiment & integrator (tolerances) & events & seeds: teacher; initialization \\
+    \midrule
+    s2s-core (\ref{app:exp-s2s}) & LSODA ($10^{-8}$, $10^{-11}\isc$; $10^{-6}$, $10^{-9}\isc$ for the longest
+      plateaus); aligned runs DP5(4) and LSODA ($10^{-10}$, $10^{-14}$); leading-order flow DOP853 &
+      final rise, refined on linear grids & 1000; 0--9 \\
+    locality (\ref{app:exp-locality}) & LSODA ($10^{-9}$, $10^{-14}$), Radau fallback; pilot: own code,
+      LSODA ($10^{-10}$, $10^{-13}\isc$) & persistent (pilot: first), root finding & 1000; 0--7 \\
+    order (\ref{app:exp-order}) & first events DP5(4) ($10^{-9}$, $10^{-14}$); full runs LSODA ($10^{-10}$,
+      $10^{-15}$; three or four components $10^{-9}$, $10^{-14}$) & first, root finding & none (standard
+      basis); 0--399 or 0--999 \\
+    regime map (\ref{app:exp-regimes}) & DP5(4) ($10^{-8}$, $10^{-12}$), LSODA for long plateaus & final
+      rise, re-integrated on a 200-point grid & $1000+s$; $s=0$--$5$ \\
+    covariance, teacher (\ref{app:exp-data-teacher}) & DOP853 ($10^{-9}$, $10^{-14}$; single-$\isc$
+      runs); LSODA ($10^{-9}$, $10^{-14}$) & onset of bond spectra, $f=0.05$; aligned covariance: first &
+      independent stream; 5--40 seeds \\
+    steps, noise, samples (\ref{app:exp-optim}) & references DOP853 ($10^{-10}$, $10^{-14}$); LSODA
+      ($10^{-8}$, $10^{-12}$) at $\chi=9$; GD and SGD by the experiment's own loops & persistent & 101; 0--4
+      (5--44 for the order check) \\
+    optimizers (\ref{app:exp-optimizers}) & gradient flow by LSODA ($10^{-9}$, $10^{-14}$), Radau fallback;
+      other methods by their own iterations & persistent, root finding & 100; 0--5 \\
+    real data (\ref{app:exp-real-data}) & DP5(4) ($10^{-8}$, $10^{-14}$) to the first escape, then LSODA
+      with the Gauss--Newton matrix & loss-rate peaks and rank events & data seed 0; 0--4 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \subsection{Saddle-to-saddle experiments}\label{app:exp-s2s}
 Settings of \cref{sec:s2s-phenomenology,sec:s2s-aligned,sec:s2s-escape} and of the odeco runs of

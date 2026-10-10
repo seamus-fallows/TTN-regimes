@@ -1,13 +1,31 @@
-% sections/04_saddle_to_saddle.tex -- The saddle-to-saddle regime (Q1-Q4, H1-H3). SKELETON.
+% sections/04_saddle_to_saddle.tex -- The saddle-to-saddle regime (Q1-Q4, H1-H3).
 % Main section of the report. Sources: PLAN.md Q1-Q4; briefs s2s-core, order (and locality);
 % results in experiments/s2s_core/, experiments/locality/, experiments/order/ and the notes
 % notes/s2s_core.md, notes/locality.md, notes/order.md; theory in notes/theory_escape.md and
-% notes/theory_saddles.md; pilot experiments/pilot_h2_locality/.
+% notes/theory_saddles.md; pilot experiments/pilot_h2_locality/. The introduction below and Sec. 4.7
+% summarize 4.1-4.6 and Secs. 3, 5, 6 and keep their tags.
 \section{The saddle-to-saddle regime}\label{sec:s2s}
 
-\placeholder{Skeleton. Theory and experiments for gradient flow from small initialization:
-plateau sequence, escape times and their dependence on each parameter, locality of later escapes,
-learning order, saddle types.}
+This section treats gradient flow from small initialization, where a run passes from plateau to plateau
+(\cref{tab:regimes}). It answers questions Q1--Q4 of \cref{sec:intro-question}: which saddles are
+visited, how long the flow stays near each, which component comes next, and how all of this depends on
+the tree. The organizing idea is the \emph{route}: near a saddle, new parameters can lower the loss only
+through connected sets of cores whose new entries combine into a term of the residual, and the number
+of cores of the cheapest route sets the type of the saddle and the length of the plateau \derived{}
+(\cref{app:saddles}; \cref{app:saddle-order} proves when this number is the saddle order). Unless
+stated otherwise, inputs are whitened, the loss is the exact population loss, the initialization is
+fan-in (\cref{sec:setup-init}), and events are dated by the final rise of the overlaps
+(\cref{sec:setup-diagnostics}).
+
+\Cref{sec:s2s-phenomenology} shows complete sequences for odeco teachers on four trees (and the first two
+components on a fifth): plateaus at
+the partial fits with fixed bond ranks, one rank step per event, durations $\propto\isc^{-(\Kc-2)}$ at
+higher-order saddles. \Cref{sec:s2s-aligned} solves the aligned case exactly and uses it to check the
+integrators. \Cref{sec:s2s-escape} predicts the first escape of each run from its initialization.
+\Cref{sec:s2s-locality} treats the later escapes: the route rule, its tests on nine trees, the types of
+the saddles, and the theorem that says when the route gives the saddle order. \Cref{sec:s2s-order} asks
+which component is learned first, \cref{sec:s2s-failure} how sequences end early (dead routes and
+stalls), and \cref{sec:s2s-parameters} collects how each parameter acts.
 
 \subsection{Phenomenology}\label{sec:s2s-phenomenology}
 % Sources: notes/s2s_core.md (sections 1, 2.3-2.5, after fix round 1), agent-runs/s2s-core/REPORT.md,
@@ -1117,8 +1135,137 @@ against $0.05$--$0.12$) nor the pilot's conjecture $\isc^{-(2k-6)}$ (both ends p
 $\alpha$ is seed-dependent, between 1 and 2) describes the data.
 
 \subsection{Dependence on each parameter}\label{sec:s2s-parameters}
-\placeholder{Summary table: initialization scale, number of cores and tree shape, bond dimension,
-physical dimension, teacher spectrum, imbalance, learning rate; effect on plateau levels, durations
-and order; status of each statement.}
-% TODO: one row per parameter with: effect on the saddle sequence | on plateau durations | on the
-% order | evidence (figure) | status tag | new/known.
+% Summary of Secs. 3-6; every entry keeps the tag of the section it comes from. Numbers are quoted
+% only where the section quotes them.
+
+\Cref{tab:s2s-parameters} collects, for each parameter, what it does to the saddle sequence (which
+saddles are visited and in which order), to the plateau durations, and to the regime boundaries of
+\cref{sec:regime-map}, with the sections that give the evidence and its scope.
+
+% A multi-page table (xltabular, as in Appendix C): it breaks between rows and repeats its header.
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.12}
+\setlength{\LTcapwidth}{\textwidth}
+\begin{xltabular}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.8cm}
+    *{3}{>{\raggedright\arraybackslash}X}@{}}
+    \caption{How each parameter acts on gradient flow from small initialization, and on the regime
+      boundaries. Summary of \cref{sec:regime-map,sec:s2s,sec:other-regimes,sec:covariance-teacher}, whose
+      sections are given under each parameter; tags as in those sections; binary4: binary tree with
+      $\Ns=4$; $k^*$: cores of the cheapest route; $m$: cores that carry a site on which two components
+      differ.}
+    \label{tab:s2s-parameters} \\
+    \toprule
+    parameter (sections) & saddle sequence & plateau durations & regime boundaries \\
+    \midrule
+    \endfirsthead
+    \caption[]{How each parameter acts (continued).} \\
+    \toprule
+    parameter (sections) & saddle sequence & plateau durations & regime boundaries \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{4}{@{}r@{}}{\itshape continued on the next page} \\
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    initialization scale $\isc$\newline(\ref{sec:s2s-escape}--\ref{sec:s2s-order},
+      \ref{sec:regime-sigma-chi}) & At leading order none: the first escape direction, hence the first
+      component and, on tensor-like trees, the order, depend on the initialization direction only
+      \derived{} \empirical; matrix-like pairs become greedy as $\isc\to0$, and close weights separate only
+      at small $\isc$ \empirical &
+      First plateau $\isc^{-(\Kc-2)}T(Z)$ \proven; later ones none, $\ln(1/\isc)$ or $\isc^{-(k^*-2)}$ for
+      $k^*=1$, $2$, $\ge3$ \derived{} \empirical, with prefactors set by the route amplitudes when each
+      plateau starts &
+      The main knob: saddle-to-saddle, rich, then lazy with full bonds or a floor below them; binary4:
+      $\isc_c\approx0.3/\sqrt\chi$ \empirical, $\isc_{\rm lazy}\approx6.5/\sqrt\chi$ \derived{} \empirical \\
+    cores $\Kc$, tree shape\newline(\ref{sec:s2s-escape}--\ref{sec:s2s-failure}, \ref{sec:regime-K},
+      \ref{sec:teacher-generic}) & The tree sets $k^*$ of every route, hence the next component
+      (\emph{locality beats weight}) and the saddle type; $m$ sets race versus greedy order; generic
+      teachers: strict escapes on MPS, higher-order on binary and HT trees, which grow bottom-up
+      \derived{} \empirical &
+      First plateau: exponent $\Kc-2$, whatever the depth \proven; median prefactor from $0.42$ to $814$
+      over 17 trees with $\Kc=3$--$15$ \empirical; later plateaus: exponent $k^*-2$ (one teacher:
+      logarithmic on MPS8, $\isc^{-3}$ on binary8, about $\isc^{-5}$ on HT8) \empirical &
+      $\isc_c$ rises with $\Kc$ ($0.17$ to $0.75$ for $\Kc=3$--$7$); the rich window narrows; stalls and
+      dead routes grow with $\Kc$ \empirical; the limit $\Kc\to\infty$ is open \conjecture \\
+    bond dimension $\chi$\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-order}, \ref{sec:s2s-failure},
+      \ref{sec:regime-sigma-chi}, \ref{sec:other-large-chi}) & Plateau levels and route degrees do not change with extra channels, as
+      zero-padded critical points stay critical (\cref{lem:A-unused}) \proven; at $\chi=\ncomp$ the last component needs a
+      route through all cores, which can die \empirical; larger uncapped $\chi$ makes the order slowly
+      greedier \empirical &
+      First-escape prefactor falls slowly with $\chi$ (log-log slopes $-0.26$ to $-0.76$) \empirical; route
+      exponents unchanged at $\chi=4$; spare channels remove stalls only on routes with an uncapped end
+      \empirical &
+      Both boundaries $\propto\chi^{-1/2}$ on binary4 \empirical; lazy only with every bond at its cut
+      dimension \derived{} \empirical; large $\chi$: standard and NTK lazy, $\mu$P-TTN not \derived{}
+      \empirical \\
+    local dimension $d$\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-order}, \ref{sec:s2s-failure},
+      \ref{sec:regime-K}) & On an MPS it enters the order only through the bond caps \eqref{eq:bond-cap}
+      \derived; at equal bonds no effect on the order ($\abs{\Delta P}\le0.021$) \empirical; a larger $\chi$
+      gives no spare channel to route ends on bonds capped at $d$ (MPS chain ends, HT leaves), where the
+      remaining stalls sit \empirical &
+      Binary4 at full bonds ($\chi=d^2$): median first-escape prefactor $\approx\pi/2$ for $d=2,3,4$,
+      independent of $d$ \derived{} \empirical, while the norm-based time falls by a factor $1.9$; MPS4:
+      $1.39$--$1.50$ \empirical &
+      Sets the cut dimensions, hence where a lazy regime exists \derived; whether $\isc_c(\Kc)$ tends to $1$
+      or $\sqrt d$ is open (large $\Kc$ run at $d=2$ only) \conjecture \\
+    teacher weights and structure\newline(\ref{sec:s2s-phenomenology}, \ref{sec:s2s-locality},
+      \ref{sec:s2s-order}, \ref{sec:teacher-generic}--\ref{sec:teacher-star}) & Weights decide the order only through the race (prefactor over
+      weight) or, for matrix-like pairs, as $\isc\to0$ \derived{} \empirical; the sites where components
+      differ decide the routes \proven; a star with $\lambda_{\max}(\Gamma)>\tw j$ makes a larger learned
+      component be forgotten \proven{} \empirical; non-orthogonal teachers give blended plateaus and ranks
+      that grow bond by bond \empirical &
+      First plateau $\propto1/\tw1$ at fixed weight ratios \proven; $k=2$: rate $\tw r\tw j^{(\Kc-2)/\Kc}$ and head start
+      $1-\tw r/\tw j$; $k\ge3$: coupling $\tw r\tw j^{(\Kc-k)/\Kc}$ \derived; generic teachers: slopes
+      $(1-\kappa_e)/\gamma_e$ \derived{} \empirical; close weights overlap unless $\isc$ is small
+      \empirical &
+      Aligned initialization: the boundary depends on the weight ratios (\cref{prop:A-s2s-aligned})
+      \proven; lazy boundary through $\xi=\normF{\Wt}/\fsc$; centred floor $\propto\isc^{2\Kc}/\normF{\Wt}^2$
+      \derived \\
+    input covariance\newline(\ref{sec:cov-aligned}, \ref{sec:cov-misaligned},
+      \ref{sec:cov-correlated}) & Aligned: race with weights $\Lambda_r\tw r$, landscape with $\Lambda_r^{1/2}\tw r$,
+      which can reverse the order and, on binary4, swap a learned component \derived{} \empirical;
+      otherwise plateaus at critical points of the $\Sig$-loss \proven{} \empirical &
+      Aligned: exact clocks $\Lambda_rt$, exponents unchanged \proven{} \empirical; non-orthogonal in the
+      $\Sig$-metric: the MPS escape from the rank-one saddle becomes logarithmic, binary4 stays at
+      $\isc^{-1}$ \empirical &
+      Not mapped \\
+    step size and optimizer\newline(\ref{sec:regime-lr}, \ref{sec:other-optim},
+      \ref{sec:other-optimizers}) & GD below $\lr_c$ keeps gradient flow's sequence and order \derived{}
+      \empirical; above it component~1 oscillates, then divergence or a return to the origin \empirical;
+      SGD near its mean-square limit erases learned components \empirical; Adam keeps the order; ALS, DMRG
+      and Riemannian GD have no plateaus \derived{} \empirical &
+      GD: events shifted by $\lr c_e$ \derived{} \empirical; SGD: first-plateau law unchanged \derived,
+      later plateaus lengthened or trapped \empirical; Adam: first escape independent of $\isc$ until
+      $\epsilon$ restores $\isc^{-(\Kc-2)}$ \derived{} \empirical; ALS, DMRG: iterates independent of
+      $\isc$ \proven &
+      $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$ at small $\isc$, from the sharpness of the balanced minimum
+      \proven{} (no stable global minimum above it: \derived{} for $\chi=\ncomp$);
+      $2/\lambda_{\rm GF}\propto\isc^{-3.97}$ on the
+      lazy side, catapults beyond it \empirical; at fixed $\lr/\batch$ SGD stalls where gradient flow is
+      only slow \derived{} (from the heuristic law of \cref{prop:A-sgd-collapse}) \\
+    balanced or fan-in initialization\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-locality},
+      \ref{sec:s2s-failure}, \ref{sec:regime-imbalance}) & Balanced re-gauging keeps the first component in 88 of 94 seeds
+      \empirical; the escape direction is balanced either way \proven; balanced initialization removes the dead routes
+      in the runs checked, but not all stalls \empirical &
+      First-escape prefactor changes per seed by a factor $0.88$--$1.92$, exponents unchanged \empirical;
+      the $k=6,7$ exponents are measured with balanced initialization only; some balanced routes escape
+      $10^5$ times later than usual \empirical &
+      Root at scale $\lambda\isc$, fixed $\fsc$: a light root is lazy at up to $100$ times smaller $\fsc$, with
+      $\dTK\propto\lambda^2$ \derived{} \empirical; a heavy root acts as balance does \empirical; the fan-in
+      default is root-light \\
+\end{xltabular}
+\endgroup
+
+Two kinds of effect run through the table. Some parameters change the landscape: which saddles exist,
+at which levels, and of which type. These are the tree, the teacher and the covariance, and, through the
+bond caps, $\chi$ and $d$. Others change only the clock, the time spent near each saddle: above all
+$\isc$, which at leading order changes neither the direction of the first escape nor the order on
+tensor-like trees, and the step size below its stability limit. Optimizers can change both: Adam keeps
+the saddles but removes the $\isc$-dependence of the first escape (until its $\epsilon$ restores it at
+small $\isc$), while ALS, DMRG and Riemannian gradient descent, which are equivariant under the whole
+gauge group, remove the plateaus (\cref{sec:other-optimizers}). The balance of the initialization leaves
+the landscape and the exponents unchanged, shifts the prefactors and occasionally the first component,
+and decides whether a route survives its plateau. Where an entry rests on one tree, one teacher or a
+single $\isc$, the sections cited give its scope.
