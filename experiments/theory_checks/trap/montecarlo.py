@@ -92,7 +92,7 @@ def main():
             )
         )
     df = pd.DataFrame(rows)
-    df.to_csv(Path(a.out) / "montecarlo_runs.csv", index=False)
+    df.to_csv(Path(a.out) / "montecarlo_runs.csv.gz", index=False)
     out = []
     for (kind, n, S, start, chi), g in df.groupby(["kind", "n", "S", "start", "chi"], dropna=False):
         m = len(g)

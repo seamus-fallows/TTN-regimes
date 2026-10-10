@@ -87,6 +87,10 @@ def main():
     df.to_csv(RES / "locality_pilot_joined.csv.gz", index=False)
     sub = df[df.obs.isin(["stall", "escaped", "dead", "pinned"]) & (df.k >= 4)].copy()
     sub["bad"] = sub.obs.isin(["stall", "dead", "pinned"])
+    # the criterion is derived for the plateau after the larger component (q = 0); runs whose
+    # correlation flow escapes along the smaller one first (wrong order) are reported separately
+    rates(sub[sub.q == 1], ["source", "start"], "verdict").to_csv(RES / "wrong_order_runs.csv")
+    sub = sub[sub.q == 0]
     # 1. per criterion, per protocol
     parts = []
     for col in ["verdict", "reduced_sigma", "verdict_r12", "verdict_q"]:

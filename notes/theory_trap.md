@@ -126,8 +126,8 @@ Route entries are $O(\sigma)$; the route drive on one of them is $c\prod_{v\ne u
   $\dot b\approx(c^2/\gamma_u)b^{2k-3}$, so the route escapes after $T_{\rm pin}\approx\gamma_u b^{-(2k-4)}/((2k-4)c^2)\propto
   \sigma^{-(2k-6)}$ instead of $\sigma^{-(k-2)}$ (exponent 4 instead of 3 at $k=5$).
   With a fixed budget such runs are counted as stalls; their end amplitudes scale as $\sigma^{k-3}$ (relative
-  $\sigma^{k-4}$), which is the "pinned" class of R12 and plausibly the steep MPS rows of the report
-  (section 9).
+  $\sigma^{k-4}$), which is the "pinned" class of R12 and plausibly the steep MPS rows of report Sec. 4.6
+  (section 10, item 5 of the report list).
 - $k=2j$ (e.g. $k=4$, $j=2$): decay and drive are of the same order. In rescaled time $\sigma^2t$ the reduced
   model below is $\sigma$-free, so the outcome is still a property of the init direction, but not a pure
   sign test. Also the sign of the route product matters: if $\prod_vb_v<0$ every $b_v^2$ decreases at the same
@@ -144,7 +144,8 @@ it returns escape / dead / pinned.
 **Proposition 1 (Gram bound; proven).** For any core $u$ on edge $e$ and all $t$,
 $G_u^{(e)}(t)^\top G_u^{(e)}(t)=Q^{(u)}_e(0)+G_w^{(e)}(t)G_w^{(e)}(t)^\top\succeq Q^{(u)}_e(0)$, hence
 $\sigma_j(G_u^{(e)}(t))^2\ge\lambda_j(Q^{(u)}_e(0))$ for every $j$ (Weyl). If $\lambda_{r_e+1}(Q^{(u)}_e(0))>0$ the end
-keeps $r_e+1$ directions of size $\ge\lambda_{r_e+1}^{1/2}$ forever: it cannot die.
+keeps $r_e+1$ directions of size $\ge\lambda_{r_e+1}^{1/2}$ forever; for an end that is a tree leaf (all its
+entries on $e$ are visible) it cannot die.
 **Corollary (proven).** If an end core is rank-deficient on $e$ at some time, $G_u\nu=0$, then
 $\nu^\top Q^{(u)}_e(0)\nu=-\lVert G_w^\top\nu\rVert^2\le0$: the partner's slice along the dead direction has
 norm$^2$ exactly $-Q^{(u)}_{\nu\nu}(0)$. This is the C8 observation ("parent new-slice norm$^2=-Q_{\nu\nu}(0)$
@@ -224,26 +225,33 @@ evaluations; includes slow escapes) vs escaped; stall-diagnosis runs dead / pinn
 component at roundoff ($\lvert a_2\rvert<10^{-20}$) = dead, converged = escaped. Runs with $k\le3$ are all
 predicted alive and none stalls (5,112 locality runs); the tables use $k\ge4$.
 
-**Pooled, fan-in init** (stalled/runs per predicted class; L2 = this note, R12 = $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$
-at the plateau start, L0 = $Q_{\nu\nu}$ alone, both with "dead iff all ends negative"):
+**Pooled, fan-in init** (stalled/runs per predicted class; runs in which the correlation flow escapes
+along the larger component; the 191 wrong-order runs with $k\ge4$ are excluded, their saddle is a
+different one; the correlation flow predicts them too: of the 459 escaping locality runs it starts
+with the smaller component, 446 are observed out of order or rotating, and of the 8,937 it starts
+with the larger, 8,834 are in weight order). L2 = this note, R12 = $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$ at the plateau start, L0 = $Q_{\nu\nu}$
+alone (both with "dead iff all ends negative"); "reduced" = the reduced route model at the run's own
+$\sigma$, where it applies (all ends with partners carrying sites, one new direction per route edge):
 
 | runs | criterion | pred. dead | pred. pinned | pred. alive |
 |---|---|---|---|---|
-| locality, saddle + small (3,512; 585 stalled) | L2 | **418/469 (89%)** | 141/942 (15%) | **26/2,101 (1.2%)** |
-| | R12 | 430/1,169 (37%) | 108/1,092 | 47/1,251 (3.8%) |
-| | L0 | 474/1,522 (31%) | 79/1,149 | 32/841 (3.8%) |
-| locality, balanced (1,316; 41 stalled, none dead) | L2 | 33/83 | 8/235 | 0/998 |
-| pilot, saddle + small (418 resolved; 124 dead) | L2 | **102/109 (94%)** | 20/169 | 2/140 |
-| | R12 | 84/161 | 30/168 | 10/89 |
+| locality, saddle + small (3,492; 587 stalled) | L2 | **408/457 (89%)** | 141/934 (15%) | **38/2,101 (1.8%)** |
+| | reduced, at $\sigma$ | 303/319 (95%) | 97/194 (50%) | 25/780 (3.2%) |
+| | R12 | 417/1,143 (36%) | 119/1,116 | 51/1,233 (4.1%) |
+| | L0 | 462/1,514 (31%) | 89/1,155 | 36/823 (4.4%) |
+| locality, balanced (1,275; 28 stalled, none dead) | L2 | 16/50 | 8/235 | 4/990 |
+| pilot, saddle + small (437 resolved; 124 dead) | L2 | **102/109 (94%)** | 20/182 | 2/146 |
+| | R12 | 84/169 | 30/185 | 10/83 |
 
 So the criterion separates the classes far better than R12 (the gain comes from the partner's
-non-visible entries, T3, and the visible degree, T4), and "alive" is a reliable prediction: 26 stalls
-in 2,101 runs, mostly slow escapes at $\sigma\ge0.1$ (below). **Stall diagnosis** (dead / escaped / pinned after
-60x patience; R12 had 30 of 55 vs 7 of 67): predicted dead 30 / 8 / 4, pinned 5 / 65 / 0, alive 2 / 56 / 0.
+non-visible entries, T3, and the visible degree, T4; figure `results/fig_criteria.png`), and "alive" is
+a reliable prediction: 38 stalls in 2,101 runs, mostly slow escapes at $\sigma\ge0.08$ (below).
+**Stall diagnosis** (dead / escaped / pinned after 60x patience; R12 had 30 of 55 vs 7 of 67):
+predicted dead 30 / 6 / 2, pinned 5 / 63 / 0, alive 2 / 56 / 0.
 
-**By $k$** (fan-in, saddle + small; `results/table_by_k.md`): $k=4$: dead 203/232, pinned 2/458, alive
-5/814 (at $k=4$ a pinned end is $O(\sigma)$, so "pinned" behaves as alive, as predicted); $k=5$: 73/79, 10/122,
-9/1,095; $k=6$: 92/104, 83/248, 8/138; $k=7$: 29/33, 12/72, 0/42; $k=8$: 21/21, 34/42, 4/12. The stall rate of
+**By $k$** (fan-in, saddle + small; `results/table_by_k.md`): $k=4$: dead 203/232, pinned 2/432, alive
+5/796 (at $k=4$ a pinned end is $O(\sigma)$, so "pinned" behaves as alive, as predicted); $k=5$: 73/79, 10/116,
+9/1,089; $k=6$: 86/98, 87/284, 18/150; $k=7$: 25/27, 8/60, 0/42; $k=8$: 21/21, 34/42, 6/24. The stall rate of
 pinned runs grows with $k$ (the pinned escape time $\propto\sigma^{-(2k-6)}$ exceeds the patience).
 
 **Per tree, bond dimension and protocol** (stalled/runs; pattern teachers with $s_2/s_1=0.5$ except the
@@ -254,75 +262,136 @@ robust rows; per (tree, $D$) in `results/table_by_case.md`, per $k$ in `results/
 | locality | binary8 | 2 | saddle | - | 5/18 | 0/156 |
 | locality | binary8 | 2 | small | - | 0/6 | 0/168 |
 | locality | binary8 | 2 | small_balanced | - | - | 0/238 |
-| locality | binary8 | 4 | small | - | - | 0/174 |
+| locality | binary8 | 4 | small | - | - | 0/168 |
 | locality | ht4 | 2 | saddle | 18/24 | 0/24 | 8/172 |
-| locality | ht4 | 2 | small | 4/6 | 4/42 | 0/156 |
-| locality | ht4 | 2 | small_balanced | - | - | 0/332 |
-| locality | ht4 | 4 | small | 7/12 | 6/42 | 0/150 |
+| locality | ht4 | 2 | small | - | 0/36 | 0/156 |
+| locality | ht4 | 2 | small_balanced | - | - | 0/318 |
+| locality | ht4 | 4 | small | 7/12 | 6/36 | 0/150 |
 | locality | ht8 | 2 | saddle | 7/9 | 2/18 | 1/78 |
-| locality | midroot6 | 2 | saddle | 18/18 | 5/24 | 6/30 |
-| locality | midroot6 | 2 | small | 12/12 | 12/42 | 0/12 |
-| locality | midroot6 | 2 | small_balanced | - | 0/18 | 0/54 |
+| locality | midroot6 | 2 | saddle | 18/18 | 5/30 | 6/30 |
+| locality | midroot6 | 2 | small | 12/12 | 12/42 | 6/24 |
+| locality | midroot6 | 2 | small_balanced | - | 0/18 | 0/60 |
 | locality | midroot6 | 4 | small | 12/12 | 18/42 | 0/24 |
 | locality | mps4 | 2 | saddle | 24/24 | 0/36 | 0/36 |
-| locality | mps4 | 2 | small | 76/76 | 0/118 | 0/62 |
-| locality | mps4 | 2 | small_balanced | - | - | 0/96 |
+| locality | mps4 | 2 | small | 76/76 | 0/100 | 0/62 |
+| locality | mps4 | 2 | small_balanced | - | - | 0/78 |
 | locality | mps4 | 4 | small | 26/46 | 0/68 | 0/94 |
 | locality | mps4 | 8 | small | - | - | 0/48 |
-| locality | mps6 | 2 | saddle | 50/58 | 21/100 | 6/80 |
-| locality | mps6 | 2 | small | 47/48 | 0/90 | 1/58 |
-| locality | mps6 | 2 | small_balanced | - | 6/92 | 0/140 |
+| locality | mps6 | 2 | saddle | 50/58 | 21/100 | 10/86 |
+| locality | mps6 | 2 | small | 47/48 | 0/102 | 1/58 |
+| locality | mps6 | 2 | small_balanced | - | 6/92 | 0/152 |
 | locality | mps6 | 4 | small | 14/14 | 20/98 | 0/102 |
-| locality | mps8 | 2 | saddle | 45/45 | 35/102 | 0/27 |
-| locality | mps8 | 2 | small | 43/50 | 13/66 | 2/54 |
-| locality | mps8 | 2 | small_balanced | 33/83 | 2/125 | 0/42 |
-| locality | mps8 | 4 | small | 15/15 | 0/6 | 2/132 |
+| locality | mps8 | 2 | saddle | 45/45 | 35/108 | 0/27 |
+| locality | mps8 | 2 | small | 37/44 | 17/64 | 4/66 |
+| locality | mps8 | 2 | small_balanced | 16/50 | 2/125 | 4/54 |
+| locality | mps8 | 4 | small | 15/15 | 0/6 | 2/126 |
 | locality | star3 | 2 | saddle | - | - | 0/96 |
-| locality | star3 | 2 | small | - | - | 0/96 |
-| locality | star3 | 2 | small_balanced | - | - | 0/96 |
-| locality | star3 | 4 | small | - | - | 0/96 |
+| locality | star3 | 2 | small | - | - | 0/90 |
+| locality | star3 | 2 | small_balanced | - | - | 0/90 |
+| locality | star3 | 4 | small | - | - | 0/84 |
 | pilot | binary8 | 2 | saddle | - | 3/6 | 0/22 |
 | pilot | binary8 | 2 | small | - | - | 0/55 |
 | pilot | mps4 | 2 | saddle | 10/10 | 0/30 | - |
-| pilot | mps4 | 2 | small | 40/40 | 0/48 | 0/40 |
+| pilot | mps4 | 2 | small | 40/40 | 0/40 | 0/40 |
 | pilot | mps6 | 2 | saddle | 20/25 | 11/38 | 2/5 |
-| pilot | mps6 | 2 | small | 32/34 | 6/47 | 0/18 |
+| pilot | mps6 | 2 | small | 32/34 | 6/68 | 0/24 |
 
 Readings: binary8 and star3 (all ends have siteless partners; $j=3$, active only for $k\ge6$) never
 stall where predicted alive; MPS4 at $\chi=2$ is predicted exactly (locality and pilot, fan-in: all
-150 predicted-dead runs stalled or died, none of the 370 others); HT4 with $k=5$ ($D=\{1,2\}$) is predicted
+150 predicted-dead runs stalled or died, none of the 344 others); HT4 with $k=5$ ($D=\{1,2\}$) is predicted
 alive and its 8 saddle-start stalls are slow escapes except two (below); the $\chi=4$ rows reproduce
 the measured effect of spare channels: fewer deaths where a route end gains spare directions
 (Proposition 2), none fewer where both ends are capped (midroot6 $\{0,5\}$: 30/30 predicted dead or
 pinned, 30/30 stalled; MPS6 $\{0,5\}$: 40/40 predicted dead or pinned, 24/40 stalled).
 
-**Per seed** (cases with $\ge3$ values of $\sigma$): locality, predicted alive: 453 of 463 seeds never stall,
-1 stalls at every $\sigma$, 9 at some; predicted dead: 46 of 70 stall at every $\sigma$, 4 never, 20 at some
-(in 9 of these the escapes are exactly the largest $\sigma$ values, as the $O(\sigma)$ corrections of section 5
-predict; 11 interleave); pinned: 126 of 159 never, 13 always. Pilot: alive 23/24 never; dead 15/17
-always; pinned 26/31 never. So the class is a property of the init direction wherever the prediction
-is alive or dead; the mixed seeds are mostly near the boundary or at $\sigma\ge0.1$.
+**Per seed** (cases with $\ge3$ values of $\sigma$): locality, predicted alive: 447 of 462 seeds never stall,
+2 stall at every $\sigma$, 13 at some; predicted dead: 45 of 65 stall at every $\sigma$, 4 never, 16 at some
+(the escapes are mostly at the largest $\sigma$ values, as the $O(\sigma)$ corrections of section 5 predict);
+pinned: 127 of 160 never, 13 always. Pilot: alive 24/25 never; dead 15/17 always; pinned 29/34 never.
+So the class is a property of the init direction wherever the prediction is alive or dead; the mixed
+seeds are near the boundary or at $\sigma\ge0.1$.
 
-**Where the criterion fails** (fan-in, 58 false alarms and 28 misses among 3,930 runs incl. pilot):
+**Where the criterion fails** (fan-in: 56 false alarms and 40 misses among 3,929 runs incl. pilot):
 1. $k=4$ with spare inner channels (MPS4 at $\chi=4$: 20 of 46 predicted dead escape). The reduced route
-   model was applied only with one new direction per route edge; with $c=3$ inner directions the
-   route's drive is larger than the scalar model assumes. Fix: vector route amplitudes (not done).
+   model treats one new direction per route edge; with $c=3$ inner directions the route's drive is
+   larger than the scalar model assumes. Fix: vector route amplitudes (not done).
 2. The marginal $j=3$ case $k=6$ on HT4 ($D=\{0,1,2\}$: 11 of 18 predicted dead escape). At $k=2j$ the
    three-core decay and the escape are of the same order; only the sign test was used.
-3. Large $\sigma$ ($\ge0.2$): the time-scale separation behind the $k\ge2j$ rule is weak. HT4 $\{1,2\}$
-   ($k=5$, $j=3$): two runs at $\sigma=0.19,0.30$ (seed 1, both cluster signs negative) are dead although
-   predicted alive; the long MPS routes ($k=6$-$8$) lose some predicted-alive runs at $\sigma\ge0.08$ (12 runs),
-   plausibly through the third-order clusters at the second route core (end, first inner core,
-   next core), which act at rate $\propto\sigma^4$ and outrun $k\ge7$ escapes (derived, not implemented).
-4. Seeds near the boundary at $k=4$-5 (MPS6 $\{1,4\}$ saddle one seed at all six $\sigma$; MPS8 $\{1,5\}$ small
-   one seed; MPS6 $\{0,3\}$, $\{0,4\}$ a few runs): $C_u$ or the reduced competition close to zero.
-5. Dead runs predicted pinned (stall diagnosis: 5 of 70): MPS6 $\{0,5\}$ at $\chi=4$, $\sigma=0.35$-$0.5$ (4 runs)
+3. Large $\sigma$: the time-scale separation behind the $k\ge2j$ rule is weak. HT4 $\{1,2\}$ ($k=5$, $j=3$):
+   two saddle-start runs at $\sigma=0.19,0.30$ (seed 1, both cluster signs negative) are dead although
+   predicted alive; long MPS and midroot6 routes ($k=6,8$) stall in 24 predicted-alive runs, all at
+   $\sigma\ge0.08$, plausibly through the third-order clusters at the second route core (end, first inner
+   core, next core), which act at rate $\propto\sigma^4$ and outrun $k\ge7$ escapes (derived, not implemented).
+   Two predicted-dead MPS8 $\{1,6\}$/HT8 runs at $\sigma\ge0.45$ escape.
+4. Seeds near the boundary at $k=4$-5: MPS6 $\{1,4\}$ saddle (one seed at all six $\sigma$), MPS8 $\{1,5\}$
+   small (one seed, $\sigma\ge0.075$), MPS6 $\{0,3\}$, $\{0,4\}$ (10 runs, locality and pilot) escape although
+   predicted dead; 7 $k=4$ saddle-start runs stall although predicted alive.
+5. Dead runs predicted pinned (stall diagnosis: 5 of 68): MPS6 $\{0,5\}$ at $\chi=4$, $\sigma=0.35$-$0.5$ (4 runs)
    and MPS6 $\{1,3,5\}$ saddle, $\sigma=0.19$ (1 run, the "both ends live" case of locality 7.5). Large $\sigma$
    again; the second end must have died through a channel not in the model.
-Balanced init: 33 of the 83 predicted-dead runs stall (all with internal ends on MPS8, T9), none of
+Balanced init: 16 of the 50 predicted-dead runs stall (all with internal ends on MPS8, T9), none of
 them dead in the diagnosis: with $Q=0$ the predicted-dead ends have small $\lvert C_u\rvert$, and at finite $\sigma$
-they escape very late instead (the $10^5\times$ delays). This is a quantitative failure of the dead /
-pinned split for balanced runs, not of the sign.
+they escape very late instead (the $10^5\times$ delays). A quantitative failure of the dead / pinned
+split for balanced runs, not of the sign.
+
+### 7.5 s2s-core (odeco, three components): order from the init, trap only from the phase-2 state
+
+The odeco runs differ in two ways: every route spans the tree ($k=K$, ends = tree leaves), and the
+component that dies is almost always the **last** one (all trapped runs except 10 MPS8 runs end with two
+components learned): the trap acts on the third plateau, after two escapes. Per-run results
+(`predict_s2s.py`, 1,196 runs of `main`, `k78`, `large`, `balanced` with $K\ge4$; 200 (tree, $\chi$, teacher,
+init, seed) predictions):
+- **Learning order from the init alone** (correlation flows): the first learned component is
+  predicted in **1,196 of 1,196** runs, the first two in order in 872 of 1,029 runs with two learned
+  (MPS4 separated: 80/80). The order is a property of the init direction, as `notes/theory_escape.md` says.
+- **Trap from the init alone: fails.** The phase-2 criterion evaluated on frozen init values (learned
+  directions from the two correlation flows, no phase-1 decay) does not separate the classes: e.g.
+  MPS4 $\chi=3$ fan-in: predicted dead 30/64 trapped or stalled, pinned 24/56, alive 0/40; binary8 and HT4
+  at $\chi=3$: 103 of 117 and 62 of 74 predicted-alive runs trap or stall. Adding the phase-1 inertia at
+  MPS ends (an end that keeps only one new direction after phase 1 cannot carry the last component)
+  helps on MPS4 (predicted dead 54/96, pinned 0/64), not on the trees with siteless partners.
+- **Mechanism check from the actual phase-2 state** (`gf_check_s2s.py`; gradient flow from the committed
+  init only up to the second escape, $a_{q_2}=0.99$, then the criterion; MPS4 $\chi=3$, $\sigma=0.03$):
+  separated teacher **10/10** (reduced route model: dead for seeds 3, 5, 6, 7, escape for the others;
+  the sign test alone gets 8/10, its two errors are seeds 0, 1 whose late second escape gave the last
+  component's route time to grow, so the dead state is unstable); close teacher **10/10** counting
+  seed 5, which the model calls an escape with one end at $C'=+0.0097\sigma^2$ (barely alive) and the data call
+  stalled at every $\sigma$; seed 7 traps at $\sigma\le0.05$ and completes at $0.07,0.1$, and at $\sigma=0.03$ the model
+  says dead. HT4 ($\chi=3$, $\sigma=0.2$): see section 7.6.
+
+So for odeco teachers the criterion is right but its input is not the init: two escapes and a phase of
+GN decay with a two-dimensional new space (phase 1, where the second and third components share the
+new directions and $j=3$ clusters act on HT and binary leaves) intervene. A $\sigma$-free reduced model of
+phase 1 would close the gap; it is not done here.
+
+**Init-only phase-2 verdict vs observed class** (t/s/c = trapped / stalled / complete; unresolved
+runs omitted; `results/table_s2s.md`). Where it predicts dead or pinned on HT4 the run traps (44 of
+44 at $\chi=3$ separated, 23 of 23 close), but most HT4 and all binary8 traps are predicted alive; on
+MPS4 half of the predicted-dead runs complete. Balanced init: all 149 resolved runs predicted alive,
+none trapped (T9).
+
+| tree | chi | teacher | init | pred. dead: t/s/c | pred. pinned: t/s/c | pred. alive: t/s/c |
+|---|---|---|---|---|---|---|
+| binary8 | 3 | close | fanin | - | - | 27/13/8 |
+| binary8 | 3 | separated | balanced | - | - | 0/27/3 |
+| binary8 | 3 | separated | fanin | - | - | 30/33/6 |
+| binary8 | 6 | close | fanin | - | - | 0/0/11 |
+| binary8 | 6 | separated | fanin | - | - | 0/0/55 |
+| ht4 | 3 | close | fanin | 12/0/0 | 11/0/0 | 22/4/3 |
+| ht4 | 3 | separated | balanced | - | - | 0/12/17 |
+| ht4 | 3 | separated | fanin | 18/0/0 | 26/0/0 | 29/7/9 |
+| ht4 | 6 | separated | fanin | - | - | 5/0/45 |
+| mps4 | 3 | close | fanin | 14/0/18 | 0/8/24 | 0/0/16 |
+| mps4 | 3 | separated | balanced | - | - | 0/0/30 |
+| mps4 | 3 | separated | fanin | 16/0/16 | 16/0/8 | 0/0/24 |
+| mps4 | 6 | close | fanin | - | 0/0/32 | 0/0/48 |
+| mps4 | 6 | separated | balanced | - | - | 0/0/30 |
+| mps4 | 6 | separated | fanin | - | 0/0/40 | 0/0/40 |
+| mps8 | 3 | close | fanin | 5/13/0 | 13/6/0 | - |
+| mps8 | 3 | separated | balanced | - | - | 0/30/0 |
+| mps8 | 3 | separated | fanin | 13/17/0 | 22/11/0 | - |
+| mps8 | 6 | close | fanin | - | - | 2/0/0 |
+| mps8 | 6 | separated | fanin | 2/2/0 | 1/19/0 | 4/13/0 |
 
 ### 7.6 Mechanism check on HT4 and binary8 (odeco, $\chi=3$, $\sigma=0.2$, seeds 0-5)
 
@@ -369,35 +438,43 @@ the fan-ins as $d$, so for single-site cores $p_u=I_{1/(1+\chi_e)}(\frac{d-1}2,\
 falls with $d$: 0.392, 0.333, 0.292 for $d=2,3,4$ at $\chi_e=2$, and 0.392, 0.25, 0.142 with the end
 bond at its cap $\chi_e=d$.
 
-### 7.5 s2s-core (odeco, three components): order from the init, trap only from the phase-2 state
+**Monte Carlo** (`montecarlo.py`; init seeds 100000+, disjoint from the committed ones; $\sigma\to0$
+verdicts; 400 draws per saddle-start case, 60 per small-init case; `results/montecarlo_summary.csv`):
 
-The odeco runs differ in two ways: every route spans the tree ($k=K$, ends = tree leaves), and the
-component that dies is almost always the **last** one (all trapped runs except 10 MPS8 runs end with two
-components learned): the trap acts on the third plateau, after two escapes. Per-run results
-(`predict_s2s.py`, 1,196 runs of `main`, `k78`, `large`, `balanced` with $K\ge4$; 200 (tree, $\chi$, teacher,
-init, seed) predictions):
-- **Learning order from the init alone** (correlation flows): the first learned component is
-  predicted in **1,196 of 1,196** runs, the first two in order in 872 of 1,029 runs with two learned
-  (MPS4 separated: 80/80). The order is a property of the init direction, as `notes/theory_escape.md` says.
-- **Trap from the init alone: fails.** The phase-2 criterion evaluated on frozen init values (learned
-  directions from the two correlation flows, no phase-1 decay) does not separate the classes: e.g.
-  MPS4 $\chi=3$ fan-in: predicted dead 30/64 trapped or stalled, pinned 24/56, alive 0/40; binary8 and HT4
-  at $\chi=3$: 103 of 117 and 62 of 74 predicted-alive runs trap or stall. Adding the phase-1 inertia at
-  MPS ends (an end that keeps only one new direction after phase 1 cannot carry the last component)
-  helps on MPS4 (predicted dead 54/96, pinned 0/64), not on the trees with siteless partners.
-- **Mechanism check from the actual phase-2 state** (`gf_check_s2s.py`; gradient flow from the committed
-  init only up to the second escape, $a_{q_2}=0.99$, then the criterion; MPS4 $\chi=3$, $\sigma=0.03$):
-  separated teacher **10/10** (reduced route model: dead for seeds 3, 5, 6, 7, escape for the others;
-  the sign test alone gets 8/10, its two errors are seeds 0, 1 whose late second escape gave the last
-  component's route time to grow, so the dead state is unstable); close teacher **10/10** counting
-  seed 5, which the model calls an escape with one end at $C'=+0.0097\sigma^2$ (barely alive) and the data call
-  stalled at every $\sigma$; seed 7 traps at $\sigma\le0.05$ and completes at $0.07,0.1$, and at $\sigma=0.03$ the model
-  says dead. HT4 ($\chi=3$, $\sigma=0.2$): see section 7.6.
+| case ($d=2$) | $k$ | saddle: P(dead) MC / closed form | saddle: P(pinned) | small init: P(dead) | small: P(pinned) |
+|---|---|---|---|---|---|
+| MPS4 $\{0,3\}$, $\chi=2$ | 4 | 0.11 / (sign only 0.20) | 0.56 | 0.17 | 0.45 |
+| MPS4 $\{0,3\}$, $\chi=4$ | 4 | 0.09 / (0.15) | 0.47 | 0.08 | 0.45 |
+| MPS6 $\{0,3\}$ | 4 | 0.12 / (0.20) | 0.53 | 0.12 | 0.52 |
+| MPS6 $\{1,4\}$ (internal ends) | 4 | 0.15 / (0.25) | 0.50 | 0.10 | 0.57 |
+| MPS6 $\{1,3,5\}$ | 5 | 0.22 / 0.25 | 0.50 | 0.20 | 0.43 |
+| MPS8 $\{1,5\}$ | 5 | 0.25 / 0.25 | 0.50 | 0.28 | 0.33 |
+| MPS6 $\{0,5\}$, $\chi=2$ | 6 | 0.19 / 0.196 | 0.46 | 0.22 | 0.57 |
+| MPS6 $\{0,5\}$, $\chi=4$ | 6 | 0.145 / 0.154 | 0.51 | 0.22 | 0.42 |
+| midroot6 $\{0,5\}$ | 6 | 0.17 / 0.154 | 0.47 | 0.10 | 0.55 |
+| HT4 all sites ($j=3$, 4 ends) | 7 | 0.33 / - | 0.51 | 0.42 | 0.48 |
+| MPS8 $\{0,7\}$ | 8 | 0.215 / 0.196 | 0.47 | 0.25 | 0.53 |
 
-So for odeco teachers the criterion is right but its input is not the init: two escapes and a phase of
-GN decay with a two-dimensional new space (phase 1, where the second and third components share the
-new directions and $j=3$ clusters act on HT and binary leaves) intervene. A $\sigma$-free reduced model of
-phase 1 would close the gap; it is not done here.
+(standard errors: about 0.02 for 400 draws, 0.04-0.06 for 60.) The closed form agrees with the Monte
+Carlo within two standard errors at every $k\ge5$ case; at $k=4$ the reduced competition lets about
+40-60% of the draws with two unfavourable ends escape. The trap probability is of order 0.1-0.3 per
+run for every route whose two ends have partners with sites, with or without spare inner channels,
+and about 0.3-0.4 for the four-ended HT route at $k=7$.
+
+**Comparison with the measured fractions.** The committed cases have 5-10 init seeds each, and the
+class is fixed per seed, so a measured fraction has a binomial error of order 0.15-0.2. Example: MPS4
+$\{0,3\}$ small init, measured 5 of 8 seeds (30 of 48 runs, locality; 5 of 8 in the pilot); predicted for
+those very seeds: the same 5; predicted over 48 seeds 0-47: 0.29; over 60 fresh seeds: 0.17. The
+committed seeds are an unusually trap-prone draw (probability about 3% at $p=0.25$), not a failure of
+the law. Section 7's per-run tests are the sharper test; the law is for planning (how many seeds,
+which trees). Figure `results/fig_probability.png` (`probability_vs_measured.csv`) puts the measured
+stall fraction of each committed case next to the predicted range: for $k\ge5$ it lies between P(dead)
+and P(dead or pinned) in 8 of 13 cases (one at the edge); above the range on the long chains
+(midroot6 $\{0,5\}$ 0.67 and 0.73 vs at most 0.65; MPS8 $\{0,7\}$ saddle 0.93 vs 0.69: the inner three-core
+channel of failure 3 is not in the law), below it for HT4 small (0.27 vs 0.42) and MPS6 $\{1,3,5\}$ small
+(0.125 vs 0.20; 6-8 seeds each). At $k=4$ the measured fraction should match P(dead): within 0.15 in 7
+of 9 cases; the exceptions are the small-init MPS4 $\{0,3\}$ and MPS6 $\{0,3\}$ seeds (0.37 vs 0.17, 0.36 vs
+0.12), whose per-run predictions are right (section 7): trap-prone draws.
 
 ## 9. Relation to prior work
 
@@ -405,7 +482,7 @@ phase 1 would close the gap; it is not done here.
   bond can lose its new direction), corrected in four places: (i) only the components orthogonal to
   the learned pattern decay; the pattern parts are tangent and free, so R12's $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$
   is replaced by $C_u$, which adds all non-visible partner entries (T3); per run this raises the
-  stall rate of predicted-dead runs from 37% to 89% (section 7); (ii) a partner without sites gives no
+  stall rate of predicted-dead runs from 36% to 89% (section 7); (ii) a partner without sites gives no
   second-order decay at a rank-one saddle, so HT and binary leaves die only through three-core clusters
   ($k\ge6$) or after a second component is learned; the HT4/B4 traps of section 8 are of the second kind
   (they happen after $q_0$ and $q_B$), and the predicted "about half of the two-ended HT routes" is wrong
@@ -454,8 +531,8 @@ phase 1 would close the gap; it is not done here.
 
 **Report Sec. 4.6 (failure modes).**
 1. "Relation to the conservation-law trap": replace the R12 criterion and its weak association (30 of
-   55 vs 7 of 67) by the per-run results of section 7 (fan-in: 89% of predicted-dead runs stall vs 1.2%
-   of predicted-alive; stall diagnosis: 30 of 42 predicted dead died, 7 of 128 others), and drop
+   55 vs 7 of 67) by the per-run results of section 7 (fan-in: 89% of predicted-dead runs stall vs 1.8%
+   of predicted-alive; stall diagnosis: 30 of 38 predicted dead died, 7 of 126 others), and drop
    "counts against the mechanism as stated": the counterexamples were R12's criterion, and the
    remaining ones are at $\sigma\ge0.19$ or in the listed failure classes.
 2. Conflict (ii) is resolved (HT leaves: $j=3$; MPS root end unfavourable on average); conflict (iii) is

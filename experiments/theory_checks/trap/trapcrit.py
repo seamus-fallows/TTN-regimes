@@ -358,16 +358,14 @@ def reduced_route(spec, teacher, cores, w, q, r, D, s_q, s_r, unit=1.0, t_max=1e
             dy2[j] = -2 * A2 * (b[i] ** 2 + rest2[j]) * y2[j]
         return np.concatenate([db, drest, dy2])
 
-    def big(_, z):
-        return np.abs(z[:n]).max() - 1e3 * scale
+    def big(_, z):  # smooth, so event location is reliable
+        return float(np.sum(z[:n] ** 2)) - (1e3 * scale) ** 2
 
-    def dead(_, z):
-        ends_now = sorted(abs(z[i]) / max(abs(y0[i]), 1e-300) for i, _, _ in endinfo)
-        return ends_now[1] - 1e-12
-
-    big.terminal = dead.terminal = True
-    sol = solve_ivp(rhs, (0.0, t_max / (A2 * scale**2)), y0, method="LSODA", rtol=1e-9,
-                    atol=1e-16 * scale, events=[big, dead])
+    big.terminal = True
+    t_end = t_max / (A2 * scale**2)
+    sol = solve_ivp(rhs, (0.0, t_end), y0, method="LSODA", rtol=1e-9, atol=1e-16 * scale, events=big)
     if sol.status == 1:
-        return "escape" if sol.t_events[0].size else "dead"
-    return "pinned"
+        return "escape"
+    z = sol.y[:, -1]
+    ratios = sorted(abs(z[i]) / max(abs(y0[i]), 1e-300) for i, _, _ in endinfo)
+    return "dead" if ratios[1] < 1e-12 else "pinned"

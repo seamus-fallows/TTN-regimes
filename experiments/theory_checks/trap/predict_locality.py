@@ -71,8 +71,13 @@ def one(item):
         nodes = tree.steiner_nodes(sorted(S))
         ok = p["k"] >= 4 and all(x["j"] == 2 for x in p["ends"]) and all(
             spec.bond_dims[v] == 2 for v in tree.edges if v in nodes and tree.parent[v] in nodes)
-        p["reduced"] = {s: (reduced_route(spec, teacher, cores, w, q, 1 - q, S, weights[q], weights[1 - q],
-                                          unit=s * m) if ok else None) for s in sigmas}
+        p["reduced"] = {}
+        for s in sigmas:
+            try:
+                p["reduced"][s] = (reduced_route(spec, teacher, cores, w, q, 1 - q, S, weights[q],
+                                                 weights[1 - q], unit=s * m) if ok else None)
+            except Exception:  # the finite-sigma model is optional; keep the sigma -> 0 verdict
+                p["reduced"][s] = "error"
     except Exception as exc:  # report, do not stop the sweep
         return key, dict(error=repr(exc))
     p.update(q=q, unit_per_sigma=m, K=spec.n_cores)
