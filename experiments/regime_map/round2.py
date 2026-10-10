@@ -42,7 +42,7 @@ ARMS = {
     "P": dict(
         exp="r2_plain",
         base=dict(model="plain", kind="binary", chi=4, cap=True, weights=WEIGHTS, method="lsoda",
-                  l_floor=1e-6, max_steps=30000),
+                  l_floor=1e-6, max_steps=30000, tensor_kernel=False),
         cells=[(n, d) for d in (2, 3) for n in range(4, 17)],
     ),
     "C": dict(

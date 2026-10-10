@@ -292,7 +292,10 @@ def tensor_kernel_change(problem: Problem, theta0, theta_end) -> float:
     """delta_K of the tensor-space kernel J D J^T (D = learning rates x mask), the kernel of
     notes/theory_regimes.md; NaN for trees too large for a dense D x P Jacobian."""
     spec = problem.spec
-    if math.prod(spec.phys_dims) * spec.n_params > TENSOR_MAX:
+    D = math.prod(spec.phys_dims)
+    # tensor_kernel also builds a D x D identity for the batched reverse passes: D = 2^15 alone is
+    # 8.6 GB (round 2: such runs were OOM-killed and broke the process pool), hence the D**2 bound
+    if D * spec.n_params > TENSOR_MAX or D * D > TENSOR_MAX:
         return np.nan
     w = kernel_weights(problem)
     T0 = tensor_kernel(spec, theta0, w)
@@ -394,7 +397,7 @@ def run_point(cfg: dict) -> dict:
     rhos_old = dg.separation_ratios(times_old, widths)
     label = dg.classify_regime(dK, rhos, traj["loss"][-1], L_ref)
     label_old = dg.classify_regime(dK, rhos_old, traj["loss"][-1], L_ref)
-    dK_tensor = tensor_kernel_change(problem, theta0, theta_end)
+    dK_tensor = tensor_kernel_change(problem, theta0, theta_end) if cfg.get("tensor_kernel", True) else np.nan
 
     sl = problem.spec.core_slices()
     dth_core = [float((theta_end[s] - theta0[s]).norm() / theta0[s].norm()) for s in sl]
