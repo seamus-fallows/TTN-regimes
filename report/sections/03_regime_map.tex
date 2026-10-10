@@ -30,9 +30,10 @@ training is saddle-to-saddle below $\isc_c\approx0.3/\sqrt\chi$, rich in a windo
 above $\isc_{\rm lazy}\approx6.5/\sqrt\chi$ (values reached at $\chi\ge32$), but lazy only when every bond reaches
 its cut dimension; below it the runs end on a floor. With more cores the saddle-to-saddle boundary rises (in the
 plain model above $\isc=1$ for most seeds at $\Kc\ge8$) and stalled runs invade its side, and a light root makes
-training lazy at an up to 100 times smaller function-space scale. \Cref{sec:other-regimes} gives the detail of each regime other than saddle-to-saddle, and
-\cref{sec:other-optim} adds discrete steps and gradient noise. \newresult[for TTNs] \knownresult[maps for linear
-and diagonal networks: \citealp{woodworth2020kernel,tu2024mixed,kunin2024get,domine2025lazy}]
+training lazy at an up to 100 times smaller function-space scale. \Cref{sec:other-regimes} gives the detail of
+each regime other than saddle-to-saddle, and \cref{sec:other-optim} adds discrete steps and gradient noise.
+\newresult[for TTNs] \knownresult[maps for linear and diagonal networks:
+\citealp{woodworth2020kernel,tu2024mixed,kunin2024get,domine2025lazy}]
 
 % ===========================================================================================
 \subsection{Protocol}\label{sec:regime-protocol}
@@ -157,8 +158,8 @@ like the per-layer threshold of aligned initialization \knownresult[\citealp{gis
 per-component amplitude $\isc_c^\Kc/\sqrt{d^\Ns}$ (\cref{prop:A-kernel}(b)), which gives $\isc_c\to\sqrt d$. A
 pre-registered second sweep with realizable targets (binary trees with $\Ns=4$--$16$, teacher $(3,2)$, $d=2$ and $3$,
 six seeds per cell) tests them. In the plain model with spare channels ($\chi=4$), 85 of the 96 seeds at $\Kc\ge8$
-find no crossing: they stay saddle-to-saddle up to the scale at which the initial function itself overlaps a teacher
-component, where the event rule stops applying, or to the end of the budget. Their lower bounds on $\isc_c$,
+find no crossing: at every sampled $\isc$ they stay saddle-to-saddle up to the scale at which the initial function
+itself overlaps a teacher component, where the event rule stops applying, or to the end of the budget. Their lower bounds on $\isc_c$,
 $1.07$--$2.03$, all exceed 1 and both laws fitted on the resolved cells, so in the plain model $\isc_c$ does not tend
 to 1. A proposed mechanism, consistent with the data but not tested causally, is that the plain model unlearns
 $\Wz$ while it waits on the plateau, which lowers the effective amplitude \conjecture. The centred model with full
