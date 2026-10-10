@@ -489,7 +489,7 @@ a random MPS teacher. Students mps4, binary4, ht4 (K = 4, 3, 7) and mps8, binary
 **Saddle-start protocol**: the exact balanced bond-rank-one critical point (lowest loss), zero-padded,
 plus fan-in noise of scale eps on every core; library LSODA (rtol 1e-9, atol 1e-14); escape event =
 first time some edge has s_2^e >= 0.05 s_2^{e,*} (and >= 10x its start value). eps = 1e-3 ... 5e-2
-(6 values, 1.7 decades), 5 seeds; the extension to eps = 1e-8 (MPS) and 1e-5 (binary, HT) is queued.
+(base) plus an extension to eps = 1e-8 (MPS) and 1e-5 (binary, HT), 5 seeds.
 Per-seed fits as in R2.0. Predicted MPS slope: 1/abs(lambda_min) of the exact-saddle Hessian (fixed
 gauge projection; raw = projected for every MPS saddle).
 
@@ -500,30 +500,38 @@ residual gradient of the numerical critical point), for all 12 teachers.
 
 **Escape law** (`results/r2_saddle_fits.csv`, figure `results/r2_saddle_law.png`; f = 0.05):
 
-| teacher (N) | MPS: lambda_min (exact saddle) | MPS: A fit (pred 1/abs(lambda_min)) | MPS log wins | binary: p (pred 1) | binary log wins | HT: p (pred 1) | HT log wins |
+| teacher (N) | MPS: lambda_min (exact saddle; raw = projected) | MPS: A fit (pred 1/abs(lambda_min)) | MPS log wins | binary: p (pred 1) | binary log wins | HT: p (pred 1) | HT log wins |
 |---|---|---|---|---|---|---|---|
-| nonorth_c0.2 (4) | -0.0285 | 36.11 +- 0.85 (35.14) | 5/5 | 1.019 +- 0.002 | 0/5 | 1.034 +- 0.015 | 0/5 |
-| nonorth_c0.45 (4) | -0.1509 | 6.66 +- 0.03 (6.63) | 5/5 | 1.016 +- 0.002 | 0/5 | 1.032 +- 0.005 | 0/5 |
-| misaligned_20 (4) | -0.0189 | 55.50 +- 1.07 (52.94) | 5/5 | 1.019 +- 0.002 | 0/5 | 1.008 +- 0.027 | 0/5 |
-| randbin_302 (4) | -0.0764 | 12.85 +- 0.34 (13.09) | 4/5 | 1.026 +- 0.002 | 0/5 | 1.022 +- 0.008 | 0/5 |
-| randbin_303 (4) | -0.3598 | 2.79 +- 0.04 (2.78) | 5/5 | 1.023 +- 0.004 | 0/5 | 1.013 +- 0.004 | 0/5 |
-| randmps_301 (4) | -0.3762 | 2.62 +- 0.04 (2.66) | 5/5 | 1.023 +- 0.003 | 0/5 | 1.025 +- 0.008 | 0/5 |
-| nonorth8_c0.45 (8) | -0.0048 | 318.31 +- 11.00 (209.70) | 5/5 | 1.019 +- 0.003 | 0/5 | 1.025 +- 0.006 | 0/5 |
-| nonorth8_c0.7 (8) | -0.0574 | 17.65 +- 0.17 (17.41) | 5/5 | 1.026 +- 0.002 | 0/5 | 1.020 +- 0.006 | 0/5 |
+| nonorth_c0.2 (4) | -0.0285 | 35.46 +- 0.32 (35.14) | 5/5 | 1.006 +- 0.001 | 0/5 | 1.012 +- 0.006 | 0/5 |
+| nonorth_c0.45 (4) | -0.1509 | 6.65 +- 0.01 (6.63) | 5/5 | 1.005 +- 0.001 | 0/5 | 1.011 +- 0.002 | 0/5 |
+| misaligned_20 (4) | -0.0189 | 53.90 +- 0.41 (52.94) | 5/5 | 1.006 +- 0.001 | 0/5 | 1.003 +- 0.009 | 0/5 |
+| randbin_302 (4) | -0.0764 | 13.04 +- 0.11 (13.09) | 5/5 | 1.009 +- 0.001 | 0/5 | 1.007 +- 0.003 | 0/5 |
+| randbin_303 (4) | -0.3598 | 2.79 +- 0.02 (2.78) | 5/5 | 1.008 +- 0.001 | 0/5 | 1.004 +- 0.002 | 0/5 |
+| randmps_301 (4) | -0.3762 | 2.64 +- 0.02 (2.66) | 5/5 | 1.008 +- 0.001 | 0/5 | 1.009 +- 0.003 | 0/5 |
+| nonorth8_c0.45 (8) | -0.0048 | 232.08 +- 2.74 (209.70) | 5/5 | 1.007 +- 0.001 | 0/5 | 1.013 +- 0.002 | 0/5 |
+| nonorth8_c0.7 (8) | -0.0574 | 17.50 +- 0.07 (17.41) | 5/5 | 1.009 +- 0.001 | 0/5 | 1.007 +- 0.002 | 0/5 |
+| misaligned8_45 (8) | -0.0174 | 57.41 +- 0.26 (57.39) | 5/5 | 1.007 +- 0.001 | 0/5 | 0.999 +- 0.002 | 0/5 |
 | misaligned8_20 (8) | -0.0005 | 47433.72 +- 4068.77 (1974.82) | 5/5 | 1.079 +- 0.006 | 0/2 | n/a | n/a |
-| randbin8_302 (8) | -0.3706 | 2.74 +- 0.03 (2.70) | 5/5 | 1.023 +- 0.008 | 0/5 | 1.014 +- 0.010 | 0/5 |
-| randbin8_303 (8) | -0.1897 | 5.50 +- 0.12 (5.27) | 5/5 | 1.019 +- 0.005 | 0/5 | 1.024 +- 0.009 | 0/5 |
-| randmps8_303 (8) | -0.1642 | 6.46 +- 0.19 (6.09) | 5/5 | 1.026 +- 0.006 | 0/5 | 1.013 +- 0.006 | 0/5 |
+| randbin8_302 (8) | -0.3706 | 2.71 +- 0.01 (2.70) | 5/5 | 1.008 +- 0.003 | 0/5 | 1.004 +- 0.004 | 0/5 |
+| randbin8_303 (8) | -0.1897 | 5.46 +- 0.06 (5.27) | 5/5 | 1.007 +- 0.002 | 0/5 | 1.008 +- 0.003 | 0/5 |
+| randmps8_303 (8) | -0.1642 | 6.34 +- 0.11 (6.09) | 5/5 | 1.009 +- 0.002 | 0/5 | 1.004 +- 0.002 | 0/5 |
 
-*Verdict* — *empirical, confirming theory_teachers R9 / theory_saddles R13*: for every teacher the
-binary and HT escapes follow sigma^-p with p = 1.01-1.03 (prediction 1; log law never preferred,
-0/5), while the MPS escapes follow the log law (preferred in 59/60 seeds), with slopes within 0.5-6%
-of 1/abs(lambda_min) for 10 teachers. Two N = 8 exceptions: nonorth8_c0.45 (A = 318 vs 210): its
-2-core rate is small (lambda_min = -0.0048) so at eps >= 1e-3 the polynomial routes still compete
-(the eps extension tests this); misaligned8_20 is degenerate (the product covariance over 8 sites
-leaves the second component a function-space weight of ~0.002 L(0); no escape law; replaced by the
-balanced theta = 45 deg teacher). Random-init sweeps on mps4 and binary4 (the R6 slope with head start)
-are below.
+*Verdict* — *empirical, confirming theory_teachers R9 / theory_saddles R13*. eps ranges: MPS
+1e-8 ... 5e-2 (11 values, 6.7 decades), binary / HT 1e-5 ... 5e-2 (10 values, 3.7 decades), 5 seeds
+(the misaligned8_20 teacher only 1e-3 ... 5e-2; ht8 with nonorth8_c0.45 only down to 1e-4 for most seeds:
+its escapes at smaller eps exceed t = 1e8 and were stopped). For every teacher the binary and HT
+escapes follow eps^-p with p = 0.999-1.013 (prediction 1; 3-core route through an internal core);
+the log law is never preferred (0/5 in every case). The MPS escapes follow the log law (5/5 seeds for
+every teacher) with slopes within 0.04-4% of 1/abs(lambda_min) for 11 teachers. The effective power
+exponent of the MPS data is 0.06-0.13 over 6.7 decades and falls as the range grows, as a log law
+requires. Exceptions: nonorth8_c0.45 (A = 232 +- 3 vs 210, +11%; lambda_min = -0.0048 is small, and
+over the base range alone the deviation was +52%: a slow crossover from the competing polynomial
+routes); misaligned8_20 is degenerate (the product covariance over 8 sites leaves the second component
+a function-space weight of ~0.002 L(0); no escape law) and is replaced by the balanced misaligned8_45
+(A = 57.41 vs 57.39). Event-threshold sensitivity: MPS slopes change by < 1.5% between f = 0.03 and
+0.1. Figures: `results/r2_saddle_law.png` (per teacher), `results/r2_saddle_collapse.png`
+(abs(lambda_min) t_esc vs ln(1/eps) for all MPS teachers on one slope-1 line; eps t_esc flat for
+binary / HT).
 
 **Random fan-in init on mps4 and binary4** (`configs/r2_random.yaml`, library LSODA, two-stage dense
 grid with fine rows; sigma = 3e-4 ... 0.3 (mps4) and 1e-4 ... 0.1 (binary4), 9 values over 3 decades,
