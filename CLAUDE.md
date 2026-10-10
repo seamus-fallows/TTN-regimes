@@ -111,7 +111,8 @@ citation / prior-work audit running (`notes/reviews/citation_check.md`). Paralle
   optimizers: Adam/RMSProp keep weight-ordered sequential learning but REMOVE the sigma^-(K-2) plateau scaling (first
   escape in a sigma-independent number of steps); re-gauged GD, Riemannian GD, Gram preconditioning, ALS, DMRG remove
   plateaus altogether. data-teacher: any non-orthogonality (misaligned covariance, CP overlap, correlations, generic TTN
-  teachers) turns MPS later plateaus into strict log-time saddles (analysis under revision after review).
+  teachers) turns the escape of MPS students from the rank-one saddle (N = 4, 8) into a strict, log-time escape; binary/HT
+  students keep sigma^-1 there (verified; notes/reviews/data_teacher_round3_verification.md "safe to cite").
 - **Locality (agent `locality`, reviewed twice + verified; report Sec. 4 locality subsection):** for two-component
   teachers the plateau exponent is k - 2 with k = cores in the Steiner subtree of the differing sites, confirmed for
   k = 1-5 on 9 trees (named exceptions: mps8 {1,5} from the saddle start at chi = 2), k = 6-7 on binary8/ht4 with
@@ -134,8 +135,12 @@ citation / prior-work audit running (`notes/reviews/citation_check.md`). Paralle
 - Experiments (interim): locality N=4 exponents match k = 1, 2, 3, 4 (incl. head-start log slope 1.005 vs 1.0);
   data-teacher: aligned covariance = race with weights Lambda s, landscape with sqrt(Lambda) s; optim-samples:
   eta_max = 2/(K s_1^(2-2/K)) exact, GD event shift predicted to 3 digits.
-- Theory (proven, report Appendix A prop:A-kkt): every KKT point of g = <W, W*> on the unit sphere with g* > 0 is exactly
-  balanced on every bond with core norms 1/K, so the near-origin escape direction is balanced and min-norm.
+- Theory (proven, report Appendix A prop:A-kkt; KNOWN in substance: Kumar & Haupt 2025a Lemma 5 for chains, and it follows
+  from the proof of Furman et al. 2026 Prop. F.10 for TTNs): every KKT point of g = <W, W*> on the unit sphere with g* > 0
+  is exactly balanced on every bond with core norms 1/K, so the near-origin escape direction is balanced and min-norm.
+- Prior-work audit (notes/reviews/citation_check.md, part b): also known or concurrent: Adam eps law (Sabanayagam & Lucey
+  2026, Prop. 7), EoS two-cycle amplitude (MacDonald et al. 2025), per-init blow-up identity and the k >= 3 head start
+  (AGF, Kunin et al. 2025; only our closed forms are new), trap overlaps Furman Thm G.1. Tag such results as known.
 - Lazy regime: the tangent kernel of a random TTN is isotropic only on average; a single draw is strongly
   anisotropic unless every chi_e >> cut dimension min(d^n_e, d^(N-n_e)), so finite-chi lazy runs have an order
   and end at the projected fit.
