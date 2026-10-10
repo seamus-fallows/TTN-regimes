@@ -501,15 +501,16 @@ on chains (MPS, midroot6), $k=4$ on chains and star3, $k=7$ only on HT trees.
   \includegraphics[width=0.86\textwidth]{locality/twocomp_exponents.png}
   \caption{Plateau law after the first component: two-component pattern teachers, $d=\chi=2$,
     weights $(1,0.5)$, all rows of the main sweep. Left: per-seed exponent $p$ of
-    $\Delta t_2\propto\isc^{-p}$ (mean $\pm$ s.e.\ over seeds) against the prediction $k-2$, with
-    $k=\abs{\mathrm{St}(N(D))}$, for every row with $k\ge3$; filled circles: small initialization,
-    open squares: saddle start; colour: tree family; points are offset horizontally by family and
-    protocol. Right: slope of $\Delta t_2$ against $\ln(1/\isc)$ for the $k=2$ rows, against
-    $(1-\tw2/\tw1)/\lambda_2=1$ (small initialization) and $1/\lambda_2=2$ (saddle start). Dashed: equality.
-    The points at $k-2\ge4$ span $0.5$--$0.8$ decades of $\isc$ with $1$--$5$ fitted seeds and are not
-    measurements of the exponent (one-decade values in \cref{tab:locality-exponents}). Takeaway: up to
-    $k=5$ the exponent is set by the number of cores of the Steiner subtree, on every tree; for $k=2$
-    the head start halves the slope.}
+    $\Delta t_2\propto\isc^{-p}$ (mean $\pm$ s.e.\ over the fitted seeds, at most eight) against the prediction
+    $k-2$, with $k=\abs{\mathrm{St}(N(D))}$, for every row with $k\ge3$; filled circles: small initialization,
+    open squares: saddle start; colour: tree family (as in all figures: MPS blue, binary orange, HT green);
+    points are offset horizontally by family and protocol. Right: slope of $\Delta t_2$ against $\ln(1/\isc)$
+    for the $k=2$ rows, against $(1-\tw2/\tw1)/\lambda_2=1$ (small initialization) and $1/\lambda_2=2$ (saddle
+    start). Dashed: equality. The points at $k-2\ge4$ span $0.5$--$0.8$ decades of $\isc$ with $1$--$5$ fitted
+    seeds and are not measurements of the exponent (one-decade values in \cref{tab:locality-exponents}). Data:
+    experiment \texttt{locality}, sweep \texttt{twocomp} (\cref{tab:repro-figures}). Takeaway: up to $k=5$ the
+    exponent is set by the number of cores of the Steiner subtree, on every tree; for $k=2$ the head start
+    halves the slope.}
   \label{fig:locality-exponents}
 \end{figure}
 
@@ -560,7 +561,8 @@ with $k^*\ge3$ by \cref{prop:A-piggyback-graph}, were not tested.
     $\lambda_{\min}=-\lambda_2$ at every $\isc$: a strict saddle (the small-initialization curves drop
     at the largest $\isc$, where the plateau is too short to reach the saddle). For $k\ge3$,
     $\lambda_{\min}\to0$ as $\isc\to0$, roughly as $\isc^{k-2}$: higher-order saddles. Lines for
-    $k\ge6$ come from the short rows of \cref{fig:locality-exponents}. Takeaway: negative curvature
+    $k\ge6$ come from the short rows of \cref{fig:locality-exponents}. Data: as \cref{fig:locality-exponents},
+    with the Hessians of \texttt{hessians.csv} (\cref{tab:repro-figures}). Takeaway: negative curvature
     that survives $\isc\to0$ exists only for two-core routes.}
   \label{fig:locality-hessian}
 \end{figure}
@@ -609,11 +611,12 @@ for $k^*=3$, $92$--$100\%$ for $k^*=4$--$6$, $86$--$97\%$ for $k^*=2$).
     $0.6$, $0.35$), $d=\chi=2$, small fan-in initialization. Columns: MPS4 ($\Kc=4$), binary4
     ($\Kc=3$), HT4 ($\Kc=7$). Top: loss of one run (seed 0, $\isc$ in the panel title) against time
     since the first event (symmetric-log axis), with the plateau levels predicted by the route rule
-    (dashed, labelled with $k^*$ and the predicted law). Middle: effective bond rank of every edge
-    in that run (threshold $0.1$ times the smallest nonzero teacher singular value of the edge; edges
-    offset vertically by $0.05$). Bottom: duration of each predicted level against $1/\isc$, median
+    (dashed; labels: $k^*$ and the predicted law). Middle: effective bond rank of every edge in that run,
+    one colour per edge (threshold $0.1$ times the smallest nonzero teacher singular value of the edge;
+    edges offset vertically by $0.05$). Bottom: duration of each predicted level against $1/\isc$, median
     over 8 seeds with the range shaded; solid: detected plateaus, dotted: time spent within $2\%$ of a
-    level too short to be detected; dashed: slope $k^*-2$. Measured: MPS4 two short levels (the
+    level too short to be detected; dashed: slope $k^*-2$. Data: experiment \texttt{locality}, sweep
+    \texttt{multicomp} (\cref{tab:repro-figures}). Measured: MPS4 two short levels (the
     second logarithmic in $\isc$; for the first the fair comparison favours a power below $1$, so its
     law is undetermined); binary4 one $\isc^{-1}$ plateau ($p=1.02$), where the first escape already
     fits $\U1$, $\U2$ and part of $\U3$; HT4 $\isc^{-1}$ and $\isc^{-2}$ plateaus ($1.09$, $2.08$).
@@ -643,10 +646,12 @@ tests that they rise as one route, not the timing of the event.
   \caption{Bond spectra through the second event, two-component teachers, $d=\chi=2$, weights
     $(1,0.5)$. Second singular value $\bs e2$ of every edge, relative to $\tw2$, against the time since
     the first event (symmetric-log axis); coloured: the edges of the Steiner subtree
-    $\mathrm{St}(N(D))$ (legend: the sites below each edge), grey dashed: all other edges; dotted
+    $\mathrm{St}(N(D))$ (legend: the sites below each edge, numbered from 0), grey dashed: all other edges,
+    drawn on top (edges with equal values, such as the two root edges of a binary tree, coincide); dotted
     vertical line: the second event. Left: MPS8, $D=\{2,5\}$, $k=4$, small initialization; middle:
     binary8, $D=\{3,4\}$, $k=5$, small initialization; right: HT8, $D=\{1,2\}$, $k=5$, saddle start
-    (one run each, $\isc$ and seed in the panel titles). Before the event every edge sits at the
+    (one run each, $\isc$ and seed in the panel titles). Data: experiment \texttt{locality}, sweep
+    \texttt{twocomp}, saved trajectories (\cref{tab:repro-figures}). Before the event every edge sits at the
     initialization-noise level, Steiner edges included; at the event exactly the Steiner edges rise,
     together. Takeaway: the escape uses the cores of the Steiner subtree and no others.}
   \label{fig:locality-bonds}
