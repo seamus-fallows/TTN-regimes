@@ -989,3 +989,133 @@ majority cells change, all lazy -> rich and all at chi = 24:
   "a heavy root is lazy from alpha = 100, as at balance". These replace "alpha = 10" in sections 0,
   2.4 and 3.2 item 6 (probe-kernel statements).
 - **Status:** empirical, majority labels of 6 seeds, one-decade alpha grid.
+
+### 4.7 Round 2 results (runs stopped at 15:34 UTC, about 3 h after the first round-2 run)
+
+Tables in `experiments/regime_map/results/round2/`: `per_seed_*.csv`, `cells_*_rho{2,3,5}.csv`,
+`fits.csv`, `ratio_*.csv`, `censored_*.csv`, `shrink_*.csv`, `timing_*.csv`. Figures:
+`round2_sigma_c_P.png`, `round2_sigma_c_C.png`, `round2_shrink.png`. Script: `round2_analysis.py`.
+Status tag for every number below: **empirical**.
+
+**Arm P (plain, chi = 4, teacher (3, 2), binary N = 4-16, d = 2 and 3; 1,070 runs, 156 seeds).**
+
+| K | d = 2: resolved / S2S to domain | median sigma_c [95% CI] | d = 3: resolved / S2S to domain | median sigma_c [95% CI] |
+|---|---|---|---|---|
+| 3 | 6 / 0 | 0.16 [0.08, 0.35] | 6 / 0 | 0.20 [0.03, 0.31] |
+| 4 | 6 / 0 | 0.39 [0.30, 0.49] | 4 / 2 | 0.44 [0.37, 0.74] |
+| 5 | 6 / 0 | 0.59 [0.45, 0.81] | 6 / 0 | 0.92 [0.40, 1.30] |
+| 6 | 5 / 1 | 0.85 [0.62, 1.18] | 3 / 3 | 0.75 [0.75, 0.83] |
+| 7 | 5 / 1 | 0.78 [0.50, 1.01] | 1 / 5 | (0.86) |
+| 8 | 2 / 4 | 1.12 [1.07, 1.16] | 0 / 6 | - |
+| 9 | 2 / 4 | 0.95 [0.86, 1.05] | 0 / 6 | - |
+| 10 | 2 / 4 | 1.25 [1.12, 1.37] | 1 / 5 | (1.08) |
+| 11 | 0 / 6 | - | 0 / 6 (1 open) | - |
+| 12 | 4 / 2 | 1.19 [0.96, 1.22] | 0 / 6 (1 open) | - |
+| 13 | 0 / 6 | - | 0 / 6 (3 open) | - |
+| 14 | 0 / 6 (1 open) | - | 0 / 6 (1 open) | - |
+| 15 | 0 / 6 (2 open) | - | 0 / 6 (3 open) | - |
+
+- "S2S to domain" = status 'domain': S2S-like (rho > 3) at every sigma up to the first sigma whose
+  initial overlap max_r |a_r(0)| reaches 0.1, where the event rule stops applying (amendment 4.6
+  item 2). "open" = still S2S-like at the last run when the budget ended (status 'all_s2s').
+- **Censoring dominates at large K.**
+  - 97 of 156 seeds are censored from above (88 'domain', 9 open).
+  - At K >= 8, 85 of 96 seeds are censored, and at d = 3, K >= 8 no seed has an S2S -> rich crossing
+    below the domain limit.
+  - Lower bounds at K >= 11: median 1.45 (range 1.18-1.75) at d = 2 and 1.69 (1.41-2.03) at d = 3.
+  - Per-seed domain limits sigma_dom (exact, since a(0) ~ sigma^K): medians 1.50 (d = 2) and 1.80
+    (d = 3) at K >= 11, approaching sqrt(d) = 1.41, 1.73 as (0.2 sqrt(D) / |z|)^(1/K) predicts.
+  - 95 of the 97 lower bounds exceed 1, and all 97 exceed both the H_A and the H_B prediction (each law
+    with gamma fitted on the resolved cells).
+- **Pre-registered fits** (rule 4.4; cells with at most 2 censored seeds, i.e. K = 3-7 plus d = 2 at
+  K = 12).
+
+  | rho* | cells | beta | rule |
+  |---|---|---|---|
+  | 3 | 9 | 1.21 +- 0.22 (H_A chi^2 35/8, H_B 7/8) | H_B favoured |
+  | 5 | | 1.55 +- 0.30 | H_B favoured |
+  | 2 | | 0.72 +- 0.56 | unresolved |
+  | 3, cells without shrinkage (x_W < 1, K = 3-7) | | 0.61 +- 0.51 | unresolved |
+  | 3, median-based variant | | 1.38 +- 0.30 | |
+
+  - d-contrast (K = 3-12 pairs available at K = 3-6 only): beta_Delta = 0.81 +- 0.51.
+  - d-ratios r_K = 1.27 [0.22, 3.08], 1.13 [0.86, 1.92], 1.57 [0.63, 2.45], 0.89 [0.64, 1.22] at
+    K = 3-6. Each CI contains both 1 and H_B's 1.27-1.31.
+  - The cells left in these fits are a selection: censoring removes the large-K cells, and with them
+    the seeds with the largest sigma_c.
+- **Censored fit over all seeds** (Tobit, not pre-registered; 59 exact values, 97 lower bounds):
+  beta = 3.15 +- 0.23 (bootstrap over seeds). Likelihood-ratio tests reject H_A (p = 1e-36) and H_B
+  (p = 4e-22); rho* = 2 and 5 give 3.11 and 3.16. This model extrapolates a linear law into the region
+  where the event-defined boundary does not exist, so read it only as "at large K the plain boundary,
+  if any, lies above both laws".
+- **Mechanism H_W** (`shrink_P.csv`, `round2_shrink.png`). The pre-escape loss of squared core norm,
+  1 - min_v ||G_v(t)||^2 / ||G_v(0)||^2 before any overlap reaches 0.1, against
+  x_W = sigma^K sqrt(D) / (s_2 d):
+
+  | x_W | <= 0.01 | 0.1-1 | 1-10 | 10-100 | 100-1e3 | 1e3-1e4 | >= 1e4 |
+  |---|---|---|---|---|---|---|---|
+  | median shrinkage | 0.1% | 0.5% | 10% | 34% | 52% | 72% | 92% |
+
+  - In the centred model (arm C, W_0 part of the target) the median is 0 at every x_W up to 1e2.
+  - Near the top of the S2S block the per-seed local exponent of rho vs sigma is far from -(K - 2)
+    once x_W >~ 1: medians -3.7, -4.9, -6.4 at K = 8-10 (d = 2; predicted -6, -7, -8), and -1.9 to
+    +1.8 at d = 3, K = 8-13. rho stops falling with sigma: the effective amplitude saturates.
+  - This confirms H_W's mechanism and direction. The heuristic gave no quantitative boundary, so it
+    stays **heuristic**.
+
+**Arm C (centred, full bonds; 360 runs).**
+
+| K (d = 2) | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|
+| median sigma_c [95% CI] | 0.16 [0.08, 0.37] | 0.39 [0.30, 0.49] | 0.50 [0.23, 0.82] | 0.65 [0.54, 0.75] | 0.81 [0.46, 0.91] | 0.83 [0.47, 1.15] |
+
+- d = 3: K = 3 gives 0.15 [0.13, 0.19] and K = 4 gives 0.28 [0.11, 0.39], all 6/6 seeds resolved.
+- K = 5 at d = 3 (P = 2349) and K = 9 at d = 2 (P = 3264) were started at 14:22 but did not finish:
+  6 runs of about 1 h each, no bracket.
+- Per-seed rho exponents: -1.05, -2.13, -3.21, -4.93, -5.18, -6.93 at K = 3-8, against -(K - 2).
+- Fits:
+  - beta = -0.07 +- 0.51 (H_A 0.1 SE, H_B 2.1 SE; rule: unresolved);
+  - median variant 0.21 +- 0.63;
+  - Tobit -0.17 +- 0.55 (LR vs H_B p = 0.08).
+- d-ratio 0.93 [0.41, 2.08] at K = 3 and 0.73 [0.28, 1.08] at K = 4. The K = 4 CI excludes H_B's
+  1.29, but here d also changes the full-bond chi (4 vs 9).
+- The plain arm agrees with arm C up to K = 4 (0.16, 0.39 at both). It lies above arm C from K = 5,
+  where x_W at the boundary approaches 1 (K = 5: 0.59 vs 0.50; K = 6: 0.85 vs 0.65).
+
+**Run time** (`timing_*.csv`; wall time per run under full load, about 330 concurrent runs).
+- Arm P (P = 48-688): median 100-250 s at K = 3-5, 300-650 s at K = 6-10 and 800-1,600 s at
+  K = 13-15. The maximum is about 1.3 h; run time grows roughly linearly with K.
+- Each seed needs 5-7 sequential walker steps, so K >= 13 did not converge in the budget (3-6 seeds
+  per cell still open). The binding constraint at large K, however, is the domain limit, not the
+  budget.
+- Arm C: P = 832-1,152 (K = 7-8, d = 2) takes 500-700 s per run; P = 2,349 takes about 1 h per run
+  with LSODA's exact Hessian. Full bonds are therefore out of reach beyond K = 8 (d = 2) and K = 4
+  (d = 3) on this machine.
+
+### 4.8 Answer and status
+
+- **Plain model with spare channels** (the realizable version of H4 as originally stated):
+  - sigma_c does **not** tend to 1. At K >= 8 most seeds, and at d = 3 every seed, stay S2S-like up to
+    the event rule's domain limit sigma_dom = (0.1 s sqrt(D) / |z|)^(1/K) -> sqrt(d). Their lower
+    bounds, 1.2-2.0, exceed 1 in 95/97 seeds and exceed the H_A and H_B predictions in all of them.
+  - The S2S/rich boundary of the plain model at large K is therefore not a crossing below sqrt(d) at
+    all. It lies at or above the scale where the initial function itself overlaps the teacher.
+  - Mechanism: H_W, the plain model unlearning W_0 on the plateau, confirmed by the core-shrinkage
+    diagnostic.
+  - Status: **empirical** (binary trees, chi = 4, teacher (3, 2), d = 2 and 3, K = 3-15).
+  - On the K <= 7 cells that do have crossings, the pre-registered rule favours H_B at rho* = 3 and 5
+    (beta = 1.21 +- 0.22) but is unresolved at rho* = 2 and in the no-shrinkage subset. This is a
+    censored selection and does not answer the large-K question.
+- **Centred model with full bonds** (no W_0 to unlearn; K <= 8 at d = 2, K <= 4 at d = 3): beta =
+  -0.07 +- 0.51, **unresolved** (leans H_A; H_B 2.1 SE away).
+  - sigma_c rises 0.16 -> 0.83 over K = 3-8 and is still below 1.
+- **H4 (sigma_c -> 1) for the plain model is rejected (empirical).**
+- **"sigma_c -> sqrt(d)" stays a conjecture.** In the plain model the S2S region reaches the domain
+  limit, which tends to sqrt(d), so sqrt(d) is a lower bound there if a boundary exists at all. In the
+  centred model the data do not reach the large-K regime.
+- **Not resolved:**
+  - the centred boundary beyond K = 8 (cost);
+  - the d-dependence at fixed K: both arms' d-ratios have CIs containing 1 and 1.25-1.3 (except arm C
+    at K = 4, which has the chi confound);
+  - what happens above the domain limit, where W_0 contains each teacher component at amplitude >= 0.1
+    and "learning from scratch" no longer applies.
