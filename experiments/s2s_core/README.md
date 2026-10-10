@@ -73,7 +73,10 @@ uv run python $D/recompute_hessians.py --raw $R/main --tag hess_main --out $O
 uv run python $D/recompute_hessians.py --raw $R/large $R/k78 $R/balanced --tag hess_other --out $O
 uv run python $D/continue_stalled.py --raw $R/k78 --names <8 runs, see continued_k78_resolved.csv> --factor 4 --tag _resolved --out $O
 uv run python $D/continue_stalled.py --raw $R/k78 --random --seed 1 --n 8 --max_ratio 100 --factor 3 --tag _random --out $O
-uv run python $D/continue_stalled.py --raw $R/large --spread --n 8 --max_ratio 1000 --factor 3 --tag _spread --out $O
+uv run python $D/continue_stalled.py --raw $R/large --factor 3 --tag _spread --out $O --names \
+  mps8_chi6_w3-2-1_fanin_s0.15_seed1 mps8_chi6_w3-2-1_fanin_s0.2_seed9 mps8_chi6_w3-2-1_fanin_s0.1_seed9 \
+  mps8_chi6_w3-2-1_fanin_s0.2_seed0 mps8_chi6_w3-2-1_fanin_s0.15_seed3 mps8_chi6_w3-2-1_fanin_s0.15_seed5 \
+  mps8_chi6_w3-2-1_fanin_s0.15_seed7 mps8_chi6_w3-2-1_fanin_s0.1_seed5     # see the note below the block
 uv run python $D/tolcheck.py --raw $R/k78 --per-class 1 --workers 12 --out $O
 # analysis (minutes)
 uv run python $D/analyze_main.py --raw $R/main $R/large $R/k78 $R/balanced --hess $O/hess_main.csv $O/hess_other.csv --out $O
@@ -88,6 +91,26 @@ uv run python $D/plot_scaling.py --results $O --out $O
 uv run python $D/plot_dormant.py --results $O --out $O
 uv run python $D/plot_lo.py --results $O --out $O
 ```
+
+**`continued_large_spread.csv` (round-1 artefact; errata E13 of
+`notes/reviews/s2s_core_round2_verification.md`).** The earlier command here, `--spread --n 8
+--max_ratio 1000 --factor 3`, does not regenerate it: on the finished `large/` folder (28 candidates
+with estimate <= 1000x the elapsed time) `--spread` picks a different set (the last 3 of the 8 runs
+differ). The same rule reproduces the committed 8 runs exactly on the 19 candidates whose raw files
+existed at 22:43 UTC (from the raw file times), i.e. the sample was drawn while `large` was still
+running (REPORT log, 22:44). The command above therefore names the 8 runs (`--names`, same rows and
+order); no script change is needed. The continuation factor of the committed file was not recorded,
+but the file fixes it: its two escape times are exact geometric midpoints of log-grid cells (to 2e-14)
+for `--factor 3` and not for 2 or 4, just as the log-grid values in `continued_k78_resolved.csv` and
+`continued_k78_random.csv` are midpoints for their documented factors 4 and 3 (all 15 rows). So the
+run that "has not escaped at 2x" (s0.2 seed 9, stop `completed`) in fact ran to 3x the estimate
+without escaping, as the round-2 verification's rerun with `--factor 3` also found. The current
+script also zoom-resolves each escape (`measured_remaining`) and writes the log-grid value to a new
+column `measured_remaining_grid`, while the committed file holds the round-1 log-grid values (+-1.8%)
+in `measured_remaining`. A rerun therefore reproduces the runs, components, estimates and
+`predicted_over_elapsed` exactly; its `measured_remaining_grid` is the counterpart of the committed
+`measured_remaining`, and its zoom-resolved `measured_remaining` agrees with that to the grid
+resolution. Which runs hit the 3000 s wall limit (checked between chunks) depends on CPU speed.
 
 `run.py` and `first_escape.py` are resumable (finished runs are skipped). `analyze_main.py --hess`
 must name the Hessian tables recomputed for the same raw folders (no default: a stale table would
@@ -121,27 +144,37 @@ changed after review round 1); summary in `agent-runs/s2s-core/REPORT.md`. In sh
 d = 4, gradient flow):
 - Aligned init reproduces the exact mode solutions on all five trees (max |a_GF - a_theory| <= 3e-9).
 - First escape (replication of theory_escape E1, E2): t_1 = sigma^-(K-2) T(theta_hat) + c_K per seed with
-  no free parameter (exponent 0.9996, 2.0000, 4.999, 5.9995 for K = 3, 4, 7, 8; prefactor to <= 2e-3 at
-  the smallest sigma); the Kumar-Haupt rho_0 law is a lower bound off by 3-2700x (K = 3-8) and up to 3e7
+  no free parameter (exponent 0.9996 (binary4 separated; 0.990-0.996 close), 2.0000, 4.999, 5.9995 for
+  K = 3, 4, 7, 8; prefactor to <= 2.2e-3 at the smallest sigma; first component = the correlation flow's
+  in 1847/1848 runs); the Kumar-Haupt rho_0 law is a lower bound off by 3-2700x (K = 3-8) and up to 3e7
   at K = 15; at full bond the binary4 prefactor is pi/2 independent of d; the RMS-overlap heuristic P3
   tracks the K dependence within 2x.
 - Random init, as measured: complete S2S sequences on binary4, mps4 (chi = 3, 6) and on binary8, ht4 at
   chi = 6 (0.6 decade of sigma); mps8 never learns a third component (0/284). Plateaus at the partial-fit
   levels, one rank step per event on every edge at once (497/531 tested runs). Gaps on runs classified
   by order and S2S status: K - 2 per seed on binary4 (+-0.1) and mps4 (+-0.03); binary8 4.88-5.09, ht4
-  3.9-5.8 per seed; mps8 first gap 5.95 +- 0.05. Plateaus are higher-order saddles (lambda_min ~
+  3.9-5.8 per seed (chi = 6, 0.6 decade); binary8 gap 1 at chi = 3 4.93 +- 0.05 (up to 1.1 decades);
+  mps8 first gap 5.95 +- 0.05. Plateaus are higher-order saddles (lambda_min ~
   sigma^(K-2)) on greedy binary4 and tensor-like trees; the wrong-order binary4 plateau (close teacher) is
-  a strict saddle, measured at 0.98 of the predicted eigenvalue.
+  a strict saddle: -0.106 .. -0.146 at the 9 wrong-order plateaus vs the exact -0.133186 (median ratio
+  0.98 for seed 8, 0.93 for seed 5), flat over sigma = 0.005-0.1. binary4 is a depth-3 DLN: its S2S
+  sequence, sigma^-1 plateaus and strict wrong-order saddle are known DLN results ([Achour2024];
+  [Jacot2021] Lemma 15), so these binary4 results are a replication; new for TTNs are mps4, binary8,
+  ht4 and mps8.
 - Dormant suppression: escapes shrink dormant components by a median 0.1-0.75 at K >= 4 (x2-3 growth at
-  K = 3), with a >100x tail of 3-11% at K = 7, 8, chi = 3 (0.6-2% at chi = 6); plateaus kill them
+  K = 3), with a >100x tail of 2-8% at K = 7, 8, chi = 3 (11% for the mps8 separated later escapes
+  only; 0-2% at chi = 6); plateaus kill them
   through the conservation-law trap of fan-in init (dead route ends; decay rate ~ sigma^2 per seed,
-  checked at K = 4): never at K = 3; at K = 4, chi = 3 fixed per init direction (separated teacher 4/10
-  seeds at every sigma; close 14/80 trapped + 8/80 stalled); at K = 7, 8 lower bounds of 30-80% at
+  checked at K = 4; the K = 7, 8 rows of `dormant_decay.csv` have no sweep column and duplicate
+  main/k78 keys, see notes 2.7c): never at K = 3; at K = 4, chi = 3 fixed per init direction for the
+  separated teacher (4/10 seeds at every sigma) but not for the close teacher (14/80 trapped + 8/80
+  stalled; seed 7 traps at 6 of 8 sigmas); at K = 7, 8 lower bounds of 30-80% at
   chi = 3; at chi = 6 binary8 0/50, ht4 5/50 (one seed), mps8 7/50 ("chi = 2R" is literal only on binary
   trees: end / leaf bonds are capped at d = 4). Gauge-balanced init: 0/120 trapped where fan-in traps
   (12/30, 47/90), but 69/90 balanced K = 7, 8 runs stall. Stalled runs with live routes are predicted to
-  be on ever-longer plateaus; checked on 8 runs of 3 seeds (escape at 0.50-0.87 of the route estimate)
-  and on small spread / random samples (see the notes).
+  be on ever-longer plateaus: of 23 continued stalled runs 16 escape, at 0.24-2.19x the balanced-route
+  estimate, which is exceeded in 4 of the 16 (so it is an estimate, not a bound); 91 of the 106 k78
+  stalled runs were never tested, so for most stalled runs this is a conjecture (notes 2.7).
 
 ## Figures (results/)
 

@@ -1,5 +1,7 @@
 # s2s-core: saddle-to-saddle phenomenology and escape-time scaling (Q1, Q2)
 
+Errata from notes/reviews/s2s_core_round2_verification.md applied (2026-10-10).
+
 Agent `s2s-core`. Experiments in `experiments/s2s_core/`. Status tags: **proven**, **derived**
 (under stated assumptions), **empirical**, **conjecture**. Setting: `notes/model.md` (whitened
 inputs, exact population loss, odeco teacher W* = sum_r s_r U_r, fan-in init with per-core scale
@@ -119,8 +121,11 @@ For m = 2 (binary N = 4) the Hessian along this direction is q (s_r - s_r') with
 strict). For m >= 3 (binary N = 8: m = 4; MPS and HT: m = N) the gain is O(eps^m) and the direction
 is again higher order. Prediction for the Hessian at plateau midpoints: no eigenvalue below -epsilon
 for K >= 3, except binary N = 4 plateaus where a larger component is still unlearned. (Same as the
-piggyback block of theory_saddles 4.1. Confirmed on binary N = 4 with the close teacher, section 2.5:
-lambda_min = 0.98x the predicted -0.133, flat in sigma.)
+piggyback block of theory_saddles 4.1. Binary N = 4 is a depth-3 DLN (theory_saddles 4.2), where this
+strict wrong-order saddle is a known result [Achour2024; Jacot2021 Lemma 15]. Confirmed on binary N = 4
+with the close teacher, section 2.5: the exact lambda_min at W_{1,3} is -0.133186 (round-2
+verification); at the 9 measured wrong-order plateaus it is -0.106 .. -0.146 (median 0.98x the
+prediction for seed 8, 0.93x for seed 5), flat over sigma = 0.005-0.1.)
 
 ### 1.5 Typical prefactor: RMS-overlap heuristic (derived heuristic, P3)
 
@@ -193,29 +198,45 @@ the same file, so figure a showed whichever finished last; the numbers changed b
 ### 2.2b First escape: per-seed test of the correlation-flow prediction (empirical replication of theory_escape E1, E2)
 
 The prediction (P1 here) is theory_escape's E1 / recipe 2.5, derived independently; the measurements
-below replicate it. Sweep `configs/first.yaml` (+ `first_k78.yaml`): for every seed, T(theta_hat) from
-the correlation flow of the sigma = 1 init, then gradient flow (LSODA rtol 1e-8, atol 1e-11 sigma) at 8
-sigmas until the first component is learned, event refined in linear time. Fan-in and gauge-balanced
-inits, d = 4, chi = 3, 6, both teachers, 10 seeds (K = 7, 8: separated teacher, fan-in only; mps8 at
-chi = 3 only); `results/first_*.csv`, figure c. T is computed with the direction-convergence stop of
-`s2s.correlation_flow_blowup` (review round 1: the earlier stop at amplitude 1e6 biased binary4 T by up
-to 1.7e-3 for the close teacher and up to 2.4e-5 for the separated one, and picked the wrong first
-component in 5 binary4 close-teacher cells; all numbers below are recomputed).
-- **Exponent** (per seed, then mean +- SE): binary4 (sigma 0.1 .. 0.002) 1.0045 +- 0.0002 raw,
-  0.9996 +- 0.0001 with the predicted O(1) offset c_K removed; mps4 (same sigmas) 2.0002 / 2.0000;
+below replicate it. Sweep `configs/first.yaml` (+ `first_k78.yaml`; 231 jobs in all, one per seed and
+cell): for every seed, T(theta_hat) from the correlation flow of the sigma = 1 init, then gradient flow (LSODA
+rtol 1e-8, atol 1e-11 sigma) at 8 sigmas until the first component is learned, event refined in linear
+time. Fan-in and gauge-balanced inits, d = 4, chi = 3, 6, both teachers, 10 seeds (K = 7, 8: separated
+teacher, fan-in only, plus 21 binary8 chi = 3 jobs with the close teacher or balanced init, which are in
+`first_summary.csv`; mps8 at chi = 3 only); `results/first_*.csv`, figure c. T is computed with the stop
+of `s2s.correlation_flow_blowup` introduced in review round 1: direction convergence (second/first
+component amplitude <= 1e-6) or the amplitude cap 1e30. The direction criterion was never met on the 40
+binary4 close-teacher jobs: all of them stopped at amplitude 1e30 (direction converging slowly; ratio
+still 2e-6 .. 7e-3), as did 2 separated binary4 chi = 6 jobs. T is converged regardless: the time left
+beyond amplitude A is ~A^-(K-2)/K ~ 1e-10, and an independent sphere-flow T (round-2 verification)
+agrees with the committed T to <= 1.5e-11 (binary4) and <= 1.7e-10 (mps4) relative. The earlier stop at
+amplitude 1e6 (review round 1) biased binary4 T by up to 2.2e-3 for the close teacher (balanced init,
+chi 3, seed 6; 1.75e-3 with fan-in init) and up to 3.0e-5 for the separated one (balanced, chi 6),
+changed mps4 and K = 7, 8 T by <= 2e-7, and picked the wrong first component in 5 binary4 close-teacher
+cells; all numbers below are recomputed.
+- **Exponent** (per seed, then mean +- SE): binary4, separated teacher (sigma 0.1 .. 0.002) 1.0045 +-
+  0.0002 raw, 0.9996 +- 0.0001 with the predicted O(1) offset c_K removed; binary4, close teacher
+  0.990-0.996 per cell with the offset removed (0.993 +- 0.003 for fan-in chi 3), 2.6-3.8 SE below 1,
+  consistent with the unconverged O(1) offset (next bullet); mps4 (same sigmas) 2.0002 / 2.0000;
   (sigma 0.4 .. 0.01, 1.6 decades, offset removed, 10 seeds each) binary8 4.9983 +- 0.0003 (chi 3),
   4.9990 +- 0.0002 (chi 6); ht4 4.9994 +- 0.0001 (chi 3), 4.9987 +- 0.0007 (chi 6); mps8 5.9995 +- 0.0002
   (chi 3) (K - 2 = 1, 2, 5, 6). mps8 at chi = 6 was not completed (jobs stopped at the end; first
   escapes at sigma = 0.01 are at t ~ 1e13).
 - **Prefactor, no free parameter**: |t_1 / (sigma^-(K-2) T(theta_hat) + c_K) - 1| at the smallest
-  sigma: binary4 separated <= 8.5e-6 (median 6e-7), binary4 close <= 2.1e-3 (median 7e-5: for close
-  weights the escape direction has not converged at sigma = 0.002, so the O(1) offset is not yet c_K),
+  sigma: binary4 separated <= 8.5e-6 (median 6e-7), binary4 close <= 2.2e-3 (2.15e-3 at balanced
+  init, chi 6; median 7e-5: for close weights the escape direction has not converged at sigma = 0.002,
+  so the O(1) offset is not yet c_K),
   mps4 <= 6e-5 (median 5e-9), binary8, ht4, mps8 <= 4e-8 at sigma = 0.01. At larger sigma the residual is
   the O(1) offset (K = 3, 4: c_K accounts for it to within ~25% (binary4) and ~10% (mps4)) or, at
   K = 7, ~37x the c_K term at sigma = 0.3 (2% at sigma = 0.4), as theory_escape 2.4 anticipates.
-- **First component** = the one dominating the correlation flow at its blow-up: 100% of runs on every
-  tree and teacher. (The "80-90% on binary4 close" reported before review round 1 was an artifact of the
-  amplitude-1e6 stop; gradient flow learns the largest component first at every sigma there.)
+- **First component** = the one dominating the correlation flow at its blow-up (r1) in 1847/1848
+  first-escape runs over all sigmas, and in 100% at the smallest sigma (the `first_summary.csv` column
+  `r1_agree_corrflow` = 1.0 tests the smallest sigma only). The exception is binary4, chi = 3, close
+  teacher, balanced init, seed 6 at sigma = 0.1: there GF learns the 0.7 component first, a finite-sigma
+  wrong first escape of the type theory_escape E9 describes. (The "80-90% on binary4 close" reported
+  before review round 1 was an artifact of the amplitude-1e6 stop; on binary4 gradient flow learns the
+  largest component first in 639/640 first-escape runs and in all 380 main/balanced runs. What is
+  withdrawn is E9 as the cause of the old r1 mismatches, not E9 itself.)
 - **Kumar-Haupt is a lower bound, far off** (replication of theory_escape E2): median T / t_KH =
   3.1-4.8 (binary4), 7.9-13.7 (mps4), 95-210 (ht4), 184-2650 (binary8), 1460 (mps8), i.e. 3-2700x at
   K = 3-8 (and up to 3e7 at K = 15 at leading order, 2.2c); inside the ranges theory_escape 9.2 gives
@@ -268,6 +289,12 @@ scaling claims). At chi = R = 3, K = 7 runs rarely complete (fan-in: binary8 14/
 of the trap (2.7). On mps8 no run learns the third component (0/284 over all sweeps); 132 runs learn two,
 so mps8 contributes the first escape and the first gap only.
 
+**Novelty (round-2 verification E7).** binary4 is a depth-3 DLN (theory_saddles 4.2). Its S2S sequence,
+the sigma^-1 plateaus and the strict wrong-order saddle (2.5) are known DLN results ([Achour2024]:
+non-top rank-r critical points are strict saddles; [Jacot2021] Lemma 15), so every binary4 measurement in
+2.3-2.5 is a **replication (known for DLNs; prediction = theory_saddles 4.1)**, not a new result. New
+for TTNs: the same measurements on mps4, binary8, ht4 and mps8.
+
 Sweep `configs/main.yaml` (and `large`, `k78`, `balanced` where stated): fan-in init, d = 4, teachers
 [3, 2, 1] and [1, 0.85, 0.7], 10 seeds; LSODA rtol 1e-8, atol 1e-11 sigma (1e-6 / 1e-9 sigma in large,
 k78). Events refined in linear time (no duration read off the log grid).
@@ -279,9 +306,12 @@ k78). Events refined in linear time (no duration read off the log grid).
   binary4 exception of 2.5 (a wrong-order plateau that does not grow).
 - **Plateau levels are the partial-fit levels** L_S = 1/2 sum_{r not learned} s_r^2 (S = the components
   learned so far, in whatever order). Max relative deviation at plateau midpoints bracketed by resolved
-  events (rho > 3): binary4 2.0e-2 (both teachers, sigma = 0.1), mps4 2.8e-3 (8.1e-3 with balanced init),
-  K = 7 <= 2.1e-5; it falls to 6e-7 at sigma = 0.003. At unresolved binary4 close-teacher "plateaus"
-  (rho <= 3: overlapping or wrong-order transitions) the loss is up to 0.50 away from L_S.
+  events (rho > 3): binary4 8.5e-3 (separated teacher, sigma = 0.1) and 2.0e-2 (close teacher, at
+  sigma = 0.003: chi 6, seed 4, rho_2 = 5.1), mps4 2.8e-3 (8.1e-3 with balanced init), K = 7 <= 2.1e-5
+  at chi = 6 (large; at chi = 3 (main) up to 1.5e-4: ht4 close, sigma = 0.4); it falls to 6e-7 at
+  sigma = 0.003 for the separated teacher and mps4, not for the close teacher on binary4. At unresolved
+  binary4 close-teacher "plateaus" (rho <= 3: overlapping or wrong-order transitions) the loss is up to
+  0.50 away from L_S.
 - **Plateaus sit at bond-rank-constrained critical points** (lead's check): at every plateau midpoint
   of the complete runs, every edge's top |S| singular values equal the learned weights (the truncated
   teacher spectrum) to a max relative deviation that shrinks with sigma: separated teacher 3e-3
@@ -297,7 +327,8 @@ k78). Events refined in linear time (no duration read off the log grid).
   0 and at most 0.05 event widths of each other (HT4: up to 0.6). Exceptions: 28 binary4 close-teacher
   runs at sigma >= 0.05 (overlapping events: two ranks in one window) and 6 HT4 runs. Effective bond rank
   0 -> 1 -> 2 -> 3 (figure b).
-- **Order** (recorded; `order` studies it): binary4 learns the largest component first in all 380 runs.
+- **Order** (recorded; `order` studies it): binary4 learns the largest component first in all 380
+  main/balanced runs (and in 639/640 first-escape runs, 2.2b; known for DLNs: [Jacot2021] Lemma 15).
   These are 20 independent init directions (10 seeds x chi = 3, 6), not 380: sigma, the teacher and
   gauge balancing do not change the direction of W_0; the full order is
   greedy in 160/160 with the separated teacher and in 89-95% with the close teacher (the exceptions are
@@ -305,7 +336,7 @@ k78). Events refined in linear time (no duration read off the log grid).
   per cell) but is the same at every sigma for each seed (10/10 seeds in every cell), as the race picture
   predicts (replication of theory_escape E8).
 
-### 2.4 Escape-time exponents (empirical; prediction derived)
+### 2.4 Escape-time exponents (empirical; prediction derived; binary4 rows: replication, known for DLNs, see 2.3)
 
 Per-seed fits of log t vs log sigma, mean +- SE over seeds, with the runs classified by the saddle
 sequence they visit before pooling (review round 1): t_1 on the runs whose first component is the
@@ -327,24 +358,39 @@ brackets: the range of the per-seed exponents.
 | mps4 | 4 | 6 | close | 0.1-0.003 | 10/10/10 | 2.000 +- 0.000 | 2.001 +- 0.001 [2.00, 2.00] | 2.001 +- 0.001 [2.00, 2.01] |
 | binary8 | 7 | 6 | separated | 0.3-0.07 | 10/10/10 | 4.999 +- 0.000 | 5.020 +- 0.009 [4.98, 5.05] | 4.969 +- 0.022 [4.88, 5.09] |
 | ht4 | 7 | 6 | separated | 0.3-0.07 | 10/10/9 | 4.999 +- 0.000 | 5.10 +- 0.08 [4.83, 5.78] | 4.75 +- 0.14 [3.94, 5.33] |
+| binary8 | 7 | 3 | separated | 0.4-0.03 (gap 1: mostly 0.03-0.4) | 10/10/1 | 4.997 +- 0.000 | 4.93 +- 0.05 [4.65, 5.13] | 1 seed only |
+| binary8 | 7 | 3 | close | 0.4-0.03 (gap 1: mostly 0.03-0.4) | 10/10/1 | 4.992 +- 0.001 | 4.92 +- 0.04 [4.65, 5.10] | 1 seed only |
 | mps8 | 8 | 6 | separated | 0.3-0.07 | 10/7/0 | 6.000 +- 0.000 | 5.95 +- 0.05 [5.79, 6.20] | not reached |
-| mps8 | 8 | 3 | separated | 0.4-0.03 | 10/3/0 | 5.999 +- 0.000 | 6.0 +- 0.3 [5.7, 6.6] | not reached |
+| mps8 | 8 | 3 | separated | t_1: 0.4-0.03; gap 1: 0.1 or 0.15 to 0.4 | 10/3/0 | 5.999 +- 0.000 | 6.0 +- 0.3 [5.7, 6.6] | not reached |
+| mps8 | 8 | 3 | close | t_1: 0.4-0.03; gap 1: 0.1 or 0.15 to 0.4 | 10/3/0 | 5.997 +- 0.001 | 6.19 +- 0.60 [5.14, 7.21] | not reached |
 
 (`results/main_exponents.csv`, `main_gap_fits.csv`; K = 7, 8 rows from sweep `large` (rtol 1e-6, atol
-1e-9 sigma) except mps8 chi = 3 (sweep `main`); the t_1 column of the first-escape sweep, with the
-offset c_K removed and sigma down to 0.002 / 0.01, is in 2.2b.) Reading:
+1e-9 sigma) except binary8 and mps8 at chi = 3 (sweep `main`); the t_1 column of the first-escape
+sweep, with the offset c_K removed and sigma down to 0.002 / 0.01, is in 2.2b. The binary8 chi = 3 rows
+and the close-teacher mps8 chi = 3 row were added from `main_exponents.csv` after the round-2
+verification (E21, E8).) Reading:
 - K = 3, 4: every gap scales as sigma^-(K-2) per seed within +-0.1 (+-0.03 for mps4) over 1.5 decades,
   once the binary4 close-teacher runs that do not follow a resolved S2S sequence are separated (2.5).
-  Pooling them, as done before review round 1, gave gap 2 = 0.92 +- 0.11 (chi = 3).
-- K = 7: binary8 per-seed exponents 4.88-5.09 (robust); ht4 per-seed exponents span 3.9-5.8 and the
-  second gap's mean is 4.75 +- 0.14, i.e. consistent with 5 only in the mean of gap 1. Both over 0.6
-  decade of sigma only (the project rule asks for >= 1 decade), at chi = 6.
+  Pooling them, as done before review round 1, gave gap 2 = 0.92 +- 0.11 (chi = 3). For binary4 close
+  the rho > 3 cut leaves some seeds with only 4-5 sigmas (0.003-0.02, about 0.8 decade; e.g. chi 3,
+  seed 4, gap 1 = 1.064 from 4 sigmas), so "1.5 decades" does not hold for every seed there. The cut is
+  rule-based and applied identically everywhere (the round-2 verification reproduces every value).
+  Without it binary4 close gives: chi 3, gap 1 = 1.00 +- 0.04 [0.76, 1.30], gap 2 = 0.92 +- 0.11; chi 6,
+  gap 1 = 1.04 +- 0.04 [0.90, 1.25], gap 2 = 1.12 +- 0.05 [0.99, 1.45]. Every other cell changes by
+  <= 0.002 without the cut.
+- K = 7: binary8 at chi = 6 per-seed exponents 4.88-5.09 (robust); ht4 per-seed exponents span 3.9-5.8
+  and the second gap's mean is 4.75 +- 0.14, i.e. consistent with 5 only in the mean of gap 1. Both over
+  0.6 decade of sigma only (the project rule asks for >= 1 decade), at chi = 6. binary8 at chi = 3
+  (main): gap 1 = 4.93 +- 0.05 (separated) and 4.92 +- 0.04 (close), 10 seeds each, per seed 4.65-5.13,
+  mostly over sigma = 0.03-0.4 (up to 1.1 decades): the only K = 7 gap fit spanning about 1 decade.
 - K = 8 (mps8): only the first gap is measured, 5.95 +- 0.05 over 7 seeds at chi = 6 (predicted 6); no
-  run learns the third component.
+  run learns the third component. At chi = 3 (main) gap 1 = 6.0 +- 0.3 (separated) and 6.19 +- 0.60
+  [5.14, 7.21] (close), 3 seeds each, fitted over sigma = 0.1 or 0.15 to 0.4 (4-5 points, <= 0.6 decade).
 - The deviations of the raw t_1 exponent from K - 2 (e.g. 1.005) are the predicted O(1) offset c_K
-  (section 1.1): with it removed the exponent is 0.9996 +- 0.0001 (2.2b).
+  (section 1.1): with it removed the exponent is 0.9996 +- 0.0001 for the separated teacher and
+  0.990-0.996 per cell for the close teacher, whose offset has not converged at sigma = 0.002 (2.2b).
 
-### 2.5 Saddle type at plateau midpoints (empirical; theory_saddles R10; strict case predicted in 1.4)
+### 2.5 Saddle type at plateau midpoints (empirical; theory_saddles R10; strict case predicted in 1.4; binary4: replication, known for DLNs, see 2.3)
 
 Gauge-projected Hessian at the plateau midpoints (minimum speed between events), recomputed from the
 saved midpoint parameters after the library's gauge-projection fix (6c42d85; `recompute_hessians.py`,
@@ -357,21 +403,32 @@ same run sets as the gaps of 2.4.
   all four cells; binary8 (chi = 6) 5.10 +- 0.01 / 5.07 +- 0.02; ht4 (chi = 6) 5.13 +- 0.08 / 4.88 +- 0.11;
   mps8 (chi = 6, first plateau) 5.99 +- 0.06. lambda_min -> 0 like sigma^{K-2}. Magnitude vs the route
   formula -(K-1) s_r (s_r |a_r|)^{(K-2)/K} (theory_saddles R10, balanced route, A = 1) with the measured
-  dormant overlap: cell medians 0.87-1.15 at K = 3, 4; 1.36-3.15 at K = 7, 8 (per seed up to ~7): the
-  routes are not balanced at these sigma, so the balanced estimate is too small.
+  dormant overlap: cell medians 0.87-1.15 at K = 3, 4 (main fan-in cells; the balanced binary4 chi 3
+  cell median is 1.19); 1.36-3.15 at K = 7, 8 (main, large) and up to 3.9 (k78): at K = 7, 8 the routes
+  are not balanced at these sigma, so the balanced estimate is too small. Per-seed medians scatter far
+  more: up to 20 (binary4 separated chi 3 seed 8, second plateau, where lambda_min is about 20x the route
+  value at every sigma; balanced mps4 chi 3 up to 7.9; K = 7, 8 up to 20). So R10's magnitude holds as a
+  cell-median statement only; the slopes are unaffected.
 - **A strict saddle, as predicted** (`results/main_strict_saddles.csv`). On binary4 (m = 2) a learned set
   with a larger component still unlearned has a piggyback direction of negative curvature
-  s_q^((K-2)/K)(s_q - s_r) (1.4; theory_saddles 4.1). With the close teacher, chi = 3, seed 8 learns in the
-  order 1-3-2 at 7 of 8 sigmas (seed 5 at 2 more): on the plateau where 0.7 is learned and 0.85 is not,
-  lambda_min (projected) = -0.118 .. -0.146 over sigma = 0.005-0.1 (raw -0.121 .. -0.147), slope 0.03,
-  i.e. flat in sigma, against the predicted -0.7^(1/3) x 0.15 = -0.133 (median ratio 0.98). The next
+  s_q^((K-2)/K)(s_q - s_r) (1.4; theory_saddles 4.1); for this depth-3 DLN that is a known result
+  [Achour2024; Jacot2021 Lemma 15], so the measurement is a replication (known for DLNs; prediction =
+  theory_saddles 4.1). With the close teacher, chi = 3, seed 8 learns in the order 1-3-2 at 7 of 8
+  sigmas (seed 5 at 2 more, sigma = 0.07 and 0.1): on the plateau where 0.7 is learned and 0.85 is not,
+  lambda_min (projected) = -0.118 .. -0.146 for seed 8 over sigma = 0.005-0.1, and -0.106 .. -0.146 over
+  all 9 wrong-order plateaus (raw -0.113 .. -0.149), slope 0.03 (seed 8), i.e. flat in sigma, against
+  the predicted -0.7^(1/3) x 0.15 = -0.133 (exact Hessian at W_{1,3}: -0.133186, round-2 verification;
+  median ratio 0.98 for seed 8 and 0.93 for seed 5). The wrong order, and with it the strict saddle, is
+  not visited at the smallest sigma: seed 8 is greedy at sigma = 0.003, and chi = 6 seed 4 is wrong-order
+  only at sigma >= 0.03; "flat in sigma" therefore covers sigma = 0.005-0.1. The next
   event follows within about one width (rho ~ 1.2), so the gap does not grow as sigma -> 0 (per-seed
   exponent -0.08). These runs are not S2S and are excluded from the fits of 2.4. At chi = 6 (seed 4, 3
   sigmas) the wrong-order state has no resolved plateau (rho ~ 0.3), so the midpoint Hessian
   (-0.36 .. -0.53) is taken mid-transition and is not comparable.
 - So: plateaus are higher-order saddles on greedy-order binary4 sequences and on all tensor-like trees
   (mps4, binary8, ht4, mps8); on binary4 a wrong-order plateau is a strict saddle, measured as
-  predicted. (Before review round 1 the notes said "no strict saddles seen with odeco teachers".)
+  predicted (binary4: both known for DLNs; the tensor-like trees are new). (Before review round 1 the
+  notes said "no strict saddles seen with odeco teachers".)
 
 ### 2.7 Dormant-component suppression (lead's question; empirical unless tagged)
 
@@ -395,9 +452,9 @@ factor, fraction of drops by more than 100x):
 | mps8 | 8 | 3 / 6 | x0.58 / x0.75, 2.6% / 0.6% | x0.12 / x0.48, 8.3% / 0% |
 
 On binary4 the dormant components GROW (the head start of theory_saddles 3.3). At K >= 4 an escape
-shrinks them by a median factor 0.1-0.75; the >100x tail is <= 1.3% at K = 4 and 0.6-2% at K = 7, 8
-with chi = 6, but 3-8% at K = 7, 8 with chi = 3 (later escapes; 3/28 = 11% for mps8 with the separated
-teacher), with values down to 4e-7 (binary8) and 1.5e-10 (mps8). With balanced init: 0% at first escapes, <= 2/30 at later
+shrinks them by a median factor 0.1-0.75; the >100x tail is <= 1.3% at K = 4 and 0-2% at K = 7, 8
+with chi = 6, but 2.0-8.3% at K = 7, 8 with chi = 3 (later escapes; ht4 2.0%; 3/28 = 11% for mps8 with
+the separated teacher), with values down to 4e-7 (binary8) and 1.5e-10 (mps8). With balanced init: 0% at first escapes, <= 2/30 at later
 ones. So escapes suppress dormant components appreciably only in a chi = R tail at K = 7, 8; later
 escapes are not "the same picture" there (before review round 1 the notes said they were, and "0% at
 chi = 2R").
@@ -430,10 +487,11 @@ unless stated:
 (`results/main_classes.csv`, all cells incl. `main` at K = 7, 8, where 39-53% of the runs are
 unresolved.) Reading:
 - **K = 3**: never trapped (0/380 over both teachers, chi and inits).
-- **K = 4, chi = 3**: the trap fraction is fixed by the init direction, not by sigma. Separated teacher:
-  4/10 seeds trap at all 8 sigmas (0.003-0.1), the other 6 complete at all 8 (32/80 = 40%). Close
-  teacher: seed 1 traps at all 8 sigmas and seed 7 at 6 of 8; seed 5 stalls at all 8 (14/80 trapped +
-  8/80 stalled). So "40% at K = 4" holds for the separated teacher only.
+- **K = 4, chi = 3**: with the separated teacher the trap fraction is fixed by the init direction, not
+  by sigma: 4/10 seeds trap at all 8 sigmas (0.003-0.1), the other 6 complete at all 8 (32/80 = 40%).
+  With the close teacher it is not fixed per direction: seed 1 traps at all 8 sigmas but seed 7 at only
+  6 of 8, and seed 5 stalls at all 8 (14/80 trapped + 8/80 stalled). So "40% at K = 4" and "fixed per
+  init direction" hold for the separated teacher only.
 - **K = 7, 8**: trapped fractions are LOWER BOUNDS: stalled runs end with dormant slices that are still
   decaying in part of the cells (slice trends below), so some of them may trap later. chi = R = 3 with
   fan-in: 9/30, 24/30, 14/30 trapped (binary8, ht4, mps8). chi = 6 does not remove the trap everywhere:
@@ -450,19 +508,29 @@ y_vis' = -q^{2(K-2)} |x|^2 y_vis with |x|^2 - |y_vis|^2 - |y_route|^2 = Q_nu nu 
 seed. Measured (end-core slices of the trapped component, exponential fit from 1.5x the last event
 until the slice first falls below 1e-9 absolute, i.e. above the integrator / float64 floor at
 ~1e-12 .. 1e-15; `dormant_decay.csv`, column `n_fit`):
-- mps4, chi = 3: gamma / sigma^2 is constant per seed to 1-3% over sigma = 0.003-0.1 for all 4 trapped
-  seeds of the separated teacher (levels 0.26, 0.27-0.29, 0.81, 1.0-1.1: seed-dependent), and within
-  1.33x (seed 1, 8 sigmas) and 1.25x (seed 7, sigma <= 0.03; 3x lower at 0.05) for the close teacher.
-  The "two pairs switch between two levels by 20-100x" of the first version was an artifact of fitting
-  into the floor.
+- mps4, chi = 3: gamma / sigma^2 is constant per seed over sigma = 0.003-0.1 for all 4 trapped seeds of
+  the separated teacher, to <= 2.4% (seeds 3, 5, 6) and <= 5.3% (seed 7; <= 3% by the median of local
+  rates) (round-2 verification, refitted from the raw slices with its own window). The fit window here
+  starts at 1.5x the last event, inside the post-event transient (e.g. seed 3, sigma 0.01: core 0 still
+  grows at first while core 3 decays at 0.7 sigma^2), which biases the per-core values in
+  `dormant_decay.csv` by about +-4% (0.251 vs 0.270 for seed 3). The asymptotic local rate is the same
+  at both end cores and seed-dependent: 0.259 (seed 3), 0.81 (5), 0.276 (6), 1.00-1.04 (7). Close
+  teacher: within 1.33x (seed 1, 8 sigmas) and 1.25x (seed 7, sigma <= 0.03; 3x lower at 0.05). The
+  "two pairs switch between two levels by 20-100x" of the first version was an artifact of fitting into
+  the floor.
 - On two re-run trapped seeds (sigma = 0.01), Q_nu nu (from the init, conserved) makes the end core the
-  light side at BOTH route ends (the joint condition of theory_saddles v2 for a dead route); the
-  measured rates are 0.18-0.87 of the single-end estimate s_q |Q_nu nu| (s_q between the learned
-  weights 2 and 3; it ignores |y_route|^2), i.e. 1.1-5.6x below it (the first version said 3-15x).
-  The reduced model gives the sign, the sigma^2 scaling and the magnitude to within a factor 6.
+  light side at BOTH route ends (the joint condition of theory_saddles v2 for a dead route; 2 seeds,
+  and no committed script computes Q_nu nu). The comparison of the measured rates with the single-end
+  estimate s_q |Q_nu nu| (quoted before as "0.18-0.87 of it, i.e. 1.1-5.6x below", first as "3-15x") is
+  **withdrawn as unsupported**: no script, CSV or log computes Q_nu nu or the estimate, it rests on these
+  2 re-run seeds, and the choice of s_q (2 or 3) alone spans a factor 1.5 (round-2 verification E5).
+  The reduced model is cited for the sign rule and the sigma^2 scaling only, not for the magnitude.
 - K = 7, 8: the fits are short (6-243 points from slices of 1e-7 .. 1e-2) and gamma / sigma^2 is not
   constant per seed (e.g. ht4 separated seed 8: 0.013 -> 0.11 over sigma = 0.15-0.4; seed 0: 0.0057-0.0060
-  over 0.15-0.3). The sigma^2 law is checked at K = 4 only.
+  over 0.15-0.3, but 0.0017 at sigma = 0.4 in main). The sigma^2 law is checked at K = 4 only. The
+  K = 7, 8 rows of `dormant_decay.csv` are not citable as they stand: the table has no sweep column, and
+  13 K = 7, 8 keys appear in both main and k78, one pair differing 6x (mps8 sigma 0.15 seed 8); no claim
+  here depends on them.
 Consequence (derived): trap time ~ sigma^-2 vs escape time ~ sigma^-(K-2). K = 3: the escape comes
 first, never trapped. K = 4: same order, so a sigma-independent, init-dependent fraction traps. K >= 5:
 the ends' fate is settled long before the route can escape.
@@ -476,30 +544,47 @@ Balanced init does not make K = 7, 8 complete: 69/90 balanced runs stall (binary
 mps8 30/30); complete: binary8 3 vs 2, ht4 17 vs 3, mps8 0 vs 0 (30/30 balanced mps8 runs learn 2 of 3
 components; with fan-in 18/30 learn only 1). 5 runs complete with fan-in but stall with balanced init.
 
-**Stalled runs: ever-longer plateaus (derived prediction; checked on few runs).** Derived: for a route
-that obeys the balanced reduction with a positive product, the remaining plateau is at most the
-balanced-route estimate b^-(K-2)/((K-2) s_r), b = (s_r |a_r|)^(1/K) with the dormant amplitude at the end
-of the run (a_v^2 - a_w^2 is conserved and dP/dt = P^2 (s - P) sum_v 1/a_v^2 is smallest when all a_v
-are equal). So a stalled run whose route ends are alive should escape after a time set by how far the
-dormant amplitude was suppressed, ~ (suppression)^-(K-2)/K. Checks (`continue_stalled.py`, continuation
-from the final state, escape time zoom-resolved like every event):
+**Stalled runs: ever-longer plateaus? (derived prediction, checked on 16 escapes; a conjecture for the
+untested majority).** Derived: for a route that obeys the balanced reduction with a positive product,
+the remaining plateau is at most the balanced-route estimate b^-(K-2)/((K-2) s_r), b = (s_r |a_r|)^(1/K)
+with the dormant amplitude at the end of the run (a_v^2 - a_w^2 is conserved and dP/dt = P^2 (s - P)
+sum_v 1/a_v^2 is smallest when all a_v are equal). So a stalled run whose route ends are alive should
+escape after a time set by how far the dormant amplitude was suppressed, ~ (suppression)^-(K-2)/K. The
+measured escapes exceed this estimate in 4 of 16 cases (1.08, 1.37, 1.81 and 2.19x): the reduction does
+not hold in those runs, so in the data below it is an estimate, not a bound. Checks
+(`continue_stalled.py`, continuation from the final state; escape times zoom-resolved like every event,
+except the round-1 `large` sample, read off the log grid, +-1.8%):
 - 8 k78 stalled runs, chosen as those with the shortest predicted remaining plateau (3 seeds: binary8
   fan-in seed 2, mps8 balanced seed 6, ht4 balanced seed 9, at 2-3 sigmas each): all 8 escape, at
   0.81-0.87, 0.50-0.55 and 0.86 of the estimate (per seed, across sigma; the earlier log-grid values were
   within 1.8% of these).
 - 8 mps8 chi = 6 stalled runs from `large`, spread over estimate / elapsed time (0.2-420): 2 escape, at
-  1.37x and 1.81x the estimate (above the derived bound: the reduction does not hold there, e.g. part of
-  |a_r| is off the route or a sign correction is under way); 1 has not escaped at 2x; 4 hit the 50-min
-  wall limit before reaching the estimate; 1 integrator failure.
-- A seeded random sample (`--random --seed 1`) of 8 of the 74 k78 stalled runs whose estimate is <= 100x
-  the time already integrated (one run overlaps the first set): 7 escape, at 0.24-2.19 of the estimate
-  (median 0.55; above the derived bound: binary8 fan-in 1.08, mps8 fan-in 2.19); mps8 balanced seed 1
-  (sigma = 0.15) has not escaped at 3x the estimate (`continued_k78_random.csv`). The 33 runs with
-  estimates beyond 100x were not sampled.
-- For the stalled runs as a whole the estimate is a median 10-60x (k78) and ~400x (mps8, chi = 6) the
-  time already integrated, so most stalled runs are not tested. Slice trends at the end of the stalled
-  / unresolved runs (`slice_trends.csv`; smallest dormant slice / sigma, its log-log slope over the last
-  decade, "decaying" = slope < -0.1): k78 binary8 median 0.011 (balanced) / 0.036 (fan-in), 4% / 0%
+  1.37x and 1.81x the estimate (above the estimate: the reduction does not hold there, e.g. part of
+  |a_r| is off the route or a sign correction is under way); 1 (sigma = 0.2, seed 9) does not escape by
+  3x the estimate (stated before as "not at 2x"; the committed run used factor 3, see below, and the
+  round-2 verification's rerun with `--factor 3` agrees); 4 hit the 50-min wall limit (whether before
+  reaching the estimate cannot be checked: the CSV has no reached-time column); 1 integrator failure.
+  `continued_large_spread.csv` is a round-1 artefact. Its continuation factor was not recorded, but its
+  two escape times are exact log-grid cell midpoints only for factor 3 (as the k78 continuation files
+  are for their documented factors 4 and 3), so it was 3. On the finished sweep (28 candidates) the
+  README rule `--spread --n 8 --max_ratio 1000` picks a different set (the last 3 of 8 differ); the same
+  rule reproduces the committed set exactly on the 19 candidates whose files existed at 22:43 UTC (raw
+  file times), so the sample was drawn while `large` was still running (REPORT log, 22:44). The README
+  now regenerates this set with `--names`.
+- A seeded random sample (`--random --seed 1`) of 8 of the 74 k78 candidate runs whose estimate is
+  <= 100x the time already integrated (73 stalled + 1 trapped run that ran to t_max: mps8 fan-in
+  sigma = 0.3 seed 5, slice 1.4e-10 sigma, not drawn; one drawn run overlaps the first set): 7 escape, at
+  0.24-2.19 of the estimate (median 0.55; above the estimate: binary8 fan-in 1.08, mps8 fan-in 2.19);
+  mps8 balanced seed 1 (sigma = 0.15) has not escaped at 3x the estimate (`continued_k78_random.csv`).
+  The 33 runs with estimates beyond 100x were not sampled.
+- In total 23 distinct stalled runs were continued and 16 escaped (14 of 15 k78, 2 of 8 large), at
+  0.24-2.19x the estimate. Untested: 91 of the 106 k78 stalled runs (estimate / elapsed time: cell
+  medians 17-64x) and 35 of the 43 large mps8 stalled or unresolved runs (median about 390x). "Stalls are
+  ever-longer plateaus" is therefore a derived prediction checked on 16 escapes; for the untested
+  majority it is a **conjecture**, supported only by the slice trends: pinned in binary8 and in balanced
+  mps8, still decaying in 50% of the balanced ht4 runs and 19-32% of the fan-in mps8 runs.
+- Slice trends at the end of the stalled / unresolved runs (`slice_trends.csv`; smallest dormant slice /
+  sigma, its log-log slope over the last decade, "decaying" = slope < -0.1): k78 binary8 median 0.011 (balanced) / 0.036 (fan-in), 4% / 0%
   decaying; ht4 balanced 0.05, 50% decaying; mps8 balanced 0.029, 13% decaying; mps8 fan-in 1.7e-5,
   19% decaying; large mps8 chi = 6 1e-6, 32% decaying; main mps8 chi = 3 4e-5 (stalled) and 5e-4
   (unresolved, 77% decaying). The k78 binary8 runs (both inits) and the mps8 balanced runs are mostly
@@ -534,48 +619,67 @@ changes them by <= 3.6e-6).
    bond-rank-constrained critical points W_S with truncated teacher spectra on every bond; one rank step
    per event on every edge at the same time in 497/531 tested runs; separation ratios growing like
    sigma^-(K-2)) were measured on binary4 and mps4 (both teachers, chi = 3, 6, 1.5 decades of sigma) and on
-   binary8 and ht4 at chi = 6 (separated teacher, 0.6 decade). On mps8 no run learns a third component
+   binary8 and ht4 at chi = 6 (separated teacher, 0.6 decade). On binary4, a depth-3 DLN, these are a
+   replication (known for DLNs; prediction = theory_saddles 4.1; [Achour2024; Jacot2021 Lemma 15]); new
+   for TTNs are mps4, binary8, ht4 and mps8. On mps8 no run learns a third component
    (0/284); two components in 132. At chi = R = 3, K = 7, 8 most runs trap or stall (2.7), so "S2S on
    every tree" holds only in this restricted sense. Order: greedy on binary4 (largest first in 20/20 init
    directions; the close teacher has wrong-order runs, 2.5), seed-dependent on the tensor-like trees with
    the first component fixed per seed across sigma (race model; replication of theory_escape E8).
    Saddle type: higher-order (lambda_min ~ sigma^(K-2)) at greedy binary4 plateaus and all plateaus on
-   the tensor-like trees; a **strict saddle** at the wrong-order binary4 plateau, as predicted
-   (lambda_min = 0.98 of the piggyback value, flat in sigma; 2.5).
+   the tensor-like trees; a **strict saddle** at the wrong-order binary4 plateau, as predicted and known
+   for DLNs (exact lambda_min at W_{1,3} -0.133186; measured -0.106 .. -0.146 at the 9 wrong-order
+   plateaus, median ratio 0.98 for seed 8 and 0.93 for seed 5, flat over sigma = 0.005-0.1; the wrong
+   order is not visited at sigma = 0.003; 2.5).
 3. **Escape-time scaling**:
    - t_1 = sigma^-(K-2) T(theta_hat) + c_K per seed (derived; = theory_escape E1, this is a
-     replication): no free parameter, residual <= 2e-3 at the smallest sigma, exponents with the offset
-     removed 0.9996, 2.0000, 4.998-4.999, 5.9995 for K = 3, 4, 7, 8 (2.2b). The Kumar-Haupt time is a
+     replication): no free parameter, residual <= 2.2e-3 at the smallest sigma, exponents with the
+     offset removed 0.9996 (binary4 separated; 0.990-0.996 close, offset not yet converged), 2.0000,
+     4.998-4.999, 5.9995 for K = 3, 4, 7, 8 (2.2b). The Kumar-Haupt time is a
      lower bound (proven), 3-2700x below the median at K = 3-8 (replication of E2).
    - Later gaps (empirical, on the runs that follow a resolved S2S sequence; 2.4): K - 2 per seed within
-     +-0.1 on binary4 and +-0.03 on mps4 (1.5 decades); binary8 (chi = 6) 5.02 +- 0.01 / 4.97 +- 0.02
+     +-0.1 on binary4 (known for DLNs) and +-0.03 on mps4 (1.5 decades; for binary4 close the rho > 3
+     cut leaves some seeds with 0.8 decade); binary8 (chi = 6) 5.02 +- 0.01 / 4.97 +- 0.02
      with per-seed values 4.88-5.09; ht4 (chi = 6) 5.10 +- 0.08 / 4.75 +- 0.14 with per-seed values
-     3.94-5.78 (not a clean confirmation); mps8 first gap only, 5.95 +- 0.05 (7 seeds); all K = 7, 8 over
-     0.6 decade. The wrong-order binary4 gap does not grow (strict saddle).
+     3.94-5.78 (not a clean confirmation); mps8 first gap only, 5.95 +- 0.05 (chi = 6, 7 seeds; at chi = 3
+     6.0 +- 0.3 and 6.19 +- 0.60, 3 seeds each); these K = 7, 8 fits span <= 0.6 decade. binary8 at
+     chi = 3, gap 1: 4.93 +- 0.05 / 4.92 +- 0.04 (separated / close, up to 1.1 decades), the only K = 7
+     fit spanning about 1 decade. The wrong-order binary4 gap does not grow (strict saddle).
    - chi: weak decrease of the prefactor (slopes -0.26 .. -0.76 over chi = 2-16), not the rho_0 law
      (replication of theory_escape E7); d: flat at full bond (E5); K: the RMS-overlap heuristic P3
      tracks the median within 2x over K = 3-15 (new; heuristic).
-   - Stalled runs (derived prediction): with live route ends, the remaining plateau is bounded by the
-     balanced-route estimate set by the suppressed dormant amplitude, ~ (suppression)^-(K-2)/K. Checked
-     on few runs only: 8/8 shortest-estimate k78 runs (3 seeds) escape at 0.50-0.87 of the estimate;
-     2 of 8 mps8 chi = 6 runs escape at 1.4-1.8x (above the bound); of a random 8 of the
-     74 k78 runs with estimates <= 100x the elapsed time, 7 escape at 0.24-2.2x and 1 not by 3x. Most
-     stalled runs have estimates 10-400x beyond the integrated time and are untested.
+   - Stalled runs (derived prediction; a conjecture for the untested majority): with live route ends
+     that obey the balanced reduction, the remaining plateau is set by the balanced-route estimate from
+     the suppressed dormant amplitude, ~ (suppression)^-(K-2)/K. Of 23 distinct continued stalled runs,
+     16 escape (14 of 15 k78, 2 of 8 large), at 0.24-2.19x the estimate: 8/8 shortest-estimate k78 runs
+     (3 seeds) at 0.50-0.87; 2 of 8 mps8 chi = 6 runs at 1.37x and 1.81x; 6 new escapes in a random 8
+     of the 74 k78 candidates (73 stalled + 1 trapped) with estimates <= 100x the elapsed time (1 not by
+     3x). The estimate is exceeded in 4 of the 16 escapes (1.08, 1.37, 1.81, 2.19x), so it is an
+     estimate, not a bound. Untested: 91 of 106 k78 stalled runs (estimate / elapsed: cell medians
+     17-64x) and 35 of 43 large mps8 stalled or unresolved runs (median about 390x).
 4. **Saddle type** (empirical; theory_saddles R10): slope of log(-lambda_min) vs log sigma per seed 1.0-1.2
-   (binary4), 2.0 (mps4), 4.9-5.1 (binary8, ht4), 6.0 (mps8, first plateau); magnitude within 0.87-1.15 of
-   the balanced route formula -(K-1) s_r (s_r |a_r|)^((K-2)/K) at K = 3, 4 and 1.4-3.2x larger at K = 7, 8
-   (routes not balanced). The strict wrong-order saddle on binary4 is item 2.
+   (binary4; known for DLNs), 2.0 (mps4), 4.9-5.1 (binary8, ht4), 6.0 (mps8, first plateau). Magnitude,
+   as a cell-median statement only: 0.87-1.15 of the balanced route formula
+   -(K-1) s_r (s_r |a_r|)^((K-2)/K) at K = 3, 4 (main fan-in cells; balanced binary4 chi 3: 1.19) and
+   1.4-3.2x larger at K = 7, 8 (up to 3.9 in k78; routes not balanced). Per-seed medians reach 20
+   (binary4 separated chi 3 seed 8, second plateau; balanced mps4 chi 3 up to 7.9), so per-seed R10
+   magnitudes are not cited; the slopes are unaffected. The strict wrong-order saddle on binary4 is
+   item 2.
 5. **Dormant suppression** (lead's question; 2.7): escapes shrink dormant components by a median 0.1-0.75
-   at K >= 4 (growth x2-3 at K = 3), with a >100x tail of <= 1.3% at K = 4, 0.6-2% at K = 7, 8 with chi = 6
-   and 3-11% at K = 7, 8 with chi = 3. The plateaus kill them through the conservation-law trap of fan-in
-   init (dead route ends; decay rate ~ sigma^2 per seed, checked at K = 4 to 1-3%; magnitude 1.1-5.6x
-   below the single-end estimate). Trap fractions: 0 at K = 3; at K = 4, chi = 3 fixed per init
-   direction (separated 4/10 seeds at every sigma; close 14/80 trapped + 8/80 stalled); at K = 7, 8 lower
+   at K >= 4 (growth x2-3 at K = 3), with a >100x tail of <= 1.3% at K = 4, 0-2% at K = 7, 8 with chi = 6
+   and 2-8% at K = 7, 8 with chi = 3 (11% for the mps8 separated later escapes only). The plateaus kill
+   them through the conservation-law trap of fan-in init (dead route ends; decay rate ~ sigma^2 per seed,
+   checked at K = 4: constant to <= 2.4% (seeds 3, 5, 6) and <= 5.3% (seed 7) over sigma = 0.003-0.1;
+   sign rule as derived; the magnitude relative to the single-end estimate is not cited, being
+   unsupported). Trap fractions: 0 at K = 3; at K = 4, chi = 3 fixed per init direction for the
+   separated teacher (4/10 seeds at every sigma) but not for the close teacher (14/80 trapped + 8/80
+   stalled; seed 7 traps at 6 of 8 sigmas, seed 5 stalls at all 8); at K = 7, 8 lower
    bounds of 30-80% at chi = 3 (fan-in), and at chi = 6 binary8 0/50, ht4 5/50 (one seed), mps8 7/50.
    Gauge-balanced init: 0/120 trapped in the cells where fan-in traps (12/30 and 47/90), but at K = 7, 8
    69/90 balanced runs stall. So at large K and chi = R, S2S from fan-in init means effectively stuck
    dynamics for a large fraction of seeds; with balanced init most runs sit on long plateaus whose
-   length is set by the suppression, as long as the dormant slices stay above roundoff (tolerance
+   length, by the derived prediction (checked on 16 escapes, a conjecture for the untested majority), is
+   set by the suppression, as long as the dormant slices stay above roundoff (tolerance
    check: 9/9 runs keep class and order at 100x tighter atol).
 
 ## 4. Changes after review round 1 (`notes/reviews/s2s_core_round1.md`)
@@ -583,31 +687,44 @@ changes them by <= 3.6e-6).
 Claims that changed (old -> new); everything else was re-derived from the same raw data with the
 corrected scripts and holds.
 1. "No strict saddles with odeco teachers" -> a strict saddle exists on binary4 wrong-order plateaus and
-   was measured as predicted (2.5); "higher-order" is restricted to greedy binary4 and tensor-like trees.
+   was measured as predicted (2.5: -0.106 .. -0.146 at 9 plateaus vs the exact -0.133186, median ratio
+   0.98 for seed 8 and 0.93 for seed 5; known for DLNs, so a replication); "higher-order" is restricted
+   to greedy binary4 and tensor-like trees.
 2. "Every gap ~ sigma^-(K-2)" (pooled fits) -> fits on runs classified by order and S2S status; binary4
    close gap 2 is 1.016 +- 0.011 (was 0.92 +- 0.11 pooled); ht4 per-seed exponents 3.9-5.8 and gap 2
-   4.75 +- 0.14; K = 7, 8 rest on chi = 6 over 0.6 decade (2.4).
+   4.75 +- 0.14; K = 7, 8 rest on chi = 6 over 0.6 decade, except binary8 gap 1 at chi = 3 (main, up to
+   1.1 decades; added after the round-2 verification) (2.4).
 3. "S2S on every tree" -> scope as measured; mps8 never learns a third component (0/284); mps8 gap 1
    5.95 +- 0.05 is new (2.3, 2.4).
 4. Trap decay rates: "constant per seed within 1.8x, two pairs switch levels by 20-100x" -> constant to
-   1-3% (separated) / 1.25-1.33x (close) once the fit stops above the float64 floor; the switch was an
-   artifact; rates are 1.1-5.6x below the single-end estimate (was "3-15x") (2.7c).
-5. Correlation-flow prediction: amplitude-1e6 stop -> direction-convergence stop; binary4 close
-   first-component agreement 100% (was 80-90%, an artifact); T changed by <= 1.7e-3 (binary4 close)
-   and less elsewhere; the cited cause (theory_escape E9, "wrong order at finite
-   sigma") is withdrawn: gradient flow learns the largest component first at every sigma (2.2b).
+   <= 2.4% (seeds 3, 5, 6) and <= 5.3% (seed 7) (separated) / 1.25-1.33x (close) once the fit stops
+   above the float64 floor; the switch was an artifact. The magnitude comparison with the single-end
+   estimate (first "3-15x", then "1.1-5.6x below") is withdrawn as unsupported (round-2 verification
+   E5) (2.7c).
+5. Correlation-flow prediction: amplitude-1e6 stop -> direction-convergence stop with an amplitude cap
+   1e30 (all 40 binary4 close-teacher jobs ended at the cap, direction converging slowly; T is converged
+   regardless). First-component agreement 1847/1848 runs over all sigmas, 100% at the smallest sigma
+   (binary4 close was 80-90%, an artifact of the old stop). T changed by <= 2.2e-3 (binary4 close;
+   1.75e-3 with fan-in init), <= 3.0e-5 (binary4 separated) and <= 2e-7 elsewhere. theory_escape E9
+   ("wrong order at finite sigma") is withdrawn as the cause of the old r1 mismatches, not as a
+   phenomenon: gradient flow learns the largest component first in 639/640 binary4 first-escape runs
+   and in all 380 main/balanced runs; the exception (chi 3, close, balanced, seed 6 at sigma = 0.1) is
+   an E9-type wrong first escape (2.2b).
 6. "Stalls are ever-longer plateaus (10/11)" -> a derived prediction, checked on 3 seeds (8 runs) plus the
-   mps8 chi = 6 spread sample (2 escape above the bound, 1 not at 2x, 5 unresolved) and a random sample
-   of 8 k78 runs (7 escape at 0.24-2.19x the estimate, 1 not by 3x);
-   slice trends reported (2.7).
+   mps8 chi = 6 spread sample (2 escape above the estimate, 1 not by 3x (stated before as "2x"; the
+   factor was 3), 5 unresolved) and a random sample of 8 k78 runs (7 escape at 0.24-2.19x
+   the estimate, 1 not by 3x): 16 escapes among 23 distinct continued runs, 4 of them above the
+   estimate, which is therefore not a bound; a conjecture for the untested 91/106 k78 and 35/43 large
+   mps8 runs; slice trends reported (2.7).
 7. Trap fractions at K = 7, 8 are lower bounds; "40% at K = 4" is the separated teacher only (close:
-   14/80 trapped + 8/80 stalled) (2.7).
+   14/80 trapped + 8/80 stalled, not fixed per init direction) (2.7).
 8. Balanced init: "0/210 trapped" -> 0/120 in the informative cells (fan-in 12/30, 47/90); balanced
    K = 7, 8 runs mostly stall (69/90); HT4 at chi = 6 traps 5/50 (was "2/50"), mps8 at chi = 6 7/50;
    "chi = 2R" is literal only on binary trees (2.7).
 9. Numbers corrected against the CSVs: edge rank steps 497/531 (332 untested); >100x drops at chi = 6
-   0.6-2% (was 0%); later escapes at K = 7, 8, chi = 3 up to 8-11% >100x (was "same picture"); R10
-   magnitude 0.87-1.15 (K = 3, 4) and 1.4-3.2 (K = 7, 8) (was 0.8-1.7); mps4 plateau level error 2.8e-3
+   0-2% (was 0%); later escapes at K = 7, 8, chi = 3 2.0-8.3% >100x, 11% for mps8 separated (was "same
+   picture"); R10 magnitude as cell medians 0.87-1.15 (K = 3, 4) and 1.4-3.2 (K = 7, 8; up to 3.9 in
+   k78) (was 0.8-1.7), per-seed medians up to 20; mps4 plateau level error 2.8e-3
    (8.1e-3 balanced); binary4 close plateau error up to 0.50 at unresolved plateaus; mps4 close has 8
    stalled runs; Kumar-Haupt ratio 3-2700x (was 3-500x).
 10. Tags: first escape, KH bound, d-flatness, chi slopes and race order are replications of theory_escape
