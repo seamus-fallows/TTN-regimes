@@ -33,6 +33,21 @@
     \toprule
     figure & command & raw data (sweeps; \cref{app:experiments}) \\
     \midrule
+    \ref{fig:s2s-runs} & \texttt{uv run python experiments/s2s\_core/\allowbreak plot\_report.py -{}-raw-main
+      data/s2s\_core/main -{}-raw-large data/s2s\_core/large -{}-out experiments/s2s\_core/results} draws this
+      figure (\texttt{report\_runs}) and \cref{fig:s2s-prefactor}; scripts below are in
+      \texttt{experiments/s2s\_core/}, run with \texttt{uv run python} and \texttt{-{}-out
+      experiments/s2s\_core/results}; full order in the experiment's README
+      & \texttt{main}, \texttt{large} (one run each; \cref{tab:exp-s2s}); local copy \texttt{data/s2s\_core/} \\
+    \ref{fig:s2s-aligned} & \texttt{plot\_aligned.py -{}-raw data/s2s\_core/aligned} (\texttt{fig\_a\_aligned})
+      & \texttt{aligned} \\
+    \ref{fig:s2s-first} & \texttt{plot\_scaling.py} (\texttt{fig\_c\_first\_escape\_chi3\_fanin}) from
+      \texttt{first\_runs.csv} (\texttt{analyze\_first.py}); \cref{tab:s2s-gaps} is
+      \texttt{main\_exponents.csv}, written by \texttt{recompute\_hessians.py} and \texttt{analyze\_main.py}
+      & \texttt{first}, \texttt{first\_k78}; table: \texttt{main}, \texttt{large} \\
+    \ref{fig:s2s-prefactor} & \texttt{plot\_report.py} as above (\texttt{report\_prefactor}), from \texttt{lo\_d.csv},
+      \texttt{lo\_chi\_table.csv}, \texttt{lo\_K\_table.csv} (\texttt{lo\_sweep.py}, \texttt{plot\_lo.py})
+      & \texttt{lo\_d}, \texttt{lo\_chi}, \texttt{lo\_K} \\
     \ref{fig:locality-exponents}, \ref{fig:locality-hessian} & \texttt{bash
       experiments/locality/finalize.sh R} writes every figure and table of
       \cref{sec:s2s-locality,sec:s2s-failure} into directory \texttt{R} (\texttt{LOCALITY\_EAGER=1}
@@ -47,6 +62,10 @@
     \ref{fig:locality-bonds} & \texttt{plot\_bonds.py \$O/twocomp -{}-cases mps8:25 binary8:34 ht8:12s
       -{}-sigma 0.05 -{}-out R/bond\_spectra.png}
       & \texttt{twocomp} (saved trajectories) \\
+    \ref{fig:s2s-dormant} & \texttt{uv run python experiments/s2s\_core/\allowbreak plot\_dormant.py -{}-out
+      experiments/s2s\_core/results} (\texttt{fig\_g\_dormant}) from \texttt{main\_runs.csv} and
+      \texttt{dormant\_decay.csv} (\texttt{analyze\_main.py}, \texttt{analyze\_dormant.py})
+      & \texttt{main}, \texttt{large}, \texttt{k78}, \texttt{balanced} (\cref{tab:exp-s2s}) \\
     \ref{fig:optim-gd} & \texttt{uv run python experiments/optim\_samples/\allowbreak plot\_report.py
       -{}-out-dir experiments/optim\_samples/\allowbreak results} draws this figure and the next two from
       committed tables, here
