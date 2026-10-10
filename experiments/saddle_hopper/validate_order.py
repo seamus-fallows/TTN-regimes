@@ -1,8 +1,10 @@
-"""Validate the hopper on experiments/order (round-1 results on main; re-run when the fix round lands).
+"""Validate the hopper on experiments/order (results of the order fix round, merged on main).
 
 Inputs (committed, experiments/order/results/): sigma_fits.csv (P(smaller first) ~ sigma^gamma: fitted
-gamma vs n (1 - rho)/rho), h1b_fits.csv (wrong-order saddle: lambda_min and correction slope),
-multi2_perms.csv (R = 3, 4 components: frequency of every order).
+gamma vs n (1 - rho)/rho), h1b_fits.csv (wrong-order saddle: lambda_min and correction slope; set
+"h1b_saddle_b4" = binary4 saddle starts, named "saddle_b4" in round 1), multi2_perms.csv (R = 3, 4
+components: frequency of every order). The gamma and H1b values compared here are the order agent's own
+predictions (gamma_pred, lam_pred, slope_pred): a check of the hopper's implementation.
 usage: uv run python experiments/saddle_hopper/validate_order.py [--workers 8]
 """
 
@@ -89,7 +91,7 @@ def main():
         for r in fits.itertuples()
     }
     h1b = pd.read_csv(ORD / "h1b_fits.csv")
-    h1b = h1b[h1b.set == "saddle_b4"]
+    h1b = h1b[h1b.set.isin(["h1b_saddle_b4", "saddle_b4"])]  # fix round renamed the set
     for r in h1b.itertuples():  # binary4, d = 2, chi = 4, smaller component learned (saddle start)
         cases[("h1b", r.rho)] = two_case("binary", 4, None, r.rho, 2, 4, init="saddle", start=1)
     perms = pd.read_csv(ORD / "multi2_perms.csv")
