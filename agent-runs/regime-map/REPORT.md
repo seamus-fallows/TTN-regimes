@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-10 01:38 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-10 01:52 UTC
 
 ## Summary
 Task: phase diagrams of saddle-to-saddle (S2S) / rich / lazy dynamics over init scale sigma, bond
@@ -168,3 +168,4 @@ Other interim findings (N = 4):
 - 00:45 large_chi_b4 (partial): exponents of delta_K vs chi: SP -2.95 +- 0.16 (theory -3), NTK -0.76 +- 0.11 (-1), muP-TTN +0.15 +- 0.16 (0)
 - 01:25 chi_b4 complete: lazy boundary slope -0.522 +- 0.020 (chi >= 32; theory -1/2), S2S boundary slope -0.524 +- 0.045 (chi 16-128): collapse in sigma sqrt(chi) (per-bond Gram scale); large_chi_b4 complete (sigma = 1.5): SP -3.09 +- 0.09, NTK -0.84 +- 0.06, muP-TTN +0.03 +- 0.06 for delta_K vs chi
 - 01:37 started the centred sigma x K sweep (d = 2) alongside the N = 4 tail (two-copy deficient escapes at large sigma)
+- 01:52 heavy pool too slow (~1350 runs left at ~4/min): dropped the remaining d = 3 sigma x K runs (K <= 8; 252 done, d = 2 sweeps cover K); restarted heavy pool with the N = 8 maps, the d = 2 plain and full-bond K sweeps and large-chi K = 7
