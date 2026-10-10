@@ -1,1 +1,20 @@
 45 cases -> /root/outputs/real_data/fashion
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.14_seed0", "status": "completed", "wall": 1166.3}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.05_seed2", "status": "completed", "wall": 1235.7}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.14_seed4", "status": "completed", "wall": 1239.8}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.14_seed1", "status": "completed", "wall": 1266.3}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.05_seed2", "status": "completed", "wall": 1268.0}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.05_seed1", "status": "completed", "wall": 1269.9}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.05_seed3", "status": "completed", "wall": 1272.3}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.05_seed0", "status": "completed", "wall": 1276.1}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.14_seed2", "status": "completed", "wall": 1276.1}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.14_seed0", "status": "completed", "wall": 1277.3}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.14_seed3", "status": "completed", "wall": 1324.2}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.14_seed2", "status": "completed", "wall": 1349.9}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.05_seed1", "status": "completed", "wall": 1356.1}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.05_seed0", "status": "completed", "wall": 1364.5}
+{"name": "fashion4_7v9_n4000_raw_mps_snake_chi4_s0.05_seed4", "status": "completed", "wall": 1371.6}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.05_seed3", "status": "completed", "wall": 1390.7}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.05_seed4", "status": "completed", "wall": 1439.5}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.14_seed1", "status": "completed", "wall": 1472.8}
+{"name": "fashion4_7v9_n4000_raw_binary_quadtree_chi4_s0.5_seed0", "status": "completed", "wall": 1540.7}

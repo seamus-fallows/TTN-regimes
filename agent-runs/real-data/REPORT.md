@@ -103,7 +103,16 @@ Figures (`experiments/real_data/results/`): `loss_curves_raw` (train/test per tr
   also carry the data-weighted spectra).
 
 ## Files left on the machine
-- `/root/outputs/real_data/data/` (~25 MB): raw IDX files and downsampled npz (regenerate with download.py).
+All under `/root/outputs/real_data/` (~0.6 GB; none in git):
+| path | size | what | needed to reproduce |
+|---|---|---|---|
+| `data/` | 65 MB | raw IDX files + 4x4 / 8x8 npz (`download.py`) | yes (or re-download) |
+| `main/` | 367 MB | 234 trajectories of the main sweep (npz: phase-1/2 rows, spectra, theta at phase ends) + `runs.jsonl` | yes for every main-sweep number |
+| `regime/` | 68 MB | 35 centred-model trajectories | yes for the regime map |
+| `chi8/`, `fashion/`, `img8/`, `tol_check/` | (running) | robustness sweeps | for section 7 of the notes |
+| `analysis/` | 2 MB | summaries, route amplitudes, Hessians, regime analysis (JSON; copies of the small ones in `experiments/real_data/results/`) | regenerable from the runs |
+| `pilot/`, `smoke*/` | 38 MB | development runs (pre-final settings) | no |
+| `main_placeholders.txt`, `old/` | - | list of trimmed cases; logs of the killed launches | no |
 
 ## Caveats and next steps
 (pending)
