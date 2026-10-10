@@ -67,10 +67,12 @@ It is the simplest genuine TTN. (i)~With at least three sites and an internal bo
 genuine tensor; a deep linear network is a chain with physical legs only at its two ends.
 (ii)~Whitened inputs reduce the population loss to a Frobenius distance (\cref{sec:setup-loss}), the
 setting in which \citet{saxe2014exact} solved deep linear networks. (iii)~The matrix product state
-(MPS) models of \citet{stoudenmire2016supervised} have the same form with non-Gaussian features.
+(MPS) classifiers of \citet{stoudenmire2016supervised} compute, for each class label $\ell$,
+$f^\ell(x)=\ip{\W^\ell}{\bigotimes_i\feat{i}(x)}$ (the label index sits on one core), with non-Gaussian
+local features $(\cos(\pi\xs{i}/2),\sin(\pi\xs{i}/2))$ that are correlated across sites.
 (iv)~Training is then a fully observed tensor factorization. On HT trees it has the mode tree of the
 hierarchical tensor factorization of \citet{razin2022implicit} (one leaf matrix per site), but there
-each internal node is a local CP factorization,
+each internal node is a local CP factorization (their Eq.~3),
 $\G{v}[b_1,\dots,b_c,a]=\sum_r\delta_{b_1r}\cdots\delta_{b_cr}M^{(v)}_{ra}$, trained on general losses
 such as tensor completion; our dense cores carry the matrix gauge symmetries of
 \cref{sec:setup-conservation} instead of one scalar invariant per local component.
@@ -258,11 +260,12 @@ $\norm{\params_0}^2\approx\isc^2\sum_v\bd{v}$ grows with the bond dimensions.
   \item \emph{Imbalance}: per-core scales $\iscv{v}=\isc c_v$ with a fixed profile $(c_v)$ (for
     example root versus rest), compared at fixed $\prod_v\iscv{v}$.
   \item \emph{Centred model}: the target is $\Wt+\W(\params_0)$, that is, $f_\params-f_{\params_0}$ is
-    trained on $f^*$ \citep{chizat2019lazy}. The initial function is removed at any $\isc$ without
+    trained on $f^*$ \citep[Sec.~3.2]{chizat2019lazy}. The initial function is removed at any $\isc$ without
     changing the parameterization, so $\isc$ alone moves the model from small to large
     initialization; overlaps and bond spectra refer to $\W-\W(\params_0)$. This is the main
     construction of the regime map (\cref{sec:regime-map}).
-  \item \emph{Two-copy model} \citep{woodworth2020kernel}: $\W(\params^+)-\W(\params^-)$ with
+  \item \emph{Two-copy model} (\citealp[Sec.~3.1]{chizat2019lazy};
+    \citealp[Sec.~4]{woodworth2020kernel}): $\W(\params^+)-\W(\params^-)$ with
     $\params^+(0)=\params^-(0)=\params_0$, zero at initialization for every $\isc$; a cross-check of
     the centred model (\path{notes/model.md}, \path{notes/decisions.md}). It is stored as one TTN with
     doubled bonds $2\bd{v}$ and block-diagonal cores ($\G{v}^\pm$ on the block where all bond indices
@@ -273,8 +276,9 @@ $\norm{\params_0}^2\approx\isc^2\sum_v\bd{v}$ grows with the bond dimensions.
     diagonal in the teacher's basis, giving exactly solvable Saxe-type dynamics.
   \item \emph{Per-core learning-rate multipliers} $\lrm{v}$ \eqref{eq:gf}. A fixed
     forward multiplier $c_v$ ($\G{v}=c_vH_v$, $H_v$ trained) is equivalent to the initial scale
-    $c_v\iscv{v}$ with the multiplier $c_v^2\lrm{v}$; this expresses NTK- and $\mu$P-type
-    parameterizations for large bond dimension \citep{yang2021tensor} (\cref{sec:other-regimes}).
+    $c_v\iscv{v}$ with the multiplier $c_v^2\lrm{v}$; this expresses the NTK and $\mu$P
+    parameterizations of wide networks \citep{yang2021tensor}, transposed to large bond dimension
+    (\cref{sec:other-regimes}).
 \end{enumerate}
 
 \begin{remark}[The two-copy model needs a gradient mask]\label{rem:two-copy-mask}
