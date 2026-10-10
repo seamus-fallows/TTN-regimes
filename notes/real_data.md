@@ -300,7 +300,7 @@ per critical-point unit, not per run.
 | strict saddle iff k = 2 (H3), via lambda_min scaling | MPS (after the first route): exponent 0.047 ± 0.016 (strict); binary rank-1 plateau 0.95 ± 0.07 (higher order, predicted 1) | yes | `plateau_hessians`, 8.7 |
 | next route = lowest degree, then largest amplitude (R8) | 22/26 units hit in all states, 2 mixed, 2 miss (chance 1/4); 11/11 review runs; larger-amplitude k = 5, 7 routes escape later | yes | `route_amplitudes`, 8.3 |
 | bottom-up rank growth (R3) | Kendall tau(level, time) > 0 on binary trees (0.17-0.31) | partly (a tendency) | `tables.md`, 8.10 |
-| locality: local pixel orders learn faster | quadtree lowest final loss at every seed (sigma = 0.1), share of amplitude on k <= 5 routes predicts the final loss (rho = -0.72, n = 30); an equally local transposed quadtree is among the worst; early learning not faster | no as locality; an order effect measured by route amplitudes | `locality_orders`, 8.4 |
+| locality: local pixel orders learn faster | quadtree lowest final loss at every seed for sigma <= 0.14; pre-registered test over 27 orders: a data-only route-amplitude share predicts the final loss (rho = -0.60 [-0.82, -0.22]; random orders -0.55 [-0.85, -0.09]) but not the time to L <= 0.25; an equally local transposed quadtree is among the worst | no as locality; an order effect predicted by route amplitudes (final loss only) | `locality_orders`, `order_test`, 8.4, 9 |
 | MPS between quadtree and scrambled (brief) | tree shape and pixel order confounded; snake MPS fastest on the tau clock (MNIST), later on the absolute clock, slowest on Fashion | undetermined | 8.5 |
 | regimes: S2S -> rich -> lazy with sigma (H4) | S2S at small sigma; rich at one sigma (1.4); lazy (>= 2) = linearized model, kernel rank = R2 formula; boundaries threshold-dependent; lazy runs unconverged | partly | `regime_sweep`, 8.8 |
 
@@ -500,8 +500,14 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   (4) Mechanism **[conjecture]**: the pixel order decides which label-relevant pixel interactions lie on short
   routes (k <= 5, escaping within the horizon) and which on k = 7 routes (sigma^-5 plateaus, not reached);
   whether the order is local in the image does not decide it (transposed quadtree). The claim is renamed
-  "pixel-order (orientation) effect, measured by route amplitudes"; untested: more local orders and more seeds
-  (the review's optional runs were not made in this round).
+  "pixel-order (orientation) effect, measured by route amplitudes".
+  (5) **Pre-registered test (round 2, section 9):** across 27 orders (20 new random, 7 structured; 3 seeds each,
+  seeds averaged), the share computed from the data alone (best rank-1 fit, no training) predicts the final loss
+  (rho = -0.60 [-0.82, -0.22] over all orders, -0.55 [-0.85, -0.09] within random orders: supported) but not the
+  time to L <= 0.25 (rho = -0.30 [-0.59, +0.06]: not supported). **[empirical, pre-registered]** Final form of the
+  claim: the pixel order changes how low a binary TTN ends at fixed training time (small sigma); a data-only route-
+  amplitude share predicts that ranking across orders; it does not predict early speed; locality in the image is
+  neither necessary nor sufficient (transposed quadtree among the worst, high-S random orders near the best).
 - Withdrawn: "locality is a small-init dynamical effect" as a statement about locality. Kept: the gap between
   orders at small sigma is not an expressivity limit at chi = 4, since at sigma = 0.5 the committed scrambled
   orders end lower than the quadtree **[empirical]**.
@@ -542,8 +548,9 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   median 0.01). (1) In 10/35 runs (seed 4 at every sigma, seed 0 at sigma >= 0.2) the data-weighted s2/s1 of
   edge 5 is >= 0.05 already at the start of phase 2: the recorded "first increase" is the threshold at
   tau = 0, not a resolved event (round 0 counted these as "single edge first"; `summarize.py` now flags
-  them). (2) In all 25 resolved runs the first increase is edge 5 alone, 0.05-1.96 time units *before* the
-  first drop's rate peak (24/25 inside its window): the first MPS route is merged with the escape from the
+  them; the full-horizon recount gives the same 10/35). (2) In all 25 resolved runs the first increase is edge 5
+  alone, 0.05-1.96 time units *before* the first drop's rate peak (24/25 inside its window; in the full-horizon
+  runs one of the 25 crosses 0.015 after the peak): the first MPS route is merged with the escape from the
   origin, so no gap is measured for it and the k = 2 log law is not tested on it. **[empirical]** (3) The log
   law is measured on the next edges. With relative-residual fits for both laws (5 seeds, sigma = 0.05-0.5):
   edge 4 rises at 14.7 ± 1.5 per unit ln(1/sigma) after the first drop (log rms 0.027 vs power 0.355; 4/5
@@ -557,7 +564,7 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   artifact of the unweighted log fit; with fair fits 6 of 9 do. Edges 1 and 2 (next to the chain's start)
   remain unexplained by rank-1 counting, which predicts k = 2 everywhere on the MPS. **[empirical]** (4) The strict Hessian of 4.5 is measured on the plateau after edge 5 has risen
   (8.7), so it belongs to the later routes. Verdict: **partly** (a single-edge first increase, but merged with
-  the escape; log time holds for edges 4, 3).
+  the escape; log time holds for 6 of the 9 later edges).
 
 ### 8.7 Saddle type at the first plateau (section 4.5) [binary exponent corrected; MPS state re-described]
 - **Binary (old: "lambda_min ∝ sigma^0.877 ± 0.005 per seed (3 seeds) ... measured 12% lower").** Seed 4 was
@@ -676,7 +683,7 @@ fixes and keep their committed outputs.
 | MPS first route (4.2) | single edge, k = 2 strict, 34/35: yes | merged with the escape, 10/35 at tau = 0: partly | empirical |
 | MPS later edges (4.4) | log law for edges 4, 3; far edges power-like | fair fits, full horizon: log for edges 3, 4, 6-9 (27/29 seed fits), power for 1, 2, mixed for 0 | empirical |
 | route-amplitude rule (4.3) | 34/35, 78/89 runs | 22/26 units hit, 2 mixed, 2 miss (chance 1/4); 11/11 out of sample | empirical |
-| locality (4.7) | quadtree >> scrambled, 88% vs 21%, gone at sigma = 0.5 | pixel-order effect: quadtree lowest final loss at every seed, share predicts loss (rho -0.72, n = 30), not faster early, transposed quadtree among the worst | empirical; mechanism conjecture |
+| locality (4.7) | quadtree >> scrambled, 88% vs 21%, gone at sigma = 0.5 | pixel-order effect: quadtree lowest final loss at every seed (sigma <= 0.14), not faster early, transposed quadtree among the worst; pre-registered: data-only share predicts final loss over 27 orders (rho -0.60 [-0.82, -0.22]), not time to L <= 0.25 | empirical (pre-registered); mechanism conjecture |
 | MPS fastest (4.7, 5, REPORT) | every loss level first at every sigma; fails on every task | tau clock, MNIST, snake only; slower on the absolute clock (4/5 seeds at 0.1), slowest on Fashion; shape/order confounded | empirical; mechanism conjecture |
 | later routes higher degree (4.4) | k = 4-5, exponent 3.3 | not established | withdrawn |
 | binary lambda_min exponent (4.5) | 0.877 ± 0.005, 12% low | 0.95 ± 0.07 (4 seeds, < 1 decade), consistent with 1 | empirical |
@@ -749,3 +756,41 @@ The predictor values for all orders are committed (`results/extra_orders_predict
   sigma = 0.1, seeds 0-4) for the four round-0 orders, i.e. whether the best rank-1 fit is the state the runs reach.
 - Anything else is labelled exploratory. Budget: at most 8 processes and about 1.5 h; if runs remain unfinished,
   orders with fewer than 3 seeds are reported but left out of the primary analysis (a listed deviation).
+
+### 9.6 Results (appended after the runs; analysis exactly as registered)
+`results/order_test.{json,md}`, figure `order_test`; per-order predictor values were committed before the runs
+(commit 44feb2f), the registration itself in 2f4d99e.
+- **Runs.** All 81 runs completed to tau = 1e4 (74 new, 7 reused). Predictor S over the 27 orders: 0.014-0.994.
+  Orders with the same pixel pairs share the best rank-1 fit: quadtree, rowmajor and snake (horizontal pairs)
+  have S = 0.989, quadtreeT and colmajor (vertical pairs) 0.338; mortonrev 0.475, hilbert 0.033. Outcomes: O1 from
+  0.097 (quadtree, the lowest of the 27 orders) to 0.244; O2 from 1.04 to 3.96 (4 of 81 seeds censored at the
+  horizon, one each in 4 orders).
+- **Primary, O1 (final loss): supported.** All orders: rho = -0.60, 95% CI [-0.82, -0.22], permutation p = 0.001
+  (n = 27). New random orders: rho = -0.55 [-0.85, -0.09], p = 0.015 (n = 20). **[empirical, pre-registered]**
+- **Primary, O2 (time to L <= 0.25): not supported.** All orders: rho = -0.30 [-0.59, +0.06], p = 0.12; new random
+  orders: rho = -0.26 [-0.63, +0.23], p = 0.26. **[empirical, pre-registered]**
+- **Secondary (registered).** (a) Without the three orders seen before registration (n = 24): O1 rho = -0.51
+  [-0.80, -0.08] (supported), O2 -0.22 [-0.57, +0.22] (not). (b) With the round-0 random orders scrambled0-2 added:
+  O1 -0.60 [-0.82, -0.24] (all, n = 30) and -0.57 [-0.84, -0.17] (random, n = 23), supported; O2 -0.24 and -0.13,
+  not. (c) Predictor validity: the registered rank-1 search does not always find the rank-1 state that gradient
+  flow reaches. For the quadtree (and rowmajor, snake: same pairs) its best fit has loss 0.310, while 4 of 5 runs
+  plateau at a lower rank-1 point, L = 0.27, with share 0.91 (S = 0.99). For scrambled0 it finds the state of one
+  seed (L 0.296, share 0.81 vs S 0.76), while the other four sit at L = 0.30-0.32 with share 0.02-0.07. scrambled2
+  matches 3 of 5 seeds (S 0.008 vs 0.01). For scrambled1 the loss level is about the same but S = 0.25 vs a share
+  of 0.12. So S is a noisy proxy for the state the runs actually reach.
+- **Deviations.** None in the registered design or analysis. The 8-process limit was exceeded briefly, without
+  effect on any result: 9 processes for about 2.5 min (figure regeneration and a one-run timing test while 8 runs
+  were active), and 12-13 processes for about 3 min (the exploratory job below was started on a miscount of the
+  finished runs; it was stopped and restarted after all runs had completed). Wall-clock: 70 min for the runs.
+- **Reading.** The share of route amplitude on k <= 5 routes, computed from the data alone, ranks pixel orders by
+  their final loss at tau = 1e4 (sigma = 0.1), across all orders and within random orders. It does not predict
+  how fast the first loss levels are reached. This matches 8.4 (3): the order acts through the later escapes
+  (routes of degree 5 vs 7), not the first ones. That the share acts through those routes is still a
+  **[conjecture]**.
+- **Exploratory (not registered).** The same share evaluated at the plateau state that each run actually reaches
+  (`route_amplitudes.py` on all 81 runs; 79 states within 0.05 of rank 1, two not), averaged over seeds, predicts
+  the final loss more strongly: rho = -0.83 [-0.91, -0.66] over all orders and -0.85 [-0.95, -0.60] within random
+  orders. Like the registered predictor, it does not predict the time to L <= 0.25 (-0.15, -0.08). This plateau
+  share is computed after the first escape, so it is not a before-training predictor. Together with (c) this is
+  consistent with the registered S being a noisier proxy because the data-only rank-1 search sometimes picks a
+  different rank-1 state than gradient flow (interpretation: **[conjecture]**). **[empirical, exploratory]**

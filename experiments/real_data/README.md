@@ -16,7 +16,8 @@ earlier statements where they differ). Running report: `agent-runs/real-data/REP
   sigma (`TTNSpec.init`), float64, one thread per process.
 - Trees (`data.pixel_order`, `data.make_tree`): `binary16` (K = 15) on the Morton/quadtree order
   ("quadtree"), `mps16` (K = 16) on the boustrophedon order ("snake"), `binary16` on a random
-  permutation ("scrambled<k>", permutation seed k + 12345), row-major ("rowmajor"). Bond dimension chi (default 4).
+  permutation ("scrambled<k>", permutation seed k + 12345), and for the order test quadtreeT, rowmajor, colmajor,
+  hilbert, mortonrev (`data.pixel_order`). Bond dimension chi (default 4).
 - Dynamics: gradient flow, two phases (`run.py`): DP5 through the first plateau until the loss has
   dropped by 1%, then LSODA (Gauss-Newton Newton matrix) on the clock tau = t - t_a for a horizon T2;
   rtol 1e-8, atol 1e-14. Library `Recorder` (log + fine rows) plus test metrics and data-weighted
@@ -90,8 +91,9 @@ and transposed-quadtree binary trees, MPS with other pixel orders; seed 0 and 1,
 remote `chi8_runs/` links point to these two; map in `data/real_data/SYMLINKS_on_remote.txt`) and img8 into
 `$L/full/`, then `scaling.py`, `tables.py`, `events_table.py`, `make_figures.py` and `fix1_analysis.py --main
 $L/full/main_summary.json` as in "How to run". This regenerated `scaling.json`, `tables.*`,
-`scaling_raw.*` (removed in fix round 1: its middle panel plotted misattributed gaps; `first_route_gaps` and
-`scaling_fix1` replace it), `events_table.*` and the `chi8_*`/`fashion_*`/`img8_*` tables and scaling files from the
+`scaling_raw.*` (removed in fix round 1 because its middle panel plotted misattributed gaps; now regenerated
+with the window-checked attribution over all runs, next to `first_route_gaps` and `scaling_fix1`), the raw-curve
+figures (MNIST and Fashion), `events_table.*` and the `chi8_*`/`fashion_*`/`img8_*` tables and scaling files from the
 raw outputs with the fixed code; nothing from the review's list is pending (`notes/real_data.md` 8.12).
 
 ### Pre-registered order test (notes/real_data.md section 9)
@@ -101,6 +103,8 @@ uv run python experiments/real_data/run.py experiments/real_data/configs/extra_o
 uv run python experiments/real_data/summarize.py $L/extra_orders $L/extra_orders_summary 8
 uv run python experiments/real_data/order_test.py $R/extra_orders_predictor.json $L/extra_orders_summary.json $R/order_test     --main $L/full/main_summary.json --routes $R/routes_raw.json [--plateau $L/routes_extra.json]
 ```
+Committed: `results/extra_orders_predictor.json` (S, before the runs), `extra_orders_summary.csv`, `order_test.{json,md}`,
+`routes_extra_orders.json` (plateau-state amplitudes of the 81 runs, exploratory) and the figure `order_test`.
 Reused identical cases are copied into `$L/extra_orders` before the run (quadtree seeds 0-2 from the main sweep,
 quadtreeT and rowmajor seeds 0-1 from the review runs), so the runner skips them.
 
@@ -108,7 +112,7 @@ quadtreeT and rowmajor seeds 0-1 from the review runs), so the runner skips them
 | file | role |
 |---|---|
 | `download.py` | data download and downsampling |
-| `data.py` | tasks, features, pixel orderings, trees, `GNProblem` (closed-form per-sample Jacobian, Gauss-Newton Newton matrix), `DenseHessianProblem` (exact Hessian, N <= 16), `messages`, `function_spectra`; `REAL_DATA_DIR` |
+| `data.py` | tasks, features, pixel orderings (quadtree, quadtreeT, rowmajor, colmajor, snake, hilbert, mortonrev, scrambled<k>), trees, `GNProblem` (closed-form per-sample Jacobian, Gauss-Newton Newton matrix), `DenseHessianProblem` (exact Hessian, N <= 16), `messages`, `function_spectra`; `REAL_DATA_DIR` |
 | `run.py` | two-phase gradient-flow runner (re-anchored clock in phase 1, LSODA phase 2), `RealRecorder` |
 | `analysis.py` | loading, rate-peak loss drops, events, time-to-loss; `route_units` (rank-1 filter, critical-point units) |
 | `summarize.py` | one summary row per run (drops, rho, S2S, rank events incl. those already met at tau = 0, edges per drop, loss levels) |
@@ -119,7 +123,9 @@ quadtreeT and rowmajor seeds 0-1 from the review runs), so the runner skips them
 | `regime_analysis.py` | regime labels, post-hoc delta_K, linearized-model reference L_lin(t) |
 | `tables.py`, `make_figures.py` | tables and figures (`make_figures.py --json`: the figures that need only committed JSON) |
 | `fix1_analysis.py` | fix round 1: re-analysis from committed outputs (+ local reruns, review runs) -> `results/fix1_analysis.{json,md}` |
-| `configs/` | `main` (+ `main_extra`: 14 scrambled1 runs main.yaml does not generate), `regime`, `fashion`, `chi8` + `chi8b` (same cases, two runners), `img8`, `tol_check`; `fix1_local`, `fix1_mps` (fix round 1); `pilot`, `smoke*` (development) |
+| `order_predictor.py` | data-only predictor of the pre-registered order test (best rank-1 fit, route-amplitude share) -> `results/extra_orders_predictor.json` |
+| `order_test.py` | registered analysis of the order test (seed-averaged outcomes, Spearman, bootstrap CIs, permutation p) -> `results/order_test.{json,md}` |
+| `configs/` | `main` (+ `main_extra`: 14 scrambled1 runs main.yaml does not generate), `regime`, `fashion`, `chi8` + `chi8b` (same cases, two runners), `img8`, `tol_check`; `fix1_local`, `fix1_mps` (fix round 1); `extra_orders` (order test); `pilot`, `smoke*` (development) |
 | `results/` | small outputs: tables, JSON summaries, figures (`fix1_*` = fix round 1; see the pending note above for round-0 files) |
 
 ## Results (details and evidence: `notes/real_data.md`; section 8 = fix round 1)
@@ -136,10 +142,11 @@ quadtreeT and rowmajor seeds 0-1 from the review runs), so the runner skips them
   the binary rank-1 plateau a higher-order one (lambda_min ∝ sigma^0.95 ± 0.07) (`scaling_fix1`, `plateau_hessians`).
 - Route amplitudes at the rank-1 plateau predict the first sibling pair in 22 of 26 (order, seed, critical
   point) units (2 mixed, 2 miss; chance 1/4) and 11/11 review runs (`route_amplitudes`).
-- Pixel order: at sigma = 0.1 the quadtree order ends lowest at every seed (0.098 ± 0.001 vs 0.19-0.23 for
-  random orders), the k <= 5 share of route amplitude predicts the final loss (Spearman -0.72, n = 30), but an
-  equally local transposed quadtree is among the worst and early learning is not faster: an order/orientation
-  effect, not locality as such (`locality_orders`).
+- Pixel order: at sigma <= 0.14 the quadtree order ends lowest at every seed, but an equally local transposed
+  quadtree is among the worst orders and early learning is not faster. Pre-registered test (27 orders x 3 seeds,
+  sigma = 0.1): the share of route amplitude on k <= 5 routes, computed from the data alone, predicts the final
+  loss across orders (Spearman -0.60 [-0.82, -0.22]; within 20 random orders -0.55 [-0.85, -0.09]) but not the time
+  to L <= 0.25 (-0.30 [-0.59, +0.06]): an order effect, not locality as such (`order_test`, `locality_orders`).
 - MPS vs binary: the snake MPS is fastest only on the tau = t - t_a clock on MNIST; on the absolute clock its
   first escape is later for 4 of 5 seeds at sigma = 0.1, and on Fashion it is the slowest tree.
 - Regimes (centred): S2S at small sigma, rich at sigma = 1.4 (one sigma), lazy from 2 with L(T) = L_lin(T);

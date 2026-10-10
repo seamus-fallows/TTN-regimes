@@ -64,6 +64,8 @@ def outcomes(rows):
 
 def spearman_ci(x, y, rng):
     x, y = np.asarray(x, float), np.asarray(y, float)
+    if len(x) < 4:
+        return {"n": len(x), "rho": None, "ci95": [None, None], "p_perm": None, "n_boot_used": 0, "supported": None}
     rho = float(spearmanr(x, y).statistic)
     boots = []
     n = len(x)
@@ -186,6 +188,8 @@ def main():
 
 
 def _fmt(r):
+    if r["rho"] is None:
+        return f"n = {r['n']} (too few orders)"
     lo, hi = r["ci95"]
     return (
         f"rho = {r['rho']:+.2f} [{lo:+.2f}, {hi:+.2f}], p_perm = {r['p_perm']:.3g}, n = {r['n']}"
