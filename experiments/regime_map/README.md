@@ -150,7 +150,7 @@ the notes):
     sigma^K sqrt(D) / (s d) > ~1.
   - Centred model with full bonds (K <= 8 at d = 2, K <= 4 at d = 3): sigma^K and sigma^K / sqrt(D)
     are not resolved (beta = -0.07 +- 0.51).
-  - Run time: 0.1-0.4 h per run at K = 13-15 (plain, chi = 4); about 1 h at full bonds with P = 2349;
+  - Run time: median 800-1,600 s per run at K = 13-15 (plain, chi = 4); about 1 h at full bonds with P = 2349;
 - large chi (tensor kernel): delta_K ~ chi^-3.02 (SP), NTK chi^-1 at chi >= 64, muP-TTN delta_K -> 6.2
   (theory P16);
 - imbalance: light root -> lazy (delta_K ~ lambda^2, saturating at 0.6, the lower edge of P20's

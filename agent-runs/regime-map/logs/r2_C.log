@@ -1,0 +1,16 @@
+12:49:34 240 runs submitted for 48 walkers
+12:52:53 25 done, 217 running, walkers {'open': 48}
+12:53:18 50 done, 202 running, walkers {'open': 48}
+12:55:35 75 done, 189 running, walkers {'open': 48}
+12:56:27 100 done, 176 running, walkers {'open': 48}
+13:03:44 125 done, 163 running, walkers {'open': 48}
+13:06:36 150 done, 142 running, walkers {'open': 48}
+13:07:39 175 done, 127 running, walkers {'open': 48}
+13:08:45 200 done, 112 running, walkers {'open': 48}
+13:09:11 225 done, 89 running, walkers {'ok': 10, 'open': 38}
+13:09:43 250 done, 76 running, walkers {'ok': 18, 'open': 30}
+13:10:24 275 done, 53 running, walkers {'ok': 29, 'open': 19}
+13:13:33 300 done, 34 running, walkers {'ok': 36, 'open': 12}
+13:16:18 325 done, 9 running, walkers {'ok': 42, 'open': 6}
+13:27:11 350 done, 2 running, walkers {'ok': 47, 'open': 1}
+13:32:06 final: {'ok': 48}
