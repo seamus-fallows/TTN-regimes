@@ -148,6 +148,20 @@ P(larger first), rho = 0.5 / 0.8 / 0.9 (binomial SE <= 0.025):
   settings: GF 0.60-0.88 (rho = 0.5), 0.51-0.65 (0.8); race curve 0.66-0.89 and 0.55-0.66.
 - Selection rule (O5): see section 8.
 
+### 7.1b d test with independent seeds (fix round)
+
+d = 2 vs d = 4 at identical bond dimensions, full GF, sigma = 0.01, 1000 seeds each, disjoint seed ranges
+(200000+ for d = 2, 300000+ for d = 4: no shared random draws), two-sample z test per rho
+(`configs/d_test_*.yaml`, `analyze_dtest.py`, `results/d_test.csv`):
+
+| tree, bonds | rho | P(larger first), d = 2 | d = 4 | z |
+|---|---|---|---|---|
+| binary8, 4-4-4-4-4-4 | 0.5 / 0.8 | 0.774 / 0.591 | 0.774 / 0.572 | 0.00 / -0.86 |
+| MPS4, 2-2-2 | 0.5 / 0.8 | 0.788 / 0.606 | 0.809 / 0.621 | +1.17 / +0.69 |
+
+No d dependence is detected at equal bonds (|difference| <= 0.021, two-sample SE ~0.018-0.020):
+derived for MPS, empirical (at this resolution, one chi) for binary8.
+
 ### 7.2 sigma dependence: m = 2 versus m >= 3 (complete)
 
 Full GF (RK45 with event location, rtol 1e-9, atol 1e-14), d = 2. Commands `sweep.py configs/b4_sigma.yaml`
