@@ -19,8 +19,9 @@ flow on a real dataset? Findings: `notes/real_data.md`. Running report: `agent-r
   dropped by 1%, then LSODA (Gauss-Newton Newton matrix) on the clock tau = t - t_a for a horizon T2;
   rtol 1e-8, atol 1e-14. Library `Recorder` (log + fine rows) plus test metrics and data-weighted
   bond spectra (`data.function_spectra`).
-- Analysis definitions: `analysis.py` docstring (events on data-weighted spectra referenced to the
-  run's final values, f = 0.05; merged log + fine rows).
+- Analysis definitions (`notes/real_data.md` section 3): learning events = peaks of the loss rate -dL/dt
+  (FWHM widths; separation ratios as in `notes/diagnostics.md`); which edges gain rank = data-weighted
+  s_k/s_1 crossing 0.05; merged log + fine rows.
 
 ## How to run (in this order)
 ```
