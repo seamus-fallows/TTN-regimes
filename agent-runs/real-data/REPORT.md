@@ -38,6 +38,7 @@ features unless stated; sigma = 0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5; seeds 0-4.
 | MPS between the two | MPS fastest at every sigma (L(1e4) 0.089, acc 0.957) | no |
 | regimes S2S -> rich -> lazy | S2S <= 0.3, mixed 0.5-1, rich 1.4, lazy >= 2; lazy L(T) = linearized L_lin(T) (0.151); kernel rank 304 = R2 formula | yes |
 | (Fashion-MNIST sneaker vs boot) same structure | t1 exact; first two rising edges siblings 15/15, 14/15; a rank-1 strict saddle (lambda_min ∝ sigma^0.03±0.09) left by a rank-preserving rotation; no locality advantage (task ~solved at rank 1) | yes / locality: no |
+| (chi = 8) same structure | t1 exact; sibling first route 14/15 (both binary orders), MPS single edge 15/15; k = 3 gap exponent 1.17 ± 0.06 (quadtree, sigma 0.05-0.14); locality as at chi = 4 | yes |
 | integrator accuracy | drift <= 4.6e-8 (234 runs); 100x tighter tolerances: drop times within 0.1-0.9 units, L(T) to 6 digits | ok |
 
 Figures (`experiments/real_data/results/`): `loss_curves_raw` (train/test per tree and sigma),
@@ -134,3 +135,4 @@ All under `/root/outputs/real_data/` (~0.6 GB; none in git):
 - 00:45 main sweep 124/220 runs; regime sweep 9/35 (sigma 0.5-1: not lazy, kernel scale 1e-13..3e-5 at init: raw features are small-init in function space up to sigma ~ 1); plateau Hessians and route amplitudes running; chi8 + fashion queued after main
 - 01:39 main sweep (234 runs) and regime sweep (65 runs) analysed; notes section 5 table; final figures; chi8 / fashion / 8x8 running
 - 02:24 Fashion (45 runs) + tolerance check analysed; Fashion rank-1 rotation through a strict saddle; chi8 split to a second runner; chi8 / 8x8 running
+- 04:24 chi = 8 (45 runs) analysed: same structure; 8x8 runs still running

@@ -307,3 +307,12 @@ pixels and moves the small-init asymptote to smaller sigma.
   faster (sigma = 0.05: L(1e4) 0.120 vs 0.123), and the MPS is slower at first but reaches the lowest loss
   (0.089, acc 0.945). Locality matters only as much as the label depends on pixel interactions that the
   pixel order can place on short routes.
+- **Bond dimension chi = 8** [empirical; 45 runs: quadtree, snake MPS, scrambled0 x sigma in {0.05, 0.14, 0.5}
+  x 5 seeds; 23 runs stopped at the 2 h wall limit, horizon tau = 4700-1e4 (median 9800); `results/chi8_tables.md`].
+  Same picture as chi = 4. t1 exponents are 13.000 / 13.000 / 14.000. The first two rising edges are siblings in
+  14/15 quadtree and 14/15 scrambled runs, with the same sibling pair per seed as at chi = 4. The MPS's first
+  rise is a single edge in 15/15. First-route gap between sigma = 0.05 and 0.14, per seed: quadtree
+  1.17 ± 0.06 (5 seeds), scrambled 0.97 ± 0.11 (k = 3: 1); at sigma = 0.5 the events merge (exponent
+  0.05-0.5: 0.79 ± 0.28). Locality as at chi = 4: quadtree vs scrambled L(tau_end) = 0.158 vs 0.220
+  (sigma = 0.05), 0.096 vs 0.176 (0.14). At sigma = 0.5 scrambled fits the training set better (0.055 vs
+  0.079) but generalizes worse (test loss 0.111 vs 0.088). The MPS is fastest at small sigma (0.088 / 0.080).
