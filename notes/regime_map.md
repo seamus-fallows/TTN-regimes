@@ -262,6 +262,41 @@ minimum over edges): dead route < 1e-12, decaying 1e-12..1e-4, long plateau >= 1
 - Consequence for the map: at chi = teacher rank and K >= 7, "stalled" occupies the whole S2S side
   at practical budgets; the S2S boundary is measured with spare channels or full bonds (2.3).
 
+### 2.3 sigma x K: the S2S boundary and H4
+
+Sweeps at d = 2, odeco teacher [3, 2], 6 seeds: centred model (`sigma_K_centred_d2`; chi = 4 = 2 x
+teacher rank on every tree, plus full bonds for MPS 6 / binary 8 / MPS 8), plain model
+(`sigma_K_d2`, chi = 2 and 4; `sigma_K_full_d2`, full bonds), trees binary N = 4, 8, 16 and MPS N = 4, 5,
+6, 8, 10, 12 (K = 3..15); LSODA; per-seed boundaries (`seed_s2s_boundary`). Figures
+`phase_sigma_K_*.png`, `sigma_c_vs_K.png`, `stalls_vs_K.png`; table `sigma_c_vs_K.csv`.
+
+- **Centred model, chi = 4 (per-seed medians; numbers of resolved seeds in the csv).** S2S boundary
+  sigma_c = 0.17, 0.41, 0.61, 0.68, 0.75, 0.77, 0.90, 1.02 for K = 3, 4, 5, 6, 7, 8, 10, 15
+  (MPS 12: no seed resolved, see stalls below; K = 15: 2 of 6 seeds resolved). The boundary rises toward
+  and past 1 (H4's direction), but in the function-space scale alpha = sigma^K it is not stable
+  (alpha_c = 0.005 -> 1.3).
+- **The K-stable variable is the per-component amplitude u_0 = sigma^K / sqrt(D)** (the RMS overlap of
+  W_0 with a unit rank-one tensor, D = d^N; theory_regimes R9): at the boundary u_0c = sigma_c^K / sqrt(D)
+  = 0.016, 0.013, 0.0085, 0.0078, 0.010, 0.005 for K = 5, 6, 7, 8, 10, 15 (0.0013 and 0.0068 at K = 3, 4),
+  against the aligned-init limit s q (1 - q) / 39.85 = 0.017 for this teacher. **Empirical.**
+- **Consequence for H4 (derived from the effective-amplitude law, assumptions: u_0c and c_K = O(1)
+  as K grows; N = K or K + 1).** sigma_c(K) = (u_0c d^{N/2} / c_K)^{1/K} -> sqrt(d) as K -> infinity,
+  not 1: the effective per-core amplitude is kappa_K = a_0c(K) / sigma_c -> 1/sqrt(d). Measured kappa_K
+  (centred, chi = 4): 0.33, 0.42, 0.53, 0.61, 0.65, 0.71, 0.70, 0.70 for K = 3..15, i.e. it levels off at
+  1/sqrt(2) = 0.707 from K ~ 8 on. With u_0c = 0.01 the formula gives sigma_c = 0.77, 0.89, 1.07 at K = 7, 10,
+  15 (measured 0.75, 0.90, 1.02). So H4's "sigma_c -> 1" holds only in the normalization where the
+  per-site features have unit total variance (sigma -> sigma sqrt(d)); in the project's convention
+  (x_i ~ N(0, I_d)) the limit is sqrt(d). **Derived + empirical** (8 trees, d = 2 only).
+- **Stalls take over at large K.** Even with spare channels, MPS trees stall on the S2S side (MPS 8:
+  5/6 seeds stall at the smallest sigma; MPS 12: no seed reaches a resolved S2S boundary; centred floor
+  above sigma ~ 1). Binary trees stall less (binary 16: S2S up to sigma = 0.63-1.0). See
+  `stalls_vs_K.png`; at chi = teacher rank the stalled fraction is higher at every K >= 6 (2.2).
+- **Plain model.** Up to K = 8 the plain and centred boundaries agree (identical at K = 3, 5, 7: the
+  initial function is negligible there). At K >= 10 the plain boundary exceeds the centred one (binary
+  16: 1.50 vs 1.02): at sigma > 1 the plain run first collapses W_0 (loss / (1/2 ||W*||^2) from ~190 to
+  ~1 by t ~ 0.1) and then learns saddle-to-saddle from the small residual scale. The plain model is
+  therefore not a test of H4 at large K.
+
 ### 2.4 Imbalance: root scale at fixed function-space scale (binary N = 4)
 
 `configs/imbalance_b4.yaml`: root init lambda sigma, other cores sigma, alpha = lambda sigma^3 fixed;
