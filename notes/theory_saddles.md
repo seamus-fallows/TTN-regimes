@@ -19,6 +19,11 @@ verifier (teacher seed 3); the v1 prefactors, learning orders and trap counts ar
 matter.
 
 
+> **Trap update (2026-10-10):** R12, C8, section 8, section 9 (row R12), section 10 (one bracket), section 11
+> ("Trap"), P12 and P14(v) are updated from `notes/theory_trap.md` section 10, as corrected by
+> `notes/reviews/trap_verification.md`. Each edit is marked "[trap update 2026-10-10]". The HT4/B4 data of
+> section 8 are kept unchanged.
+
 > **Lead's correction (2026-10-09):** the wrong-order exponent carries a factor $n$, the number of unstable
 > directions of the matrix-like pair: $n=\chi_e$ when the two differing cores are adjacent and share bond $e$, else
 > $n=1$ (`notes/theory_escape.md` v2 §5.3, checked on 19 Hessians). The formulas in this note now include it.
@@ -38,7 +43,7 @@ matter.
 | R9 | With several learned components the escape degree can be smaller than the number of cores needed to fit the component exactly ("partial learning"): an extra plateau at the best fit of a lower rank profile appears. | derived, checked (v1; levels re-derived by the verifier) |
 | R10 | Hessian: gauge orbit at $\theta_S$ has dimension $\sum_e[\chi_e^2-(\chi_e-r_e)^2]$; null space $\sum_e r_e^2+P_{\rm new}-2\sum_{k=2}c_e$. At a plateau point each route contributes one negative direction, $-\lambda$ ($k=2$) or $\approx-(k-1)s_rA\,b^{k-2}=O(\sigma^{k-2})$ ($k\ge3$). Visible new-index pairs add $O(\sigma^2)$ indefinite terms, so "one negative eigenvalue per route" holds for $k\le3$ only (at $k=4$ a second one of the same order appears). | proven (counts at $\theta_S$), derived (plateau), checked |
 | R11 | The 1e-3 relative threshold of `notes/diagnostics.md` classifies $k=3$ plateaus as strict for $\sigma\gtrsim0.01$; use the $\sigma$-scaling of $\lambda_{\min}$ instead. | checked (v1 and verifier; boundary seed-dependent, $\sigma\approx0.01$-$0.04$) |
-| R12 | Conservation-law trap: with unbalanced init ($Q_e\ne0$; likely under fan-in init on HT leaf edges, $E[Q]=-\sigma^2/2$), a route dies permanently only if **all its ends** are unfavourable ($Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2<0$); with one live end the weak end is pinned and the route escapes slowly. HT4/B4, $\sigma=0.2$: dead in every run with both ends unfavourable, pinned otherwise. Exactly balanced init avoids it. $\sigma\to0$ and $k$-dependence: conjecture. | derived (mechanism, reduced model), empirical ($\sigma=0.2$), conjecture ($\sigma\to0$) |
+| R12 | Conservation-law trap [trap update 2026-10-10; details in `notes/theory_trap.md`]. On a rank-one plateau the decisive conserved quantity of a route end $u$ (partner $w$ on the route edge) is $C_u=X_u^{\perp\top}X_u^\perp-X_w^{\perp\top}X_w^\perp$, built from the normal-visible blocks (new bond index, physical index normal to the learned pattern); the pattern parts are tangent and do not decay. The end's normal block goes to $[C_u]_+$: with one new direction the end dies iff $C_u<0$. After a small-init escape $C_u=Q_{\nu\nu}+\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+O(\sigma^3)$; the old criterion $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$ kept only the route entry of $Y_{\rm nv}$ and over-predicts death. Routes with $k\le3$ never trap. For $k\le5$, as $\sigma\to0$, a route is dead iff at least two ends die and pinned if one does; from $k=6$ three-core clusters through inner route cores (rate $\propto\sigma^4$) are a further death channel and pre-empt the pinned escape. Per run from the init (fan-in, $k\ge4$, locality): predicted dead 408/457 stall, predicted alive 38/2,101. HT4/B4 at $\sigma=0.2$ (section 8): traps after two learned components. Balanced init: tree-leaf ends cannot die at leading order; internal ends can. | conservation and limit $[C_u]_+$: proven (reduced flow), checked in full GF; identity: proven; death rule: derived for $k\le5$, incomplete for $k\ge6$; pinned escape law $\propto\sigma^{-(2k-6)}$: conjecture; per-run tests: empirical |
 | R13 | Generic (non-orthogonal) teachers: adjacent pairs with free modes give $k^*=2$; on an MPS every later saddle is strict (log-time, edge-by-edge rank growth), binary/HT trees keep $k^*\ge3$ at rank one. Power-law plateaus need tree-aligned orthogonal structure. | derived, checked (one teacher) |
 
 ## 1. Setting and notation
@@ -701,14 +706,14 @@ $\gamma$ of section 3.3, not by a fixed threshold.
 | C5 | wrong order (H1b) | binary4 and mps4 odeco, $s_q=0.5$ learned, $s_r=1$ | see 4.4: rotation spacing 11.67/12.60 vs 11.60; $L$ plateau at 0.125; $m=4$: no rotation, escape at 4999.97 vs 5000 |
 | C6 | order reversal (B4) | mps4, binary4, ht4; $\chi=3$ | orders as predicted; MPS4 $q_A$ increments $\to1.620$ per halving (pred 1.617), identical with and without $q_B$; exponents $-2.03$ (mps4 $q_B$), $-1.02$ (binary4), $-2.99$ (ht4 $q_B$) |
 | C7 | partial learning (N4) | mps4, $\chi=3$ | intermediate plateau $L=0.0567$ (pred 0.0569), log-like gaps |
-| C8 | conservation-law trap | ht4, B4, $\sigma=0.2$, seeds 0-2, fan-in vs gauge-balanced init | fan-in: stall at $L=0.045$ in 3/3 seeds up to $t=3\cdot10^6$ (leaf route amplitudes $\sim10^{-14}$, parent new-slice norm$^2=-Q_{\nu\nu}(0)$ to 4 digits); balanced: route alive in 3/3, $q_A$ learned in 2/3, third predicted at $t\approx3.4\cdot10^6$ |
+| C8 | conservation-law trap | ht4, B4, $\sigma=0.2$, seeds 0-2, fan-in vs gauge-balanced init | fan-in: stall at $L=0.045$ in 3/3 seeds up to $t=3\cdot10^6$ (leaf route amplitudes $\sim10^{-14}$, parent new-slice norm$^2=-Q_{\nu\nu}(0)$ to 4 digits; [trap update 2026-10-10] this is exact at any dead end, the corollary of Prop. 1 in `theory_trap.md`); balanced: route alive in 3/3, $q_A$ learned in 2/3, third predicted at $t\approx3.4\cdot10^6$ |
 | C9 | E8 on MPS8 vs binary8 | $\sigma=0.25,0.2$, seeds 0,1, $\chi=3$ | MPS8 order $q_0,q_A,q_B$ (2/2 seeds), $q_B$ gap ratio 2.40/2.59 (pred 2.44); binary8 tie order seed-dependent, gap ratios 1.91-2.09 (pred 1.95), $t_1$ ratios 3.81 and 3.05 (pred $1.25^6$, $1.25^5$) |
 | C10 | generic (non-orthogonal) CP teacher | `random_cp_teacher(4,2,[1,0.5],seed=3)`, mps4 and binary4, $\sigma=0.05\to0.0125$ | MPS4: $\lambda_{\min}=-0.129,-0.132,-0.136$ (strict), log gaps; binary4: $\lambda_{\min}\propto\sigma$, gaps $\propto\sigma^{-1}$ (section 5.6) |
 | V1-V3 | verifier, post-fix, independent code | exact $\theta_S$ (as C1); aligned MPS5 $(1.5,0.6)$, $k=2..5$, $\sigma\to3\cdot10^{-5}$; random MPS4 $(1.2,0.5)$ | C1 values to 6 digits; $k=2$ slope 0.78408 vs 0.78405; $\Delta t_2$/pred $\to1.0000$; random: slope 1.066 vs 1.065, exponents $-0.986,-0.994$ ($k$=3), $-1.996,-1.999$ ($k$=4); $\gamma$ 1.000, 1.33-1.34, 1.49-1.50 |
 | C11 | piggyback-graph criterion at $\theta_q$ (v2 `r1`, verifier V1) | stars on mps4, ht4, binary4, binary8; triangle on mps6; 3 sub-critical controls | $\lambda_{\min}=a^{K-2}(s_q-\rho(S))$ to 6 digits in all 5 strict cases; no negative eigenvalue in the controls (table in 4.1) |
 | C12 | star dynamics (verifier V4, v2 `r2`) | mps4, $(2;1.6,1.6)$ and $(2;1.2,1.2)$, $\sigma=0.05$, random fan-in init | super-critical: 5/5 seeds forget $q$ ($a_q\to0.01$-$0.10$) and relearn it; sub-critical: 3/3 plateau at $q$ ($L=1.44$), then $r$, $r'$ (section 4.6) |
 | C13 | F2, disconnected $J$ (v2 `r1`) | mps5, $D=\{0,4\}$, $J=\{0,1\}\cup\{3,4\}$, $x=y=t^2$ | $(L-L_S)/t^4=0.50000$ and $-0.43528$ for $(s_q,s_r)=(1,0.5),(0.5,1)$; predicted $a(s_q-s_r)$ exactly |
-| C14 | trap, joint condition (verifier V6, v2 `r3`) | ht4, B4, teacher seed 3, $\sigma=0.2$, init seeds 0-6 | dead iff all route ends unfavourable; pinned otherwise (table in section 8) |
+| C14 | trap, joint condition (verifier V6, v2 `r3`) | ht4, B4, teacher seed 3, $\sigma=0.2$, init seeds 0-6 | dead iff all route ends unfavourable; pinned otherwise (table in section 8; [trap update 2026-10-10] two-ended routes, so "all" = "at least two", the rule of R12) |
 | C15 | $k=4$ plateau Hessian (verifier V5, v2 `r4`) | mps4 $(1.2,0.5)$, $D=\{0,3\}$, seeds 0-2 | two negative eigenvalues $\propto\sigma^2$; route block has one, new-index block three (section 6.2) |
 
 RNG note: C3-C10 ran before the teacher/init stream fix (commit 57d5262), and their runs with init
@@ -716,7 +721,17 @@ seed 0 used teacher seed 0. C1, C1b and C2 involve no random init and are unaffe
 slopes and Hessian values were re-checked after the fix (V1-V3, C11-C15). Prefactors, learning
 orders and the v1 trap counts were not.
 
-## 8. Caveat found numerically: the conservation-law trap (mechanism derived in a reduced model; occurrence empirical at $\sigma=0.2$; $\sigma\to0$ conjecture)
+## 8. Caveat found numerically: the conservation-law trap (HT4/B4 data at $\sigma=0.2$; theory updated 2026-10-10 from `notes/theory_trap.md`)
+
+> **[trap update 2026-10-10]** The theory of this section is superseded by `notes/theory_trap.md` (v1.1,
+> after its verification). Replaced below: "Which ends die", "How often", "Timescales" and the balanced-init
+> statement; one bracket in the mechanism list. Kept: the HT4/B4 observations, the data table and the
+> tally. Two further changes: (i) the HT4/B4 traps happen after two learned components ($q_0$ and $q_B$,
+> or $q_0$ and $q_A$). With two learned components the siteless parent's off-diagonal visible entries give
+> a second-order normal product ($j=2$), and that kills the leaves. At a rank-one saddle an HT leaf has
+> visible degree $j=3$ and dies only through three-core clusters ($k\ge6$). So these runs are not
+> instances of the rank-one mechanism. (ii) The section-title tags were: mechanism derived in a reduced
+> model, occurrence empirical at $\sigma=0.2$, $\sigma\to0$ conjecture. The current tags are in R12.
 
 On HT4 with example B4 ($\sigma=0.2$, seed 0, $\chi=3$) gradient flow learns $q_0$ and $q_B$ and then
 stays at $L=0.045=\tfrac12s_A^2$ with $\lvert\nabla L\rvert\approx10^{-15}$ and a gauge-projected Hessian
@@ -729,28 +744,47 @@ died. Mechanism:
 fixes $\lVert G_v\nu\rVert^2-\lVert\nu^\top G_{p,(v)}\rVert^2=Q_{\nu\nu}$.
 - On a plateau, the new parts that connect through the other side to *learned* structure
 ("visible" components) have a GN cost $\propto$ (norm of the other side's new part)$^2\times O(1)$ and
-decay at a rate $\sim\lvert Q_{\nu\nu}\rvert\sim\sigma^2$. The lighter side decays to zero, the heavier
+decay at a rate $\sim\lvert Q_{\nu\nu}\rvert\sim\sigma^2$. [trap update 2026-10-10: only their parts normal to
+the learned pattern decay, at rate $A^2\lvert C_u\rvert$; the pattern parts are tangent and free
+(`theory_trap.md` T1-T2).] The lighter side decays to zero, the heavier
 side freezes with norm$^2=\lvert Q_{\nu\nu}\rvert$, keeping visible components that confine the lighter
 side's route entry. The route then cannot grow (its drive is a product of small amplitudes).
-- **Which ends die: a joint condition (v2; v1 said "one unfavourable sign").** Reduced model of one
-route end (leaf new column $x$; parent slice $y=(y_{\rm vis},y_{\rm route})$ along $\nu$): GN makes $x$ and
-$y_{\rm vis}$ decay together, with $\lvert x\rvert^2-\lvert y_{\rm vis}\rvert^2-\lvert y_{\rm route}\rvert^2=Q_{\nu\nu}$
-conserved. So the leaf column decays iff $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2<0$ (verifier). But
-the route drive on $x$ is proportional to the product of the *other* route amplitudes. While another
-end stays alive, the drive pins $x$ at $x_*\approx$ drive/decay rate $>0$ and the route escapes slowly.
-A permanent stall ($x\to0$ exponentially, down to roundoff) needs **every end of the route** to be
-unfavourable (derived in the reduced model). The dead state is then linearly stable if
-$\gamma_1\gamma_2>\kappa^2$, with decay rates $\gamma_i\sim\lvert Q_i\rvert\sim\sigma^2$ and mutual drive
-$\kappa\sim s_rA\prod_{\rm inner}b\sim\sigma^{k-2}$ (heuristic). That is stable as $\sigma\to0$ for
-$k\ge5$, never for $k=3$, and undecided for $k=4$.
-- **How often.** Fan-in init gives $E[Q_e]=\sigma^2(1-\chi_p/\chi_e)I$ (proven; re-derived by the
-verifier; $\chi_p$ = bond dimension of the parent's own parent edge). On HT leaf edges ($\chi_e=d=2$,
-$\chi_p=3$) $Q_{\nu\nu}=\sigma^2(\chi^2_2/2-\chi^2_6/4)$, with mean $-\sigma^2/2$ and both signs:
-$P(Q_{\nu\nu}>0)=(1+1.5/3)^{-3}=0.30$ per leaf if $\nu$ is independent of the init (heuristic), so
-$P(\text{both ends unfavourable})\approx0.5$ for a two-ended route. Any i.i.d. init has such
-fluctuations ($P\approx0.25$ when $E[Q]=0$, e.g. MPS with $\chi=d$); only exactly balanced init removes
-the trap. In trapped runs the parent slice along $\nu$ ends with norm$^2=-Q_{\nu\nu}$ (conservation with
-$x=0$; v1: $0.0263$; final leaf new-column norm$^2\sim10^{-28}$).
+- **Which ends die** [trap update 2026-10-10; v1 said "one unfavourable sign", v2 "every end
+unfavourable", with the end quantity $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$]. The conserved quantity of an end $u$
+with route partner $w$ is $C_u=X_u^{\perp\top}X_u^\perp-X_w^{\perp\top}X_w^\perp$ of the normal-visible blocks. The
+end's normal block goes to $[C_u]_+$ (proven in the reduced flow, checked in full gradient flow), so with
+one new direction the end dies iff $C_u<0$, at rate $\gamma_u=A^2\lvert C_u\rvert$. Exactly,
+$C_u=Q_{\nu\nu}+\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+(y_\parallel^2-x_\parallel^2)$, and the last term is
+$O(\sigma^3)$ after a small-init escape. The v2 quantity kept only the route entry of the partner's
+non-visible entries $Y_{\rm nv}$, which is why it over-predicts death: per run (fan-in, $k\ge4$) 36% of its
+predicted-dead runs stall, against 89% with $C_u$.
+  - The route drive on a dying end is proportional to the product of the *other* route amplitudes.
+    While another end stays alive, it pins the end at $x_*\approx$ drive/decay rate $\propto\sigma^{k-3}$.
+  - Two dying ends: the dead state is linearly stable if $\gamma_1\gamma_2>\kappa^2$ (mutual drive
+    $\kappa\sim s_rA\prod_{\rm inner}b\sim\sigma^{k-2}$), i.e. always as $\sigma\to0$ for $k\ge5$.
+  - Hence, for $k\le5$ as $\sigma\to0$: **dead iff at least two ends die** (not all ends), pinned if
+    one does (derived). From $k=6$ three-core clusters through inner route cores (rate $\propto\sigma^4$) are
+    a further death channel: marginal at $k=6$ and dominant for $k\ge7$ against a live route, dominant
+    from $k=6$ against the pinned escape. So pinned routes can die there, and the pinned escape law
+    $\propto\sigma^{-(2k-6)}$ is a conjecture.
+  - For the two-ended routes of the table below, "both", "all" and "at least two" coincide, so the
+    table's dead/pinned classification stands (its $Q$ column is the v2 quantity, not $C_u$).
+- **How often** [trap update 2026-10-10]. Fan-in init gives $E[Q_e]=\sigma^2(1-\chi_p/\chi_e)I$ (proven;
+re-derived by the verifier; $\chi_p$ = bond dimension of the parent's own parent edge). The heuristic
+that followed here is **withdrawn**: $P(Q_{\nu\nu}>0)=0.30$ per HT leaf, hence $P\approx0.5$ dead for a
+two-ended HT route, and $P\approx0.25$ for MPS with $\chi=d$ ("stalls less often", contradicted by
+`notes/locality.md` 7.5 (ii)). The decisive quantity is $C_u$, not $Q_{\nu\nu}$, and an HT leaf has visible
+degree $j=3$ at a rank-one saddle. The replacement (`theory_trap.md` section 8):
+  - Saddle start, one new direction on the end edge ($c_e=1$):
+    $P(C_u<0)=I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$ ($F$ = fan-ins, $n$ = normal physical rows). This gives
+    0.392 at an MPS tree-leaf end and 0.5 at the MPS root end ($d=\chi=2$).
+  - A two-ended route with $k=5$ whose ends both have partners with sites is dead with probability
+    $p_up_{u'}$ as $\sigma\to0$; for $k\ge6$ the inner-cluster channel adds deaths that the law does not
+    count.
+  - At a capped end bond with $d\ge3$ there are $c_e=d-1$ new directions, and death needs $C_u\le0$ on
+    all of them: about 0.023 ($d=3$) and $1.5\cdot10^{-4}$ ($d=4$), by Monte Carlo.
+In trapped runs the parent slice along $\nu$ ends with norm$^2=-Q_{\nu\nu}$ (conservation with $x=0$; exact
+at any dead end, `theory_trap.md` Prop. 1; v1: $0.0263$; final leaf new-column norm$^2\sim10^{-28}$).
 - **Data** (HT4, B4, $\sigma=0.2$, fan-in init, LSODA rtol $10^{-10}$; $Q$ = $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$ at the
 plateau start for v2 seeds 4-6, $Q_{\nu\nu}$ otherwise; dead: leaf $x^2\lesssim10^{-26}$, pinned:
 $10^{-11}$-$10^{-7}$):
@@ -771,27 +805,47 @@ Every run with all route ends unfavourable died; every run with a live end had t
 not dead. Stalls at a fixed budget therefore include slow pinned escapes. Tally with teacher seed 3
 (init seeds 0-8): 6 dead, 2 pinned, 1 no stall; the joint rule classified all 8 stalls correctly. The stalled component can be the
 larger one ($q_B$, 2 runs) when the tie of section 3.4 goes to $q_A$.
-- **Timescales and $\sigma\to0$ (conjecture).** Decay time $\sim1/\lvert Q_{\nu\nu}\rvert\propto\sigma^{-2}$
-versus route escape $\propto\sigma^{-(k-2)}$: for $k\ge5$ the ends' fate is decided long before the
-route can escape. Conjecture: as $\sigma\to0$, $P(\text{permanent stall})\to P(\text{all ends
-unfavourable})$, a $\sigma$-independent number ($\approx0.5$ for two-ended HT routes under fan-in init),
-for $k\ge5$; no stalls for $k=3$; $k=4$ undecided. All data are at $\sigma=0.2$ on one teacher.
+- **Timescales and $\sigma\to0$** [trap update 2026-10-10; replaces a conjecture, `theory_trap.md` T5,
+T8, derived]. An end with visible degree $j$ (cores in the smallest cluster through its new index whose
+product is normal to the learned manifold: $j=2$ if the partner carries sites, $j=3$ for a leaf whose
+partner is siteless) decays in time $\propto\sigma^{-2(j-1)}$, against the route escape $\propto\sigma^{-(k-2)}$.
+So an end can kill its route only if $k\ge2j$:
+  - $k\le3$: never (0 stalls in 5,744 committed runs);
+  - $k=4$: a $\sigma$-free competition, settled by a reduced route ODE from the plateau-start values
+    (derived for one new direction per route edge);
+  - $k=5$: the sign test on the $C_u$ (dead iff at least two ends have $C_u<0$);
+  - $k\ge6$: the sign test plus the inner three-core channel, which the per-run criterion does not
+    include.
+The plateau-start state is $\sigma$ times a function of the init direction, so the outcome is a property
+of the init direction, not of $\sigma$ (corrections $O(\sigma)$). The dead-state stability condition
+$\gamma_1\gamma_2>\kappa^2$ is kept, with $\gamma=A^2\lvert C_u\rvert$. The earlier conjecture
+($P(\text{stall})\to P(\text{all ends unfavourable})\approx0.5$ for two-ended HT routes) is withdrawn.
 - The point reached is not a local minimum (moving the frozen visible components is free and then
 opens a $k=2$ descent), but gradient flow does not move along those flat directions; SGD noise would.
-- **Balanced init removes the trap (v1: 3 seeds, pre-fix RNG; conjecture in general).** Gauge-balancing
+- **Balanced init removes the trap (v1: 3 seeds, pre-fix RNG; conjecture in general; [trap update
+2026-10-10] derived for tree-leaf ends only, see the end of this item).** Gauge-balancing
 the fan-in init ($Q_e=0$ exactly, same $W_0$) keeps the leaf route amplitudes alive: HT4, B4,
 $\sigma=0.2$, seeds 0/1/2: balanced init learns $q_A$ at $t=2850$ (seed 0) and $3.7\cdot10^5$ (seed 1),
 and for seed 2 the route is alive at $t=2\cdot10^5$ (leaf amplitudes $-0.0196$, product negative,
 i.e. in a sign-correction phase) with escape predicted by the route ODE at $t\approx3.4\cdot10^6$.
 With $Q_{\nu\nu}=0$ both sides of an edge lose their visible components together and the leaf column
 converges to the norm of the parent's route component instead of to zero.
+[trap update 2026-10-10] With $Q_e=0$, $C_u=\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+O(\sigma^3)\ge0$ at an end
+that is a tree leaf ($X_{\rm nv}=0$), so tree-leaf ends cannot die at leading order (derived; `theory_trap.md`
+T9). Ends with extra legs (pattern teachers, e.g. MPS $\{1,5\}$) still can. In the s2s-core odeco runs
+no balanced run traps (0/150), but 69/150 stall (binary8 27/30, HT4 12/30, MPS8 30/30). So balanced
+init removes the death of leaf ends, not every stall.
 
 Practical consequence for Q3 experiments: on HT trees (and for $k\ge4$ routes in general), report the
 *fraction* of stalled runs. Split stalls into dead routes (leaf new-column norm$^2\lesssim10^{-26}$,
 roundoff) and pinned slow escapes (one end at $10^{-11}$-$10^{-7}$, the other alive), and record
-$Q_{\nu\nu}$ at every route end. Use gauge-balanced initialization when the aim is to measure escape
-exponents. The trap is a property of unbalanced initialization (any $Q_e\ne0$; fan-in init makes it
-likely on HT leaves), not of the TTN landscape.
+$Q_{\nu\nu}$ at every route end ([trap update 2026-10-10] better: $C_u$, computable from the init with
+`experiments/theory_checks/trap/`). Use gauge-balanced initialization when the aim is to measure escape
+exponents. The trap is a property of unbalanced initialization (any $Q_e\ne0$; [trap update 2026-10-10]
+"fan-in init makes it likely on HT leaves" holds only after a second learned component or for $k\ge6$),
+not of the TTN landscape. [trap update 2026-10-10] Balanced init still leaves route ends with extra legs
+exposed ($C_u$ can be negative there, `theory_trap.md` T9), although none of the balanced locality stalls
+was dead in the stall diagnosis.
 
 
 ## 9. Relation to the literature: what is known, what is new (v2)
@@ -809,7 +863,7 @@ and "not found" means not found in the papers that file covers.
 | R4: $k=2$ head start $\sigma^{1-s_r/s_q}$ | Zhang, Saxe & Latham 2026, Thm 4 (separation $O(\sigma^{1-s_{r+1}/s_1})$); AGF; cumulative clocks (Pesme & Flammarion 2023) | the $k\ge3$ version $\sigma_{\rm eff}=\sigma(1-s_r/s_q)^{-1/(k-2)}$ (elementary; not found) |
 | R5: growth exponent $2-2/k$ | standard for a balanced product of $k$ factors (Arora et al. 2019; Razin et al. 2022, per node $2-2/L_\nu$) | its use as a $k$-meter on TTN plateaus, with saturation term and window |
 | R6/R7: piggyback classification, H1b | Achour et al. 2024, Thm 7 (DLN strict/non-strict; binary4 is a DLN); Anandkumar et al. 2014 (odeco components are local optima of rank-one approximation) | the piggyback graph and $\rho(S)>s_q$ on general trees; stars and cycles make the largest component strict |
-| R12: conservation-law trap | imbalance as a knob and stalls near non-min-norm points (Furman 2026, Thm G.1; literature.md H4 and section 5, item 8) | the leaf-death mechanism on TTN routes and its joint condition (not found) |
+| R12: conservation-law trap [trap update 2026-10-10] | imbalance as a knob and stalls near non-min-norm points (Furman 2026, Thm G.1; literature.md H4 and section 5, item 8); a conserved quantity decides which side of a unit can vanish (AGF, Kunin et al. 2025, Lemma B.1; T2 of `theory_trap.md` is that statement for the normal-visible blocks of a route end); with unbalanced init the leading-order flow can converge to a saddle, and balanced init excludes it (Jacot et al. 2021, App. C.1); dormant weights outside the stable set of a KKT point shrink (Kumar & Haupt) | the normal-visible blocks and the identity $C_u=Q_{\nu\nu}+\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2$; the visible degree and the rule $k\ge2j$; two dying ends for death ($k\le5$) and the pinned state; protection by spare directions on the end edge; an init-only per-run predictor of dead routes, validated on committed runs (not found in literature.md or the citation audit; `theory_trap.md` section 9) |
 | R13: generic teachers give $k^*=2$ on MPS | - | not found |
 
 ## 10. Verification (round 2): issues and resolutions
@@ -834,7 +888,8 @@ Partial rebuttals (both minor):
   $(1,1,2)$ optimum is "$r$, $r'$ learned", since $\max_{g_0,g_1}\lVert\langle W^*,g_0g_1\,\cdot\rangle\rVert^2=5.12>4$.
 - On I4(d), agreed that only exactly balanced init removes the trap. But the fan-in *mean*
   imbalance matters quantitatively: it raises $P(\text{both HT leaf ends unfavourable})$ from
-  $\approx0.25$ (balanced in expectation) to $\approx0.5$ (heuristic, section 8).
+  $\approx0.25$ (balanced in expectation) to $\approx0.5$ (heuristic, section 8). [trap update 2026-10-10:
+  this heuristic is withdrawn, see section 8 "How often".]
 
 ## 11. Open issues
 
@@ -861,10 +916,19 @@ Partial rebuttals (both minor):
   amplitudes at the start of each plateau plus the accumulated head start (verifier: the $k=4$ random
   gap is 46x the aligned value at equal $\sigma$). The $\sigma$-independent shortening of $t_1$ in the
   aligned family follows from a 3-scalar ODE but was not solved in closed form.
-- **Trap.** The joint condition is derived in a reduced model, and its occurrence is empirical
-  ($\sigma=0.2$, one teacher, 9 runs with teacher seed 3 plus 3 v1 runs). Open: $\sigma\to0$ (conjecture: $P\to P$(all ends unfavourable)
-  for $k\ge5$, none for $k=3$), other trees, routes with more than two ends, and whether balanced init
-  always avoids it.
+- **Trap** [trap update 2026-10-10; the open items of `theory_trap.md` section 11]. The $\sigma\to0$ rules,
+  other trees and many-ended routes are now covered there (sections 8 and 12 here). Open:
+  - a $\sigma$-free reduced model of the second plateau, needed to predict the odeco (multi-stage) trap
+    from the init;
+  - $k=4$ routes with spare inner channels: vector route amplitudes; the current code's verdict there
+    is basis-dependent;
+  - the inner three-core clusters (death channel from $k=6$): derived to act, not in the per-run
+    criterion;
+  - the marginal $k=6$ case on HT trees;
+  - finite $\sigma$: the $k\ge2j$ separation is weak at $\sigma\ge0.2$;
+  - the pinned escape law $\propto\sigma^{-(2k-6)}$: a conjecture, testable only at $k=5$;
+  - capped end bonds at $d\ge3$: Monte Carlo values only;
+  - balanced init with internal route ends: very late escapes instead of deaths, not quantified.
 - **Plateau Hessian for $k\ge4$.** At $k=4$ the visible new-index pairs add $O(\sigma^2)$ negative
   directions. For $k\ge5$ they may decay before the midpoint or may dominate $\lambda_{\min}$, which
   would change its $\sigma$-scaling. Untested.
@@ -999,17 +1063,34 @@ $\sigma_2(M)^2/2=0.0569$ has $a_2\approx0.3$, and every gap after the first is $
 (increments $\approx8$-9 per halving at $\sigma=0.1\to0.05$), although the exact rank rule alone would
 give $\sigma^{-1}$ for $q_2$. On binary4: $0.76\to0.0569\to0$, with second gap $\propto\sigma^{-1}$.
 
-**P12. Conservation-law trap** [mechanism derived (reduced model); frequencies empirical at
-$\sigma=0.2$; $\sigma\to0$ conjecture]. HT4, B4, fan-in init, $\sigma=0.2$: some runs stall on a $k=5$
+**P12. Conservation-law trap** [trap update 2026-10-10: predictions from `theory_trap.md` T5, T6,
+Prop. 2 and section 8, as corrected by its verification; tags per item]. For a route of $k$ cores on a
+rank-one plateau, with end quantities $C_u$ (R12):
+- $k\le3$: never trapped (derived; 0 stalls in 5,744 committed runs).
+- $k=4$: a $\sigma$-free competition between end decay and route drive, settled by a reduced route ODE
+  from the plateau-start values (derived for one new direction per route edge; at inner edges with
+  $\chi\ge3$ the current code's verdict depends on an arbitrary basis choice).
+- $k=5$, $\sigma\to0$: dead iff at least two ends have $C_u<0$; with one, that end is pinned at
+  $\propto\sigma^{k-3}$ (derived) and the route escapes late (after $\propto\sigma^{-(2k-6)}$: conjecture,
+  untested).
+- $k\ge6$: in addition, three-core clusters at inner route cores (rate $\propto\sigma^4$) can kill pinned
+  routes, and live routes too (marginal at $k=6$, dominant for $k\ge7$) (derived, not in the per-run
+  criterion).
+- Spare channels: an end with more new directions on its route edge than its partner has
+  normal-visible rows ($c_e>n_w$) generically never dies (derived); capped end bonds are not protected.
+- Fan-in init, saddle start, $c_e=1$: $P(C_u<0)=0.392$ at an MPS tree-leaf end and 0.5 at the MPS
+  root end ($d=\chi=2$; proven for the Gaussian saddle-start model). At a capped end bond with $d\ge3$:
+  about 0.023 ($d=3$) and $1.5\cdot10^{-4}$ ($d=4$) (Monte Carlo).
+- Per run from the init (fan-in, $k\ge4$, locality): predicted dead 408/457 stall, predicted alive
+  38/2,101 (empirical).
+- Balanced init: tree-leaf ends cannot die at leading order (derived); in s2s-core 0/150 balanced odeco
+  runs trap, 69/150 stall.
+Withdrawn: the heuristic dead fraction $\approx0.5$ per two-ended HT route, and "MPS with $\chi=d$ stalls
+less often". Original data (unchanged; HT4, B4, fan-in init, $\sigma=0.2$): some runs stall on a $k=5$
 route at $L=\tfrac12s^2$ (0.045 for $q_A$, 0.18 for $q_B$). With teacher seed 3 and init seeds 0-8:
-6 dead stalls, 2 pinned slow escapes (one escaped at $6\cdot10^5$), 1 run without a stall (9 runs;
-section 8 table): stalled at a budget of $10^6$ in 7 of 9 runs, dead in 6 of 9. Predicted per run: *dead* (leaf new-column norm$^2\to$ roundoff, $\lesssim10^{-26}$) iff
-$Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2<0$ at **both** route leaves; otherwise at most *pinned* (weak
-leaf at $10^{-11}$-$10^{-7}$), and the route escapes late ($6\cdot10^5$ in one run, $>10^6$ in another).
-Heuristic frequency of dead stalls under fan-in init on HT leaves: $\approx0.5$ per two-ended route.
-Gauge-balanced init of the same $W_0$ should have no dead stalls (v1: 3/3 routes alive, pre-fix RNG).
-Conjectures: for $k\ge5$ the dead fraction tends to a $\sigma$-independent value as $\sigma\to0$;
-$k=3$ routes never die; MPS with $\chi=d$ (balanced in expectation) stalls less often.
+6 dead stalls, 2 pinned slow escapes (one escaped at $6\cdot10^5$), 1 run without a stall (section 8
+table); every run with both route leaves unfavourable died. These traps act after two learned
+components (section 8 note), not through the rank-one mechanism.
 
 **P13. Generic (non-orthogonal) teachers** [derived; v1 check on one teacher]. Random CP or random TTN
 teachers on an MPS: every plateau after the first is strict ($\lambda_{\min}$ independent of $\sigma$,
@@ -1022,5 +1103,10 @@ $\sigma$-independent as $\sigma\to0$ with no star ($\rho(S)\le s_q$): a missed $
 fixed-rank instability. (ii) A per-seed exponent off by more than 0.2 from $-(k-2)$ at
 $\sigma\le0.05$ in a run that neither stalled nor went through a sign correction. (iii) For $k=2$, a
 slope $1/\lambda$ instead of $(1-s_r/s_q)/\lambda$. (iv) A star teacher with $\rho(S)>s_q$ that
-plateaus at $q$ with $a_q\approx1$ for a time growing with $1/\sigma$. (v) A dead stall with a live
-route end ($Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2>0$ at one leaf).
+plateaus at $q$ with $a_q\approx1$ for a time growing with $1/\sigma$. (v) [trap update 2026-10-10] A dead
+stall at small $\sigma$ on a route with $k\le4$ that has at most one dying end ($C_u>0$ at every other end;
+R12). It used to read "a dead stall with a live route end ($Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2>0$ at one
+leaf)". Adding only "at small $\sigma$", as `theory_trap.md` v1 proposed, is not enough: the pilot has 20
+predicted-pinned runs ($k=5$-7) labelled dead at every $\sigma$ of their grids (`theory_trap.md` section 7,
+failure 5). Three-core clusters through inner route cores can kill a pinned route, marginally at $k=5$ and
+dominantly from $k=6$; hence the restriction to $k\le4$.
