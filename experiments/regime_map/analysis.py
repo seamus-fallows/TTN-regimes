@@ -1,8 +1,13 @@
 """Regime labels, boundaries and threshold sensitivity from saved runs (notes/diagnostics.md).
 
 Input: results.jsonl (one summary row per run) + traj/<run_id>.npz (t, L/L0, overlaps A) under
-/root/outputs/regime_map/<exp>/. Output: a per-run table with events, separation ratios and labels
-for every (delta_K threshold, separation threshold) pair.
+<OUT>/<exp>/, OUT = $REGIME_MAP_OUT (default /root/outputs/regime_map; `make_figures.py --raw`).
+Output: a per-run table with events, separation ratios and labels for every (delta_K threshold,
+separation threshold) pair.
+
+Fix round 1: event times are last upward crossings of 1/2 (notes/diagnostics.md). Rows written
+before the fix (no 'event_rule') are relabelled from their trajectories (`relabel_last_crossing`);
+the pre-fix values are kept in the columns *_old.
 """
 
 from __future__ import annotations
@@ -13,7 +18,7 @@ import os
 import numpy as np
 import pandas as pd
 
-OUT = "/root/outputs/regime_map"
+OUT = os.environ.get("REGIME_MAP_OUT", "/root/outputs/regime_map")
 K_THRESHOLDS = (0.05, 0.1, 0.2)
 RHO_THRESHOLDS = (2.0, 3.0, 5.0)
 CONVERGED = 1e-3  # L(T) < 1e-3 L(0)
@@ -73,10 +78,125 @@ def label(l_end, dK, rhos, k_thr=0.1, rho_thr=3.0):
     return "rich"
 
 
+def _traj_path(exp: str, row: dict) -> str:
+    from run_regime import row_cfg, run_id
+
+    return os.path.join(OUT, exp, "traj", run_id(row_cfg(row)) + ".npz")
+
+
+def relabel_last_crossing(df: pd.DataFrame, exp: str) -> pd.DataFrame:
+    """Event times by the last upward crossing of 1/2 (notes/diagnostics.md) for every run.
+
+    Rows of the fixed driver (event_rule == 'last') already carry them. For pre-fix rows the stored
+    (refined) times are kept unless a component crossed 1/2 upward more than once on the recorded
+    log + fine rows of its trajectory (a transient above 1/2): its time and final-rise width are then
+    taken from those rows (`run_regime.final_rise`; fine rows resolve a rise with ~20 or more
+    samples). Adds n_up (upward crossings of 1/2 per component), bump (any n_up > 1), the pre-fix
+    event_times_old / rhos_old, and relabelled = whether the times changed."""
+    from run_regime import final_rise
+
+    from ttn.dynamics import merged_rows
+
+    df = df.copy()
+    if "event_rule" not in df.columns:
+        df["event_rule"] = None
+    new_t, new_w, new_rho, old_t, old_rho, nup, changed = [], [], [], [], [], [], []
+    for _, r in df.iterrows():
+        times = np.asarray(r.event_times, float)
+        widths = np.asarray(r.event_widths, float)
+        if r.event_rule == "last":
+            new_t.append(list(times))
+            new_w.append(list(widths))
+            new_rho.append(list(r.rhos))
+            old_t.append(list(r.event_times_old))
+            old_rho.append(list(r.rhos_old))
+            nup.append(list(r.n_up))
+            changed.append(bool(np.any(np.asarray(r.n_up) > 1)))
+            continue
+        old_t.append(list(times))
+        old_rho.append(list(r.rhos))
+        path = _traj_path(exp, r.to_dict())
+        if not os.path.exists(path):  # cannot be checked: keep the pre-fix values (flagged)
+            new_t.append(list(times))
+            new_w.append(list(widths))
+            new_rho.append(list(r.rhos))
+            nup.append([-1] * len(times))
+            changed.append(False)
+            continue
+        with np.load(path, allow_pickle=False) as z:
+            data = {k: z[k] for k in ("t", "overlaps", "fine_t", "fine_overlaps") if k in z.files}
+        m = merged_rows(data, keys=("overlaps",))
+        t2, w2, n2 = times.copy(), widths.copy(), []
+        for c in range(m["overlaps"].shape[1]):
+            t_mid, w, n = final_rise(m["t"], m["overlaps"][:, c])
+            n2.append(n)
+            if n > 1:
+                t2[c] = t_mid
+                # the stored (refined) width is already the final-rise width unless the transient
+                # itself reached 0.9 and fell back; only then take the recorded-rows value
+                if _transient_above(m["overlaps"][:, c], 0.9):
+                    w2[c] = w
+        new_t.append(list(t2))
+        new_w.append(list(w2))
+        new_rho.append([float(x) for x in _ratios(t2, w2)])
+        nup.append(n2)
+        changed.append(bool(np.any(~np.isclose(t2, times, equal_nan=True))))
+    df["event_times"], df["event_widths"], df["rhos"] = new_t, new_w, new_rho
+    df["event_times_old"], df["rhos_old"], df["n_up"] = old_t, old_rho, nup
+    df["bump"] = [bool(np.any(np.asarray(n) > 1)) for n in nup]
+    df["relabelled"] = changed
+    return df
+
+
+def add_tensor_kernel(df: pd.DataFrame, exp: str, mask=None) -> pd.DataFrame:
+    """Fill dK_tensor (tensor-space kernel change, `run_regime.tensor_kernel_change`) for pre-fix
+    rows from theta_end of their trajectories; the initial point is rebuilt from the config (same
+    seeds). mask: optional boolean Series selecting the rows to compute (it costs a few seconds per
+    run at chi = 128)."""
+    import torch
+    from run_regime import build, row_cfg, tensor_kernel_change
+
+    df = df.copy()
+    if "dK_tensor" not in df.columns:
+        df["dK_tensor"] = np.nan
+    sel = df.dK_tensor.isna() if mask is None else (df.dK_tensor.isna() & mask)
+    for i in np.flatnonzero(sel.values):
+        r = df.iloc[i].to_dict()
+        path = _traj_path(exp, r)
+        if not os.path.exists(path):
+            continue
+        with np.load(path, allow_pickle=False) as z:
+            theta_end = torch.from_numpy(z["theta_end"])
+        cfg = {k: v for k, v in row_cfg(r).items() if not _is_missing(v)}
+        problem, theta0, _, _ = build(cfg)
+        df.iloc[i, df.columns.get_loc("dK_tensor")] = tensor_kernel_change(
+            problem, theta0, theta_end
+        )
+    return df
+
+
+def _is_missing(v):
+    return v is None or (isinstance(v, float) and not np.isfinite(v))
+
+
+def _transient_above(a, level):
+    """True if the curve reaches `level` and later falls below 1/2 again (a transient that high)."""
+    a = np.asarray(a, float)
+    above = np.flatnonzero(a >= level)
+    return bool(above.size and np.any(a[above[0] :] < 0.5))
+
+
+def _ratios(times, widths):
+    from ttn.diagnostics import separation_ratios as sr
+
+    return sr(np.asarray(times, float), np.asarray(widths, float))
+
+
 def load(exp: str) -> pd.DataFrame:
     """Per-run table with events, rho's and labels at every threshold pair.
 
-    Library runs (run_regime.py) carry event_times / event_widths / rhos in their rows; interim runs
+    Library runs (run_regime.py) carry event_times / event_widths / rhos in their rows (pre-fix rows
+    are relabelled with the last-crossing rule, `relabel_last_crossing`); interim runs
     (pilots/interim.py) are re-analysed from their saved trajectories."""
     rows = []
     with open(os.path.join(OUT, exp, "results.jsonl")) as f:
@@ -88,15 +208,33 @@ def load(exp: str) -> pd.DataFrame:
     df = pd.DataFrame(rows)
     # de-duplicate reruns of the same config (early rows stored a recomputed alpha, so the resume
     # check missed them): key on the config with sigma / alpha rounded, keep the latest row
-    key = pd.DataFrame({c: df[c] if c in df.columns else None for c in
-                        ("model", "kind", "n", "d", "chi", "seed", "root_scale", "lr", "balance")})
+    key = pd.DataFrame(
+        {
+            c: df[c] if c in df.columns else None
+            for c in ("model", "kind", "n", "d", "chi", "seed", "root_scale", "lr", "balance")
+        }
+    )
     key["sigma_r"] = [float(f"{x:.4g}") for x in df.sigma]
-    key["alpha_r"] = [float(f"{x:.3g}") if isinstance(x, float) and np.isfinite(x) else None
-                      for x in (df.alpha if "alpha" in df.columns and "root_scale" in df.columns else [None] * len(df))]
+    key["alpha_r"] = [
+        float(f"{x:.3g}") if isinstance(x, float) and np.isfinite(x) else None
+        for x in (
+            df.alpha if "alpha" in df.columns and "root_scale" in df.columns else [None] * len(df)
+        )
+    ]
     df = df.loc[~key.astype(str).duplicated(keep="last").values].reset_index(drop=True)
     if "rhos" in df.columns:
+        for c in ("event_times", "event_widths", "rhos", "event_times_old", "rhos_old"):
+            if c in df.columns:  # JSON nulls -> NaN
+                df[c] = [
+                    [np.nan if x is None else float(x) for x in v] if isinstance(v, list) else v
+                    for v in df[c]
+                ]
+        df = relabel_last_crossing(df, exp)
         df["events"] = [list(zip(t, w)) for t, w in zip(df.event_times, df.event_widths)]
-        df["rhos"] = [[x for x in r if x is not None] if isinstance(r, list) else [] for r in df.rhos]
+        df["min_rho_old"] = [
+            float(np.min(np.asarray(r, float))) if len(r) else np.nan for r in df.rhos_old
+        ]
+        df["label_old"] = [label(le, dk, rh) for le, dk, rh in zip(df.l_end, df.dK, df.rhos_old)]
     else:
         from pilots.interim import run_id  # same id as the interim driver
 
@@ -218,7 +356,9 @@ def seed_s2s_boundary(rows: pd.DataFrame, label_col: str = "label"):
         return np.nan, "never_s2s", np.nan, np.nan
     start = s2s[0]
     below = "+stall_below" if (lab[:start] == "stalled").any() else ""
-    if (lab[:start] != "stalled").any():  # a rich/lazy run below the first S2S run: not a clean block
+    if (
+        lab[:start] != "stalled"
+    ).any():  # a rich/lazy run below the first S2S run: not a clean block
         start_status = "mixed_below"
         below = "+" + start_status
     end = start
@@ -231,14 +371,20 @@ def seed_s2s_boundary(rows: pd.DataFrame, label_col: str = "label"):
     return float(np.sqrt(lo * hi)), status, float(lo), float(hi)
 
 
-def seed_kernel_boundary(rows: pd.DataFrame, thr: float = 0.1, converged_only: bool = True):
+def seed_kernel_boundary(
+    rows: pd.DataFrame, thr: float = 0.1, converged_only: bool = True, col: str = "dK"
+):
     """One seed's kernel boundary: sigma where delta_K(T) crosses `thr` from above (log-log
     interpolation between the bracketing runs; the last crossing if delta_K is not monotone).
-    With converged_only, stalled runs are excluded (their delta_K is not an end-of-training value)."""
+    With converged_only, stalled runs are excluded (their delta_K is not an end-of-training value).
+    col: 'dK' (128-probe kernel, the label rule) or 'dK_tensor' (tensor-space kernel, theory)."""
     r = rows.sort_values("sigma")
     if converged_only:
         r = r[r.label != "stalled"]
-    sig, dk = r.sigma.values, r.dK.values
+    if col not in r.columns:
+        return np.nan
+    r = r[np.isfinite(r[col].astype(float).values)]
+    sig, dk = r.sigma.values, r[col].astype(float).values
     idx = np.flatnonzero((dk[:-1] >= thr) & (dk[1:] < thr))
     if idx.size == 0:
         return np.nan
@@ -262,7 +408,11 @@ def mean_se(v):
     v = v[np.isfinite(v)]
     if v.size == 0:
         return np.nan, np.nan, 0
-    return float(v.mean()), float(v.std(ddof=1) / np.sqrt(v.size)) if v.size > 1 else np.nan, int(v.size)
+    return (
+        float(v.mean()),
+        float(v.std(ddof=1) / np.sqrt(v.size)) if v.size > 1 else np.nan,
+        int(v.size),
+    )
 
 
 def per_seed_table(df: pd.DataFrame, by: list[str], K: int | None = None) -> pd.DataFrame:
@@ -272,16 +422,66 @@ def per_seed_table(df: pd.DataFrame, by: list[str], K: int | None = None) -> pd.
     for key, g in df.groupby(by + ["seed"]):
         k = K or int(g.K.iloc[0])
         sc, status, lo, hi = seed_s2s_boundary(g)
-        w = g.weights.iloc[0] if "weights" in g.columns and isinstance(g.weights.iloc[0], list) else (3.0, 2.0, 1.0)
+        w = (
+            g.weights.iloc[0]
+            if "weights" in g.columns and isinstance(g.weights.iloc[0], list)
+            else (3.0, 2.0, 1.0)
+        )
         pred, _ = aligned_sigma_c(g, k, weights=tuple(w))
         s2s = g[g.label == "s2s"]
         slope, _ = seed_power_fit(s2s.sigma, s2s.min_rho) if len(s2s) >= 3 else (np.nan, np.nan)
+        rc, rstatus, rlo, rhi = seed_rho_boundary_stalls(g)
         row = dict(zip(by + ["seed"], key if isinstance(key, tuple) else (key,)))
-        row.update(K=k, sigma_c=sc, s2s_status=status, s2s_lo=lo, s2s_hi=hi, sigma_c_pred=pred,
-                   sigma_K01=seed_kernel_boundary(g),
-                   rho_slope=slope, n_s2s=len(s2s))
+        row.update(
+            K=k,
+            sigma_c=sc,
+            s2s_status=status,
+            s2s_lo=lo,
+            s2s_hi=hi,
+            sigma_c_rho=rc,
+            rho_status=rstatus,
+            rho_lo=rlo,
+            rho_hi=rhi,
+            sigma_c_pred=pred,
+            sigma_K01=seed_kernel_boundary(g),
+            sigma_K01_tensor=seed_kernel_boundary(g, col="dK_tensor"),
+            rho_slope=slope,
+            n_s2s=len(s2s),
+            n_runs=len(g),
+            n_bump=int(g.bump.sum()) if "bump" in g.columns else 0,
+            n_relabelled=int(g.relabelled.sum()) if "relabelled" in g.columns else 0,
+        )
         out.append(row)
     return pd.DataFrame(out)
+
+
+def seed_rho_boundary_stalls(rows: pd.DataFrame, thr: float = 3.0):
+    """One seed's S2S boundary in rho when some runs stall (fix round 1, K sweep).
+
+    Runs are ordered by sigma and classified by min_i rho_i whatever their label, so a run that
+    learned every component but ended on the floor of an unrealizable centred target counts as
+    S2S-like (rho > thr) or rich-like. Runs without a ratio (fewer than two completed events: a long
+    or dead route) carry no information on the separation and are skipped. Returns
+    (sigma_c, status, lo, hi): the log-log interpolated crossing of thr between the last run above
+    it (lo) and the next run with a ratio (hi); status 'ok', 'gap' (a run without a ratio lies
+    between lo and hi), 'never_above' or 'all_above' (sigma_c = NaN, lo = largest sigma above)."""
+    r = rows.sort_values("sigma")
+    sig, rho = r.sigma.values, r.min_rho.values.astype(float)
+    has = np.isfinite(rho)
+    if not has.any() or not (rho[has] > thr).any():
+        return np.nan, "never_above", np.nan, np.nan
+    idx = np.flatnonzero(has)
+    first = idx[np.argmax(rho[idx] > thr)]
+    after = idx[idx > first]
+    drop = after[rho[after] <= thr]
+    if drop.size == 0:
+        return np.nan, "all_above", float(sig[idx[-1]]), np.nan
+    j = drop[0]
+    i = idx[idx < j][-1]
+    status = "gap" if (~has[i + 1 : j]).any() else "ok"
+    w = (np.log(thr) - np.log(rho[i])) / (np.log(rho[j]) - np.log(rho[i])) if rho[j] > 0 else 0.5
+    sc = float(np.exp(np.log(sig[i]) + w * (np.log(sig[j]) - np.log(sig[i]))))
+    return sc, status, float(sig[i]), float(sig[j])
 
 
 def stall_type(exp: str, row: dict, R: int = 3) -> dict:
@@ -296,7 +496,11 @@ def stall_type(exp: str, row: dict, R: int = 3) -> dict:
     tr = Trajectory.load(os.path.join(OUT, exp, "traj", run_id(row_cfg(row)) + ".npz"))
     # spectra of W itself: 'spectra' for plain runs; centred runs record W - W_0 there and W in
     # 'spectra_W' (runs from 2026-10-09 21:00 on); older centred runs cannot be classified
-    key = "spectra_W" if "spectra_W" in tr.data else ("spectra" if row.get("model") != "centred" else None)
+    key = (
+        "spectra_W"
+        if "spectra_W" in tr.data
+        else ("spectra" if row.get("model") != "centred" else None)
+    )
     if key is None:
         return dict(sR_end=np.nan, stall_kind="n/a")
     t, spec = tr["t"], tr[key]  # (n, E, chi_max), NaN-padded
@@ -324,11 +528,19 @@ def aligned_boundary_a0(K: int, weights=(3.0, 2.0, 1.0), rho_thr: float = 3.0) -
 
     def min_rho(log_a0):
         u0 = np.exp(K * log_a0)
-        t = [s ** -expo * _I(K, min(u0 / s, 0.4999), 0.5) for s in w]
-        wid = [s ** -expo * omega for s in w]
+        t = [s**-expo * _I(K, min(u0 / s, 0.4999), 0.5) for s in w]
+        wid = [s**-expo * omega for s in w]
         return min((t[i + 1] - t[i]) / max(wid[i], wid[i + 1]) for i in range(len(w) - 1))
 
-    return float(np.exp(brentq(lambda la: min_rho(la) - rho_thr, np.log(1e-4), np.log(0.999 * (0.5 * w[-1]) ** (1 / K)))))
+    return float(
+        np.exp(
+            brentq(
+                lambda la: min_rho(la) - rho_thr,
+                np.log(1e-4),
+                np.log(0.999 * (0.5 * w[-1]) ** (1 / K)),
+            )
+        )
+    )
 
 
 def seed_rho_boundary(rows: pd.DataFrame, thr: float = 3.0):
@@ -360,6 +572,11 @@ def sensitivity_table(df: pd.DataFrame, by: list[str]) -> pd.DataFrame:
             row[f"s2s_{rt:g}"] = seed_rho_boundary(g, rt)
         for kt in K_THRESHOLDS:
             row[f"lazy_{kt:g}"] = seed_kernel_boundary(g, kt)
+        if "dK_tensor" in g.columns:
+            for kt in K_THRESHOLDS:
+                row[f"lazy_tensor_{kt:g}"] = seed_kernel_boundary(g, kt, col="dK_tensor")
+        row["n_runs"] = len(g)
+        row["n_bump"] = int(g.bump.sum()) if "bump" in g.columns else 0
         out.append(row)
     return pd.DataFrame(out)
 
@@ -398,12 +615,16 @@ def add_resolution_flags(df: pd.DataFrame, exp: str, factor: float = 5.0) -> pd.
     for _, r in df.iterrows():
         wr = width_resolution(exp, r.to_dict())
         widths = [w for _, w in r.events]
-        good = all((not np.isfinite(w)) or (not np.isfinite(q)) or w >= factor * q for w, q in zip(widths, wr))
+        good = all(
+            (not np.isfinite(w)) or (not np.isfinite(q)) or w >= factor * q
+            for w, q in zip(widths, wr)
+        )
         res.append(wr)
         ok.append(good)
     df = df.copy()
     df["width_res"] = res
     df["rho_resolved"] = ok
-    df["label_resolved"] = np.where((df.label == "rich") & (~df.rho_resolved) & (df.n_events >= 2),
-                                    "undetermined", df.label)
+    df["label_resolved"] = np.where(
+        (df.label == "rich") & (~df.rho_resolved) & (df.n_events >= 2), "undetermined", df.label
+    )
     return df

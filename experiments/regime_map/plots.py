@@ -18,7 +18,8 @@ from matplotlib.colors import LogNorm, TwoSlopeNorm  # noqa: E402
 from matplotlib.patches import Patch  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(__file__))
-from analysis import K_THRESHOLDS, OUT, REGIMES, RHO_THRESHOLDS, boundary, fractions, load  # noqa: E402
+import analysis  # noqa: E402
+from analysis import K_THRESHOLDS, REGIMES, RHO_THRESHOLDS, boundary, fractions, load  # noqa: E402
 
 RES = os.path.join(os.path.dirname(__file__), "results")  # default output dir (set by --out)
 FORCE = False  # --force: allow overwriting existing outputs
@@ -255,7 +256,7 @@ def load_traj(exp, cfg):
     """(t, L/L0, overlaps) for a run of either driver (library Trajectory or interim npz)."""
     from run_regime import row_cfg, run_id
 
-    path = os.path.join(OUT, exp, "traj", run_id(row_cfg(cfg)) + ".npz")
+    path = os.path.join(analysis.OUT, exp, "traj", run_id(row_cfg(cfg)) + ".npz")
     if os.path.exists(path):
         z = np.load(path, allow_pickle=False)
         if "overlaps" in z.files:
@@ -263,7 +264,7 @@ def load_traj(exp, cfg):
         return z["t"], z["L"], z["A"]
     from pilots.interim import run_id as rid
 
-    z = np.load(os.path.join(OUT, exp, "traj", rid(cfg) + ".npz"))
+    z = np.load(os.path.join(analysis.OUT, exp, "traj", rid(cfg) + ".npz"))
     return z["t"], z["L"], z["A"]
 
 
@@ -503,11 +504,13 @@ def fig_imbalance(exp="imbalance_b4"):
     from analysis import load
 
     df = load(exp)
-    df["alpha"] = [float(f"{a:.3g}") for a in df.alpha]  # early rows stored the recomputed product
+    # early rows stored the recomputed product; 4 digits keep the check point 3.375 (3 digits gave
+    # 3.38 and an empty P20 panel, fix round 1)
+    df["alpha"] = [float(f"{a:.4g}") for a in df.alpha]
     df["lam_rel"] = df.root_scale / np.sqrt(df.chi)
     fig, axes = plt.subplots(1, 3, figsize=(14, 4.0), gridspec_kw=dict(width_ratios=[1, 1, 0.8]))
     for ax, chi in zip(axes[:2], (24, 3)):
-        sub = df[(df.chi == chi) & (df.alpha != 3.375)]
+        sub = df[(df.chi == chi) & ~np.isclose(df.alpha, 3.375)]
         if sub.empty:
             continue
         alphas = sorted(sub.alpha.unique())
@@ -519,7 +522,7 @@ def fig_imbalance(exp="imbalance_b4"):
         ax.set_ylabel(r"function-space scale $\alpha=\lambda\sigma^K$")
         ax.set_title(f"binary N = 4, chi = {chi} (dotted: fan-in default lambda = 1)", fontsize=9, loc="left")
     ax = axes[2]
-    pt = df[(df.chi == 16) & (df.alpha == 3.375)]
+    pt = df[(df.chi == 16) & np.isclose(df.alpha, 3.375)]
     if not pt.empty:
         g = pt.groupby("root_scale").dK
         lam = np.array(sorted(pt.root_scale.unique()))
@@ -593,11 +596,14 @@ def fig_large_chi(exp="large_chi_b4", model="centred", sigma=1.5, chi_fit_min=16
             if len(med) and model == "centred" and s.n.iloc[0] == 4:
                 xx = np.array([chi_fit_min, med.index.max()], float)
                 ax.loglog(xx, med.iloc[-1] * (xx / xx[-1]) ** th, ":", color=c, lw=1.2)
-        for col in ("dK", "dth", "root_change", "leaf_change"):
+        for col in ("dK", "dK_tensor", "dth", "root_change", "leaf_change"):
+            if col not in fit.columns:  # dK_tensor: runs of the fixed driver (fix round 1)
+                continue
             b, e = pooled_slope(fit.chi, fit[col])
             rows.append(dict(exp=exp, model=model, sigma=sigma, lr=lr, quantity=col, slope=b, se=e,
                              n_runs=int(np.isfinite(fit[col]).sum()),
-                             theory={"dK": THEORY_EXP[lr][0], "dth": THEORY_EXP[lr][1]}.get(col, np.nan)))
+                             theory={"dK": THEORY_EXP[lr][0], "dK_tensor": THEORY_EXP[lr][0],
+                                     "dth": THEORY_EXP[lr][1]}.get(col, np.nan)))
     for ax, t in zip(axes, (r"kernel change $\delta_K(T)$", r"$\delta_\theta(T)$", "root core: relative Frobenius change")):
         ax.set_xlabel(r"bond dimension $\chi$")
         ax.set_title(t, fontsize=9, loc="left")
@@ -641,36 +647,103 @@ def fig_stall_fraction(specs, name="stalls_vs_K"):
     save_fig(fig, f"{name}.png")
 
 
-def fig_sigma_c_vs_K(specs, name="sigma_c_vs_K"):
-    """S2S boundary vs K: per-seed boundaries (median, quartiles) for each (exp, chi) series, with
-    the exact aligned-init boundary a0c(K) (the kappa_K -> 1 limit of H4) and the effective per-core
-    amplitude kappa_K = a0c(K) / sigma_c (theory_regimes R9; H4 holds iff kappa_K -> 1).
-    specs: list of (label, exp, chi or 'full'). Also writes the table."""
+def k_series_rows(tab, label, exp, chi, w):
+    """Per tree of a per-seed table (`analysis.per_seed_table`): counts by label status and the
+    boundary medians. Resolved = status 'ok...' (the next run up is rich or lazy); 'unresolved...'
+    = the next run stalled, so the boundary is only bracketed by [s2s_lo, s2s_hi] (fix round 1: the
+    pre-fix table counted only the exact status 'unresolved' and missed 'unresolved+stall_below').
+    sigma_c_median and kappa use resolved seeds only; bracket_* summarize every seed."""
+    from analysis import aligned_boundary_a0
+
+    rows = []
+    for (kind, n), g in tab.groupby(["kind", "n"]):
+        K = int(g.K.iloc[0])
+        st = g.s2s_status.astype(str)
+        res = st.str.startswith("ok")
+        sc = g.sigma_c[res].dropna()
+        a0c = aligned_boundary_a0(K, w)
+        rows.append(
+            dict(
+                series=label,
+                exp=exp,
+                chi=chi,
+                tree=f"{kind}{n}",
+                K=K,
+                n_seeds=len(g),
+                n_resolved=int(res.sum()),
+                n_unresolved=int(st.str.startswith("unresolved").sum()),
+                n_never=int(st.str.startswith("never").sum()),
+                n_all_s2s=int(st.str.startswith("all_s2s").sum()),
+                n_stall_below=int(st.str.contains("stall_below").sum()),
+                sigma_c_median=float(sc.median()) if len(sc) else np.nan,
+                sigma_c_q1=float(sc.quantile(0.25)) if len(sc) else np.nan,
+                sigma_c_q3=float(sc.quantile(0.75)) if len(sc) else np.nan,
+                bracket_median=float(g.sigma_c.median()),
+                bracket_lo_median=float(g.s2s_lo.median()),
+                bracket_hi_median=float(g.s2s_hi.median()),
+                a0c=a0c,
+                kappa=a0c / float(sc.median()) if len(sc) else np.nan,
+            )
+        )
+    return rows
+
+
+def fig_sigma_c_vs_K(specs, name="sigma_c_vs_K", tables=None):
+    """S2S boundary vs K: per-seed boundaries for each (exp, chi) series, with the exact aligned-init
+    boundary a0c(K) (the kappa_K -> 1 limit of H4) and the effective per-core amplitude
+    kappa_K = a0c(K) / sigma_c (theory_regimes R9; H4 holds iff kappa_K -> 1). Filled: median over
+    resolved seeds (quartiles), shown when at least half the seeds are resolved; open triangles:
+    otherwise, the median bracket [last S2S sigma, next sigma] (a lower bound and a step above it).
+    specs: list of (label, exp, chi or 'full'); tables: optional {label: (per-seed table, weights)}
+    used instead of the raw runs (fix round 1: committed per-seed CSVs). Also writes the table."""
     from analysis import aligned_boundary_a0, load, per_seed_table
 
     rows = []
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
     colors = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
     for (label, exp, chi), c in zip(specs, colors):
-        df = load(exp)
-        if chi != "full":
-            df = df[df.chi == chi]
-        w = tuple(df.weights.iloc[0]) if "weights" in df.columns and isinstance(df.weights.iloc[0], list) else (3.0, 2.0, 1.0)
-        tab = per_seed_table(df, ["kind", "n"])
-        for (kind, n), g in tab.groupby(["kind", "n"]):
-            K = int(g.K.iloc[0])
-            sc = g.sigma_c.dropna()
-            a0c = aligned_boundary_a0(K, w)
-            rows.append(dict(series=label, exp=exp, chi=chi, tree=f"{kind}{n}", K=K, n_seeds=len(g), n_resolved=len(sc),
-                             n_never=int((g.s2s_status == "never_s2s").sum()), n_unresolved=int((g.s2s_status == "unresolved").sum()),
-                             sigma_c_median=float(sc.median()) if len(sc) else np.nan,
-                             sigma_c_q1=float(sc.quantile(0.25)) if len(sc) else np.nan,
-                             sigma_c_q3=float(sc.quantile(0.75)) if len(sc) else np.nan, a0c=a0c,
-                             kappa=a0c / float(sc.median()) if len(sc) else np.nan))
+        if tables is not None:
+            if label not in tables:
+                continue
+            tab, w = tables[label]
+        else:
+            df = load(exp)
+            if chi != "full":
+                df = df[df.chi == chi]
+            w = (
+                tuple(df.weights.iloc[0])
+                if "weights" in df.columns and isinstance(df.weights.iloc[0], list)
+                else (3.0, 2.0, 1.0)
+            )
+            tab = per_seed_table(df, ["kind", "n"])
+        rows += k_series_rows(tab, label, exp, chi, w)
         t = pd.DataFrame([r for r in rows if r["series"] == label]).sort_values("K")
-        ok = t.sigma_c_median.notna()
-        axes[0].errorbar(t.K[ok], t.sigma_c_median[ok], yerr=[t.sigma_c_median[ok] - t.sigma_c_q1[ok], t.sigma_c_q3[ok] - t.sigma_c_median[ok]],
-                         fmt="o", color=c, ms=4, capsize=2, label=label)
+        ok = t.sigma_c_median.notna() & (t.n_resolved >= t.n_seeds / 2)
+        axes[0].errorbar(
+            t.K[ok],
+            t.sigma_c_median[ok],
+            yerr=[t.sigma_c_median[ok] - t.sigma_c_q1[ok], t.sigma_c_q3[ok] - t.sigma_c_median[ok]],
+            fmt="o",
+            color=c,
+            ms=4,
+            capsize=2,
+            label=f"{label} (resolved seeds)",
+        )
+        br = ~ok & t.bracket_lo_median.notna()
+        if br.any():
+            lo = t.bracket_lo_median[br]
+            hi = t.bracket_hi_median[br].fillna(lo * 1.5)
+            axes[0].errorbar(
+                t.K[br] + 0.15,
+                lo,
+                yerr=[0 * lo, hi - lo],
+                fmt="^",
+                color=c,
+                mfc="white",
+                ms=4,
+                capsize=2,
+                label=f"{label}: unresolved, median bracket",
+            )
         axes[1].plot(t.K[ok], t.kappa[ok], "o", color=c, ms=4, label=label)
     Ks = np.arange(3, 16)
     axes[0].plot(Ks, [aligned_boundary_a0(k, (3.0, 2.0)) for k in Ks], "--", color=MUTED, lw=1,
@@ -690,66 +763,82 @@ def fig_sigma_c_vs_K(specs, name="sigma_c_vs_K"):
 
 
 def fig_summary(name="summary"):
-    """Summary: (left) binary N = 4 centred map at chi >= 9 against the collapse variable sigma sqrt(chi)
-    (fraction of seeds per regime, majority colour), with the S2S and lazy boundaries; (right) S2S
-    boundary vs K (centred, d = 2, chi = 4) with the per-component-amplitude law
-    sigma_c = (u0c d^(N/2))^(1/K), u0c = 0.01, and its sqrt(d) limit."""
+    """Summary figure from the raw runs: per-seed boundaries of chi_b4 (centred) and the K sweep
+    (sigma_K_centred_d2, chi = 4) with floor-stalled runs classified by min_i rho_i
+    (`analysis.seed_rho_boundary_stalls`); see `summary_figure`."""
     from analysis import load, per_seed_table
 
-    df = pd.concat([load("chi_b4"), load("sigma_chi_b4")])
-    df = df[(df.model == "centred") & (df.chi >= 9)].copy()
-    df["x"] = df.sigma * np.sqrt(df.chi)
+    df = load("chi_b4")
+    chi_tab = per_seed_table(df[df.model == "centred"], ["chi"], 3)
+    k = load("sigma_K_centred_d2")
+    t = per_seed_table(k[k.chi == 4], ["kind", "n"])
+    t["lo"], t["hi"] = t.rho_lo, t.rho_hi
+    t["status"] = np.where(t.rho_status.isin(["ok", "gap"]), "rho", "bracket (open)")
+    save_csv(t, f"{name}_sigma_c_per_seed.csv")
+    summary_figure(chi_tab, t, name)
+
+
+def summary_figure(chi_tab, k_tab, name="summary"):
+    """(left) binary N = 4 (K = 3), centred, fan-in, chi >= 9: per-seed S2S boundary (last-crossing
+    events) and lazy boundaries (probe kernel, the label rule; tensor-space kernel, the theory's)
+    times sqrt(chi), with theory P5's asymptote 6.50; (right) S2S boundary vs K (centred, d = 2,
+    chi = 4): per seed the bracket [last S2S-like sigma, first rich-like sigma] by min_i rho_i
+    (floor-stalled runs included), open where no rich-like run was found.
+    chi_tab: chi, seed, sigma_c, sigma_K01, sigma_K01_tensor; k_tab: kind, n, K, seed, lo, hi, status."""
     fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.0))
     ax = axes[0]
-    chis = sorted(df.chi.unique())
-    for j, c in enumerate(chis):
-        sub = df[df.chi == c]
-        for x, g in sub.groupby("x"):
-            lab = g.label.value_counts().index[0]
-            ax.scatter(x, j, s=30, color=COLORS[lab], marker="s", lw=0)
-    ax.axvline(0.29, color=INK, ls="--", lw=1)
-    ax.axvline(6.2, color=INK, ls=":", lw=1.2)
-    ax.text(0.29, -0.9, r" S2S $\approx0.29$", fontsize=7)
-    ax.text(6.2, -0.9, r" lazy $\approx6.2$ (theory 6.5)", fontsize=7)
-    ax.set_xscale("log")
-    ax.set_yticks(range(len(chis)), [str(c) for c in chis])
-    ax.set_ylabel(r"bond dimension $\chi$")
-    ax.set_xlabel(r"collapse variable $\sigma\sqrt{\chi}$ (per-bond Gram scale)")
-    ax.set_title("binary N = 4 (K = 3), centred, full bonds: majority regime", fontsize=9, loc="left")
-    ax.set_ylim(-1.3, len(chis) - 0.5)
-    ax.legend(handles=legend_handles(False)[:3], fontsize=7, frameon=False, loc="upper left", bbox_to_anchor=(0, -0.13),
-              ncol=3)
-    ax = axes[1]
-    k = load("sigma_K_centred_d2")
-    k = k[k.chi == 4]
-    tab = per_seed_table(k, ["kind", "n"])
-    save_csv(tab, f"{name}_sigma_c_per_seed.csv")
-    for (kind, n), g in tab.groupby(["kind", "n"]):
-        sc = g.sigma_c.dropna()
-        if len(sc) == 0:
+    t = chi_tab[chi_tab.chi >= 9]
+    for col, c, m, lab in (
+        ("sigma_c", COLORS["s2s"], "o", "S2S boundary (rho = 3)"),
+        ("sigma_K01", COLORS["lazy"], "s", r"lazy boundary, probe kernel ($\delta_K$ = 0.1)"),
+        ("sigma_K01_tensor", "#104281", "D", "lazy boundary, tensor-space kernel"),
+    ):
+        if col not in t.columns or t[col].isna().all():
             continue
-        K = int(g.K.iloc[0])
-        lo, hi = g.s2s_lo.median(), g.s2s_hi.median()
-        unresolved = (g.s2s_status.str.startswith("unresolved")).mean() > 0.5
-        c = "#2a78d6" if kind == "binary" else "#eb6834"
-        ax.errorbar(K, sc.median(), yerr=[[sc.median() - lo], [hi - sc.median()]], fmt="o" if kind == "binary" else "s",
-                    color=c, mfc="white" if unresolved else c, ms=5, capsize=2)
-        ax.annotate(f"{len(sc)}/{len(g)}", (K, sc.median()), textcoords="offset points", xytext=(5, -10), fontsize=6,
-                    color=MUTED)
-    Ks = np.arange(3, 31)
-    for kind, nf, c in (("binary", lambda K: K + 1, "#2a78d6"), ("mps", lambda K: K, "#eb6834")):
-        ax.plot(Ks, [(0.01 * 2.0 ** (nf(K) / 2)) ** (1 / K) for K in Ks], "-", color=c, lw=1, alpha=0.7,
-                label=rf"$(u_{{0c}}\,d^{{N/2}})^{{1/K}}$, $u_{{0c}}=0.01$ ({kind})")
+        y = t[col] * np.sqrt(t.chi)
+        ax.scatter(
+            t.chi * np.exp(0.04 * (t.seed - 2.5)), y, s=10, color=c, marker=m, alpha=0.5, lw=0
+        )
+        med = y.groupby(t.chi).median()
+        ax.plot(med.index, med.values, "-", color=c, marker=m, ms=4, lw=1.2, label=lab + ", median")
+    ax.axhline(6.50, color=INK, ls=":", lw=1, label="theory P5 asymptote 6.50 (tensor kernel)")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"bond dimension $\chi$")
+    ax.set_ylabel(r"boundary $\sigma\sqrt{\chi}$")
+    ax.set_title("binary N = 4 (K = 3), centred, fan-in init (6 seeds)", fontsize=9, loc="left")
+    ax.legend(fontsize=6.5, frameon=False, loc="center right")
+    ax = axes[1]
+    for r in k_tab.itertuples():
+        c = "#2a78d6" if r.kind == "binary" else "#eb6834"
+        x = r.K + 0.08 * (r.seed - 2.5)
+        if np.isfinite(r.hi):
+            ax.plot([x, x], [r.lo, r.hi], color=c, lw=1.2, alpha=0.8)
+            ax.plot(x, np.sqrt(r.lo * r.hi), "o", color=c, ms=3)
+        elif np.isfinite(r.lo):
+            ax.annotate(
+                "", (x, r.lo * 1.25), (x, r.lo), arrowprops=dict(arrowstyle="->", color=c, lw=1)
+            )
     ax.axhline(np.sqrt(2), color=MUTED, ls=":", lw=1)
     ax.axhline(1.0, color=MUTED, ls="--", lw=0.8)
-    ax.text(28, np.sqrt(2) + 0.02, r"$\sqrt{d}$", fontsize=8, color=MUTED)
-    ax.text(28, 1.02, "1 (H4)", fontsize=7, color=MUTED)
-    ax.plot([], [], "o", color="#2a78d6", label="binary trees: median over seeds; bar = [last S2S, next] sigma")
-    ax.plot([], [], "s", color="#eb6834", label="MPS")
-    ax.plot([], [], "s", color="#eb6834", mfc="white", label="open: next run stalled (boundary in the bracket)")
+    ax.text(15.6, np.sqrt(2) * 1.01, r"$\sqrt{d}$", fontsize=8, color=MUTED)
+    ax.text(15.6, 1.01, "1", fontsize=8, color=MUTED)
+    ax.plot([], [], "o-", color="#2a78d6", ms=3, label="binary tree: per-seed bracket, midpoint")
+    ax.plot([], [], "o-", color="#eb6834", ms=3, label="MPS")
+    ax.plot(
+        [],
+        [],
+        marker=r"$\uparrow$",
+        ls="none",
+        color=MUTED,
+        label="open: no rich-like run found (lower bound)",
+    )
+    ax.set_yscale("log")
     ax.set_xlabel("number of cores K")
-    ax.set_ylabel(r"S2S boundary $\sigma_c$")
-    ax.set_title("S2S boundary vs K: centred, d = 2, chi = 4 (resolved seeds / seeds)", fontsize=9, loc="left")
+    ax.set_ylabel(r"S2S boundary $\sigma_c$ (classified by $\min_i\rho_i$)")
+    ax.set_title(
+        "S2S boundary vs K: centred, d = 2, chi = 4 (2x teacher rank)", fontsize=9, loc="left"
+    )
     ax.legend(fontsize=6.5, frameon=False, loc="lower right")
     fig.tight_layout()
     save_fig(fig, f"{name}.png")
