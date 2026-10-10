@@ -22,3 +22,14 @@ Collected from agents' hand-backs; each item names where it came from. Tick off 
     edit); add the other editors' renamed symbols to tab:notation; settle remaining clashes.
 12. Sec. 2 cuts X5, X6, X7, X9 (readability cut list) were not done because their labels are cited from 04, A, B:
     move them once the other files are final (~1 page).
+13. tab:notation additions: \mathcal{T}(Z); Adam's eps vs the perturbation \varepsilon; omega_r; Sec. 3/5 symbols
+    c_col, x_W, b_0, w, xi, lambda (root scale), sigma_c, sigma_lazy, eta_c, eta*_ms, lambda_GF, c_e, sigma_x.
+14. Sec. 2.7 still says the Sec. 3 labels use the probe kernel; the binary4 maps now use the tensor kernel.
+15. App. C: a row for the teaser figure (experiments/report_figures/make_teaser.py + report/tikz/teaser.tex);
+    provenance lines for the literature search and the hopper audit (cited from 1.3 and 7.2).
+16. D_optim: the "Interpretation" (invariance) paragraph now lives in Sec. 7.1; reduce the D_optim copy to a pointer.
+17. Sec. 7: remove the label guard once Sec. 4.7 is deleted (after the ed-s2s merge).
+18. Sec. 1: the SGD statement must match Sec. 5.5 ("no setting shortened the first plateau beyond noise: 11 of 23
+    cell means negative, >= -1.0%, all within 2.5 s.e.").
+19. Sec. 1 finding 7 (dead routes) and Sec. 4 failure modes: update from notes/theory_trap.md after its verification.
+20. Abstract is ~235 words; trim to <= 200.
