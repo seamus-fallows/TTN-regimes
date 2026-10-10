@@ -76,19 +76,21 @@ Recorder keeps "fine rows" (log + integrator steps where theta or log L moved by
 
 | Q | topic | literature | owner | status |
 |---|---|---|---|---|
-| Q1 | saddle sequence from small init | open | `s2s-core` | reviewed; fix round 1 merged (5647a0f); verification running (`notes/reviews/s2s_core_round2_verification.md`) |
+| Q1 | saddle sequence from small init | open | `s2s-core` | DONE: reviewed, fixed, verified (errata applied; safe-to-cite in `notes/reviews/s2s_core_round2_verification.md`); report Sec. 4.1-4.3, 4.6 |
 | Q2 | plateau scaling with sigma, K, chi | partly known | `s2s-core` | as Q1 |
 | Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | DONE: reviewed twice + verified; report Sec. 4.4. Theory: Steiner identity proven; saddle order = k* proven when the generalized piggyback operator stays below s_q (always for k* = 2, for k* in {3,4} with a PD old block, for two-component teachers in the correct order); otherwise order 2l* < k* (proven for pattern teachers with a spare bond index; first case k* = 5, MPS6 pair-star). notes/theory_saddle_order.md v2, verified twice; report App. A.4 |
-| Q4 | learning order | analogues known, TTN open | `order` | reviewed; fix round running (remote, small new runs) |
-| Q5 | regime map | analogues known, TTN open | `regime-map` | reviewed; fix round running LOCALLY (worktree `../wt/regime-map-fix`; machine cannot restart) |
-| Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | round 2 reviewed; fix round 2 merged (fe95253); verification running (`notes/reviews/data_teacher_round3_verification.md`) |
+| Q4 | learning order | analogues known, TTN open | `order` | DONE: reviewed, fixed, verified (errata applied; C1-C17 in `notes/reviews/order_round2_verification.md`); report Sec. 4.5 |
+| Q5 | regime map | analogues known, TTN open | `regime-map` | fix round 1 (local) verified; report Sec. 3, 5.1-5.4. ROUND 2 running (remote): realizable K sweep, d = 2, 3, tensor-kernel relabel |
+| Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | DONE: two rounds reviewed, fixed, verified (`notes/reviews/data_teacher_round3_verification.md`); report Sec. 6.1-6.8 |
 | Q8 | learning rate, SGD, samples | partly known | `optim-samples` | DONE: reviewed + verified (errata in `notes/reviews/optim_samples_round2_verification.md`); report Sec. 5.5 drafted |
 | B1 | optimizer dependence (Adam, gauge-aware, ALS) | open | `optimizers` | DONE: reviewed + fixed; report Sec. 5.6 drafted |
-| B5 | real data (MNIST, quadtree vs MPS vs scrambled) | open | `real-data` | reviewed; fix round running LOCALLY (worktree `../wt/real-data-fix`) |
+| B5 | real data (MNIST, quadtree vs MPS vs scrambled) | open | `real-data` | DONE: fix round + pre-registered order test, verified (`notes/reviews/real_data_round2_verification.md`); report Sec. 6.9 |
 
-Report: Sec. 2 (polished), 4 locality + failure modes, 5.5, 5.6, App. B/C entries drafted; App. A being trimmed;
-citation / prior-work audit running (`notes/reviews/citation_check.md`). Parallel report work happens in git worktrees
-`../wt/<name>` on branches `wip/<name>`, merged by the lead.
+Report (119 pages): Sec. 2-6 written, App. A (incl. A.4 saddle-order theorem), B, C; citation audit applied.
+In progress: Sec. 1, abstract, 4.7, 7 (synthesis agent), figure QA, reproducibility check; pending inputs: regime-map
+round 2 (Sec. 3 large-K placeholder) and saddle-dyn (remote test of the saddle-order theorem's dynamics).
+Parallel report work happens in git worktrees `../wt/<name>` on branches `wip/<name>`, merged by the lead.
+Reviewer/verifier scripts (provenance for review numbers): `notes/reviews/scripts/`.
 
 ## Key findings so far
 
