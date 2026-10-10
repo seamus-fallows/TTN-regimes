@@ -29,7 +29,7 @@ import torch
 from ttn import diagnostics as dg
 from ttn.dynamics import Problem, Recorder, integrate_gf
 from ttn.network import TTNSpec, antisymmetric_double, to_dense
-from ttn.teachers import ShiftedTeacher, odeco_teacher
+from ttn.teachers import CPTeacher, ShiftedTeacher, odeco_teacher
 from ttn.tree import make_tree
 
 OUT = "/root/outputs/regime_map"
@@ -82,6 +82,24 @@ def run_id(cfg: dict) -> str:
     return "_".join(f"{k}{cfg.get(k)}" for k in keys if cfg.get(k) is not None)
 
 
+class ShiftedCP(CPTeacher):
+    """Target W* + W_0 seen as a plain CP target (direct loss; see `build`): the CP fields and
+    component overlaps are those of the base teacher W*, the norm and inner products include W_0."""
+
+    def __init__(self, base: CPTeacher, spec0: TTNSpec, cores0):
+        super().__init__(base.weights, base.factors)
+        self.shift = ShiftedTeacher(base, spec0, cores0)
+
+    def __call__(self, x):
+        return self.shift(x)
+
+    def norm2(self, site_metrics=None):
+        return self.shift.norm2(site_metrics)
+
+    def inner_ttn(self, spec, cores, site_metrics=None):
+        return self.shift.inner_ttn(spec, cores, site_metrics)
+
+
 def build(cfg: dict):
     """(problem, theta0, spec, info) for a config."""
     spec = make_spec(cfg["kind"], cfg["n"], cfg["d"], cfg["chi"], cfg.get("cap", True), cfg.get("bonds"))
@@ -94,7 +112,14 @@ def build(cfg: dict):
 
         cores0 = gauge_balance(spec, cores0)[0]
     model = cfg["model"]
-    if model == "centred":
+    alpha0 = math.prod(cfg["sigma"] * s for s in scales)
+    if model == "centred" and alpha0 < cfg.get("direct_alpha", 1e-2):
+        # Small W_0: the direct loss 1/2 ||W - (W* + W_0)||^2 has cancellation error ~1e-16 alpha^2
+        # (negligible) and is 4-14x cheaper than the cancellation-free doubled-bond form. Overlaps
+        # and spectra then refer to W, which differs from W - W_0 by O(alpha / sqrt(D)).
+        problem = Problem(spec, ShiftedCP(base, spec, cores0), lr_multipliers=eta)
+        theta0 = spec.flatten(cores0)
+    elif model == "centred":
         problem = Problem(spec, ShiftedTeacher(base, spec, cores0), lr_multipliers=eta)
         theta0 = spec.flatten(cores0)
     elif model == "plain":
@@ -111,7 +136,8 @@ def build(cfg: dict):
     lam_bar = alpha**2 / D * sum(e * f / (cfg["sigma"] * s) ** 2 for e, f, s in zip(eta, spec.fan_in, scales))
     if model == "twocopy":
         lam_bar *= 2
-    return problem, theta0, spec, dict(alpha=alpha, lam_bar=lam_bar, base=base, cores0=cores0, eta=eta)
+    return problem, theta0, spec, dict(alpha=alpha, lam_bar=lam_bar, base=base, cores0=cores0, eta=eta,
+                                       direct=isinstance(problem.target, ShiftedCP))
 
 
 def kernel_weights(problem: Problem) -> torch.Tensor | None:
@@ -183,7 +209,7 @@ def run_point(cfg: dict) -> dict:
     # Reference loss 1/2 ||W*||^2 (= L(0) for the centred and two-copy models). The plain model at
     # large sigma has L(0) ~ 1/2 ||W_0||^2 >> 1/2 ||W*||^2, and "L < 1e-3 L(0)" would then count a run
     # that merely shrank W_0 as converged (and the loss floor would stop it before W* is learned).
-    L_ref = 0.5 * float(problem.target_norm2)
+    L_ref = 0.5 * float(info["base"].norm2())
     method = cfg.get("method", "dopri5")
     if method == "auto":  # LSODA for the stiff later plateaus at small sigma, dopri5 otherwise
         method = "lsoda" if sigma < 0.7 else "dopri5"
@@ -191,7 +217,7 @@ def run_point(cfg: dict) -> dict:
     floor = cfg.get("l_floor", 1e-6) * L_ref
 
     extra = []
-    if cfg["model"] == "centred":  # spectra of W itself (the Recorder's are of W - W_0): dead routes
+    if cfg["model"] == "centred" and not info["direct"]:  # spectra of W itself (Recorder: W - W_0)
         extra.append(("spectra_W", _own_spectra))
 
     def integrate(kw):
@@ -243,7 +269,7 @@ def run_point(cfg: dict) -> dict:
     row = {k: v for k, v in cfg.items()}
     row.update(
         K=K, P=problem.spec.n_params, alpha_init=info["alpha"], lam_bar=info["lam_bar"], t_max=t_max,
-        integrator=kw["method"],
+        integrator=kw["method"], centred_direct=info["direct"],
         t_end=float(traj.meta["t_end"]), stop=traj.meta["stop_reason"], stiff_at=traj.meta.get("stiff_at"),
         n_steps=traj.meta["n_steps"], L0=L0, L_ref=L_ref, l_end=l_end, l_best=l_best, dK=dK, dK_dir=dK_dir,
         dth=float(traj["rel_dist_from_init"][-1]), dth_core=dth_core,
