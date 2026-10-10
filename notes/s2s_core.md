@@ -560,15 +560,17 @@ except the round-1 `large` sample, read off the log grid, +-1.8%):
   within 1.8% of these).
 - 8 mps8 chi = 6 stalled runs from `large`, spread over estimate / elapsed time (0.2-420): 2 escape, at
   1.37x and 1.81x the estimate (above the estimate: the reduction does not hold there, e.g. part of
-  |a_r| is off the route or a sign correction is under way); 1 (sigma = 0.2, seed 9) has not escaped at
-  2x, and does not escape by 3x either (round-2 verification rerun with `--factor 3`); 4 hit the 50-min
-  wall limit (whether before reaching the estimate cannot be checked: the CSV has no reached-time
-  column); 1 integrator failure. `continued_large_spread.csv` is a round-1 artefact: the continuation
-  factor used for it is not recorded, and on the finished sweep (28 candidates) the README rule
-  `--spread --n 8 --max_ratio 1000` picks a different set (the last 3 of 8 differ). The same rule
-  reproduces the committed set exactly on the 19 candidates whose files existed at 22:43 UTC (raw file
-  times), so the sample was drawn while `large` was still running (REPORT log, 22:44). The README now
-  regenerates this set with `--names`.
+  |a_r| is off the route or a sign correction is under way); 1 (sigma = 0.2, seed 9) does not escape by
+  3x the estimate (stated before as "not at 2x"; the committed run used factor 3, see below, and the
+  round-2 verification's rerun with `--factor 3` agrees); 4 hit the 50-min wall limit (whether before
+  reaching the estimate cannot be checked: the CSV has no reached-time column); 1 integrator failure.
+  `continued_large_spread.csv` is a round-1 artefact. Its continuation factor was not recorded, but its
+  two escape times are exact log-grid cell midpoints only for factor 3 (as the k78 continuation files
+  are for their documented factors 4 and 3), so it was 3. On the finished sweep (28 candidates) the
+  README rule `--spread --n 8 --max_ratio 1000` picks a different set (the last 3 of 8 differ); the same
+  rule reproduces the committed set exactly on the 19 candidates whose files existed at 22:43 UTC (raw
+  file times), so the sample was drawn while `large` was still running (REPORT log, 22:44). The README
+  now regenerates this set with `--names`.
 - A seeded random sample (`--random --seed 1`) of 8 of the 74 k78 candidate runs whose estimate is
   <= 100x the time already integrated (73 stalled + 1 trapped run that ran to t_max: mps8 fan-in
   sigma = 0.3 seed 5, slice 1.4e-10 sigma, not drawn; one drawn run overlaps the first set): 7 escape, at
@@ -709,8 +711,8 @@ corrected scripts and holds.
    and in all 380 main/balanced runs; the exception (chi 3, close, balanced, seed 6 at sigma = 0.1) is
    an E9-type wrong first escape (2.2b).
 6. "Stalls are ever-longer plateaus (10/11)" -> a derived prediction, checked on 3 seeds (8 runs) plus the
-   mps8 chi = 6 spread sample (2 escape above the estimate, 1 not at 2x nor, in the round-2
-   verification's rerun, by 3x, 5 unresolved) and a random sample of 8 k78 runs (7 escape at 0.24-2.19x
+   mps8 chi = 6 spread sample (2 escape above the estimate, 1 not by 3x (stated before as "2x"; the
+   factor was 3), 5 unresolved) and a random sample of 8 k78 runs (7 escape at 0.24-2.19x
    the estimate, 1 not by 3x): 16 escapes among 23 distinct continued runs, 4 of them above the
    estimate, which is therefore not a bound; a conjecture for the untested 91/106 k78 and 35/43 large
    mps8 runs; slice trends reported (2.7).

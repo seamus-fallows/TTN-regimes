@@ -50,7 +50,7 @@ Answer (odeco teachers, d = 4):
 | trap decay ~ sigma^2 within 1.8x, two seeds switch levels by 20-100x | rate / sigma^2 constant per seed to <= 2.4% (seeds 3, 5, 6) and <= 5.3% (seed 7) over sigma 0.003-0.1 (4 separated seeds; per-core levels carry a +-4% fit-window bias), 1.25-1.33x (close) once fitted above the float64 floor (1e-9); the switch was an artifact; K = 7, 8 rates not sigma^2-clean | `dormant_decay.csv` |
 | measured rates 3-15x below the single-end estimate | withdrawn as unsupported (was "1.1-5.6x below", ratio 0.18-0.87): no script, CSV or log computes Q_nu nu or the estimate, it rests on 2 re-run seeds, and the choice of s_q alone spans 1.5x; only the sign rule and the sigma^2 scaling are cited | notes 2.7c |
 | first component = correlation flow's except binary4 close (80-90%, wrong order at finite sigma) | 1847/1848 runs over all sigmas (100% at the smallest sigma): the 80-90% came from stopping the flow at amplitude 1e6. The one exception (binary4 chi 3, close, balanced, seed 6 at sigma = 0.1) is an E9-type wrong first escape: theory_escape E9 is withdrawn only as the cause of the old mismatches. Now stopped on direction convergence or at the amplitude cap 1e30 (all 40 binary4 close jobs end at the cap, direction converging slowly; T converged regardless, independent check to <= 1.5e-11); T moved by <= 2.2e-3 (binary4 close; fan-in max 1.75e-3), <= 3.0e-5 (binary4 separated), <= 2e-7 elsewhere | `first_runs.csv`, `recompute_T.py` |
-| stalls are ever-longer plateaus (10 of 11 escape) | derived prediction; 8/8 shortest-estimate k78 runs (3 seeds) escape at 0.50-0.87 of the estimate; mps8 chi = 6 spread: 2 escape at 1.37x and 1.81x, 1 not at 2x (nor by 3x in the verification rerun), 5 unresolved; random sample of 8 of the 74 k78 candidates (73 stalled + 1 trapped) with estimate <= 100x elapsed: 7 escape at 0.24-2.19x, 1 not by 3x. In all 16 of 23 distinct continued runs escape; the estimate is exceeded in 4 of the 16, so it is not a bound; 91/106 k78 and 35/43 large mps8 stalled/unresolved runs untested (conjecture there) | `continued_*.csv` |
+| stalls are ever-longer plateaus (10 of 11 escape) | derived prediction; 8/8 shortest-estimate k78 runs (3 seeds) escape at 0.50-0.87 of the estimate; mps8 chi = 6 spread: 2 escape at 1.37x and 1.81x, 1 not by 3x (stated before as "2x"; the run used factor 3, recovered from its log grid; the verification rerun agrees), 5 unresolved; random sample of 8 of the 74 k78 candidates (73 stalled + 1 trapped) with estimate <= 100x elapsed: 7 escape at 0.24-2.19x, 1 not by 3x. In all 16 of 23 distinct continued runs escape; the estimate is exceeded in 4 of the 16, so it is not a bound; 91/106 k78 and 35/43 large mps8 stalled/unresolved runs untested (conjecture there) | `continued_*.csv` |
 | trap fraction 40% at K = 4; 30-80% at K = 7, 8 | 40% separated teacher only (close: 14/80 trapped + 8/80 stalled, not fixed per init direction); K = 7, 8 fractions are lower bounds (stalled runs partly still decaying) | `main_classes.csv`, `slice_trends.csv` |
 | balanced init removes the trap (0/210); chi = 2R removes it | 0/120 in the informative cells (fan-in 12/30, 47/90); balanced K = 7, 8 still stall 69/90; chi = 6: ht4 5/50 trapped (seed 9 at every sigma), mps8 7/50; "2R" literal only on binary trees (MPS end / HT leaf bonds capped at d = 4) | `main_classes.csv` |
 | edge rank steps 517/551; >100x drops 0% at chi = 2R; later escapes "same picture"; R10 magnitude 0.8-1.7; plateau error <= 2e-2, mps4 2e-3; KH 3-500x | 497/531 (332 untested); 0-2%; 2.0-8.3% >100x at K = 7, 8, chi = 3 (11% for mps8 separated later escapes); cell medians 0.87-1.15 (K = 3, 4) and 1.4-3.2 (K = 7, 8; up to 3.9 in k78), per-seed medians up to 20; binary4 8.5e-3 (separated, sigma = 0.1) and 2.0e-2 (close, sigma = 0.003) (up to 0.50 at unresolved close plateaus), mps4 2.8e-3 (8.1e-3 balanced), K = 7 <= 2.1e-5 at chi = 6 (1.5e-4 at chi = 3); 3-2700x | notes 2.3-2.7 |
@@ -189,8 +189,9 @@ E1, E2, E5, E7 unless marked):
   continued from their final state, the 8 k78 runs with the shortest estimate (3 seeds) all escape, at
   0.50-0.87 of it (zoom-resolved; per seed constant across sigma); of 8 mps8 chi = 6 runs spread over
   the distribution, 2 escape at 1.37x and 1.81x (the reduction does not hold there; log-grid values,
-  round-1 script), 1 not by 2x (nor by 3x in the round-2 verification's rerun), 4 wall-limited
-  (whether before the estimate cannot be checked: no reached-time column), 1 integrator failure; a
+  round-1 script), 1 not by 3x (stated before as "2x"; factor 3, recovered from the log grid), 4
+  wall-limited (whether before the estimate cannot be checked: no reached-time column), 1 integrator
+  failure; a
   seeded random 8 of the 74 k78 candidates (73 stalled + 1 trapped that ran to t_max, not drawn) with
   estimate <= 100x the elapsed time: 7 escape at 0.24-2.19x (median 0.55), 1 not by 3x. In total 16 of
   23 distinct continued stalled runs escape (14/15 k78, 2/8 large), and the estimate is exceeded in 4
@@ -268,7 +269,8 @@ E1, E2, E5, E7 unless marked):
 - **Continuation test** of stalled runs on the 8 with the shortest predicted remaining plateau (to fit
   the time left); a spread sample from `large` was started as a check of the bias (drawn at ~22:43 UTC
   while `large` was still running, from 19 candidates, so `--spread` on the finished sweep picks another
-  set; the README regenerates it with `--names`; its continuation factor was not recorded).
+  set; the README regenerates it with `--names`; its continuation factor was not recorded, but the
+  log-grid escape times fix it at 3).
 
 - **Fix round: run sets for the fits.** Options: (i) pool complete runs (before; mixes wrong-order and
   overlapping-event runs into the fits); (ii) require every rho > 3 in a run; (iii) classify per step.
@@ -321,7 +323,7 @@ regenerated by the commands in `experiments/s2s_core/README.md` (~6 h on 60 CPUs
 - **Stalled vs stuck** is a derived prediction checked on 16 escapes: 8 shortest-estimate k78 runs
   (3 seeds, all escape at 0.50-0.87x), a random 8 of the 74 k78 candidates with estimate <= 100x the
   elapsed time (7 escape at 0.24-2.19x, 1 not by 3x) and 8 mps8 chi = 6 runs (2 escape at 1.37x and
-  1.81x, 1 not by 2x nor by 3x, 5 not integrated far enough): 16 of 23 distinct continued runs, with the
+  1.81x, 1 not by 3x, 5 not integrated far enough): 16 of 23 distinct continued runs, with the
   estimate exceeded in 4 of the 16 (1.08, 1.37, 1.81, 2.19x), so it is not a bound. 91 of the 106 k78
   stalled runs (estimate / elapsed: cell medians 17-64x) and 35 of the 43 large mps8 stalled or
   unresolved runs (median about 390x) are untested: for them "ever-longer plateaus" is a conjecture. At
