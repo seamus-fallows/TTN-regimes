@@ -43,7 +43,7 @@ matter.
 | R9 | With several learned components the escape degree can be smaller than the number of cores needed to fit the component exactly ("partial learning"): an extra plateau at the best fit of a lower rank profile appears. | derived, checked (v1; levels re-derived by the verifier) |
 | R10 | Hessian: gauge orbit at $\theta_S$ has dimension $\sum_e[\chi_e^2-(\chi_e-r_e)^2]$; null space $\sum_e r_e^2+P_{\rm new}-2\sum_{k=2}c_e$. At a plateau point each route contributes one negative direction, $-\lambda$ ($k=2$) or $\approx-(k-1)s_rA\,b^{k-2}=O(\sigma^{k-2})$ ($k\ge3$). Visible new-index pairs add $O(\sigma^2)$ indefinite terms, so "one negative eigenvalue per route" holds for $k\le3$ only (at $k=4$ a second one of the same order appears). | proven (counts at $\theta_S$), derived (plateau), checked |
 | R11 | The 1e-3 relative threshold of `notes/diagnostics.md` classifies $k=3$ plateaus as strict for $\sigma\gtrsim0.01$; use the $\sigma$-scaling of $\lambda_{\min}$ instead. | checked (v1 and verifier; boundary seed-dependent, $\sigma\approx0.01$-$0.04$) |
-| R12 | Conservation-law trap [trap update 2026-10-10; details in `notes/theory_trap.md`]. On a rank-one plateau the decisive conserved quantity of a route end $u$ (partner $w$ on the route edge) is $C_u=X_u^{\perp\top}X_u^\perp-X_w^{\perp\top}X_w^\perp$, built from the normal-visible blocks (new bond index, physical index normal to the learned pattern); the pattern parts are tangent and do not decay. The end's normal block goes to $[C_u]_+$: with one new direction the end dies iff $C_u<0$. After a small-init escape $C_u=Q_{\nu\nu}+\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+O(\sigma^3)$; the old criterion $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$ kept only the route entry of $Y_{\rm nv}$ and over-predicts death. Routes with $k\le3$ never trap. For $k\le5$, as $\sigma\to0$, a route is dead iff at least two ends die and pinned if one does; from $k=6$ three-core clusters through inner route cores (rate $\propto\sigma^4$) are a further death channel and pre-empt the pinned escape. Per run from the init (fan-in, $k\ge4$, locality): predicted dead 408/457 stall, predicted alive 38/2,101. HT4/B4 at $\sigma=0.2$ (section 8): traps after two learned components. Balanced init: tree-leaf ends cannot die at leading order; internal ends can. | conservation and limit $[C_u]_+$: proven (reduced flow), checked in full GF; identity: proven; death rule: derived for $k\le5$, incomplete for $k\ge6$; pinned escape law $\propto\sigma^{-(2k-6)}$: conjecture; per-run tests: empirical |
+| R12 | Conservation-law trap [trap update 2026-10-10; details in `notes/theory_trap.md`]. On a rank-one plateau the decisive conserved quantity of a route end $u$ (partner $w$ on the route edge) is $C_u=X_u^{\perp\top}X_u^\perp-X_w^{\perp\top}X_w^\perp$, built from the normal-visible blocks (new bond index, physical index normal to the learned pattern); the pattern parts are tangent and do not decay. The end's normal block goes to $[C_u]_+$: with one new direction the end dies iff $C_u<0$. After a small-init escape $C_u=Q_{\nu\nu}+\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+O(\sigma^3)$; the old criterion $Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$ kept only the route entry of $Y_{\rm nv}$ and over-predicts death. Routes with $k\le3$ never trap. For $k\le5$, as $\sigma\to0$, a route is dead iff at least two ends die and pinned if one does (at $k=4$ a $\sigma$-free competition with the route drive decides; with spare inner channels its reduced route model is basis invariant, `theory_trap.md` v1.2, Prop. 3); from $k=6$ three-core clusters through inner route cores (rate $\propto\sigma^4$) are a further death channel and pre-empt the pinned escape. Per run from the init (fan-in, $k\ge4$, locality; v1.2): predicted dead 408/437 (93%) stall, predicted pinned 141/934, predicted alive 38/2,121 (1.8%). HT4/B4 at $\sigma=0.2$ (section 8): traps after two learned components. Balanced init: tree-leaf ends cannot die at leading order; internal ends can. | conservation and limit $[C_u]_+$: proven (reduced flow), checked in full GF; identity: proven; death rule: derived for $k\le5$, incomplete for $k\ge6$; pinned escape law $\propto\sigma^{-(2k-6)}$: conjecture; per-run tests: empirical |
 | R13 | Generic (non-orthogonal) teachers: adjacent pairs with free modes give $k^*=2$; on an MPS every later saddle is strict (log-time, edge-by-edge rank growth), binary/HT trees keep $k^*\ge3$ at rank one. Power-law plateaus need tree-aligned orthogonal structure. | derived, checked (one teacher) |
 
 ## 1. Setting and notation
@@ -812,12 +812,16 @@ partner is siteless) decays in time $\propto\sigma^{-2(j-1)}$, against the route
 So an end can kill its route only if $k\ge2j$:
   - $k\le3$: never (0 stalls in 5,744 committed runs);
   - $k=4$: a $\sigma$-free competition, settled by a reduced route ODE from the plateau-start values
-    (derived for one new direction per route edge);
+    (derived as $\sigma\to0$ for one new direction on each end edge; with spare inner directions the
+    route entries of the two inner cores are vectors $\beta_1,\beta_2$, which enter only through
+    $\langle\beta_1,\beta_2\rangle$ and $\lvert\beta_1\rvert^2+\lvert\beta_2\rvert^2$, so the verdict is basis invariant:
+    `theory_trap.md` v1.2, Prop. 3, verified in `notes/reviews/trap_k4_verification.md`);
   - $k=5$: the sign test on the $C_u$ (dead iff at least two ends have $C_u<0$);
   - $k\ge6$: the sign test plus the inner three-core channel, which the per-run criterion does not
     include.
-The plateau-start state is $\sigma$ times a function of the init direction, so the outcome is a property
-of the init direction, not of $\sigma$ (corrections $O(\sigma)$). The dead-state stability condition
+The plateau-start state is $\sigma$ times a function of the init direction, so as $\sigma\to0$ the outcome is a
+property of the init direction, not of $\sigma$ (corrections $O(\sigma)$; near the boundary the class shifts at
+$\sigma\gtrsim0.03$, `notes/reviews/trap_k4_verification.md` erratum 1). The dead-state stability condition
 $\gamma_1\gamma_2>\kappa^2$ is kept, with $\gamma=A^2\lvert C_u\rvert$. The earlier conjecture
 ($P(\text{stall})\to P(\text{all ends unfavourable})\approx0.5$ for two-ended HT routes) is withdrawn.
 - The point reached is not a local minimum (moving the frozen visible components is free and then
@@ -920,8 +924,9 @@ Partial rebuttals (both minor):
   other trees and many-ended routes are now covered there (sections 8 and 12 here). Open:
   - a $\sigma$-free reduced model of the second plateau, needed to predict the odeco (multi-stage) trap
     from the init;
-  - $k=4$ routes with spare inner channels: vector route amplitudes; the current code's verdict there
-    is basis-dependent;
+  - $k=4$ routes with spare inner channels: closed in `theory_trap.md` v1.2 (basis-invariant vector route
+    amplitudes, Prop. 3; verified). Open: a finite-$\sigma$ reduced model with spare inner channels at $k\ge5$,
+    and ends with more than one new direction;
   - the inner three-core clusters (death channel from $k=6$): derived to act, not in the per-run
     criterion;
   - the marginal $k=6$ case on HT trees;
@@ -1068,8 +1073,11 @@ Prop. 2 and section 8, as corrected by its verification; tags per item]. For a r
 rank-one plateau, with end quantities $C_u$ (R12):
 - $k\le3$: never trapped (derived; 0 stalls in 5,744 committed runs).
 - $k=4$: a $\sigma$-free competition between end decay and route drive, settled by a reduced route ODE
-  from the plateau-start values (derived for one new direction per route edge; at inner edges with
-  $\chi\ge3$ the current code's verdict depends on an arbitrary basis choice).
+  from the plateau-start values (derived as $\sigma\to0$ for one new direction on each end edge; with
+  spare inner directions the inner cores' route entries $\beta_1,\beta_2$ enter only through
+  $\langle\beta_1,\beta_2\rangle$ and $\lvert\beta_1\rvert^2+\lvert\beta_2\rvert^2$, so the verdict is basis invariant,
+  `theory_trap.md` v1.2, Prop. 3, proven within the reduced flow; checked in full GF in 36/36 runs and
+  69/71 directions at $\sigma=0.03$, the two misses near the boundary and correct at $\sigma\le0.01$).
 - $k=5$, $\sigma\to0$: dead iff at least two ends have $C_u<0$; with one, that end is pinned at
   $\propto\sigma^{k-3}$ (derived) and the route escapes late (after $\propto\sigma^{-(2k-6)}$: conjecture,
   untested).
@@ -1081,8 +1089,8 @@ rank-one plateau, with end quantities $C_u$ (R12):
 - Fan-in init, saddle start, $c_e=1$: $P(C_u<0)=0.392$ at an MPS tree-leaf end and 0.5 at the MPS
   root end ($d=\chi=2$; proven for the Gaussian saddle-start model). At a capped end bond with $d\ge3$:
   about 0.023 ($d=3$) and $1.5\cdot10^{-4}$ ($d=4$) (Monte Carlo).
-- Per run from the init (fan-in, $k\ge4$, locality): predicted dead 408/457 stall, predicted alive
-  38/2,101 (empirical).
+- Per run from the init (fan-in, $k\ge4$, locality; `theory_trap.md` v1.2): predicted dead 408/437 (93%)
+  stall, predicted pinned 141/934, predicted alive 38/2,121 (1.8%) (empirical).
 - Balanced init: tree-leaf ends cannot die at leading order (derived); in s2s-core 0/150 balanced odeco
   runs trap, 69/150 stall.
 Withdrawn: the heuristic dead fraction $\approx0.5$ per two-ended HT route, and "MPS with $\chi=d$ stalls
