@@ -24,6 +24,14 @@ from ttn import plotting as tp  # noqa: E402
 
 HERE = Path(__file__).parent
 CLASSES = ["complete", "trapped", "stalled", "unresolved"]
+# Display names: the stall taxonomy of the report (notes/report_style.md): a trapped run has a dead route,
+# a stalled one (route ends still live when the budget ran out) is slow.
+LABELS = {
+    "complete": "complete",
+    "trapped": "dead route",
+    "stalled": "slow",
+    "unresolved": "unresolved",
+}
 TREES = ["binary4", "mps4", "binary8", "ht4", "mps8"]
 NAMES = {"binary4": "binary4", "mps4": "MPS4", "binary8": "binary8", "ht4": "HT4", "mps8": "MPS8"}
 
@@ -89,7 +97,7 @@ def main():
             cells[c],
             left=left,
             color=colors[c],
-            label=c,
+            label=LABELS[c],
             height=0.75,
             edgecolor="white",
             linewidth=0.8,
@@ -117,7 +125,7 @@ def main():
     ax2.set_yscale("log")
     ax2.set_xlabel(r"$\sigma$")
     ax2.set_ylabel(r"end-slice decay rate / $\sigma^2$")
-    ax2.set_title("MPS4, $\\chi=3$, trapped runs\n(one line per seed and teacher)", fontsize=8)
+    ax2.set_title("MPS4, $\\chi=3$, dead routes\n(one line per seed and teacher)", fontsize=8)
     ax2.legend(loc="center left", fontsize=8, handlelength=1.6)
     tp.savefig(fig, out / "fig_g_dormant")
 

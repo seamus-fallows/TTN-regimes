@@ -33,10 +33,11 @@ from ttn import plotting as tp  # noqa: E402
 
 HERE = Path(__file__).parent
 # (run name, raw folder option, edge whose spectrum is shown: the middle / root edge, as named by
-# tp.edge_label with sites counted from 0, and as printed with sites counted from 1 as in the report)
+# tp.edge_label with sites counted from 0, and as printed in the report: sites from 0, bipartitions as
+# 01|23 or 0-3|4-7, notes/report_style.md)
 RUNS = [
-    ("mps4_chi3_w3-2-1_fanin_s0.01_seed0", "main", "{0,1} | {2,3}", r"$\{1,2\}|\{3,4\}$"),
-    ("binary8_chi6_w3-2-1_fanin_s0.1_seed0", "large", "{0–3} | {4–7}", r"$\{1$–$4\}|\{5$–$8\}$"),
+    ("mps4_chi3_w3-2-1_fanin_s0.01_seed0", "main", "{0,1} | {2,3}", r"$01|23$"),
+    ("binary8_chi6_w3-2-1_fanin_s0.1_seed0", "large", "{0–3} | {4–7}", r"$0$–$3|4$–$7$"),
 ]
 TREE_NAMES = {"mps": "MPS", "binary": "binary", "ht": "HT"}
 
@@ -118,7 +119,7 @@ def fig_runs(raws: dict[str, Path], out: Path):
         for k, x in enumerate((3, 2, 1))
     ]
     handles += [
-        plt.Line2D([], [], color=tp.MUTED, lw=0.9, label="other $s^e_k$"),
+        plt.Line2D([], [], color=tp.MUTED, lw=0.9, label="other $s^e_j$"),
         plt.Line2D([], [], color=tp.MUTED, lw=0.9, ls="--", label="teacher values / events"),
         plt.Line2D([], [], color=tp.MUTED, lw=0.7, ls=":", label="partial-fit levels $L_S$"),
     ]
@@ -183,7 +184,7 @@ def fig_prefactor(res: Path, out: Path):
     ax.set_xscale("log", base=2)
     ax.set_yscale("log")
     ax.set_xlabel(r"bond dimension $\chi$ ($d=4$, $s=1$)")
-    ax.set_ylabel(r"$T=\lim_{\sigma\to0}\sigma^{K-2}t_1$")
+    ax.set_ylabel(r"$\mathcal{T}=\lim_{\sigma\to0}\sigma^{K-2}t_1$")
     ax.set_title("(a)", loc="left", fontsize=8)
 
     # (b) physical dimension at full bond chi = d^2, single component s = 1
@@ -218,7 +219,7 @@ def fig_prefactor(res: Path, out: Path):
     ax.set_yscale("log")
     ax.set_xticks([2, 3, 4])
     ax.set_xlabel(r"$d$ (full bond, $\chi=d^2$)")
-    ax.set_ylabel("$T$")
+    ax.set_ylabel(r"$\mathcal{T}$")
     ax.set_title("(b)", loc="left", fontsize=8)
 
     # (c) number of cores, chi = 3, d = 4, s = (3, 2, 1)
@@ -240,7 +241,7 @@ def fig_prefactor(res: Path, out: Path):
         ax.plot(g.K, g.tKH_median, color=fam_col[fam], lw=0.8, ls="--")
     ax.set_yscale("log")
     ax.set_xlabel(r"cores $K$ ($\chi=3$, $d=4$, $s=(3,2,1)$)")
-    ax.set_ylabel("$T$")
+    ax.set_ylabel(r"$\mathcal{T}$")
     ax.set_title("(c)", loc="left", fontsize=8)
 
     # One legend below the panels: trees of (a), (b) (marker = N; in (c) diamonds, colour = family)
@@ -250,7 +251,7 @@ def fig_prefactor(res: Path, out: Path):
         for t in trees
     ]
     h += [
-        plt.Line2D([], [], color=tp.INK, lw=1.1, label="median $T$ (95% CI)"),
+        plt.Line2D([], [], color=tp.INK, lw=1.1, label=r"median $\mathcal{T}$ (95% CI)"),
         plt.Line2D([], [], color=tp.INK, lw=0.8, ls="--", label=r"median $t_{\rm KH}$"),
         plt.Line2D([], [], color=tp.INK, lw=0.9, ls=":", label=r"heuristic $P_3$"),
     ]
