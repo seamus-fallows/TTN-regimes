@@ -165,12 +165,13 @@
   year      = {2017}
 }
 
-% verified: https://arxiv.org/abs/2106.15013 (comment: "published in NeurIPS 2021"; NeurIPS 2021 is volume 34)
+% verified: https://arxiv.org/abs/2106.15013 (comment: "published in NeurIPS 2021"; NeurIPS 2021 is volume 34) ; https://proceedings.neurips.cc/paper_files/paper/2021/file/c82836ed448c41094025b4a872c5341e-Bibtex.bib (pages; cite-check 2026-10-10)
 @inproceedings{stoger2021small,
   author    = {St{\"o}ger, Dominik and Soltanolkotabi, Mahdi},
   title     = {Small random initialization is akin to spectral learning: Optimization and generalization guarantees for overparameterized low-rank matrix reconstruction},
   booktitle = {Advances in Neural Information Processing Systems},
   volume    = {34},
+  pages     = {23831--23843},
   year      = {2021}
 }
 
@@ -355,20 +356,22 @@
   year      = {2021}
 }
 
-% verified: https://arxiv.org/abs/2311.18817 (comment: "Published as a conference paper at ICLR 2024")
+% verified: https://arxiv.org/abs/2311.18817 (comment: "Published as a conference paper at ICLR 2024") ; https://proceedings.iclr.cc/paper_files/paper/4581-/bibtex (pages; cite-check 2026-10-10)
 @inproceedings{lyu2024dichotomy,
   author    = {Lyu, Kaifeng and Jin, Jikai and Li, Zhiyuan and Du, Simon S. and Lee, Jason D. and Hu, Wei},
   title     = {Dichotomy of Early and Late Phase Implicit Biases Can Provably Induce Grokking},
   booktitle = {International Conference on Learning Representations},
+  pages     = {33897--33936},
   year      = {2024}
 }
 
-% verified: https://arxiv.org/abs/2310.06110 (no journal-ref; v1 9 Oct 2023, v3 11 Apr 2024)
-@misc{kumar2024grokking,
-  author       = {Kumar, Tanishq and Bordelon, Blake and Gershman, Samuel J. and Pehlevan, Cengiz},
-  title        = {Grokking as the Transition from Lazy to Rich Training Dynamics},
-  howpublished = {arXiv preprint arXiv:2310.06110},
-  year         = {2024}
+% verified: https://proceedings.iclr.cc/paper_files/paper/2024/hash/63ed15a46a143ff57484b38cd6b85d91-Abstract-Conference.html ; https://proceedings.iclr.cc/paper_files/paper/5686-/bibtex ; https://arxiv.org/abs/2310.06110 (cite-check 2026-10-10: published at ICLR 2024; was listed as an arXiv preprint)
+@inproceedings{kumar2024grokking,
+  author    = {Kumar, Tanishq and Bordelon, Blake and Gershman, Samuel J. and Pehlevan, Cengiz},
+  title     = {Grokking as the Transition from Lazy to Rich Training Dynamics},
+  booktitle = {International Conference on Learning Representations},
+  pages     = {23010--23035},
+  year      = {2024}
 }
 
 % ================================================================================================
@@ -991,12 +994,15 @@
   doi     = {10.1088/2632-2153/ac44a9}
 }
 
-% verified: https://arxiv.org/abs/2210.15435 (no journal-ref; v1 only)
-@misc{zunkovic2022grokking,
-  author       = {{\v{Z}}unkovi{\v{c}}, Bojan and Ilievski, Enej},
-  title        = {Grokking phase transitions in learning local rules with gradient descent},
-  howpublished = {arXiv preprint arXiv:2210.15435},
-  year         = {2022}
+% verified: https://jmlr.org/papers/v25/22-1228.html (cite-check 2026-10-10: published in JMLR 2024; was listed as an arXiv preprint; the key keeps the arXiv year so that existing citations still resolve) ; https://arxiv.org/abs/2210.15435
+@article{zunkovic2022grokking,
+  author  = {{\v{Z}}unkovi{\v{c}}, Bojan and Ilievski, Enej},
+  title   = {Grokking phase transitions in learning local rules with gradient descent},
+  journal = {Journal of Machine Learning Research},
+  volume  = {25},
+  number  = {199},
+  pages   = {1--52},
+  year    = {2024}
 }
 
 % ================================================================================================
@@ -1377,4 +1383,69 @@
   pages     = {3857--3881},
   year      = {2024},
   doi       = {10.52202/079017-0126}
+}
+
+% ================================================================================================
+% Added by the citation audit (cite-check, 2026-10-10; notes/reviews/citation_check.md). Entries
+% needed by the audit's suggested fixes and prior-work pointers; not cited yet.
+% ================================================================================================
+
+% verified: https://proceedings.mlr.press/v145/ma22a.html (abstract: the signGD flow "is the limit of Adam when taking the learning rate to 0 while keeping the momentum parameters fixed")
+@inproceedings{ma2022qualitative,
+  author    = {Ma, Chao and Wu, Lei and E, Weinan},
+  title     = {A Qualitative Study of the Dynamic Behavior for Adaptive Gradient Algorithms},
+  booktitle = {Proceedings of the 2nd Mathematical and Scientific Machine Learning Conference},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {145},
+  pages     = {671--692},
+  year      = {2022}
+}
+
+% verified: https://api.crossref.org/works/10.2478/cmam-2011-0016
+@article{grasedyck2011introduction,
+  author  = {Grasedyck, Lars and Hackbusch, Wolfgang},
+  title   = {An Introduction to Hierarchical ({H}-) Rank and {TT}-Rank of Tensors with Examples},
+  journal = {Computational Methods in Applied Mathematics},
+  volume  = {11},
+  number  = {3},
+  pages   = {291--304},
+  year    = {2011},
+  doi     = {10.2478/cmam-2011-0016}
+}
+
+% verified: https://api.crossref.org/works/10.1137/15M1010506
+@article{steinlechner2016riemannian,
+  author  = {Steinlechner, Michael},
+  title   = {Riemannian Optimization for High-Dimensional Tensor Completion},
+  journal = {SIAM Journal on Scientific Computing},
+  volume  = {38},
+  number  = {5},
+  pages   = {S461--S484},
+  year    = {2016},
+  doi     = {10.1137/15M1010506}
+}
+
+% verified: https://arxiv.org/abs/1810.02281 (comment: "Published as a conference paper at ICLR 2019"); App. D.2.3, eq. (35) read in arXiv v3
+@inproceedings{arora2019convergence,
+  author    = {Arora, Sanjeev and Cohen, Nadav and Golowich, Noah and Hu, Wei},
+  title     = {A Convergence Analysis of Gradient Descent for Deep Linear Neural Networks},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2019}
+}
+
+% verified: https://neurips.cc/virtual/2025/poster/118466 (NeurIPS 2025 title, "for Overparametrised") ; https://arxiv.org/abs/2510.17506 (v1 20 Oct 2025, comment "NeurIPS 2025"; arXiv title has "in Overparametrised"); pages not verified, left out
+@inproceedings{macdonald2025convergence,
+  author    = {MacDonald, Lachlan Ewen and Min, Hancheng and Palma, Leandro and Tarmoun, Salma and Xu, Ziqing and Vidal, Ren{\'e}},
+  title     = {Convergence Rates for Gradient Descent on the Edge of Stability for Overparametrised Least Squares},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {38},
+  year      = {2025}
+}
+
+% verified: https://arxiv.org/abs/2610.04249 (v1 3 Oct 2026 only; no journal-ref; "under review")
+@misc{sabanayagam2026optimizer,
+  author       = {Sabanayagam, Mahalakshmi and Lucey, Simon},
+  title        = {Optimizer Geometry Sets the Pace: Spectral Learning Dynamics in Matrix Factorization},
+  howpublished = {arXiv preprint arXiv:2610.04249},
+  year         = {2026}
 }

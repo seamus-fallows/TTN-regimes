@@ -1,7 +1,8 @@
 # Literature review: training dynamics of tree tensor networks
 
-Status: v1.1, 2026-10-09. v1 was built from seven verified literature sweeps (section 1); v1.1 applies a
-completeness critique of v1 (changelog below). Where this file and `notes/prior_knowledge.md` disagree, this
+Status: v1.2, 2026-10-10. v1 was built from seven verified literature sweeps (section 1); v1.1 applies a
+completeness critique of v1; v1.2 applies a citation audit (changelog below; the audit's table is
+`notes/reviews/citation_check.md`). Where this file and `notes/prior_knowledge.md` disagree, this
 file wins; section 4 lists the corrections. Claim tags follow CLAUDE.md: **proven** (a theorem in the cited
 paper), **empirical**, **conjecture** (labelled so by the authors), **derived** (a calculation).
 **Derived (review)** marks a calculation made during this review by a sweep or verification agent; it is in
@@ -11,6 +12,15 @@ critic of v1; "re-checked" means it was re-derived (and checked numerically) for
 
 Changelog.
 
+- v1.2 (2026-10-10), citation audit (`notes/reviews/citation_check.md`): every theorem, lemma, equation and
+  constant pointer and every section-7 venue re-checked against the papers (version read given in the
+  audit). Wrong items fixed: [KumarHaupt2025b] Thm 11 in all versions; [Chou2024] theorem numbers;
+  [Kawaguchi2016] zero-Hessian set (only H >= 3); [WeselBatselier2025] Cor B.6 (PMLR numbering);
+  [Chizat2019] also uses the centred model; [Strashko2022] do not blame barren plateaus; venues of
+  [Zunkovic2022] (JMLR 2024), [Kumar2024g] (ICLR 2024), [MaGuoFattahi2022] (ICLR 2023). Many scope
+  qualifiers added (assumptions, "sufficient", symmetric vs non-symmetric settings, arXiv vs proceedings
+  numbering) and the prior-work pointers of Furman et al. (Fig. 4, Remark D.10) and Kunin et al. (carried
+  dormant norms) made explicit.
 - v1.1 (2026-10-09), from the completeness critique of v1 (its items A-F are cited as "critique A1" etc.):
   - Corrections. The lazy limit is isotropic only for bonds far wider than the cut dimension, not for
     chi >> K (A1). At depth 2 the full saddle sequence is proven, so for TTNs the open case is K >= 3 cores
@@ -92,8 +102,8 @@ tagged "derived (critique)":
    configurations (section 3, H1).
 6. Single-core Hessian blocks are PSD, so every TTN saddle needs >= 2 cores to descend; a rank-deficient
    core of 2 nodes gives a strict saddle (section 3, H3).
-7. The lambda = 0 "spurious local minimum" of [FrandsenGe2022] is a degenerate saddle of order 6
-   (section 2.4).
+7. The lambda = 0 counter-example of [FrandsenGe2022] (presented there as a non-global local minimum) is
+   a degenerate saddle of order 6 (section 2.4).
 8. The per-core balanced gauge is not Vidal's canonical gauge (section 2.6).
 9. Derived (critique), critique A1: the tangent kernel `J J^T` of a single random TTN is strongly
    anisotropic, with rank <= the number of parameters; it is close to isotropic only when every chi_e is far
@@ -131,8 +141,8 @@ tagged "derived (critique)":
    muP, mean-field or DMFT theory exists for TTNs.
 6. The last clause of H6 (no change in the saddle sequence at small init) is not established. It is
    contradicted for large steps or strong noise in other models (edge-of-stability re-balancing, stochastic
-   collapse, noise equilibrium along gauge orbits) and supported for small steps and for SGD in aligned,
-   balanced DLNs [Corlouer2026] (section 3, H6).
+   collapse, noise equilibrium along gauge orbits) and supported for small steps and by SGD experiments on
+   DLNs [Corlouer2026] (section 3, H6).
 
 ## 2. Themes
 
@@ -152,9 +162,12 @@ tagged "derived (critique)":
   goes to infinity" (continuous time, fixed learning rate). The analytic curves track simulations from small
   random init (empirical). On MNIST, random orthogonal init gives depth-independent learning times and
   scaled Gaussian init does not (empirical). [Saxe2019]: hierarchically structured data are learned coarse
-  to fine, in singular-value order. [Chou2024] (discrete GD at any depth N >= 2 from identical (alpha I) or
-  perturbed-identical init, symmetric target): the iterates pass near the best rank-L approximations of the
-  target in turn (Thm 3.1; proven), a depth >= 3 sequence result for decoupled-type init.
+  to fine, in singular-value order. [Chou2024] (discrete GD at any depth N >= 2 from the identical init
+  alpha I, symmetric target; arXiv v5): the non-negative eigenvalues are recovered at rates ordered by
+  magnitude (Thm 1.1; a perturbed identical init recovers the whole spectrum, Thm 1.3), and the effective
+  rank ||W||_*/||W|| first drops to one and then plateaus at the levels of the best rank-L approximations
+  over explicit time windows (Thm 3.5 for GD at any N; Thm 3.1 is gradient flow at N = 2) (proven): a
+  depth >= 3 sequence result for decoupled-type init.
 - Conservation laws. Under GF `W_(j+1)^T W_(j+1) - W_j W_j^T` is constant ([Arora2018]; [DuHuLee2018]
   Thm 2.2, which needs only the two adjacent layers to be linear; their Thm 2.1 gives per-neuron scalar laws
   for homogeneous activations). With balanced init the product obeys
@@ -163,10 +176,12 @@ tagged "derived (critique)":
   is open [Marcotte2023]. [Marcotte2025] (ResNets and Transformers): conservation laws that depend on a
   subset of the parameters reduce to the laws of that block in isolation, and shallow linear and ReLU blocks
   have no laws beyond the known ones (per the critique).
-- Incremental learning at depth 2 [Gidel2019] (aligned init, approximately commuting Sigma_x and
-  Sigma_xy; GF and discrete GD): in time rescaled by log(1/init), mode i switches on as a step at
-  T_i = 1/sigma_i, and between steps the product is the minimum-norm reduced-rank regression solution
-  (proven).
+- Incremental learning at depth 2 [Gidel2019] (aligned init; Sigma_x and Sigma_xy jointly diagonalizable,
+  approximately for GF (Thm 2), exactly for discrete GD (Thm 3)): in time rescaled by log(1/init), mode i
+  switches on as a step at T_i = 1/sigma_i, sigma_i the singular values of Sigma_xy (proven). Cor 2
+  identifies the product between steps with the minimum-norm reduced-rank regression solution; that holds
+  only when the order of the sigma_i matches the order of the loss drops sigma_i^2/lambda_i (e.g. Sigma_x
+  proportional to I), a condition the corollary does not state.
 - Depth sharpens incremental learning. [Gissin2020] (toy model sigma_i = w_i^N, the same init for every
   coordinate, depth-normalized loss): `sigma_i' = sigma_i^(2-2/N) (sigma*_i - sigma_i)`; the largest init
   that still separates two modes with ratio r = sigma*_i/sigma*_j is exponentially small in 1/(r-1) at
@@ -192,10 +207,13 @@ tagged "derived (critique)":
   (proven).
 - Saddle-to-saddle [Jacot2021] (arXiv only; iid Gaussian init scaled by alpha -> 0; any convex cost).
   Thm 2 proves only the path from the origin to the first rank-one saddle, with probability 1 for L <= 3 and
-  >= 1/2 for L > 3 (conjectured 1). Escape time ~ -log alpha (L = 2) or alpha^-(L-2) (L > 2); optimal escape
-  speed `s* = L^(-(L-2)/2) s_1`. Lemma 15: every non-optimal positive-speed escape direction has curvature
-  < -s* along a perturbation of the first and last layers only; Lemma 16 excludes zero-speed directions only
-  for L = 3. Thm 22 (approximately homogeneous costs; covers TTNs with k = K, m = 2K) matches escape paths
+  >= 1/2 for L > 3 (conjectured 1; the top singular value s_1 of grad C(0) must be simple). Escape time
+  ~ -log alpha (L = 2) or alpha^-(L-2) (L > 2) (stated in the text, App. C.5); optimal escape speed
+  `s* = L^(-(L-2)/2) s_1`. Lemma 15: every non-optimal positive-speed escape direction has curvature -s*
+  (per unit norm, exactly in the proof) along a perturbation of the first and last layers only, so it is a
+  strict saddle of the normalized flow; Lemma 16 excludes zero-speed directions only for L = 3 and a
+  gradient grad C(0) of full rank min(n_0, n_L), so the probability-1 case L = 3 does not cover low-rank
+  targets. Thm 22 (approximately homogeneous costs; covers TTNs with k = K, m = 2K) matches escape paths
   only for speeds above (K-1)/(K+1) of the maximum. Prop 14 assumes that non-optimal escape directions are
   strict saddles. The full rank-increasing sequence is Conjecture 3; Remark 4: the limiting saddles are
   balanced; Remark 6: at L > 2 the rank-one saddle is escaped only through the Hessian null space. Thm 1
@@ -205,8 +223,11 @@ tagged "derived (critique)":
   ([JiangChenDing2023]; [Jin2023]). At depth >= 3 it is proven only for decoupled or identity-type inits
   ([Saxe2014]; [Chou2024]) and deep diagonal networks [Zhao2026] (section 2.2); for generic init, only the
   first escape.
-- Landscape. Every local minimum is global, and for >= 2 hidden layers the set W_1 = ... = W_H = 0 (which
-  contains the origin) has identically zero Hessian [Kawaguchi2016] (proven). [Achour2024] Thm 7
+- Landscape. Every local minimum is global, and for >= 2 hidden layers some saddles have no negative
+  Hessian eigenvalue, e.g. the origin ([Kawaguchi2016] Cor 2.4, proven). The set W_1 = ... = W_H = 0 used in
+  its proof has zero Hessian only for H >= 3 hidden layers: for H = 2 the cross block of W_1 and W_2 is
+  -<Y, W_3 dW_2 dW_1 X>, nonzero when W_3 != 0 (the bilinear term of W_3 W_2 W_1; also checked numerically
+  in the citation audit). [Achour2024] Thm 7
   (invertible Sigma_XX, distinct singular values): a critical point of rank r < r_max with index set S is a
   strict saddle if S != [1, r]; if S = [1, r] (it solves the rank-r problem) it is non-strict iff
   "tightened", i.e. every pivot has a complementary block of rank r. For H >= 3 three factors of rank r
@@ -218,17 +239,20 @@ tagged "derived (critique)":
   `max_(||u||=1) NCF(u)` selected by w0, or has shrunk below `2 delta eps` (proven; the theorem does not say
   which KKT point, nor whether it is a maximum). [KumarHaupt2024]: the L = 2 version, also near saddles.
   [KumarHaupt2025b] (JMLR): if w0 lies in the stable set of a Delta-second-order positive KKT point w*
-  (Delta > 0), GF escapes after ~delta^-(L-2) (exactly `1 / (L (L-2) N(w*) delta^(L-2))` from delta w*) and
-  then tracks the escape path from the origin along w* (Thm 4 for L = 2; Thm 11 for L > 2 in arXiv v3,
-  Thm 10 in earlier versions). In feed-forward nets, zero rows/columns of the KKT direction stay small until
+  (Delta > 0), GF escapes after ~delta^-(L-2) (`1 / (L (L-2) N(w*) delta^(L-2)) + O(1)` from delta w*, stated
+  in the discussion before Thm 11; `ln(1/delta) / (2 N(w*)) + O(1)` for L = 2, before Thm 4) and then tracks
+  the escape path from the origin along w* (Thm 4 for L = 2; Thm 11 for L > 2; same numbers in arXiv v1-v3,
+  checked by cite-check 2026-10-10). In feed-forward nets, zero rows/columns of the KKT direction stay small
+  until
   the next saddle (Thm 19); first-order-only KKT points are not handled (Remark 14). [KumarHaupt2025c]
   (Neuron Pursuit, arXiv): started within delta of a saddle where the dormant weights enter the output with
   lowest homogeneity L and the active weights sit at a Lojasiewicz local minimum, the dormant weights stay
   O(delta) for `T/delta^(L-2)` and align with a KKT point of the residual's NCF (Thm 8; a local lower bound
   on the plateau, not an escape time).
 - Escape directions [Bantzis2026] (deep ReLU nets, ICLR 2026): in the optimal escape direction the top
-  singular value of layer l exceeds the others by a factor ~l^(1/4); for linear nets escape directions are
-  rank one in every layer. A sequence of increasing bottleneck rank is conjectured ([Jacot2022]).
+  singular value of layer l is at least l^(1/4) times the others; for linear nets the optimal escape
+  direction is rank one and balanced. Bantzis et al. conjecture saddle-to-saddle dynamics with increasing
+  bottleneck rank (the BN-rank of [Jacot2022]).
 - Lazy versus rich in two-layer linear nets. [Tu2024]:
   `dA/dt ~ -sqrt(A A^T + sigma^4 w^2 I) grad C - grad C sqrt(A^T A + sigma^4 w^2 I)`; singular values below
   sigma^2 w move lazily, those above actively; in the wide regime (w = d^gw with gw > 1, sigma^2 = d^gs)
@@ -285,13 +309,16 @@ escape (generic init) or decoupled/diagonal models.
   (kernel), alpha -> 0 minimum l1 (rich), with `Q_alpha / log(1/alpha^2) -> ||beta||_1` (Thm 1). Near-l1
   needs exponentially small alpha, near-l2 only polynomially large alpha (Thm 2). D >= 3 (Thm 3): Q depends
   on alpha^D, the limits are still l1 and l2 (not l_(2/D)), and only polynomially small alpha is needed for
-  the rich limit. The init shape w0 changes only the kernel limit. For width-k factorizations UV^T the
+  the rich limit. The init shape w0 changes the kernel and intermediate regimes but not the rich (l1)
+  limit (Sec. 4, eqs. 6-7). For width-k factorizations UV^T the
   control parameter is the lifted scale alpha^2 k (empirical transition at alpha^2 k ~ 1 in matrix
   completion). Starting exactly at w = 0, a saddle that GF never leaves, is avoided by the two-copy
-  construction.
+  construction (Sec. 4, eq. 3; Chizat and Bach's "unbiasing" trick, Chizat et al. 2019 Sec. 3.1).
 - [Chizat2019]: objective `R(alpha h(w)) / alpha^2`. The criterion
   `kappa = ||h(w0) - y*|| ||D^2 h|| / ||Dh||^2 << 1` is sufficient only. For q-homogeneous h, scaling the
-  init gives laziness only if the initial output stays bounded. With h(w0) = 0 (symmetrized init):
+  init guarantees laziness when the initial output stays bounded (a sufficient condition, Sec. 1.2). With
+  h(w0) = 0 (symmetrized init `h_(m/2)(w_a) - h_(m/2)(w_b)`, w_a(0) = w_b(0), Sec. 3.1, or the centred model
+  `h~(w) - h~(w0)`, Sec. 3.2):
   `||w - w0|| = O(1/alpha)` (Thms 2.2, 2.4); underparameterized lazy training converges to a local minimum
   (Thm 2.5). Two-layer nets with per-neuron scale alpha(m) are lazy if `m alpha(m) -> inf` (alpha = 1/m is
   mean field). Lazy CNNs generalize worse (empirical).
@@ -309,19 +336,26 @@ escape (generic init) or decoupled/diagonal models.
   data in general position): in time `ln(1/alpha) t` the limit is a jump process given by an explicit
   algorithm, identified with the adaptive inverse scale space method: LARS-like but not the Lasso path,
   history-dependent, coordinates can deactivate, at most `min(2^d, sum_(k<=n) C(d,k))` steps, ending at the
-  minimum-l1 interpolator (Thm 2, Prop 3). Under 2r-RIP and a gap, jump i happens at
+  minimum-l1 interpolator (convergence: Thm 2, Prop 3; step bound and endpoint: Prop 7, App. D.1). Under
+  2r-RIP and a gap, jump i happens at
   ~ln(1/alpha)/|beta*_i| (Prop 2). Following the most-negative-curvature direction would give OMP, not this
   path. Weighted init exponents and depth D appear only as remarks. [Berthier2023]: Lotka-Volterra form;
-  init exponents k_i weight a lasso path (nonnegative, anti-correlated features, n >= d). [Zhao2026] (ICML
+  the active sets follow the support of a nonnegative lasso path weighted by the init exponents k_i (Thm 1;
+  anti-correlated features, n >= d); the iterates jump between constrained least-squares points and only
+  their time average follows the lasso path. [Zhao2026] (ICML
   2026; deep diagonal nets with L >= 3 and general two-layer diagonal models; generic unbalanced init
   direction, scale s -> 0): GF passes near every iterate of a LARS-like algorithm whose growth times
   `t_i^(+-) = +-F_i(+-inf)` depend on the init shape, and the implicit bias is a weighted l1 norm with
   init-shape-dependent weights (Thm 4.5, Cor 4.6). [Kunin2025] (AGF): dormant neurons follow
-  `d theta_bar/dt = eta ||theta||^(kappa-2) P_perp grad U` and `d||theta||/dt = eta kappa ||theta||^(kappa-1) U`,
+  `d theta_bar/dt = eta ||theta||^(kappa-2) P_perp grad U` and
+  `d||theta||/dt = eta kappa ||theta||^(kappa-1) U`,
   where U is the utility (correlation with the residual of the active neurons) and kappa its leading degree;
   neuron i activates when `int kappa U_i ds` reaches c_i/eta with `c_i = -log||theta_i(0)||` (kappa = 2) or
-  `(||theta_i(0)||^(2-kappa) - 1) / (kappa - 2)` (kappa > 2). Proven only for diagonal linear nets (Thm 3.1:
-  converges to Pesme-Flammarion's algorithm as alpha -> 0); conjectured for fully connected linear nets
+  `(||theta_i(0)||^(2-kappa) - 1) / (kappa - 2)` (kappa > 2) (Eqs. 2-3, arXiv v4). At each jump the norms and
+  directions of the still-dormant neurons are recorded as the initialization of the next phase (end of Sec.
+  2.2), so later activations inherit what was accumulated: the head start, for any kappa. Proven only for
+  diagonal linear nets (Thm 3.1: converges to Pesme-Flammarion's algorithm as alpha -> 0); conjectured for
+  fully connected linear nets
   (Conjecture 4.1); not proven for attention-only transformers either; Thms 5.1-5.2 treat quadratic networks
   and modular addition under simplifying assumptions (critique spot check).
 - Init shape and imbalance. [Azulay2021] (untied diagonal nets): the regime is set by `alpha / (1 - s^2)`
@@ -338,8 +372,9 @@ escape (generic init) or decoupled/diagonal models.
   `alpha_inf = alpha (.) exp(-2 gamma diag(X^T X / n) int L dt)`, i.e. closer to l1. [Even2023]: large steps
   give `alpha_inf^2 = alpha^2 (.) exp(-sum_k q(gamma_k grad L_(B_k)))`; for GD the gain concentrates on the
   support (hinders sparse recovery), for SGD it is homogeneous (helps); the edge-of-stability analysis is
-  heuristic. [Nacson2022]: the step size can turn kernel-type bias into sparsity-inducing bias where GF
-  would stay kernel. [Lewkowycz2020] (two-layer uv model): lazy for `eta < 2/lambda_0`, catapult (loss
+  heuristic. [Nacson2022]: for non-centred data, large steps can turn kernel-type bias into
+  sparsity-inducing bias where GF would stay kernel (dynamical stability). [Lewkowycz2020] (two-layer uv
+  model): lazy for `eta < 2/lambda_0`, catapult (loss
   spike, curvature falls below 2/eta) for `2/lambda_0 < eta < c_act/lambda_0` (c_act = 4 in the model,
   about 12 empirically for ReLU nets), divergent above. [Moroshko2020] (classification, exponential loss):
   kernel vs rich is set jointly by init scale and training accuracy, boundary `eps = exp(-Theta(alpha^D))`.
@@ -352,7 +387,7 @@ escape (generic init) or decoupled/diagonal models.
   regularization): grokking arises when the network first fits a kernel regression solution with its initial
   features and learns features late; the key factors are the rate of feature learning (set by the output
   scale) and the alignment of the initial NTK with the target (empirical, with sufficient statistics for the
-  test loss; venue not confirmed).
+  test loss; ICLR 2024).
 
 **Setting.** Diagonal or width-1 models (commuting structure, mirror-descent derivations), sparse
 regression, square loss; the imbalance results are two-layer; the lazy-then-rich results ([Lyu2024];
@@ -385,17 +420,20 @@ regression, square loss; the imbalance results are two-layer; the lazy-then-rich
 
 - Two-layer mean field [MeiMontanariNguyen2018; ChizatBach2018; RotskoffVE2018;
   SirignanoSpiliopoulos2020]: the neuron distribution follows a nonlinear PDE; global convergence holds under
-  conditions (Chizat-Bach assume 2-homogeneous or partially 1-homogeneous units, per the verifier's
-  recollection, not re-read).
+  conditions (Chizat-Bach, Thms 3.3 and 3.5: for 2-homogeneous or partially 1-homogeneous units, if the
+  Wasserstein gradient flow converges and the initial measure satisfies a support/separation condition,
+  its limit is a global minimizer).
 - Depth. [NguyenPham2023]: iid-initialized multilayer mean-field limits degenerate at depth >= 4; global
-  convergence for 2-3 layers. [Chizat2024] (three-layer single-output linear net in muP, GD on the expected
+  convergence for 2- and 3-layer nets with iid init, and at any depth with a special correlated init
+  ("bidirectional diversity"). [Chizat2024] (three-layer single-output linear net in muP, GD on the expected
   loss): converges to GD on a deterministic infinite-width network; in continuous time the predictor
   converges exponentially to the minimum-l2 risk minimizer. That muP at O(1) init has no plateaus is an
   inference, not a statement of the paper.
 - Tensor Programs. [YangHu2021] (TP IV): stability and nontriviality conditions for abc-parameterizations;
   feature learning iff r = 0, kernel regime iff r > 0. This dichotomy needs Assumption 3.1 (tanh or
-  sigma-gelu) and the paper says it fails for linear activations; feature-learning parameterizations have
-  f_0 -> 0. [YangLittwin2021] (TP IIb): kernel training dynamics for any Tensor Program in NTK
+  sigma-gelu; Assumption I.1 in the ICML version, whose theorem numbers differ from arXiv v3) and the paper
+  says it fails for linear activations; feature-learning parameterizations have f_0 -> 0. [YangLittwin2021]
+  (TP IIb): kernel training dynamics for any Tensor Program in NTK
   parameterization. [Yang2021] (TP V): muTransfer. [YangSB2023] (preprint): spectral condition
   `||W||_spec, ||Delta W||_spec = Theta(sqrt(fan_out / fan_in))`; its Claim 1 (a random init scales vectors
   by its spectral norm) holds only when fan-out >= fan-in; init
@@ -403,7 +441,9 @@ regression, square loss; the imbalance results are two-layer; the lazy-then-rich
   depth-muP; both need scaled residual branches. [BordelonPehlevan2022] (DMFT): for a two-layer linear net
   with whitened data, `dDelta/dt = -2 sqrt(1 + gamma_0^2 (y - Delta)^2) Delta` (NTK-like as gamma_0 -> 0,
   logistic as gamma_0 -> inf); the relative NTK change is O(gamma_0^2 L) in deep linear nets
-  (perturbative). [Bordelon2024b]: a stable feature-learning limit of attention needs 1/N logits.
+  (perturbative). [Bordelon2024b]: as the key/query dimension per head N -> inf, a stable
+  feature-learning limit needs muP 1/N attention logits (Result 1), and all heads then collapse to the same
+  dynamics; the H -> inf limit at fixed N avoids the collapse.
   [Atanasov2025]: with muP output divided by gamma, the optimal LR scales as gamma^2 (gamma << 1) and as
   gamma^(2/L) (gamma >> 1); in the "ultra-rich" regime loss curves show a long plateau and then a drop,
   sometimes staircases, with silent alignment and sharpness rising to ~2/eta at the drop (empirical, plus a
@@ -412,7 +452,8 @@ regression, square loss; the imbalance results are two-layer; the lazy-then-rich
   both widths grow; the NNGP kernel is a Hadamard product. [Choraria2022] (polynomial Pi-nets): one
   multiplicative interaction gives a product of kernels. [Vankadara2024] (SSMs incl. Mamba): they are not
   Tensor Programs; standard muP fails; a scaling derived from signal propagation restores feature learning.
-  [Qiu2024] (TT and block-TT layers) and [Potapczynski2024] (general Einsum layers): muP-style init and LR
+  [Qiu2024] (low-rank, Kronecker, Monarch, TT and block-TT layers; Adam rule in Sec. 3.2, SGD in App. H)
+  and [Potapczynski2024] (general Einsum layers): muP-style init and LR
   rules using the min{} init of [YangSB2023]; heuristic, validated empirically. [HaninNica2020]: when depth
   and width grow together the NTK stays random and moves; [HaninNica2020b]: log-norms of products of many
   large random matrices are asymptotically Gaussian; [LiNicaRoy2021]: ResNets are log-Gaussian at a fixed
@@ -426,14 +467,17 @@ regression, square loss; the imbalance results are two-layer; the lazy-then-rich
   "as the number of the tensor nodes goes to infinity" with at least one bond of dimension >= 2; App. B.1
   treats the path products as iid, but they are only uncorrelated; critique spot check). [WeselBatselier2025]:
   CPD- and TT-constrained kernel machines converge to the same product-kernel GP (TT ranks -> inf in
-  sequence; simultaneous growth via deep linear nets, Cor B.8); stated rates O((MD/P)^(1/2)) for CPD and
-  O((MD/P)^((D-1)/4)) for TT. The TT rate treats the R^(D-1) shared-core paths as independent; the exact
-  excess kurtosis is `3 [(1 + 2/R)^(D-1) - 1] ~ 6 (D-1) / R` (derived (review)). [WangLiuYu2026]
+  sequence; simultaneous growth via deep linear nets, Cor B.6 in PMLR (Cor B.8 in arXiv v1)); stated rates
+  O((MQ/P)^(1/2)) for CPD and O((MQ/P)^((Q-1)/4)) for TT (Cors 3.3-3.4; Q = number of input dimensions =
+  cores, written D in arXiv v1). The TT rate treats the R^(Q-1) shared-core paths as independent; the exact
+  excess kurtosis is `3 [(1 + 2/R)^(Q-1) - 1] ~ 6 (Q-1) / R` (derived (review)). [WangLiuYu2026]
   (Haar-isometric MPS, normalized expectation values; moment method; no training): GP limits with explicit
   moment bounds; for global observables Gaussianity needs D >> n, and at large d with fixed D global outputs
   stay non-Gaussian. [Yarotsky2026] (ICML 2026; GF on a rank-H CP model of an order-nu tensor with p entries
-  per mode, iid N(0, sigma^2) init, fully observed square loss): a diagram expansion of the loss gives
-  regimes: free evolution (H ~ p^(nu-1), p^(nu-1) sigma^nu -> inf), NTK (asymmetric model;
+  per mode, iid N(0, sigma^2) init, fully observed square loss, identity target F = delta): a diagram
+  expansion of the loss gives regimes (asymmetric scenario, Table 1; in the symmetric scenario with even nu
+  there is no NTK point and the rich over-parameterized edge is sigma^2 ~ 1/H, Secs. 5, 8): free evolution (H
+  ~ p^(nu-1), p^(nu-1) sigma^nu -> inf), NTK (asymmetric model;
   `p^(nu-1) H sigma^(2 nu) ~ 1`, `H sigma^nu -> inf`), mean field (`H sigma^nu ~ 1`, `H / p^(nu-1) -> inf`)
   and under-parameterized rich (`p^(nu-1) sigma^nu ~ 1`, `H / p^(nu-1) -> 0`). Prop 8.1: the initial NTK
   tends to the identity (asymmetric model); Prop 8.2 (symmetric, nu = 2): a stable NTK is equivalent to no
@@ -516,18 +560,24 @@ CP only and are mostly informal or concern the prior at init.
   Adam. [Hariz2022] (deep CP): `||(x)_n w_r^n||` grows with exponent `2 - 2/N + sum_n k_n / N` (Thm 3.2),
   which is the depth-D law with D = N + sum_n k_n under exact balance (derived (review)).
 - Empirical TT/Tucker. [Milanesi2021] (GD with lr 0.1 on completion with full-rank TT and deep Tucker
-  factorizations; small Gaussian init): low effective rank, but not minimal nuclear norm; unfolding singular
-  values show a long plateau and then an abrupt rise; smaller init recovers better; deeper Tucker gives
-  sparser spectra and more abrupt transitions. The random targets have comparable components, so no ordering
+  factorizations; small Gaussian init): low effective rank, but not minimal nuclear norm; in one synthetic
+  TT completion run (12^4 tensor of TT-rank 6, Fig. 3(b)) the middle-bond singular values stay flat for
+  about 3.5e5 iterations and then the six leading ones rise abruptly and almost together (one plateau, no
+  staircase; on real data the TT values rise with little or no plateau); smaller init recovers better;
+  deeper Tucker gives sparser spectra and more abrupt transitions. The random targets have comparable
+  components, so no ordering
   is visible.
 - Over-parameterized CP and lazy capacity. [Ge2021] (4th-order odeco target; 2-homogeneous normalized
   model `sum_i w_i^((x)4) / ||w_i||^2` with m = poly(d) components): a modified GF (re-initialization of
   small components, l2 penalty, epochs with decreasing thresholds) provably follows deflation, largest
   components first; for vanilla GF largest-first is empirical (Fig. 1: 5 target components with ratio 1.2,
   m = 50, init norm 1e-15); discovery follows tensor-power dynamics in which winners maximize roughly
-  a_i x (initial overlap)^2; non-orthogonal targets can split (App. E). [Wang2020]: lazy training of an
-  order-l, rank-r tensor needs Omega(d^(l-1)) components, a GD variant succeeds with `O*(r^(2.5 l) log d)`.
-  [Arvanitakis2025]: ALS with over-parameterized rank (content unconfirmed; section 7).
+  a_i x (initial overlap)^2; for a non-orthogonal target, two large student components in the same
+  direction can split and GD leaves the greedy low-rank path (App. E.2). [Wang2020]: lazy training needs
+  Omega(d^(l-1)) components even for a random rank-one order-l tensor (Thm 1); a GD variant fits rank r
+  with `O*(r^(2.5 l) log d)` components (Thm 3). [Arvanitakis2025] (abstract): for third-order n x n x n
+  tensors of rank r << n, ALS with rank k = O(r^2) converges globally from random init w.h.p., against
+  O(r^7.5 log n) for a GD variant.
 - Odeco tensors. [Anandkumar2014] (symmetric order-3 odeco tensors, lambda_i > 0): the robust
   eigenvectors of the normalized power map are exactly the components (Thm 4.1); isolated local maximizers
   of T(u,u,u) on the ball iff u = v_i (Thm 4.2); the start decides the limit: convergence to
@@ -535,23 +585,29 @@ CP only and are mostly informal or concern the prior at init.
   sum_(i in S) v_i / lambda_i also exist.
 - Tensor PCA (learning order). [BenArous2024a] (online SGD on the Stiefel manifold, order p >= 3, r
   orthogonal spikes): sequential elimination; the order is a greedy maximum selection on
-  `lambda_i lambda_j m_ij(0)^(p-2)` (Thm 1.5); signal-to-noise order is guaranteed only if
-  `lambda_i > C (eta sqrt(log eta))^(p-2) lambda_(i+1)` (Thm 1.3, probability >= 1 - 1/eta); for p = 2,
+  `lambda_i lambda_j m_ij(0)^(p-2)` (Thm 1.5); signal-to-noise order is guaranteed, with probability
+  >= 1 - 1/eta, if `lambda_i > C (eta sqrt(log eta))^(p-2) lambda_(i+1)` (Thm 1.3, a sufficient condition;
+  positive initial correlations, M >> log(N) N^(p-2) samples); for p = 2,
   separated SNRs are recovered in order and equal SNRs only as a subspace. [BenArous2024b] (gradient flow):
   all spikes are recovered up to a permutation fixed by initial correlations and SNRs, without separation
   assumptions; [BenArous2024c] is the Langevin-dynamics companion (abstract only). [BenArous2021] (online
-  SGD, information exponent k): about N, N log^2 N and N^(k-1) log^2 N samples suffice for k = 1, 2 and >= 3,
-  and fewer give no weak recovery. [BenArous2020] (single-spike tensor PCA): gradient flow and Langevin
-  dynamics from random init need an SNR that grows with the dimension, and below the threshold recovery
-  takes stretched-exponential time; the high-dimensional form of the (overlap)^(p-2) escape law (per the
-  critique).
-- GD timing. [MaGuoFattahi2022] (preprint; symmetric odeco CP, each student pre-aligned with its teacher):
-  within `T <~ alpha^(-(l-2)/l) / (eta l sigma_r)` GD steps the components are learned largest first.
+  SGD, information exponent k): M >> N, N log^2 N and N^(k-1) log^2 N samples suffice for k = 1, 2 and >= 3
+  (Thm 1.3), and M << N, N log N and N^(k-1) give no weak recovery (Thm 1.4). [BenArous2020] (single-spike
+  tensor PCA): gradient flow and Langevin dynamics recover in O(1) time from a uniform random start once the
+  SNR exceeds N^((k-2)/2) (Thm 2.1); below it, recovery from Gibbs-type ("natural") initializations takes
+  at least stretched-exponential time (conjectured for the uniform start); the high-dimensional form of the
+  (overlap)^(p-2) escape law (per the critique).
+- GD timing. [MaGuoFattahi2022] (ICLR 2023; symmetric orthogonal CP of order l, each student pre-aligned
+  with its teacher, `||u_i(0)|| = alpha^(1/l)`): every component reaches 0.99 sigma_i within
+  `O(alpha^(-(l-2)/l) / (eta l sigma_r))` GD steps (Prop 4, Thm 4); the authors call this incremental
+  learning ("learns the tensor eigenvalues incrementally").
 - Landscapes. [FrandsenGe2022] (Tucker, i.e. a star TTN; fully observed): with a balancing regularizer
   lambda l^2 (l = sum of squared per-edge Gram defects) all local minima are global (Thm 1). At balanced
   points the paper exhibits descent of order eps^2, eps^3 and eps^4 when 1, 2 and 3 bonds must grow (2, 3
-  and 4 cores move); moving one core gives first-order descent (Lemma 8). These orders come from exhibited
-  directions, without lower-bound proofs. The paper's lambda = 0 "spurious local minimum" is a degenerate
+  and 4 cores move; proof of Lemma 7, Sec. 3.3, "3rd/4th order saddle point"); moving one core gives
+  first-order descent (Lemmas 5, 8). These orders come from exhibited directions, without lower-bound
+  proofs. The paper's lambda = 0 counter-example (after Thm 1; presented as a non-global local minimum) is a
+  degenerate
   saddle: its overlap with the target is a product of four perturbations, and the best curve gives a
   decrease ~ -eps^6 (derived (review), checked numerically). The critique confirmed it with an explicit
   curve (T = a (x) b (x) c, S = 0, A, B, C orthogonal to a, b, c): set S = c eps^3 and tilt A, B, C by eps
@@ -597,17 +653,21 @@ from small balanced init; orthogonal (odeco) targets for the ordering results.
   training (completely on one dataset); a TT-rank-2 linear-model init, even with random coefficients,
   works; Riemannian optimization reached a 1e-4 loss about 20x faster than SGD on the cores; SGD failed on
   synthetic high-order data. [Han2018] (MPS Born machines, NLL, two-site updates with SVD, bond dimension
-  grown from 2): at a fixed maximal bond dimension the NLL grows linearly in N. [Cheng2019]: a TTN Born
+  grown from 2): when memorizing |T| = 100 random patterns at a fixed maximal bond dimension, the training
+  NLL grows linearly in N (Sec. III B, Fig. 2b). [Cheng2019]: a TTN Born
   machine built to respect 2D locality keeps long-range correlations (binary MNIST test NLL 94.25 at
   D_max = 50 vs 101.45 for an MPS at D_max = 100). [Liu2019]: unitary hierarchical TTN classifier trained by
   a MERA-derived algorithm. [Stoudenmire2018]: layered TTN whose layers are mostly fixed without
-  supervision. [ChenBarthel2024] (TTN classifiers with CP-rank-constrained cores, Adam, complex
-  N(0, 0.4^2) entries): branching ratio 4 beats 2 by about 4% (attributed to graph distance); full TTNs
-  overfit; tensor dropout helps. [WallDAguanno2021]: isometric TTN classifiers trained by manifold GD.
+  supervision. [ChenBarthel2024] (TTN classifiers with CP-rank-constrained cores, Adam, real and imaginary
+  parts of entries iid N(0, 0.4^2)): on Fashion-MNIST, low-rank TTNs with branching ratio 4 beat 2 by about
+  4% test accuracy (Fig. 7; attributed to graph distance); full TTNs overfit; tensor dropout helps.
+  [WallDAguanno2021]: isometric TTN classifiers trained by manifold GD.
   [Klug2026]: a natural Riemannian gradient for functional TTNs converges much better than Riemannian GD.
   [Strashko2022] (teacher-student MPS regression): U-shaped test loss in the student bond dimension, with the
-  optimum growing with sample size; training on synthetic-teacher data was "much more challenging" (the
-  authors blame barren plateaus).
+  optimum growing with sample size; training on synthetic-teacher data was "much more challenging" than on
+  MNIST, which the authors read as trainability depending on the data (barren plateaus of global losses,
+  [Liu2022], are mentioned only as background; Sec. V); DMRG results depended strongly on initial
+  conditions (Sec. III).
 - Initialization and norms. [Barratt2022]: iid entries of variance sigma^2 on V nodes and E edges of
   dimension D give `Var(W_ij) = D^E sigma^(2V)`; matching a target variance is impractical in floating point
   when V is comparable to the number of features; a "copy-node" init leaves a small dense subnetwork; direct
@@ -635,8 +695,9 @@ from small balanced init; orthogonal (odeco) targets for the ordering results.
   (sweep-trained MPS classifiers): grokking coincides with an entanglement transition (volume-law-like to
   sub-volume-law) and "eigenvalue evaporation" in reduced density matrices. [Zunkovic2022] (two solvable
   grokking models in rule learning): grokking is a phase transition with exact critical exponents and
-  grokking-time distributions; a tensor-network map links the setup to perceptron learning theory and makes
-  grokking a consequence of the locality of the teacher (abstract). [Milanesi2021] (section 2.4) is the
+  grokking-time distributions; a tensor-network map links the setup to perceptron learning theory and gives
+  evidence that grokking is a consequence of the locality of the teacher (JMLR abstract; arXiv v1 says
+  "show"). [Milanesi2021] (section 2.4) is the
   only plain-GD plateau observation on TT found.
 - Expressivity background (no dynamics): [CohenSharirShashua2016], [Levine2018], [Khrulkov2018],
   [Glasser2019], [Alexander2023] (an entanglement-based condition for data suited to locally connected
@@ -655,7 +716,8 @@ Riemannian or natural-gradient updates change or remove parameter-space plateaus
 claim must name the optimizer. By analogy, the locality evidence ([Tang2025], [Cheng2019],
 [ChenBarthel2024], [MasotLlima2024]) is consistent with H2. The initialization results ([Barratt2022],
 [MataAli2023], [Sasaki2026], [Novikov2017], [Rakhshan2020]) apply directly and justify the fan-in init; the
-(1 + 2/R)^N factor means random-init function scales are broad unless chi >> K. Barren-plateau results
+(1 + 2/R)^(N-1) factor in the variance bound of [Rakhshan2020] means random-init function scales fluctuate
+strongly unless R >> N. Barren-plateau results
 concern normalized outputs; for unnormalized regression the analogue is the sigma^K scale. Copy-node and
 TT-rank-2 inits start near low-rank saddles (inference) and are candidates for staged dynamics at large
 init scale.
@@ -666,21 +728,25 @@ init scale.
 
 - Formats and spectra. HT format [HackbuschKuhn2009]; TT-SVD [Oseledets2011]. [Grasedyck2010] (HSVD):
   root-to-leaves truncation within sqrt(2d-2) of the best (Thm 3.11; sqrt(2d-3) by Remark 3.12),
-  leaves-to-root within (2 + sqrt(2)) sqrt(d) (Thm 3.22); all edge singular values from accumulated Gram
-  matrices after QR orthogonalization in O(d k^4) (Lemma 4.6, Remark 4.5). [Grasedyck2024]: the Gram route
+  leaves-to-root within (2 + sqrt(2)) sqrt(d) for a complete binary tree (Thm 3.22); all edge singular
+  values from accumulated Gram matrices after QR orthogonalization in O(d k^4) plus O(sum_mu n_mu k^2) for
+  the QR steps (Lemma 4.6, Remark 4.5, Lemmas 4.8-4.9; preprint numbering). [Grasedyck2024]: the Gram route
   squares singular values and loses accuracy; a stable, root-independent variant is accurate to machine
   precision. [ShiDuanVidal2006]: canonical form of tree states (Schmidt values on every edge) in
   O(n chi^4). [TindallFishman2023]: belief propagation is exact on trees (one ordered sweep); bond tensors
   in the Vidal gauge are the edge singular values. [Lubich2015]: TT unfolding singular values equal those of
   the small matrix `S_i = R_(<=i) R_(>=i+1)^T` (a stable route). [Kramer2019]: feasible squared TT spectra
   form polyhedral cones (equivalent to a quantum marginal problem).
-- Manifolds. [UschmajewVandereycken2013]: full hierarchical rank iff leaf frames have full column rank and
+- Manifolds (numbering of the MATHICSE report 12.2012; the LAA version numbers these Theorem 1,
+  Proposition 3, Theorem 2, Corollary 2 and Theorem 5). [UschmajewVandereycken2013]: full hierarchical rank
+  iff leaf frames have full column rank and
   transfer tensors have full multilinear rank (Thm 3.7); decompositions are unique up to the GL(k_t) gauge
   (Prop 3.9); the quotient is a smooth manifold of dimension
   `sum_leaves n_t k_t + sum_interior k_t1 k_t2 k_t - sum_(t != root) k_t^2` (Thm 4.3); horizontal lifts
   give an isomorphism onto the tangent space (Cor 4.13); its closure is {rank_T <= k} (Thm 4.14), so best
-  approximations exist. TT analogue: [Holtz2012] (content not read). Non-closed sets: bounded CP rank
-  [deSilvaLim2008]; TN states on graphs with a cycle that has no subcritical vertex [Landsberg2011].
+  approximations exist. TT analogue: [Holtz2012] (embedded manifold of fixed TT rank; gauge-fixed tangent
+  space; preprint abstract read). Non-closed sets: bounded CP rank [deSilvaLim2008]; TN states on graphs
+  with a cycle that has no subcritical vertex, not Zariski closed [Landsberg2011] (Thm 1.3.2).
 - Dynamical low-rank approximation. [Lubich2013] (HT/TT, Dirac-Frenkel principle); [Lubich2015] (TT
   projector splitting, robust to small singular values; standard Runge-Kutta on factor ODEs performs
   poorly); [Ceruti2021] (trees); [CerutiLubich2022] (BUG integrator); [Ceruti2023] (rank-adaptive trees;
@@ -698,8 +764,10 @@ init scale.
   symmetric gauge has `||Delta_e||_F ~ 2.8` on both bonds (derived (review), numerical).
   [LindseyMenon2025] (DLN): the l2 regularizer is minimized on the balanced manifold; balancing flows
   converge exponentially. [Bah2022]: from balanced init the DLN product follows a Riemannian gradient flow on
-  the fixed-rank manifold (Cor 17) and converges to a global minimizer on some rank-k manifold for almost
-  all inits. [Kunin2021], [Zhao2023], [Marcotte2023], [Marcotte2025]: frameworks deriving conservation laws
+  the fixed-rank manifold (Cor 17); for almost all (generic, unbalanced) factor inits the product converges
+  to a global minimizer on M_k for some k (Thm 39(a)); for almost all balanced inits on M_k, to a global
+  minimizer on M_k or to a lower-rank critical point (Thm 40). [Kunin2021], [Zhao2023], [Marcotte2023],
+  [Marcotte2025]: frameworks deriving conservation laws
   from symmetries (completeness results in section 2.1).
 - Landscape of the project's model: [Furman2026] (TTN on any tree with dense cores; inputs uniform on a
   finite product set, i.e. the population square loss `||T(theta) - T*||_F^2 / (2|X|)`; realizable
@@ -716,17 +784,24 @@ init scale.
   - Thm 5.2 (formalized; no min-norm assumption): every non-global critical point lacks full Tucker rank.
     A target is realizable iff rank T*^(e) <= r_e on every internal edge (Prop B.1); at min-norm points
     rank mat_e(W_u) = rank mat_e(W_v) = rank T^(e) (Prop D.2).
-  - Lemmas D.7-D.9 and Remark D.10: at a min-norm non-global critical point, take a connected component of
-    rank-deficient edges with N nodes; along `T(t) = T + t^N U`,
-    `L(t) - L = t^N <R,U> + t^(2N) ||U||^2 / 2` with `<R,U> < 0`. This bounds the saddle order by N from
-    above only; the authors note that the more must be learned in one step, the higher the order and the
-    harder the escape.
+  - Lemmas D.7-D.9 and Remark D.10: at a min-norm non-global critical point (App. D.3, after reducing every
+    bond dimension to the target rank, so "rank-deficient" means model rank below target rank), take a
+    connected component of rank-deficient edges with N nodes (all nodes incident to it); moving each of these
+    cores on a straight line `W_v + t dW_v` gives `T(t) = T + t^N U` (Lemma D.8) and
+    `L(t) - L = t^N <R,U> + t^(2N) ||U||^2 / 2` with `<R,U> < 0` (Lemma D.9). This bounds the saddle order by
+    N from above only; the authors note that the more must be learned in one step, the higher the order and
+    the harder the escape, and compare with the leap complexity of [Abbe2023] (Remark D.10). Fig. 4 caption:
+    with several disjoint rank-deficient cores, "each core represents one escape path in the saddle point,
+    and the smallest core delivers the least suppressed escape". Strictness for N = 2 is not discussed.
   - Prop 5.3: n-bit parity on a balanced binary tree (n-1 nodes, bond dimension 2), at the uniform
     rank-one point, is a saddle with `L - L_0 >= -C ||theta - theta_0||^(n/2+1)` ("order >= n/2" in their
     convention, where order m means decrease power m+1); Remark H.3 conjectures order n-2, i.e. decrease
     power n-1 = N. In Remark D.10, "order N" is the decrease power itself.
-  - Thm G.1: an explicit non-min-norm spurious local minimum (3-leaf Tucker star). App. D.7: min-norm,
-    realizability, square loss and tree topology are each needed (the last two only suggested).
+  - Thm G.1: an explicit non-min-norm spurious local minimum (3-leaf Tucker star). App. D.7: min-norm (Thm
+    G.1) and realizability (best rank-one approximation; [KofidisRegalia2002] Ex. 4) are shown necessary by
+    examples; the square loss by a two-layer DLN example of Trager et al. with other losses (spurious
+    critical points; footnote 8: min-norm "does not appear to" prevent it); acyclicity is only suggested
+    (tensor-ring example of [ChenLiLu2020]).
   - App. I.3 (heuristic): near a degenerate saddle with L ~ -c s^k the escape time is polynomial in 1/s_0
     for k > 2. Saxe-type exact TTN solutions are listed as future work.
   - Affiliations: Furman and Hodgkinson, University of Melbourne; Wäldchen and Bei, Iliad. Worth checking
@@ -734,7 +809,8 @@ init scale.
 - Other landscape facts. [Levin2024]: multilinear lifts fail "2 => 1" at points with >= 3 zero factors;
   the proof shows such points have zero gradient and zero Hessian for every smooth cost; for LR^T,
   "local => local" holds iff rank L = rank R = rank(LR^T). Best rank-one approximation is NP-hard
-  [HillarLim2013] and has non-global local optima ([KofidisRegalia2002] Ex. 4, via [Furman2026]).
+  [HillarLim2013] and has non-global local optima ([KofidisRegalia2002] Examples 3-4: symmetric rank-one
+  approximation of supersymmetric fourth-order tensors; also cited by [Furman2026]).
   [Qin2024]: left-orthogonal TT with Riemannian GD converges linearly near the solution (gauge fixed; no
   small-init structure). [Kressner2014]: Riemannian Tucker completion; [Steinlechner2016]: Riemannian
   tensor-train completion (metadata only). [PaezVelasco2026]: Riemannian
@@ -767,39 +843,52 @@ assume realizability, square loss, a tree and, for Thm 4.3, min-norm points.
   convolution kernels and attention heads; small init, GF): fixed points of narrower networks embed into
   wider ones (Thm 1); GF has invariant manifolds of reduced effective width (Thm 3); saddle-to-saddle means
   moving to a manifold with one more effective unit. Units linear in their own weights give a data-induced
-  separation (Thm 4: when the top-r part is O(1) the rest is `O(sigma^(1 - s_(r+1)/s_1))`); units quadratic
-  in their own weights give an init-induced separation (Prop 5: the unit with the largest init grows first
-  while the others are still O(sigma)); a stronger effect is conjectured for higher degree. Equal data
+  separation (Thm 4, for the linearized early dynamics `v' = Sigma_yz u, u' = Sigma_yz^T v` of a two-layer
+  linear net from N(0, sigma^2) init, s_1 of multiplicity r: when the projection on the top-r singular
+  vectors is O(1), the rest is `O(sigma^(1 - s_(r+1)/s_1))`; later saddles are argued by the same reasoning,
+  Eq. 12); units quadratic in their own weights give an init-induced separation (Prop 5: when one unit
+  reaches O(1) the others are still O(sigma); the text attributes this to the unit with the largest init);
+  a stronger effect is conjectured for higher degree. Equal data
   singular values remove intermediate plateaus in linear nets but not in quadratic-unit nets. Whether the
-  saddle sequence is Markov is left open. [Simsek2021]: embedded critical points form affine subspaces with
-  (m - r) zero Hessian eigenvalues; strict saddles stay strict; saddles far outnumber minima when the width is
-  just above the minimal width. [Kunin2025] (AGF): section 2.2.
-- Escape-time laws. [RawalDeWeese2026] (preprint; scalar output, smooth sigma with sigma'(0) > 0, the first
-  r layers at scale eps): an exact imbalance identity driven by `phi_sigma(z) = z sigma'(z) - sigma(z)`
-  (Thm 3.1); escape time Theta(1/Gamma), Theta(log(1/eps)/Gamma) and Theta(eps^-(r-2)/Gamma) for r = 1, 2
-  and >= 3, with Gamma = ||E[yx]|| (Thm 4.2); a multimode teacher is escaped once, jointly (Sec. 5), because
-  the network is linear in x near the origin. [Bantzis2026]: escape directions satisfy
+  saddle sequence is Markov is left open. [Simsek2021]: embedded critical points form G(r, m) affine
+  subspaces of dimension m - r with (m - r) zero Hessian eigenvalues (Props 4.3-4.4); strict saddles stay
+  strict (Prop 4.4); symmetry-induced critical subspaces far outnumber global-minimum subspaces when the
+  width is just above the minimal width (Sec. 4.3). [Kunin2025] (AGF): section 2.2.
+- Escape-time laws. [RawalDeWeese2026] (preprint, v4 2026-09-25; linear readout, smooth sigma with
+  sigma(0) = 0 and sigma'(0) > 0, square loss, the first r layers at scale eps and the others O(1)): an exact
+  imbalance identity driven by `phi_sigma(z) = z sigma'(z) - sigma(z)` (Thm 3.1); escape time Theta(1/Gamma),
+  Theta(log(1/eps)/Gamma) and Theta(eps^-(r-2)/Gamma) for r = 1, 2 and >= 3, with Gamma = ||Sigma w*||, w* the
+  linear component of the teacher (Thm 4.2; Gamma = ||E[yx]|| in Cor 4.4); a multimode teacher is escaped
+  once, jointly (Sec. 5), because the network is linear in x near the origin. [Bantzis2026]: escape
+  directions satisfy
   `grad L_0(rho) = -s rho`, and along them
   `||theta(t)|| = (||theta(t_0)||^(2-L) + (2-L) L s (t - t_0))^(1/(2-L))` (Prop 2.2). [Zhang2025] (ICML
   2025; linear attention trained on in-context regression): with merged key-query weights (degree 2 per
   head) there is one abrupt drop after ~ln(1/w_init); with separate key and query (degree 3 per head) there
   are 2^D fixed points and a staircase through them in eigenvalue order (in-context principal component
   regression), with plateaus polynomial in 1/w_init. The same task under two parameterizations has
-  different plateau laws. [BoixAdsera2023] (diagonal attention weights): stages of Theta(log(1/alpha)), the
-  rank growing by at most one per stage (Thm 4.1). [Simon2023] (self-supervised learning from small init):
-  the top eigenmodes of a contrastive kernel are learned one at a time (per the critique; not reviewed).
+  different plateau laws. [BoixAdsera2023] (diagonal attention weights): stages of Theta(log(1/alpha))
+  (Thm 1.1; Thm 4.1 in the rescaled time t log(1/alpha)), in each of which the support of the diagonal
+  weights grows by at most one coordinate, so the rank of a head's W_K W_Q^T or W_V W_O^T grows by at most
+  one. [Simon2023] (self-supervised learning from small init): the top eigenmodes of a contrastive kernel
+  are learned one at a time (abstract; linearized Barlow Twins at infinite width; the same steps are seen
+  empirically with Barlow Twins, SimCLR and VICReg).
   [Du2017]: with natural random inits, GD can take exponential time to escape saddle points, while perturbed
   GD converges in polynomial time (abstract); the slowdown comes from escape times compounding along a
-  chain of saddles (per the critique).
-- High-dimensional analogues. [Abbe2023] (COLT 2023): leap complexity; conjectured learning time
-  Theta~(d^max(Leap, 2)); proven for a class of functions with Gaussian data, two-layer nets and layer-wise
+  chain of saddles (Sec. 1, p. 2).
+- High-dimensional analogues. [Abbe2023] (COLT 2023): leap complexity (Def. 1); conjectured learning time
+  Theta~(d^max(Leap, 2)) total runtime, i.e. Theta~(d^max(Leap-1, 1)) online-SGD steps (Conj. 1); proven
+  for a class of functions with Gaussian data, two-layer nets and layer-wise
   training; saddle-to-saddle is proven only when leaps increase. Its predecessor [Abbe2022] gives the
   merged-staircase property, a necessary and nearly sufficient condition for SGD learning of sparse
   functions on two-layer nets (metadata only). [Bietti2023] (multi-index models, fast-slow GF): no bad local
-  minima in G = M M^T; the saddles form a flag; escape from saddle k takes ~d^(s_k - 1); with a known link,
-  Stiefel GF can be trapped for some targets. [Simsek2025] (Gaussian multi-index models, GF): time
-  complexity and directional convergence; GF converges to the index vectors nearest the init, so the init
-  overlap decides the direction (per the critique). [Cagnetta2024] (random hierarchy model): a
+  minima in G = M M^T (Thm 3.7); the saddles form a flag; escape from saddle k within ~d^(s_k - 1) (up to
+  log d; an upper bound, Thm 3.25); with a known link, Stiefel GF can be trapped for some targets (Thms
+  4.3, 4.6). [Simsek2025] (Gaussian multi-index models, correlation loss, GF): time complexity and
+  directional convergence; for orthogonal index vectors each neuron converges to the index vector with the
+  largest initial overlap (Prop 2.2), so ~k log k neurons recover all k directions; for equiangular index
+  vectors with overlap above beta_c the average of the index vectors becomes a local minimum (Thm 3.2).
+  [Cagnetta2024] (random hierarchy model): a
   tree-structured, compositional synthetic teacher; background for the teacher-structure knob (metadata
   only). [Ren2025] (NeurIPS 2025; two-layer, norm-tied student, information exponent 2I > 2): sharp
   transitions at `T_p ~ 1 / (a_pi(p) eta vbar_(p,pi(p))(0)^(2I-2))`, with the student-teacher matching
@@ -812,35 +901,47 @@ assume realizability, square loss, a tree and, for Thm 4.3, min-norm points.
   loss decays as O(1/t) with an approximately low-rank first layer (abstract); [Boursier2025] (one hidden
   ReLU layer): early alignment yields sparse representations tied to the implicit bias, but on a simple data
   example over-parameterized nets converge to a spurious stationary point instead of a global minimum
-  (abstract). [BerthierMZ2024] (time-scale separation from layer-wise learning rates): the degree-l Hermite
-  component is learned at t ~ c_l eps^(1/(2l)).
+  (abstract). [BerthierMZ2024] (wide two-layer net, single-index target, second layer trained 1/eps times
+  faster; the "canonical learning order" of Definition 1: numerics up to degree 2, conjectured beyond
+  (Sec. 6.5), rigorous for a simplified model (Thm 1)): the linear component is learned at
+  t ~ eps^(1/2) log(1/eps) / (4 |sigma_1 phi_1|) and the degree-l Hermite component (l >= 2) at
+  t ~ c_l eps^(1/(2l)).
 - Classical plateau theory (background; metadata only): [SaadSolla1995] (on-line learning in soft committee
   machines), [FukumizuAmari2000] (local minima and plateaus in hierarchical structures of multilayer
   perceptrons), [Amari2006] (singularities affect the dynamics of learning in neuromanifolds).
 - Learning rate. [Cohen2021]: sharpness rises to ~2/eta and hovers there (edge of stability, EoS).
   [Ghosh2025] (deep matrix factorization): the balanced sharpness of mode i is `S_i = L sigma_i^(2-2/L)`;
   when 2/eta lies between max(S_(p+1), S_p / (2 sqrt 2)) and S_p, the top-p singular values oscillate in a
-  2-period orbit inside a p-dimensional subspace (Thm 1), with period doubling to chaos beyond; the
-  balancing gap that GF conserves breaks and decreases monotonically to 0 (Prop 2). [Hofmann2026]
+  2-period orbit inside a p-dimensional subspace (Thm 1; the orbit is given implicitly, as roots of a
+  polynomial), with period doubling to chaos beyond; beyond the edge (2/S_i < eta < 2 sqrt 2 / S_i, small
+  unbalanced init) the balancing gap that GF conserves (Lemma 2) contracts at every step (Prop 2; decay to
+  0 argued in the text). [Hofmann2026]
   (preprint; finite-step maps): balanced two-factor edge at a = 1; with depth scaling a = c/n a Ricker-type
   map with edge c = 1; the imbalance obeys `Delta_+ = (1 - a^2 r^2) Delta`; wide linear nets have a ladder
-  of spectral edges. [WangCZT2022]: GD with a large step on XY^T converges beyond 2/L and balances the
-  factors. [KimLee2026] (multi-pathway DLNs): GF gives winner-take-all; at EoS, GD re-balances signals
-  across pathways. [MarionChizat2024]: the sharpness of DLN minimizers has a lower bound linear in depth, and
-  GF reaches it within a constant; small init gives near rank-one weights. [Kreisler2023] (scalar nets): GD
+  of spectral edges. [WangCZT2022]: for XY^T with a scalar or rank-one isotropic target, GD converges for
+  steps up to about 4/lambda_0 (lambda_0 the top Hessian eigenvalue at initialization) to a balanced minimum
+  with sharpness <= 2/eta (Thms 3.1-3.2, 4.2-4.3). [KimLee2026] (multi-pathway DLNs): GF gives
+  winner-take-all; at EoS, GD re-balances signals
+  across pathways. [MarionChizat2024] (univariate regression): the sharpness of DLN minimizers has a lower
+  bound linear in depth, and GF reaches it within a factor set by the condition number of the data
+  covariance; small init gives near rank-one weights. [Kreisler2023] (scalar nets): GD
   monotonically decreases the sharpness of the GF solution from the current iterate. [LiangMontufar2025]
   (matrix factorization): near-critical steps are chaotic, with fractal convergence regions.
 - Noise. [Corlouer2026] (preprint; DLN SGD as an SDE, aligned and balanced weights): per-mode drift
-  `L w^(2(L-1)/L) (s - w)` plus an Ito drift `beta L (L-1) (s - w) w^(2(L-2)/L)`; near the origin the
-  outward Ito drift dominates the gradient drift (verifier's reading of their formulas); diffusion along a
-  mode peaks before the mode is learned; mode order is kept; "SGD does not fundamentally alter" the
-  saddle-to-saddle dynamics. [Ziyin2023]: at Type-II saddles the gradient noise vanishes; probabilistic
+  `L w^(2(L-1)/L) (s - w)` plus a printed Ito drift `beta L (L-1) (s - w) w^(2(L-2)/L)` (Prop 3.5, eq. 6),
+  which would dominate the gradient drift near the origin. The citation audit found eq. 6 not covariant
+  under the exact rescaling symmetry of SGD; Ito's lemma with their diffusion (eq. 7) gives
+  `beta L (L-1) (s - w)^2 w^((3L-4)/L)`, subdominant near the origin (to be confirmed with the authors'
+  App. E). Diffusion along a mode peaks before the mode is learned; mode order is kept in experiments
+  (Fig. 2); "SGD does not fundamentally alter" the saddle-to-saddle dynamics. [Ziyin2023]: at Type-II saddles
+  the gradient noise vanishes; probabilistic
   stability gives four phases. [ChenKunin2023]: invariant sets (vanishing or identical neurons) become
-  attractive when `L''(0) + D''(0) / 2 > 0`; in linear teacher-student models, modes weaker than
+  attractive when `L''(0) + D''(0) / 2 > 0` (1-D criterion, Thm 4.1; a sufficient condition in general,
+  Thm 4.2); in linear teacher-student models, modes weaker than
   ~eta zeta^2 / 2 collapse. [Ziyin2024]: along exponential symmetries, SGD noise drives a Noether flow to a
   unique noise equilibrium. [ZhangT2026] (abstract): label-noise SGD moves two-layer linear nets from lazy
-  to rich. [Singh2026] (abstract): GD's low-rank bias in factored models comes from gauge equivariance,
-  which Adam lacks.
+  to rich. [Singh2026] (abstract): GD's low-rank bias in factored models needs gauge equivariance
+  (necessary, not sufficient), which Adam lacks.
 
 **Setting.** Two-layer or scalar-output nonlinear nets, high-dimensional limits, and DLNs for the
 learning-rate and noise results.
@@ -871,7 +972,8 @@ learning-rate and noise results.
 - Proven for TTNs as a corollary (derived (review)): by [KumarHaupt2025a] Thm 1, the direction converges to
   a non-negative KKT point of g on the sphere within ~`||theta_0||^-(K-2)`, or the weights shrink (K = 2:
   [KumarHaupt2024]). From an init exactly along a nondegenerate KKT point w*, escape takes
-  `1 / (K (K-2) g(w*) delta^(K-2))` [KumarHaupt2025b], but nondegeneracy fails for chi >= 2 (gauge orbits).
+  `1 / (K (K-2) g(w*) delta^(K-2)) + O(1)` [KumarHaupt2025b], but nondegeneracy fails for chi >= 2 (gauge
+  orbits).
   PLAN.md Q2's `t_1 ~ rho_0^-(K-2)` has this form.
 - Known (derived (critique), re-checked; critique C5): every KKT point of g on the unit sphere with `g* > 0`
   is exactly balanced on every bond, `A_e = B_e`, where A_e and B_e are the Gram matrices of the child and
@@ -894,15 +996,17 @@ learning-rate and noise results.
   bond-rank-one configurations aligned with a best rank-one approximation of W* (derived (review):
   Cauchy-Schwarz from the leaves up gives `||W(theta)||_nuc <= prod_v ||G_v||_F`, then AM-GM; with
   multi-site cores use the injective norm of the grouping of sites into cores). Best rank-one approximation
-  has non-global local optima ([KofidisRegalia2002], via [Furman2026]) and is NP-hard [HillarLim2013],
+  has non-global local optima ([KofidisRegalia2002] Examples 3-4, symmetric case) and is NP-hard
+  [HillarLim2013],
   so several basins are expected for tensorial teachers (compare the symmetry-breaking critical points of
   symmetric tensor decomposition, [Arjevani2021]).
 - Mechanism proven in analogues: the order is set by (teacher weight) x (init overlap)^(p-2) for degree
   p >= 3: tensor PCA ([BenArous2024a] Thm 1.5; [BenArous2024b]), two-layer nets [Ren2025], units quadratic
   in their own weights ([ZhangSL2026] Prop 5), AGF thresholds [Kunin2025], the first CP stage ([Razin2021]
   Thm 2, a sufficient condition with exponent 1/(N-2)), deep diagonal nets [Zhao2026], tensor power method
-  basins ([Anandkumar2014] Lemma 5.1); in Gaussian multi-index models GF converges to the index vectors
-  nearest the init [Simsek2025]. Degree-2 (matrix-like) cases are greedy given a gap ([BenArous2024a];
+  basins ([Anandkumar2014] Lemma 5.1); with a correlation loss and orthogonal index vectors each neuron
+  converges to the index vector nearest its init ([Simsek2025] Prop 2.2). Degree-2 (matrix-like) cases are
+  greedy given a gap ([BenArous2024a];
   [Gidel2019]; [JiangChenDing2023], the whole depth-2 sequence from small random init), and DLNs escape
   greedily first among positive-speed directions ([Jacot2021] Lemma 15).
 - Qualifiers (counter-evidence to "random"): largest-first is guaranteed above an SNR gap factor
@@ -932,8 +1036,9 @@ the topology-dependent plateau law is open.**
   [Jacot2021; LiLuoLyu2021; Gissin2020; Atanasov2022].
 - Empirical tensor-network evidence: MPS miss long-range correlations [Tang2025]; trees capture them
   [Cheng2019]; higher branching helps [ChenBarthel2024]; denser geometries train better [MasotLlima2024];
-  GD on TT shows plateaus and then abrupt rank growth [Milanesi2021]; in solvable local-rule models with a
-  tensor-network map, grokking is a consequence of the locality of the teacher [Zunkovic2022].
+  GD on TT completion shows one long plateau and then an abrupt, nearly simultaneous rise of the leading
+  middle-bond singular values ([Milanesi2021] Fig. 3(b)); in solvable local-rule models with a
+  tensor-network map, grokking is attributed to the locality of the teacher [Zunkovic2022].
 - Refinements. (i) H2's k (cores in the Steiner subtree plus bonds whose rank must grow) is not Furman's N
   (nodes touching a connected component of rank-deficient edges); compare both with data. (ii) At a later
   saddle the exponent is the lowest degree with nonzero residual correlation, which can be below the subtree
@@ -949,11 +1054,15 @@ the topology-dependent plateau law is open.**
 
 - DLN ([Achour2024] Thm 7): rank-r critical points are strict unless they solve the rank-r problem; those
   that do are non-strict iff tightened; 0-balanced ones are tightened for H >= 3; at H = 2 all saddles are
-  strict. So the saddles visited from small balanced init are non-strict at depth >= 3.
+  strict. The paper itself draws the dynamical consequence (paragraph after Prop 8): from an exactly
+  0-balanced init, every saddle visited by GF that is associated with S = [1, r] (top singular values) is
+  non-strict at depth >= 3. Small random init is balanced only up to O(sigma^2) (an extrapolation of ours).
+  Assumptions: Sigma_XX invertible, Sigma_XY of full rank d_y, distinct singular values (Assumption 1).
 - TTN facts (derived (review)): the loss is a convex quadratic in each single core, so single-core Hessian
   blocks are PSD and, at a critical point, no single core can descend: every saddle needs >= 2 cores
   (k >= 2). A rank-deficient core with N = 2 nodes gives `L(t) - L = t^2 <R,U> + O(t^4)` along a straight
-  line, i.e. negative curvature, i.e. a strict saddle ([Furman2026] Lemma D.9). Points with >= 3 zero cores
+  line, i.e. negative curvature, i.e. a strict saddle (a one-line consequence of [Furman2026] Lemmas D.8-D.9;
+  the paper does not discuss strictness). Points with >= 3 zero cores
   have zero gradient and zero Hessian for every loss ([Levin2024] proof; [Kawaguchi2016] for DLNs). The
   parity saddle is non-strict ([Furman2026] Prop 5.3).
 - Correction: "strict exactly when k = 2" is too strong as stated. A saddle is strict whenever some
@@ -991,7 +1100,8 @@ the topology-dependent plateau law is open.**
   `min(d^(n_e), d^(N-n_e))` of each bond. It plays the role of H / p^(nu-1) in [Yarotsky2026] and of width
   relative to dimension in [Tu2024], and it sets the rank and anisotropy of the tangent kernel
   (Correction 1). Untested.
-- Correction 3: no muP exists for TTNs: the init clause of [YangSB2023] fails for cores with fan-in >
+- Correction 3: no muP for TTNs exists in the literature (the report derives one, "muP-TTN"): the init
+  clause of [YangSB2023] fails for cores with fan-in >
   fan-out, and TP IV's dichotomy excludes linear activations; the "ultra-rich" muP regime is small init by
   homogeneity ([Atanasov2025] plus derived (review)).
 - Lazy training cannot fit a generic W* when some chi_e is below the cut dimension, as at practical chi:
@@ -999,13 +1109,15 @@ the topology-dependent plateau law is open.**
   `O*(r^(2.5 l) log d)` components; critique A1). Above the cut dimension the fit is exact but slow along
   small kernel eigenvalues (section 2.3).
 - Imbalance is an established second knob in two-layer linear nets [Kunin2024; Domine2025; Tu2024;
-  Azulay2021; Min2021; XuZiyin2025]; it is erased by weight decay ([Furman2026] Cor F.13), large steps
-  [WangCZT2022; Ghosh2025; Hofmann2026] and SGD noise [Ziyin2024]. Fan-in init has
+  Azulay2021; Min2021; XuZiyin2025]; it is erased by weight decay ([Furman2026] Cor F.13), reduced by large
+  steps and erased beyond the edge of stability [WangCZT2022; Ghosh2025; Hofmann2026], and moved by SGD
+  noise to a data-dependent noise equilibrium, balanced for isotropic data [Ziyin2024]. Fan-in init has
   `E[Q_v] = sigma^2 (1 - chi_p/chi_v) I` (derived (review)).
 - Escape exponents count only small cores [RawalDeWeese2026]; staging occurs without small init in high
   dimension [Zhou2026], so d and chi are knobs too.
-- Random iid init makes the function scale exponential in K [Barratt2022; MataAli2023; Sasaki2026;
-  Rakhshan2020; Novikov2017; Shamir2019].
+- Random iid init makes the function scale exponential in K unless the per-core variance is tuned
+  [Barratt2022; MataAli2023; Sasaki2026; Shamir2019]; even then fluctuations grow like (1 + 2/R)^(N-1)
+  [Rakhshan2020], and random TT init can freeze training [Novikov2017].
 - With l2 weight decay on the cores and K >= 3 the origin is a local minimum (the degree-K gain loses to the
   quadratic penalty), as in DLNs [ZiyinLiMeng2022] (derived (review) for TTNs).
 - Weight decay is also a time-dependent lazy-to-rich knob: homogeneous nets with large init and small weight
@@ -1016,9 +1128,11 @@ the topology-dependent plateau law is open.**
 **H5 (input covariance): partly known in linear analogues; open for TTNs.**
 
 - Aligned or commuting covariance reorders learning by covariance-weighted strengths [Gidel2019]; for any
-  convex loss the first escape follows the covariance-weighted teacher ([Jacot2021] Thm 2; [LiLuoLyu2021];
-  [Achour2024] with invertible Sigma_XX); rank-r saddles are reduced-rank regression solutions, not teacher
-  directions.
+  convex loss the first escape follows the covariance-weighted teacher ([Jacot2021] Thm 2; [LiLuoLyu2021]);
+  rank-r critical points are reduced-rank regression projections `U_S U_S^T Sigma_YX Sigma_XX^-1` onto any
+  r singular directions, not teacher directions ([Achour2024] Prop 1, invertible Sigma_XX; landscape only).
+  The visited ones keep the r largest covariance-weighted strengths, which is the reduced-rank regression
+  optimum only when that order matches the order of the loss drops ([Gidel2019] Thm 2 vs Cor 2).
 - TTN with product covariance (derived (review)): absorbing Sigma_i^(1/2) into the core carrying site i is
   an invertible reparameterization, so the landscape is that of a white problem with target
   `((x)_i Sigma_i^(1/2)) W*` (critical points, saddle orders and [Furman2026] Thm 5.2 transfer); the GF
@@ -1042,7 +1156,8 @@ established and is contradicted in some settings.**
   (`S_i = L sigma_i^(2-2/L)` [Ghosh2025]; linear-in-depth lower bound [MarionChizat2024]), so PLAN.md Q8's
   `eta_max ~ 2 / (K s_1^(2-2/K))` matches the DLN formula (to verify for TTNs); EoS oscillations stay in the
   learned top subspace and the balancing gap breaks and decays to 0 [Ghosh2025; Hofmann2026; WangCZT2022];
-  SGD keeps the mode order in aligned, balanced DLNs [Corlouer2026].
+  SGD keeps the mode order in DLN experiments [Corlouer2026] (Fig. 2; their per-mode SDEs assume aligned,
+  balanced weights).
 - Against: large steps re-balance features across pathways after GF-like winner-take-all [KimLee2026];
   the step size changes the implicit bias [Nacson2022; Even2023]; SGD noise lowers the effective init
   [Pesme2021]; stochastic collapse makes zero or duplicate channels attractive [ChenKunin2023]; Type-II
@@ -1059,13 +1174,15 @@ Numbered by the section of `notes/prior_knowledge.md` they correct.
    their eq. 15 (where N_l counts layers of units, i.e. N_l - 1 matrices). The infinite-depth version is
    stated: eqs. 16-17, with escape term `1 / (N_l s u_0)` and a learning time that tends to zero as
    N_l -> inf at fixed u_0 (continuous time; critique A3). Theorem-level sources: [LiLuoLyu2021] Thm 6.2
-   (first phase, init alpha I, a technical assumption); [Jacot2021] (first escape); [Gissin2020] Thm 1
-   (depth-normalized loss); [KumarHaupt2025b] (`1 / (L (L-2) N(w*) delta^(L-2))` for init along w*);
-   [Atanasov2022] (t_1/2).
+   (first phase, init alpha I, a technical assumption); [Jacot2021] (first escape); [Gissin2020] eq. 4
+   and the proof of Thm 2 (depth-normalized loss; Thm 1 itself solves only N = 1, 2 and N -> inf);
+   [KumarHaupt2025b] (`1 / (L (L-2) N(w*) delta^(L-2)) + O(1)` for init along
+   w*, text before Thm 11); [Atanasov2022] (t_1/2).
 2. The depth experiment of [Saxe2014] contrasts random orthogonal init (depth-independent learning times)
    with scaled Gaussian init, not with small init.
-3. "For L >= 3 the origin is a higher-order saddle (Kawaguchi 2016)": correct; [Kawaguchi2016] exhibits the
-   zero-Hessian set (which contains the origin) for >= 2 hidden layers. The full strict/non-strict
+3. "For L >= 3 the origin is a higher-order saddle (Kawaguchi 2016)": correct; [Kawaguchi2016] Cor 2.4
+   exhibits saddles without negative curvature for >= 2 hidden layers (the origin; the larger set
+   W_1 = ... = W_H = 0 of its proof has zero Hessian only for H >= 3). The full strict/non-strict
    classification is [Achour2024].
 4. "Marcotte, Gribonval & Peyre 2023, 'Abundant conservation laws'": the title is "Abide by the Law and
    Follow the Flow: Conservation Laws for Gradient Flows" (NeurIPS 2023). Completeness of the known laws is
@@ -1091,7 +1208,7 @@ Numbered by the section of `notes/prior_knowledge.md` they correct.
 12. [Braun2022]: two-layer, zero-balanced init (not necessarily small or aligned).
 13. [Domine2025]: two-layer only (despite the title); whitened inputs; lambda-balanced init
     `W_2^T W_2 - W_1 W_1^T = lambda I` with hidden width min(N_i, N_o), not general unbalanced inits;
-    ICLR 2025 (venue not re-verified).
+    ICLR 2025, pp. 102485-102536.
 14. [Kunin2024]: delta includes the layer learning rates. In linear nets balanced init becomes rich
     fastest, upstream init is lazy and downstream init is delayed-rich; "upstream accelerates rich
     learning" holds only in piecewise-linear nets.
@@ -1103,18 +1220,22 @@ Numbered by the section of `notes/prior_knowledge.md` they correct.
 16. [Woodworth2020]: COLT 2020, PMLR 125:3635-3673 (arXiv 2002.09277; the older 1906.05827 was withdrawn).
     The rich limit is l1 for every depth D (not l_(2/D)); "hypentropy" refers to D = 2 only; "depth sharpens
     the transition" means that D = 2 needs exponentially small alpha and D >= 3 only polynomially small
-    alpha; the init shape changes only the kernel limit; width enters through the lifted scale alpha^2 k.
+    alpha; the init shape changes the kernel and intermediate regimes, not the rich limit; width enters
+    through the lifted scale alpha^2 k.
     The two-copy construction is as stated.
-17. [Chizat2019] scale alpha h(w) and arrange h(w0) = 0 with a symmetrized init; the explicitly centred
-    form alpha (f(theta) - f(theta_0)) is the variant of [Geiger2020]. Their kappa is a sufficient
-    criterion only; homogeneous models become lazy under init scaling only if the initial output stays
-    bounded; width helps through cancellations (lazy if m alpha(m) -> inf), so "a matter of scaling, not
+17. [Chizat2019] scale alpha h(w) and arrange h(w0) = 0 either with a symmetrized init (two-layer nets:
+    h_(m/2)(w_a) - h_(m/2)(w_b) with w_a(0) = w_b(0), Sec. 3.1) or with the explicitly centred model
+    h(w) = h~(w) - h~(w0) (VGG-11, Sec. 3.2); [Geiger2020] use the centred form throughout. Their kappa is a
+    sufficient criterion only; homogeneous models are guaranteed to become lazy under init scaling if the
+    initial output stays bounded (a sufficient condition); width helps through cancellations (lazy if m
+    alpha(m) -> inf), so "a matter of scaling, not
     width" is incomplete; underparameterized lazy training converges to a local minimum (Thm 2.5).
 18. [PesmeFlammarion2023]: parameterization u (.) v with init (sqrt(2) alpha, 0); the algorithm is the
     adaptive inverse scale space method, LARS-like but not the Lasso/homotopy path, history-dependent, with
     possible deactivation of coordinates; also J. Stat. Mech. (2024) 104016.
-19. [Berthier2023]: JMLR 24(171); nonnegative, anti-correlated (n >= d) case only; the path is a weighted
-    lasso path whose weights are the init exponents.
+19. [Berthier2023]: JMLR 24(171); nonnegative, anti-correlated (n >= d) case only; the active sets follow
+    the support of a nonnegative lasso path weighted by the init exponents (Thm 1); only the time average of
+    the iterates follows the lasso path.
 20. [Geiger2020]: J. Stat. Mech. (2020) 113301; boundary alpha* ~ h^-1/2; the knob is the output scale,
     which equals an init-scale knob only for homogeneous nets.
 21. [Ghorbani2019]: NeurIPS 2019 (the proceedings title ends "...Network"); the NT/NN separation is proven
@@ -1124,7 +1245,7 @@ Numbered by the section of `notes/prior_knowledge.md` they correct.
 
 22. "Every stable parameterization is either kernel-limit or feature-learning" [YangHu2021] needs
     Assumption 3.1 (tanh or sigma-gelu activations); the paper states that it fails for linear activations,
-    hence for multilinear TTNs.
+    hence for multilinear TTNs (the dichotomy is stated for nontrivial stable abc-parameterizations).
 23. [YangSB2023] is an arXiv preprint (no venue found). Its Claim 1 assumes fan-out >= fan-in, which
     internal TTN cores violate; its init would shrink TTN signals by chi^(-(c-1)/2) per core with c bond
     children (derived (review)). Only the update clause carries over, so "the spectral condition gives the
@@ -1180,11 +1301,13 @@ Numbered by the section of `notes/prior_knowledge.md` they correct.
 38. [Stoudenmire2016]: the NeurIPS title is "Supervised Learning with Tensor Networks"; the sweeps are
     two-site gradient steps followed by SVD truncation.
 39. Exponential growth or decay of ||W|| at random init: confirmed with explicit formulas ([Barratt2022],
-    [MataAli2023], [Sasaki2026], [Rakhshan2020]).
-40. Bibliographic details: [Glasser2019] full title "Expressive power of tensor-network factorizations for
-    probabilistic modeling, with applications from hidden Markov models to quantum machine learning";
-    [CohenSharirShashua2016] COLT 2016, pp. 698-728; [Levine2018] ICLR 2018 not re-verified (arXiv lists no
-    venue); [Khrulkov2018] ICLR 2018; [Stoudenmire2018] Quantum Sci. Technol. 3, 034003.
+    [MataAli2023], [Sasaki2026]); [Rakhshan2020] give the variance factor (1 + 2/R)^(N-1) of tensorized
+    random projections, which are isometries in expectation.
+40. Bibliographic details: [Glasser2019] NeurIPS 2019 title "Expressive power of tensor-network
+    factorizations for probabilistic modeling" (NeurIPS 32, pp. 1498-1510); the arXiv extended version adds
+    ", with applications from hidden Markov models to quantum machine learning";
+    [CohenSharirShashua2016] COLT 2016, pp. 698-728; [Levine2018] ICLR 2018 (poster; confirmed on iclr.cc);
+    [Khrulkov2018] ICLR 2018; [Stoudenmire2018] Quantum Sci. Technol. 3, 034003.
 
 **Section 7 (hierarchical formats)**
 
@@ -1192,8 +1315,8 @@ Numbered by the section of `notes/prior_knowledge.md` they correct.
     bond dimension r_e; a target is realizable iff rank T*^(e) <= r_e on every internal edge
     ([Furman2026] Prop B.1); the ranks are equal at min-norm points (Prop D.2).
 42. Fixed-rank HT/TT sets are smooth embedded submanifolds but are not closed; their closure is
-    {rank_T <= k} ([UschmajewVandereycken2013] Thm 4.14). The content of [Holtz2012] was not read (its
-    results are known here through [Lubich2015]).
+    {rank_T <= k} ([UschmajewVandereycken2013] Thm 4.14, report numbering; Theorem 5 in LAA). [Holtz2012]:
+    the fixed-TT-rank set is an embedded manifold (preprint abstract read).
 43. The gauge conservation law is correct and proven in [Furman2026] Prop F.12 for any loss that depends on
     theta only through W, on any topology; balanced <=> min-norm holds only on trees (Prop F.10,
     Remark F.14); weight decay drives the defect to zero exponentially (Cor F.13). The per-core balanced
@@ -1205,7 +1328,8 @@ Numbered by the section of `notes/prior_knowledge.md` they correct.
     classical [Anandkumar2014]; in TTN parameter space such maxima are at best non-strict (gauge orbits).
     "For a matrix-like teacher only the top component is a local max (as in DLNs)" holds in DLNs among
     positive-speed escape directions ([Jacot2021] Lemma 15; zero-speed directions are excluded only for
-    L <= 3) and fails for diagonal or decoupled models; the governing property is whether components are
+    L <= 3 and a full-rank gradient at the origin, Lemma 16) and fails for diagonal or decoupled models; the
+    governing property is whether components are
     connected through a perturbation of at most 2 factors.
 45. H3, H4 and H6: see section 3 (strict saddles beyond k = 2; lazy dynamics without centring only for
     chi far above the cut dimension; two-parameter regime control; the learning rate can change late
@@ -1265,7 +1389,8 @@ numbers in brackets.
    sigma^K chi^(K-1) in iid normalization; chi_e relative to the cut dimension `min(d^(n_e), d^(N-n_e))`,
    the candidate second parameter of critique C2); centred vs plain models at large chi.
 7. **Large-chi limits.**
-   Why open: no GP/NTK result beyond MPS/TT; no feature-learning limit; [YangSB2023] fails for cores with
+   Why open: no GP/NTK result beyond MPS/TT and CP ([WeselBatselier2025] Thm 3.1; [Yarotsky2026]
+   Prop 8.1); none for general trees; no feature-learning limit; [YangSB2023] fails for cores with
    fan-in > fan-out; the kernel of a single draw is near-isotropic only for chi_e far above the cut dimension
    (critique A1).
    Evidence: rank, condition number and eigenvalue spread of `J J^T` against chi_e / cut_e (spread roughly
@@ -1298,7 +1423,7 @@ numbers in brackets.
     of grokking. Grokking as a lazy-to-rich transition is established in other models ([Lyu2024], proven
     for homogeneous nets with large init and small weight decay; [Kumar2024g], two-layer nets); only the link
     to tensor networks is open: the entanglement transition of sweep-trained MPS [Pomarico2025] and the
-    tensor-network map of solvable local-rule models, where grokking follows from teacher locality
+    tensor-network map of solvable local-rule models, where grokking is attributed to teacher locality
     [Zunkovic2022] (critique C3). Also a "tree leap complexity" linking plateau exponents to target
     structure and to the hardness result of [Furman2026].
 
@@ -1345,8 +1470,9 @@ Project equivalents refer to `notes/diagnostics.md`.
     saddles [Ziyin2023].
 15. Gradient variance at random init against N, chi and distance [Liu2022; MiaoBarthel2024;
     BarthelMiao2025; CerveroMartin2023].
-16. Output statistics at init: moments and kurtosis [WeselBatselier2025; WangLiuYu2026; section 2.3];
-    Cramer-von Mises tests [WeselBatselier2025]; Var(W) and critical init scale [Barratt2022; Sasaki2026].
+16. Output statistics at init: histograms and Cramer-von Mises tests [WeselBatselier2025]; higher-moment
+    bounds [WangLiuYu2026]; kurtosis (section 2.3); Var(W) and critical init scale [Barratt2022;
+    Sasaki2026].
 17. Entanglement (bond entropy) during training and "eigenvalue evaporation" [Pomarico2025]; captured
     long-range correlations [Cheng2019].
 18. Final-solution diagnostics: implicit-bias potentials (Q_alpha; l1 vs l2) [Woodworth2020;
@@ -1378,7 +1504,7 @@ reading, not re-read for v1.1.
 - [Abbe2022] Emmanuel Abbe, Enric Boix-Adserà, Theodor Misiakiewicz. The merged-staircase property: a necessary and nearly sufficient condition for SGD learning of sparse functions on two-layer neural networks. COLT 2022, PMLR 178:4782-4887. <https://arxiv.org/abs/2202.08658> (metadata only; v1.1, from 7.2)
 - [Abbe2023] Emmanuel Abbe, Enric Boix-Adserà, Theodor Misiakiewicz. SGD learning on neural networks: leap complexity and saddle-to-saddle dynamics. COLT 2023, PMLR 195:2552-2623. <https://arxiv.org/abs/2302.11055> (read)
 - [Achour2024] El Mehdi Achour, François Malgouyres, Sébastien Gerchinovitz. The loss landscape of deep linear neural networks: a second-order analysis. JMLR 25(242):1-76, 2024. <https://arxiv.org/abs/2107.13289> (read)
-- [Acuaviva2023] Arturo Acuaviva, Visu Makam, Harold Nieuwboer, David Pérez-García, Friedrich Sittner, Michael Walter, Freek Witteveen. The minimal canonical form of a tensor network. FOCS 2023, pp. 328-362. <https://arxiv.org/abs/2209.14358> (read)
+- [Acuaviva2023] Arturo Acuaviva, Visu Makam, Harold Nieuwboer, David Pérez-García, Friedrich Sittner, Michael Walter, Freek Witteveen. The minimal canonical form of a tensor network. FOCS 2023, pp. 328-362, doi:10.1109/FOCS57990.2023.00027. <https://arxiv.org/abs/2209.14358> (read)
 - [Advani2017] Madhu S. Advani, Andrew M. Saxe. High-dimensional dynamics of generalization error in neural networks. arXiv 1710.03667, 2017; journal version with H. Sompolinsky, Neural Networks 132:428-446, 2020. <https://arxiv.org/abs/1710.03667> (metadata only; not reviewed)
 - [AgyeiKodie2026] Eugene Agyei-Kodie, Longxiu Huang, Shuang Li, Xiao Liang. Strict-Saddle Landscapes and Multi-Rank Geometry in Low-Tubal-Rank Tensor Sensing. arXiv 2609.37865, 2026. <https://arxiv.org/abs/2609.37865> (abstract)
 - [Alexander2023] Yotam Alexander, Nimrod De La Vega, Noam Razin, Nadav Cohen. What Makes Data Suitable for a Locally Connected Neural Network? A Necessary and Sufficient Condition Based on Quantum Entanglement. NeurIPS 2023. <https://arxiv.org/abs/2303.11249> (metadata only)
@@ -1386,9 +1512,10 @@ reading, not re-read for v1.1.
 - [Anandkumar2014] Animashree Anandkumar, Rong Ge, Daniel Hsu, Sham M. Kakade, Matus Telgarsky. Tensor Decompositions for Learning Latent Variable Models. JMLR 15(80):2773-2832, 2014. <https://jmlr.org/papers/v15/anandkumar14b.html> (read)
 - [AnandkumarGe2016] Animashree Anandkumar, Rong Ge. Efficient approaches for escaping higher order saddle points in non-convex optimization. COLT 2016, PMLR 49:81-102. <https://arxiv.org/abs/1602.05908> (abstract)
 - [Arjevani2021] Yossi Arjevani, Joan Bruna, Michael Field, Joe Kileel, Matthew Trager, Francis Williams. Symmetry Breaking in Symmetric Tensor Decomposition. arXiv 2103.06234, 2021 (v2 2023; no venue). <https://arxiv.org/abs/2103.06234> (abstract; added v1.1)
-- [Arjevani2026] Yossi Arjevani, Joan Bruna, Joe Kileel, Elzbieta Polak, Matthew Trager. Geometry and Optimization of Shallow Polynomial Networks. SIAM J. Appl. Algebra Geom. 10(2):174-209, 2026 (arXiv 2501.06074; the critique keyed it Arjevani2025, year unconfirmed). <https://doi.org/10.1137/25M1732994> (abstract; added v1.1)
+- [Arjevani2026] Yossi Arjevani, Joan Bruna, Joe Kileel, Elzbieta Polak, Matthew Trager. Geometry and Optimization of Shallow Polynomial Networks. SIAM J. Appl. Algebra Geom. 10(2):174-209, 2026 (arXiv 2501.06074; year confirmed on Crossref, online 2026-04-20). <https://doi.org/10.1137/25M1732994> (abstract; added v1.1)
 - [Arora2018] Sanjeev Arora, Nadav Cohen, Elad Hazan. On the Optimization of Deep Networks: Implicit Acceleration by Overparameterization. ICML 2018, PMLR 80:244-253. <https://arxiv.org/abs/1802.06509> (abstract; formula checked via [Arora2019])
 - [Arora2019] Sanjeev Arora, Nadav Cohen, Wei Hu, Yuping Luo. Implicit Regularization in Deep Matrix Factorization. NeurIPS 2019. <https://arxiv.org/abs/1905.13655> (read)
+- [Arvanitakis2025] Dionysis Arvanitakis, Vaidehi Srinivas, Aravindan Vijayaraghavan. Guarantees for Alternating Least Squares in Overparameterized Tensor Decompositions. NeurIPS 2025. <https://openreview.net/forum?id=9FDErIfoVE> (abstract: for third-order tensors of rank r, ALS with rank k = O(r^2) converges globally from random init w.h.p., against O(r^7.5 log n) for a GD variant; v1.2, from 7.2)
 - [Atanasov2022] Alexander Atanasov, Blake Bordelon, Cengiz Pehlevan. Neural Networks as Kernel Learners: The Silent Alignment Effect. ICLR 2022. <https://arxiv.org/abs/2111.00034> (read)
 - [Atanasov2025] Alexander Atanasov, Alexandru Meterez, James B. Simon, Cengiz Pehlevan. The Optimization Landscape of SGD Across the Feature Learning Strength. ICLR 2025. <https://arxiv.org/abs/2410.04642> (read)
 - [Azulay2021] Shahar Azulay, Edward Moroshko, Mor Shpigel Nacson, Blake Woodworth, Nathan Srebro, Amir Globerson, Daniel Soudry. On the Implicit Bias of Initialization Shape: Beyond Infinitesimal Mirror Descent. ICML 2021, PMLR 139:468-477. <https://arxiv.org/abs/2102.09769> (read)
@@ -1402,13 +1529,13 @@ reading, not re-read for v1.1.
 - [BenArous2024b] Gérard Ben Arous, Cédric Gerbelot, Vanessa Piccolo. Permutation recovery of spikes in noisy high-dimensional tensor estimation. arXiv 2412.14650, 2024; to appear in Stochastic Analysis and Applications, Springer Proceedings in Mathematics & Statistics (per arXiv). <https://arxiv.org/abs/2412.14650> (read)
 - [BenArous2024c] Gérard Ben Arous, Cédric Gerbelot, Vanessa Piccolo. Langevin dynamics for high-dimensional optimization: the case of multi-spiked tensor PCA. arXiv 2408.06401, 2024 (v3 2026). <https://arxiv.org/abs/2408.06401> (abstract; v1.1, from 7.2)
 - [Berthier2023] Raphaël Berthier. Incremental Learning in Diagonal Linear Networks. JMLR 24(171):1-26, 2023. <https://arxiv.org/abs/2208.14673> (read)
-- [BerthierMZ2024] Raphaël Berthier, Andrea Montanari, Kangjie Zhou. Learning time-scales in two-layers neural networks. Foundations of Computational Mathematics, 2024, DOI 10.1007/s10208-024-09664-9. <https://arxiv.org/abs/2303.00055> (read)
+- [BerthierMZ2024] Raphaël Berthier, Andrea Montanari, Kangjie Zhou. Learning time-scales in two-layers neural networks. Foundations of Computational Mathematics 25(5):1627-1710, 2025 (online 2024), DOI 10.1007/s10208-024-09664-9. <https://arxiv.org/abs/2303.00055> (read)
 - [Bietti2023] Alberto Bietti, Joan Bruna, Loucas Pillaud-Vivien. On Learning Gaussian Multi-index Models with Gradient Flow. arXiv 2310.19793, 2023 (venue not confirmed). <https://arxiv.org/abs/2310.19793> (read)
 - [BoixAdsera2023] Enric Boix-Adserà, Etai Littwin, Emmanuel Abbe, Samy Bengio, Joshua Susskind. Transformers learn through gradual rank increase. NeurIPS 2023. <https://arxiv.org/abs/2306.07042> (read)
 - [Bordelon2024a] Blake Bordelon, Lorenzo Noci, Mufan Bill Li, Boris Hanin, Cengiz Pehlevan. Depthwise Hyperparameter Transfer in Residual Networks: Dynamics and Scaling Limit. ICLR 2024. <https://arxiv.org/abs/2309.16620> (abstract)
 - [Bordelon2024b] Blake Bordelon, Hamza Tahir Chaudhry, Cengiz Pehlevan. Infinite Limits of Multi-head Transformer Dynamics. NeurIPS 2024. <https://arxiv.org/abs/2405.15712> (abstract)
 - [BordelonPehlevan2022] Blake Bordelon, Cengiz Pehlevan. Self-Consistent Dynamical Field Theory of Kernel Evolution in Wide Neural Networks. NeurIPS 2022. <https://arxiv.org/abs/2205.09653> (read)
-- [Boursier2022] Etienne Boursier, Loucas Pillaud-Vivien, Nicolas Flammarion. Gradient flow dynamics of shallow ReLU networks for square loss and orthogonal inputs. NeurIPS 2022 (venue not re-verified; arXiv v3, 2026, corrects Prop. 1). <https://arxiv.org/abs/2206.00939> (read)
+- [Boursier2022] Etienne Boursier, Loucas Pillaud-Vivien, Nicolas Flammarion. Gradient flow dynamics of shallow ReLU networks for square loss and orthogonal inputs. NeurIPS 2022 (arXiv v3, 2026-04-14, corrects Prop. 1). <https://arxiv.org/abs/2206.00939> (read)
 - [Boursier2025] Etienne Boursier, Nicolas Flammarion. Early alignment in two-layer networks training is a two-edged sword. JMLR 26(183):1-75, 2025. <https://arxiv.org/abs/2401.10791> (abstract; added v1.1)
 - [Braun2022] Lukas Braun, Clémentine Dominé, James Fitzgerald, Andrew Saxe. Exact learning dynamics of deep linear networks with prior knowledge. NeurIPS 2022. <https://papers.nips.cc/paper_files/paper/2022/hash/2b3bb2c95195130977a51b3bb251c40a-Abstract-Conference.html> (abstract)
 - [Cagnetta2024] Francesco Cagnetta, Leonardo Petrini, Umberto M. Tomasini, Alessandro Favero, Matthieu Wyart. How Deep Neural Networks Learn Compositional Data: The Random Hierarchy Model. Phys. Rev. X 14, 031001, 2024. <https://arxiv.org/abs/2307.02129> (metadata only; added v1.1)
@@ -1416,7 +1543,7 @@ reading, not re-read for v1.1.
 - [Ceruti2023] Gianluca Ceruti, Christian Lubich, Dominik Sulz. Rank-adaptive time integration of tree tensor networks. SIAM J. Numer. Anal. 61(1):194-222, 2023. <https://arxiv.org/abs/2201.10291> (abstract)
 - [CerutiLubich2022] Gianluca Ceruti, Christian Lubich. An unconventional robust integrator for dynamical low-rank approximation. BIT Numer. Math. 62(1):23-44, 2022. <https://arxiv.org/abs/2010.02022> (abstract)
 - [CerveroMartin2023] Enrique Cervero Martín, Kirill Plekhanov, Michael Lubasch. Barren plateaus in quantum tensor network optimization. Quantum 7, 974, 2023. <https://arxiv.org/abs/2209.00292> (abstract)
-- [ChenBarthel2024] Hao Chen, Thomas Barthel. Machine learning with tree tensor networks, CP rank constraints, and tensor dropout. IEEE Trans. Pattern Anal. Mach. Intell. 46, 7825, 2024. <https://arxiv.org/abs/2305.19440> (read)
+- [ChenBarthel2024] Hao Chen, Thomas Barthel. Machine learning with tree tensor networks, CP rank constraints, and tensor dropout. IEEE Trans. Pattern Anal. Mach. Intell. 46(12):7825-7832, 2024, doi:10.1109/TPAMI.2024.3396386. <https://arxiv.org/abs/2305.19440> (read)
 - [ChenKunin2023] Feng Chen, Daniel Kunin, Atsushi Yamamura, Surya Ganguli. Stochastic Collapse: How Gradient Noise Attracts SGD Dynamics Towards Simpler Subnetworks. NeurIPS 2023. <https://arxiv.org/abs/2306.04251> (read)
 - [ChenLiLu2020] Ziang Chen, Yingzhou Li, Jianfeng Lu. Tensor Ring Decomposition: Optimization Landscape and One-loop Convergence of Alternating Least Squares. SIAM J. Matrix Anal. Appl. 41(3):1416-1442, 2020. <https://arxiv.org/abs/1905.07101> (read)
 - [Cheng2019] Song Cheng, Lei Wang, Tao Xiang, Pan Zhang. Tree Tensor Networks for Generative Modeling. Phys. Rev. B 99, 155131, 2019. <https://arxiv.org/abs/1901.02217> (read)
@@ -1424,13 +1551,13 @@ reading, not re-read for v1.1.
 - [Chizat2024] Lénaïc Chizat, Maria Colombo, Xavier Fernández-Real, Alessio Figalli. Infinite-width limit of deep linear neural networks. Comm. Pure Appl. Math. 77(10):3958-4007, 2024. <https://arxiv.org/abs/2211.16980> (read)
 - [ChizatBach2018] Lénaïc Chizat, Francis Bach. On the Global Convergence of Gradient Descent for Over-parameterized Models using Optimal Transport. NeurIPS 2018. <https://arxiv.org/abs/1805.09545> (abstract)
 - [Choraria2022] Moulik Choraria, Leello Tadesse Dadi, Grigorios Chrysos, Julien Mairal, Volkan Cevher. The Spectral Bias of Polynomial Neural Networks. ICLR 2022. <https://arxiv.org/abs/2202.13473> (read)
-- [Chou2024] Hung-Hsu Chou, Carsten Gieshoff, Johannes Maly, Holger Rauhut. Gradient descent for deep matrix factorization: Dynamics and implicit bias towards low rank. Appl. Comput. Harmon. Anal. 68:101595, 2024. <https://arxiv.org/abs/2011.13772> (read by the critique, Thm 3.1; added v1.1)
+- [Chou2024] Hung-Hsu Chou, Carsten Gieshoff, Johannes Maly, Holger Rauhut. Gradient descent for deep matrix factorization: Dynamics and implicit bias towards low rank. Appl. Comput. Harmon. Anal. 68:101595, 2024. <https://arxiv.org/abs/2011.13772> (read by the critique; theorem numbers re-checked in the citation audit on arXiv v5: Thms 1.1, 1.3, 3.1, 3.5; added v1.1)
 - [Cohen2021] Jeremy M. Cohen, Simran Kaur, Yuanzhi Li, J. Zico Kolter, Ameet Talwalkar. Gradient Descent on Neural Networks Typically Occurs at the Edge of Stability. ICLR 2021. <https://arxiv.org/abs/2103.00065> (abstract)
 - [CohenSharirShashua2016] Nadav Cohen, Or Sharir, Amnon Shashua. On the Expressive Power of Deep Learning: A Tensor Analysis. COLT 2016, pp. 698-728. <https://arxiv.org/abs/1509.05009> (metadata only)
 - [Convy2022] Ian Convy, William Huggins, Haoran Liao, K. Birgitta Whaley. Mutual Information Scaling for Tensor Network Machine Learning. Mach. Learn.: Sci. Technol. 3, 015017, 2022. <https://arxiv.org/abs/2103.00105> (abstract; added v1.1)
 - [Corlouer2026] Guillaume Corlouer, Avi Semler, Alexander Strang, Alexander Gietelink Oldenziel. Stochastic Gradient Descent in the Saddle-to-Saddle Regime of Deep Linear Networks. arXiv 2604.06366, 2026. <https://arxiv.org/abs/2604.06366> (read)
 - [deSilvaLim2008] Vin de Silva, Lek-Heng Lim. Tensor rank and the ill-posedness of the best low-rank approximation problem. SIAM J. Matrix Anal. Appl. 30(3):1084-1127, 2008. <https://arxiv.org/abs/math/0607647> (metadata only)
-- [Domine2025] Clémentine C. J. Dominé, Nicolas Anguita, Alexandra M. Proca, Lukas Braun, Daniel Kunin, Pedro A. M. Mediano, Andrew M. Saxe. From Lazy to Rich: Exact Learning Dynamics in Deep Linear Networks. ICLR 2025 (venue not re-verified). <https://arxiv.org/abs/2409.14623> (read)
+- [Domine2025] Clémentine C. J. Dominé, Nicolas Anguita, Alexandra M. Proca, Lukas Braun, Daniel Kunin, Pedro A. M. Mediano, Andrew M. Saxe. From Lazy to Rich: Exact Learning Dynamics in Deep Linear Networks. ICLR 2025, pp. 102485-102536. <https://arxiv.org/abs/2409.14623> (read)
 - [Du2017] Simon S. Du, Chi Jin, Jason D. Lee, Michael I. Jordan, Barnabás Póczos, Aarti Singh. Gradient Descent Can Take Exponential Time to Escape Saddle Points. NIPS 2017. <https://arxiv.org/abs/1705.10412> (abstract; added v1.1)
 - [DuHu2019] Simon S. Du, Wei Hu. Width Provably Matters in Optimization for Deep Linear Neural Networks. ICML 2019, PMLR 97:1655-1664. <https://arxiv.org/abs/1901.08572> (abstract)
 - [DuHuLee2018] Simon S. Du, Wei Hu, Jason D. Lee. Algorithmic Regularization in Learning Deep Homogeneous Models: Layers are Automatically Balanced. NeurIPS 2018. <https://arxiv.org/abs/1806.00900> (read)
@@ -1440,13 +1567,13 @@ reading, not re-read for v1.1.
 - [Furman2026] Zach Furman, Stephan Wäldchen, Yangda Bei, Liam Hodgkinson. Benign Loss Landscapes Can Coexist with Worst-Case Hardness. arXiv 2609.13057, 2026. <https://arxiv.org/abs/2609.13057> (read)
 - [Ge2015] Rong Ge, Furong Huang, Chi Jin, Yang Yuan. Escaping From Saddle Points --- Online Stochastic Gradient for Tensor Decomposition. COLT 2015, PMLR 40:797-842. <https://arxiv.org/abs/1503.02101> (abstract)
 - [Ge2021] Rong Ge, Yunwei Ren, Xiang Wang, Mo Zhou. Understanding Deflation Process in Over-parametrized Tensor Decomposition. NeurIPS 2021. <https://arxiv.org/abs/2106.06573> (read)
-- [GeMa2017] Rong Ge, Tengyu Ma. On the Optimization Landscape of Tensor Decompositions. NeurIPS 2017. <https://arxiv.org/abs/1706.05598> (abstract)
+- [GeMa2017] Rong Ge, Tengyu Ma. On the Optimization Landscape of Tensor Decompositions. NeurIPS 2017; journal version Math. Program. 193(2):713-759, 2022, doi:10.1007/s10107-020-01579-x. <https://arxiv.org/abs/1706.05598> (abstract)
 - [Geiger2020] Mario Geiger, Stefano Spigler, Arthur Jacot, Matthieu Wyart. Disentangling feature and lazy training in deep neural networks. J. Stat. Mech. (2020) 113301. <https://arxiv.org/abs/1906.08034> (read)
 - [Ghorbani2019] Behrooz Ghorbani, Song Mei, Theodor Misiakiewicz, Andrea Montanari. Limitations of Lazy Training of Two-layers Neural Networks (NeurIPS title ends "...Neural Network"). NeurIPS 2019. <https://arxiv.org/abs/1906.08899> (read)
-- [Ghosh2025] Avrajit Ghosh, Soo Min Kwon, Rongrong Wang, Saiprasad Ravishankar, Qing Qu. Learning Dynamics of Deep Linear Networks Beyond the Edge of Stability. ICLR 2025. <https://arxiv.org/abs/2502.20531> (read)
+- [Ghosh2025] Avrajit Ghosh, Soo Min Kwon, Rongrong Wang, Saiprasad Ravishankar, Qing Qu. Learning Dynamics of Deep Linear Networks Beyond the Edge of Stability (ICLR title: Learning Dynamics of Deep Matrix Factorization Beyond the Edge of Stability). ICLR 2025, pp. 17753-17800. <https://arxiv.org/abs/2502.20531> (read)
 - [Gidel2019] Gauthier Gidel, Francis Bach, Simon Lacoste-Julien. Implicit Regularization of Discrete Gradient Dynamics in Linear Neural Networks. NeurIPS 2019. <https://arxiv.org/abs/1904.13262> (read)
 - [Gissin2020] Daniel Gissin, Shai Shalev-Shwartz, Amit Daniely. The Implicit Bias of Depth: How Incremental Learning Drives Generalization. ICLR 2020. <https://arxiv.org/abs/1909.12051> (read)
-- [Glasser2019] Ivan Glasser, Ryan Sweke, Nicola Pancotti, Jens Eisert, J. Ignacio Cirac. Expressive power of tensor-network factorizations for probabilistic modeling, with applications from hidden Markov models to quantum machine learning. NeurIPS 2019. <https://arxiv.org/abs/1907.03741> (metadata only)
+- [Glasser2019] Ivan Glasser, Ryan Sweke, Nicola Pancotti, Jens Eisert, J. Ignacio Cirac. Expressive power of tensor-network factorizations for probabilistic modeling. NeurIPS 2019, pp. 1498-1510 (the arXiv extended version adds ", with applications from hidden Markov models to quantum machine learning"). <https://arxiv.org/abs/1907.03741> (metadata only)
 - [Grasedyck2010] Lars Grasedyck. Hierarchical Singular Value Decomposition of Tensors. SIAM J. Matrix Anal. Appl. 31(4):2029-2054, 2010. <https://doi.org/10.1137/090764189> (read)
 - [Grasedyck2024] Lars Grasedyck, Sebastian Krämer, Dieter Moser. Stable Truncation and Root-Independent Normalization of Tree Tensor Networks. In R. DeVore, A. Kunoth (eds.), Multiscale, Nonlinear and Adaptive Approximation II, Springer, 2024, pp. 231-265. <https://doi.org/10.1007/978-3-031-75802-7_12> (abstract)
 - [Gunasekar2017] Suriya Gunasekar, Blake Woodworth, Srinadh Bhojanapalli, Behnam Neyshabur, Nathan Srebro. Implicit Regularization in Matrix Factorization. NIPS 2017. <https://arxiv.org/abs/1705.09280> (metadata only; added v1.1)
@@ -1460,11 +1587,12 @@ reading, not re-read for v1.1.
 - [Harada2025] Kenji Harada, Tsuyoshi Okubo, Naoki Kawashima. Tensor tree learns hidden relational structures in data to construct generative models. Mach. Learn.: Sci. Technol. 6, 025002, 2025. <https://arxiv.org/abs/2408.10669> (metadata only)
 - [Hariz2022] Kais Hariz, Hachem Kadri, Stéphane Ayache, Maher Moakher, Thierry Artières. Implicit Regularization with Polynomial Growth in Deep Tensor Factorization. ICML 2022, PMLR 162:8484-8501. <https://arxiv.org/abs/2207.08942> (read)
 - [Hariz2024] Kais Hariz, Hachem Kadri, Stéphane Ayache, Maher Moakher, Thierry Artières. Implicit Regularization in Deep Tucker Factorization: Low-Rankness via Structured Sparsity. AISTATS 2024, PMLR 238:2359-2367. <https://proceedings.mlr.press/v238/hariz24a.html> (read)
-- [HillarLim2013] Christopher Hillar, Lek-Heng Lim. Most tensor problems are NP-hard. J. ACM 60(6), 2013. <https://arxiv.org/abs/0911.1393> (metadata only)
+- [HillarLim2013] Christopher J. Hillar, Lek-Heng Lim. Most tensor problems are NP-hard. J. ACM 60(6):45, 2013. <https://arxiv.org/abs/0911.1393> (metadata only)
 - [Hofmann2026] Thomas Hofmann. The Map Behind the Flow: Finite-Step Gradient Descent as a Dynamical System. arXiv 2607.04993, 2026. <https://arxiv.org/abs/2607.04993> (read)
+- [Holtz2012] Sebastian Holtz, Thorsten Rohwedder, Reinhold Schneider. On manifolds of tensors of fixed TT-rank. Numer. Math. 120(4):701-731, 2012. <https://doi.org/10.1007/s00211-011-0419-7> (abstract of the DFG-SPP 1324 preprint 61: under a maximal-rank condition TT ranks are unique and equal the separation ranks; the fixed-TT-rank set is an embedded manifold; gauge conditions give a unique tangent-space representation; v1.2, from 7.2)
 - [Jacot2018] Arthur Jacot, Franck Gabriel, Clément Hongler. Neural Tangent Kernel: Convergence and Generalization in Neural Networks. NeurIPS 2018. <https://arxiv.org/abs/1806.07572> (abstract)
 - [Jacot2021] Arthur Jacot, François Ged, Berfin Simsek, Clément Hongler, Franck Gabriel. Saddle-to-Saddle Dynamics in Deep Linear Networks: Small Initialization Training, Symmetry, and Sparsity. arXiv 2106.15933, 2021 (v2 2022; no peer-reviewed venue found). <https://arxiv.org/abs/2106.15933> (read)
-- [Jacot2022] Arthur Jacot. Implicit Bias of Large Depth Networks: a Notion of Rank for Nonlinear Functions. arXiv 2209.15055, 2022 (venue not confirmed; possibly ICLR 2023). <https://arxiv.org/abs/2209.15055> (metadata only)
+- [Jacot2022] Arthur Jacot. Implicit Bias of Large Depth Networks: a Notion of Rank for Nonlinear Functions. ICLR 2023 (arXiv 2209.15055, 2022). <https://arxiv.org/abs/2209.15055> (metadata only)
 - [JiangChenDing2023] Liwei Jiang, Yudong Chen, Lijun Ding. Algorithmic Regularization in Model-Free Overparametrized Asymmetric Matrix Factorization. SIAM J. Math. Data Sci. 5(3):723-744, 2023. <https://arxiv.org/abs/2203.02839> (read by the critique, Thms 4.1-4.2; added v1.1)
 - [Jin2023] Jikai Jin, Zhiyuan Li, Kaifeng Lyu, Simon S. Du, Jason D. Lee. Understanding Incremental Learning of Gradient Descent: A Fine-grained Analysis of Matrix Sensing. ICML 2023, PMLR 202:15200-15238. <https://arxiv.org/abs/2301.11500> (abstract)
 - [Karnik2025] Santhosh Karnik, Anna Veselovska, Mark Iwen, Felix Krahmer. Implicit Regularization for Tubal Tensor Factorizations via Gradient Descent. ICML 2025, PMLR 267:29148-29204. <https://arxiv.org/abs/2410.16247> (read)
@@ -1472,11 +1600,11 @@ reading, not re-read for v1.1.
 - [Khrulkov2018] Valentin Khrulkov, Alexander Novikov, Ivan Oseledets. Expressive power of recurrent neural networks. ICLR 2018. <https://arxiv.org/abs/1711.00811> (metadata only)
 - [KimLee2026] Hee-Sung Kim, Sungyoon Lee. Gradient Descent with Large Step Size Restores Symmetry in Deep Linear Networks with Multi-Pathway. ICML 2026, PMLR 306:58124-58155. <https://proceedings.mlr.press/v306/kim26aj.html> (abstract)
 - [Klug2026] Nikolas Klug, Michael Ulbrich, André Uschmajew, Marius Willner. Natural Riemannian gradient for learning functional tensor networks. arXiv 2604.09263, 2026. <https://arxiv.org/abs/2604.09263> (abstract)
-- [KofidisRegalia2002] Eleftherios Kofidis, Phillip A. Regalia. On the Best Rank-1 Approximation of Higher-Order Supersymmetric Tensors. SIAM J. Matrix Anal. Appl. 23(3):863-884, 2002. <https://doi.org/10.1137/S0895479801387413> (metadata only; Ex. 4 known via [Furman2026]; v1.1, from 7.2)
-- [Kramer2019] Sebastian Krämer. A Geometric Description of Feasible Singular Values in the Tensor Train Format. SIAM J. Matrix Anal. Appl. 40(3):1153-1178, 2019. <https://arxiv.org/abs/1701.08437> (abstract)
+- [KofidisRegalia2002] Eleftherios Kofidis, Phillip A. Regalia. On the Best Rank-1 Approximation of Higher-Order Supersymmetric Tensors. SIAM J. Matrix Anal. Appl. 23(3):863-884, 2002. <https://doi.org/10.1137/S0895479801387413> (read: Examples 3-4, symmetric rank-one approximation; v1.1, from 7.2)
+- [Kramer2019] Sebastian Krämer. A Geometric Description of Feasible Singular Values in the Tensor Train Format. SIAM J. Matrix Anal. Appl. 40(3):1153-1178, 2019, doi:10.1137/18M1192408. <https://arxiv.org/abs/1701.08437> (abstract)
 - [Kreisler2023] Itai Kreisler, Mor Shpigel Nacson, Daniel Soudry, Yair Carmon. Gradient Descent Monotonically Decreases the Sharpness of Gradient Flow Solutions in Scalar Networks and Beyond. ICML 2023, PMLR 202:17684-17744. <https://arxiv.org/abs/2305.13064> (abstract)
 - [Kressner2014] Daniel Kressner, Michael Steinlechner, Bart Vandereycken. Low-rank tensor completion by Riemannian optimization. BIT Numer. Math. 54(2):447-468, 2014. <https://doi.org/10.1007/s10543-013-0455-z> (abstract, from snippet)
-- [Kumar2024g] Tanishq Kumar, Blake Bordelon, Samuel J. Gershman, Cengiz Pehlevan. Grokking as the Transition from Lazy to Rich Training Dynamics. arXiv 2310.06110, 2023 (v3 2024; venue not confirmed). <https://arxiv.org/abs/2310.06110> (abstract; added v1.1)
+- [Kumar2024g] Tanishq Kumar, Blake Bordelon, Samuel J. Gershman, Cengiz Pehlevan. Grokking as the Transition from Lazy to Rich Training Dynamics. ICLR 2024, pp. 23010-23035 (arXiv 2310.06110, v3 2024). <https://arxiv.org/abs/2310.06110> (abstract; added v1.1)
 - [KumarHaupt2024] Akshay Kumar, Jarvis Haupt. Directional Convergence Near Small Initializations and Saddles in Two-Homogeneous Neural Networks. TMLR, 06/2024. <https://arxiv.org/abs/2402.09226> (abstract)
 - [KumarHaupt2025a] Akshay Kumar, Jarvis Haupt. Early Directional Convergence in Deep Homogeneous Neural Networks for Small Initializations. TMLR, 2025 (month not confirmed). <https://arxiv.org/abs/2403.08121> (read)
 - [KumarHaupt2025b] Akshay Kumar, Jarvis Haupt. Towards Understanding Gradient Flow Dynamics of Homogeneous Neural Networks Beyond the Origin. JMLR 26(269):1-83, 2025. <https://arxiv.org/abs/2502.15952> (read)
@@ -1486,29 +1614,29 @@ reading, not re-read for v1.1.
 - [Kunin2025] Daniel Kunin, Giovanni Luca Marchetti, Feng Chen, Dhruva Karkada, James B. Simon, Michael R. DeWeese, Surya Ganguli, Nina Miolane. Alternating Gradient Flows: A Theory of Feature Learning in Two-layer Neural Networks. NeurIPS 2025. <https://arxiv.org/abs/2506.06489> (read)
 
 - [Lampinen2019] Andrew K. Lampinen, Surya Ganguli. An analytic theory of generalization dynamics and transfer learning in deep linear networks. ICLR 2019. <https://arxiv.org/abs/1809.10374> (metadata only; not reviewed)
-- [Landsberg2011] J. M. Landsberg, Yang Qi, Ke Ye. On the geometry of tensor network states. arXiv 1105.4449, 2011 (v2 2012; "to appear in QIC", journal details not confirmed). <https://arxiv.org/abs/1105.4449> (read)
+- [Landsberg2011] J. M. Landsberg, Yang Qi, Ke Ye. On the geometry of tensor network states. Quantum Inf. Comput. 12(3&4):346-354, 2012, doi:10.26421/QIC12.3-4-12 (arXiv 1105.4449, 2011). <https://arxiv.org/abs/1105.4449> (read)
 - [Lee2019] Jaehoon Lee, Lechao Xiao, Samuel S. Schoenholz, Yasaman Bahri, Roman Novak, Jascha Sohl-Dickstein, Jeffrey Pennington. Wide Neural Networks of Any Depth Evolve as Linear Models Under Gradient Descent. NeurIPS 2019. <https://arxiv.org/abs/1902.06720> (read)
 - [Levin2024] Eitan Levin, Joe Kileel, Nicolas Boumal. The effect of smooth parametrizations on nonconvex optimization landscapes. Math. Program. 209(1-2):63-111 (online 2024, print 2025). <https://arxiv.org/abs/2207.03512> (read)
-- [Levine2018] Yoav Levine, David Yakira, Nadav Cohen, Amnon Shashua. Deep Learning and Quantum Entanglement: Fundamental Connections with Implications to Network Design. ICLR 2018 (venue not re-verified; arXiv lists none). <https://arxiv.org/abs/1704.01552> (metadata only)
+- [Levine2018] Yoav Levine, David Yakira, Nadav Cohen, Amnon Shashua. Deep Learning and Quantum Entanglement: Fundamental Connections with Implications to Network Design. ICLR 2018 (poster). <https://arxiv.org/abs/1704.01552> (metadata only)
 - [Lewkowycz2020] Aitor Lewkowycz, Yasaman Bahri, Ethan Dyer, Jascha Sohl-Dickstein, Guy Gur-Ari. The large learning rate phase of deep learning: the catapult mechanism. arXiv 2003.02218, 2020. <https://arxiv.org/abs/2003.02218> (read)
 - [LiLuoLyu2021] Zhiyuan Li, Yuping Luo, Kaifeng Lyu. Towards Resolving the Implicit Bias of Gradient Descent for Matrix Factorization: Greedy Low-Rank Learning. ICLR 2021. <https://arxiv.org/abs/2012.09839> (read)
 - [LiNicaRoy2021] Mufan Bill Li, Mihai Nica, Daniel M. Roy. The Future is Log-Gaussian: ResNets and Their Infinite-Depth-and-Width Limit at Initialization. NeurIPS 2021. <https://arxiv.org/abs/2106.04013> (abstract)
-- [LiangMontufar2025] Shuang Liang, Guido Montúfar. Gradient Descent with Large Step Sizes: Chaos and Fractal Convergence Region. arXiv 2509.25351, 2025 (v3 2026; venue not checked). <https://arxiv.org/abs/2509.25351> (abstract)
+- [LiangMontufar2025] Shuang Liang, Guido Montúfar. Gradient Descent with Large Step Sizes: Chaos and Fractal Convergence Region. ICLR 2026 (arXiv 2509.25351, v3 2026). <https://arxiv.org/abs/2509.25351> (abstract)
 - [LindseyMenon2025] Kathryn Lindsey, Govind Menon. Regularization Implies balancedness in the deep linear network. arXiv 2511.01137, 2025. <https://arxiv.org/abs/2511.01137> (abstract)
 - [Littwin2020] Etai Littwin, Tomer Galanti, Lior Wolf, Greg Yang. On Infinite-Width Hypernetworks. NeurIPS 2020. <https://arxiv.org/abs/2003.12193> (read)
 - [Liu2019] Ding Liu, Shi-Ju Ran, Peter Wittek, Cheng Peng, Raul Blázquez García, Gang Su, Maciej Lewenstein. Machine Learning by Unitary Tensor Network of Hierarchical Tree Structure. New J. Phys. 21, 073059, 2019. <https://arxiv.org/abs/1710.04833> (abstract)
-- [Liu2022] Zidu Liu, Li-Wei Yu, L.-M. Duan, Dong-Ling Deng. The Presence and Absence of Barren Plateaus in Tensor-network Based Machine Learning. Phys. Rev. Lett. 129, 270501, 2022. <https://arxiv.org/abs/2108.08312> (read)
+- [Liu2022] Zidu Liu, Li-Wei Yu, L.-M. Duan, Dong-Ling Deng. Presence and Absence of Barren Plateaus in Tensor-Network Based Machine Learning. Phys. Rev. Lett. 129, 270501, 2022. <https://arxiv.org/abs/2108.08312> (read)
 - [Lubich2013] Christian Lubich, Thorsten Rohwedder, Reinhold Schneider, Bart Vandereycken. Dynamical Approximation by Hierarchical Tucker and Tensor-Train Tensors. SIAM J. Matrix Anal. Appl. 34(2):470-494, 2013. <https://doi.org/10.1137/120885723> (abstract)
 - [Lubich2015] Christian Lubich, Ivan V. Oseledets, Bart Vandereycken. Time integration of tensor trains. SIAM J. Numer. Anal. 53(2):917-941, 2015. <https://arxiv.org/abs/1407.2042> (read)
 - [Luo2021] Tao Luo, Zhi-Qin John Xu, Zheng Ma, Yaoyu Zhang. Phase Diagram for Two-layer ReLU Neural Networks at Infinite-width Limit. JMLR 22(71):1-47, 2021. <https://jmlr.org/papers/v22/20-1123.html> (metadata only; content from the sweeps; v1.1, from 7.2)
 - [Lyu2024] Kaifeng Lyu, Jikai Jin, Zhiyuan Li, Simon S. Du, Jason D. Lee, Wei Hu. Dichotomy of Early and Late Phase Implicit Biases Can Provably Induce Grokking. ICLR 2024. <https://arxiv.org/abs/2311.18817> (abstract, per the critique; added v1.1)
-- [MaGuoFattahi2022] Jianhao Ma, Lingjun Guo, Salar Fattahi. Behind the Scenes of Gradient Descent: A Trajectory Analysis via Basis Function Decomposition. arXiv 2210.00346, 2022 (venue not confirmed; possibly ICLR 2023). <https://arxiv.org/abs/2210.00346> (read)
+- [MaGuoFattahi2022] Jianhao Ma, Lingjun Guo, Salar Fattahi. Behind the Scenes of Gradient Descent: A Trajectory Analysis via Basis Function Decomposition. ICLR 2023 (arXiv 2210.00346, 2022). <https://arxiv.org/abs/2210.00346> (read)
 - [MaLavaeiSojoudi2023] Ziye Ma, Javad Lavaei, Somayeh Sojoudi. Algorithmic Regularization in Tensor Optimization: Towards a Lifted Approach in Matrix Sensing. NeurIPS 2023. <https://arxiv.org/abs/2310.15549> (abstract)
 - [Marcotte2023] Sibylle Marcotte, Rémi Gribonval, Gabriel Peyré. Abide by the Law and Follow the Flow: Conservation Laws for Gradient Flows. NeurIPS 2023. <https://arxiv.org/abs/2307.00144> (read)
 - [Marcotte2025] Sibylle Marcotte, Rémi Gribonval, Gabriel Peyré. Transformative or Conservative? Conservation laws for ResNets and Transformers. ICML 2025, PMLR 267:43140-43176. <https://arxiv.org/abs/2506.06194> (abstract, per the critique; added v1.1)
 - [MarionChizat2024] Pierre Marion, Lénaïc Chizat. Deep linear networks for regression are implicitly regularized towards flat minima. NeurIPS 2024. <https://arxiv.org/abs/2405.13456> (abstract)
 - [Martyn2020] John Martyn, Guifré Vidal, Chase Roberts, Stefan Leichenauer. Entanglement and Tensor Networks for Supervised Image Classification. arXiv 2007.06082, 2020. <https://arxiv.org/abs/2007.06082> (abstract; added v1.1)
-- [MasotLlima2024] Sergi Masot-Llima, Artur Garcia-Saez. Advantages of density in tensor network geometries for gradient based training. arXiv 2412.17497, 2024. <https://arxiv.org/abs/2412.17497> (read)
+- [MasotLlima2024] Sergi Masot-Llima, Artur Garcia-Saez. Advantages of density in tensor network geometries for gradient based training. arXiv 2412.17497, 2024 (v1 read); published as "Advantages of Density in Tensor Network Geometries for Gradient-Based Training", Algorithms 18(2):70, 2025, doi:10.3390/a18020070. <https://arxiv.org/abs/2412.17497> (read)
 - [MataAli2023] Alejandro Mata Ali, Iñigo Perez Delgado, Marina Ristol Roura, Aitor Moreno Fdez. de Leceta. Efficient Finite Initialization with Partial Norms for Tensorized Neural Networks and Tensor Networks Algorithms. arXiv 2309.06577, 2023 (v5 2026). <https://arxiv.org/abs/2309.06577> (read)
 - [MeiMontanariNguyen2018] Song Mei, Andrea Montanari, Phan-Minh Nguyen. A mean field view of the landscape of two-layer neural networks. PNAS 115(33), 2018. <https://arxiv.org/abs/1804.06561> (abstract)
 - [MiaoBarthel2024] Qiang Miao, Thomas Barthel. Isometric tensor network optimization for extensive Hamiltonians is free of barren plateaus. Phys. Rev. A 109, L050402, 2024. <https://arxiv.org/abs/2304.14320> (abstract)
@@ -1518,7 +1646,7 @@ reading, not re-read for v1.1.
 - [Moroshko2020] Edward Moroshko, Blake Woodworth, Suriya Gunasekar, Jason D. Lee, Nathan Srebro, Daniel Soudry. Implicit Bias in Deep Linear Classification: Initialization Scale vs Training Accuracy. NeurIPS 2020. <https://arxiv.org/abs/2007.06738> (read)
 - [Nacson2022] Mor Shpigel Nacson, Kavya Ravichandran, Nathan Srebro, Daniel Soudry. Implicit Bias of the Step Size in Linear Diagonal Neural Networks. ICML 2022, PMLR 162:16270-16295. <https://proceedings.mlr.press/v162/nacson22a.html> (abstract)
 - [NguyenPham2023] Phan-Minh Nguyen, Huy Tuan Pham. A Rigorous Framework for the Mean Field Limit of Multilayer Neural Networks. Mathematical Statistics and Learning 6(3):201-357, 2023. <https://arxiv.org/abs/2001.11443> (abstract)
-- [Novikov2017] Alexander Novikov, Mikhail Trofimov, Ivan Oseledets. Exponential Machines. ICLR 2017 workshop track (arXiv 2016). <https://arxiv.org/abs/1605.03795> (read)
+- [Novikov2017] Alexander Novikov, Mikhail Trofimov, Ivan Oseledets. Exponential Machines. ICLR 2017 workshop track (arXiv 2016); journal version: Bull. Pol. Acad. Sci. Tech. Sci. 66(6):789-797, 2018, doi:10.24425/bpas.2018.125926. <https://arxiv.org/abs/1605.03795> (read)
 - [Oseledets2011] I. V. Oseledets. Tensor-Train Decomposition. SIAM J. Sci. Comput. 33(5):2295-2317, 2011. <https://doi.org/10.1137/090752286> (abstract)
 - [PaezVelasco2026] Pablo Páez-Velasco. Tensor network manifolds and Riemannian fundamental theorem for tensor networks. arXiv 2606.14613, 2026. <https://arxiv.org/abs/2606.14613> (abstract)
 - [Pesah2021] Arthur Pesah, M. Cerezo, Samson Wang, Tyler Volkoff, Andrew T. Sornborger, Patrick J. Coles. Absence of Barren Plateaus in Quantum Convolutional Neural Networks. Phys. Rev. X 11, 041011, 2021. <https://arxiv.org/abs/2011.02966> (metadata only; added v1.1)
@@ -1542,7 +1670,7 @@ reading, not re-read for v1.1.
 - [Saxe2022] Andrew Saxe, Shagun Sodhani, Sam Jay Lewallen. The Neural Race Reduction: Dynamics of Abstraction in Gated Networks. ICML 2022, PMLR 162:19287-19309. <https://proceedings.mlr.press/v162/saxe22a.html> (abstract)
 - [Shamir2019] Ohad Shamir. Exponential Convergence Time of Gradient Descent for One-Dimensional Deep Linear Neural Networks. COLT 2019, PMLR 99:2691-2713. <https://arxiv.org/abs/1809.08587> (abstract)
 - [ShiDuanVidal2006] Yaoyun Shi, Luming Duan, Guifré Vidal. Classical simulation of quantum many-body systems with a tree tensor network. Phys. Rev. A 74, 022320, 2006. <https://arxiv.org/abs/quant-ph/0511070> (read)
-- [Simon2023] James B. Simon, Maksis Knutins, Liu Ziyin, Daniel Geisz, Abraham J. Fetterman, Joshua Albrecht. On the Stepwise Nature of Self-Supervised Learning. ICML 2023, PMLR 202:31852-31876. <https://arxiv.org/abs/2303.15438> (metadata only; content per the critique; v1.1, from 7.2)
+- [Simon2023] James B. Simon, Maksis Knutins, Liu Ziyin, Daniel Geisz, Abraham J. Fetterman, Joshua Albrecht. On the Stepwise Nature of Self-Supervised Learning. ICML 2023, PMLR 202:31852-31876. <https://arxiv.org/abs/2303.15438> (abstract; v1.1, from 7.2)
 - [Simsek2021] Berfin Simsek, François Ged, Arthur Jacot, Francesco Spadaro, Clément Hongler, Wulfram Gerstner, Johanni Brea. Geometry of the Loss Landscape in Overparameterized Neural Networks: Symmetries and Invariances. ICML 2021 (PMLR 139). <https://arxiv.org/abs/2105.12221> (read)
 - [Simsek2025] Berfin Şimşek, Amire Bendjeddou, Daniel Hsu. Learning Gaussian Multi-Index Models with Gradient Flow: Time Complexity and Directional Convergence. AISTATS 2025, PMLR 258:4204-4212. <https://arxiv.org/abs/2411.08798> (abstract, per the critique; added v1.1)
 - [Singh2026] Devender Singh. The Loss Does Not See the Basis, but Adam Does. arXiv 2608.05136, 2026. <https://arxiv.org/abs/2608.05136> (abstract)
@@ -1555,15 +1683,15 @@ reading, not re-read for v1.1.
 - [Tang2025] Xun Tang, Yuehaw Khoo, Lexing Ying. Initialization and training of matrix product state probabilistic models. arXiv 2505.06419, 2025. <https://arxiv.org/abs/2505.06419> (read)
 - [TindallFishman2023] Joseph Tindall, Matthew T. Fishman. Gauging tensor networks with belief propagation. SciPost Phys. 15, 222, 2023. <https://arxiv.org/abs/2306.17837> (read)
 - [Tu2024] Zhenfeng Tu, Santiago Aranguri, Arthur Jacot. Mixed Dynamics In Linear Networks: Unifying the Lazy and Active Regimes. NeurIPS 2024. <https://arxiv.org/abs/2405.17580> (read)
-- [UschmajewVandereycken2013] André Uschmajew, Bart Vandereycken. The geometry of algorithms using hierarchical tensors. Linear Algebra Appl. 439(1):133-166, 2013. <https://www.epfl.ch/labs/mathicse/wp-content/uploads/2018/10/12.2012_AU-BV.pdf> (read)
+- [UschmajewVandereycken2013] André Uschmajew, Bart Vandereycken. The geometry of algorithms using hierarchical tensors. Linear Algebra Appl. 439(1):133-166, 2013. <https://www.epfl.ch/labs/mathicse/wp-content/uploads/2018/10/12.2012_AU-BV.pdf> (read; theorem numbers in this file are those of this MATHICSE report 12.2012, the LAA version numbers its results sequentially)
 - [Vankadara2024] Leena Chennuru Vankadara, Jin Xu, Moritz Haas, Volkan Cevher. On Feature Learning in Structured State Space Models. NeurIPS 2024. <https://proceedings.neurips.cc/paper_files/paper/2024/hash/9c7eeda2dc98e61baa9a5884afd231bc-Abstract-Conference.html> (abstract)
 - [WallDAguanno2021] Michael L. Wall, Giuseppe D'Aguanno. Tree tensor network classifiers for machine learning: from quantum-inspired to quantum-assisted. Phys. Rev. A 104, 042408, 2021. <https://arxiv.org/abs/2104.02249> (abstract)
 - [Wang2020] Xiang Wang, Chenwei Wu, Jason D. Lee, Tengyu Ma, Rong Ge. Beyond Lazy Training for Over-parameterized Tensor Decomposition. NeurIPS 2020. <https://arxiv.org/abs/2010.11356> (read)
 - [WangCZT2022] Yuqing Wang, Minshuo Chen, Tuo Zhao, Molei Tao. Large Learning Rate Tames Homogeneity: Convergence and Balancing Effect. ICLR 2022. <https://arxiv.org/abs/2110.03677> (abstract)
 - [WangLiuYu2026] Shi-Tuan Wang, Zidu Liu, Li-Wei Yu. Gaussian Universality and Its Breakdown in Tensor-Network Machine Learning. arXiv 2610.06080, 2026. <https://arxiv.org/abs/2610.06080> (read)
-- [WeselBatselier2025] Frederiek Wesel, Kim Batselier. Tensor Network-Constrained Kernel Machines as Gaussian Processes. AISTATS 2025, PMLR 258:2161-2169. <https://proceedings.mlr.press/v258/wesel25a.html> (read)
+- [WeselBatselier2025] Frederiek Wesel, Kim Batselier. Tensor Network-Constrained Kernel Machines as Gaussian Processes. AISTATS 2025, PMLR 258:2161-2169. <https://proceedings.mlr.press/v258/wesel25a.html> (read; PMLR numbering differs from arXiv 2403.19500v1)
 - [Woodworth2020] Blake Woodworth, Suriya Gunasekar, Jason D. Lee, Edward Moroshko, Pedro Savarese, Itay Golan, Daniel Soudry, Nathan Srebro. Kernel and Rich Regimes in Overparametrized Models. COLT 2020, PMLR 125:3635-3673. <https://arxiv.org/abs/2002.09277> (read)
-- [XuZiyin2025] Yizhou Xu, Liu Ziyin. Three Mechanisms of Feature Learning in a Linear Network. ICLR 2025 (venue not re-verified; arXiv lists none). <https://arxiv.org/abs/2401.07085> (read)
+- [XuZiyin2025] Yizhou Xu, Liu Ziyin. Three Mechanisms of Feature Learning in a Linear Network. ICLR 2025, pp. 61158-61180. <https://arxiv.org/abs/2401.07085> (read)
 - [Yang2021] Greg Yang, Edward J. Hu, Igor Babuschkin, Szymon Sidor, Xiaodong Liu, David Farhi, Nick Ryder, Jakub Pachocki, Weizhu Chen, Jianfeng Gao. Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer. NeurIPS 2021 (per arXiv journal-ref; arXiv 2022). <https://arxiv.org/abs/2203.03466> (abstract)
 - [Yang2024] Greg Yang, Dingli Yu, Chen Zhu, Soufiane Hayou. Tensor Programs VI: Feature Learning in Infinite-Depth Neural Networks. ICLR 2024. <https://arxiv.org/abs/2310.02244> (abstract)
 - [YangHu2021] Greg Yang, Edward J. Hu. Tensor Programs IV: Feature Learning in Infinite-Width Neural Networks. ICML 2021. <https://arxiv.org/abs/2011.14522> (read)
@@ -1581,18 +1709,16 @@ reading, not re-read for v1.1.
 - [Ziyin2023] Liu Ziyin, Botao Li, Tomer Galanti, Masahito Ueda. Type-II Saddles and Probabilistic Stability of Stochastic Gradient Descent. arXiv 2303.13093, 2023 (v4 2024). <https://arxiv.org/abs/2303.13093> (abstract)
 - [Ziyin2024] Liu Ziyin, Mingze Wang, Hongchao Li, Lei Wu. Parameter Symmetry and Noise Equilibrium of Stochastic Gradient Descent. NeurIPS 2024. <https://arxiv.org/abs/2402.07193> (abstract)
 - [ZiyinLiMeng2022] Liu Ziyin, Botao Li, Xiangming Meng. Exact Solutions of a Deep Linear Network. NeurIPS 2022. <https://arxiv.org/abs/2202.04777> (abstract)
-- [Zunkovic2022] Bojan Žunkovič, Enej Ilievski. Grokking phase transitions in learning local rules with gradient descent. arXiv 2210.15435, 2022 (venue not confirmed). <https://arxiv.org/abs/2210.15435> (abstract; added v1.1)
+- [Zunkovic2022] Bojan Žunkovič, Enej Ilievski. Grokking phase transitions in learning local rules with gradient descent. J. Mach. Learn. Res. 25(199):1-52, 2024 (arXiv 2210.15435, 2022). <https://arxiv.org/abs/2210.15435> (abstract; added v1.1)
 
 ### 7.2 Unconfirmed, or metadata incomplete
 
-Unconfirmed content (confidence "unconfirmed" in the sweeps):
+Unconfirmed content: none left. In v1.2 the two entries of this list ([Holtz2012], [Arvanitakis2025])
+were checked at abstract level and moved to 7.1.
 
-- [Holtz2012] Sebastian Holtz, Thorsten Rohwedder, Reinhold Schneider. On manifolds of tensors of fixed TT-rank. Numer. Math. 120(4):701-731, 2012. <https://doi.org/10.1007/s00211-011-0419-7>. Metadata confirmed on Crossref; no abstract or text read; the results cited here come from [Lubich2015].
-- [Arvanitakis2025] Dionysis Arvanitakis, Vaidehi Srinivas, Aravindan Vijayaraghavan. Guarantees for Alternating Least Squares in Overparameterized Tensor Decompositions. NeurIPS 2025. <https://openreview.net/forum?id=9FDErIfoVE>. Title, authors and venue confirmed; the claimed result (ALS converges globally from random init with over-parameterized rank O(r^2), improving O(r^7.5 log n)) was not checked.
-
-Mentioned but with incomplete metadata (not reviewed; do not cite without checking). In v1.1 the other six
+Mentioned but not reviewed (metadata completed in v1.2). In v1.1 the other six
 entries of this list were completed and moved to 7.1: [KofidisRegalia2002], [Steinlechner2016], [Luo2021]
 (the JMLR venue is now confirmed), [Abbe2022], [BenArous2024c] and [Simon2023].
 
-- Pomarico, Cilli, Monaco et al., "Transfer entropy and O-information to detect grokking in tensor network multi-class classification problems", Technologies 13(10), 438, 2025, arXiv 2507.23346: follow-up to [Pomarico2025]. Full author list not recorded.
+- Domenico Pomarico, Roberto Cilli, Alfonso Monaco, Loredana Bellantuono, Marianna La Rocca, Tommaso Maggipinto, Giuseppe Magnifico, Marlis Ontivero Ortega, Ester Pantaleo, Sabina Tangaro, Sebastiano Stramaglia, Roberto Bellotti, Nicola Amoroso. "Transfer entropy and O-information to detect grokking in tensor network multi-class classification problems", Technologies 13(10):438, 2025, doi:10.3390/technologies13100438, arXiv 2507.23346: follow-up to [Pomarico2025].
 
