@@ -1,0 +1,233 @@
+[
+ {
+  "group": "intro",
+  "applied": [
+   "intro-summary-1 / other-cov-3 / global-04 (confirmed): finding 10 and Sec. 1.3 now say rank-one plateaus of random MPS4 teachers sit at the bond-rank-one critical point, separated from every SVD-type truncation for 3 of 5 teachers (not at higher ranks). Sec. 1.3 now lists HSVD non-criticality (a fourth-order loss gap) as the new part and cites Razin 2021 for the CP rank-one trajectory.",
+   "intro-summary-2 / global-01 (confirmed) + trap-k4: finding 7 and open question 4 give three classes: 93% of predicted-dead runs stall, 15% of pinned runs (one dying end), 1.8% of predicted-alive runs.",
+   "setup-regimes-01 (confirmed), intro and Sec. 7 parts: finding 8, open question 6 and the Sec. 7 table K row now say sigma_c -> 1 is rejected at K<=15 (binary trees, chi=4, teacher (3,2), d=2,3), and that the bounds-vs-laws comparison and the domain censoring were added after the pre-registration.",
+   "global-02 (confirmed): open question 4 now says HT routes with k=5 do not stall from small initialization (0 of 144 HT4 runs).",
+   "trap_k4_verification, Sec. 7: 89% -> 93% (l.225); dropped 'with spare inner channels at k=4 the reduced route model depends on a choice of basis' (l.230-231) and 'a reduced route model with vector amplitudes for spare inner channels' (l.238). Errata 1 (sigma-independence only as sigma->0) and 2 (30/4/2) have no occurrence in my files.",
+   "intro-summary-3 / other-cov-9 / global-09: Sec. 7 Q8 '4-9 times the dimension of the teacher manifold (students with chi=4)'.",
+   "intro-summary-4: cross-refs fixed (sec:s2s-several in Sec. 7 Q1 and finding 3; sec:s2s-saddle-order in finding 4 and Table 1 Q3).",
+   "intro-summary-5: abstract, bullet 3, Sec. 1.3 and finding 4 now say from k*=5 on the order can be lower even at a non-strict saddle; finding 4 names the three-component MPS6 teacher.",
+   "intro-summary-6: abstract scoped to 'the binary and hierarchical Tucker trees tested, whose internal cores carry no site'; Table 1 Q7 scoped to 'the binary and HT trees tested'.",
+   "intro-summary-7: abstract 'every bond at its largest possible rank'. The abstract was reworded to stay at 200 words.",
+   "intro-summary-8: finding 1 'not cleanly on HT4'.",
+   "intro-summary-9: bullet 6 adds Adam's epsilon bringing the gradient-flow law back at small sigma.",
+   "intro-summary-10: Furman Fig. 4 cited in both places; analogue reworded to 'smallest connected set of rank-deficient cores'.",
+   "intro-summary-11: Sec. 1.3 separates the exact race on MPS from the TTN selection rule (76-92% of winners).",
+   "intro-summary-12: Achour scope (saddles selecting top singular values, full-rank targets with distinct singular values).",
+   "intro-summary-13: rate tag '\\empirical (heuristic mechanism; adjacent cores: \\conjecture)' in Table 1 Q4 and finding 6.",
+   "intro-summary-14: light layer known only in two-layer networks; the root-imbalance map added to the new items.",
+   "intro-summary-15 (partly): per-number detail moved to the sections; finding 10 split into 10 (covariance and teachers) and 11 (real data; new label it:intro-real); some bold headers shortened. Findings 1-3, 5-7, 10 and 11 are now at most 5 lines; 4, 8 and 9 are 6. Dropped from the intro but still in the report: balanced-init sentence of finding 7 (Sec. 4.8, Sec. 7 table); K=8-15 per-seed numbers of finding 8 (Sec. 3.3); SGD 'no shortening beyond noise' and 'Adam mostly keeps the order' from finding 9 (bullet 6, Sec. 5.4/5.5, Sec. 7 table).",
+   "intro-summary-16: Sec. 7 Q2 escape law checked on MPS6 only; forgetting seen there and in 6 of 7 HT4 wrong-order runs (order 6, not k=7).",
+   "intro-summary-17: finding 7 says runs stall (within budget), often with a dead route; the initialization-only criterion is stated for pattern teachers.",
+   "setup-regimes-12 (Sec. 7 and intro): 'route degrees' -> 'route sizes'; the SGD outcome is now 'stall (stochastic collapse)' / 'never left' in Sec. 7 table, bullet 6, Table 1 Q8, finding 9 and Sec. 1.3 ('collapse condition'), with 'trap' kept for the conservation-law mechanism.",
+   "global-12: Table 1 referenced at the start of 'Main findings'.",
+   "global-20: Sec. 1.3 'that it can fail from k*=5 on'.",
+   "appendix-math-3 (Sec. 1 part): finding 4 'exactly k* when the piggyback coupling ... stays below the learned weight'.",
+   "Sec. 7 counterparts, checked against sources: s2s-9 (hopper 97.0% vs 95.8% on the informative locality runs; both 96.6% on odeco binary4 runs), s2s-11 (d effect: |Delta P|<=0.021 on MPS4 and binary8, >0.06 excluded at 95%), global-08 (Sec. 7 table 'head-start factor 1 - s_r/s_j')."
+  ],
+  "rejected": [
+   {
+    "id": "intro-summary-15 (remainder)",
+    "reason": "Findings 4, 8 and 9 stay at 6 lines. Finding 4 still carries the saddle-dyn placeholder, which will add a sentence anyway. Sec. 1.3's novelty list refers to findings 8 (map, full-bond condition, lazy constants, muP) and 9 (stability limit, SGD laws, Adam, sigma-independence of sweeps) for content that cannot be cut further without losing those anchors or the post-hoc caveat of setup-regimes-01."
+   }
+  ],
+  "outside_my_files": [
+   "Sec. 4 (04_saddle_to_saddle.tex l.830-836): trap-k4 changes (89% -> 93%; drop the 'k=4 with spare inner channels' known failure), the pinned class 141/934 (s2s-6), and 'as sigma->0' on 'depends on its direction, not on sigma' (erratum 1). These keep Sec. 4 consistent with the intro and Sec. 7 numbers.",
+   "Sec. 4.5 l.478-480 (appendix-math-3): 'exactly k* when the piggyback coupling stays below the learned weight', to match finding 4; the placeholder line stays.",
+   "Sec. 4.6 hopper paragraph (s2s-9): 'informative locality runs', 's2s-core binary4: 96.6% for both', 'no per-case tuning', to match Sec. 7 Q1.",
+   "Sec. 4.7 l.707-708 (s2s-11): d-effect wording, to match the Sec. 7 table.",
+   "global-08: settle 'head-start factor' for 1 - s_r/s_j in tab:notation (02), Sec. 4.4, Table 9 and A.3; Sec. 7 already uses 'head-start factor'.",
+   "setup-regimes-12 / global-15: Sec. 2 or App. A 'route degree'/'escape degree' -> size; Sec. 5.4 'trapped'/'trapping' for SGD -> stall by stochastic collapse. The intro and Sec. 7 now say 'stall (stochastic collapse)', and Sec. 1.3 says 'collapse condition'.",
+   "setup-regimes-01: 03_regime_map.tex l.164-165 and D_regimes.tex l.98-99 need the post-hoc/censoring caveat that the intro and Sec. 7 now carry.",
+   "global-02: D_s2s.tex l.627-628 HT k=5 scope (0 of 144 small-init HT4 runs; 7 of 192 saddle-start runs stall).",
+   "trap-k4 D_s2s/App. A changes (408/437, 38/2,121, 30/4/2, 449 of 464, 45 of 63, 36 false alarms, 30 of 36 / 7 of 128, item (5), the MC sentence) are needed for consistency with the 93% now in Sec. 1 and Sec. 7.",
+   "Optional, for whoever owns 01 later: finding 10 was split into 10 (covariance and teachers) and 11 (real data, label it:intro-real); no file outside 01 references the it:intro-* labels."
+  ],
+  "build_ok": true,
+  "commits": [
+   "5886445c1fd99275a796fe051c60bb56adc12295"
+  ]
+ },
+ {
+  "group": "setup",
+  "applied": [
+   "setup-regimes-01 (Sec. 3 part: the sigma_c -> 1 rejection is now limited to the plain model at K <= 15 (binary, chi = 4, teacher (3,2), d = 2, 3), and the text says the bounds-vs-laws comparison and the censoring rule were added after the pre-registration)",
+   "setup-regimes-02 (Sec. 3 side only: 'The plain model, at the same chi = 4, gives the same boundaries'; the D_regimes replacement is listed under outside_my_files)",
+   "setup-regimes-03 (tab:regime-summary: x1.30-1.35 for delta_* at chi >= 32, up to x1.97 at chi = 9)",
+   "setup-regimes-04 (02 Reporting rules: threshold sensitivity is reported for the binary4 boundaries and the large-K fits; the K sweep of Fig. 3(b), binary8 and the imbalance map use the default thresholds only)",
+   "setup-regimes-05 (confirmed from slopes_vs_chi_chi_b4.csv and s2s_per_seed: 2.7-2.9 SE in per-seed fits, 3.7 in the pooled fit; Sec. 3 values marked as geometric means or medians, and the table row says 'geometric means' because 0.24 and 0.023 are both geometric means)",
+   "setup-regimes-06 (confirmed: n_tensor = 3 at chi = 9 and 3.156 in the six-seed sweep, 12% above; added to the text and the table)",
+   "setup-regimes-07 (lazy row: 'this does not imply a small delta_theta', with a reference to sec:other-lazy)",
+   "setup-regimes-08 (learned saddle in general = critical point of the loss restricted to the current bond ranks, with a reference to sec:teacher-ttn)",
+   "setup-regimes-09 (table part: lambda_2(H) and the correlated-input analogue of lambda_2 named)",
+   "setup-regimes-10 (C_v environment vs C_u named in both rows; identity I added; c_1, c_2 vs c_r named; c_e uses e as an event index; tab:trees now says 'N a power of 2' instead of 2^m)",
+   "setup-regimes-11 (my parts: factor f in Sec. 3 replaced by words; cited widths w, h translated; unused ell removed from tab:notation and its unused macro removed from macros.tex; delta_* defined in the tab:regimes caption)",
+   "setup-regimes-12 (Sec. 2.7 defines 'degree' as a synonym of route size)",
+   "setup-regimes-13 (02 'whether'; 03 '(\\cref{prop:A-lazy}).', and the same full stop at the imbalance paragraph; 'SP:' label)",
+   "appendix-math-1 (tab:notation: Q_nunu = nu^T Q^(u)_e nu, oriented end minus partner, Q^(u)_e = +-Q_e)",
+   "appendix-math-2 (tab:notation part: new row 'visible degree, j_vis')",
+   "global-08 (tab:notation: head start = ratio s2/s1, head-start factor = 1 - s2/s1; this matches what the appx, s2s and intro worktrees already use)",
+   "global-16 (tab:notation: dropped 'the only use of x' and listed the other local uses of x)",
+   "trap-k4: none of the listed changes falls in my files and they say nothing about sigma-independence; tab:notation now names beta_1, beta_2 as the inner route entries of a k = 4 route (prop:A-trap, app:supp-s2s-trap), a second use besides Adam's"
+  ],
+  "rejected": [],
+  "outside_my_files": [
+   "setup-regimes-01: D_regimes l.98-99 needs the same post-registration clause. Intro bullet (01 l.201-205), Sec. 7 l.249-251 and the Sec. 7 parameter-table row (07 l.72-73, 'sigma_c does not tend to 1') need the same qualifier: 'sigma_c -> 1 rejected for the plain model at K <= 15 (binary, chi = 4, teacher (3,2)); the comparison was added after the pre-registration'.",
+   "setup-regimes-02: replace D_regimes l.121-122 with the verified text, which notes that the arms differ in chi as well as in W_0 and that at equal chi = 4 the boundaries agree up to K = 7.",
+   "appendix-math-1: prop:A-trap (ii) in A_derivations (Q_nunu = nu^T Q^(u)_e nu, end minus partner) and 04:816 ('the imbalance of their bond, end minus partner').",
+   "appendix-math-2: tab:notation now uses j_vis for the visible degree. prop:A-trap (iii)-(iv) and D_s2s:555 must rename j to j_vis. If the appendix fixer picks another symbol (e.g. deg_vis(u)), update the tab:notation row to match.",
+   "trap-k4 (beta_1, beta_2): tab:notation says beta_1, beta_2 are the k = 4 inner route entries in prop:A-trap and app:supp-s2s-trap. If the A/D fixers name them differently, update or remove that note. Avoid bare p and S for <beta_1,beta_2> and |beta_1|^2+|beta_2|^2, which clash with the parent p(v) and the learned set S.",
+   "setup-regimes-09: A.4 l.932/936 should write lambda_l at l = 2 (not lambda_2). eq:A-lambda2 (A l.580, 698, 703) should use lambda_2 instead of bare lambda (bare lambda is the root scale in the table). Rename the A.4 example residuals r_1, r_2 (r_1 is the component learned first).",
+   "setup-regimes-11: D_regimes l.106 should write 'chi-square statistic' in words. Sec. 5 l.424 should use L_{1}/L(0) and L_{1,2}/L(0) (same as global-19).",
+   "setup-regimes-12 / global-15: Sec. 5 l.280-288 and Sec. 7 l.74, 123, 129 should not call the SGD stochastic-collapse outcome 'trapped' (e.g. 'dead route by stochastic collapse').",
+   "global-16: rename the R12 quantity c in D_s2s:470 (e.g. C'_u), since c is the input correlation.",
+   "macros.tex: I removed the unused \\lossn macro. If any other branch starts using \\lossn, the merged build will fail; grep after merging."
+  ],
+  "build_ok": true,
+  "commits": [
+   "49b7eaf20a7a1c7520c10b8b5ffb0dc38bbcebda"
+  ]
+ },
+ {
+  "group": "s2s",
+  "applied": [
+   "s2s-1 (box: spectral-condition qualifier; Steiner sentence scoped to orthogonal pattern teachers, one learned component)",
+   "s2s-2 (4.1 exception to (iii) for order-6 split clusters; 4.7 (iii) Kept caveat with proven/derived/conjecture tags; test: one MPS6 seed of six stalls; binary8 sigma^5.2 at or above crossover; 4.5 names the binary8 order runs and odeco HT4/binary8 among the 30; Status; fig:order-wrong caption 'no strict saddle')",
+   "s2s-3 (hopper: condition fails at 177 of 587, 147 strict + 30 order 6; 4.5 scoped to correct-order saddles, wrong-first TA/TB/N4 HT4 saddles strict)",
+   "global-02 (D_s2s: HT k=5 cannot die at leading order; 0 of 144 small-init HT4, 7 of 192 from the saddle)",
+   "global-03 (04 and D_s2s: 'do not learn all four', MPS4/MPS6/binary8 counts, 22 no-stop runs, inferred for the others, MPS6 often two)",
+   "global-05 (census of 587, x=0.2998, 19 of 88 tagged empirical as computations on committed data, no proven/newresult; pointer to app:supp-s2s-hopper; proven kept only for the two-component HT4 D={0,1,2,3} order via cor:A-order)",
+   "appendix-math-1 (04 trap paragraph: Q_nu-nu oriented end minus partner; D_s2s (3) orientation made explicit)",
+   "s2s-4",
+   "s2s-5",
+   "s2s-6",
+   "s2s-7",
+   "s2s-8 / global-07 (04 part)",
+   "s2s-9 (also D_s2s scores: locality-only scope, odeco informative only on 380 binary4 runs)",
+   "s2s-10",
+   "s2s-11",
+   "global-08 (04 part: 'head-start factor' 1-s2/s1, head start s2/s1)",
+   "global-10",
+   "global-16 (D_s2s part: c -> C'_u)",
+   "global-18",
+   "global-21",
+   "appendix-math-2 (D_s2s part: j -> j_vis)",
+   "appendix-math-3 (04 part: order k* when couplings stay below s_j; equality settled only for k*=3)",
+   "trap-k4 Sec. 4: 89% -> 93% (+15% pinned); dropped the k=4 spare-inner-channel failure; k=4 competition stated as in prop:A-trap; sigma-independence only as sigma->0 with the boundary shift (erratum 1); 30 of 36 / 7 of 128 on the 164 stall-diagnosis runs; header comment updated",
+   "trap-k4 D_s2s: source v1.2 + verification; item (5) basis-invariant k=4 model with 36/36 and 69/71 checks; item (7) boundary erratum; 408/437 (93%), 38/2,121; k=4 203/212, 5/816; stall diagnosis 30/4/2 and 2/58/0 (164 runs, q=0, k>=4, filtered); per seed 449/464, 45/63 (2 never); 36 false alarms (29+7); MPS4 chi=4 26/26 vs 0/182 moved to successes; Monte Carlo 0.05 at MPS4 chi=4; provenance note",
+   "report_todo item 31 (notes/theory_saddles.md: R12 row, Timescales k=4 item and sigma->0 qualifier, open Trap item, P12 k=4 and per-run counts 408/437, 141/934, 38/2,121)"
+  ],
+  "rejected": [],
+  "outside_my_files": [
+   "01_introduction.tex l.194-195 (global-01, intro-summary-2, trap-k4): '(93% of the runs it predicts dead stall, 15% of those it predicts pinned, 1.8% of those it predicts alive)'; 'pinned' needs a gloss there",
+   "07_open_questions.tex l.225-226: same three-class wording with 93%; global-02: 'why HT routes with k=5 do not stall from small initialization (0 of 144 HT4 runs)'; trap-k4: drop 'with spare inner channels at k=4 the reduced route model depends on a choice of basis' (l.230-231) and 'a reduced route model with vector amplitudes for spare inner channels' (l.238)",
+   "A_derivations.tex prop:A-trap: (ii) Q_nu-nu = nu^T Q^(u)_e nu oriented end minus partner (Q^(u)_e = Q_e if u is the child of e, -Q_e if the parent) (appendix-math-1); rename the visible degree j to $j_{\\rm vis}$, the symbol I used in D_s2s (appendix-math-2); (iv) replace '(where every route edge has one new direction)' with: one new direction on each end edge, spare inner directions enter only through the inner product and the sum of squared norms of the inner route entries (basis invariant; reduction proven within the reduced flow, k=4 verdict derived as sigma->0, checked in full GF 36/36 and 69/71 at sigma=0.03); l.796-797: 'depends on its direction, not on sigma' needs 'as sigma->0, away from the boundary'; l.787: label 5,744 as 'locality and pilot' (global-07)",
+   "A_derivations.tex cor:A-order (iv) (appendix-math-3): add 'if no level below k*/2 exceeds s_j, the order is k* provided lambda_{ceil(k*/2)-1} < s_j (at equality only k*=3 is settled)'; 01_introduction.tex l.169-172: 'exactly k* when the piggyback coupling ... stays below the learned weight'",
+   "02_setup.tex tab:notation: 'end minus partner' in the Q_nu-nu row (appendix-math-1); add j_vis (appendix-math-2); add C'_u (earlier criterion, D_s2s) and fix the 'only use of x' remark (global-16); head start = s2/s1, 1-s2/s1 = 'head-start factor' (global-08; 04 now uses this); the same head-start rename at 06:111, A:703, A:1057 and 07:103"
+  ],
+  "build_ok": true,
+  "commits": [
+   "f8be78c",
+   "e67391f"
+  ]
+ },
+ {
+  "group": "other",
+  "applied": [
+   "setup-regimes-01 (confirmed; D_regimes part): the large-K rejection is now scoped (binary trees, chi=4, teacher (3,2), d=2,3). The domain rule is marked as an amendment made after the first, discarded plain-model runs. The bound-vs-law comparison is stated as not pre-registered and as relying on that rule.",
+   "setup-regimes-02 (confirmed): replaced D_regimes 'plain agrees up to K=4, above from K=5'. Every number was rechecked against round2/per_seed_P/C.csv. Censored plain seeds are noted at K=6 and K=7 (0.86 if the censored seed is counted at its bound) and at d=3, K=4. The new text says the chi confound means the comparison does not isolate the unlearning of W0.",
+   "other-cov-1 (confirmed): the post-hoc order ranks and adjacency count are labelled 'Descriptive, not registered' with an \\empirical tag in Sec. 6.7, in the tab:cov-summary real-data row, and in the fig:real-order caption.",
+   "other-cov-4: recomputed from report/runs_sigma_chi_b4.csv. Two-copy per-seed exponents are 0.08-1.03, median 0.50, and below 0.75 in 16 of 18 seeds. Sec. 5.2 now reads 'per seed sigma^-0.1 to sigma^-1.0 (median about sigma^-0.5), in most seeds far more slowly', and D_regimes gets the median and the count.",
+   "other-cov-5: Sec. 5.4 now limits the 0.9% match to 1.05-1.3 eta_c (two-cycle, period four from 1.245 eta_c) and says the chaotic window from 1.32 eta_c does not survive. Confirmed against D_optim.",
+   "other-cov-6: Sec. 6 intro now reads 'correlated sites only at N=4 and not on HT'. Confirmed by Sec. 6.3.",
+   "other-cov-7 / global-17: Sec. 6.8 now reads 'MPS edges 1 and 2 (edge 0 mixed)'. Confirmed by Sec. 6.7.",
+   "other-cov-8: in the fig:optim-gd caption q is replaced by 'x the per-core amplitude of component 1 divided by s_1^{1/K}'. I left the symbol out on purpose: the proposed 'a' would clash with the overlap a_r.",
+   "other-cov-10: the tab:cov-summary caption now ends with '(sources: tab:exp-data-teacher, tab:exp-real-data)'.",
+   "global-13: Sec. 5.5 'Interpretation' is cut to a pointer to Sec. 7.1 ('Landscape and clock'), keeping the one re-gauged-GD clause that Sec. 7.1 lacks. Every other tagged claim is already in Sec. 7.1 or in the Sec. 5.5 paragraphs, so D_optim's 'given once' is now true.",
+   "global-19 / setup-regimes-11 (my-file parts): the fig:optimizers-side caption uses L_{1}/L_0=0.36 and L_{1,2}/L_0=0.07 (eq:partial-fit). Values checked: 2.5/7 and 0.5/7. The chi^2 statistic is written out as 'chi-square statistic' in D_regimes (3 places) and D_optim. The kernel threshold delta_* (default 0.1) is named in place in D_regimes.",
+   "setup-regimes-09 (my-file part): lambda_2(H) in D_optim is defined in place as the second-largest Hessian eigenvalue at the minimum.",
+   "setup-regimes-12 / global-15 (my-file parts): the SGD 'trapped'/'trap' wording in Sec. 5.4 (6 places) and D_optim (5 places) now says 'stalled', matching App. B.7 ('no persistent event by 4T_GF; the route amplitude decays'). The mechanism is named as stochastic collapse, distinct from gradient flow's dead routes. 'Dead route' is not used because App. B does not establish that the route reached roundoff.",
+   "trap_k4_verification: none of its listed changes or errata fall in my files. Grep found no trap-criterion, 89%, spare-inner or 30/6/2 text in 05, 06, D_regimes, D_optim or D_covariance."
+  ],
+  "rejected": [
+   {
+    "id": "other-cov-2",
+    "reason": "Refuted by the verifier, so skipped. eq:A-centred-floor is the mean, and the chi=3 six-seed mean of 0.57 and median of 0.48 are within the seed scatter. The proposed fix would compare a median with a mean and would drop the lazy-residual clause."
+   }
+  ],
+  "outside_my_files": [
+   "setup-regimes-01: the same scope and pre-registration caveat is still needed at 03_regime_map.tex l.164-165, the intro bullet at 01 l.201-205, and 07 l.249-255. D_regimes is done.",
+   "setup-regimes-04: 02_setup.tex l.548-549 should say threshold sensitivity is reported only for the binary4 boundaries and the large-K fits; the K sweeps, binary8 and the imbalance map use the default thresholds only.",
+   "setup-regimes-09: tab:notation (02) should name lambda_2(H), the second-largest Hessian eigenvalue at the minimum, as used in A.7 l.1295 and D_optim. The A.4 lambda_l and r_1 renames are also outside my files.",
+   "setup-regimes-10: tab:notation (02) should name c_e (e is an event index here, as in Sec. 5.4, D_optim and prop:A-gd-shift) and the kernel constants c_1, c_2 (Sec. 5.1 and 5.3) next to the route coupling c_r. Renaming them would touch A and B as well.",
+   "setup-regimes-11: delta_* should be defined in Sec. 2.8 or tab:regimes (I named it in place in D_regimes); the unused ell should be removed from tab:notation; f should be renamed in Sec. 3 and App. B; the cited widths w and h in 03 l.49 and l.98 should be translated.",
+   "setup-regimes-12 / global-15: 07_open_questions.tex l.74, 123 and 129 still say 'trapped' or 'traps' for SGD and should say 'stalled (stochastic collapse)' to match Sec. 5.4 and App. B. 'Route degree' in 07 and A should become 'route size'.",
+   "global-06: in A_derivations.tex l.1277, 1307 and 1386, point the three \\cref{sec:other-optim} references to \\cref{app:D-optim}; the numbers they cite are only there.",
+   "global-08: settle the meaning of 'head start' in 02 tab:notation, 04 l.352, Table 9 and A.3/A:703, calling 1 - s_2/s_1 'the head-start factor'. Sec. 6 and D_covariance already use head start = s_2(M_e)/sbar, which matches the proposed convention, so no change was made there.",
+   "intro-summary-3 / other-cov-9 / global-09: 07 l.290-291 should read '4-9 times the dimension of the teacher manifold (chi=4 students)' to match D_optim l.125-126, which is already correct.",
+   "trap_k4_verification: all its changes are in 04, 07, D_s2s.tex and A_derivations.tex, none in my files."
+  ],
+  "build_ok": true,
+  "commits": [
+   "6fdec88f28a0e2fcff39624db9bdcc86392cc12e"
+  ]
+ },
+ {
+  "group": "appx",
+  "applied": [
+   "appendix-math-1 (confirmed): prop:A-trap (ii) now uses Q^(u)_e, the bond imbalance oriented end minus partner (+Q_e if e = e_u, i.e. u is the child; -Q_e if u is the parent)",
+   "appendix-math-2: the visible degree j in prop:A-trap is renamed deg_vis(u) and defined in place (j is the learned component)",
+   "appendix-math-3: cor:A-order (iv) now covers the case with no level below k*/2: order k* if lambda_{ceil(k*/2)-1} < s_j; at equality only k*=3 is settled",
+   "global-06: three stale refs at A:1277, 1307, 1386 now point to app:D-optim",
+   "global-07 (App. A part): 0 stalls in the 5,744 locality and pilot runs with k<=3",
+   "global-08 (App. A part): head start = s_r/s_j (or s_2(M_e)/sbar); 1 - s_r/s_j = head-start factor (A.3 after prop:A-head-start, cor:A-second-escape)",
+   "global-11: sites indexed from 0 at A:1116 and B:34, 38",
+   "global-14: B says the large-chi regime labels keep the probe kernel and its exponents (tab:large-chi) use the tensor kernel",
+   "global-22: B wording is now 'the 28 plateau states that are not near rank one'",
+   "setup-regimes-09 (App. A part): k=2 rate written lambda_2 in eq:A-lambda2 and its uses; A.4 example writes lambda_l at l=2 and renames residuals r_1, r_2 to r, r'; star formula drops r_1..r_n; lambda_2(H) always carries its argument and is defined in A.7",
+   "setup-regimes-11 (my part): onset fraction f named in place in B (event rules) and A (cor:A-second-escape)",
+   "setup-regimes-12 (App. A part): 'route degree'/'escape degree' replaced by 'route size' throughout App. A (prop:A-escape-degree retitled 'Escape through the smallest route', label kept; table caption, prop:A-signatures title, A.5, A.6, A.7, A.8); rem:A-wrong-order no longer uses the A.4 term 'degree' before it is defined",
+   "setup-regimes-01 (consistency in my files): App. A large-K paragraph scoped to K<=15 and notes the domain rule was added after the pre-registration; App. B regime-map intro lists the round-2 amendments (section 4.6)",
+   "global-05 (App. C provenance only): App. C states that section 9 of the hopper note was added after the audit and is not covered by it",
+   "trap-k4: prop:A-trap (iv) drops '(where every route edge has one new direction)'; now one new direction per end edge, vector inner amplitudes, decision depends only on <b1,b2> and |b1|^2+|b2|^2 (basis invariant); tags: reduction proven within the reduced flow, k=4 verdict derived as sigma->0; full-GF check 36/36 runs + 69/71 directions at sigma=0.03 (misses near boundary, agree at sigma<=0.01)",
+   "trap-k4 erratum 1: App. A now says the trap class is direction-determined only as sigma->0 (O(sigma) corrections; near the boundary a direction can change class)",
+   "trap-k4 provenance: App. A and App. C cite notes/reviews/trap_k4_verification.md"
+  ],
+  "rejected": [
+   {
+    "id": "setup-regimes-10",
+    "reason": "Not applied in my files. The clash between C_v (environment) and C_u (route end) is real, but C_v is defined in 02 (l.59, tab:notation l.614-615) and A:1394 only recalls it, so renaming A alone would break the recall. The suggested E_v would also clash with B.1, which already uses E_v for the pair environments of eq:environment. The other sub-items (I in the table, c_1/c_2 vs c_r, c_e, N=2^m) are all in 02. Listed outside."
+   },
+   {
+    "id": "global-16",
+    "reason": "Nothing to change in my files: the fix is the tab:notation 'only use of x' remark (02) and the R12 symbol c in D_s2s. App. A's uses of x (scalar-map variable, Perron vector) are defined in place. Listed outside."
+   },
+   {
+    "id": "trap-k4 erratum 2 (stall-diagnosis 30/4/2)",
+    "reason": "Not applicable to my files: App. A/B/C quote no stall-diagnosis counts. The counts live in D_s2s and 04; the unfiltered CSV is in experiments/theory_checks/trap/results."
+   }
+  ],
+  "outside_my_files": [
+   "appendix-math-1: tab:notation Q_nunu row (02:719) and 04:816 must say 'imbalance of their bond, end minus partner' (Q^(u)_e = Q_e if u is the child of e, -Q_e if the parent), matching prop:A-trap and D_s2s:551-552",
+   "appendix-math-2: D_s2s:555 should rename visible degree j to deg_vis(u) as in prop:A-trap; add deg_vis(u) to tab:notation",
+   "appendix-math-3: Secs. 1 (01:169-172) and 4 (04:478-480) should say the order is exactly k* when the piggyback coupling stays below the learned weight (not 'unless it exceeds')",
+   "global-08: head start = s_r/s_j (or s_2(M_e)/sbar), head-start factor = 1-s_r/s_j. Update tab:notation 02:710, 04:353 ('The factor 1-s2/s1 is the head-start factor') and Table 9 at 07:103 ('head-start factor 1-s_r/s_j')",
+   "setup-regimes-09: tab:notation should name lambda_2(H) (second-largest Hessian eigenvalue, A.7 and D_optim:19) as a second use; App. A now writes the k=2 rate as lambda_2, matching the table",
+   "setup-regimes-10: if C_v is renamed in 02 (l.59, tab:notation), A:1394, 1402 and 1413 (prop:A-kernel) must follow. Do not use E_v, which B.1 (eq:environment) uses for pair environments; \\bar T_v is one option. Also add the identity I to the table and name c_1/c_2 vs c_r and c_e",
+   "setup-regimes-12: 07:74 'route degrees' -> 'route sizes'; check 06:438 'Degree comes before coupling'. App. A now uses 'route size' throughout; the label prop:A-escape-degree is unchanged",
+   "setup-regimes-11: remaining items are in other files: the f geometric SE factor (03), the chi^2 statistic (D_regimes), L_k at 05:424, the unused ell and delta_* in tab:notation",
+   "setup-regimes-01: main-text caveats in 03:164-165, D_regimes:98-99, 01:201-205 and 07:249-251 (App. A and B now note that the domain rule was an amendment after the pre-registration)",
+   "global-07: 04:874 population labels; App. A keeps 5,744, labelled locality and pilot",
+   "global-16: tab:notation 'only use of x' remark (x is also the scalar-map variable in A.7 and the Perron vector in the A.4 proof); R12 symbol c in D_s2s:470",
+   "global-05: Sec. 4.5/4.6 tags on the hopper section-9 results (App. C now states their audit status)",
+   "trap-k4: changes listed in notes/reviews/trap_k4_verification.md for 04 (l.830 89%->93%, l.835-836), 07 (l.225, 230-231, 238) and D_s2s (l.559-560, 576, 578, 580-581 with 30/4/2 and 2/58/0, 585-586, 590-591, 621, 627); experiments/theory_checks/trap/results/stall_diagnosis_confusion.csv is unfiltered (filter to q=0, k>=4 or label it)"
+  ],
+  "build_ok": true,
+  "commits": [
+   "1fdf85cec57c2dae8aa694d84d340c4d7c3a0d17"
+  ]
+ }
+]
