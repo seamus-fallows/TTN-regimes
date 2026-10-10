@@ -17,7 +17,7 @@ The regime map S2S -> rich -> lazy appears, and the lazy regime is exactly the l
 Locality: on the same tree shape the quadtree learns far faster than scrambled orders at small init,
 because it puts 88% of the residual label interaction on short routes (scrambled: 21%). The effect vanishes
 at sigma = 0.5. Contrary to the brief's expectation, the MPS is the fastest tree at every sigma: route
-degree (tree shape) beats locality. Loss plateaus are not flat on real data (they creep).
+degree (tree shape) beats locality (time to reach each loss level). Loss plateaus are not flat on real data (they creep).
 
 ## Results
 Full table of predictions vs observations: `notes/real_data.md` section 5 (short version below). Gradient
@@ -29,14 +29,14 @@ features unless stated; sigma = 0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5; seeds 0-4.
 | prediction | observed | verdict |
 |---|---|---|
 | t1 ∝ sigma^-(K-2) | 13.000 / 13.000 / 14.000 ± 0.000 per seed (quadtree, scrambled, MPS) | yes |
-| first route: sibling pair (binary, k = 3), one edge (MPS, k = 2) | 35/35 quadtree, 86/89 scrambled; 34/35 MPS | yes |
+| first route: sibling pair (binary, k = 3), one edge (MPS, k = 2) | first two rising edges are siblings in 35/35 quadtree and 89/89 scrambled runs (simultaneous in 35/35, 86/89); single edge in 34/35 MPS runs | yes |
 | k = 3 gap ∝ sigma^-1 | 1.01 ± 0.14 (quadtree, 4 seeds), 0.97 ± 0.11 / 1.27 ± 0.02 / 0.91 ± 0.23 (scrambled orders); log law rms 0.56-0.91 vs 0.03-0.14 | yes |
 | k = 2 gap ∝ log(1/sigma) | MPS edges 4 / 3: log rms 0.09 / 0.14 vs power 0.35 / 0.25 (5 seeds) | yes |
 | strict iff k = 2 (lambda_min vs sigma) | MPS sigma^0.04±0.03 (strict); binary sigma^0.877±0.005 (higher order, predicted 1) | yes (binary 12% low) |
 | route choice: lowest k, then largest amplitude | 34/35 quadtree, 78/89 scrambled | yes |
 | flat plateaus | plateaus creep; S2S signature holds with rate-peak drops (quadtree 100% at sigma <= 0.07, min rho 24 at 0.05) | partly |
 | locality: quadtree faster than scrambled | sigma = 0.1: L(1e4) 0.098 vs 0.207, acc 0.954 vs 0.872; 88% vs 21% of residual interaction on k <= 5 routes; not at sigma = 0.5 | yes (small init) |
-| MPS between the two | MPS fastest at every sigma (L(1e4) 0.089, acc 0.957) | no |
+| MPS between the two | MPS reaches every loss level first at every sigma (e.g. L <= 0.2 at tau = 56 vs 333 quadtree, 6730 scrambled at sigma = 0.1); at sigma = 0.5 scrambled ends slightly lower at tau = 1e4 (0.078 vs 0.086) | no |
 | regimes S2S -> rich -> lazy | S2S <= 0.3, mixed 0.5-1, rich 1.4, lazy >= 2; lazy L(T) = linearized L_lin(T) (0.151); kernel rank 304 = R2 formula | yes |
 | (Fashion-MNIST sneaker vs boot) same structure | t1 exact; first two rising edges siblings 15/15, 14/15; a rank-1 strict saddle (lambda_min ∝ sigma^0.03±0.09) left by a rank-preserving rotation; no locality advantage (task ~solved at rank 1) | yes / locality: no |
 | (chi = 8) same structure | t1 exact; sibling first route 14/15 (both binary orders), MPS single edge 15/15; k = 3 gap exponent 1.17 ± 0.06 (quadtree, sigma 0.05-0.14); locality as at chi = 4 | yes |

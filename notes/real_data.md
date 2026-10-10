@@ -206,8 +206,9 @@ MPS 56 (5/5); sigma = 0.5: 85, 374, 28.
   and the next escapes take thousands of time units. At sigma = 0.5 the escapes are fast for both trees and
   the advantage disappears (scrambled even ends lower at tau = 1e4). **Locality is a small-init dynamical
   effect here, not an expressivity limit at chi = 4.**
-- **MPS vs binary: the brief's ordering fails.** The snake MPS is the fastest tree at every sigma and its
-  learning times are nearly sigma-independent. Every MPS core carries a pixel, so its routes are 2-core
+- **MPS vs binary: the brief's ordering fails.** The snake MPS reaches every loss level first at every sigma
+  and its learning times are nearly sigma-independent (at sigma = 0.5 the scrambled tree ends slightly lower
+  at tau = 1e4: 0.078 vs 0.086). Every MPS core carries a pixel, so its routes are 2-core
   strict saddles (log-time). Binary trees have pixel-free internal cores and need k >= 3 routes
   (power-law plateaus). Route degree (tree shape) dominates locality at small sigma.
 - **Bottom-up order:** Kendall tau between an edge's level and the time of its first rank increase is
