@@ -31,11 +31,11 @@ $E_v\in\R^{\bd{v}\times\bd{v}'}$ computed from the leaves to the root at a cost 
 for a CP teacher, $\ipS{\W}{\U{r}}$ is the student evaluated at the site vectors $\Sigi{i}\fac{r}{i}$, so on any
 tree
 \begin{equation}\label{eq:cp-inner}
-  \ipS{\W}{\Wt}=\sum_r\tw{r}\,f_\params\big(\Sigi{1}\fac{r}{1},\dots,\Sigi{\Ns}\fac{r}{\Ns}\big),
+  \ipS{\W}{\Wt}=\sum_r\tw{r}\,f_\params\big(\Sigi{0}\fac{r}{0},\dots,\Sigi{\Ns-1}\fac{r}{\Ns-1}\big),
   \qquad
   \ipS{\Wt}{\Wt}=\sum_{r,r'}\tw{r}\tw{r'}\prod_i\fac{r}{i}{}\T\Sigi{i}\fac{r'}{i},
 \end{equation}
-where $f_\params(z_1,\dots,z_\Ns)$ is \eqref{eq:messages} with $\feat{i}(x)$ replaced by $z_i$; a TTN teacher on
+where $f_\params(z_0,\dots,z_{\Ns-1})$ is \eqref{eq:messages} with $\feat{i}(x)$ replaced by $z_i$; a TTN teacher on
 another tree is glued to the student along the physical legs, and the loopy network is contracted exactly
 along an optimized path. The reference model and the reasons for it are in \path{notes/model.md}.
 
@@ -156,7 +156,7 @@ runs): it then dates the relearning, or gives no event. The first-crossing rule 
 crosses $\frac12$ before the final rise (non-learned overlaps rise transiently while another component is
 learned, up to $0.41$ on binary4). For other teachers one escape can raise several overlaps and later escapes
 none, so event $(e,n)$ comes from the bond spectra. The \emph{onset} rule (recommended) takes the first time
-$\bs en$ reaches $f\,\bst en$ with $f=0.05$ (sensitivity $0.03$, $0.1$), without width: a half-value rule can skip
+$\bs en$ reaches $f\,\bst en$, with the onset fraction $f=0.05$ (sensitivity $0.03$, $0.1$), without width: a half-value rule can skip
 intermediate saddles whose spectra stay below the final ones (\cref{cor:A-second-escape}). The
 \emph{half-teacher} rule takes a crossing of half the teacher's value. The \emph{library} rule
 (\path{ttn.diagnostics.spectral_events}) takes the last upward crossing of half the run's final value and then
@@ -676,7 +676,10 @@ Settings of \cref{sec:regime-map}, of \cref{sec:other-lazy,sec:other-rich,sec:ot
 stalls in \cref{sec:s2s-failure}.
 Experiment folder \path{experiments/regime_map/} (README with the run order; YAML configurations in
 \path{configs/}); findings in \path{notes/regime_map.md}, whose section 3 (fix round 1) overrides its sections
-0--2, section 4 holds the pre-registered round 2 and section 5 the tensor-kernel relabel; reviews in
+0--2, section 4 holds round 2 (pre-registered before its runs; amendments made after the first, discarded,
+plain-model rows are listed in its section 4.6, among them the time budget, the domain of the event rule for runs
+whose initial function already overlaps a component by $0.1$, and the scope and extension of the centred arm) and section 5 the
+tensor-kernel relabel; reviews in
 \path{notes/reviews/} (\path{regime_map_round1.md}, and the verifications \path{regime_map_round2_verification.md} of
 fix round 1 and \path{regime_map_round3_verification.md} of round 2, whose errata are applied); theory in
 \path{notes/theory_regimes.md} and \cref{app:boundaries}. Every number from this experiment in these sections is
@@ -721,7 +724,8 @@ $d^\Ns\dim\params\le2\cdot10^7$, and for earlier runs from their final parameter
 (\texttt{tensor}) and \path{relabel_tensor.py}. The maps of the binary tree with $\Ns=4$ (\texttt{sigma\_chi\_b4},
 \texttt{chi\_b4}, \texttt{imbalance\_b4}) are labelled with $\dTK$ (65 of their 5,298 labels change against the probe
 kernel, 59 of them lazy to non-lazy at the lazy boundary, which moves up by $4$--$9\%$, $14\%$ at $\chi=6$--$9$); the
-$\Kc$ sweeps, the maps of the binary tree with $\Ns=8$ and the large-$\chi$ tables keep $\dTK^{\rm probe}$.
+$\Kc$ sweeps, the maps of the binary tree with $\Ns=8$ and the regime labels of the large-$\chi$ sweep keep
+$\dTK^{\rm probe}$ (its exponents, \cref{tab:large-chi}, use $\dTK$).
 Per-seed boundaries: \path{analysis.seed_rho_boundary} (log-log interpolation of the crossing of $\min_i\sep i$),
 \path{seed_s2s_boundary} (label brackets; status ``unresolved'' when the next run is stalled) and
 \path{seed_kernel_boundary} (crossing of $\delta_*$ among converged runs); slopes against $\chi$ are pooled
@@ -1350,7 +1354,7 @@ within $1.3\%$ and the Hessians and route couplings within $4\%$, and an indepen
 agreed; the fix round and the order test were verified in \path{notes/reviews/real_data_round2_verification.md}.
 
 \paragraph{Excluded and superseded runs.}
-The first-route points of other routes (above) and the 28 rank-one states that are not near rank one. The
+The first-route points of other routes (above) and the 28 plateau states that are not near rank one. The
 round-0 claims superseded by the fix round are listed in \path{notes/real_data.md}, section 8.13. Raw outputs
 (about 0.8\,GB, plus 0.2\,GB of local reruns; local
 copies \path{data/real_data/} and \path{data/real_data_local/}) are not in the repository; the JSON
