@@ -742,7 +742,7 @@ def fig_order_test(order_json, out):
             rf"all 27 orders: Spearman $r_S={r['rho']:.2f}$ $[{lo:.2f}, {hi:.2f}]$",
             fontsize=8,
         )
-        ax.set_xlabel(r"predictor $S$ (share on $k\leq5$ routes, best rank-1 fit)")
+        ax.set_xlabel(r"predictor $\mathcal{S}$ (share on $k\leq5$ routes, best rank-1 fit)")
         ax.set_xlim(-0.05, 1.3)
         ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
     axes[0].set_ylabel(r"train loss at $\tau=10^4$ (mean of 3 seeds)")

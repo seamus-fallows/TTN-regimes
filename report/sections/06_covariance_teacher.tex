@@ -527,7 +527,7 @@ pairs) ended above six random orders at seed 0. Before running any new order we 
 this share; the registration and the predictor values were committed before the runs (\cref{app:supp-cov}),
 and the test is reported here as registered.
 \begin{itemize}
-  \item \emph{Design.} Hypothesis: across pixel orders of binary16 at $\isc=0.1$, the share $S$ of
+  \item \emph{Design.} Hypothesis: across pixel orders of binary16 at $\isc=0.1$, the share $\mathcal S$ of
     $\sum_{uw}\mu_{uw}^2$ on routes with $k_{uw}\le5$, evaluated at the best rank-one fit of the labels (no
     training), predicts (O1) the training loss at $\tau=10^4$ and (O2) $\log_{10}$ of the time to
     $\Loss\le0.25$: Spearman correlation $r_S<0$ with a 95\% bootstrap interval that excludes 0, for each
@@ -541,10 +541,10 @@ and the test is reported here as registered.
     within the 20 random ones (p-value $0.015$): \emph{supported}. O2: $-0.30$ $[-0.59,+0.06]$ and $-0.26$
     $[-0.63,+0.23]$: \emph{not supported}. The registered secondary analyses agree (O1 without the three orders
     seen before registration: $-0.51$ $[-0.80,-0.08]$; with the three scrambled orders of the main sweep
-    added: $-0.60$). Orders with the same pixel pairs share $S$ (24 distinct values over 27 orders), so the
+    added: $-0.60$). Orders with the same pixel pairs share $\mathcal S$ (24 distinct values over 27 orders), so the
     within-random result is the cleaner test. Also registered: the rank-one search on the data does not
     always find the rank-one state that gradient flow reaches (quadtree: a fit at loss $0.310$, while four of
-    five runs plateau at $0.27$), so $S$ is a noisy proxy.
+    five runs plateau at $0.27$), so $\mathcal S$ is a noisy proxy.
   \item \emph{Deviations.} None in the design or the analysis; the compute budget of 8 processes was exceeded
     for a few minutes, and two procedural points (the timing of one commit and an interim summary) are
     listed in \cref{app:supp-cov}.
@@ -553,11 +553,11 @@ The pixel order thus sets how low a binary TTN ends at fixed training time, and 
 computed from the data before training predicts the ranking of the orders by that loss (Spearman
 correlation $-0.60$; $-0.55$ within random orders), but not by their early speed. Locality in the image is
 neither necessary nor sufficient: the three orders with horizontal pixel pairs (quadtree, snake, row-major;
-$S=0.989$) rank 1, 2 and 4 of 27 by O1, but the equally local orders with vertical or mixed pairs (quadtreeT,
+$\mathcal S=0.989$) rank 1, 2 and 4 of 27 by O1, but the equally local orders with vertical or mixed pairs (quadtreeT,
 column-major, Hilbert) rank 13--21; the transposed quadtree ends at twice the loss of the quadtree ($0.189$
 against $0.097$; the quadtree's outcome, the lowest, and two of the three transposed-quadtree seeds were
-seen before registration); and among random orders one with $S=0.994$ ranks third (4 of its 8 bottom pairs
-happen to be adjacent in the image, against $1.6$ expected by chance) and one with $S=0.990$ and no adjacent
+seen before registration); and among random orders one with $\mathcal S=0.994$ ranks third (4 of its 8 bottom pairs
+happen to be adjacent in the image, against $1.6$ expected by chance) and one with $\mathcal S=0.990$ and no adjacent
 pair ranks sixth. Tree tensor networks for images are
 often built to follow the pixel geometry (e.g.\ \citealp{cheng2019tree}). Our explanation is a
 \conjecture: an order helps by placing label-relevant pixel interactions on routes that escape within the
@@ -571,11 +571,11 @@ strongly ($r_S=-0.83$ $[-0.91,-0.66]$; $-0.85$ $[-0.95,-0.60]$ within random ord
   \includegraphics{real_data/order_test.pdf}
   \caption{Pre-registered order test: 27 pixel orders of binary16 (orange: 20 new random orders; blue:
     7 structured orders, labelled), $\isc=0.1$, seeds 0--2 (points: mean; bars: range over seeds); grey: the
-    three scrambled orders of the main sweep (secondary analysis only). Horizontal axis: the predictor $S$,
+    three scrambled orders of the main sweep (secondary analysis only). Horizontal axis: the predictor $\mathcal S$,
     computed from the data before training. Left: training loss at $\tau=10^4$ (O1). Right: $\log_{10}$ of the
     time to $\Loss\le0.25$ (O2), censored at 4. Titles: Spearman correlation $r_S$ over the 27 orders, 95\%
-    bootstrap intervals. Takeaway: $S$ predicts the ranking of the orders by their final loss
-    ($r_S=-0.60$), not by their early speed; orders with the same pixel pairs share $S$, and local orders with
+    bootstrap intervals. Takeaway: $\mathcal S$ predicts the ranking of the orders by their final loss
+    ($r_S=-0.60$), not by their early speed; orders with the same pixel pairs share $\mathcal S$, and local orders with
     vertical or mixed pairs rank only 13--21 of 27 (source: \cref{tab:repro-figures}).}
   \label{fig:real-order}
 \end{figure}
