@@ -171,3 +171,111 @@
 {"name": "mnist4_3v5_n4000_raw_binary_scrambled1_chi4_s0.3_seed3", "status": "completed", "wall": 2495.4}
 {"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.05_seed4", "status": "completed", "wall": 2103.6}
 {"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.05_seed2", "status": "completed", "wall": 2216.5}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.2_seed2", "status": "completed", "wall": 1983.7}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.5_seed3", "status": "completed", "wall": 1934.0}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.5_seed0", "status": "completed", "wall": 2003.3}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.2_seed3", "status": "completed", "wall": 2047.6}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.5_seed1", "status": "completed", "wall": 2051.1}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.5_seed4", "status": "completed", "wall": 2038.1}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.5_seed2", "status": "completed", "wall": 2204.1}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.14_seed0", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.14_seed1", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.14_seed2", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.14_seed3", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.14_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.1_seed0", "status": "completed", "wall": 2515.5}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.1_seed4", "status": "completed", "wall": 2447.1}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.05_seed1", "status": "completed", "wall": 2130.5}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.1_seed1", "status": "completed", "wall": 2597.0}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.3_seed0", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.3_seed1", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.3_seed2", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.3_seed3", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.3_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.05_seed3", "status": "completed", "wall": 2190.9}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.05_seed2", "status": "completed", "wall": 2243.4}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.2_seed1", "status": "completed", "wall": 2614.2}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.2_seed4", "status": "completed", "wall": 2509.4}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.07_seed1", "status": "completed", "wall": 2118.6}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.05_seed0", "status": "completed", "wall": 2397.9}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.07_seed0", "status": "completed", "wall": 2166.9}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.07_seed2", "status": "completed", "wall": 2050.6}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.05_seed4", "status": "completed", "wall": 2327.4}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled2_chi4_s0.2_seed0", "status": "completed", "wall": 3014.1}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.07_seed3", "status": "completed", "wall": 2231.4}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.1_seed1", "status": "completed", "wall": 1733.0}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.2_seed2", "status": "completed", "wall": 1779.0}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.5_seed0", "status": "completed", "wall": 1665.2}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.1_seed4", "status": "completed", "wall": 1864.9}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.5_seed4", "status": "completed", "wall": 1662.7}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.1_seed3", "status": "completed", "wall": 2042.9}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.1_seed2", "status": "completed", "wall": 2071.3}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.1_seed0", "status": "completed", "wall": 2145.8}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.5_seed2", "status": "completed", "wall": 1854.3}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.14_seed0", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.14_seed1", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.14_seed2", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.14_seed3", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.14_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.05_seed1", "status": "completed", "wall": 1696.0}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.07_seed4", "status": "completed", "wall": 2225.1}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.5_seed3", "status": "completed", "wall": 1916.1}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.2_seed0", "status": "completed", "wall": 2147.4}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.05_seed0", "status": "completed", "wall": 1812.6}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.3_seed0", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.3_seed1", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.3_seed2", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.3_seed3", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.3_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.5_seed1", "status": "completed", "wall": 2015.5}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.07_seed4", "status": "completed", "wall": 1634.4}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.2_seed3", "status": "completed", "wall": 2209.2}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.1_seed0", "status": "completed", "wall": 1633.0}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.07_seed1", "status": "completed", "wall": 1737.6}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.2_seed4", "status": "completed", "wall": 2227.8}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.05_seed2", "status": "completed", "wall": 1856.3}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.1_seed1", "status": "completed", "wall": 1643.7}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.07_seed3", "status": "completed", "wall": 1749.1}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.1_seed4", "status": "completed", "wall": 1592.8}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.07_seed0", "status": "completed", "wall": 1794.7}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.05_seed4", "status": "completed", "wall": 1901.6}
+{"name": "mnist4_3v5_n4000_white_binary_quadtree_chi4_s0.2_seed1", "status": "completed", "wall": 2352.9}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.05_seed3", "status": "completed", "wall": 1935.6}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.1_seed2", "status": "completed", "wall": 1683.6}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.5_seed1", "status": "completed", "wall": 1195.1}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.07_seed2", "status": "completed", "wall": 1843.2}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.2_seed0", "status": "completed", "wall": 1531.7}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.2_seed1", "status": "completed", "wall": 1535.3}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.5_seed3", "status": "completed", "wall": 1267.8}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.5_seed4", "status": "completed", "wall": 1266.3}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.2_seed3", "status": "completed", "wall": 1522.3}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.5_seed2", "status": "completed", "wall": 1335.1}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.2_seed2", "status": "completed", "wall": 1557.0}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.5_seed0", "status": "completed", "wall": 1471.4}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.1_seed3", "status": "completed", "wall": 1846.3}
+{"name": "mnist4_3v5_n4000_white_mps_snake_chi4_s0.2_seed4", "status": "completed", "wall": 1631.2}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.5_seed1", "status": "completed", "wall": 969.4}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.5_seed2", "status": "completed", "wall": 1048.5}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.5_seed3", "status": "completed", "wall": 1019.1}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.5_seed0", "status": "completed", "wall": 1114.9}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.05_seed1", "status": "completed", "wall": 1969.0}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.07_seed1", "status": "completed", "wall": 1673.9}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.05_seed4", "status": "completed", "wall": 1941.6}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.5_seed4", "status": "completed", "wall": 1071.4}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.2_seed0", "status": "completed", "wall": 1289.1}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.05_seed2", "status": "completed", "wall": 1997.0}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.05_seed0", "status": "completed", "wall": 2061.9}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.05_seed3", "status": "completed", "wall": 2000.6}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.1_seed2", "status": "completed", "wall": 1375.2}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.2_seed1", "status": "completed", "wall": 1306.9}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.2_seed2", "status": "completed", "wall": 1307.6}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.2_seed3", "status": "completed", "wall": 1308.1}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.07_seed4", "status": "completed", "wall": 1602.9}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.2_seed4", "status": "completed", "wall": 1287.6}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.07_seed2", "status": "completed", "wall": 1764.5}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.1_seed0", "status": "completed", "wall": 1591.7}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.1_seed1", "status": "completed", "wall": 1472.2}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.07_seed3", "status": "completed", "wall": 1649.7}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.1_seed4", "status": "completed", "wall": 1430.0}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.07_seed0", "status": "completed", "wall": 1876.3}
+{"name": "mnist4_3v5_n4000_white_binary_scrambled0_chi4_s0.1_seed3", "status": "completed", "wall": 1468.4}
