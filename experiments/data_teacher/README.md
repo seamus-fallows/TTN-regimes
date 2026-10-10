@@ -80,6 +80,8 @@ uv run python experiments/data_teacher/count_p11.py
 uv run python experiments/data_teacher/analyze_r2_corr.py
 uv run python experiments/data_teacher/analyze_r2_star.py; uv run python experiments/data_teacher/star_blended.py
 uv run python experiments/data_teacher/check_resolution.py; uv run python experiments/data_teacher/check_float_floor.py
+# report Sec. 6 figures and tables (reads only the committed CSVs written above)
+uv run python experiments/data_teacher/plot_report.py
 ```
 
 `run_queue.sh` and `run_dense_queue.sh` are the queues used for round 1; `run_round2.sh` replays round 2
@@ -147,6 +149,8 @@ explicit list. `variant: white_mapped` (step 2) runs the absorbed white problem 
 | `e3_sgd_check.{png,csv}` | `e3_sgd_check.py` | online SGD vs exact population GF (binary-4, rho = 0.3) |
 | `crosscheck_library.csv` | `crosscheck_library.py` | pilot vs library integrator |
 | `float_floor_check.csv` | `check_float_floor.py` | dormant signals after the first escape vs the float64 floor (incl. star random-init and correlated runs) |
+| `report_contrast.{pdf,png}`, `report_mps_laws.{pdf,png}` | `plot_report.py` | report Sec. 6 figures, from committed CSVs only. `report_contrast`: tree-shape contrast for generic teachers, saddle start (MPS: escape time rescaled by the predicted slope 1/gamma_e, 13 teachers; binary and HT: eps x t_esc) and random init, N = 4 (plateau lambda_min and second escape against sigma) (`r2_saddle_runs_all.csv`, `r2_saddle_fits.csv`, `r2_random_v2_runs.csv`). `report_mps_laws`: MPS-4, random init, second escape against sigma with overlapping CP components, a misaligned covariance and correlated sites, each with its orthogonal baseline (`e4a_sigma_v2_runs.csv`, `e2_sigma_v2_{runs,summary}.csv`, `r2_corr_{runs,fits}.csv`; runs flagged in `float_floor_check.csv` marked) |
+| `report_first_escape.csv`, `report_lambda_scaling.csv`, `report_float_floor_refit.csv` | `plot_report.py` | tables quoted in report Sec. 6: per-seed exponent of t_1 against sigma in `r2_random` (all 9 sigma and the 3 smallest; mean and range per teacher and tree); aligned covariance, one-component teachers: per-seed slope of t_1/2 against Lambda s within each eigenvector direction (`e1_scaling_lambda_summary.csv`); odeco baselines of `e4a_sigma` and `e2_sigma`: per-seed exponent of the second escape with and without the runs flagged by `check_float_floor.py` |
 
 `pilots/` holds the throwaway pilot (`pilot_reversal.py`) and the pilot integrator used by the
 single-sigma runners and by `r2_corr.py`.

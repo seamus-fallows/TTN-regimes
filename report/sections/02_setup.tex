@@ -467,9 +467,18 @@ $0.54$--$1.11$ times $\dTK$ (median $0.78$).
 
 \paragraph{Learning events.}
 For CP teachers with orthogonal components (in the metric $\Sig$), event $r$ is dated at the last
-upward crossing $\tev{r}$ of $\ov{r}=\frac12$, the first crossing unless a transient (while another
-component is learned) crossed and fell back. Its width $\wev{r}$ is the final rise, from the last
-upward crossing of $0.1$ before $\ov{r}$ first reaches $0.9$ to that time. For
+upward crossing $\tev{r}$ of $\ov{r}=\frac12$ before $\ov{r}$ first reaches $0.9$: the first crossing
+unless a transient (while another component is learned) crossed and fell back, and unchanged if the
+learned component later dips below $\frac12$. Its width $\wev{r}$ is the final rise, from the last
+upward crossing of $0.1$ before $\ov{r}$ first reaches $0.9$ to that time. This rule is recommended and is
+the one of the saddle-to-saddle (s2s-core) and regime-map experiments. The library (\path{runner.summary})
+and the locality, optimizer and optim-samples experiments take instead the last upward crossing after
+which $\ov{r}$ stays at least $\frac12$ until the end of the run, and the order, data-teacher (aligned
+covariance) and H2-pilot experiments the first crossing (code per experiment: \path{notes/diagnostics.md}).
+The first alternative
+differs only when a learned component later dips below $\frac12$ (star teachers, SGD noise, rotations to a
+better component, a few deep-tree runs): it then dates the relearning, or gives no event. The second differs
+only when a transient crosses $\frac12$ before the final rise. For
 other teachers one escape can raise several overlaps, so events $(e,k)$ come from the bond spectra,
 by one of three rules (\cref{app:experiments} gives each experiment's): (a)~the onset, the first time
 $\bs{e}{k}$ reaches $f\bst{e}{k}$ with $f=0.05$ (sensitivity $f\in[0.03,0.1]$), without widths

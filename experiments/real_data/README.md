@@ -3,7 +3,8 @@
 **Question.** Do the phenomena established with teachers (first plateau ~ sigma^-(K-2), stepwise
 bond-rank growth, the route/locality rule, the regime map) appear when a TTN is trained by gradient
 flow on a real dataset? Findings: `notes/real_data.md` (section 8 = fix round 1, which supersedes
-earlier statements where they differ). Running report: `agent-runs/real-data/REPORT.md`.
+earlier statements where they differ; errata of the round-2 verification,
+`notes/reviews/real_data_round2_verification.md`, applied). Running report: `agent-runs/real-data/REPORT.md`.
 
 ## Setup
 - Data: MNIST 3 (y = +1) vs 5 (y = -1), balanced, n_train = 4000, n_test = 1600 (data seed 0), images
@@ -132,23 +133,31 @@ quadtreeT and rowmajor seeds 0-1 from the review runs), so the runner skips them
 - First plateau t1 ∝ sigma^-(K-2) (13.000 binary16, 14.000 mps16): an identity of small-init flow [proven],
   an integrator check rather than evidence.
 - First route after the escape on binary trees: a sibling pair of bottom cores (k = 3) in all 20 (order, seed)
-  pairs; its gap follows A/sigma + B (all 11 clean series and all 10 window-checked seed series of the full sweep,
-  B < 0; free exponent 1.22 ± 0.03 / 1.20 ± 0.03, not robust); the
+  pairs; with raw features its gap follows A/sigma + B (all 11 clean series and all 10 window-checked seed series
+  of the full sweep, B < 0; free exponent 1.22 ± 0.03 / 1.20 ± 0.03, not robust); the one whitened series that
+  meets the same rule (quadtree seed 3, sigma = 0.05-0.2) has B = +10.8 and free exponent 0.91. The
   log law is rejected with the same relative-residual weighting (`first_route_gaps`). The round-0 "1.01 ± 0.14"
   came from an attribution bug.
 - MPS: the first rank increase (edge 5) is merged with the escape (10/35 runs already above threshold at
-  tau = 0); with relative-residual fits over the full horizon, 6 of 9 later edges (3, 4, 6-9) rise in log time,
-  edges 1, 2 do not; the plateau after the escape is a strict saddle,
-  the binary rank-1 plateau a higher-order one (lambda_min ∝ sigma^0.95 ± 0.07) (`scaling_fix1`, `plateau_hessians`).
+  tau = 0); with relative-residual fits over the full horizon, 6 of 9 later edges (3, 4, 6-9) rise in log time
+  (28 of 29 seed fits), edges 1, 2 do not; the plateau after the escape is a strict saddle, the binary rank-1
+  plateau a higher-order one (lambda_min ∝ sigma^p with p = 0.87-0.89 on the three seeds with 5-6 sigma values
+  and 1.15 on one 3-point seed, mean 0.95 ± 0.07; whether p = 1 is not established) (`scaling_fix1`,
+  `plateau_hessians`).
 - Route amplitudes at the rank-1 plateau predict the first sibling pair in 22 of 26 (order, seed, critical
-  point) units (2 mixed, 2 miss; chance 1/4) and 11/11 review runs (`route_amplitudes`).
-- Pixel order: at sigma <= 0.14 the quadtree order ends lowest at every seed, but an equally local transposed
-  quadtree is among the worst orders and early learning is not faster. Pre-registered test (27 orders x 3 seeds,
+  point) units (2 mixed, 2 miss; chance 1/4); other reasonable groupings give 19-22 hits of 23-26 units (1-2
+  misses), one state per (order, seed) 20/20. Review runs: 11/11, of which 10 are new orders or seeds (quadtree
+  seed 0 at sigma = 0.1 repeats a main-sweep case) (`route_amplitudes`).
+- Pixel order: at sigma <= 0.14 the quadtree order ends lowest at every seed, but equally local orders
+  (transposed quadtree, column-major, Hilbert) rank only 13-21 of 27 in the pre-registered test and early
+  learning is not faster. Pre-registered test (27 orders x 3 seeds,
   sigma = 0.1): the share of route amplitude on k <= 5 routes, computed from the data alone, predicts the final
   loss across orders (Spearman -0.60 [-0.82, -0.22]; within 20 random orders -0.55 [-0.85, -0.09]) but not the time
   to L <= 0.25 (-0.30 [-0.59, +0.06]): an order effect, not locality as such (`order_test`, `locality_orders`).
 - MPS vs binary: the snake MPS is fastest only on the tau = t - t_a clock on MNIST; on the absolute clock its
-  first escape is later for 4 of 5 seeds at sigma = 0.1, and on Fashion it is the slowest tree.
+  first escape is later for 4 of 5 seeds at sigma = 0.1, and on Fashion it is the slowest tree to L <= 0.3-0.15
+  (it is the only tree to reach L <= 0.12 early at sigma <= 0.14). Tree shape and pixel order are confounded
+  (snake chains only).
 - Regimes (centred): S2S at small sigma, rich at sigma = 1.4 (one sigma), lazy from 2 with L(T) = L_lin(T);
   boundaries depend on the thresholds; the lazy runs are not converged at their horizon (`regime_sweep`).
 - Robustness: Fashion-MNIST (rank-1 strict saddle, no order advantage), chi = 8 (23 runs wall-limited; locality

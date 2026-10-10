@@ -402,10 +402,16 @@ def correlation_flow_blowup(spec: TTNSpec, teacher: CPTeacher, theta_hat: torch.
     sigma * theta_hat).
 
     Integrates in segments, raising the stop amplitude max_r |<W, U_r>| by 1e3 per segment from
-    amp_start, until the direction has converged: the second-largest component amplitude is below
-    ratio_tol x the largest and did not grow relative to it over the last segment (on matrix-like
-    trees the flow can linger near a smaller component's saddle before turning; stopping at a fixed
-    amplitude then gives the wrong r1 and a biased T: review s2s_core round 1, B2 / issue 6). Adds the
+    amp_start, until the direction has converged (the second-largest component amplitude is below
+    ratio_tol x the largest and did not grow relative to it over the last segment) or the stop
+    amplitude reaches amp_max, whichever comes first (on matrix-like trees the flow can linger near a
+    smaller component's saddle before turning; stopping at a fixed small amplitude then gives the
+    wrong r1 and a biased T: review s2s_core round 1, B2 / issue 6). In the first-escape sweeps the
+    direction criterion was never met on the binary4 close teacher: all 40 of those jobs (and 2
+    separated binary4 chi = 6 jobs) stopped at amplitude amp_max = 1e30, with the direction still
+    converging slowly (ratio 2e-6 .. 7e-3; see ratio_stop). T is converged anyway: the time left
+    beyond amplitude A is ~ A^(-(K-2)/K) (1e-10 at A = 1e30, K = 3), and an independent sphere-flow
+    computation agrees to <= 1.5e-11 relative (s2s_core round-2 verification, E3). Adds the
     remaining blow-up time of a balanced aligned mode, q^-(K-2) / ((K-2) s_r), q = |<W, U_r>|^(1/K).
     Returns T, the component that blows up (r1), the stop amplitude and amplitude ratio, and the core-
     norm fractions |G_v|^2 / |theta|^2 and largest relative imbalance |Q_e|_F / |theta|^2 at the stop.

@@ -5,6 +5,8 @@ Agent `real-data`, branch `agent/real-data`. Experiments in `experiments/real_da
 (2026-10-10); prediction table in section 5 (updated in fix round 1), robustness in section 7.
 **Fix round 1 (local, 2026-10-10): section 8 supersedes sections 4-7 where they differ; superseded
 statements are marked "[fix 1: ...]".**
+Errata E1-E9 of the round-2 verification (`notes/reviews/real_data_round2_verification.md`, section 4)
+are applied in place (2026-10-10); changed statements carry "[verification E<n>: ...]" or name the erratum.
 
 ## 1. Setting
 
@@ -59,7 +61,8 @@ sigma-exponents. Locality can only enter through amplitudes (how much residual l
 lives between the two pixel pairs of a sibling route) and plateau levels (how much a rank budget
 captures). Conjecture: adjacent pixels carry larger residual correlations, so the quadtree tree has
 shorter later plateaus (smaller prefactors) and lower losses at equal rank. [fix 1: adjacency alone does not
-decide it: the transposed quadtree, equally local, is among the worst orders (8.4)]
+decide it: the transposed quadtree, equally local, ends far above the quadtree (8.4); verification E2: in the
+pre-registered test the equally local orders (quadtreeT, colmajor, hilbert) rank 13-21 of 27 (9.6)]
 
 **R5 (non-product metric; derived in `theory_covariance.md` C10 for MPS).** Cross-site correlations
 open additional 2-core routes, so later plateaus on the MPS should be log-time or invisible.
@@ -132,7 +135,8 @@ for all 28 pairs of bottom cores. The sibling pair (k = 3) with the largest lamb
 rank first in 34/35 quadtree runs (best/second sibling amplitude: median ratio 46) and in 78/89 scrambled
 runs (30/35, 32/34, 16/20 for the three orders; median ratio 5.6, closer ties). [fix 1: 28 of these states
 are not near rank 1 and runs across sigma repeat one critical point; per unit 22/26 hit in all states, 2
-mixed, 2 miss, chance 1/4; 11/11 out of sample, 8.3] The largest amplitudes
+mixed, 2 miss, chance 1/4 (19-22 of 23-26 with other groupings, verification E4); 11/11 review runs, 10 of
+them new orders or seeds, 8.3] The largest amplitudes
 overall belong to non-sibling pairs (k = 5, 7; e.g. lambda = 0.35 for k = 5 vs 0.05 for the best k = 3
 pair, sigma = 0.5, seed 0). These routes escape later: route degree beats amplitude, as on teachers
 (theory_saddles.md R8, "locality beats weight"). The plateau state is the same rank-1 critical point
@@ -177,8 +181,9 @@ rtol 1e-3); the two agree within ~10%. Runs at the common plateau level only (sa
   0.04 +- 0.03 in sigma (`saddle_scaling`: strict). Per seed 0.038 +- 0.025 (3 seeds with >= 4 sigma).
 - Binary quadtree (plateau L = 0.270, 20 runs, sigma = 0.05-0.3): lambda_min ∝ sigma^0.877+-0.005 per seed
   (3 seeds; pooled 0.73 +- 0.16): higher order. The prediction for k = 3 is exponent 1 (teachers: 0.98-1.03);
-  measured 12% lower. [fix 1: with seed 4 (1.15, 3 sigma values) 0.95 ± 0.07 over 4 seeds, each < 1 decade;
-  consistent with 1; MPS state is after edge 5 rose, 8.7] At sigma <= 0.14 there is exactly one eigenvalue below -1e-3 lambda_max (one active
+  measured 12% lower. [fix 1 and verification E5: 0.87-0.89 on the three seeds with 5-6 sigma values,
+  1.15 on seed 4 (3 sigma values); mean 0.95 ± 0.07 over 4 seeds, each < 1 decade; below 1 at these sigma,
+  consistency with 1 not established; MPS state is after edge 5 rose, 8.7] At sigma <= 0.14 there is exactly one eigenvalue below -1e-3 lambda_max (one active
   route); more appear at larger sigma.
 
 ### 4.6 The S2S signature on real data [empirical]
@@ -213,7 +218,8 @@ MPS 56 (5/5); sigma = 0.5: 85, 374, 28.
   share of pairs. [fix 1: SEs pooled one critical point over sigma; one value per (order, seed): 0.89 ±
   0.015 vs 0.17 ± 0.07, and the three scrambled orders are the low tail of random orders (chance 0.43), 8.4]
 - **Quadtree vs scrambled (the clean locality test, same tree shape): the local tree learns much faster
-  at small init.** [fix 1: an equally local transposed quadtree is among the worst orders, early learning is
+  at small init.** [fix 1: an equally local transposed quadtree ends far above the quadtree (verification
+  E2: equally local orders rank 13-21 of 27 in the pre-registered test, 9.6), early learning is
   not faster, and at sigma = 0.5 the advantage does not vanish; narrowed to an order/orientation effect, 8.4] It reaches lower loss and higher test accuracy at every sigma <= 0.2, and the gap grows
   as sigma decreases. Both have the same route degrees (same shape), so the difference sits in where the
   strong label-relevant interactions lie. In the quadtree they lie on short routes (inside bottom cores,
@@ -294,14 +300,14 @@ per critical-point unit, not per run.
 | flat plateaus at rank-constrained critical points | plateaus creep: between drops the loss falls by a median 0.76 of the next drop; S2S signature holds with rate-peak drops, rho grows as sigma -> 0 | partly | `tables.md`, 4.6, 8.11 |
 | binary trees at rank 1: next route = two sibling bottom cores, k = 3 (R2) | all 20 (order, seed) pairs; siblings cross together in 96/96 rank-1 states | yes | `fix1_analysis.md`, 8.3 |
 | MPS: next route on one edge, k = 2 | edge 5 alone in 25/25 resolved runs, but before the first drop's peak (merged with the escape); 10/35 recorded "increases" are the threshold at tau = 0 | partly | `fix1_analysis.md`, 8.6 |
-| k = 3 gap ∝ sigma^-1 (H2) | A/sigma + B fits all 11 clean series (rms <= 0.06, B < 0); free exponent 1.22 ± 0.03 (offset-dominated); log law rms 0.11-0.30 | yes, as A/sigma + B | `first_route_gaps`, 8.1 |
-| k = 2 gap ∝ log(1/sigma) | later MPS edges, relative-residual fits over the full horizon: log law preferred for edges 3, 4, 6, 7, 8, 9 (27/29 seed fits; edge 4 slope 14.7 ± 1.5, edge 3 30.3 ± 0.8 per unit ln(1/sigma)), power law for edges 1, 2, mixed for edge 0 | yes for 6 of 9 edges (later routes) | `scaling.json`, `scaling_fix1`, 8.6 |
+| k = 3 gap ∝ sigma^-1 (H2) | A/sigma + B fits all 11 clean series and all 10 window-checked raw-feature series of the full sweep (rms <= 0.06, B < 0; the one whitened series meeting the same rule has B = +10.8, verification E3); free exponent 1.22 ± 0.03 (offset-dominated); log law rms 0.11-0.30 | yes, as A/sigma + B (raw features) | `first_route_gaps`, 8.1 |
+| k = 2 gap ∝ log(1/sigma) | later MPS edges, relative-residual fits over the full horizon: log law preferred for edges 3, 4, 6, 7, 8, 9 (28/29 seed fits, verification E1; edge 4 slope 14.7 ± 1.5, edge 3 30.3 ± 0.8 per unit ln(1/sigma)), power law for edges 1, 2, mixed for edge 0 | yes for 6 of 9 edges (later routes) | `scaling.json`, `scaling_fix1`, 8.6 |
 | k >= 4 later routes: sigma^-(k-2) | route identification of late binary events not clean | not established | 8.10 |
-| strict saddle iff k = 2 (H3), via lambda_min scaling | MPS (after the first route): exponent 0.047 ± 0.016 (strict); binary rank-1 plateau 0.95 ± 0.07 (higher order, predicted 1) | yes | `plateau_hessians`, 8.7 |
-| next route = lowest degree, then largest amplitude (R8) | 22/26 units hit in all states, 2 mixed, 2 miss (chance 1/4); 11/11 review runs; larger-amplitude k = 5, 7 routes escape later | yes | `route_amplitudes`, 8.3 |
+| strict saddle iff k = 2 (H3), via lambda_min scaling | MPS (after the first route): exponent 0.047 ± 0.016 (strict); binary rank-1 plateau 0.87-0.89 on the three seeds with 5-6 sigma values and 1.15 on one 3-point seed, mean 0.95 ± 0.07 (higher order; predicted 1, below it at these sigma; verification E5) | yes | `plateau_hessians`, 8.7 |
+| next route = lowest degree, then largest amplitude (R8) | 22/26 units hit in all states, 2 mixed, 2 miss (chance 1/4) with the grouping of 8.3; other reasonable groupings give 19-22 hits of 23-26 units (1-2 misses), one state per (order, seed) 20/20; 11/11 review runs (10 new orders or seeds; verification E4); larger-amplitude k = 5, 7 routes escape later | yes | `route_amplitudes`, 8.3 |
 | bottom-up rank growth (R3) | Kendall tau(level, time) > 0 on binary trees (0.17-0.31) | partly (a tendency) | `tables.md`, 8.10 |
-| locality: local pixel orders learn faster | quadtree lowest final loss at every seed for sigma <= 0.14; pre-registered test over 27 orders: a data-only route-amplitude share predicts the final loss (rho = -0.60 [-0.82, -0.22]; random orders -0.55 [-0.85, -0.09]) but not the time to L <= 0.25; an equally local transposed quadtree is among the worst | no as locality; an order effect predicted by route amplitudes (final loss only) | `locality_orders`, `order_test`, 8.4, 9 |
-| MPS between quadtree and scrambled (brief) | tree shape and pixel order confounded; snake MPS fastest on the tau clock (MNIST), later on the absolute clock, slowest on Fashion | undetermined | 8.5 |
+| locality: local pixel orders learn faster | quadtree lowest final loss at every seed for sigma <= 0.14; pre-registered test over 27 orders: a data-only route-amplitude share predicts the final loss (rho = -0.60 [-0.82, -0.22]; random orders -0.55 [-0.85, -0.09]) but not the time to L <= 0.25; equally local orders (quadtreeT, colmajor, hilbert) rank 13-21 of 27 (verification E2; the quadtree's first place is descriptive, its outcome was seen before registration) | no as locality; an order effect predicted by route amplitudes (final loss only) | `locality_orders`, `order_test`, 8.4, 9 |
+| MPS between quadtree and scrambled (brief) | tree shape and pixel order confounded; snake MPS fastest on the tau clock (MNIST), later on the absolute clock, slowest on Fashion to L <= 0.3-0.15 (but the only tree to reach L <= 0.12 early at sigma <= 0.14) | undetermined | 8.5 |
 | regimes: S2S -> rich -> lazy with sigma (H4) | S2S at small sigma; rich at one sigma (1.4); lazy (>= 2) = linearized model, kernel rank = R2 formula; boundaries threshold-dependent; lazy runs unconverged | partly | `regime_sweep`, 8.8 |
 
 ## 6. Caveats and open points
@@ -312,8 +318,9 @@ per critical-point unit, not per run.
 - The horizon tau = 1e4 cuts the later escapes at sigma < 0.1 (k >= 5 routes need ~1e4-1e5), which lowers the
   small-sigma test accuracy in the locality and regime tables: those numbers are at fixed training time.
 - The binary first-plateau lambda_min exponent (0.88) is below the k = 3 value (1); the MPS far-edge rises scale
-  like power laws (exponent ~1) where rank-1 counting predicts k = 2; both are open. [fix 1: with seed 4 the
-  binary exponent is 0.95 ± 0.07 (consistent with 1); with fair fits over the full horizon edges 3, 4, 6-9
+  like power laws (exponent ~1) where rank-1 counting predicts k = 2; both are open. [fix 1 and verification
+  E5: 0.87-0.89 on the three seeds with 5-6 sigma values, 1.15 on one 3-point seed, mean 0.95 ± 0.07; below 1
+  at these sigma, consistency with 1 not established; with fair fits over the full horizon edges 3, 4, 6-9
   rise in log time, edges 1, 2 remain power-like (8.6, 8.7)]
 - [fix 1] Pixel order and tree shape are confounded for the MPS (snake only), and the locality comparison
   rests on four committed orders plus review runs at one sigma (8.4, 8.5).
@@ -353,7 +360,9 @@ per critical-point unit, not per run.
   rank-clock two-point slopes 1.27 ± 0.08 / 1.20 ± 0.06; 4 of the 15 MPS first rises are at tau = 0; all 23
   wall-limited runs are quadtree or MPS, so the sigma = 0.5 comparison below is withdrawn (8.9)] Locality as at chi = 4: quadtree vs scrambled L(tau_end) = 0.158 vs 0.220
   (sigma = 0.05), 0.096 vs 0.176 (0.14). At sigma = 0.5 scrambled fits the training set better (0.055 vs
-  0.079) but generalizes worse (test loss 0.111 vs 0.088). The MPS is fastest at small sigma (0.088 / 0.080).
+  0.079) but generalizes worse (test loss 0.111 vs 0.088). The MPS has the lowest L(tau_end) at small sigma
+  (0.088 / 0.080). [verification E8: was "is fastest"; these are losses at tau_end, and 9 of the 15 MPS runs
+  are wall-limited (8.9)]
 - **8x8 images (N = 64; binary64 K = 63, mps64 K = 64)** [empirical; 12 runs: 3 trees x sigma in {0.1, 0.3} x
   seeds {0, 1}, tau <= 3000; `results/img8_tables.md`]. t1 exponents 61.0000 (binary, 4 seed-tree pairs) and
   62.0000 (MPS), with t1 up to 1e73 (re-anchored clock). The first two rising edges are siblings in 4/4
@@ -418,11 +427,14 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   now reproducible with `configs/main_extra.yaml`. **[empirical]**
 - **Full sweep (round 2).** The window-checked attribution on all 124 binary runs (`results/scaling.json`
   `first_route`, regenerated) keeps 91 (seed, sigma) points and excludes 33 (16 rose between drops, 2 merged with
-  drop 0, 15 had another route first). Ten seed series are fitted (>= 4 sigma over >= 0.5 decade): free exponent
-  1.20 ± 0.03 (range 1.02-1.32; quadtree 1.11 ± 0.07 over 3 seeds, scrambled0 1.23 ± 0.07 (2), scrambled1 1.27 ±
-  0.02 (4), scrambled2 1.13 (1)); A/sigma + B fits every series (rms <= 0.060, B < 0 in 10/10), the log law does
-  not (rms 0.12-0.30). Quadtree seed 0 over sigma = 0.05-0.5 gives 1.02 with B ≈ -1, over 0.05-0.3 (clean series)
-  1.06: the free exponent depends on the sigma range, A/sigma + B does not need to. **[empirical]**
+  drop 0, 15 had another route first). Ten raw-feature seed series are fitted (>= 4 sigma over >= 0.5 decade):
+  free exponent 1.20 ± 0.03 (range 1.02-1.32; quadtree 1.11 ± 0.07 over 3 seeds, scrambled0 1.23 ± 0.07 (2),
+  scrambled1 1.27 ± 0.02 (4), scrambled2 1.13 (1)); A/sigma + B fits every series (rms <= 0.060, B < 0 in 10/10),
+  the log law does not (rms 0.12-0.30). [verification E3: these statements hold for raw features. The one
+  whitened series that meets the same rule (quadtree seed 3, sigma = 0.05-0.2, `scaling.json` first_route
+  binary_quadtree/white) has B = +10.8 and free exponent 0.91.] Quadtree seed 0 over sigma = 0.05-0.5 gives
+  1.02 with B ≈ -1, over 0.05-0.3 (clean series) 1.06: the free exponent depends on the sigma range,
+  A/sigma + B does not need to. **[empirical]**
 - Section 4.4's other gap statements: the per-series refit with fair weights is in `results/events_table.md`
   (all 36 series) and `results/fix1_analysis.md`. Two corrections: the third singular value on the first
   sibling pair ((3,3),(4,3), drop 2, quadtree) is better fitted by the log law in seeds 2, 3 (rms 0.019, 0.037
@@ -453,9 +465,14 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   the largest amplitude is the first pair to gain rank in all states of 22 units, in some states of 2 units
   (quadtree seed 4 at sigma 0.14-0.3; scrambled1 seed 4 at 0.14-0.2) and in none of 2 units (scrambled0 seed 3
   at 0.14-0.2; scrambled2 seed 2 at 0.1); chance is 1/4 per unit (4 sibling pairs). Per state: 27/28
-  (quadtree), 64/68 (scrambled). Out of sample (the 11 binary review runs: quadtree, six more random orders,
-  row-major and transposed quadtree at seed 0, the last two also at seed 1): 11/11. **[empirical]** (The review counted 28/30 units with its own
-  grouping; the conclusion is the same.)
+  (quadtree), 64/68 (scrambled). Review runs (the 11 binary review runs: quadtree, six more random orders,
+  row-major and transposed quadtree at seed 0, the last two also at seed 1): 11/11; 10 of them are new orders
+  or seeds, while quadtree seed 0 at sigma = 0.1 repeats a main-sweep case (verification E4: was "11/11 out of
+  sample"). **[empirical]** (The review counted 28/30 units with its own grouping; the conclusion is the same.)
+  [verification E4: 22/26 holds for this total-variation grouping; other reasonable groupings give 19-22 hits
+  of 23-26 units with 1-2 misses (20/24 grouping by predicted pair and plateau loss within 0.01, 19/23 by loss
+  only), and 20/20 with one state per (order, seed) at the smallest sigma; per state 91/96. About 80-85% of
+  units, against chance 25%.]
 - **First route = sibling pair.** The first two rising edges are siblings in all 124 runs, i.e. in all 20
   (order, seed) pairs; in the 96 rank-1 states the two sibling edges cross 0.05 together (within 5%) in 96/96.
   The 3 runs where they do not are at sigma >= 0.3 with a non-rank-1 plateau state (the route merged with the
@@ -468,9 +485,11 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
 - **Old:** "Quadtree vs scrambled (the clean locality test, same tree shape): the local tree learns much
   faster at small init ... quadtree puts 88% of the residual interaction on k <= 5 routes, scrambled 21%
   (± 0.02-0.03) ... gone at sigma = 0.5. Locality is a small-init dynamical effect."
-- **What failed.** (a) An equally local order is among the worst: the transposed quadtree (same 2 x 2 blocks,
-  vertical instead of horizontal pairs) ends at L(1e4) = 0.226 / 0.194 (seeds 0 / 1, sigma = 0.1) against
-  0.096 / 0.099 for the quadtree; row-major gives 0.136 / 0.099 (review runs). (b) The "21%" baseline came from
+- **What failed.** (a) An equally local order ends far above the quadtree: the transposed quadtree (same 2 x 2
+  blocks, vertical instead of horizontal pairs) ends at L(1e4) = 0.226 / 0.194 (seeds 0 / 1, sigma = 0.1) against
+  0.096 / 0.099 for the quadtree; row-major gives 0.136 / 0.099 (review runs). [verification E2: was "among the
+  worst", which holds for seed 0 of these runs only; in the pre-registered 27-order test the transposed
+  quadtree ranks 18 of 27 by O1 (21, 18, 15 per seed) and colmajor 21 (9.6)] (b) The "21%" baseline came from
   3 random permutations in the low tail: per (order, seed) at sigma = 0.05 the k <= 5 share is 0.89 ± 0.015
   (quadtree, 5 seeds) and 0.17 ± 0.07 (15 = 3 orders x 5 seeds; per order 0.34 / 0.11 / 0.06), while six more
   random orders give 0.02-0.88 (mean 0.42, seed 0, sigma = 0.1), the pair-count chance level being 12/28 = 0.43.
@@ -507,7 +526,10 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   time to L <= 0.25 (rho = -0.30 [-0.59, +0.06]: not supported). **[empirical, pre-registered]** Final form of the
   claim: the pixel order changes how low a binary TTN ends at fixed training time (small sigma); a data-only route-
   amplitude share predicts that ranking across orders; it does not predict early speed; locality in the image is
-  neither necessary nor sufficient (transposed quadtree among the worst, high-S random orders near the best).
+  neither necessary nor sufficient (equally local orders, quadtreeT, colmajor and hilbert, rank 13-21 of 27;
+  high-S random orders are near the best, e.g. scrambled110 third at O1 = 0.102). The quadtree's first place
+  is descriptive only: its outcome was seen before registration. [verification E2: was "transposed quadtree
+  among the worst"]
 - Withdrawn: "locality is a small-init dynamical effect" as a statement about locality. Kept: the gap between
   orders at small sigma is not an expressivity limit at chi = 4, since at sigma = 0.5 the committed scrambled
   orders end lower than the quadtree **[empirical]**.
@@ -526,7 +548,10 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   sigma <= 0.07; its lead on the tau clock (~1e2) is negligible against these differences (1e14-1e16).
   **[empirical prefactors]**
   (3) Fashion-MNIST: the MPS is the slowest tree to L <= 0.25 / 0.2 / 0.15 at sigma = 0.05 (117 / 124 / 374 vs
-  quadtree 35 / 37 / 44 and scrambled 21 / 22 / 26; `fashion_tables.md`), although it ends lowest. **[empirical]**
+  quadtree 35 / 37 / 44 and scrambled 21 / 22 / 26; `fashion_tables.md`), although it ends lowest; it is
+  the only tree to reach L <= 0.12 early at sigma <= 0.14 (median tau 430 / 248 at sigma = 0.05 / 0.14; the
+  quadtree reaches it in 0/5 and 1/5 runs, the scrambled tree at 7.8e3 (3/5) and 2.5e3 (5/5); verification E9).
+  **[empirical]**
   (4) Tree shape and pixel order are confounded (only snake chains in the sweeps). Review runs (sigma = 0.1,
   seed 0) with other chain orders: row-major ends at 0.083; scrambled0 at 0.084 but reaches L <= 0.25 only at
   tau = 299 (quadtree 156), with a 3-core first route and staircase-like plateaus (rho = 8.5-30); scrambled3 ends
@@ -558,9 +583,9 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   at 30.3 ± 0.8 (0.029 vs 0.254; 5/5); edge 2 is ambiguous (0.141 vs 0.131; 1/5 prefer log) and edge 1
   power-like (p = 1.25 ± 0.10; 0.113 vs 0.272; 0/4). **[empirical]** **Full horizon (round 2, main sweep,
   relative residuals for both laws; `results/scaling.json` edge_scaling, `fix1_analysis.md`):** the seeds prefer
-  the log law for edges 3 (5/5), 4 (4/5), 6 (4/4), 7, 8, 9 (5/5 each), i.e. 27 of 29 seed fits on these six
-  edges (log rms 0.03-0.11 vs power 0.17-0.36); edges 1 (0/5; power p 1.27 ± 0.08) and 2 (1/5; p 1.00 ± 0.08)
-  prefer a power law, edge 0 is mixed (2/5). The review's "only 2 of 9 MPS edges prefer the log law" was an
+  the log law for edges 3 (5/5), 4 (4/5), 6 (4/4), 7, 8, 9 (5/5 each), i.e. 28 of 29 seed fits on these six
+  edges (5 + 4 + 4 + 5 + 5 + 5; verification E1: was "27 of 29") (log rms 0.03-0.11 vs power 0.17-0.36);
+  edges 1 (0/5; power p 1.27 ± 0.08) and 2 (1/5; p 1.00 ± 0.08) prefer a power law, edge 0 is mixed (2/5). The review's "only 2 of 9 MPS edges prefer the log law" was an
   artifact of the unweighted log fit; with fair fits 6 of 9 do. Edges 1 and 2 (next to the chain's start)
   remain unexplained by rank-1 counting, which predicts k = 2 everywhere on the MPS. **[empirical]** (4) The strict Hessian of 4.5 is measured on the plateau after edge 5 has risen
   (8.7), so it belongs to the later routes. Verdict: **partly** (a single-edge first increase, but merged with
@@ -569,9 +594,12 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
 ### 8.7 Saddle type at the first plateau (section 4.5) [binary exponent corrected; MPS state re-described]
 - **Binary (old: "lambda_min ∝ sigma^0.877 ± 0.005 per seed (3 seeds) ... measured 12% lower").** Seed 4 was
   left out because it has only 3 sigma values at the common plateau (L = 0.27). Per seed: 0.871 (seed 0,
-  sigma 0.05-0.3), 0.888 (seed 2, 0.05-0.3), 0.873 (seed 3, 0.05-0.2), 1.149 (seed 4, 0.05-0.1): 0.95 ± 0.07
-  (4 seeds), each over less than one decade (0.3-0.78 decades). Consistent with the k = 3 prediction 1; the
-  "12% low" statement is withdrawn. Higher order (exponent far from 0) stands. **[empirical]**
+  sigma 0.05-0.3), 0.888 (seed 2, 0.05-0.3), 0.873 (seed 3, 0.05-0.2), 1.149 (seed 4, 0.05-0.1): 0.87-0.89 on
+  the three seeds with 5-6 sigma values (0.6-0.78 decades) and 1.15 on one 3-point seed (0.3 decade); mean
+  0.95 ± 0.07 (4 seeds). Higher order (exponent far from 0) stands. [verification E5: this replaces "0.95 ±
+  0.07, consistent with the k = 3 prediction 1; the '12% low' statement is withdrawn". Consistency with 1 is not
+  established, and on the three seeds with more than 3 points the exponent stays below 1 at these sigma, so
+  that observation is not withdrawn.] **[empirical]**
 - **MPS (strict, sigma^0.04 ± 0.03).** Per seed 0.045, 0.044, -0.009, 0.078, 0.078: 0.047 ± 0.016 (5 seeds).
   Strict stands, but the state is the plateau *after* edge 5 has risen (the first MPS route is merged with
   the escape, 8.6), and it has 2-3 negative directions at sigma <= 0.1 (several active 2-core routes): it is
@@ -677,21 +705,21 @@ fixes and keep their committed outputs.
 | claim (section) | old | new | status |
 |---|---|---|---|
 | t1 ∝ sigma^-(K-2) (4.1) | evidence that predictions survive, [empirical] | identity of small-init flow (integrator check) | proven |
-| k = 3 first-route gap (4.4) | sigma^-1.0, 1.01 ± 0.14 (quadtree) | A/sigma + B fits 11/11 clean series (B < 0); free exponent 1.22 ± 0.03 (not robust) | empirical (form derived) |
+| k = 3 first-route gap (4.4) | sigma^-1.0, 1.01 ± 0.14 (quadtree) | A/sigma + B fits 11/11 clean series and 10/10 raw-feature series of the full sweep (B < 0; not the one whitened series, B = +10.8, E3); free exponent 1.22 ± 0.03 (not robust) | empirical (form derived) |
 | log-law rejection (4.4) | rms 0.56-0.91 | rms 0.11-0.30 with the same weighting; still rejected | empirical |
 | scrambled1 / scrambled2 exponents (4.4) | 1.27 ± 0.02 "yes"; 0.91 ± 0.23 | offset effect (B/A ~ -1); scrambled2 one clean series, 1.13 | empirical |
 | MPS first route (4.2) | single edge, k = 2 strict, 34/35: yes | merged with the escape, 10/35 at tau = 0: partly | empirical |
-| MPS later edges (4.4) | log law for edges 4, 3; far edges power-like | fair fits, full horizon: log for edges 3, 4, 6-9 (27/29 seed fits), power for 1, 2, mixed for 0 | empirical |
-| route-amplitude rule (4.3) | 34/35, 78/89 runs | 22/26 units hit, 2 mixed, 2 miss (chance 1/4); 11/11 out of sample | empirical |
-| locality (4.7) | quadtree >> scrambled, 88% vs 21%, gone at sigma = 0.5 | pixel-order effect: quadtree lowest final loss at every seed (sigma <= 0.14), not faster early, transposed quadtree among the worst; pre-registered: data-only share predicts final loss over 27 orders (rho -0.60 [-0.82, -0.22]), not time to L <= 0.25 | empirical (pre-registered); mechanism conjecture |
-| MPS fastest (4.7, 5, REPORT) | every loss level first at every sigma; fails on every task | tau clock, MNIST, snake only; slower on the absolute clock (4/5 seeds at 0.1), slowest on Fashion; shape/order confounded | empirical; mechanism conjecture |
+| MPS later edges (4.4) | log law for edges 4, 3; far edges power-like | fair fits, full horizon: log for edges 3, 4, 6-9 (28/29 seed fits, E1), power for 1, 2, mixed for 0 | empirical |
+| route-amplitude rule (4.3) | 34/35, 78/89 runs | 22/26 units hit, 2 mixed, 2 miss (chance 1/4; 19-22 of 23-26 with other groupings, E4); 11/11 review runs (10 new orders or seeds) | empirical |
+| locality (4.7) | quadtree >> scrambled, 88% vs 21%, gone at sigma = 0.5 | pixel-order effect: quadtree lowest final loss at every seed (sigma <= 0.14), not faster early, equally local orders rank 13-21 of 27 (E2); pre-registered: data-only share predicts final loss over 27 orders (rho -0.60 [-0.82, -0.22]), not time to L <= 0.25 | empirical (pre-registered); mechanism conjecture |
+| MPS fastest (4.7, 5, 7, REPORT) | every loss level first at every sigma; fails on every task; fastest at chi = 8 | tau clock, MNIST, snake only; slower on the absolute clock (4/5 seeds at 0.1), slowest on Fashion to L <= 0.3-0.15 (E9); at chi = 8 lowest L(tau_end), not "fastest" (E8); shape/order confounded | empirical; mechanism conjecture |
 | later routes higher degree (4.4) | k = 4-5, exponent 3.3 | not established | withdrawn |
-| binary lambda_min exponent (4.5) | 0.877 ± 0.005, 12% low | 0.95 ± 0.07 (4 seeds, < 1 decade), consistent with 1 | empirical |
+| binary lambda_min exponent (4.5) | 0.877 ± 0.005, 12% low | 0.87-0.89 on three seeds (5-6 sigma), 1.15 on one 3-point seed; mean 0.95 ± 0.07 (< 1 decade each); below 1 at these sigma, consistency with 1 not established (E5) | empirical |
 | MPS Hessian (4.5) | strict saddle of the first (k = 2) route | strict, but the state is after edge 5 rose (later routes) | empirical |
 | regimes (4.8) | S2S -> rich (1.4) -> lazy; floor well above feature learning | rich on one sigma; boundary threshold-dependent; lazy unconverged; floor claim false per seed | empirical |
 | whitened S2S (4.9) | 80% | 57% (17/30) | empirical |
 | bottom-up order (4.7) | all trees incl. MPS | binary trees only | empirical (tendency) |
-| Fashion (7) | siblings first 15/15, 14/15; sigma^-0.92...-0.97 | siblings rise together 3/15; exponents withdrawn | empirical |
+| Fashion (7) | siblings first 15/15, 14/15; sigma^-0.92...-0.97 | siblings rise together 3/15 (quadtree) and 2/15 (scrambled); exponents withdrawn | empirical |
 | chi = 8 (7) | L(1e4); 1.17 ± 0.06; scrambled fits better at 0.5 | L(tau_end), 23 runs wall-limited; two-point slopes 1.27 / 1.20; sigma = 0.5 comparison withdrawn | empirical |
 | 8x8 (7) | L(1e4) | L(3000); one permutation, two seeds | empirical |
 
@@ -782,6 +810,19 @@ The predictor values for all orders are committed (`results/extra_orders_predict
   effect on any result: 9 processes for about 2.5 min (figure regeneration and a one-run timing test while 8 runs
   were active), and 12-13 processes for about 3 min (the exploratory job below was started on a miscount of the
   finished runs; it was stopped and restarted after all runs had completed). Wall-clock: 70 min for the runs.
+  Two more deviations, found by the round-2 verification (E6) and missing from this list before; neither
+  changes the result:
+  (i) **Run config and analysis script committed after the runs started.** The registration (2f4d99e,
+  11:51:13) and the predictor values (44feb2f, 11:52:58) were committed before every new run (the first started
+  at about 11:53:55), but `configs/extra_orders.yaml` and `order_test.py` were first committed at 11:57:38
+  (8f22642), about 4 min after the runs started and before the first outcome existed (12:02:09). The config
+  matches 9.3.
+  (ii) **Interim look at the outcomes.** At 12:58:01, with 72 of the 81 runs finished (among them all 60
+  random-order runs, i.e. the complete data of the within-random primary analysis), a partial summary was
+  written (`data/real_data_local/extra_orders_summary_partial.{csv,json}`). The guard for n < 4 in
+  `order_test.py`, the script's only change after outcomes existed (it has no effect on the reported numbers),
+  suggests that the analysis was run on that partial table. Nothing in the registered design or analysis was
+  changed afterwards.
 - **Reading.** The share of route amplitude on k <= 5 routes, computed from the data alone, ranks pixel orders by
   their final loss at tau = 1e4 (sigma = 0.1), across all orders and within random orders. It does not predict
   how fast the first loss levels are reached. This matches 8.4 (3): the order acts through the later escapes

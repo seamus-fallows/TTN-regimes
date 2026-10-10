@@ -22,17 +22,30 @@
 % report/figures.txt; the TikZ figure of Sec. 2 is drawn from report/tikz/trees.tex.
 % Rows of tab:repro-figures: one per figure, in the order of the report.
 
-\begin{table}[ht]
-  \centering
-  \caption{Figures of the report: the command that draws each one (from the repository root) and the
-    sweeps whose raw runs it reads. Figures are copied into \texttt{report/figures/} by
-    \texttt{report/collect\_figures.sh} from the list in \texttt{report/figures.txt}.}
-  \label{tab:repro-figures}
-  \footnotesize
-  \begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}X@{}}
+% A multi-page table (xltabular = longtable with X columns): longer than a page, so not a float; it
+% breaks between rows and repeats its header on every page.
+\begingroup
+\footnotesize
+\setlength{\LTcapwidth}{\textwidth}
+\begin{xltabular}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}X@{}}
+    \caption{Figures of the report: the command that draws each one (from the repository root) and the
+      sweeps whose raw runs it reads. Figures are copied into \texttt{report/figures/} by
+      \texttt{report/collect\_figures.sh} from the list in \texttt{report/figures.txt}.}
+    \label{tab:repro-figures} \\
     \toprule
     figure & command & raw data (sweeps; \cref{app:experiments}) \\
     \midrule
+    \endfirsthead
+    \caption[]{Figures of the report (continued).} \\
+    \toprule
+    figure & command & raw data (sweeps; \cref{app:experiments}) \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{3}{@{}r@{}}{\itshape continued on the next page} \\
+    \endfoot
+    \bottomrule
+    \endlastfoot
     \ref{fig:regime-map} & \texttt{uv run python experiments/regime\_map/\allowbreak plot\_report.py} draws this
       figure (\texttt{report\_map}) and \cref{fig:other-regimes} from committed tables in \texttt{results/},
       \texttt{results/fix1/} and \texttt{results/report/}; the last are written by \texttt{report\_tables.py
@@ -117,9 +130,8 @@
       predictor \texttt{extra\_orders\_predictor.json} written by \texttt{order\_predictor.py} before the
       runs)
       & \texttt{extra\_orders}; \texttt{main} for the secondary analysis \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
+\end{xltabular}
+\endgroup
 
 \subsection{Building the report}\label{app:repro-build}
 The report is built by \path{report/build.sh} (pdflatex, BibTeX, then pdflatex until the

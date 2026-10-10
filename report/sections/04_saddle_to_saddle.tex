@@ -688,10 +688,9 @@ corrected.}
 % balanced-route estimate as an upper bound (E12: exceeded in 4 of 16 escapes); "stalls are ever-longer
 % plateaus" as established (checked on 16 escapes only); K = 7, 8 decay rates and their sigma dependence
 % (E19, E20); "40% at K = 4, fixed per direction" for the close teacher (E15); ">100x drops 3-8%" and
-% "0.6-2% at chi = 6" (E18: 2-8% and 0-2%). TODO(regime-map): stalls at K >= 5 with chi = R in the
-% phase diagrams (app:boundaries, notes/theory_regimes.md P14).
-\placeholder{Regime-map experiment (pending): stalls at $\Kc\ge5$ with $\chi$ equal to the teacher
-rank in the phase diagrams (\cref{app:boundaries}).}
+% "0.6-2% at chi = 6" (E18: 2-8% and 0-2%). Regime-map stalls at chi = R (app:boundaries,
+% notes/theory_regimes.md P14): summarized at the end of the first paragraph from Sec. 5.3
+% (sec:other-stalled), which has the numbers.
 
 Two things end a saddle-to-saddle sequence early: a route dies, its end cores decaying to roundoff under
 the conservation laws (the trap of \cref{prop:A-trap}), or a plateau outlasts the budget. Both appear in
@@ -699,7 +698,14 @@ the odeco runs of \cref{sec:s2s-phenomenology}, whose routes span the tree, and 
 of \cref{sec:s2s-locality}. An odeco run is \emph{trapped} if a component not yet learned has a route-end
 slice below $10^{-8}\isc$ and \emph{stalled} if its budget ended with every such slice above it
 (\cref{app:exp-s2s}); a pattern-teacher run is flagged \emph{stalled} when its gradient stays below
-$10^{-12}$, and \emph{dead} when a longer run confirms route ends at roundoff.
+$10^{-12}$, and \emph{dead} when a longer run confirms route ends at roundoff. The regime maps meet the
+same trap at $\chi$ equal to the teacher rank, as \cref{app:boundaries} predicts (\empirical{};
+\cref{sec:other-stalled}):
+on binary8 ($\Kc=7$) and MPS8 ($\Kc=8$) most runs never learn the last component, whose route runs
+through all $\Kc$ cores, in the plain as in the centred model; from fan-in initialization that route ends
+dead (28 of 32 stalled plain runs), and balanced initialization removes the dead routes but not the
+stalls. Spare channels remove the stalls where every route end has one (binary8 at $\chi=6$), not where
+the end bonds are capped at the teacher rank (MPS8 at $d=3$).
 
 \paragraph{Odeco teachers: the trap grows with $\Kc$} (\cref{fig:s2s-dormant}).
 \empirical{} \newresult{} No run traps at $\Kc=3$ (0 of 380). On MPS4 at $\chi=3$ the separated teacher's outcome
