@@ -73,6 +73,9 @@ if __name__ == "__main__":
     ap.add_argument("configs", nargs="+", help="YAML configs (a trailing integer = process count)")
     ap.add_argument("--n-proc", type=int, default=340)
     ap.add_argument("--out", default=run_regime.OUT, help="raw output root (default /root/outputs/regime_map)")
+    ap.add_argument("--order", default="cost", choices=["cost", "sigma_desc"],
+                    help="cost: big trees and small sigma first; sigma_desc: large sigma first (boundary and"
+                    " lazy regions before the deep S2S points, which are certain and slowest)")
     a = ap.parse_args()
     paths = list(a.configs)
     if paths[-1].isdigit():
@@ -82,4 +85,5 @@ if __name__ == "__main__":
     for path in paths:
         with open(path) as f:
             runs += expand(yaml.safe_load(f))
-    run_regime.run_sweep(runs, n_proc=a.n_proc, order=expected_cost)
+    order = expected_cost if a.order == "cost" else (lambda c: (-c["sigma"], -c["n"]))
+    run_regime.run_sweep(runs, n_proc=a.n_proc, order=order)

@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-10 02:58 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-10 04:56 UTC
 
 ## Summary
 Task: phase diagrams of saddle-to-saddle (S2S), rich non-incremental and lazy dynamics over init scale
@@ -203,3 +203,4 @@ K = 7 (`large_chi_b8`). Interim data and figures of the first report are in `res
 - 01:37 started the centred sigma x K sweep (d = 2) alongside the N = 4 tail (two-copy deficient escapes at large sigma)
 - 01:52 heavy pool too slow (~1350 runs left at ~4/min): dropped the remaining d = 3 sigma x K runs (K <= 8; 252 done, d = 2 sweeps cover K); restarted heavy pool with the N = 8 maps, the d = 2 plain and full-bond K sweeps and large-chi K = 7
 - 02:55 centred loss with small W_0 switched to the direct form (decision 15, verified); restarted the heavy pool with the centred sigma x K sweep included (1885 runs)
+- 04:55 heavy pool down to ~1 run/min (in-flight K = 10-12 deep-S2S centred runs); restarted it in sigma-descending order (boundary and lazy regions first, deep S2S points last)
