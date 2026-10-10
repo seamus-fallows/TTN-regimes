@@ -1,0 +1,601 @@
+1836 jobs, 125 processes
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[1/1836      15s] HA C2 seed=11 x=1e-05  trapped (15s)
+[2/1836      15s] HA C2 seed=5 x=1e-05  trapped (15s)
+[3/1836      15s] HA C2 seed=1 x=1e-05  trapped (15s)
+[4/1836      16s] HA C2 seed=0 x=1.778e-05  trapped (15s)
+[5/1836      16s] HA C2 seed=5 x=1.778e-05  trapped (16s)
+[6/1836      16s] HA C2 seed=0 x=1e-05  trapped (16s)
+[7/1836      17s] HA C2 seed=9 x=1e-05  trapped (16s)
+[8/1836      17s] HA C2 seed=3 x=1e-05  trapped (17s)
+[9/1836      17s] HA C2 seed=3 x=1.778e-05  trapped (17s)
+[10/1836      17s] HA C2 seed=11 x=1.778e-05  trapped (17s)
+[11/1836      19s] HA C2 seed=8 x=1e-05  trapped (19s)
+[12/1836      21s] HA C2 seed=8 x=1.778e-05  trapped (20s)
+[13/1836      32s] HA C2 seed=0 x=3.162e-05  trapped (14s)
+[14/1836      35s] HA C2 seed=3 x=3.162e-05  trapped (16s)
+[15/1836      37s] HA PS06 seed=11 x=1e-05  trapped (37s)
+[16/1836      40s] HA PS06 seed=0 x=1e-05  trapped (39s)
+[17/1836      40s] HA PS06 seed=1 x=1e-05  trapped (40s)
+[18/1836      44s] HA C2 seed=5 x=3.162e-05  trapped (13s)
+[19/1836      45s] HA PS06 seed=5 x=1e-05  trapped (44s)
+[20/1836      45s] HA PS06 seed=8 x=1e-05  trapped (45s)
+[21/1836      49s] HA PS06 seed=8 x=1.778e-05  trapped (48s)
+[22/1836      50s] HA PS06 seed=5 x=1.778e-05  trapped (50s)
+[23/1836      51s] HA PS06 seed=5 x=3.162e-05  trapped (51s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[24/1836      57s] HA C2 seed=7 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (57s)
+[25/1836      59s] HA C2 seed=11 x=3.162e-05  trapped (14s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[26/1836      64s] HA C2 seed=4 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (63s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[27/1836      65s] HA C2 seed=7 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (65s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[28/1836      68s] HA C2 seed=4 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (68s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[29/1836      75s] HA C2 seed=6 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (75s)
+[30/1836      77s] HA C2 seed=6 x=1.778e-05  event t_esc=1184525152973940.8 (77s)
+[31/1836      85s] HA C2 seed=4 x=3.162e-05  event t_esc=18708548324560.85 (65s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[32/1836      89s] HA C2 seed=2 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (71s)
+[33/1836      93s] HA C2 seed=7 x=3.162e-05  event t_esc=9849547889186.121 (56s)
+[34/1836      94s] HA C2 seed=2 x=1.778e-05  event t_esc=5.304211536556653e+16 (94s)
+[35/1836     111s] HA C2 seed=6 x=3.162e-05  event t_esc=210601898789291.66 (76s)
+[36/1836     122s] HA C2 seed=2 x=1e-05  event t_esc=5.2995530017998336e+17 (122s)
+[37/1836     131s] HA W6 seed=7 x=1.778e-05  event t_esc=851852767.4690391 (130s)
+[38/1836     132s] HA W6 seed=3 x=3.162e-05  event t_esc=1150859927.5324252 (131s)
+[39/1836     140s] HA W6 seed=2 x=3.162e-05  event t_esc=303344766.184318 (139s)
+[40/1836     144s] HA W6 seed=0 x=1.778e-05  event t_esc=2239690084.56202 (144s)
+[41/1836     144s] HA W6 seed=7 x=3.162e-05  event t_esc=269391367.1212478 (129s)
+[42/1836     145s] HA PS08 seed=4 x=3.162e-05  event t_esc=1502187970.8072693 (145s)
+[43/1836     146s] HA W6 seed=0 x=3.162e-05  event t_esc=708387932.4532807 (145s)
+[44/1836     149s] HA PS08 seed=4 x=1.778e-05  event t_esc=4750802045.248302 (148s)
+[45/1836     149s] HA W6 seed=3 x=1e-05  event t_esc=11506891647.296215 (149s)
+[46/1836     150s] HA W6 seed=2 x=1.778e-05  event t_esc=959249430.2197157 (150s)
+[47/1836     150s] HA W6 seed=5 x=1.778e-05  event t_esc=5743288940.570551 (150s)
+[48/1836     151s] HA W6 seed=2 x=1e-05  event t_esc=3033393600.4659376 (150s)
+[49/1836     151s] HA W6 seed=4 x=1.778e-05  event t_esc=1064136883.3800224 (151s)
+[50/1836     151s] HA W6 seed=7 x=1e-05  event t_esc=2693728252.705936 (151s)
+[51/1836     152s] HA W6 seed=3 x=1.778e-05  event t_esc=3638992985.751441 (151s)
+[52/1836     152s] HA PS08 seed=7 x=1.778e-05  event t_esc=3802862135.3461037 (151s)
+[53/1836     152s] HA W6 seed=8 x=1.778e-05  event t_esc=3482854659.4315186 (152s)
+[54/1836     152s] HA W6 seed=1 x=1.778e-05  event t_esc=1298966642.3746204 (152s)
+[55/1836     153s] HA W6 seed=9 x=1e-05  event t_esc=18651279049.324913 (152s)
+[56/1836     153s] HA PS08 seed=1 x=3.162e-05  event t_esc=1833892576.2754169 (152s)
+[57/1836     153s] HA W6 seed=4 x=1e-05  event t_esc=3365341346.748332 (153s)
+[58/1836     153s] HA W6 seed=1 x=3.162e-05  event t_esc=410818405.4151797 (153s)
+[59/1836     154s] HA PS08 seed=10 x=3.162e-05  event t_esc=7380985567.596132 (153s)
+[60/1836     154s] HA W6 seed=4 x=3.162e-05  event t_esc=336466056.8971434 (154s)
+[61/1836     154s] HA W6 seed=1 x=1e-05  event t_esc=4107417182.441118 (154s)
+[62/1836     155s] HA PS08 seed=7 x=3.162e-05  event t_esc=1202610762.2697358 (154s)
+[63/1836     155s] HA W6 seed=10 x=1.778e-05  event t_esc=5228754224.394926 (155s)
+[64/1836     155s] HA PS08 seed=1 x=1.778e-05  event t_esc=5798748129.705174 (155s)
+[65/1836     157s] HA W6 seed=8 x=3.162e-05  event t_esc=1101637038.8475819 (141s)
+[66/1836     158s] HA W6 seed=5 x=1e-05  event t_esc=18161270439.035645 (157s)
+[67/1836     158s] HA W6 seed=11 x=1e-05  event t_esc=22001911503.466084 (157s)
+[68/1836     158s] HA W6 seed=6 x=1e-05  event t_esc=16628917892.618666 (158s)
+[69/1836     159s] HA W6 seed=6 x=1.778e-05  event t_esc=5258584213.200427 (158s)
+[70/1836     159s] HA PS08 seed=0 x=1.778e-05  event t_esc=9998461647.021269 (158s)
+[71/1836     160s] HA PS08 seed=6 x=3.162e-05  event t_esc=7424063625.628216 (160s)
+[72/1836     161s] HA PS08 seed=1 x=1e-05  event t_esc=18336310375.230053 (161s)
+[73/1836     162s] HA PS08 seed=9 x=1.778e-05  event t_esc=26330948217.440582 (161s)
+[74/1836     162s] HA W6 seed=6 x=3.162e-05  event t_esc=1662943326.1850052 (147s)
+[75/1836     162s] HA PS08 seed=2 x=1e-05  event t_esc=13542399745.25653 (162s)
+[76/1836     162s] HA W6 seed=9 x=3.162e-05  event t_esc=1864869291.916892 (146s)
+[77/1836     163s] HA PS08 seed=4 x=1e-05  event t_esc=15024184977.831692 (162s)
+[78/1836     163s] HA W6 seed=10 x=1e-05  event t_esc=16536260981.338951 (163s)
+[79/1836     163s] HA W6 seed=0 x=1e-05  event t_esc=7081758995.638185 (163s)
+[80/1836     164s] HA W6 seed=9 x=1.778e-05  event t_esc=5897757932.058597 (163s)
+[81/1836     164s] HA PS08 seed=2 x=1.778e-05  event t_esc=4282624440.4612584 (164s)
+[82/1836     164s] HA PS08 seed=9 x=3.162e-05  event t_esc=8326249331.684557 (164s)
+[83/1836     165s] HA W6 seed=11 x=1.778e-05  event t_esc=6953874990.009615 (165s)
+[84/1836     166s] HA PS08 seed=7 x=1e-05  event t_esc=12025480108.137781 (165s)
+[85/1836     166s] HA PS08 seed=0 x=3.162e-05  event t_esc=3162359011.956322 (165s)
+[86/1836     166s] HA W6 seed=10 x=3.162e-05  event t_esc=1653212655.861349 (150s)
+[87/1836     166s] HA PS08 seed=2 x=3.162e-05  event t_esc=1354364404.3783035 (166s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[88/1836     167s] HA PS08 seed=0 x=1e-05  event t_esc=31614720405.32367 (166s)
+[89/1836     167s] HA PS06 seed=7 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (166s)
+[90/1836     167s] HA PS08 seed=8 x=3.162e-05  event t_esc=4918135558.595132 (166s)
+[91/1836     167s] HA C2 seed=5 x=5.623e-05  trapped (13s)
+[92/1836     167s] HA W6 seed=8 x=1e-05  event t_esc=11012282375.181843 (167s)
+[93/1836     167s] HA C2 seed=0 x=5.623e-05  trapped (14s)
+[94/1836     167s] HA PS08 seed=8 x=1e-05  event t_esc=49162332222.62571 (167s)
+[95/1836     167s] HA W6 seed=5 x=3.162e-05  event t_esc=1816294847.317182 (152s)
+[96/1836     170s] HA PS08 seed=11 x=1.778e-05  event t_esc=31036179846.834126 (169s)
+[97/1836     170s] HA W6 seed=11 x=3.162e-05  event t_esc=2196911147.0113974 (154s)
+[98/1836     170s] HA PS08 seed=3 x=1e-05  event t_esc=51370664921.15345 (170s)
+[99/1836     171s] HA C2 seed=3 x=5.623e-05  trapped (17s)
+[100/1836     173s] HA PS08 seed=3 x=1.778e-05  event t_esc=16245849049.15843 (172s)
+[101/1836     173s] HA C2 seed=11 x=5.623e-05  trapped (15s)
+[102/1836     173s] HA PS08 seed=3 x=3.162e-05  event t_esc=5137961330.31997 (173s)
+[103/1836     174s] HA PS06 seed=7 x=3.162e-05  event t_esc=88928154394208.45 (174s)
+[104/1836     174s] HA PS08 seed=8 x=1.778e-05  event t_esc=15548659301.80857 (174s)
+[105/1836     174s] HA PS08 seed=11 x=3.162e-05  event t_esc=9803212758.388468 (174s)
+[106/1836     175s] HA PS08 seed=5 x=1.778e-05  event t_esc=25638595585.956154 (175s)
+[107/1836     175s] HA PS08 seed=11 x=1e-05  event t_esc=98208727969.32051 (175s)
+[108/1836     175s] HA PS08 seed=6 x=1e-05  event t_esc=74236903088.73836 (175s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[109/1836     176s] HA PS06 seed=4 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (176s)
+[110/1836     177s] HA PS08 seed=10 x=1e-05  event t_esc=73824402952.00891 (176s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[111/1836     178s] HA PS06 seed=4 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (178s)
+[112/1836     179s] HA PS08 seed=6 x=1.778e-05  event t_esc=23476194949.327545 (179s)
+[113/1836     180s] HA PS08 seed=10 x=1.778e-05  event t_esc=23343670094.90176 (179s)
+[114/1836     180s] HA PS08 seed=5 x=3.162e-05  event t_esc=8107847662.52082 (180s)
+[115/1836     185s] HA PS08 seed=5 x=1e-05  event t_esc=81075167148.7444 (184s)
+[116/1836     186s] HA PS08 seed=9 x=1e-05  event t_esc=83267611435.828 (186s)
+[117/1836     189s] HA C2 seed=10 x=3.162e-05  event t_esc=3.5989484506862163e+17 (144s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[118/1836     189s] HA PS06 seed=6 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (188s)
+[119/1836     189s] HA PS08 seed=0 x=5.623e-05  event t_esc=1000345321.734293 (144s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[120/1836     189s] HA PS06 seed=9 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (189s)
+[121/1836     193s] HA PS08 seed=2 x=5.623e-05  event t_esc=428332424.7462512 (143s)
+[122/1836     193s] HA PS06 seed=7 x=1e-05  event t_esc=2812120448652340.5 (193s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[123/1836     194s] HA PS06 seed=9 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (193s)
+[124/1836     202s] HA C2 seed=0 x=0.0001  trapped (16s)
+[125/1836     207s] HA C2 seed=3 x=0.0001  trapped (17s)
+[126/1836     207s] HA PS08 seed=4 x=5.623e-05  event t_esc=474950587.81762105 (150s)
+[127/1836     208s] HA C2 seed=5 x=0.0001  trapped (15s)
+[128/1836     210s] HA PS08 seed=6 x=5.623e-05  event t_esc=2347829455.79351 (146s)
+[129/1836     210s] HA PS08 seed=1 x=5.623e-05  event t_esc=580021908.7664592 (161s)
+[130/1836     214s] HA C2 seed=7 x=5.623e-05  event t_esc=1751434383746.3428 (59s)
+[131/1836     215s] HA PS08 seed=3 x=5.623e-05  event t_esc=1625088229.1155233 (164s)
+[132/1836     215s] HA PS06 seed=4 x=1e-05  event t_esc=2171803024352527.5 (215s)
+[133/1836     216s] HA C2 seed=1 x=3.162e-05  event t_esc=1.1543469228804728e+18 (199s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[134/1836     216s] HA C2 seed=6 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (61s)
+[135/1836     217s] HA C2 seed=4 x=5.623e-05  event t_esc=3326681348527.636 (63s)
+[136/1836     218s] HA C1 seed=10 x=0.0001  trapped (38s)
+[137/1836     220s] HA PS08 seed=9 x=5.623e-05  event t_esc=2632807007.184121 (144s)
+[138/1836     223s] HA PS08 seed=5 x=5.623e-05  event t_esc=2564045768.3604655 (164s)
+[139/1836     223s] HA PS06 seed=9 x=1e-05  event t_esc=4609271588259073.0 (222s)
+[140/1836     223s] HA C2 seed=11 x=0.0001  trapped (15s)
+[141/1836     224s] HA PS08 seed=7 x=5.623e-05  event t_esc=380321508.7639059 (159s)
+[142/1836     232s] HA C2 seed=2 x=5.623e-05  event t_esc=532744402295887.6 (79s)
+[143/1836     232s] HA C1 seed=0 x=0.0001  trapped (58s)
+[144/1836     236s] HA PS08 seed=10 x=5.623e-05  event t_esc=2333549143.342641 (159s)
+[145/1836     238s] HA PS08 seed=8 x=5.623e-05  event t_esc=1555936223.5076377 (170s)
+[146/1836     245s] HA PS08 seed=11 x=5.623e-05  event t_esc=3093739697.504646 (159s)
+[147/1836     246s] HA PS06 seed=6 x=1.778e-05  event t_esc=7338162890090955.0 (246s)
+[148/1836     250s] HA C2 seed=7 x=0.0001  event t_esc=311425374148.47284 (57s)
+[149/1836     253s] HA C2 seed=4 x=0.0001  event t_esc=591506912137.6333 (64s)
+[150/1836     257s] HA C2 seed=10 x=5.623e-05  event t_esc=3.5992337286597224e+16 (99s)
+[151/1836     257s] HA PS06 seed=6 x=1e-05  event t_esc=4.1270974240564584e+16 (257s)
+[152/1836     258s] HA C2 seed=6 x=0.0001  event t_esc=6653610610671.282 (65s)
+[153/1836     258s] HA C2 seed=2 x=0.0001  event t_esc=53541739932323.6 (69s)
+[154/1836     270s] HA PS06 seed=0 x=0.0001  trapped (106s)
+[155/1836     271s] HA C2 seed=1 x=5.623e-05  event t_esc=1.1539368053263725e+17 (118s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[156/1836     278s] HA PS06 seed=4 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (155s)
+[157/1836     282s] HA C1 seed=7 x=0.0001  trapped (104s)
+[158/1836     285s] HA C2 seed=1 x=0.0001  event t_esc=1.1532085424782612e+16 (97s)
+[159/1836     288s] HA W6 seed=4 x=5.623e-05  event t_esc=106375413.15485588 (138s)
+[160/1836     291s] HA C2 seed=10 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (83s)
+[161/1836     294s] HA W6 seed=7 x=5.623e-05  event t_esc=85195708.11290634 (142s)
+[162/1836     295s] HA W6 seed=9 x=5.623e-05  event t_esc=589630378.8840421 (143s)
+[163/1836     296s] HA W6 seed=3 x=0.0001  event t_esc=115140035.24186164 (128s)
+[164/1836     296s] HA W6 seed=2 x=5.623e-05  event t_esc=95927987.179748 (146s)
+[165/1836     298s] HA W6 seed=5 x=5.623e-05  event t_esc=574423297.8409041 (147s)
+[166/1836     302s] HA PS08 seed=2 x=0.0001  event t_esc=135475801.64011434 (143s)
+[167/1836     304s] HA W6 seed=3 x=5.623e-05  event t_esc=363995352.6651816 (154s)
+[168/1836     305s] HA PS08 seed=4 x=0.0001  event t_esc=150145925.08749145 (143s)
+[169/1836     307s] HA W6 seed=1 x=5.623e-05  event t_esc=129939795.70537557 (157s)
+[170/1836     307s] HA W6 seed=10 x=0.0001  event t_esc=165190628.36649776 (134s)
+[171/1836     309s] HA C2 seed=10 x=1.778e-05  event t_esc=3.598788011391467e+18 (308s)
+[172/1836     309s] HA W6 seed=8 x=5.623e-05  event t_esc=348515464.32623935 (157s)
+[173/1836     309s] HA W6 seed=10 x=5.623e-05  event t_esc=522642993.7867939 (157s)
+[174/1836     310s] HA W6 seed=6 x=0.0001  event t_esc=166310646.19604924 (140s)
+[175/1836     311s] HA W6 seed=2 x=0.0001  event t_esc=30336192.147214707 (143s)
+[176/1836     311s] HA W6 seed=6 x=5.623e-05  event t_esc=525887412.2500014 (159s)
+[177/1836     311s] HA W6 seed=4 x=0.0001  event t_esc=33625089.935616545 (141s)
+[178/1836     313s] HA PS08 seed=7 x=0.0001  event t_esc=120280932.14171962 (151s)
+[179/1836     313s] HA W6 seed=0 x=0.0001  event t_esc=70905990.09942392 (146s)
+[180/1836     316s] HA PS08 seed=5 x=0.0001  event t_esc=810889590.0340501 (155s)
+[181/1836     317s] HA PS08 seed=1 x=0.0001  event t_esc=183471994.8082136 (159s)
+[182/1836     319s] HA C1 seed=2 x=0.0001  trapped (144s)
+[183/1836     321s] HA PS08 seed=0 x=0.0001  event t_esc=316516974.53163296 (163s)
+[184/1836     321s] HA W6 seed=11 x=5.623e-05  event t_esc=693551043.0732824 (169s)
+[185/1836     322s] HA W6 seed=9 x=0.0001  event t_esc=186405171.70025006 (149s)
+[186/1836     322s] HA PS08 seed=3 x=0.0001  event t_esc=514079297.90140283 (161s)
+[187/1836     323s] HA PS06 seed=7 x=5.623e-05  event t_esc=15814131850711.23 (183s)
+[188/1836     324s] HA W6 seed=7 x=0.0001  event t_esc=26945006.695149064 (153s)
+[189/1836     326s] HA W6 seed=0 x=5.623e-05  event t_esc=224088337.3972377 (177s)
+[190/1836     327s] HA PS08 seed=11 x=0.0001  event t_esc=974818138.7252967 (163s)
+[191/1836     327s] HA PS06 seed=4 x=0.0001  event t_esc=2172535140598.7202 (161s)
+[192/1836     327s] HA PS06 seed=9 x=5.623e-05  event t_esc=25945926356788.04 (183s)
+[193/1836     327s] HA PS06 seed=0 x=5.623e-05  trapped (238s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[194/1836     327s] HA PS06 seed=6 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (195s)
+[195/1836     330s] HA PS08 seed=6 x=0.0001  event t_esc=742524472.0829936 (168s)
+[196/1836     330s] HA W6 seed=11 x=0.0001  event t_esc=218666317.49023607 (156s)
+[197/1836     332s] HA PS06 seed=1 x=5.623e-05  event t_esc=5.133134386852774e+16 (239s)
+[198/1836     334s] HA W6 seed=5 x=0.0001  event t_esc=181682614.29286325 (163s)
+[199/1836     336s] HA PS06 seed=1 x=3.162e-05  event t_esc=5.1331476228486803e+17 (336s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[200/1836     337s] HA PS06 seed=6 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (171s)
+[201/1836     338s] HA PS08 seed=10 x=0.0001  event t_esc=737638824.6454976 (175s)
+[202/1836     338s] HA PS06 seed=7 x=0.0001  event t_esc=2812264097242.1177 (172s)
+[203/1836     338s] HA W6 seed=1 x=0.0001  event t_esc=41106102.339654 (171s)
+[204/1836     342s] HA C2 seed=8 x=0.0001  event t_esc=3.485990910934258e+17 (140s)
+[205/1836     344s] HA PS08 seed=8 x=0.0001  event t_esc=492415964.63344103 (182s)
+[206/1836     345s] HA W6 seed=8 x=0.0001  event t_esc=110293153.59419657 (172s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[207/1836     345s] HA PS06 seed=1 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (181s)
+[208/1836     347s] HA PS06 seed=9 x=0.0001  event t_esc=4618318919925.445 (181s)
+[209/1836     353s] HA C1 seed=11 x=0.0001  trapped (168s)
+[210/1836     361s] HA PS08 seed=9 x=0.0001  event t_esc=832463089.5321902 (198s)
+[211/1836     365s] HA C2 seed=9 x=0.0001  event t_esc=5.046584787175007e+17 (158s)
+[212/1836     373s] HA C1 seed=4 x=0.0001  trapped (198s)
+[213/1836     374s] HA C1 seed=0 x=0.0001778  trapped (37s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[214/1836     374s] HA HT4L seed=3 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (142s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[215/1836     384s] HA HT4L seed=2 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (152s)
+[216/1836     388s] HA C2 seed=0 x=0.0001778  trapped (15s)
+[217/1836     398s] HA C2 seed=3 x=0.0001778  trapped (15s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[218/1836     405s] HA C1 seed=1 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (231s)
+[219/1836     407s] HA C1 seed=10 x=0.0001778  trapped (46s)
+[220/1836     410s] HA C2 seed=5 x=0.0001778  trapped (12s)
+[221/1836     417s] HA PS06 seed=3 x=1e-05  trapped (417s)
+[222/1836     419s] HA PS06 seed=0 x=0.0001778  trapped (108s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[223/1836     425s] HA PS06 seed=10 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (258s)
+[224/1836     428s] HA HT4W seed=2 x=0.0001  event t_esc=6384451027803571.0 (214s)
+[225/1836     428s] HA HT4W seed=3 x=0.0001  event t_esc=4521125569340248.0 (213s)
+[226/1836     429s] HA PS08 seed=7 x=0.0001778  event t_esc=38043323.37383007 (121s)
+[227/1836     430s] HA HT4W seed=10 x=0.0001  event t_esc=1.4037767740892234e+16 (207s)
+[228/1836     436s] HA HT4L seed=10 x=0.0001  event t_esc=1.5205450721397706e+16 (179s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[229/1836     437s] HA HT4L seed=7 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (190s)
+[230/1836     437s] HA HT4W seed=6 x=0.0001  event t_esc=7.728301153312082e+16 (221s)
+[231/1836     440s] HA C2 seed=4 x=0.0001778  event t_esc=105164323633.41034 (53s)
+[232/1836     441s] HA C2 seed=11 x=0.0001778  trapped (17s)
+[233/1836     441s] HA PS08 seed=0 x=0.0001778  event t_esc=100192968.41220313 (145s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[234/1836     442s] HA HT4W seed=7 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (225s)
+[235/1836     442s] HA PS08 seed=4 x=0.0001778  event t_esc=47454095.877757594 (138s)
+[236/1836     442s] HA PS06 seed=10 x=5.623e-05  event t_esc=1.1485878724300331e+17 (297s)
+[237/1836     445s] HA C1 seed=5 x=0.0001  trapped (269s)
+[238/1836     446s] HA W6 seed=7 x=0.0001778  event t_esc=8522875.210535252 (116s)
+[239/1836     447s] HA C2 seed=1 x=0.0001778  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (73s)
+[240/1836     450s] HA PS08 seed=2 x=0.0001778  event t_esc=42855383.88387782 (148s)
+[241/1836     450s] HA C2 seed=2 x=0.0001778  event t_esc=5402223404023.611 (76s)
+[242/1836     454s] HA PS06 seed=4 x=0.0001778  event t_esc=386450053716.7872 (138s)
+[243/1836     456s] HA W6 seed=2 x=0.0001778  event t_esc=9593766.730672708 (130s)
+[244/1836     459s] HA PS08 seed=5 x=0.0001778  event t_esc=256463634.5714695 (152s)
+[245/1836     460s] HA C1 seed=9 x=0.0001  trapped (280s)
+[246/1836     462s] HA C1 seed=4 x=0.0001778  trapped (120s)
+[247/1836     463s] HA W6 seed=6 x=0.0001778  event t_esc=52597925.29347756 (136s)
+[248/1836     464s] HA C2 seed=6 x=0.0001778  event t_esc=1181944409329.0342 (59s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[249/1836     464s] HA PS06 seed=7 x=0.0001778  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (143s)
+[250/1836     465s] HA C2 seed=7 x=0.0001778  event t_esc=55371091017.84622 (58s)
+[251/1836     465s] HA W6 seed=0 x=0.0001778  event t_esc=22446714.592829205 (141s)
+[252/1836     465s] HA W6 seed=3 x=0.0001778  event t_esc=36429952.35254384 (138s)
+[253/1836     467s] HA W6 seed=1 x=0.0001778  event t_esc=13007629.426695546 (142s)
+[254/1836     468s] HA W6 seed=4 x=0.0001778  event t_esc=10625449.420096062 (140s)
+[255/1836     469s] HA PS08 seed=3 x=0.0001778  event t_esc=162668180.29279745 (165s)
+[256/1836     469s] HA PS06 seed=3 x=0.0001  trapped (304s)
+[257/1836     469s] HA PS08 seed=6 x=0.0001778  event t_esc=234849401.6728851 (162s)
+[258/1836     471s] HA W6 seed=11 x=0.0001778  event t_esc=68786550.5228663 (135s)
+[259/1836     472s] HA HT4L seed=6 x=0.0001  event t_esc=8.222934460394534e+16 (227s)
+[260/1836     472s] HA PS06 seed=10 x=3.162e-05  event t_esc=1.1488410919822107e+18 (472s)
+[261/1836     474s] HA HT4L seed=11 x=0.0001  event t_esc=1.3470471386597744e+17 (216s)
+[262/1836     475s] HA C1 seed=2 x=0.0001778  trapped (136s)
+[263/1836     475s] HA HT4W seed=11 x=0.0001  event t_esc=1.2245633913068589e+17 (252s)
+[264/1836     475s] HA C2 seed=9 x=5.623e-05  event t_esc=5.045641918986839e+18 (318s)
+[265/1836     476s] HA PS08 seed=1 x=0.0001778  event t_esc=58048735.66890355 (178s)
+[266/1836     477s] HA PS06 seed=5 x=0.0001778  trapped (160s)
+[267/1836     479s] HA C1 seed=5 x=0.0001778  trapped (135s)
+[268/1836     482s] HA PS08 seed=10 x=0.0001778  event t_esc=233096576.63466898 (171s)
+[269/1836     484s] HA PS08 seed=9 x=0.0001778  event t_esc=263189694.0958247 (175s)
+[270/1836     485s] HA PS06 seed=3 x=0.0001778  trapped (172s)
+[271/1836     485s] HA PS08 seed=8 x=0.0001778  event t_esc=155932921.12456375 (176s)
+[272/1836     485s] HA PS06 seed=6 x=0.0001778  event t_esc=7318382094435.072 (166s)
+[273/1836     490s] HA HT4L seed=0 x=0.0001  event t_esc=3.794097664008351e+17 (267s)
+[274/1836     491s] HA W6 seed=8 x=0.0001778  event t_esc=34924453.62323823 (161s)
+[275/1836     491s] HA HT4L seed=1 x=0.0001  event t_esc=3.0123366514659144e+16 (267s)
+[276/1836     491s] HA PS06 seed=5 x=0.0001  trapped (325s)
+[277/1836     492s] HA C1 seed=3 x=0.0001778  trapped (153s)
+[278/1836     493s] HA C2 seed=8 x=5.623e-05  event t_esc=3.4702486775827656e+18 (337s)
+[279/1836     497s] HA C1 seed=9 x=0.0001778  trapped (144s)
+[280/1836     498s] HA PS06 seed=9 x=0.0001778  event t_esc=822667455956.6436 (177s)
+[281/1836     498s] HA PS08 seed=11 x=0.0001778  event t_esc=306329689.08416855 (188s)
+[282/1836     499s] HA W6 seed=10 x=0.0001778  event t_esc=52190903.41078262 (166s)
+[283/1836     500s] HA W6 seed=9 x=0.0001778  event t_esc=58917077.32660643 (168s)
+[284/1836     503s] HA C2 seed=8 x=0.0001778  event t_esc=3.5142704581950084e+16 (93s)
+[285/1836     503s] HA C1 seed=3 x=0.0001  trapped (328s)
+[286/1836     506s] HA W6 seed=5 x=0.0001778  event t_esc=57472249.50973994 (179s)
+[287/1836     507s] HA C1 seed=6 x=0.0001  event t_esc=9.474725239616976e+16 (330s)
+[288/1836     507s] HA HT4W seed=1 x=0.0001  event t_esc=2.7244763493033896e+16 (297s)
+[289/1836     517s] HA HT4L seed=8 x=0.0001  event t_esc=2.5604302980663318e+17 (266s)
+[290/1836     517s] HA PS06 seed=11 x=0.0001  event t_esc=1.8841592781152067e+17 (350s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[291/1836     524s] HA PS06 seed=10 x=0.0001778  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (203s)
+[292/1836     527s] HA C2 seed=9 x=0.0001778  event t_esc=5.048264356210483e+16 (110s)
+[293/1836     528s] HA PS06 seed=1 x=0.0001778  event t_esc=513309983254859.06 (217s)
+[294/1836     531s] HA HT4L seed=5 x=0.0001  event t_esc=8.413205426699619e+17 (293s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[295/1836     536s] HA C2 seed=10 x=0.0001778  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 129, in run_ha |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     if solver.status == "failed": |                      ^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (117s)
+[296/1836     537s] HA HT4W seed=4 x=0.0001  event t_esc=2.6426648985990227e+17 (321s)
+[297/1836     538s] HA HT4L seed=4 x=0.0001  event t_esc=4.16802997030104e+17 (302s)
+[298/1836     540s] HA HT4W seed=8 x=0.0001  event t_esc=3.135085210228705e+17 (322s)

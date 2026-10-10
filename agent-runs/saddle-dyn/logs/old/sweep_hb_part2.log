@@ -1,0 +1,724 @@
+842 jobs, 62 processes
+[1/842      15s] HB PS08 seed=26 x=0.0003162  residual_first (14s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[2/842      18s] HB PS06 seed=3 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+[3/842      18s] HB PS08 seed=5 x=0.0005623  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[4/842      18s] HB PS08 seed=17 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[5/842      18s] HB PS08 seed=8 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+[6/842      18s] HB PS08 seed=9 x=0.0005623  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[7/842      18s] HB PS08 seed=25 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[8/842      19s] HB PS06 seed=8 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[9/842      19s] HB PS08 seed=1 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[10/842      19s] HB PS08 seed=21 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[11/842      19s] HB PS06 seed=0 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[12/842      19s] HB PS06 seed=7 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[13/842      19s] HB PS08 seed=3 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+[14/842      19s] HB PS08 seed=24 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[15/842      19s] HB PS08 seed=38 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[16/842      19s] HB PS08 seed=20 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[17/842      19s] HB PS08 seed=7 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+[18/842      19s] HB PS08 seed=1 x=0.0003162  residual_first (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[19/842      19s] HB PS08 seed=31 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+[20/842      20s] HB PS08 seed=32 x=0.0003162  residual_first (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[21/842      20s] HB PS06 seed=9 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+[22/842      20s] HB PS08 seed=18 x=0.0003162  residual_first (20s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[23/842      20s] HB PS08 seed=13 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+[24/842      20s] HB PS08 seed=8 x=0.0005623  residual_first (20s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[25/842      20s] HB PS08 seed=16 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+[26/842      20s] HB PS08 seed=11 x=0.0003162  residual_first (20s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[27/842      20s] HB PS08 seed=34 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[28/842      20s] HB PS06 seed=11 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[29/842      21s] HB PS08 seed=28 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[30/842      21s] HB PS08 seed=23 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[31/842      21s] HB PS08 seed=39 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (21s)
+[32/842      21s] HB PS08 seed=0 x=0.0005623  residual_first (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[33/842      21s] HB PS08 seed=5 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (21s)
+[34/842      21s] HB PS06 seed=5 x=0.0003162  residual_first (21s)
+[35/842      21s] HB PS08 seed=3 x=0.0005623  residual_first (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[36/842      21s] HB PS08 seed=36 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (21s)
+[37/842      22s] HB PS08 seed=12 x=0.0003162  residual_first (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[38/842      22s] HB PS08 seed=6 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[39/842      22s] HB PS08 seed=10 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (21s)
+[40/842      22s] HB PS08 seed=6 x=0.0005623  residual_first (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[41/842      22s] HB PS08 seed=9 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[42/842      22s] HB PS08 seed=0 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+[43/842      22s] HB PS08 seed=15 x=0.0003162  residual_first (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[44/842      22s] HB PS08 seed=27 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[45/842      22s] HB PS08 seed=2 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[46/842      22s] HB PS08 seed=4 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[47/842      22s] HB PS06 seed=4 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[48/842      22s] HB PS08 seed=37 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[49/842      22s] HB PS06 seed=6 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+[50/842      22s] HB PS08 seed=14 x=0.0003162  residual_first (22s)
+[51/842      22s] HB PS06 seed=10 x=0.0003162  residual_first (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[52/842      22s] HB PS08 seed=30 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[53/842      23s] HB PS08 seed=33 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[54/842      23s] HB PS08 seed=19 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (23s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[55/842      24s] HB PS08 seed=22 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (24s)
+[56/842      24s] HB PS08 seed=35 x=0.0003162  residual_first (24s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[57/842      31s] HB PS08 seed=10 x=0.0005623  residual_first (17s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[58/842      35s] HB PS08 seed=23 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (16s)
+[59/842      35s] HB PS08 seed=11 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+[60/842      36s] HB PS08 seed=16 x=0.0005623  residual_first (17s)
+[61/842      36s] HB PS08 seed=9 x=0.001  residual_first (13s)
+[62/842      37s] HB PS08 seed=18 x=0.0005623  residual_first (18s)
+[63/842      37s] HB PS08 seed=24 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+[64/842      37s] HB PS08 seed=12 x=0.0005623  residual_first (20s)
+[65/842      38s] HB PS06 seed=8 x=0.0005623  residual_first (16s)
+[66/842      38s] HB PS08 seed=39 x=0.0005623  residual_first (17s)
+[67/842      38s] HB PS08 seed=14 x=0.0005623  residual_first (20s)
+[68/842      38s] HB PS06 seed=3 x=0.0005623  residual_first (17s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[69/842      38s] HB PS06 seed=4 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (17s)
+[70/842      38s] HB PS08 seed=19 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[71/842      39s] HB PS08 seed=20 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+[72/842      39s] HB PS08 seed=15 x=0.0005623  residual_first (20s)
+[73/842      39s] HB PS08 seed=34 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+[74/842      39s] HB PS08 seed=3 x=0.001  residual_first (17s)
+[75/842      39s] HB PS08 seed=28 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+[76/842      39s] HB PS08 seed=22 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+[77/842      39s] HB PS08 seed=26 x=0.0005623  residual_first (20s)
+[78/842      39s] HB PS08 seed=36 x=0.0005623  residual_first (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[79/842      39s] HB PS06 seed=1 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+[80/842      39s] HB PS08 seed=32 x=0.0005623  residual_first (19s)
+[81/842      40s] HB PS08 seed=37 x=0.0005623  residual_first (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[82/842      40s] HB PS08 seed=33 x=0.0005623  residual_first (20s)
+[83/842      40s] HB PS06 seed=11 x=0.0005623  residual_first (18s)
+[84/842      40s] HB PS08 seed=11 x=0.001  residual_first (17s)
+[85/842      40s] HB PS08 seed=30 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+[86/842      40s] HB PS08 seed=0 x=0.001  residual_first (19s)
+[87/842      40s] HB PS08 seed=8 x=0.001  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[88/842      41s] HB PS08 seed=6 x=0.001  residual_first (18s)
+[89/842      41s] HB PS08 seed=38 x=0.0005623  residual_first (20s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[90/842      41s] HB PS08 seed=29 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (21s)
+[91/842      41s] HB PS06 seed=5 x=0.0005623  residual_first (19s)
+[92/842      41s] HB PS06 seed=6 x=0.0005623  residual_first (19s)
+[93/842      41s] HB PS08 seed=5 x=0.001  residual_first (19s)
+[94/842      41s] HB PS08 seed=10 x=0.001  residual_first (19s)
+[95/842      41s] HB PS08 seed=35 x=0.0005623  residual_first (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[96/842      42s] HB PS06 seed=2 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (21s)
+[97/842      42s] HB PS06 seed=10 x=0.0005623  residual_first (20s)
+[98/842      42s] HB PS08 seed=1 x=0.001  residual_first (20s)
+[99/842      43s] HB PS08 seed=12 x=0.001  residual_first (19s)
+[100/842      43s] HB PS06 seed=9 x=0.0005623  residual_first (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[101/842      50s] HB PS08 seed=14 x=0.001  residual_first (19s)
+[102/842      51s] HB PS08 seed=18 x=0.001  residual_first (15s)
+[103/842      53s] HB PS08 seed=16 x=0.001  residual_first (18s)
+[104/842      54s] HB PS08 seed=15 x=0.001  residual_first (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[105/842      56s] HB PS06 seed=5 x=0.001  residual_first (15s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[106/842      56s] HB PS08 seed=32 x=0.001  residual_first (17s)
+[107/842      56s] HB PS08 seed=30 x=0.001  residual_first (17s)
+[108/842      57s] HB PS08 seed=19 x=0.001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[109/842      57s] HB PS08 seed=29 x=0.001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+[110/842      57s] HB PS08 seed=39 x=0.001  residual_first (17s)
+[111/842      57s] HB PS08 seed=36 x=0.001  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[112/842      58s] HB PS08 seed=0 x=0.001778  residual_first (16s)
+[113/842      58s] HB PS08 seed=26 x=0.001  residual_first (19s)
+[114/842      58s] HB PS08 seed=3 x=0.001778  residual_first (16s)
+[115/842      58s] HB PS08 seed=37 x=0.001  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[116/842      59s] HB PS08 seed=33 x=0.001  residual_first (19s)
+[117/842      59s] HB PS06 seed=10 x=0.001  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[118/842      59s] HB PS06 seed=3 x=0.001  residual_first (19s)
+[119/842      59s] HB PS08 seed=38 x=0.001  residual_first (20s)
+[120/842      59s] HB PS06 seed=6 x=0.001  residual_first (18s)
+[121/842      59s] HB PS06 seed=8 x=0.001  residual_first (18s)
+[122/842      59s] HB PS08 seed=35 x=0.001  residual_first (20s)
+[123/842      60s] HB PS08 seed=5 x=0.001778  residual_first (17s)
+[124/842      60s] HB PS06 seed=9 x=0.001  residual_first (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[125/842      61s] HB PS08 seed=1 x=0.001778  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[126/842      62s] HB PS06 seed=11 x=0.001  residual_first (21s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[127/842      65s] HB PS08 seed=6 x=0.001778  residual_first (15s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[128/842      67s] HB PS08 seed=10 x=0.001778  residual_first (11s)
+[129/842      71s] HB PS08 seed=8 x=0.001778  residual_first (18s)
+[130/842      72s] HB PS08 seed=12 x=0.001778  residual_first (16s)
+[131/842      72s] HB PS08 seed=9 x=0.001778  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[132/842      73s] HB PS08 seed=11 x=0.001778  residual_first (17s)
+[133/842      74s] HB PS08 seed=16 x=0.001778  residual_first (17s)
+[134/842      74s] HB PS08 seed=15 x=0.001778  residual_first (17s)
+[135/842      75s] HB PS08 seed=18 x=0.001778  residual_first (17s)
+[136/842      75s] HB PS08 seed=14 x=0.001778  residual_first (18s)
+[137/842      76s] HB PS08 seed=26 x=0.001778  residual_first (17s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[138/842      77s] HB PS08 seed=19 x=0.001778  residual_first (19s)
+[139/842      77s] HB PS08 seed=7 x=0.0005623  escaped dt=70111.529296875 (77s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[140/842      78s] HB PS08 seed=30 x=0.001778  residual_first (17s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[141/842      78s] HB PS08 seed=33 x=0.001778  residual_first (12s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[142/842      81s] HB PS08 seed=32 x=0.001778  residual_first (15s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[143/842      88s] HB PS06 seed=0 x=0.001778  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (14s)
+[144/842      88s] HB PS08 seed=39 x=0.001778  residual_first (14s)
+[145/842      89s] HB PS08 seed=36 x=0.001778  residual_first (17s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[146/842      90s] HB PS08 seed=35 x=0.001778  residual_first (18s)
+[147/842      92s] HB PS08 seed=37 x=0.001778  residual_first (18s)
+[148/842      92s] HB PS08 seed=2 x=0.0003162  escaped dt=335358.3125 (91s)
+[149/842      93s] HB PS08 seed=38 x=0.001778  residual_first (19s)
+[150/842      93s] HB PS06 seed=3 x=0.001778  residual_first (16s)
+[151/842      94s] HB PS06 seed=6 x=0.001778  residual_first (16s)
+[152/842      95s] HB PS06 seed=5 x=0.001778  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[153/842     100s] HB PS08 seed=7 x=0.001  escaped dt=22170.81915283203 (77s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[154/842     103s] HB PS08 seed=2 x=0.001  escaped dt=33536.80078125 (81s)
+[155/842     104s] HB PS06 seed=9 x=0.001778  residual_first (15s)
+[156/842     106s] HB PS06 seed=8 x=0.001778  residual_first (18s)
+[157/842     107s] HB PS08 seed=7 x=0.001778  escaped dt=7008.87264251709 (56s)
+[158/842     107s] HB PS08 seed=21 x=0.0005623  escaped dt=154109.8076171875 (88s)
+[159/842     107s] HB PS06 seed=10 x=0.001778  residual_first (19s)
+[160/842     107s] HB PS08 seed=0 x=0.003162  residual_first (16s)
+[161/842     108s] HB PS06 seed=11 x=0.001778  residual_first (18s)
+[162/842     108s] HB PS08 seed=3 x=0.003162  residual_first (15s)
+[163/842     109s] HB PS08 seed=2 x=0.001778  escaped dt=10603.779724121094 (67s)
+[164/842     109s] HB PS08 seed=1 x=0.003162  residual_first (18s)
+[165/842     111s] HB PS08 seed=5 x=0.003162  residual_first (15s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[166/842     114s] HB PS08 seed=6 x=0.003162  residual_first (15s)
+[167/842     116s] HB PS08 seed=34 x=0.001  escaped dt=53267.1904296875 (76s)
+[168/842     116s] HB PS08 seed=4 x=0.0005623  escaped dt=13993765.9609375 (116s)
+[169/842     116s] HB PS08 seed=8 x=0.003162  residual_first (12s)
+[170/842     120s] HB PS08 seed=10 x=0.003162  residual_first (13s)
+[171/842     122s] HB PS08 seed=25 x=0.0005623  escaped dt=1516832.0966796875 (102s)
+[172/842     123s] HB PS08 seed=12 x=0.003162  residual_first (15s)
+[173/842     123s] HB PS08 seed=21 x=0.001  escaped dt=48734.63311767578 (85s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[174/842     123s] HB PS08 seed=15 x=0.003162  residual_first (15s)
+[175/842     124s] HB PS08 seed=9 x=0.003162  residual_first (17s)
+[176/842     124s] HB PS06 seed=1 x=0.0003162  trapped (123s)
+[177/842     124s] HB PS08 seed=20 x=0.001  escaped dt=216069.16064453125 (87s)
+[178/842     124s] HB PS08 seed=11 x=0.003162  residual_first (17s)
+[179/842     124s] HB PS08 seed=14 x=0.003162  residual_first (16s)
+[180/842     125s] HB PS08 seed=16 x=0.003162  residual_first (16s)
+[181/842     125s] HB PS08 seed=4 x=0.001  escaped dt=4423941.125488281 (103s)
+[182/842     126s] HB PS08 seed=18 x=0.003162  residual_first (15s)
+[183/842     127s] HB PS08 seed=21 x=0.001778  escaped dt=15410.334060668945 (69s)
+[184/842     128s] HB PS08 seed=17 x=0.0005623  escaped dt=1493032.4384765625 (110s)
+[185/842     129s] HB PS08 seed=13 x=0.001  escaped dt=6916648.408874512 (105s)
+[186/842     129s] HB PS08 seed=27 x=0.0005623  escaped dt=47506015.55859375 (109s)
+[187/842     129s] HB PS08 seed=29 x=0.0003162  escaped dt=73708579.375 (129s)
+[188/842     129s] HB PS08 seed=24 x=0.001  escaped dt=730670.0681152344 (91s)
+[189/842     132s] HB PS08 seed=25 x=0.001  escaped dt=479668.3063964844 (93s)
+[190/842     132s] HB PS08 seed=17 x=0.001  escaped dt=472142.9250488281 (96s)
+[191/842     132s] HB PS08 seed=19 x=0.003162  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[192/842     138s] HB PS08 seed=17 x=0.001778  escaped dt=149307.57027435303 (80s)
+[193/842     139s] HB PS08 seed=26 x=0.003162  residual_first (17s)
+[194/842     139s] HB PS08 seed=34 x=0.001778  escaped dt=16843.796295166016 (69s)
+[195/842     140s] HB PS08 seed=30 x=0.003162  residual_first (16s)
+[196/842     140s] HB PS08 seed=32 x=0.003162  residual_first (15s)
+[197/842     140s] HB PS08 seed=33 x=0.003162  residual_first (16s)
+[198/842     141s] HB PS08 seed=20 x=0.001778  escaped dt=68328.30096435547 (83s)
+[199/842     141s] HB PS08 seed=4 x=0.001778  escaped dt=1398258.2436218262 (98s)
+[200/842     141s] HB PS08 seed=31 x=0.0005623  escaped dt=25762213.59375 (121s)
+[201/842     141s] HB PS08 seed=36 x=0.003162  residual_first (14s)
+[202/842     142s] HB PS08 seed=25 x=0.001778  escaped dt=151687.05715179443 (83s)
+[203/842     142s] HB PS08 seed=22 x=0.001  escaped dt=915809.416015625 (105s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[204/842     143s] HB PS08 seed=39 x=0.003162  residual_first (14s)
+[205/842     144s] HB PS08 seed=24 x=0.001778  escaped dt=231061.18099975586 (85s)
+[206/842     144s] HB PS08 seed=35 x=0.003162  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[207/842     145s] HB PS08 seed=37 x=0.003162  residual_first (16s)
+[208/842     146s] HB PS08 seed=23 x=0.001  escaped dt=12151278.638916016 (108s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[209/842     146s] HB PS06 seed=1 x=0.001  trapped (106s)
+[210/842     146s] HB PS08 seed=28 x=0.001  escaped dt=4794226.628662109 (107s)
+[211/842     146s] HB PS08 seed=27 x=0.001  escaped dt=15022543.273925781 (108s)
+[212/842     147s] HB PS08 seed=38 x=0.003162  residual_first (18s)
+[213/842     147s] HB PS08 seed=13 x=0.001778  escaped dt=2187247.389945984 (91s)
+[214/842     148s] HB PS06 seed=3 x=0.003162  residual_first (16s)
+[215/842     149s] HB PS08 seed=2 x=0.003162  escaped dt=3349.9527893066406 (56s)
+[216/842     150s] HB PS08 seed=31 x=0.001  escaped dt=8146754.382080078 (111s)
+[217/842     153s] HB PS06 seed=5 x=0.003162  residual_first (15s)
+[218/842     154s] HB PS06 seed=8 x=0.003162  residual_first (14s)
+[219/842     155s] HB PS06 seed=6 x=0.003162  residual_first (16s)
+[220/842     155s] HB PS06 seed=9 x=0.003162  residual_first (15s)
+[221/842     156s] HB PS08 seed=22 x=0.001778  escaped dt=289607.94747924805 (98s)
+[222/842     157s] HB PS06 seed=10 x=0.003162  residual_first (16s)
+[223/842     159s] HB B8W seed=0 x=0.003162  no_visit (18s)
+[224/842     159s] HB B8W seed=2 x=0.003162  no_visit (18s)
+[225/842     159s] HB PS08 seed=7 x=0.003162  escaped dt=2212.4802169799805 (56s)
+[226/842     160s] HB B8W seed=5 x=0.003162  no_visit (17s)
+[227/842     160s] HB PS06 seed=11 x=0.003162  residual_first (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[228/842     161s] HB B8W seed=3 x=0.003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+[229/842     163s] HB B8W seed=8 x=0.003162  no_visit (18s)
+[230/842     163s] HB B8W seed=7 x=0.003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (18s)
+[231/842     165s] HB B8W seed=13 x=0.003162  no_visit (18s)
+[232/842     165s] HB PS08 seed=28 x=0.001778  escaped dt=1516076.5220718384 (105s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[233/842     165s] HB B8W seed=11 x=0.003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+[234/842     165s] HB PS08 seed=27 x=0.001778  escaped dt=4750454.103210449 (106s)
+[235/842     165s] HB B8W seed=12 x=0.003162  no_visit (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[236/842     166s] HB B8W seed=10 x=0.003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (20s)
+[237/842     167s] HB B8W seed=16 x=0.003162  no_visit (18s)
+[238/842     168s] HB PS08 seed=31 x=0.001778  escaped dt=2576249.578842163 (106s)
+[239/842     170s] HB PS08 seed=29 x=0.001778  escaped dt=2330931.436279297 (109s)
+[240/842     171s] HB B8W seed=19 x=0.003162  no_visit (17s)
+[241/842     172s] HB B8W seed=18 x=0.003162  no_visit (19s)
+[242/842     174s] HB B8W seed=20 x=0.003162  no_visit (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[243/842     175s] HB B8W seed=22 x=0.003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 161, in run_hb |     res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=extra, wall=wall, trap=False) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (19s)
+[244/842     176s] HB PS08 seed=21 x=0.003162  escaped dt=4870.506061077118 (60s)
+[245/842     176s] HB B8W seed=26 x=0.003162  no_visit (17s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[246/842     178s] HB B8W seed=27 x=0.003162  no_visit (18s)
+[247/842     178s] HB B8W seed=25 x=0.003162  no_visit (19s)
+[248/842     179s] HB PS08 seed=0 x=0.005623  residual_first (16s)
+[249/842     179s] HB PS08 seed=1 x=0.005623  residual_first (16s)
+[250/842     179s] HB B8W seed=29 x=0.003162  no_visit (18s)
+[251/842     179s] HB PS08 seed=3 x=0.005623  residual_first (14s)
+[252/842     180s] HB PS08 seed=17 x=0.003162  escaped dt=47216.32738494873 (71s)
+[253/842     180s] HB PS08 seed=5 x=0.005623  residual_first (15s)
+[254/842     181s] HB PS08 seed=6 x=0.005623  residual_first (15s)
+[255/842     181s] HB PS06 seed=1 x=0.001778  trapped (106s)
+[256/842     183s] HB PS08 seed=9 x=0.005623  residual_first (14s)
+[257/842     183s] HB PS08 seed=8 x=0.005623  residual_first (16s)
+[258/842     184s] HB PS08 seed=20 x=0.003162  escaped dt=21606.790439605713 (69s)
+[259/842     185s] HB PS08 seed=10 x=0.005623  residual_first (16s)
+[260/842     187s] HB PS08 seed=12 x=0.005623  residual_first (16s)
+[261/842     189s] HB PS08 seed=34 x=0.003162  escaped dt=5323.9569091796875 (64s)
+[262/842     189s] HB PS08 seed=11 x=0.005623  residual_first (18s)
+[263/842     190s] HB PS08 seed=14 x=0.005623  residual_first (16s)
+[264/842     191s] HB PS08 seed=16 x=0.005623  residual_first (15s)
+[265/842     191s] HB PS08 seed=15 x=0.005623  residual_first (16s)
+[266/842     195s] HB PS08 seed=18 x=0.005623  residual_first (16s)
+[267/842     195s] HB PS08 seed=19 x=0.005623  residual_first (16s)
+[268/842     196s] HB PS08 seed=26 x=0.005623  residual_first (15s)
+[269/842     198s] HB PS08 seed=25 x=0.003162  escaped dt=47968.8026971817 (75s)
+[270/842     198s] HB PS08 seed=4 x=0.003162  escaped dt=441768.15840911865 (105s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[271/842     200s] HB PS06 seed=0 x=0.0005623  escaped dt=82381184239.54102 (179s)
+[272/842     201s] HB PS08 seed=24 x=0.003162  escaped dt=73069.16034889221 (79s)
+[273/842     202s] HB PS08 seed=13 x=0.003162  escaped dt=691677.7764339447 (95s)
+[274/842     203s] HB PS08 seed=30 x=0.005623  residual_first (17s)
+[275/842     203s] HB PS08 seed=32 x=0.005623  residual_first (15s)
+[276/842     205s] HB PS08 seed=33 x=0.005623  residual_first (16s)
+[277/842     206s] HB PS08 seed=36 x=0.005623  residual_first (14s)
+[278/842     207s] HB PS08 seed=23 x=0.003162  escaped dt=1215147.4132614136 (86s)
+[279/842     209s] HB PS08 seed=38 x=0.005623  residual_first (14s)
+[280/842     209s] HB PS08 seed=39 x=0.005623  residual_first (14s)
+[281/842     210s] HB PS08 seed=37 x=0.005623  residual_first (15s)
+[282/842     210s] HB PS08 seed=35 x=0.005623  residual_first (19s)
+[283/842     210s] HB PS08 seed=22 x=0.003162  escaped dt=91583.70195770264 (94s)
+[284/842     214s] HB PS08 seed=2 x=0.005623  escaped dt=1054.310167312622 (50s)
+[285/842     215s] HB PS08 seed=7 x=0.005623  escaped dt=693.9318732023239 (50s)
+[286/842     217s] HB PS06 seed=3 x=0.005623  residual_first (16s)
+[287/842     217s] HB PS06 seed=5 x=0.005623  residual_first (15s)
+[288/842     218s] HB PS08 seed=28 x=0.003162  escaped dt=479433.6968617439 (94s)
+[289/842     218s] HB PS06 seed=6 x=0.005623  residual_first (15s)
+[290/842     219s] HB PS06 seed=8 x=0.005623  residual_first (13s)
+[291/842     219s] HB PS06 seed=0 x=0.001  escaped dt=14649862562.07135 (179s)
+[292/842     219s] HB PS06 seed=9 x=0.005623  residual_first (13s)
+[293/842     224s] HB PS08 seed=29 x=0.003162  escaped dt=737134.681716919 (100s)
+[294/842     224s] HB PS06 seed=10 x=0.005623  residual_first (15s)
+[295/842     225s] HB PS08 seed=31 x=0.003162  escaped dt=814696.4299926758 (101s)
+[296/842     227s] HB PS06 seed=11 x=0.005623  residual_first (18s)
+[297/842     228s] HB B8W seed=2 x=0.005623  no_visit (18s)
+[298/842     229s] HB B8W seed=0 x=0.005623  no_visit (19s)
+[299/842     233s] HB B8W seed=3 x=0.005623  no_visit (18s)
+[300/842     234s] HB B8W seed=5 x=0.005623  no_visit (17s)
+[301/842     235s] HB PS08 seed=21 x=0.005623  escaped dt=1535.7363906502724 (55s)
+[302/842     235s] HB PS08 seed=20 x=0.005623  escaped dt=6830.38866519928 (56s)
+[303/842     235s] HB B8W seed=8 x=0.005623  no_visit (17s)
+[304/842     237s] HB B8W seed=11 x=0.005623  no_visit (17s)
+[305/842     237s] HB PS06 seed=1 x=0.003162  trapped (108s)
+[306/842     237s] HB PS08 seed=27 x=0.003162  escaped dt=1502182.3078193665 (114s)
+[307/842     238s] HB B8W seed=10 x=0.005623  no_visit (19s)
+[308/842     241s] HB PS08 seed=34 x=0.005623  escaped dt=1679.291425228119 (51s)
+[309/842     243s] HB B8W seed=12 x=0.005623  no_visit (19s)
+[310/842     244s] HB B8W seed=13 x=0.005623  no_visit (19s)
+[311/842     246s] HB B8W seed=16 x=0.005623  no_visit (18s)
+[312/842     248s] HB PS08 seed=25 x=0.005623  escaped dt=15168.608833193779 (67s)
+[313/842     248s] HB PS08 seed=17 x=0.005623  escaped dt=14930.495352625847 (70s)
+[314/842     249s] HB PS08 seed=24 x=0.005623  escaped dt=23105.887070655823 (69s)
+[315/842     251s] HB B8W seed=18 x=0.005623  no_visit (18s)
+[316/842     252s] HB PS08 seed=22 x=0.005623  escaped dt=28961.075290203094 (73s)
+[317/842     252s] HB B8W seed=19 x=0.005623  no_visit (18s)
+[318/842     252s] HB PS08 seed=4 x=0.005623  escaped dt=139475.56319904327 (87s)
+[319/842     254s] HB B8W seed=20 x=0.005623  no_visit (19s)
+[320/842     255s] HB PS06 seed=4 x=0.001778  escaped dt=3927121843.5047913 (178s)
+[321/842     255s] HB B8W seed=26 x=0.005623  no_visit (17s)
+[322/842     257s] HB B8W seed=25 x=0.005623  no_visit (20s)
+[323/842     260s] HB PS08 seed=13 x=0.005623  escaped dt=218735.42660218477 (86s)
+[324/842     260s] HB B8W seed=27 x=0.005623  no_visit (18s)
+[325/842     260s] HB PS08 seed=0 x=0.01  residual_first (14s)
+[326/842     261s] HB PS08 seed=1 x=0.01  residual_first (13s)
+[327/842     262s] HB B8W seed=29 x=0.005623  no_visit (18s)
+[328/842     263s] HB PS08 seed=28 x=0.005623  escaped dt=151617.29520630836 (80s)
+[329/842     263s] HB PS08 seed=3 x=0.01  residual_first (14s)
+[330/842     264s] HB PS08 seed=5 x=0.01  residual_first (12s)
+[331/842     267s] HB PS08 seed=6 x=0.01  residual_first (15s)
+[332/842     269s] HB PS08 seed=9 x=0.01  residual_first (14s)
+[333/842     270s] HB PS08 seed=23 x=0.005623  escaped dt=384261.91518855095 (90s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[334/842     270s] HB PS06 seed=2 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 200, in run_hb |     res2, info2 = integrate(model, yg.numpy(), T_MAX, rtol, atol, wall=max(60.0, wall - info["secs"]), stop_after=1e-2) |                   ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (270s)
+[335/842     270s] HB PS08 seed=10 x=0.01  residual_first (15s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Illegal input detected (internal error).
+  solver._y, solver.t = integrator.run(
+[336/842     271s] HB PS06 seed=7 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 200, in run_hb |     res2, info2 = integrate(model, yg.numpy(), T_MAX, rtol, atol, wall=max(60.0, wall - info["secs"]), stop_after=1e-2) |                   ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 374, in integrate |     tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol) |              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ | RuntimeError: LSODA failed in advance |  (249s)
+[337/842     271s] HB PS08 seed=8 x=0.01  residual_first (17s)
+[338/842     273s] HB PS08 seed=15 x=0.01  residual_first (12s)
+[339/842     273s] HB PS08 seed=11 x=0.01  residual_first (16s)
+[340/842     274s] HB PS08 seed=12 x=0.01  residual_first (14s)
+[341/842     274s] HB PS08 seed=16 x=0.01  residual_first (13s)
+[342/842     275s] HB PS08 seed=14 x=0.01  residual_first (15s)
+[343/842     277s] HB PS08 seed=18 x=0.01  residual_first (14s)
+[344/842     277s] HB PS08 seed=29 x=0.005623  escaped dt=233126.4339208603 (93s)
+[345/842     280s] HB PS08 seed=19 x=0.01  residual_first (16s)
+[346/842     284s] HB PS06 seed=0 x=0.003162  escaped dt=463346608.5888338 (155s)
+[347/842     285s] HB PS06 seed=2 x=0.001  escaped dt=81078062012776.92 (245s)
+[348/842     286s] HB PS08 seed=2 x=0.01  escaped dt=326.5418059229851 (37s)
+[349/842     286s] HB PS08 seed=26 x=0.01  residual_first (15s)
+[350/842     287s] HB PS06 seed=7 x=0.001778  escaped dt=3103158172385.173 (206s)
+[351/842     288s] HB PS06 seed=7 x=0.001  escaped dt=30944144313641.035 (248s)
+[352/842     289s] HB PS06 seed=4 x=0.003162  escaped dt=440805926.0482483 (157s)
+[353/842     290s] HB PS08 seed=30 x=0.01  residual_first (16s)
+[354/842     291s] HB PS08 seed=27 x=0.005623  escaped dt=475014.8308610916 (108s)
+[355/842     291s] HB PS08 seed=32 x=0.01  residual_first (14s)
+[356/842     292s] HB PS08 seed=33 x=0.01  residual_first (14s)
+[357/842     292s] HB PS08 seed=31 x=0.005623  escaped dt=257641.14149713516 (104s)
+[358/842     295s] HB PS08 seed=7 x=0.01  escaped dt=211.88450776040554 (43s)
+[359/842     296s] HB PS08 seed=36 x=0.01  residual_first (11s)
+[360/842     298s] HB PS06 seed=2 x=0.001778  escaped dt=8115686736598.404 (222s)
+[361/842     299s] HB PS08 seed=37 x=0.01  residual_first (13s)
+[362/842     301s] HB PS08 seed=35 x=0.01  residual_first (17s)
+[363/842     301s] HB PS08 seed=38 x=0.01  residual_first (15s)
+[364/842     302s] HB PS08 seed=39 x=0.01  residual_first (15s)
+[365/842     304s] HB PS06 seed=3 x=0.01  residual_first (13s)
+[366/842     305s] HB PS06 seed=5 x=0.01  residual_first (13s)
+[367/842     306s] HB PS06 seed=6 x=0.01  residual_first (14s)
+[368/842     309s] HB PS06 seed=8 x=0.01  residual_first (12s)
+[369/842     310s] HB PS06 seed=1 x=0.005623  trapped (111s)
+[370/842     311s] HB PS06 seed=10 x=0.01  residual_first (12s)
+[371/842     313s] HB PS06 seed=9 x=0.01  residual_first (15s)
+[372/842     314s] HB PS08 seed=17 x=0.01  escaped dt=4719.06035888195 (51s)
+[373/842     315s] HB PS08 seed=21 x=0.01  escaped dt=479.37120670080185 (46s)
+[374/842     317s] HB PS06 seed=11 x=0.01  residual_first (16s)
+[375/842     319s] HB PS08 seed=20 x=0.01  escaped dt=2155.8925622701645 (52s)
+[376/842     319s] HB B8W seed=0 x=0.01  no_visit (18s)
+[377/842     322s] HB B8W seed=2 x=0.01  no_visit (18s)
+[378/842     324s] HB PS08 seed=13 x=0.01  escaped dt=69176.19971247017 (64s)
+[379/842     324s] HB B8W seed=3 x=0.01  no_visit (19s)
+[380/842     327s] HB B8W seed=5 x=0.01  no_visit (18s)
+[381/842     330s] HB B8W seed=8 x=0.01  no_visit (17s)
+[382/842     331s] HB PS08 seed=22 x=0.01  escaped dt=9156.244341135025 (62s)
+[383/842     332s] HB B8W seed=11 x=0.01  no_visit (16s)
+[384/842     332s] HB PS08 seed=25 x=0.01  escaped dt=4794.595432415605 (62s)
+[385/842     333s] HB PS06 seed=7 x=0.003162  escaped dt=311881553983.90857 (193s)
+[386/842     334s] HB PS08 seed=34 x=0.01  escaped dt=524.9418850243092 (53s)
+[387/842     334s] HB B8W seed=10 x=0.01  no_visit (19s)
+[388/842     338s] HB B8W seed=13 x=0.01  no_visit (18s)
+[389/842     338s] HB PS08 seed=4 x=0.01  escaped dt=43980.25553691387 (87s)
+[390/842     338s] HB B8W seed=12 x=0.01  no_visit (19s)
+[391/842     343s] HB B8W seed=16 x=0.01  no_visit (18s)
+[392/842     346s] HB PS08 seed=24 x=0.01  escaped dt=7304.321467265487 (76s)
+[393/842     347s] HB PS08 seed=27 x=0.01  escaped dt=150209.98012819886 (73s)
+[394/842     347s] HB PS06 seed=4 x=0.005623  escaped dt=53152078.57143307 (145s)
+[395/842     347s] HB B8W seed=20 x=0.01  no_visit (15s)
+[396/842     348s] HB B8W seed=18 x=0.01  no_visit (18s)
+[397/842     349s] HB B8W seed=19 x=0.01  no_visit (17s)
+[398/842     350s] HB PS08 seed=28 x=0.01  escaped dt=47951.26404619962 (77s)
+[399/842     355s] HB B8W seed=26 x=0.01  no_visit (17s)
+[400/842     356s] HB B8W seed=25 x=0.01  no_visit (19s)
+[401/842     358s] HB PS08 seed=0 x=0.01778  residual_first (11s)
+[402/842     358s] HB B8W seed=27 x=0.01  no_visit (20s)
+[403/842     359s] HB PS08 seed=1 x=0.01778  residual_first (13s)
+[404/842     360s] HB PS08 seed=29 x=0.01  escaped dt=73741.21319174767 (87s)
+[405/842     360s] HB PS08 seed=31 x=0.01  escaped dt=81482.55105403066 (86s)
+[406/842     362s] HB PS08 seed=5 x=0.01778  residual_first (12s)
+[407/842     362s] HB PS06 seed=2 x=0.003162  escaped dt=812968667639.3867 (231s)
+[408/842     363s] HB PS08 seed=23 x=0.01  escaped dt=121505.54113730788 (93s)
+[409/842     366s] HB PS06 seed=0 x=0.005623  escaped dt=82428535.63159955 (168s)
+[410/842     366s] HB B8W seed=29 x=0.01  no_visit (19s)
+[411/842     369s] HB PS08 seed=6 x=0.01778  residual_first (14s)
+[412/842     370s] HB PS08 seed=8 x=0.01778  residual_first (12s)
+[413/842     371s] HB PS08 seed=9 x=0.01778  residual_first (12s)
+[414/842     371s] HB PS08 seed=10 x=0.01778  residual_first (11s)
+[415/842     371s] HB PS08 seed=3 x=0.01778  residual_first (23s)
+[416/842     373s] HB PS08 seed=12 x=0.01778  residual_first (12s)
+[417/842     375s] HB PS08 seed=14 x=0.01778  residual_first (13s)
+[418/842     376s] HB PS08 seed=11 x=0.01778  residual_first (15s)
+[419/842     377s] HB PS08 seed=16 x=0.01778  residual_first (12s)
+[420/842     381s] HB PS08 seed=2 x=0.01778  escaped dt=94.51792374998331 (34s)
+[421/842     382s] HB PS08 seed=18 x=0.01778  residual_first (13s)
+[422/842     383s] HB PS08 seed=15 x=0.01778  residual_first (20s)
+[423/842     385s] HB PS06 seed=7 x=0.005623  escaped dt=31469960100.755535 (179s)
+[424/842     385s] HB PS08 seed=19 x=0.01778  residual_first (15s)
+[425/842     388s] HB PS08 seed=7 x=0.01778  escaped dt=57.536802222020924 (32s)
+[426/842     391s] HB PS08 seed=26 x=0.01778  residual_first (14s)
+[427/842     394s] HB PS06 seed=1 x=0.01  trapped (105s)
+[428/842     399s] HB PS08 seed=32 x=0.01778  residual_first (11s)
+[429/842     400s] HB PS08 seed=30 x=0.01778  residual_first (15s)
+[430/842     403s] HB PS08 seed=33 x=0.01778  residual_first (13s)
+[431/842     408s] HB PS08 seed=4 x=0.01778  escaped dt=13835.899585619569 (59s)
+[432/842     409s] HB PS08 seed=21 x=0.01778  escaped dt=143.45126416627318 (39s)
+[433/842     411s] HB PS08 seed=35 x=0.01778  residual_first (12s)
+[434/842     411s] HB PS08 seed=36 x=0.01778  residual_first (12s)
+[435/842     417s] HB PS08 seed=20 x=0.01778  escaped dt=675.8657601326704 (47s)
+[436/842     418s] HB PS08 seed=37 x=0.01778  residual_first (14s)
+[437/842     420s] HB PS08 seed=39 x=0.01778  residual_first (10s)
+[438/842     420s] HB PS08 seed=38 x=0.01778  residual_first (12s)
+[439/842     420s] HB PS08 seed=17 x=0.01778  escaped dt=1488.142916539684 (54s)
+[440/842     427s] HB PS08 seed=24 x=0.01778  escaped dt=2305.7025727089494 (52s)
+[441/842     428s] HB PS06 seed=2 x=0.005623  escaped dt=81545108180.12926 (228s)
+[442/842     429s] HB PS06 seed=4 x=0.01  escaped dt=7027593.4869861305 (138s)
+[443/842     430s] HB PS08 seed=13 x=0.01778  escaped dt=21879.679218075238 (68s)
+[444/842     431s] HB PS06 seed=3 x=0.01778  residual_first (13s)
+[445/842     431s] HB PS06 seed=5 x=0.01778  residual_first (11s)
+[446/842     432s] HB PS06 seed=6 x=0.01778  residual_first (12s)
+[447/842     436s] HB PS08 seed=22 x=0.01778  escaped dt=2891.6038728505373 (65s)
+[448/842     436s] HB PS08 seed=25 x=0.01778  escaped dt=1512.3118586726487 (60s)
+[449/842     441s] HB PS06 seed=8 x=0.01778  residual_first (12s)
+[450/842     442s] HB PS06 seed=10 x=0.01778  residual_first (12s)
+[451/842     443s] HB PS06 seed=9 x=0.01778  residual_first (13s)
+[452/842     448s] HB B8W seed=0 x=0.01778  no_visit (17s)
+[453/842     450s] HB PS06 seed=11 x=0.01778  residual_first (20s)
+[454/842     451s] HB B8W seed=2 x=0.01778  no_visit (15s)
+[455/842     453s] HB B8W seed=3 x=0.01778  no_visit (17s)
+[456/842     453s] HB PS08 seed=27 x=0.01778  escaped dt=47504.826266646385 (72s)
+[457/842     455s] HB PS08 seed=28 x=0.01778  escaped dt=15167.695139479823 (73s)
+[458/842     456s] HB B8W seed=5 x=0.01778  no_visit (13s)
+[459/842     457s] HB PS08 seed=29 x=0.01778  escaped dt=23336.289376795292 (74s)
+[460/842     457s] HB PS08 seed=34 x=0.01778  escaped dt=158.04817562550306 (63s)
+[461/842     457s] HB PS08 seed=23 x=0.01778  escaped dt=38409.80480085313 (85s)
+[462/842     458s] HB PS08 seed=31 x=0.01778  escaped dt=25774.89610734023 (73s)
+[463/842     468s] HB B8W seed=11 x=0.01778  no_visit (15s)
+[464/842     469s] HB B8W seed=13 x=0.01778  no_visit (13s)
+[465/842     469s] HB PS06 seed=2 x=0.01  escaped dt=8198370454.592024 (179s)
+[466/842     470s] HB B8W seed=10 x=0.01778  no_visit (17s)
+[467/842     471s] HB B8W seed=12 x=0.01778  no_visit (16s)
+[468/842     471s] HB B8W seed=8 x=0.01778  no_visit (21s)
+[469/842     474s] HB B8W seed=21 x=0.003162  escaped dt=2566092981.67041 (319s)
+[470/842     475s] HB B8W seed=16 x=0.01778  no_visit (17s)
+[471/842     483s] HB B8W seed=19 x=0.01778  no_visit (14s)
+[472/842     483s] HB B8W seed=20 x=0.01778  no_visit (14s)
+[473/842     484s] HB B8W seed=18 x=0.01778  no_visit (16s)
+[474/842     493s] HB PS06 seed=0 x=0.01  escaped dt=14675965.417672075 (205s)
+[475/842     495s] HB B8W seed=26 x=0.01778  no_visit (12s)
+[476/842     496s] HB PS06 seed=7 x=0.01  escaped dt=3198164848.617488 (201s)
+[477/842     496s] HB B8W seed=25 x=0.01778  no_visit (22s)
+[478/842     498s] HB B8W seed=27 x=0.01778  no_visit (15s)
+[479/842     504s] HB B8W seed=9 x=0.003162  escaped dt=19177492508.48047 (358s)
+[480/842     506s] HB PS06 seed=1 x=0.01778  trapped (94s)
+[481/842     506s] HB B8W seed=29 x=0.01778  no_visit (13s)
+[482/842     507s] HB PS08 seed=0 x=0.03162  residual_first (11s)
+[483/842     509s] HB PS08 seed=3 x=0.03162  residual_first (11s)
+[484/842     510s] HB PS08 seed=1 x=0.03162  residual_first (14s)
+[485/842     512s] HB B8W seed=9 x=0.005623  escaped dt=1916327110.717041 (293s)
+[486/842     516s] HB PS08 seed=5 x=0.03162  residual_first (10s)
+[487/842     517s] HB PS08 seed=6 x=0.03162  residual_first (11s)
+[488/842     520s] HB PS08 seed=8 x=0.03162  residual_first (10s)
+[489/842     522s] HB PS08 seed=10 x=0.03162  residual_first (10s)
+[490/842     523s] HB PS08 seed=9 x=0.03162  residual_first (13s)
+[491/842     524s] HB PS08 seed=7 x=0.03162  escaped dt=6.697092072456144 (17s)
+[492/842     526s] HB PS08 seed=12 x=0.03162  residual_first (9s)
+[493/842     527s] HB PS08 seed=11 x=0.03162  residual_first (12s)
+[494/842     528s] HB PS06 seed=4 x=0.01778  escaped dt=1021395.7791896053 (108s)
+[495/842     529s] HB PS08 seed=2 x=0.03162  escaped dt=19.160699777305126 (33s)
+[496/842     533s] HB PS08 seed=14 x=0.03162  residual_first (11s)
+[497/842     533s] HB PS08 seed=16 x=0.03162  residual_first (9s)
+[498/842     536s] HB PS08 seed=15 x=0.03162  residual_first (13s)
+[499/842     538s] HB PS08 seed=18 x=0.03162  residual_first (10s)
+[500/842     542s] HB PS08 seed=19 x=0.03162  residual_first (14s)
+[501/842     542s] HB PS06 seed=0 x=0.01778  escaped dt=2619438.1219144426 (131s)

@@ -1,0 +1,1204 @@
+1836 jobs, 125 processes
+[1/1836       0s] HA PS08 seed=1 x=1e-05  exists (0s)
+[2/1836       0s] HA PS08 seed=4 x=1e-05  exists (0s)
+[3/1836       0s] HA PS08 seed=0 x=1e-05  exists (0s)
+[4/1836       0s] HA PS08 seed=6 x=1e-05  exists (0s)
+[5/1836       0s] HA PS08 seed=2 x=1e-05  exists (0s)
+[6/1836       0s] HA PS08 seed=3 x=1e-05  exists (0s)
+[7/1836       0s] HA PS08 seed=5 x=1e-05  exists (0s)
+[8/1836       0s] HA PS08 seed=7 x=1e-05  exists (0s)
+[9/1836       0s] HA PS08 seed=8 x=1e-05  exists (0s)
+[10/1836       0s] HA PS08 seed=9 x=1e-05  exists (0s)
+[11/1836       0s] HA PS06 seed=0 x=1e-05  exists (0s)
+[12/1836       0s] HA PS08 seed=10 x=1e-05  exists (0s)
+[13/1836       0s] HA PS08 seed=11 x=1e-05  exists (0s)
+[14/1836       0s] HA PS06 seed=1 x=1e-05  exists (0s)
+[15/1836       0s] HA PS06 seed=6 x=1e-05  exists (0s)
+[16/1836       0s] HA PS06 seed=3 x=1e-05  exists (0s)
+[17/1836       0s] HA PS06 seed=5 x=1e-05  exists (0s)
+[18/1836       0s] HA PS06 seed=7 x=1e-05  exists (0s)
+[19/1836       0s] HA PS06 seed=8 x=1e-05  exists (0s)
+[20/1836       0s] HA PS06 seed=11 x=1e-05  exists (0s)
+[21/1836       0s] HA PS06 seed=4 x=1e-05  exists (0s)
+[22/1836       0s] HA PS06 seed=9 x=1e-05  exists (0s)
+[23/1836       0s] HA W6 seed=1 x=1e-05  exists (0s)
+[24/1836       0s] HA W6 seed=0 x=1e-05  exists (0s)
+[25/1836       0s] HA W6 seed=4 x=1e-05  exists (0s)
+[26/1836       0s] HA W6 seed=5 x=1e-05  exists (0s)
+[27/1836       0s] HA W6 seed=9 x=1e-05  exists (0s)
+[28/1836       0s] HA W6 seed=2 x=1e-05  exists (0s)
+[29/1836       0s] HA W6 seed=6 x=1e-05  exists (0s)
+[30/1836       0s] HA W6 seed=7 x=1e-05  exists (0s)
+[31/1836       0s] HA W6 seed=3 x=1e-05  exists (0s)
+[32/1836       0s] HA W6 seed=10 x=1e-05  exists (0s)
+[33/1836       0s] HA W6 seed=8 x=1e-05  exists (0s)
+[34/1836       0s] HA C2 seed=2 x=1e-05  exists (0s)
+[35/1836       0s] HA C2 seed=1 x=1e-05  exists (0s)
+[36/1836       0s] HA C2 seed=3 x=1e-05  exists (0s)
+[37/1836       0s] HA W6 seed=11 x=1e-05  exists (0s)
+[38/1836       0s] HA C2 seed=0 x=1e-05  exists (0s)
+[39/1836       0s] HA C2 seed=5 x=1e-05  exists (0s)
+[40/1836       0s] HA C2 seed=8 x=1e-05  exists (0s)
+[41/1836       0s] HA C2 seed=9 x=1e-05  exists (0s)
+[42/1836       0s] HA PS08 seed=0 x=1.778e-05  exists (0s)
+[43/1836       0s] HA C2 seed=11 x=1e-05  exists (0s)
+[44/1836       0s] HA PS08 seed=1 x=1.778e-05  exists (0s)
+[45/1836       0s] HA PS08 seed=2 x=1.778e-05  exists (0s)
+[46/1836       0s] HA PS08 seed=5 x=1.778e-05  exists (0s)
+[47/1836       0s] HA PS08 seed=3 x=1.778e-05  exists (0s)
+[48/1836       0s] HA PS08 seed=6 x=1.778e-05  exists (0s)
+[49/1836       0s] HA PS08 seed=7 x=1.778e-05  exists (0s)
+[50/1836       0s] HA PS08 seed=4 x=1.778e-05  exists (0s)
+[51/1836       0s] HA PS08 seed=8 x=1.778e-05  exists (0s)
+[52/1836       0s] HA PS08 seed=9 x=1.778e-05  exists (0s)
+[53/1836       0s] HA PS08 seed=11 x=1.778e-05  exists (0s)
+[54/1836       0s] HA PS08 seed=10 x=1.778e-05  exists (0s)
+[55/1836       0s] HA PS06 seed=5 x=1.778e-05  exists (0s)
+[56/1836       0s] HA PS06 seed=6 x=1.778e-05  exists (0s)
+[57/1836       0s] HA PS06 seed=8 x=1.778e-05  exists (0s)
+[58/1836       0s] HA W6 seed=0 x=1.778e-05  exists (0s)
+[59/1836       0s] HA W6 seed=1 x=1.778e-05  exists (0s)
+[60/1836       0s] HA W6 seed=2 x=1.778e-05  exists (0s)
+[61/1836       0s] HA W6 seed=3 x=1.778e-05  exists (0s)
+[62/1836       0s] HA W6 seed=7 x=1.778e-05  exists (0s)
+[63/1836       0s] HA W6 seed=4 x=1.778e-05  exists (0s)
+[64/1836       0s] HA W6 seed=5 x=1.778e-05  exists (0s)
+[65/1836       0s] HA W6 seed=9 x=1.778e-05  exists (0s)
+[66/1836       0s] HA W6 seed=10 x=1.778e-05  exists (0s)
+[67/1836       0s] HA W6 seed=6 x=1.778e-05  exists (0s)
+[68/1836       0s] HA W6 seed=11 x=1.778e-05  exists (0s)
+[69/1836       0s] HA W6 seed=8 x=1.778e-05  exists (0s)
+[70/1836       0s] HA C2 seed=0 x=1.778e-05  exists (0s)
+[71/1836       0s] HA C2 seed=2 x=1.778e-05  exists (0s)
+[72/1836       0s] HA C2 seed=3 x=1.778e-05  exists (0s)
+[73/1836       0s] HA C2 seed=5 x=1.778e-05  exists (0s)
+[74/1836       0s] HA C2 seed=6 x=1.778e-05  exists (0s)
+[75/1836       0s] HA C2 seed=8 x=1.778e-05  exists (0s)
+[76/1836       0s] HA C2 seed=10 x=1.778e-05  exists (0s)
+[77/1836       0s] HA C2 seed=11 x=1.778e-05  exists (0s)
+[78/1836       0s] HA PS08 seed=0 x=3.162e-05  exists (0s)
+[79/1836       0s] HA PS08 seed=4 x=3.162e-05  exists (0s)
+[80/1836       0s] HA PS08 seed=1 x=3.162e-05  exists (0s)
+[81/1836       0s] HA PS08 seed=5 x=3.162e-05  exists (0s)
+[82/1836       0s] HA PS08 seed=2 x=3.162e-05  exists (0s)
+[83/1836       0s] HA PS08 seed=3 x=3.162e-05  exists (0s)
+[84/1836       0s] HA PS08 seed=10 x=3.162e-05  exists (0s)
+[85/1836       0s] HA PS08 seed=6 x=3.162e-05  exists (0s)
+[86/1836       0s] HA PS08 seed=7 x=3.162e-05  exists (0s)
+[87/1836       0s] HA PS08 seed=8 x=3.162e-05  exists (0s)
+[88/1836       0s] HA PS08 seed=9 x=3.162e-05  exists (0s)
+[89/1836       0s] HA PS08 seed=11 x=3.162e-05  exists (0s)
+[90/1836       0s] HA PS06 seed=1 x=3.162e-05  exists (0s)
+[91/1836       0s] HA PS06 seed=5 x=3.162e-05  exists (0s)
+[92/1836       0s] HA PS06 seed=7 x=3.162e-05  exists (0s)
+[93/1836       0s] HA PS06 seed=10 x=3.162e-05  exists (0s)
+[94/1836       0s] HA W6 seed=0 x=3.162e-05  exists (0s)
+[95/1836       0s] HA W6 seed=1 x=3.162e-05  exists (0s)
+[96/1836       0s] HA W6 seed=4 x=3.162e-05  exists (0s)
+[97/1836       0s] HA W6 seed=3 x=3.162e-05  exists (0s)
+[98/1836       0s] HA W6 seed=7 x=3.162e-05  exists (0s)
+[99/1836       0s] HA W6 seed=6 x=3.162e-05  exists (0s)
+[100/1836       0s] HA W6 seed=2 x=3.162e-05  exists (0s)
+[101/1836       0s] HA W6 seed=10 x=3.162e-05  exists (0s)
+[102/1836       0s] HA W6 seed=9 x=3.162e-05  exists (0s)
+[103/1836       0s] HA W6 seed=11 x=3.162e-05  exists (0s)
+[104/1836       0s] HA C2 seed=0 x=3.162e-05  exists (0s)
+[105/1836       0s] HA C2 seed=3 x=3.162e-05  exists (0s)
+[106/1836       0s] HA C2 seed=4 x=3.162e-05  exists (0s)
+[107/1836       0s] HA C2 seed=1 x=3.162e-05  exists (0s)
+[108/1836       0s] HA W6 seed=8 x=3.162e-05  exists (0s)
+[109/1836       0s] HA C2 seed=6 x=3.162e-05  exists (0s)
+[110/1836       0s] HA C2 seed=5 x=3.162e-05  exists (0s)
+[111/1836       0s] HA W6 seed=5 x=3.162e-05  exists (0s)
+[112/1836       0s] HA C2 seed=10 x=3.162e-05  exists (0s)
+[113/1836       0s] HA C2 seed=7 x=3.162e-05  exists (0s)
+[114/1836       0s] HA PS08 seed=0 x=5.623e-05  exists (0s)
+[115/1836       0s] HA C2 seed=11 x=3.162e-05  exists (0s)
+[116/1836       0s] HA PS08 seed=1 x=5.623e-05  exists (0s)
+[117/1836       0s] HA PS08 seed=3 x=5.623e-05  exists (0s)
+[118/1836       0s] HA PS08 seed=5 x=5.623e-05  exists (0s)
+[119/1836       0s] HA PS08 seed=4 x=5.623e-05  exists (0s)
+[120/1836       0s] HA PS08 seed=7 x=5.623e-05  exists (0s)
+[121/1836       0s] HA PS08 seed=9 x=5.623e-05  exists (0s)
+[122/1836       0s] HA PS08 seed=11 x=5.623e-05  exists (0s)
+[123/1836       0s] HA PS08 seed=8 x=5.623e-05  exists (0s)
+[124/1836       0s] HA PS08 seed=10 x=5.623e-05  exists (0s)
+[125/1836       0s] HA PS06 seed=0 x=5.623e-05  exists (0s)
+[126/1836       0s] HA PS06 seed=1 x=5.623e-05  exists (0s)
+[127/1836       0s] HA PS08 seed=2 x=5.623e-05  exists (0s)
+[128/1836       0s] HA PS08 seed=6 x=5.623e-05  exists (0s)
+[129/1836       0s] HA PS06 seed=7 x=5.623e-05  exists (0s)
+[130/1836       0s] HA PS06 seed=9 x=5.623e-05  exists (0s)
+[131/1836       0s] HA PS06 seed=10 x=5.623e-05  exists (0s)
+[132/1836       0s] HA W6 seed=1 x=5.623e-05  exists (0s)
+[133/1836       0s] HA W6 seed=3 x=5.623e-05  exists (0s)
+[134/1836       0s] HA W6 seed=0 x=5.623e-05  exists (0s)
+[135/1836       0s] HA W6 seed=2 x=5.623e-05  exists (0s)
+[136/1836       0s] HA W6 seed=6 x=5.623e-05  exists (0s)
+[137/1836       0s] HA W6 seed=5 x=5.623e-05  exists (0s)
+[138/1836       0s] HA W6 seed=7 x=5.623e-05  exists (0s)
+[139/1836       0s] HA W6 seed=4 x=5.623e-05  exists (0s)
+[140/1836       0s] HA W6 seed=11 x=5.623e-05  exists (0s)
+[141/1836       0s] HA W6 seed=10 x=5.623e-05  exists (0s)
+[142/1836       0s] HA W6 seed=9 x=5.623e-05  exists (0s)
+[143/1836       0s] HA C2 seed=1 x=5.623e-05  exists (0s)
+[144/1836       0s] HA W6 seed=8 x=5.623e-05  exists (0s)
+[145/1836       0s] HA C2 seed=0 x=5.623e-05  exists (0s)
+[146/1836       0s] HA C2 seed=2 x=5.623e-05  exists (0s)
+[147/1836       0s] HA C2 seed=4 x=5.623e-05  exists (0s)
+[148/1836       0s] HA C2 seed=3 x=5.623e-05  exists (0s)
+[149/1836       0s] HA C2 seed=5 x=5.623e-05  exists (0s)
+[150/1836       0s] HA C2 seed=7 x=5.623e-05  exists (0s)
+[151/1836       0s] HA C2 seed=9 x=5.623e-05  exists (0s)
+[152/1836       0s] HA PS08 seed=0 x=0.0001  exists (0s)
+[153/1836       0s] HA C2 seed=11 x=5.623e-05  exists (0s)
+[154/1836       0s] HA C2 seed=10 x=5.623e-05  exists (0s)
+[155/1836       0s] HA C2 seed=8 x=5.623e-05  exists (0s)
+[156/1836       0s] HA PS08 seed=1 x=0.0001  exists (0s)
+[157/1836       0s] HA PS08 seed=3 x=0.0001  exists (0s)
+[158/1836       0s] HA PS08 seed=2 x=0.0001  exists (0s)
+[159/1836       0s] HA PS08 seed=6 x=0.0001  exists (0s)
+[160/1836       0s] HA PS08 seed=5 x=0.0001  exists (0s)
+[161/1836       0s] HA PS08 seed=8 x=0.0001  exists (0s)
+[162/1836       0s] HA PS08 seed=10 x=0.0001  exists (0s)
+[163/1836       0s] HA PS08 seed=7 x=0.0001  exists (0s)
+[164/1836       0s] HA PS06 seed=0 x=0.0001  exists (0s)
+[165/1836       0s] HA PS08 seed=9 x=0.0001  exists (0s)
+[166/1836       0s] HA PS06 seed=3 x=0.0001  exists (0s)
+[167/1836       0s] HA PS08 seed=11 x=0.0001  exists (0s)
+[168/1836       0s] HA PS06 seed=4 x=0.0001  exists (0s)
+[169/1836       0s] HA PS08 seed=4 x=0.0001  exists (0s)
+[170/1836       0s] HA PS06 seed=7 x=0.0001  exists (0s)
+[171/1836       0s] HA PS06 seed=5 x=0.0001  exists (0s)
+[172/1836       0s] HA PS06 seed=9 x=0.0001  exists (0s)
+[173/1836       0s] HA PS06 seed=11 x=0.0001  exists (0s)
+[174/1836       0s] HA W6 seed=0 x=0.0001  exists (0s)
+[175/1836       0s] HA W6 seed=1 x=0.0001  exists (0s)
+[176/1836       0s] HA W6 seed=2 x=0.0001  exists (0s)
+[177/1836       0s] HA W6 seed=5 x=0.0001  exists (0s)
+[178/1836       0s] HA W6 seed=3 x=0.0001  exists (0s)
+[179/1836       0s] HA W6 seed=4 x=0.0001  exists (0s)
+[180/1836       0s] HA W6 seed=7 x=0.0001  exists (0s)
+[181/1836       0s] HA W6 seed=10 x=0.0001  exists (0s)
+[182/1836       0s] HA W6 seed=6 x=0.0001  exists (0s)
+[183/1836       0s] HA W6 seed=9 x=0.0001  exists (0s)
+[184/1836       0s] HA W6 seed=8 x=0.0001  exists (0s)
+[185/1836       0s] HA W6 seed=11 x=0.0001  exists (0s)
+[186/1836       0s] HA C1 seed=0 x=0.0001  exists (0s)
+[187/1836       0s] HA C1 seed=2 x=0.0001  exists (0s)
+[188/1836       0s] HA C1 seed=4 x=0.0001  exists (0s)
+[189/1836       0s] HA C1 seed=6 x=0.0001  exists (0s)
+[190/1836       0s] HA C1 seed=5 x=0.0001  exists (0s)
+[191/1836       0s] HA C1 seed=7 x=0.0001  exists (0s)
+[192/1836       0s] HA C1 seed=3 x=0.0001  exists (0s)
+[193/1836       0s] HA C1 seed=10 x=0.0001  exists (0s)
+[194/1836       0s] HA C2 seed=0 x=0.0001  exists (0s)
+[195/1836       0s] HA C1 seed=9 x=0.0001  exists (0s)
+[196/1836       0s] HA C2 seed=1 x=0.0001  exists (0s)
+[197/1836       0s] HA C2 seed=2 x=0.0001  exists (0s)
+[198/1836       0s] HA C1 seed=11 x=0.0001  exists (0s)
+[199/1836       0s] HA C2 seed=3 x=0.0001  exists (0s)
+[200/1836       0s] HA C2 seed=4 x=0.0001  exists (0s)
+[201/1836       0s] HA C2 seed=5 x=0.0001  exists (0s)
+[202/1836       0s] HA C2 seed=7 x=0.0001  exists (0s)
+[203/1836       0s] HA C2 seed=9 x=0.0001  exists (0s)
+[204/1836       0s] HA C2 seed=8 x=0.0001  exists (0s)
+[205/1836       0s] HA C2 seed=6 x=0.0001  exists (0s)
+[206/1836       0s] HA C2 seed=11 x=0.0001  exists (0s)
+[207/1836       0s] HA HT4W seed=3 x=0.0001  exists (0s)
+[208/1836       0s] HA HT4W seed=4 x=0.0001  exists (0s)
+[209/1836       0s] HA HT4W seed=2 x=0.0001  exists (0s)
+[210/1836       0s] HA HT4W seed=8 x=0.0001  exists (0s)
+[211/1836       0s] HA HT4W seed=6 x=0.0001  exists (0s)
+[212/1836       0s] HA HT4W seed=10 x=0.0001  exists (0s)
+[213/1836       0s] HA HT4L seed=0 x=0.0001  exists (0s)
+[214/1836       0s] HA HT4W seed=11 x=0.0001  exists (0s)
+[215/1836       0s] HA HT4L seed=1 x=0.0001  exists (0s)
+[216/1836       0s] HA HT4L seed=6 x=0.0001  exists (0s)
+[217/1836       0s] HA HT4L seed=5 x=0.0001  exists (0s)
+[218/1836       0s] HA HT4W seed=1 x=0.0001  exists (0s)
+[219/1836       0s] HA HT4L seed=10 x=0.0001  exists (0s)
+[220/1836       0s] HA HT4L seed=8 x=0.0001  exists (0s)
+[221/1836       0s] HA HT4L seed=11 x=0.0001  exists (0s)
+[222/1836       0s] HA HT4L seed=4 x=0.0001  exists (0s)
+[223/1836       0s] HA PS08 seed=0 x=0.0001778  exists (0s)
+[224/1836       0s] HA PS08 seed=1 x=0.0001778  exists (0s)
+[225/1836       0s] HA PS08 seed=3 x=0.0001778  exists (0s)
+[226/1836       0s] HA PS08 seed=2 x=0.0001778  exists (0s)
+[227/1836       0s] HA PS08 seed=5 x=0.0001778  exists (0s)
+[228/1836       0s] HA PS08 seed=4 x=0.0001778  exists (0s)
+[229/1836       0s] HA PS08 seed=8 x=0.0001778  exists (0s)
+[230/1836       0s] HA PS08 seed=7 x=0.0001778  exists (0s)
+[231/1836       0s] HA PS08 seed=9 x=0.0001778  exists (0s)
+[232/1836       0s] HA PS08 seed=11 x=0.0001778  exists (0s)
+[233/1836       0s] HA PS06 seed=0 x=0.0001778  exists (0s)
+[234/1836       0s] HA PS08 seed=10 x=0.0001778  exists (0s)
+[235/1836       0s] HA PS08 seed=6 x=0.0001778  exists (0s)
+[236/1836       0s] HA PS06 seed=3 x=0.0001778  exists (0s)
+[237/1836       0s] HA PS06 seed=5 x=0.0001778  exists (0s)
+[238/1836       0s] HA PS06 seed=4 x=0.0001778  exists (0s)
+[239/1836       0s] HA PS06 seed=1 x=0.0001778  exists (0s)
+[240/1836       0s] HA PS06 seed=9 x=0.0001778  exists (0s)
+[241/1836       0s] HA PS06 seed=6 x=0.0001778  exists (0s)
+[242/1836       0s] HA W6 seed=0 x=0.0001778  exists (0s)
+[243/1836       0s] HA W6 seed=1 x=0.0001778  exists (0s)
+[244/1836       0s] HA W6 seed=2 x=0.0001778  exists (0s)
+[245/1836       0s] HA W6 seed=3 x=0.0001778  exists (0s)
+[246/1836       0s] HA W6 seed=5 x=0.0001778  exists (0s)
+[247/1836       0s] HA W6 seed=4 x=0.0001778  exists (0s)
+[248/1836       0s] HA W6 seed=6 x=0.0001778  exists (0s)
+[249/1836       0s] HA W6 seed=7 x=0.0001778  exists (0s)
+[250/1836       0s] HA W6 seed=8 x=0.0001778  exists (0s)
+[251/1836       0s] HA W6 seed=11 x=0.0001778  exists (0s)
+[252/1836       0s] HA W6 seed=10 x=0.0001778  exists (0s)
+[253/1836       0s] HA C1 seed=0 x=0.0001778  exists (0s)
+[254/1836       0s] HA W6 seed=9 x=0.0001778  exists (0s)
+[255/1836       0s] HA C1 seed=3 x=0.0001778  exists (0s)
+[256/1836       0s] HA C1 seed=2 x=0.0001778  exists (0s)
+[257/1836       0s] HA C1 seed=5 x=0.0001778  exists (0s)
+[258/1836       0s] HA C1 seed=4 x=0.0001778  exists (0s)
+[259/1836       0s] HA C1 seed=10 x=0.0001778  exists (0s)
+[260/1836       0s] HA C1 seed=9 x=0.0001778  exists (0s)
+[261/1836       0s] HA C2 seed=3 x=0.0001778  exists (0s)
+[262/1836       0s] HA C2 seed=2 x=0.0001778  exists (0s)
+[263/1836       0s] HA C2 seed=4 x=0.0001778  exists (0s)
+[264/1836       0s] HA C2 seed=7 x=0.0001778  exists (0s)
+[265/1836       0s] HA C2 seed=5 x=0.0001778  exists (0s)
+[266/1836       0s] HA C2 seed=6 x=0.0001778  exists (0s)
+[267/1836       0s] HA C2 seed=9 x=0.0001778  exists (0s)
+[268/1836       0s] HA C2 seed=8 x=0.0001778  exists (0s)
+[269/1836       0s] HA C2 seed=11 x=0.0001778  exists (0s)
+[270/1836       0s] HA C2 seed=0 x=0.0001778  exists (0s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[271/1836      44s] HA C2 seed=10 x=0.0001  failed: Unexpected istate in LSODA. (44s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[272/1836      47s] HA C2 seed=2 x=3.162e-05  failed: Unexpected istate in LSODA. (46s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[273/1836      49s] HA C2 seed=6 x=1e-05  failed: Unexpected istate in LSODA. (49s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[274/1836      61s] HA HT4W seed=10 x=0.0001778  failed: Unexpected istate in LSODA. (61s)
+[275/1836      63s] HA HT4L seed=3 x=0.0001  failed: Unexpected istate in LSODA. (62s)
+[276/1836      72s] HA C2 seed=7 x=1.778e-05  event t_esc=55389686240919.69 (72s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[277/1836      76s] HA HT4L seed=6 x=0.0001778  failed: Unexpected istate in LSODA. (75s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[278/1836      77s] HA C2 seed=6 x=5.623e-05  event t_esc=37438332221373.445 (76s)
+[279/1836      78s] HA C2 seed=4 x=1.778e-05  event t_esc=105209833289408.34 (77s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[280/1836      78s] HA C2 seed=7 x=1e-05  event t_esc=311484179709785.94 (77s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[281/1836      79s] HA HT4L seed=2 x=0.0001  failed: Unexpected istate in LSODA. (78s)
+[282/1836      81s] HA HT4L seed=11 x=0.0001778  failed: Unexpected istate in LSODA. (80s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[283/1836      81s] HA HT4W seed=1 x=0.0001778  failed: Unexpected istate in LSODA. (81s)
+[284/1836      81s] HA C2 seed=4 x=1e-05  event t_esc=591650810513744.9 (81s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[285/1836      83s] HA HT4L seed=1 x=0.0001778  failed: Unexpected istate in LSODA. (83s)
+[286/1836      86s] HA HT4W seed=11 x=0.0001778  failed: Unexpected istate in LSODA. (85s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[287/1836      94s] HA HT4W seed=7 x=0.0001778  failed: Unexpected istate in LSODA. (94s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[288/1836     100s] HA PS06 seed=1 x=0.0001  failed: Unexpected istate in LSODA. (99s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[289/1836     100s] HA C2 seed=1 x=0.0001778  event t_esc=1151916667793397.5 (100s)
+[290/1836     101s] HA HT4L seed=7 x=0.0001778  failed: Unexpected istate in LSODA. (100s)
+[291/1836     101s] HA C2 seed=10 x=0.0001778  event t_esc=360064703704819.8 (101s)
+[292/1836     102s] HA HT4W seed=6 x=0.0001778  failed: Unexpected istate in LSODA. (102s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[293/1836     105s] HA HT4L seed=7 x=0.0001  failed: Unexpected istate in LSODA. (105s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[294/1836     107s] HA HT4L seed=5 x=0.0001778  failed: Unexpected istate in LSODA. (107s)
+[295/1836     108s] HA HT4W seed=8 x=0.0001778  failed: Unexpected istate in LSODA. (107s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[296/1836     112s] HA HT4W seed=7 x=0.0001  failed: Unexpected istate in LSODA. (112s)
+[297/1836     112s] HA PS06 seed=10 x=0.0001778  failed: Unexpected istate in LSODA. (112s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[298/1836     115s] HA HT4W seed=5 x=0.0001778  failed: Unexpected istate in LSODA. (115s)
+[299/1836     116s] HA PS06 seed=10 x=0.0001  failed: Unexpected istate in LSODA. (116s)
+[300/1836     117s] HA HT4L seed=8 x=0.0001778  failed: Unexpected istate in LSODA. (117s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[301/1836     122s] HA HT4L seed=4 x=0.0001778  failed: Unexpected istate in LSODA. (122s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[302/1836     131s] HA C1 seed=1 x=0.0001778  failed: Unexpected istate in LSODA. (130s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[303/1836     135s] HA HT4L seed=9 x=0.0001778  failed: Unexpected istate in LSODA. (134s)
+[304/1836     135s] HA C1 seed=1 x=0.0001  failed: Unexpected istate in LSODA. (134s)
+[305/1836     137s] HA PS08 seed=4 x=0.0003162  event t_esc=14991572.445182499 (136s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[306/1836     144s] HA HT4L seed=0 x=0.0001778  failed: Unexpected istate in LSODA. (144s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[307/1836     148s] HA PS08 seed=1 x=0.0003162  event t_esc=18373390.872026604 (147s)
+[308/1836     149s] HA HT4W seed=4 x=0.0001778  failed: Unexpected istate in LSODA. (148s)
+[309/1836     152s] HA PS06 seed=0 x=0.0003162  trapped (105s)
+[310/1836     152s] HA PS08 seed=2 x=0.0003162  event t_esc=13560037.28493811 (152s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[311/1836     155s] HA C1 seed=0 x=0.0003162  trapped (43s)
+[312/1836     156s] HA PS08 seed=7 x=0.0003162  event t_esc=12034381.729987912 (156s)
+[313/1836     159s] HA PS08 seed=3 x=0.0003162  event t_esc=51497664.8584063 (158s)
+[314/1836     159s] HA PS08 seed=10 x=0.0003162  event t_esc=73618796.33837695 (158s)
+[315/1836     160s] HA PS06 seed=11 x=0.0001778  failed: Unexpected istate in LSODA. (159s)
+[316/1836     162s] HA PS08 seed=9 x=0.0003162  event t_esc=83195136.52503878 (161s)
+[317/1836     164s] HA PS08 seed=6 x=0.0003162  event t_esc=74289855.94491093 (163s)
+[318/1836     166s] HA C2 seed=0 x=0.0003162  trapped (18s)
+[319/1836     170s] HA C2 seed=3 x=0.0003162  trapped (15s)
+[320/1836     170s] HA PS08 seed=5 x=0.0003162  event t_esc=81122279.95213072 (170s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[321/1836     174s] HA C2 seed=5 x=0.0003162  trapped (15s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[322/1836     176s] HA HT4W seed=0 x=0.0001778  failed: Unexpected istate in LSODA. (175s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[323/1836     178s] HA HT4S seed=2 x=0.0001778  failed: Unexpected istate in LSODA. (178s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[324/1836     181s] HA PS06 seed=8 x=0.0001778  failed: Unexpected istate in LSODA. (180s)
+[325/1836     181s] HA PS08 seed=8 x=0.0003162  event t_esc=49432938.59844573 (180s)
+[326/1836     182s] HA HT4S seed=8 x=0.0001778  failed: Unexpected istate in LSODA. (181s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[327/1836     183s] HA PS08 seed=0 x=0.0003162  event t_esc=31741171.50373915 (182s)
+[328/1836     183s] HA C2 seed=11 x=0.0003162  trapped (14s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[329/1836     184s] HA HT4W seed=9 x=0.0001778  failed: Unexpected istate in LSODA. (183s)
+[330/1836     185s] HA C1 seed=10 x=0.0003162  trapped (41s)
+[331/1836     186s] HA HT4S seed=3 x=0.0001  failed: Unexpected istate in LSODA. (186s)
+[332/1836     187s] HA HT4S seed=10 x=0.0001778  failed: Unexpected istate in LSODA. (186s)
+[333/1836     191s] HA PS06 seed=4 x=5.623e-05  event t_esc=12215060850567.418 (191s)
+[334/1836     194s] HA PS06 seed=5 x=0.0003162  trapped (118s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[335/1836     202s] HA PS06 seed=7 x=1.778e-05  event t_esc=500075815099213.44 (201s)
+[336/1836     202s] HA HT4S seed=4 x=0.0001778  failed: Unexpected istate in LSODA. (201s)
+[337/1836     204s] HA PS06 seed=7 x=0.0001778  event t_esc=500120935660.1204 (203s)
+[338/1836     204s] HA HT4W seed=0 x=0.0001  failed: Unexpected istate in LSODA. (204s)
+[339/1836     205s] HA HT4S seed=5 x=0.0001778  failed: Unexpected istate in LSODA. (205s)
+[340/1836     206s] HA HT4L seed=10 x=0.0001778  event t_esc=1520317342861084.2 (205s)
+[341/1836     208s] HA HT4L seed=2 x=0.0001778  event t_esc=630404186707113.2 (207s)
+[342/1836     209s] HA PS06 seed=4 x=1.778e-05  event t_esc=386218519431963.3 (208s)
+[343/1836     213s] HA C2 seed=6 x=0.0003162  event t_esc=209787622007.31308 (54s)
+[344/1836     213s] HA PS06 seed=6 x=0.0001  event t_esc=41208169863180.71 (213s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[345/1836     217s] HA C2 seed=7 x=0.0003162  event t_esc=9843668400.278683 (57s)
+[346/1836     217s] HA C2 seed=9 x=0.0003162  failed: Unexpected istate in LSODA. (53s)
+[347/1836     220s] HA C2 seed=4 x=0.0003162  event t_esc=18694154815.7115 (64s)
+[348/1836     220s] HA W6 seed=0 x=0.0003162  event t_esc=7111994.487702871 (139s)
+[349/1836     221s] HA PS06 seed=9 x=3.162e-05  event t_esc=145826503468750.56 (220s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[350/1836     222s] HA C1 seed=2 x=0.0003162  trapped (106s)
+[351/1836     224s] HA C2 seed=8 x=0.0003162  failed: Unexpected istate in LSODA. (62s)
+[352/1836     226s] HA PS08 seed=11 x=0.0003162  event t_esc=95817799.4700837 (182s)
+[353/1836     226s] HA C2 seed=2 x=0.0003162  event t_esc=548888500807.2286 (74s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[354/1836     228s] HA W6 seed=2 x=0.0003162  event t_esc=3034166.26411754 (142s)
+[355/1836     228s] HA HT4W seed=3 x=0.0001778  event t_esc=452114810272750.9 (228s)
+[356/1836     229s] HA PS06 seed=6 x=5.623e-05  event t_esc=231901940280077.53 (228s)
+[357/1836     230s] HA HT4S seed=7 x=0.0001778  failed: Unexpected istate in LSODA. (230s)
+[358/1836     231s] HA W6 seed=8 x=0.0003162  event t_esc=11070426.226489762 (128s)
+[359/1836     231s] HA W6 seed=1 x=0.0003162  event t_esc=4118292.0231628055 (147s)
+[360/1836     231s] HA PS06 seed=9 x=1.778e-05  event t_esc=819795923174308.1 (231s)
+[361/1836     235s] HA W6 seed=4 x=0.0003162  event t_esc=3355715.9590438693 (135s)
+[362/1836     236s] HA PS06 seed=4 x=0.0003162  event t_esc=68757236254.67245 (164s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[363/1836     238s] HA PS06 seed=7 x=0.0003162  event t_esc=88942256161.9774 (160s)
+[364/1836     238s] HA PS06 seed=4 x=3.162e-05  event t_esc=68684004466232.83 (237s)
+[365/1836     238s] HA PS06 seed=3 x=0.0003162  trapped (176s)
+[366/1836     241s] HA W6 seed=7 x=0.0003162  event t_esc=2696361.77523922 (140s)
+[367/1836     242s] HA HT4S seed=4 x=0.0001  failed: Unexpected istate in LSODA. (241s)
+[368/1836     243s] HA W6 seed=6 x=0.0003162  event t_esc=16636239.006629827 (142s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[369/1836     243s] HA HT4W seed=2 x=0.0001778  event t_esc=637840993774211.5 (243s)
+[370/1836     244s] HA C2 seed=10 x=0.0003162  event t_esc=36022610860309.586 (78s)
+[371/1836     247s] HA HT4S seed=8 x=0.0001  failed: Unexpected istate in LSODA. (246s)
+[372/1836     247s] HA W6 seed=3 x=0.0003162  event t_esc=11531134.625907317 (153s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[373/1836     248s] HA W6 seed=9 x=0.0003162  event t_esc=18614686.04532722 (143s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[374/1836     249s] HA PS06 seed=6 x=3.162e-05  event t_esc=1304624111176350.5 (248s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[375/1836     250s] HA PS06 seed=9 x=0.0003162  event t_esc=146740547553.8576 (171s)
+[376/1836     251s] HA W6 seed=11 x=0.0003162  event t_esc=21554329.49236786 (143s)
+[377/1836     252s] HA HT4S seed=0 x=0.0001778  failed: Unexpected istate in LSODA. (252s)
+[378/1836     253s] HA PS06 seed=2 x=0.0001778  failed: Unexpected istate in LSODA. (252s)
+[379/1836     253s] HA C2 seed=1 x=0.0003162  event t_esc=114962851786403.12 (102s)
+[380/1836     255s] HA PS06 seed=8 x=0.0003162  failed: Unexpected istate in LSODA. (177s)
+[381/1836     257s] HA W6 seed=10 x=0.0003162  event t_esc=16477855.34008495 (149s)
+[382/1836     259s] HA W6 seed=5 x=0.0003162  event t_esc=18185128.938911844 (159s)
+[383/1836     259s] HA PS06 seed=11 x=0.0003162  failed: Unexpected istate in LSODA. (178s)
+[384/1836     260s] HA C3 seed=1 x=0.0003162  trapped (69s)
+[385/1836     260s] HA C1 seed=4 x=0.0003162  trapped (143s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[386/1836     266s] HA HT4S seed=10 x=0.0001  failed: Unexpected istate in LSODA. (266s)
+[387/1836     267s] HA PS06 seed=6 x=0.0003162  event t_esc=1298413318358.9375 (191s)
+[388/1836     274s] HA C1 seed=9 x=0.0003162  trapped (138s)
+[389/1836     274s] HA C3 seed=6 x=0.0003162  trapped (70s)
+[390/1836     282s] HA HT4W seed=11 x=0.0003162  failed: Unexpected istate in LSODA. (95s)
+[391/1836     282s] HA C3 seed=3 x=0.0003162  trapped (80s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[392/1836     288s] HA C3 seed=4 x=0.0003162  trapped (86s)
+[393/1836     290s] HA HT4S seed=2 x=0.0001  failed: Unexpected istate in LSODA. (289s)
+[394/1836     291s] HA C1 seed=8 x=0.0001778  failed: Unexpected istate in LSODA. (291s)
+[395/1836     298s] HA HT4W seed=8 x=0.0003162  failed: Unexpected istate in LSODA. (114s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[396/1836     302s] HA HT4W seed=0 x=0.0003162  failed: Unexpected istate in LSODA. (131s)
+[397/1836     304s] HA PS06 seed=2 x=0.0003162  failed: Unexpected istate in LSODA. (242s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[398/1836     308s] HA C3 seed=5 x=0.0003162  failed: Unexpected istate in LSODA. (104s)
+[399/1836     309s] HA HT4S seed=1 x=0.0001778  failed: Unexpected istate in LSODA. (308s)
+[400/1836     310s] HA PS06 seed=10 x=1e-05  failed: Unexpected istate in LSODA. (310s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[401/1836     312s] HA HT4W seed=4 x=0.0003162  failed: Unexpected istate in LSODA. (131s)
+[402/1836     312s] HA PS06 seed=5 x=5.623e-05  failed: Unexpected istate in LSODA. (311s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[403/1836     313s] HA HT4L seed=5 x=0.0003162  failed: Unexpected istate in LSODA. (92s)
+[404/1836     316s] HA HT4W seed=9 x=0.0003162  failed: Unexpected istate in LSODA. (132s)
+[405/1836     316s] HA HT4W seed=5 x=0.0001  failed: Unexpected istate in LSODA. (315s)
+[406/1836     318s] HA PS06 seed=10 x=0.0003162  event t_esc=114591777281217.88 (238s)
+[407/1836     320s] HA C1 seed=6 x=0.0001778  event t_esc=9465359200538792.0 (319s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[408/1836     322s] HA C1 seed=5 x=0.0003162  trapped (199s)
+[409/1836     324s] HA HT4L seed=9 x=0.0001  failed: Unexpected istate in LSODA. (323s)
+[410/1836     325s] HA C1 seed=3 x=0.0003162  trapped (209s)
+[411/1836     327s] HA C3 seed=0 x=0.0003162  trapped (141s)
+[412/1836     337s] HA PS06 seed=0 x=0.0005623  trapped (82s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[413/1836     344s] HA HT4L seed=9 x=0.0003162  failed: Unexpected istate in LSODA. (118s)
+[414/1836     346s] HA C1 seed=8 x=0.0003162  failed: Unexpected istate in LSODA. (211s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[415/1836     351s] HA HT4W seed=5 x=0.0003162  failed: Unexpected istate in LSODA. (171s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[416/1836     355s] HA HT4S seed=1 x=0.0001  failed: Unexpected istate in LSODA. (355s)
+[417/1836     364s] HA PS08 seed=2 x=0.0005623  event t_esc=4292548.6441657925 (119s)
+[418/1836     365s] HA C1 seed=0 x=0.0005623  trapped (50s)
+[419/1836     370s] HA C2 seed=0 x=0.0005623  trapped (15s)
+[420/1836     372s] HA C3 seed=11 x=0.0003162  trapped (159s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[421/1836     378s] HA HT4L seed=2 x=0.0003162  event t_esc=62937859886454.016 (161s)
+[422/1836     378s] HA PS08 seed=1 x=0.0005623  event t_esc=5819618.414617242 (135s)
+[423/1836     381s] HA HT4W seed=7 x=0.0003162  event t_esc=307793804740726.4 (199s)
+[424/1836     382s] HA C1 seed=1 x=0.0003162  event t_esc=179812478064310.66 (269s)
+[425/1836     383s] HA PS06 seed=8 x=0.0001  failed: Unexpected istate in LSODA. (383s)
+[426/1836     387s] HA PS08 seed=7 x=0.0005623  event t_esc=3807873.377860333 (137s)
+[427/1836     389s] HA PS08 seed=0 x=0.0005623  event t_esc=10069994.457752768 (146s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[428/1836     392s] HA C2 seed=5 x=0.0005623  trapped (14s)
+[429/1836     392s] HA PS08 seed=4 x=0.0005623  event t_esc=4732478.595266209 (145s)
+[430/1836     394s] HA HT4S seed=8 x=0.0003162  failed: Unexpected istate in LSODA. (156s)
+[431/1836     395s] HA C2 seed=3 x=0.0005623  trapped (25s)
+[432/1836     396s] HA W6 seed=1 x=0.0005623  event t_esc=1305088.0677210786 (106s)
+[433/1836     397s] HA HT4W seed=2 x=0.0003162  event t_esc=63676942200419.98 (221s)
+[434/1836     399s] HA PS08 seed=5 x=0.0005623  event t_esc=25665210.89060656 (151s)
+[435/1836     400s] HA PS08 seed=9 x=0.0005623  event t_esc=26290196.45705833 (148s)
+[436/1836     406s] HA PS08 seed=10 x=0.0005623  event t_esc=23228255.84159469 (153s)
+[437/1836     407s] HA C2 seed=11 x=0.0005623  trapped (18s)
+[438/1836     409s] HA PS08 seed=6 x=0.0005623  event t_esc=23506013.456408188 (160s)
+[439/1836     409s] HA HT4L seed=4 x=0.0003162  event t_esc=4153265942055565.0 (189s)
+[440/1836     410s] HA HT4S seed=2 x=0.0003162  failed: Unexpected istate in LSODA. (179s)
+[441/1836     411s] HA HT4S seed=11 x=0.0003162  failed: Unexpected istate in LSODA. (169s)
+[442/1836     412s] HA HT4L seed=3 x=0.0003162  event t_esc=50178858819005.234 (192s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[443/1836     413s] HA HT4L seed=6 x=0.0003162  event t_esc=821511973767085.4 (191s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[444/1836     414s] HA HT4L seed=11 x=0.0003162  event t_esc=1347999631557860.0 (186s)
+[445/1836     415s] HA W6 seed=3 x=0.0005623  event t_esc=3652654.5522734257 (117s)
+[446/1836     416s] HA HT4S seed=9 x=0.0001778  failed: Unexpected istate in LSODA. (416s)
+[447/1836     419s] HA HT4W seed=6 x=0.0003162  event t_esc=772221198832343.0 (237s)
+[448/1836     420s] HA HT4L seed=7 x=0.0003162  event t_esc=348777351093645.5 (196s)
+[449/1836     422s] HA W6 seed=0 x=0.0005623  event t_esc=2256797.1540366868 (134s)
+[450/1836     423s] HA PS08 seed=3 x=0.0005623  event t_esc=16317401.059745021 (176s)
+[451/1836     423s] HA PS08 seed=8 x=0.0005623  event t_esc=15701435.149080554 (172s)
+[452/1836     423s] HA PS06 seed=2 x=1.778e-05  failed: Unexpected istate in LSODA. (423s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[453/1836     425s] HA C2 seed=7 x=0.0005623  event t_esc=1749575632.4651933 (44s)
+[454/1836     427s] HA W6 seed=5 x=0.0005623  event t_esc=5756752.17182224 (124s)
+[455/1836     429s] HA HT4S seed=7 x=0.0003162  failed: Unexpected istate in LSODA. (191s)
+[456/1836     429s] HA HT4S seed=1 x=0.0003162  failed: Unexpected istate in LSODA. (198s)
+[457/1836     429s] HA W6 seed=9 x=0.0005623  event t_esc=5877195.668829693 (117s)
+[458/1836     429s] HA W6 seed=4 x=0.0005623  event t_esc=1058731.1134055876 (128s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[459/1836     430s] HA C2 seed=4 x=0.0005623  event t_esc=3322128611.576386 (58s)
+[460/1836     430s] HA C1 seed=2 x=0.0005623  failed: Unexpected istate in LSODA. (112s)
+[461/1836     431s] HA HT4W seed=1 x=0.0003162  event t_esc=272540940762374.44 (257s)
+[462/1836     431s] HA W6 seed=10 x=0.0005623  event t_esc=5195982.957754222 (120s)
+[463/1836     432s] HA C2 seed=9 x=0.0005623  failed: Unexpected istate in LSODA. (49s)
+[464/1836     433s] HA HT4S seed=11 x=0.0001778  failed: Unexpected istate in LSODA. (432s)
+[465/1836     433s] HA W6 seed=2 x=0.0005623  event t_esc=959686.4218164571 (142s)
+[466/1836     435s] HA C1 seed=6 x=0.0003162  event t_esc=944876586983127.5 (304s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[467/1836     436s] HA PS08 seed=11 x=0.0005623  event t_esc=29741232.924165975 (183s)
+[468/1836     436s] HA HT4L seed=10 x=0.0003162  event t_esc=151991297115101.03 (209s)
+[469/1836     437s] HA C2 seed=6 x=0.0005623  event t_esc=37181857804.98464 (59s)
+[470/1836     438s] HA C3 seed=9 x=0.0003162  failed: Unexpected istate in LSODA. (230s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[471/1836     442s] HA C2 seed=2 x=0.0005623  event t_esc=56459276309.23975 (76s)
+[472/1836     444s] HA HT4S seed=5 x=0.0003162  failed: Unexpected istate in LSODA. (209s)
+[473/1836     444s] HA C3 seed=8 x=0.0003162  failed: Unexpected istate in LSODA. (239s)
+[474/1836     446s] HA W6 seed=7 x=0.0005623  event t_esc=853336.4360678728 (137s)
+[475/1836     450s] HA W6 seed=8 x=0.0005623  event t_esc=3515676.029064872 (140s)
+[476/1836     452s] HA HT4S seed=9 x=0.0003162  failed: Unexpected istate in LSODA. (214s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[477/1836     453s] HA W6 seed=6 x=0.0005623  event t_esc=5262711.522016243 (145s)
+[478/1836     454s] HA PS06 seed=6 x=0.0005623  event t_esc=229962466727.20065 (187s)
+[479/1836     456s] HA PS06 seed=9 x=0.0005623  event t_esc=26238402346.14832 (182s)
+[480/1836     457s] HA PS06 seed=1 x=0.0005623  event t_esc=5133164186771.053 (200s)
+[481/1836     457s] HA C2 seed=10 x=0.0005623  event t_esc=3605141882579.519 (70s)
+[482/1836     457s] HA C1 seed=4 x=0.0005623  trapped (135s)
+[483/1836     458s] HA C2 seed=1 x=0.0005623  event t_esc=11455866254526.557 (94s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[484/1836     459s] HA PS06 seed=8 x=0.0005623  failed: Unexpected istate in LSODA. (185s)
+[485/1836     464s] HA HT4W seed=10 x=0.0003162  event t_esc=140313984789938.92 (279s)
+[486/1836     466s] HA HT4L seed=0 x=0.0003162  event t_esc=3799112991181481.0 (253s)
+[487/1836     466s] HA PS06 seed=2 x=0.0005623  failed: Unexpected istate in LSODA. (207s)
+[488/1836     468s] HA PS06 seed=3 x=0.0005623  trapped (209s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[489/1836     473s] HA W6 seed=11 x=0.0005623  event t_esc=6709946.100166508 (159s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[490/1836     475s] HA C1 seed=7 x=0.0001778  failed: Unexpected istate in LSODA. (474s)
+[491/1836     475s] HA C3 seed=6 x=0.0005623  trapped (59s)
+[492/1836     477s] HA C1 seed=9 x=0.0005623  trapped (133s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[493/1836     480s] HA HT4L seed=1 x=0.0003162  event t_esc=301349283202238.7 (263s)
+[494/1836     480s] HA PS06 seed=2 x=0.0001  failed: Unexpected istate in LSODA. (479s)
+[495/1836     480s] HA C3 seed=1 x=0.0005623  trapped (69s)
+[496/1836     480s] HA C2 seed=1 x=1.778e-05  failed: Unexpected istate in LSODA. (479s)
+[497/1836     480s] HA C3 seed=2 x=0.0003162  failed: Unexpected istate in LSODA. (286s)
+[498/1836     480s] HA C3 seed=3 x=0.0005623  trapped (67s)
+[499/1836     481s] HA C3 seed=4 x=0.0005623  trapped (67s)
+[500/1836     483s] HA PS06 seed=4 x=0.0005623  event t_esc=12238227563.045277 (223s)
+[501/1836     485s] HA C2 seed=8 x=0.0005623  event t_esc=365958347638357.44 (104s)
+[502/1836     487s] HA PS06 seed=10 x=0.0005623  event t_esc=11433979067064.818 (205s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[503/1836     496s] HA C3 seed=0 x=0.0005623  trapped (86s)
+[504/1836     497s] HA PS06 seed=11 x=5.623e-05  failed: Unexpected istate in LSODA. (496s)
+[505/1836     503s] HA HT4L seed=8 x=0.0003162  event t_esc=2566099267602608.5 (277s)
+[506/1836     523s] HA C3 seed=11 x=0.0005623  trapped (100s)
+[507/1836     526s] HA HT4W seed=5 x=0.0005623  failed: Unexpected istate in LSODA. (129s)
+[508/1836     531s] HA C1 seed=3 x=0.0005623  trapped (211s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[509/1836     537s] HA HT4L seed=9 x=0.0005623  failed: Unexpected istate in LSODA. (106s)
+[510/1836     540s] HA C3 seed=9 x=0.0005623  trapped (118s)
+[511/1836     551s] HA HT4W seed=2 x=0.0005623  event t_esc=6348723548144.05 (157s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[512/1836     556s] HA HT4W seed=9 x=0.0001  failed: Unexpected istate in LSODA. (556s)
+[513/1836     558s] HA PS06 seed=0 x=0.001  trapped (90s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[514/1836     563s] HA HT4S seed=5 x=0.0001  failed: Unexpected istate in LSODA. (562s)
+[515/1836     564s] HA C1 seed=1 x=0.0005623  event t_esc=17974453293429.49 (248s)
+[516/1836     568s] HA HT4W seed=3 x=0.0005623  event t_esc=4521262292257.419 (173s)
+[517/1836     570s] HA PS08 seed=0 x=0.001  event t_esc=3203017.046131551 (118s)
+[518/1836     572s] HA PS08 seed=4 x=0.001  event t_esc=1491898.8027204473 (115s)
+[519/1836     577s] HA HT4S seed=2 x=0.0005623  failed: Unexpected istate in LSODA. (143s)
+[520/1836     578s] HA PS08 seed=2 x=0.001  event t_esc=1359949.9641746627 (124s)
+[521/1836     580s] HA HT4L seed=2 x=0.0005623  event t_esc=6275630311749.465 (153s)
+[522/1836     581s] HA PS06 seed=11 x=0.0005623  event t_esc=187439048273732.2 (299s)
+[523/1836     581s] HA PS08 seed=1 x=0.001  event t_esc=1845646.1176017988 (128s)
+[524/1836     585s] HA HT4W seed=11 x=0.0005623  event t_esc=122532966687777.14 (175s)
+[525/1836     586s] HA HT4W seed=6 x=0.0005623  event t_esc=77152959718991.62 (187s)
+[526/1836     588s] HA PS08 seed=5 x=0.001  event t_esc=8122935.839472601 (132s)
+[527/1836     589s] HA HT4L seed=7 x=0.0005623  event t_esc=34970928942032.465 (160s)
+[528/1836     592s] HA W6 seed=1 x=0.001  event t_esc=414266.14116295485 (106s)
+[529/1836     592s] HA HT4L seed=6 x=0.0005623  event t_esc=82062452042136.78 (163s)
+[530/1836     594s] HA PS08 seed=3 x=0.001  event t_esc=5178332.345466687 (137s)
+[531/1836     594s] HA HT4L seed=3 x=0.0005623  event t_esc=5017923114600.212 (165s)
+[532/1836     595s] HA W6 seed=3 x=0.001  event t_esc=1158570.6358543409 (99s)
+[533/1836     597s] HA HT4L seed=11 x=0.0005623  event t_esc=134908969665780.77 (164s)
+[534/1836     597s] HA W6 seed=2 x=0.001  event t_esc=303592.3643492124 (110s)
+[535/1836     598s] HA HT4L seed=4 x=0.0005623  event t_esc=413677176794222.8 (169s)
+[536/1836     600s] HA PS06 seed=0 x=3.162e-05  trapped (600s)
+[537/1836     601s] HA C2 seed=0 x=0.001  trapped (16s)
+[538/1836     604s] HA C1 seed=8 x=0.0005623  failed: Unexpected istate in LSODA. (267s)
+[539/1836     604s] HA PS08 seed=7 x=0.001  event t_esc=1205433.162163244 (146s)
+[540/1836     604s] HA HT4L seed=10 x=0.0005623  event t_esc=15191956894091.523 (173s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[541/1836     605s] HA W6 seed=4 x=0.001  event t_esc=333432.52375295 (109s)
+[542/1836     605s] HA PS08 seed=9 x=0.001  event t_esc=8303335.685274575 (142s)
+[543/1836     606s] HA HT4W seed=10 x=0.0005623  event t_esc=14024166967597.625 (197s)
+[544/1836     607s] HA PS08 seed=6 x=0.001  event t_esc=7440871.74824868 (150s)
+[545/1836     607s] HA C1 seed=0 x=0.001  trapped (51s)
+[546/1836     608s] HA HT4S seed=5 x=0.0005623  failed: Unexpected istate in LSODA. (171s)
+[547/1836     610s] HA C2 seed=5 x=0.001  trapped (18s)
+[548/1836     610s] HA C2 seed=3 x=0.001  trapped (21s)
+[549/1836     612s] HA PS08 seed=10 x=0.001  event t_esc=7316288.234353508 (146s)
+[550/1836     613s] HA HT4W seed=4 x=0.0005623  event t_esc=263641728478913.22 (218s)
+[551/1836     616s] HA C2 seed=11 x=0.001  trapped (19s)
+[552/1836     622s] HA HT4W seed=1 x=0.0005623  event t_esc=27264833653729.09 (230s)
+[553/1836     622s] HA HT4S seed=9 x=0.0005623  failed: Unexpected istate in LSODA. (177s)
+[554/1836     622s] HA HT4S seed=11 x=0.0005623  failed: Unexpected istate in LSODA. (172s)
+[555/1836     622s] HA W6 seed=7 x=0.001  event t_esc=270227.78344452556 (96s)
+[556/1836     624s] HA PS06 seed=4 x=0.001  event t_esc=2179866102.810285 (147s)
+[557/1836     627s] HA PS08 seed=11 x=0.001  event t_esc=9118553.323023358 (161s)
+[558/1836     629s] HA W6 seed=5 x=0.001  event t_esc=1823912.0779129684 (126s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[559/1836     633s] HA HT4W seed=7 x=0.0005623  event t_esc=30884889779070.348 (233s)
+[560/1836     633s] HA HT4W seed=0 x=0.0005623  event t_esc=530789758041180.6 (241s)
+[561/1836     633s] HA HT4L seed=5 x=0.0005623  event t_esc=846715229935526.8 (204s)
+[562/1836     634s] HA W6 seed=8 x=0.001  event t_esc=1120219.3247980177 (103s)
+[563/1836     634s] HA HT4S seed=7 x=0.0001  failed: Unexpected istate in LSODA. (633s)
+[564/1836     636s] HA PS08 seed=8 x=0.001  event t_esc=5004656.801260073 (177s)
+[565/1836     638s] HA PS06 seed=9 x=0.001  event t_esc=4712802579.123909 (158s)
+[566/1836     642s] HA W6 seed=0 x=0.001  event t_esc=718113.9900821894 (159s)
+[567/1836     643s] HA C2 seed=4 x=0.001  event t_esc=590066617.2276039 (52s)
+[568/1836     646s] HA PS06 seed=7 x=0.001  event t_esc=2813593350.689146 (167s)
+[569/1836     647s] HA C2 seed=7 x=0.001  event t_esc=310837865.5918964 (53s)
+[570/1836     655s] HA C2 seed=2 x=0.001  event t_esc=5932460073.276413 (67s)
+[571/1836     657s] HA HT4L seed=8 x=0.0005623  event t_esc=257262277370903.7 (227s)
+[572/1836     658s] HA PS06 seed=6 x=0.001  event t_esc=40608233642.74035 (178s)
+[573/1836     660s] HA W6 seed=10 x=0.001  event t_esc=1634855.6400353243 (120s)
+[574/1836     660s] HA C2 seed=6 x=0.001  event t_esc=6573074772.327575 (67s)
+[575/1836     661s] HA C1 seed=2 x=0.001  failed: Unexpected istate in LSODA. (99s)
+[576/1836     662s] HA W6 seed=6 x=0.001  event t_esc=1665274.0138487434 (139s)
+[577/1836     663s] HA PS06 seed=3 x=0.001  trapped (188s)
+[578/1836     664s] HA HT4W seed=8 x=0.0005623  event t_esc=315089921102721.44 (258s)
+[579/1836     664s] HA HT4L seed=0 x=0.0005623  event t_esc=380483191732453.2 (241s)
+[580/1836     666s] HA HT4S seed=3 x=0.0003162  event t_esc=700474170000791.6 (435s)
+[581/1836     669s] HA W6 seed=9 x=0.001  event t_esc=1853321.1351637691 (132s)
+[582/1836     672s] HA C3 seed=1 x=0.001  trapped (59s)
+[583/1836     677s] HA HT4S seed=0 x=0.0003162  event t_esc=1.7715923485165656e+16 (449s)
+[584/1836     679s] HA C3 seed=6 x=0.001  trapped (57s)
+[585/1836     679s] HA C2 seed=8 x=0.001  event t_esc=38371982144414.43 (84s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[586/1836     680s] HA C2 seed=10 x=0.001  event t_esc=361029159640.76825 (83s)
+[587/1836     681s] HA C3 seed=4 x=0.001  trapped (59s)
+[588/1836     681s] HA HT4L seed=1 x=0.0005623  event t_esc=30148250211925.62 (256s)
+[589/1836     682s] HA HT4S seed=4 x=0.0005623  failed: Unexpected istate in LSODA. (245s)
+[590/1836     684s] HA PS06 seed=1 x=1.778e-05  failed: Unexpected istate in LSODA. (684s)
+[591/1836     685s] HA W6 seed=11 x=0.001  event t_esc=2066699.561223114 (134s)
+[592/1836     689s] HA C3 seed=0 x=0.001  trapped (78s)
+[593/1836     690s] HA C1 seed=4 x=0.001  trapped (122s)
+[594/1836     690s] HA PS06 seed=1 x=0.001  event t_esc=513342753763.2652 (218s)
+[595/1836     694s] HA PS06 seed=10 x=0.001  event t_esc=1138933837220.5737 (214s)
+[596/1836     695s] HA C1 seed=9 x=0.001  trapped (115s)
+[597/1836     698s] HA C3 seed=3 x=0.001  trapped (81s)
+[598/1836     698s] HA HT4S seed=10 x=0.0005623  failed: Unexpected istate in LSODA. (252s)
+[599/1836     699s] HA C2 seed=9 x=0.001  event t_esc=50662556211443.03 (102s)
+[600/1836     711s] HA HT4S seed=6 x=0.0005623  failed: Unexpected istate in LSODA. (273s)
+[601/1836     712s] HA HT4S seed=10 x=0.0003162  event t_esc=7218287184261595.0 (471s)
+[602/1836     722s] HA C3 seed=9 x=0.001  trapped (95s)
+[603/1836     723s] HA C3 seed=11 x=0.001  trapped (91s)
+[604/1836     744s] HA C1 seed=3 x=0.001  trapped (180s)
+[605/1836     747s] HA PS06 seed=2 x=0.001  event t_esc=79224848586219.95 (272s)
+[606/1836     753s] HA HT4W seed=6 x=0.001  event t_esc=7703036076906.334 (147s)
+[607/1836     754s] HA HT4L seed=2 x=0.001  event t_esc=624360199834.6586 (120s)
+[608/1836     755s] HA HT4W seed=2 x=0.001  event t_esc=631525488088.8713 (152s)
+[609/1836     757s] HA C1 seed=1 x=0.001  event t_esc=1796240449160.229 (199s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[610/1836     761s] HA HT4S seed=8 x=0.0005623  event t_esc=218464401521114.16 (317s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[611/1836     763s] HA HT4W seed=3 x=0.001  event t_esc=452139806502.32465 (160s)
+[612/1836     764s] HA C1 seed=11 x=0.0001778  failed: Unexpected istate in LSODA. (763s)
+[613/1836     767s] HA HT4S seed=6 x=0.0001778  failed: Unexpected istate in LSODA. (767s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[614/1836     777s] HA HT4L seed=7 x=0.001  event t_esc=3513848072127.1934 (134s)
+[615/1836     779s] HA HT4W seed=11 x=0.001  event t_esc=12260686364736.865 (169s)
+[616/1836     779s] HA C3 seed=7 x=0.001  failed: Unexpected istate in LSODA. (156s)
+[617/1836     779s] HA HT4S seed=0 x=0.0001  failed: Unexpected istate in LSODA. (779s)
+[618/1836     782s] HA C1 seed=8 x=0.001  failed: Unexpected istate in LSODA. (204s)
+[619/1836     782s] HA HT4W seed=4 x=0.001  event t_esc=26305767708421.863 (178s)
+[620/1836     783s] HA HT4S seed=3 x=0.0005623  event t_esc=70720683038808.16 (347s)
+[621/1836     784s] HA HT4W seed=1 x=0.001  event t_esc=2728424649844.8228 (183s)
+[622/1836     785s] HA PS06 seed=11 x=0.001  event t_esc=18652086556342.67 (304s)
+[623/1836     785s] HA PS08 seed=1 x=0.001778  event t_esc=586647.6841106366 (106s)
+[624/1836     786s] HA HT4L seed=3 x=0.001  event t_esc=501799488347.5251 (152s)
+[625/1836     788s] HA HT4S seed=7 x=0.0005623  event t_esc=1445722342257544.8 (346s)
+[626/1836     795s] HA PS06 seed=8 x=0.001  event t_esc=87277279270545.31 (315s)
+[627/1836     795s] HA HT4S seed=1 x=0.0005623  event t_esc=3128600525457392.5 (361s)
+[628/1836     795s] HA PS06 seed=0 x=0.001778  trapped (100s)
+[629/1836     798s] HA C3 seed=7 x=0.0005623  failed: Unexpected istate in LSODA. (380s)
+[630/1836     800s] HA PS08 seed=7 x=0.001778  event t_esc=381911.8599786699 (115s)
+[631/1836     802s] HA HT4S seed=4 x=0.0003162  event t_esc=1.4203746600412084e+16 (571s)
+[632/1836     802s] HA C3 seed=8 x=0.0005623  failed: Unexpected istate in LSODA. (382s)
+[633/1836     805s] HA PS08 seed=0 x=0.001778  event t_esc=1023657.2114684805 (127s)
+[634/1836     806s] HA HT4L seed=6 x=0.001  event t_esc=8190517094861.84 (164s)
+[635/1836     808s] HA PS08 seed=4 x=0.001778  event t_esc=469178.39406126604 (126s)
+[636/1836     810s] HA HT4L seed=11 x=0.001  event t_esc=13510438013811.553 (153s)
+[637/1836     812s] HA HT4W seed=7 x=0.001  event t_esc=3107483505008.8735 (206s)
+[638/1836     815s] HA HT4L seed=4 x=0.001  event t_esc=41082233302199.445 (179s)
+[639/1836     817s] HA PS08 seed=8 x=0.001778  event t_esc=1605212.2685189382 (128s)
+[640/1836     818s] HA HT4W seed=8 x=0.001  event t_esc=31661816885373.47 (211s)
+[641/1836     822s] HA PS08 seed=2 x=0.001778  event t_esc=431477.046246664 (141s)
+[642/1836     823s] HA C2 seed=0 x=0.001778  trapped (21s)
+[643/1836     824s] HA PS08 seed=3 x=0.001778  event t_esc=1647924.98641713 (143s)
+[644/1836     827s] HA HT4S seed=0 x=0.0005623  event t_esc=996990783395679.5 (394s)
+[645/1836     829s] HA C2 seed=3 x=0.001778  trapped (21s)
+[646/1836     830s] HA HT4S seed=6 x=0.001  failed: Unexpected istate in LSODA. (166s)
+[647/1836     832s] HA HT4L seed=1 x=0.001  event t_esc=3017236736846.061 (199s)
+[648/1836     833s] HA PS08 seed=6 x=0.001778  event t_esc=2357320.1364163733 (149s)
+[649/1836     833s] HA C2 seed=5 x=0.001778  trapped (21s)
+[650/1836     836s] HA HT4W seed=10 x=0.001  event t_esc=1401135474326.904 (228s)
+[651/1836     837s] HA C1 seed=6 x=0.001  event t_esc=9367931893027.047 (265s)
+[652/1836     840s] HA C2 seed=11 x=0.001778  trapped (16s)
+[653/1836     840s] HA C1 seed=0 x=0.001778  trapped (57s)
+[654/1836     842s] HA HT4L seed=5 x=0.001  event t_esc=85188825656239.69 (203s)
+[655/1836     843s] HA HT4L seed=0 x=0.001  event t_esc=38150292561948.31 (210s)
+[656/1836     844s] HA PS08 seed=9 x=0.001778  event t_esc=2619923.0950847114 (154s)
+[657/1836     844s] HA W6 seed=2 x=0.001778  event t_esc=96068.44823696566 (83s)
+[658/1836     845s] HA PS08 seed=11 x=0.001778  event t_esc=2744210.212256198 (151s)
+[659/1836     848s] HA PS08 seed=10 x=0.001778  event t_esc=2297369.2232267642 (158s)
+[660/1836     851s] HA HT4L seed=8 x=0.001  event t_esc=25844136582131.348 (205s)
+[661/1836     852s] HA W6 seed=4 x=0.001778  event t_esc=104675.25297133591 (88s)
+[662/1836     852s] HA C3 seed=5 x=0.0005623  failed: Unexpected istate in LSODA. (437s)
+[663/1836     856s] HA PS08 seed=5 x=0.001778  event t_esc=2572651.6027547275 (175s)
+[664/1836     858s] HA HT4L seed=10 x=0.001  event t_esc=1517925950466.7383 (203s)
+[665/1836     858s] HA W6 seed=1 x=0.001778  event t_esc=131883.33679620392 (101s)
+[666/1836     865s] HA PS06 seed=4 x=0.001778  event t_esc=388771137.39897007 (153s)
+[667/1836     865s] HA W6 seed=3 x=0.001778  event t_esc=368359.23777854687 (102s)
+[668/1836     865s] HA C2 seed=4 x=0.001778  event t_esc=104708550.16075793 (55s)
+[669/1836     867s] HA C2 seed=2 x=0.001778  event t_esc=646052184.330309 (61s)
+[670/1836     869s] HA W6 seed=7 x=0.001778  event t_esc=85667.5011213866 (90s)
+[671/1836     869s] HA C2 seed=7 x=0.001778  event t_esc=55185455.70001782 (52s)
+[672/1836     872s] HA PS06 seed=6 x=0.001778  event t_esc=7135791316.92665 (149s)
+[673/1836     874s] HA W6 seed=0 x=0.001778  event t_esc=229667.37769192882 (118s)
+[674/1836     879s] HA PS06 seed=3 x=0.001778  trapped (180s)
+[675/1836     879s] HA C3 seed=10 x=0.001  failed: Unexpected istate in LSODA. (250s)
+[676/1836     880s] HA W6 seed=8 x=0.001778  event t_esc=359092.5000961319 (101s)
+[677/1836     880s] HA C2 seed=6 x=0.001778  event t_esc=1156789966.093272 (65s)
+[678/1836     883s] HA W6 seed=11 x=0.001778  event t_esc=626165.8492477235 (101s)
+[679/1836     887s] HA PS06 seed=7 x=0.001778  event t_esc=500512827.65727353 (164s)
+[680/1836     888s] HA C3 seed=1 x=0.001778  trapped (45s)
+[681/1836     889s] HA C1 seed=9 x=0.001778  trapped (91s)
+[682/1836     892s] HA C3 seed=6 x=0.001778  trapped (40s)
+[683/1836     893s] HA PS06 seed=9 x=0.001778  event t_esc=853738988.5084696 (146s)
+[684/1836     895s] HA W6 seed=5 x=0.001778  event t_esc=578752.961361502 (128s)
+[685/1836     897s] HA W6 seed=9 x=0.001778  event t_esc=583150.5818391495 (118s)
+[686/1836     898s] HA C3 seed=3 x=0.001778  trapped (50s)
+[687/1836     902s] HA PS06 seed=1 x=0.001778  event t_esc=51342269971.07545 (204s)
+[688/1836     902s] HA W6 seed=6 x=0.001778  event t_esc=527207.1372593616 (125s)
+[689/1836     903s] HA C2 seed=1 x=0.001778  event t_esc=112608532667.12613 (97s)
+[690/1836     903s] HA C2 seed=8 x=0.001778  event t_esc=4190013687661.895 (85s)
+[691/1836     907s] HA C1 seed=4 x=0.001778  trapped (121s)
+[692/1836     907s] HA PS06 seed=3 x=5.623e-05  trapped (907s)
+[693/1836     911s] HA HT4W seed=9 x=0.001  event t_esc=286833518075471.1 (304s)
+[694/1836     911s] HA C3 seed=4 x=0.001778  trapped (60s)
+[695/1836     911s] HA C3 seed=0 x=0.001778  trapped (67s)
+[696/1836     913s] HA C2 seed=9 x=0.001778  event t_esc=5083706390872.211 (91s)
+[697/1836     915s] HA W6 seed=10 x=0.001778  event t_esc=512390.36475363094 (134s)
+[698/1836     918s] HA C3 seed=11 x=0.001778  trapped (53s)
+[699/1836     922s] HA HT4S seed=1 x=0.001  event t_esc=175867991937510.5 (262s)
+[700/1836     925s] HA C3 seed=9 x=0.001778  trapped (67s)
+[701/1836     927s] HA C1 seed=3 x=0.001778  trapped (142s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[702/1836     941s] HA PS06 seed=5 x=0.001778  failed: Unexpected istate in LSODA. (229s)
+[703/1836     941s] HA HT4S seed=2 x=0.001  event t_esc=51655567272873.07 (281s)
+[704/1836     947s] HA HT4L seed=9 x=0.001  event t_esc=437244003203379.25 (300s)
+[705/1836     948s] HA HT4S seed=0 x=0.001  event t_esc=56127197137089.54 (291s)
+[706/1836     949s] HA HT4W seed=2 x=0.001778  event t_esc=62565685245.962166 (119s)
+[707/1836     953s] HA HT4S seed=3 x=0.001  event t_esc=7195095346839.668 (292s)
+[708/1836     953s] HA HT4S seed=8 x=0.001  event t_esc=22064876060645.773 (288s)
+[709/1836     954s] HA C1 seed=1 x=0.001778  event t_esc=179410853538.24792 (170s)
+[710/1836     957s] HA HT4W seed=3 x=0.001778  event t_esc=45216547353.82987 (125s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[711/1836     978s] HA HT4L seed=2 x=0.001778  event t_esc=61874493815.265114 (109s)
+[712/1836     980s] HA HT4W seed=6 x=0.001778  event t_esc=768135664259.8005 (144s)
+[713/1836     980s] HA HT4W seed=1 x=0.001778  event t_esc=273197674888.57535 (151s)
+[714/1836     981s] HA HT4S seed=7 x=0.001  event t_esc=80609531724907.84 (317s)
+[715/1836     983s] HA C1 seed=8 x=0.0001  failed: Unexpected istate in LSODA. (983s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[716/1836     989s] HA C2 seed=8 x=3.162e-05  failed: Unexpected istate in LSODA. (989s)
+[717/1836     991s] HA HT4S seed=11 x=0.001  event t_esc=263932952250499.66 (314s)
+[718/1836     993s] HA PS06 seed=5 x=0.001  failed: Unexpected istate in LSODA. (513s)
+[719/1836     997s] HA PS06 seed=8 x=0.001778  event t_esc=9965458346139.457 (254s)
+[720/1836     998s] HA HT4L seed=7 x=0.001778  event t_esc=354423749551.8487 (119s)
+[721/1836     999s] HA HT4W seed=4 x=0.001778  event t_esc=2620363376921.46 (166s)
+[722/1836    1000s] HA PS06 seed=2 x=0.001778  event t_esc=7642039829007.694 (302s)
+[723/1836    1002s] HA HT4L seed=1 x=0.001778  event t_esc=302166114398.1152 (135s)
+[724/1836    1003s] HA HT4W seed=8 x=0.001778  event t_esc=3194135415067.5635 (163s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[725/1836    1006s] HA HT4W seed=7 x=0.001778  event t_esc=314201833054.6256 (169s)
+[726/1836    1008s] HA PS06 seed=8 x=5.623e-05  failed: Unexpected istate in LSODA. (1007s)
+[727/1836    1008s] HA HT4W seed=0 x=0.001778  event t_esc=5341924701219.949 (181s)
+[728/1836    1008s] HA HT4W seed=5 x=0.001778  event t_esc=9311864697742.299 (175s)
+[729/1836    1009s] HA PS06 seed=11 x=0.001778  event t_esc=1849035782788.9346 (256s)
+[730/1836    1009s] HA C3 seed=10 x=0.001778  failed: Unexpected istate in LSODA. (145s)
+[731/1836    1014s] HA HT4S seed=5 x=0.001  event t_esc=69610883154808.555 (351s)
+[732/1836    1015s] HA HT4W seed=10 x=0.001778  event t_esc=139887230414.06345 (173s)
+[733/1836    1015s] HA HT4S seed=9 x=0.001  event t_esc=454907744336715.7 (346s)
+[734/1836    1015s] HA HT4L seed=5 x=0.001778  event t_esc=8612495969565.706 (141s)
+[735/1836    1019s] HA HT4L seed=11 x=0.001778  event t_esc=1354568696366.956 (131s)
+[736/1836    1022s] HA HT4L seed=4 x=0.001778  event t_esc=4059772716734.916 (151s)
+[737/1836    1025s] HA HT4W seed=11 x=0.001778  event t_esc=1227415565734.3577 (182s)
+[738/1836    1027s] HA HT4L seed=10 x=0.001778  event t_esc=151568643717.1051 (144s)
+[739/1836    1027s] HA C1 seed=6 x=0.001778  event t_esc=927817740114.5273 (232s)
+[740/1836    1032s] HA HT4L seed=0 x=0.001778  event t_esc=3833249890202.043 (167s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[741/1836    1034s] HA HT4L seed=8 x=0.001778  event t_esc=2606001229848.9614 (154s)
+[742/1836    1035s] HA HT4L seed=6 x=0.001778  event t_esc=816271594413.1187 (157s)
+[743/1836    1037s] HA C3 seed=2 x=0.001778  failed: Unexpected istate in LSODA. (192s)
+[744/1836    1037s] HA HT4S seed=6 x=0.0001  failed: Unexpected istate in LSODA. (1036s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[745/1836    1040s] HA HT4S seed=10 x=0.001  event t_esc=128482085911651.6 (368s)
+[746/1836    1041s] HA HT4S seed=6 x=0.0003162  failed: Unexpected istate in LSODA. (805s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[747/1836    1057s] HA PS06 seed=2 x=5.623e-05  failed: Unexpected istate in LSODA. (1057s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[748/1836    1062s] HA HT4S seed=11 x=0.0001  failed: Unexpected istate in LSODA. (1061s)
+[749/1836    1064s] HA C1 seed=10 x=0.001778  failed: Unexpected istate in LSODA. (264s)
+[750/1836    1073s] HA C3 seed=7 x=0.001778  event t_esc=2435966520523979.5 (217s)
+[751/1836    1077s] HA HT4S seed=1 x=0.001778  event t_esc=9883275168420.363 (188s)
+[752/1836    1081s] HA PS08 seed=1 x=0.003162  event t_esc=187213.21498929727 (90s)
+[753/1836    1082s] HA PS06 seed=0 x=0.003162  trapped (74s)
+[754/1836    1082s] HA PS08 seed=7 x=0.003162  event t_esc=121177.24401501831 (80s)
+[755/1836    1084s] HA HT4S seed=0 x=0.001778  event t_esc=3161709913225.1343 (195s)
+[756/1836    1084s] HA HT4W seed=9 x=0.001778  event t_esc=29441147331674.613 (244s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[757/1836    1089s] HA C2 seed=10 x=1e-05  failed: Unexpected istate in LSODA. (1088s)
+[758/1836    1089s] HA PS08 seed=2 x=0.003162  event t_esc=137246.61988724547 (96s)
+[759/1836    1090s] HA PS08 seed=0 x=0.003162  event t_esc=330106.8460894797 (101s)
+[760/1836    1091s] HA PS06 seed=10 x=1.778e-05  failed: Unexpected istate in LSODA. (1091s)
+[761/1836    1091s] HA PS08 seed=4 x=0.003162  event t_esc=146912.80882762728 (93s)
+[762/1836    1092s] HA HT4S seed=2 x=0.001778  event t_esc=2906232987022.3647 (200s)
+[763/1836    1094s] HA C1 seed=8 x=0.001778  event t_esc=128403298448628.92 (299s)

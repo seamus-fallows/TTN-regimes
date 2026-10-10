@@ -289,4 +289,239 @@ slow, the grid is cut from the small end and the range reached is reported; wind
 
 # Part II: results
 
-(to be filled in after the runs)
+Final data: H-A 1836 runs, H-B 842 runs, checks 165 runs (`experiments/saddle_dyn/results/*.csv`; raw JSON in
+`/root/outputs/saddle_dyn/`). Tables below are printed by `experiments/saddle_dyn/tables.py` from the CSVs
+of `analyze.py`. Figures: `results/ha_escape.png` (t_esc vs eps, every run, coloured by escape type),
+`results/ha_local.png` (local exponents), `results/hb_dt.png`, `results/hb_local.png`. Dynamics: gradient
+flow, LSODA rtol 1e-10, atol 1e-15 (section 3, with deviations 1-7 of section 8, all numerical).
+
+## 9. Summary against the registered rules
+
+**H-A (saddle start).** The theorem's order sets the escape exponent, to three digits, in every test cell
+whose window lies below the crossover: PS08 (order 4: gamma = 2.001 ± 0.001, 12 seeds), W6 (order 4 with
+k* = 6: 2.001 ± 0.001), HT4W (order 6: 3.996 ± 0.003), HT4L (3.997 ± 0.003) and binary8 at rho = 0.5
+(B8W05: 3.998 ± 0.007): all **SUPPORTED** (every seed within 0.05 of p - 2; the route law is worse by an
+RSS factor of 1e3-2e5). Two test cells do not show the reduced law in their window: **HT4S is REFUTED by
+the registered rule** (gamma = 4.72 ± 0.14 over 11 complete seeds: 3 at 4.0, 8 at 5.0; one incomplete seed at 6) and **B8W (rho = 0.8)
+is INCONCLUSIVE** (4.48 ± 0.15; 7 seeds at 4.0-4.2, 5 at 5.0-5.2). The registered rule cannot tell the
+reason; the per-seed data (9.2-9.4) say that in both cells the window is not below the crossover for
+every seed (the route law, or the reduced law shifted by one power, competes there), not that the order
+is wrong. **Controls (p = k*):** all four are **INCONCLUSIVE** for the registered reason "fewer than 10
+seeds escape at every window point": many seeds are trapped (dead routes: PS06 31 of 104 window runs,
+C1 42/74, C2 39/107, C3 49/79). The seeds that escape show the route law k* - 2 exactly (PS06: 4 complete
+seeds at 3.000; C1: 3 at 4.0; C2: 3 of 5 at 3.00) or the route law **plus exactly one** (PS06, C2: 4.00;
+C3: 6.0) or plus two (C1: ~6), never a smaller exponent.
+
+**H-B (small init).** Pair-star: **SUPPORTED** (16 of 40 seeds visit theta_S; all 16 complete,
+gamma = 2.002 ± 0.001, route law sigma^-3 worse by RSS 148 vs 0.0027). Binary8 wrong order (rho = 0.8):
+**INCONCLUSIVE** (13 visiting seeds of 30, gamma = 4.31 ± 0.12; 10 seeds converge to 4.00-4.16, 3 stay at
+5.0); its registered side test "route law above the crossover" is **SUPPORTED** (local exponent 4.87 for
+sigma >= 0.1). PS06 control: **INCONCLUSIVE** (only 5 of 12 seeds visit theta_S; 7 learn the residual pair
+first, which corrects the verifier's "12/12 q-first", see 9.6).
+
+**Answer to the brief.** Where the theorem's order is below k* and the perturbation is small enough, the
+escape time follows eps^-(p-2) (and sigma^-(p-2) from small init) with no measurable deviation: 5 of 7
+test cells from saddle starts and the pair-star from small init, 76 seed fits in total, all within 0.05
+of p - 2. The route law k* - 2 is the exponent at larger eps (binary8, sigma >= 0.1) and remains it, for some
+seeds, down to the smallest eps reached in two cells (HT4S, binary8 at rho = 0.8): the crossover is seed-
+and teacher-dependent, and the leading-order estimate b does not locate it (HT4S: b = 0.12, but
+the route law persists to eps = 1e-4). On the controls the route law holds where the route survives, and
+the seed-to-seed spread is not scatter but integer shifts (k* - 1, k* - 2 + 2) and traps.
+
+## 9.1 H-A decision table
+
+| cell | p, k* | pred. gamma (alt.) | fitted seeds | gamma mean ± SE | median [min, max] | within 0.3 | RSS pred / alt | local exp. (2 smallest pairs) | decision |
+|---|---|---|---|---|---|---|---|---|---|
+| PS08 | 4, 5 | 2 (3) | 12 | 2.001 ± 0.001 | 2.000 [2.00, 2.01] | 1.00 | 0.00575 / 238 | 2.000 ± 0.000, 2.000 ± 0.000 | SUPPORTED |
+| W6 | 4, 6 | 2 (4) | 12 | 2.001 ± 0.001 | 2.000 [2.00, 2.01] | 1.00 | 0.0044 / 954 | 2.000 ± 0.000, 2.000 ± 0.000 | SUPPORTED |
+| HT4W | 6, 7 | 4 (5) | 12 | 3.996 ± 0.003 | 3.999 [3.97, 4.01] | 1.00 | 0.0136 / 112 | 3.999 ± 0.001, 3.999 ± 0.000 | SUPPORTED |
+| HT4L | 6, 7 | 4 (5) | 12 | 3.997 ± 0.003 | 3.998 [3.98, 4.01] | 1.00 | 0.0114 / 112 | 3.999 ± 0.001, 4.000 ± 0.000 | SUPPORTED |
+| HT4S | 6, 7 | 4 (5) | 11 | 4.723 ± 0.141 | 4.995 [3.97, 5.02] | 0.27 | 74.6 / 29.2 | 4.703 ± 0.149, 4.713 ± 0.143 | REFUTED |
+| B8W | 6, 7 | 4 (5) | 12 | 4.479 ± 0.147 | 4.187 [3.97, 5.22] | 0.58 | 52.2 / 57 | 4.428 ± 0.147, 4.417 ± 0.145 | INCONCLUSIVE (fails: mean, seeds within 0.3, RSS vs alternative) |
+| B8W05 | 6, 7 | 4 (5) | 12 | 3.998 ± 0.007 | 3.990 [3.97, 4.05] | 1.00 | 0.0931 / 112 | 3.997 ± 0.003, 3.998 ± 0.002 | SUPPORTED |
+| PS06 | 5, 5 | 3 (2, 4) | 4 | 3.000 ± 0.001 | 3.000 [3.00, 3.00] | 1.00 | 0.000697 / 79.5, 79.6 | 3.333 ± 0.211, 3.000 ± 0.000 | INCONCLUSIVE (fails: >=10 seeds) |
+| C1 | 6, 6 | 4 (3) | 3 | 3.967 ± 0.038 | 4.001 [3.89, 4.01] | 1.00 | 0.378 / 26.4 | 3.986 ± 0.016, 3.992 ± 0.009 | INCONCLUSIVE (fails: >=10 seeds) |
+| C2 | 5, 5 | 3 (2) | 5 | 3.396 ± 0.242 | 3.002 [3.00, 4.00] | 0.60 | 38.9 / 217 | 3.571 ± 0.202, 3.400 ± 0.245 | INCONCLUSIVE (fails: seeds within 0.3, RSS vs alternative, >=10 seeds) |
+| C3 | 7, 7 | 5 (4) | 1 | 6.000 | 6.000 [6.00, 6.00] | 0.00 | 9.28 / 37.1 | 6.645 ± 0.645, 6.000 | INCONCLUSIVE (fails: mean, seeds within 0.3, RSS vs alternative, >=10 seeds) |
+
+Run inventory (every run; "trapped" = deviation 1; "failed" = LSODA failure after 5 retries, all at
+t > 1e17 in effectively dead states):
+
+| cell | runs | escaped | trapped | failed | wall | floor-flagged | window runs: escaped / trapped / failed | window escapes: split / mixed / route | q forgotten after escape |
+|---|---|---|---|---|---|---|---|---|---|
+| PS08 | 204 | 204 | 0 | 0 | 0 | 0 | 108 / 0 / 0 | 108 / 0 / 0 | 1.00 |
+| W6 | 204 | 204 | 0 | 0 | 0 | 0 | 108 / 0 / 0 | 108 / 0 / 0 | 1.00 |
+| HT4W | 156 | 153 | 3 | 0 | 0 | 0 | 84 / 0 / 0 | 84 / 0 / 0 | 0.71 |
+| HT4L | 156 | 154 | 2 | 0 | 0 | 0 | 84 / 0 / 0 | 84 / 0 / 0 | 0.79 |
+| HT4S | 154 | 154 | 0 | 0 | 0 | 0 | 82 / 0 / 0 | 57 / 1 / 24 | 0.00 |
+| B8W | 132 | 132 | 0 | 0 | 0 | 0 | 84 / 0 / 0 | 73 / 9 / 2 | 0.00 |
+| B8W05 | 132 | 132 | 0 | 0 | 0 | 0 | 84 / 0 / 0 | 84 / 0 / 0 | 0.00 |
+| PS06 | 195 | 151 | 44 | 0 | 0 | 3 | 73 / 31 / 0 | 0 / 0 / 73 | 0.00 |
+| C1 | 133 | 74 | 58 | 1 | 0 | 14 | 32 / 42 / 0 | 0 / 0 / 32 | 0.00 |
+| C2 | 203 | 132 | 71 | 0 | 0 | 0 | 68 / 39 / 0 | 0 / 0 / 68 | 0.00 |
+| C3 | 127 | 51 | 75 | 1 | 0 | 8 | 29 / 49 / 1 | 0 / 0 / 29 | 0.00 |
+
+Notes: "within 0.3" = fraction of fitted seeds with |gamma_i - prediction| <= 0.3; RSS = summed squared
+log residuals of the fixed-exponent fits (prediction / alternative: route law for test cells; k* - 3 (and
+4 for PS06) for controls); local exponents = mean ± SE over seeds at the second-smallest and smallest pair
+of the window.
+
+## 9.2 Test cells below the crossover: PS08, W6, HT4W, HT4L, B8W05
+
+- Every window run escapes, none is floor-flagged (largest Phi 2e-5), and every window escape is split-type
+  (W[p] >= 5 max |W[r]|; PS08/W6: W[110000] = 0.085 at the threshold; HT4/binary8: both leaf-pair halves).
+- The local exponents are flat at p - 2 over the whole window (`results/ha_local.png`): 2.000 ± 0.000
+  (PS08, W6), 3.999 (HT4W, HT4L), 3.997 (B8W05) at the smallest pairs, and already within ~0.1 of p - 2 at
+  eps = 1e-2 (MPS6) or sigma = 0.06 (B8W05). The two-mechanism fit finds no crossover inside the grid
+  (fitted eps_c above 1 in 3 of 4 cells; B8W05: 10^-0.2).
+- W6 is the sharpest test: order 4 against k* = 6 (route law eps^-4 vs eps^-2): the route law is worse by an
+  RSS factor 2e5.
+- After the escape q is forgotten: W[q] < 0.1 s_q at 3 t_esc + 100 in 100 % of the window runs of PS08 and
+  W6 and in 71-79 % of HT4W/HT4L (the rest still on the way down); never in B8W05 (q kept).
+
+## 9.3 HT4S: REFUTED by the rule, above the crossover in fact
+
+HT4S (the s2s_core "close" odeco teacher: s_q = 0.85, residuals 1111 (1.0) and 2222 (0.7), ht4, d = 4,
+chi = 3) has the smallest gap s_r - s_q = 0.15 of all cells. Per seed (complete fits): seeds 3, 8, 10 at
+3.97-4.04 (order-6 law, split escapes), seeds 1, 2, 11 at 5.00 with route-type escapes (the route law of
+1111), seeds 0, 4, 5, 7, 9 at 4.95-5.02 with split-type escapes, seed 6 at 6.0 (split). The local
+exponents of each seed are flat over the window (2.5 decades), so no seed is in transit; the two-mechanism
+fit puts the crossover at eps_c ~ 1e-9 (median), far below the grid. So in this teacher the order-6 law
+is seen in 3 of 12 seeds at eps <= 3e-3; the others follow the route law or the split mechanism shifted by
+one power (as in 9.5). The registered verdict stands (REFUTED: |4.72 - 4| > 0.5, SE 0.14, 11 seeds); its
+reading is that the prediction is asymptotic and the asymptotic range of this teacher is not reached at
+eps >= 1e-4, and that the leading-order crossover b = 0.117 is wrong here by orders of magnitude.
+
+## 9.4 Binary8 wrong order (rho = 0.8): the crossover, seed by seed
+
+Saddle starts (fan-in perturbation as in the `order` experiment, sigma = 0.316 ... 0.00178, plus 0.15): the
+median local exponent falls from 5.2 at sigma ~ 0.3 to 4.05 at the smallest sigma (`results/ha_local.png`).
+Seeds 1, 2, 4, 5, 6, 9, 11 converge to 4.00-4.05 (order 6); seeds 0, 3, 7, 8, 10 stay at 4.97-5.01 down to
+sigma = 0.00178 (route law or shifted split law; 73 split, 9 mixed, 2 route escapes in the window).
+Registered side test "route law above the crossover" (pairs with sigma >= 0.1): local exponent 5.10 ±
+0.05 (36 pairs): **SUPPORTED**; the `order` agent's 5.3 ± 0.3 at sigma = 0.15-0.35 is reproduced
+(the runs at sigma = 0.15: median t_esc 5.5e4 over 12 seeds, theirs 4.5e4 over 6 other directions, with the event a_1 = 1/2 instead of L - L_S = -1e-3).
+For rho = 0.5 (B8W05, larger gap) every seed is at 4.00 below sigma ~ 0.06, and the side test is
+INCONCLUSIVE (4.48 ± 0.11: already between the laws at sigma >= 0.1). The crossover moves to larger sigma
+when the gap s_r - s_q grows, as the leading-order b does (0.155 -> 0.362), but b is not a quantitative
+predictor of where a given seed crosses.
+
+## 9.5 Controls: route law, integer shifts and traps
+
+Per seed (`results/ha_runs.csv`, `results/ha_local_exponents.csv`), the controls split into three groups
+with sharp boundaries:
+
+| cell (k* - 2) | route law exactly | route law + 1 | + 2 or more | trapped at every eps |
+|---|---|---|---|---|
+| PS06 (3) | seeds 4, 6, 7, 9 (3.00) | 1, 2, 8, 10, 11 (4.00; trapped at the smallest eps) | 5 (5.8, then trapped) | 0, 3 |
+| C2 (3) | 4, 6, 7 (3.00) | 1, 2, 8, 9, 10 (4.00) | - | 0, 3, 5, 11 |
+| C1 (4) | 1, 6, 8 (4.0) | - | 2, 7, 10, 11 (6.0-6.6; then trapped; escapes floor-flagged) | 0, 3, 4, 5, 9 |
+| C3 (5) | none | 2, 5, 7, 8 (6.0) | 10 (6.6-7.3) | 0, 3, 6, 9, 11 (1, 4: escape only at eps >= 0.06) |
+
+All control escapes are route-type (the residual itself grows; no split pattern). The shifted seeds are
+not in transit (flat local exponents over 1-2 decades) and their escape direction is the same route as in
+the unshifted seeds. The shift is a property of the direction xi: the same seed is shifted at every eps,
+and shifted seeds tend to become trapped at smaller eps. In the H-B control runs the dormant state at
+theta_S is exactly theta_S + sigma xi' (every route entry scales as sigma^1.00, `diag/ps06_route_entries_seed*.log`),
+so the shift is not in the initial amplitudes but in the dynamics along xi'. Conjecture (not tested): a
+route entry that also belongs to a decaying two-core cluster is driven towards zero on the faster cluster
+time scale (eps^-2) and slaved at O(eps^2); the route product then carries one more factor eps, and the
+escape one more power; if the entry is driven to zero, the route is dead (trap). The shifted escapes are
+slower than the route law, never faster, so they do not contradict the order (a lower bound on how fast
+L can fall), but they show that "t_esc ~ eps^-(p-2)" (S9) holds for typical, not all, directions.
+Some shifted escapes in C1, C3 and PS06 (t_esc 1e18-1e21) are floor-flagged (Phi up to 27) and excluded.
+
+## 9.6 H-B: from small initialization
+
+Every run is counted (`results/hb_runs.csv`). Classification at the visit time t_v (L = L_S + 1e-4):
+"escaped" = q learned first, plateau, escape; "residual_first" = a residual crossed s_r/2 first;
+"no_visit" (B8W) = the larger component was learned first (the correct order: it never visits the
+wrong saddle); "wall" = 3600 s cap (the machine was oversubscribed, see 9.7).
+
+| cell | seeds | q-first (visit theta_S) | never visit | fitted (complete window) | gamma mean ± SE | median [min, max] | prediction | decision |
+|---|---|---|---|---|---|---|---|---|
+| PS08 | 40 | 16 (at every sigma) | 24 (residual pair first, at every sigma) | 16 | 2.002 ± 0.001 | 2.000 [2.00, 2.01] | 2 (route 3) | **SUPPORTED** |
+| PS06 (control) | 12 | 5 (seed 1 trapped) | 7 (residual pair first) | 4 | 3.70 ± 0.24 | 3.90 [3.00, 4.00] | 3 | INCONCLUSIVE (4 seeds) |
+| B8W | 30 | 13 | 17 (larger component first) | 13 | 4.31 ± 0.12 | 4.07 [4.00, 5.03] | 4 (route 5) | INCONCLUSIVE (mean 0.31 off; 9/13 within 0.3) |
+
+- **PS08 (pair-star).** The sigma^-2 law holds in every visiting seed: 16 complete seeds, gamma = 2.002 ±
+  0.001 (range 2.00-2.01), RSS 0.0027 against 148 for the route law sigma^-3; local exponents at the two smallest pairs
+  2.000 ± 0.000. 173 of 176 escapes are split-type (W[110000] ≈ 0.085 at the threshold), 3 mixed (at
+  sigma = 0.1). The learning order is a property of the seed, not of sigma: 16/40 seeds learn q first at
+  every sigma, 24/40 learn the residual pair first at every sigma (the verifier had 3/10 q-first).
+  Seed 7 reproduces the verifier's plateau (dt = 211.88 vs 211.9 at sigma = 0.01).
+- **PS06 (control).** 7 of 12 seeds learn the residual pair first, at every sigma from 0.1 to 3e-4.
+  The verifier's analysis (`analyze_gf.py`) reported 12/12 "q-first": its test (q-first if
+  t_esc > t_q) cannot see this case for the 0.6 teacher, because the pair-first state has L ≈ 0.5 >
+  L_S = 0.36, so the loss crosses L_S - 1e-3 only after q is learned later; for the 0.8 teacher the
+  pair state has L = 0.5 < L_S = 0.64 and the test works. So 6 of the verifier's 10 fitted control
+  exponents (seeds 3, 5, 8, 9, 10, 11) are not q-plateaus. Among the genuine q-first seeds: seed 0
+  has 3.00 (route law), seeds 2 and 7 4.00, seed 4 3.81 (local exponents rising 3.1 -> 3.93), seed 1
+  trapped;
+  every escape goes through the k* = 5 route of r2 (W[110010] = 0.0017 at the threshold, no split
+  pattern). Diagnostic (`diag/ps06_route_entries.py`): at the q saddle reached from small init every
+  dormant entry scales exactly as sigma^1 (slopes 1.00 for all route entries in seeds 0 and 2), so
+  the exponent 4 is not in the initial amplitudes: the saddle state is theta_S + sigma xi' with a
+  seed-dependent xi', i.e. an H-A start along a special direction; see 9.5 for the same integer shift
+  in saddle starts.
+- **B8W (binary8 wrong order, rho = 0.8).** 13 of 30 seeds learn the smaller component first (43 %;
+  the `order` agent: 41 %). Of the 13 complete seeds, 10 converge to 4.00-4.16 (seed 1: 4.55, still falling; local exponents
+  fall from ~5 at sigma = 0.3 to 4.00-4.02 at sigma = 0.003: the predicted crossover from the route law
+  to the order-6 law), and 3 (seeds 6, 24, 28) stay at 5.00 although their escapes at small sigma are
+  split-type (polymer direction, W[p]/W[r] = 12.6, the same ratio as in the other seeds). The
+  registered rule gives INCONCLUSIVE (mean 4.31 ± 0.12, 9 of 13 seeds within 0.3).
+  **Route law above the crossover: SUPPORTED** by the registered comparison: local exponent 4.87
+  (26 pairs with both sigma >= 0.1) against 5 (route) and 4 (order 6).
+
+## 9.7 Accuracy, float64 floor, budget
+
+- **Integrator.** LSODA (rtol 1e-10, atol 1e-15, exact Hessian), stepped by hand, events refined by exact
+  re-integration (deviation 3). Tolerance reruns (rtol 1e-12, atol 1e-17; seeds 0-2 at the largest,
+  middle and smallest window point of every cell): 77 comparable pairs, max |relative change of t_esc|
+  = 1.6e-7. Plain-loss reruns (seeds 0-2 at the two smallest eps): 48 comparable pairs, max 8.3e-8: at
+  these eps the plain loss gives the same escape times when both escape. But in 4 cases (PS06 seeds 1, 2
+  at the two smallest eps; C2 seed 1 at 1e-5; C3 seed 2 at 10^-3.5) the cancellation-free run finds the
+  route dead (residual amplitude 1e-30 ... 1e-35, trapped or failed in a dead state) while the plain-loss
+  run "escapes" at t = 5e19 ... 8e21: roundoff-seeded escapes, the float64-floor failure that the
+  cancellation-free form avoids. Non-comparable checks (34) are runs where the main run is trapped and
+  the check is trapped, failed in a dead state, or reached t_max.
+- **Conservation.** Max drift of the bond conserved quantities over a run: <= 2e-9 in every escaped run of
+  the test cells and H-B; up to 7e-6 in the slowest escaped control runs (t_esc ~ 1e21) and up to 1.75 in
+  one failed and one trapped run at t ~ 1e23-1e27 (integration in dead states; not used).
+- **Floor index** (after the reference switch): Phi <= 2e-5 in every escaped run of the test cells
+  (largest: B8W 1.3e-5), <= 2e-6 in H-B; 16 escaped control runs are flagged (C1 7, C3 7, PS06 2: the
+  slowest, shifted escapes with t_esc = 1e18-1e21) and excluded from the fits, as registered.
+- **Unfinished runs.** All runs ended with an outcome (escaped, trapped, or LSODA failure in a dead state)
+  except FINAL_UNFINISHED.
+- **Budget.** Compute 15:21-END_TIME (about BUDGET_H h of wall clock). The first two attempts (15:21-16:13)
+  were discarded (deviations 3, 6). The final sweeps ran 16:21-18:04 with each worker inheriting a 64-thread
+  BLAS pool (load ~250 on 192 cores); 88 runs without outcome (wall cap, solver stalls) were rerun 18:04-END_TIME
+  with the in-solver reference switch (deviation 7).
+
+## 9.8 Claims and status
+
+| # | claim | status |
+|---|---|---|
+| D1 | From theta_S + eps xi (12 Gaussian directions per cell, eps <= 1e-3 resp. 3e-3), the escape time scales as eps^-(p-2) with p the theorem's order < k*: PS08 (p = 4, k* = 5: gamma = 2.001 ± 0.001), W6 (4 vs 6: 2.001 ± 0.001), HT4W (6 vs 7: 3.996 ± 0.003), HT4L (3.997 ± 0.003), binary8 rho = 0.5 (3.998 ± 0.007); every seed within 0.05 | empirical |
+| D2 | In those cells every window escape is along the split (generalized-piggyback) direction, and q is then forgotten in all PS08/W6 runs and most HT4W/HT4L runs (not in binary8) | empirical |
+| D3 | From small init, the pair-star seeds that visit theta_S (16/40; whether a seed visits is independent of sigma) have plateaus dt ∝ sigma^-(2.002 ± 0.001) for sigma = 3e-4 ... 1e-2 (16 seeds) | empirical |
+| D4 | binary8 wrong order (rho = 0.8): the local escape exponent falls from the route law (5.10 ± 0.05 at sigma >= 0.1, saddle starts; 4.87 from small init) towards the order-6 law; at the smallest sigma 7/12 saddle-start seeds and 10/13 visiting small-init seeds are at 4.0-4.2, the others at 5.0 | empirical |
+| D5 | HT4S (gap s_r - s_q = 0.15): only 3 of 11 complete seeds show the order-6 law at eps in [1e-4, 3e-3]; the others follow 5 (route law, or the split law shifted by one power); the leading-order crossover estimate b = 4 kappa / (5 s_r) does not predict where seeds cross | empirical |
+| D6 | Controls (p = k*): seeds escape with exactly the route law k* - 2, or with k* - 1 (or k*), or are trapped (dead routes); never with a smaller exponent; the shift is a property of the direction | empirical |
+| D7 | The shift comes from route entries slaved at O(eps^2) by the faster two-core cluster dynamics (one more factor eps in the route product); traps when they are slaved to zero | conjecture |
+| D8 | The verifier's "exponent ~4 in half of the control seeds" (pair-star 0.6 from small init) is in part a classification artefact (7 of 12 seeds learn the residual pair first; its test cannot see this for the 0.6 teacher) and otherwise the shift of D6 | empirical |
+| D9 | S9 ("t_esc ~ eps^-(p-2)", note section 6) holds for typical directions below a teacher- and seed-dependent crossover; above it, and for a minority of directions, the escape is slower (route law or shifted law), never faster, in line with the order being a lower bound on the descent | empirical (consistent with the proven order) |
+| D10 | scipy's LSODA dense output (and so `solve_ivp` events with LSODA) can be off by percents at step times; a fresh LSODA started on a plateau can stay nonstiff at its stability limit; plain (non-cancellation-free) losses produce roundoff-seeded escapes from dead routes at eps <= 1e-4.5 | empirical (numerics) |
+
+## 9.9 Open and next
+
+- The integer shifts (9.5) need an explanation (D6 is a conjecture): a direct test is to follow the route
+  entries and the cluster amplitudes along a shifted and an unshifted seed and check the slaving
+  b ~ eps^2.
+- HT4S and binary8 (rho = 0.8): the reduced law should appear at smaller eps; the two-mechanism fits put the
+  crossover at eps ~ 1e-9 (HT4S) and sigma ~ 0.03 (binary8, median; seed-dependent), so HT4S is out of reach
+  in float64 (floor estimate u eps^-3 ~ 1e-16 eps^-3), binary8 is reachable with sigma down to ~1e-4.
+- The controls need many more seeds (or a different perturbation family) to get 10 complete seeds through
+  the windows: 3-4 of 12 seeds keep their route alive at all eps.
+- After the escape: q is forgotten in PS08/W6 (all runs) and in most HT4W/HT4L runs, never in the binary8
+  cells and HT4S within 3 t_esc + 100 (not analysed further; the note's section 6 describes the PS08 case).

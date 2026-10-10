@@ -1,0 +1,508 @@
+1836 jobs, 125 processes
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[1/1836      13s] HA C2 seed=5 x=1e-05  trapped (12s)
+[2/1836      14s] HA C2 seed=9 x=1e-05  trapped (14s)
+[3/1836      15s] HA C2 seed=0 x=1.778e-05  trapped (15s)
+[4/1836      15s] HA C2 seed=3 x=1e-05  trapped (15s)
+[5/1836      15s] HA C2 seed=5 x=1.778e-05  trapped (15s)
+[6/1836      16s] HA C2 seed=3 x=1.778e-05  trapped (16s)
+[7/1836      21s] HA C2 seed=11 x=1e-05  trapped (21s)
+[8/1836      27s] HA C2 seed=9 x=1.778e-05  trapped (26s)
+[9/1836      38s] HA PS06 seed=0 x=1e-05  trapped (37s)
+[10/1836      57s] HA C2 seed=0 x=3.162e-05  ok (30s)
+[11/1836      61s] HA C2 seed=7 x=1.778e-05  ok t_esc=55389686240919.56 (60s)
+[12/1836      61s] HA C2 seed=7 x=1e-05  ok t_esc=311484179709789.4 (61s)
+[13/1836      66s] HA C2 seed=4 x=1.778e-05  ok t_esc=105209833289388.25 (66s)
+[14/1836      71s] HA C2 seed=6 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (71s)
+[15/1836      76s] HA C2 seed=4 x=1e-05  ok t_esc=591650810513806.1 (75s)
+[16/1836      77s] HA C2 seed=6 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (76s)
+[17/1836      77s] HA C2 seed=2 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (77s)
+[18/1836      77s] HA C2 seed=5 x=3.162e-05  trapped (11s)
+[19/1836     108s] HA C2 seed=2 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (108s)
+[20/1836     109s] HA PS06 seed=1 x=1e-05  trapped (109s)
+[21/1836     126s] HA PS08 seed=4 x=1.778e-05  ok t_esc=4750802045.24875 (126s)
+[22/1836     127s] HA C2 seed=4 x=3.162e-05  ok t_esc=18708548324560.85 (66s)
+[23/1836     128s] HA C2 seed=2 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (71s)
+[24/1836     131s] HA W6 seed=2 x=3.162e-05  ok t_esc=303344766.18470246 (131s)
+[25/1836     132s] HA W6 seed=7 x=1.778e-05  ok t_esc=851852767.4695022 (131s)
+[26/1836     133s] HA C2 seed=7 x=3.162e-05  ok t_esc=9849547889186.121 (58s)
+[27/1836     134s] HA W6 seed=0 x=1.778e-05  ok t_esc=2239690084.5624022 (134s)
+[28/1836     137s] HA W6 seed=3 x=3.162e-05  ok t_esc=1150859927.5326807 (137s)
+[29/1836     138s] HA W6 seed=5 x=1.778e-05  ok t_esc=5743288940.570909 (137s)
+[30/1836     139s] HA W6 seed=0 x=3.162e-05  ok t_esc=708387932.4534937 (138s)
+[31/1836     140s] HA PS08 seed=4 x=1e-05  ok t_esc=15024184977.832632 (140s)
+[32/1836     141s] HA W6 seed=2 x=1.778e-05  ok t_esc=959249430.2199434 (141s)
+[33/1836     142s] HA W6 seed=8 x=1.778e-05  ok t_esc=3482854659.431765 (141s)
+[34/1836     142s] HA W6 seed=4 x=1e-05  ok t_esc=3365341346.7487006 (142s)
+[35/1836     142s] HA W6 seed=4 x=1.778e-05  ok t_esc=1064136883.3804363 (142s)
+[36/1836     145s] HA W6 seed=6 x=1.778e-05  ok t_esc=5258584213.200604 (144s)
+[37/1836     146s] HA C2 seed=6 x=3.162e-05  ok t_esc=210601898789291.66 (75s)
+[38/1836     146s] HA PS08 seed=1 x=3.162e-05  ok t_esc=1833892576.2755747 (146s)
+[39/1836     146s] HA W6 seed=2 x=1e-05  ok t_esc=3033393600.4661493 (146s)
+[40/1836     146s] HA W6 seed=1 x=3.162e-05  ok t_esc=410818405.4155344 (146s)
+[41/1836     146s] HA W6 seed=3 x=1.778e-05  ok t_esc=3638992985.75164 (146s)
+[42/1836     147s] HA PS08 seed=10 x=3.162e-05  ok t_esc=7380985567.597115 (146s)
+[43/1836     147s] HA W6 seed=7 x=3.162e-05  ok t_esc=269391367.12141365 (132s)
+[44/1836     147s] HA W6 seed=1 x=1e-05  ok t_esc=4107417182.441551 (147s)
+[45/1836     147s] HA W6 seed=1 x=1.778e-05  ok t_esc=1298966642.3749993 (147s)
+[46/1836     148s] HA W6 seed=3 x=1e-05  ok t_esc=11506891647.296625 (148s)
+[47/1836     150s] HA PS08 seed=4 x=3.162e-05  ok t_esc=1502187970.8082414 (149s)
+[48/1836     150s] HA PS06 seed=5 x=3.162e-05  trapped (149s)
+[49/1836     150s] HA PS08 seed=7 x=1e-05  ok t_esc=12025480108.138887 (149s)
+[50/1836     150s] HA W6 seed=7 x=1e-05  ok t_esc=2693728252.70631 (149s)
+[51/1836     150s] HA PS08 seed=2 x=1e-05  ok t_esc=13542399745.256823 (149s)
+[52/1836     150s] HA W6 seed=4 x=3.162e-05  ok t_esc=336466056.89741606 (150s)
+[53/1836     150s] HA PS08 seed=7 x=3.162e-05  ok t_esc=1202610762.2705371 (150s)
+[54/1836     150s] HA W6 seed=9 x=1e-05  ok t_esc=18651279049.324944 (150s)
+[55/1836     151s] HA PS08 seed=9 x=1.778e-05  ok t_esc=26330948217.441284 (150s)
+[56/1836     151s] HA W6 seed=11 x=1e-05  ok t_esc=22001911503.466488 (151s)
+[57/1836     152s] HA PS08 seed=8 x=3.162e-05  ok t_esc=4918135558.595466 (151s)
+[58/1836     152s] HA PS08 seed=0 x=1e-05  ok t_esc=31614720405.32442 (151s)
+[59/1836     152s] HA PS08 seed=7 x=1.778e-05  ok t_esc=3802862135.346951 (152s)
+[60/1836     153s] HA PS08 seed=1 x=1.778e-05  ok t_esc=5798748129.7053995 (153s)
+[61/1836     153s] HA W6 seed=6 x=1e-05  ok t_esc=16628917892.619032 (153s)
+[62/1836     154s] HA PS08 seed=6 x=3.162e-05  ok t_esc=7424063625.629043 (153s)
+[63/1836     155s] HA W6 seed=11 x=1.778e-05  ok t_esc=6953874990.009992 (154s)
+[64/1836     155s] HA W6 seed=5 x=1e-05  ok t_esc=18161270439.03578 (154s)
+[65/1836     155s] HA PS08 seed=2 x=1.778e-05  ok t_esc=4282624440.4615917 (155s)
+[66/1836     156s] HA W6 seed=10 x=1e-05  ok t_esc=16536260981.339325 (155s)
+[67/1836     156s] HA W6 seed=8 x=3.162e-05  ok t_esc=1101637038.8478782 (141s)
+[68/1836     157s] HA PS08 seed=3 x=3.162e-05  ok t_esc=5137961330.320918 (157s)
+[69/1836     157s] HA PS08 seed=3 x=1e-05  ok t_esc=51370664921.15418 (157s)
+[70/1836     158s] HA PS06 seed=7 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (157s)
+[71/1836     158s] HA W6 seed=6 x=3.162e-05  ok t_esc=1662943326.185263 (143s)
+[72/1836     158s] HA W6 seed=10 x=1.778e-05  ok t_esc=5228754224.395286 (158s)
+[73/1836     158s] HA W6 seed=9 x=1.778e-05  ok t_esc=5897757932.059019 (158s)
+[74/1836     159s] HA PS08 seed=1 x=1e-05  ok t_esc=18336310375.230927 (158s)
+[75/1836     159s] HA PS08 seed=0 x=1.778e-05  ok t_esc=9998461647.022228 (158s)
+[76/1836     159s] HA PS08 seed=9 x=3.162e-05  ok t_esc=8326249331.685173 (159s)
+[77/1836     159s] HA PS08 seed=0 x=3.162e-05  ok t_esc=3162359011.957139 (159s)
+[78/1836     160s] HA W6 seed=5 x=3.162e-05  ok t_esc=1816294847.3174713 (147s)
+[79/1836     160s] HA PS08 seed=11 x=1.778e-05  ok t_esc=31036179846.834724 (159s)
+[80/1836     161s] HA W6 seed=9 x=3.162e-05  ok t_esc=1864869291.916895 (145s)
+[81/1836     164s] HA W6 seed=8 x=1e-05  ok t_esc=11012282375.181974 (164s)
+[82/1836     164s] HA W6 seed=0 x=1e-05  ok t_esc=7081758995.638595 (164s)
+[83/1836     165s] HA C2 seed=5 x=5.623e-05  trapped (12s)
+[84/1836     166s] HA PS08 seed=8 x=1e-05  ok t_esc=49162332222.62577 (165s)
+[85/1836     166s] HA PS06 seed=4 x=1.778e-05  ok t_esc=386218519431922.94 (165s)
+[86/1836     166s] HA PS08 seed=2 x=3.162e-05  ok t_esc=1354364404.3783875 (165s)
+[87/1836     168s] HA W6 seed=10 x=3.162e-05  ok t_esc=1653212655.861829 (152s)
+[88/1836     169s] HA PS08 seed=3 x=1.778e-05  ok t_esc=16245849049.159067 (169s)
+[89/1836     171s] HA PS06 seed=7 x=3.162e-05  ok t_esc=88928154394208.44 (170s)
+[90/1836     171s] HA PS08 seed=11 x=1e-05  ok t_esc=98208727969.32161 (170s)
+[91/1836     171s] HA PS08 seed=11 x=3.162e-05  ok t_esc=9803212758.38862 (171s)
+[92/1836     172s] HA PS08 seed=10 x=1e-05  ok t_esc=73824402952.00978 (171s)
+[93/1836     173s] HA PS08 seed=8 x=1.778e-05  ok t_esc=15548659301.809473 (172s)
+[94/1836     173s] HA W6 seed=11 x=3.162e-05  ok t_esc=2196911147.0116982 (152s)
+[95/1836     174s] HA PS08 seed=6 x=1e-05  ok t_esc=74236903088.73923 (174s)
+[96/1836     177s] HA PS08 seed=6 x=1.778e-05  ok t_esc=23476194949.328518 (176s)
+[97/1836     179s] HA PS08 seed=5 x=1.778e-05  ok t_esc=25638595585.957138 (179s)
+[98/1836     180s] HA PS06 seed=7 x=1.778e-05  ok t_esc=500075815099231.1 (179s)
+[99/1836     180s] HA PS08 seed=5 x=1e-05  ok t_esc=81075167148.74507 (180s)
+[100/1836     182s] HA PS08 seed=5 x=3.162e-05  ok t_esc=8107847662.521333 (182s)
+[101/1836     184s] HA PS08 seed=10 x=1.778e-05  ok t_esc=23343670094.901848 (183s)
+[102/1836     184s] HA PS06 seed=4 x=3.162e-05  ok t_esc=68684004466232.95 (184s)
+[103/1836     186s] HA PS08 seed=9 x=1e-05  ok t_esc=83267611435.82903 (185s)
+[104/1836     189s] HA PS06 seed=4 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (189s)
+[105/1836     190s] HA PS06 seed=6 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (190s)
+[106/1836     193s] HA PS06 seed=9 x=1.778e-05  ok t_esc=819795923174278.8 (192s)
+[107/1836     194s] HA PS06 seed=9 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (194s)
+[108/1836     198s] HA PS06 seed=9 x=3.162e-05  ok t_esc=145826503468760.28 (198s)
+[109/1836     203s] HA PS06 seed=6 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (203s)
+[110/1836     210s] HA C2 seed=7 x=5.623e-05  ok t_esc=1751434383746.3435 (56s)
+[111/1836     211s] HA C2 seed=10 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (133s)
+[112/1836     212s] HA C2 seed=4 x=5.623e-05  ok t_esc=3326681348527.637 (59s)
+[113/1836     213s] HA C2 seed=6 x=5.623e-05  ok t_esc=37438332221372.26 (60s)
+[114/1836     218s] HA PS06 seed=6 x=1e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (218s)
+[115/1836     227s] HA C2 seed=2 x=5.623e-05  ok t_esc=532744402295887.6 (76s)
+[116/1836     229s] HA C2 seed=1 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (191s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[117/1836     235s] HA C2 seed=0 x=5.623e-05  ok (83s)
+[118/1836     236s] HA C2 seed=0 x=1e-05  failed (235s)
+[119/1836     244s] HA C2 seed=10 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (89s)
+[120/1836     251s] HA PS08 seed=0 x=5.623e-05  ok t_esc=1000345321.7352976 (142s)
+[121/1836     251s] HA C1 seed=10 x=0.0001  trapped (33s)
+[122/1836     252s] HA PS06 seed=0 x=0.0001  trapped (91s)
+[123/1836     253s] HA C2 seed=0 x=0.0001  ok (24s)
+[124/1836     253s] HA C2 seed=1 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (102s)
+[125/1836     265s] HA C2 seed=5 x=0.0001  trapped (13s)
+[126/1836     275s] HA PS08 seed=1 x=5.623e-05  ok t_esc=580021908.7667717 (149s)
+[127/1836     276s] HA W6 seed=7 x=5.623e-05  ok t_esc=85195708.1129596 (127s)
+[128/1836     281s] HA C2 seed=10 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (280s)
+[129/1836     282s] HA W6 seed=2 x=5.623e-05  ok t_esc=95927987.17982455 (134s)
+[130/1836     283s] HA PS08 seed=4 x=0.0001  ok t_esc=150145925.0877302 (125s)
+[131/1836     285s] HA PS08 seed=2 x=5.623e-05  ok t_esc=428332424.74637324 (158s)
+[132/1836     285s] HA PS08 seed=4 x=5.623e-05  ok t_esc=474950587.8185517 (153s)
+[133/1836     288s] HA PS08 seed=7 x=5.623e-05  ok t_esc=380321508.7646104 (154s)
+[134/1836     289s] HA PS08 seed=9 x=5.623e-05  ok t_esc=2632807007.185052 (151s)
+[135/1836     289s] HA PS06 seed=1 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (289s)
+[136/1836     289s] HA C1 seed=0 x=0.0001  trapped (100s)
+[137/1836     289s] HA W6 seed=4 x=5.623e-05  ok t_esc=106375413.15496312 (140s)
+[138/1836     291s] HA W6 seed=0 x=5.623e-05  ok t_esc=224088337.3974716 (144s)
+[139/1836     292s] HA W6 seed=5 x=5.623e-05  ok t_esc=574423297.8411434 (143s)
+[140/1836     293s] HA W6 seed=6 x=5.623e-05  ok t_esc=525887412.2504297 (143s)
+[141/1836     295s] HA PS08 seed=6 x=5.623e-05  ok t_esc=2347829455.7937264 (161s)
+[142/1836     296s] HA PS08 seed=8 x=5.623e-05  ok t_esc=1555936223.5087674 (158s)
+[143/1836     297s] HA W6 seed=9 x=5.623e-05  ok t_esc=589630378.8843176 (146s)
+[144/1836     297s] HA W6 seed=3 x=5.623e-05  ok t_esc=363995352.66560185 (148s)
+[145/1836     298s] HA PS08 seed=3 x=5.623e-05  ok t_esc=1625088229.115664 (170s)
+[146/1836     300s] HA PS08 seed=11 x=5.623e-05  ok t_esc=3093739697.5054584 (160s)
+[147/1836     300s] HA C1 seed=7 x=0.0001  trapped (89s)
+[148/1836     300s] HA PS08 seed=10 x=5.623e-05  ok t_esc=2333549143.343294 (162s)
+[149/1836     302s] HA PS08 seed=5 x=5.623e-05  ok t_esc=2564045768.361286 (171s)
+[150/1836     304s] HA C2 seed=2 x=0.0001  ok t_esc=53541739932323.6 (69s)
+[151/1836     305s] HA W6 seed=0 x=0.0001  ok t_esc=70905990.0995251 (133s)
+[152/1836     306s] HA W6 seed=2 x=0.0001  ok t_esc=30336192.147243388 (133s)
+[153/1836     308s] HA W6 seed=1 x=5.623e-05  ok t_esc=129939795.70544772 (160s)
+[154/1836     308s] HA PS06 seed=4 x=5.623e-05  ok t_esc=12215060850567.152 (163s)
+[155/1836     308s] HA C2 seed=11 x=5.623e-05  trapped (152s)
+[156/1836     308s] HA C2 seed=7 x=0.0001  ok t_esc=311425374148.4737 (55s)
+[157/1836     310s] HA PS08 seed=3 x=0.0001  ok t_esc=514079297.9026214 (152s)
+[158/1836     310s] HA W6 seed=10 x=5.623e-05  ok t_esc=522642993.7869577 (159s)
+[159/1836     312s] HA PS08 seed=0 x=0.0001  ok t_esc=316516974.53247947 (155s)
+[160/1836     313s] HA W6 seed=4 x=0.0001  ok t_esc=33625089.93563978 (136s)
+[161/1836     313s] HA C2 seed=4 x=0.0001  ok t_esc=591506912137.6337 (62s)
+[162/1836     313s] HA PS08 seed=7 x=0.0001  ok t_esc=120280932.14178604 (155s)
+[163/1836     314s] HA W6 seed=8 x=5.623e-05  ok t_esc=348515464.3265212 (164s)
+[164/1836     315s] HA PS08 seed=2 x=0.0001  ok t_esc=135475801.6401458 (158s)
+[165/1836     315s] HA W6 seed=3 x=0.0001  ok t_esc=115140035.24189115 (141s)
+[166/1836     316s] HA C2 seed=1 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (81s)
+[167/1836     316s] HA C2 seed=6 x=0.0001  ok t_esc=6653610610671.282 (65s)
+[168/1836     317s] HA PS08 seed=5 x=0.0001  ok t_esc=810889590.0350986 (159s)
+[169/1836     318s] HA W6 seed=9 x=0.0001  ok t_esc=186405171.70043004 (135s)
+[170/1836     319s] HA PS08 seed=6 x=0.0001  ok t_esc=742524472.084205 (160s)
+[171/1836     319s] HA PS06 seed=5 x=1.778e-05  trapped (318s)
+[172/1836     320s] HA PS06 seed=9 x=5.623e-05  ok t_esc=25945926356788.04 (173s)
+[173/1836     320s] HA W6 seed=10 x=0.0001  ok t_esc=165190628.36677328 (136s)
+[174/1836     321s] HA W6 seed=11 x=5.623e-05  ok t_esc=693551043.0736492 (170s)
+[175/1836     322s] HA PS08 seed=11 x=0.0001  ok t_esc=974818138.7257782 (162s)
+[176/1836     323s] HA PS08 seed=1 x=0.0001  ok t_esc=183471994.80837795 (166s)
+[177/1836     324s] HA PS06 seed=7 x=5.623e-05  ok t_esc=15814131850711.23 (177s)
+[178/1836     324s] HA W6 seed=6 x=0.0001  ok t_esc=166310646.19649425 (144s)
+[179/1836     324s] HA W6 seed=8 x=0.0001  ok t_esc=110293153.59422025 (142s)
+[180/1836     325s] HA PS08 seed=9 x=0.0001  ok t_esc=832463089.5330615 (165s)
+[181/1836     328s] HA W6 seed=1 x=0.0001  ok t_esc=41106102.33967186 (156s)
+[182/1836     329s] HA PS06 seed=4 x=0.0001  ok t_esc=2172535140598.7212 (163s)
+[183/1836     329s] HA PS08 seed=8 x=0.0001  ok t_esc=492415964.6345709 (170s)
+[184/1836     329s] HA W6 seed=7 x=0.0001  ok t_esc=26945006.695155278 (149s)
+[185/1836     330s] HA W6 seed=5 x=0.0001  ok t_esc=181682614.29304856 (151s)
+[186/1836     336s] HA PS08 seed=10 x=0.0001  ok t_esc=737638824.645991 (176s)
+[187/1836     338s] HA PS06 seed=6 x=0.0001  ok t_esc=41208169863180.086 (172s)
+[188/1836     338s] HA W6 seed=11 x=0.0001  ok t_esc=218666317.49061936 (152s)
+[189/1836     339s] HA PS06 seed=7 x=0.0001  ok t_esc=2812264097242.119 (172s)
+[190/1836     340s] HA C1 seed=2 x=0.0001  trapped (147s)
+[191/1836     340s] HA PS06 seed=6 x=5.623e-05  ok t_esc=231901940280043.6 (194s)
+[192/1836     346s] HA PS06 seed=9 x=0.0001  ok t_esc=4618318919925.445 (175s)
+[193/1836     348s] HA PS06 seed=1 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (184s)
+[194/1836     352s] HA PS06 seed=1 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (210s)
+[195/1836     360s] HA C2 seed=10 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (84s)
+[196/1836     374s] HA PS06 seed=0 x=5.623e-05  trapped (233s)
+[197/1836     387s] HA C1 seed=11 x=0.0001  trapped (159s)
+[198/1836     388s] HA PS06 seed=10 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (217s)
+[199/1836     389s] HA C2 seed=8 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (136s)
+[200/1836     418s] HA PS06 seed=10 x=3.162e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (418s)
+[201/1836     421s] HA C1 seed=1 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (231s)
+[202/1836     423s] HA PS06 seed=10 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (276s)
+[203/1836     423s] HA C2 seed=9 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (158s)
+[204/1836     429s] HA PS06 seed=0 x=0.0001778  trapped (105s)
+[205/1836     429s] HA HT4L seed=3 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (132s)
+[206/1836     443s] HA PS06 seed=5 x=0.0001  trapped (277s)
+[207/1836     444s] HA HT4L seed=10 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (140s)
+[208/1836     448s] HA HT4L seed=2 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (152s)
+[209/1836     448s] HA HT4W seed=3 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (163s)
+[210/1836     449s] HA HT4W seed=10 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (158s)
+[211/1836     454s] HA PS08 seed=7 x=0.0001778  ok t_esc=38043323.37384397 (136s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[212/1836     462s] HA W6 seed=2 x=0.0001778  ok t_esc=9593766.730673652 (122s)
+[213/1836     462s] HA HT4W seed=1 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (180s)
+[214/1836     464s] HA PS08 seed=0 x=0.0001778  ok t_esc=100192968.41223584 (149s)
+[215/1836     465s] HA HT4W seed=2 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (182s)
+[216/1836     466s] HA PS08 seed=2 x=0.0001778  ok t_esc=42855383.88389051 (150s)
+[217/1836     466s] HA HT4L seed=1 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (172s)
+[218/1836     467s] HA PS06 seed=5 x=1e-05  failed (467s)
+[219/1836     468s] HA PS08 seed=4 x=0.0001778  ok t_esc=47454095.877770714 (151s)
+[220/1836     469s] HA W6 seed=4 x=0.0001778  ok t_esc=10625449.42009773 (124s)
+[221/1836     471s] HA PS08 seed=5 x=0.0001778  ok t_esc=256463634.5716594 (153s)
+[222/1836     472s] HA HT4L seed=11 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (166s)
+[223/1836     474s] HA HT4L seed=6 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (174s)
+[224/1836     474s] HA W6 seed=7 x=0.0001778  ok t_esc=8522875.210536396 (115s)
+[225/1836     475s] HA PS08 seed=1 x=0.0001778  ok t_esc=58048735.668946356 (159s)
+[226/1836     476s] HA HT4L seed=7 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (176s)
+[227/1836     476s] HA PS08 seed=3 x=0.0001778  ok t_esc=162668180.29300785 (160s)
+[228/1836     477s] HA C2 seed=8 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (323s)
+[229/1836     477s] HA W6 seed=0 x=0.0001778  ok t_esc=22446714.592834562 (139s)
+[230/1836     478s] HA HT4W seed=7 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (188s)
+[231/1836     478s] HA C2 seed=0 x=0.0001778  trapped (16s)
+[232/1836     480s] HA C1 seed=5 x=0.0001  trapped (276s)
+[233/1836     480s] HA C2 seed=9 x=5.623e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (325s)
+[234/1836     483s] HA W6 seed=1 x=0.0001778  ok t_esc=13007629.426697057 (143s)
+[235/1836     483s] HA HT4S seed=6 x=0.0001  trapped (173s)
+[236/1836     485s] HA HT4W seed=6 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (197s)
+[237/1836     486s] HA PS08 seed=6 x=0.0001778  ok t_esc=234849401.67313284 (168s)
+[238/1836     487s] HA PS06 seed=4 x=0.0001778  ok t_esc=386450053716.78796 (163s)
+[239/1836     488s] HA PS08 seed=11 x=0.0001778  ok t_esc=306329689.08500326 (166s)
+[240/1836     488s] HA PS06 seed=9 x=0.0001778  ok t_esc=822667455956.6444 (158s)
+[241/1836     489s] HA C1 seed=10 x=0.0001778  trapped (40s)
+[242/1836     489s] HA PS08 seed=9 x=0.0001778  ok t_esc=263189694.09671137 (169s)
+[243/1836     492s] HA C2 seed=1 x=1.778e-05  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (491s)
+[244/1836     493s] HA PS06 seed=7 x=0.0001778  ok t_esc=500120935660.09973 (164s)
+[245/1836     494s] HA W6 seed=5 x=0.0001778  ok t_esc=57472249.509827375 (146s)
+[246/1836     494s] HA HT4W seed=11 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (202s)
+[247/1836     497s] HA W6 seed=3 x=0.0001778  ok t_esc=36429952.3525567 (157s)
+[248/1836     498s] HA C2 seed=11 x=3.162e-05  trapped (390s)
+[249/1836     500s] HA PS06 seed=11 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (329s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
+  solver._y, solver.t = integrator.run(
+[250/1836     504s] HA PS08 seed=8 x=0.0001778  ok t_esc=155932921.1245831 (185s)
+[251/1836     506s] HA HT4L seed=8 x=0.0001  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 83, in work |     rec = run_ha(cell, seed, x, plain=(tag == "plain"), follow=(tag == ""), **kw) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 120, in run_ha |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2) |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |         raise WallTime() |           ^^^^^^^^^^^^^^ |     g, dL = evalf(y) |     ^^^^^^^^^^^^^^^^ | ValueError: f(a) and f(b) must have different signs |  (205s)
