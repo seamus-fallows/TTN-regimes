@@ -272,15 +272,17 @@ single-sigma fallback only.
   k = 4: 1.64-2.16; k = 5: 2.82-3.76; k = 6: 4.00, 4.04 (balanced, binary8 / ht4, one decade), 4.27 (mps8 {1,6},
   balanced), 3.19-5.23 (round-1 rows over 0.8 decades); k = 7: 5.01 (balanced ht4) up to 6.5 (round-1 rows over
   0.6 decades). So x grows with k and λ_min -> 0: no sigma-independent negative curvature. x is within 0.2 of
-  k - 2 in 60 of 60 k = 3 rows, 36 of 38 k = 4 rows and 30 of 37 k = 5 rows (and the balanced one-decade k = 6-7
-  rows); the k = 4-5 exceptions are rows whose duration exponent deviates the same way (midroot6 {0,3} saddle:
-  x = 1.64, p = 1.48; MPS k = 5 rows: x = 3.24-3.76, p = 3.19-3.76) plus the artefacts below. Row by row, the
-  raw x equals the row's duration exponent p within 0.2 in 95% of 169 k >= 3 rows (median |x - p| = 0.02).
+  k - 2 in 60 of 60 k = 3 rows, 37 of 38 k = 4 rows and 30 of 37 k = 5 rows, 127 of 135 in all (and the balanced
+  one-decade k = 6-7 rows); the k = 4-5 exceptions are rows whose duration exponent deviates the same way
+  (midroot6 {0,3} saddle: x = 1.64, p = 1.48; MPS k = 5 rows: x = 3.24-3.76, p = 3.13-3.76). Row by row, the raw x
+  equals the row's duration exponent p within 0.2 in 164 of 171 k >= 3 rows (96%; median |x - p| = 0.02).
   Raw and projected exponents differ by up to 0.11 (mps6 {2,3,4} small init: 0.81 projected, 0.92 raw).
-  Artefacts: balanced-init mps8 {2,5} and {1,5}, whose midpoint λ_min is ~1e-13-1e-10 (x = 8.9 and 6.2): there
-  the minimum-speed point falls where the route amplitudes are tiny (a sign-correction phase, theory_saddles.md 8),
-  and in the k = 5 extension balanced mps8 {1,5} (x = -5.4) the midpoint states are pinned states at t = 1e9 to
-  5e12; these midpoint Hessians are not representative and are left out of the ranges.
+  The balanced-init MPS8 rows follow the same pattern: mps8 {2,5} (k = 4) x = 2.01 (p = 2.02), mps8 {1,5} (k = 5)
+  x = 3.49 (p = 3.60) and, in the k = 5 extension at sigma <= 0.03, x = 3.24 (p = 3.13); λ_min at the smallest
+  sigma -1.1e-5, -1.4e-6, -1.3e-7. **Corrected 2026-10-10 (section 11):** these three rows read x = 8.90, 6.22
+  and -5.42 and were explained here as artefacts (a sign-correction phase; pinned states at t = 1e9 to 5e12) and
+  left out of the ranges. They were stale rows of `hessians.csv`: Hessians at the end (t = 1e9) of superseded
+  shorter trajectories, not at the plateau midpoints of the final runs.
 
 ### 7.3 Dormant amplitudes and single-run k — **empirical**
 
@@ -464,10 +466,10 @@ does not persist (`results/extensions_table.md`, k = 5 extension, sigma = 0.012-
   fitted seeds over 0.4 decades, with 10 of 24 runs stalled (about 40%).
 The fitted seeds of that row escape at every sigma, so it meets theory_saddles.md P14(ii) (a per-seed exponent
 off by more than 0.2 at sigma <= 0.05 in runs that did not stall), but on thin evidence (4 seeds, 0.4 decades,
-in a case where 40% of the runs die). Its Hessian exponent agrees (3.74 projected, 3.75 raw); the balanced
-mps8 {1,5} Hessian fit (x = -5.4) is meaningless because its midpoint states are pinned states at t = 1e9 to
-5e12, not plateau midpoints. At chi = 4 both mps rows give 3 (3.00 ± 0.04, 3.19 ± 0.15, medians 2.99, 3.01);
-the mps6 whole-chain k = 6 routes stay steep at chi = 4 (5.0-5.1).
+in a case where 40% of the runs die). Its Hessian exponent agrees (3.74 projected, 3.75 raw), and so does that
+of balanced mps8 {1,5} at sigma <= 0.03 (x = 3.24, p = 3.13; the x = -5.4 quoted here before, explained as
+pinned states, came from stale Hessians at t = 1e9: section 11). At chi = 4 both mps rows give 3 (3.00 ± 0.04,
+3.19 ± 0.15, medians 2.99, 3.01); the mps6 whole-chain k = 6 routes stay steep at chi = 4 (5.0-5.1).
 - **Route-end amplitudes** (`route_amps.py`, `results/route_amps*.csv`): at the plateau midpoint the route
   ends scale as sigma^α with α = 1.24-1.91 in the steep MPS rows (interior entries ∝ sigma), and they shrink
   during the plateau (median ratio midpoint / first event 0.53-0.78, single runs to 1e-4-1e-7), against
@@ -555,9 +557,9 @@ multi-component runs the rank profile matches in 94% of (run, level) pairs (99-1
 of λ_min, raw quoted where the projection is biased): k = 2: λ_min = -λ2 exactly (-0.5000; -0.2500 / -0.7500
 for s2 = 0.25 / 0.75), sigma-independent; k >= 3: λ_min ∝ sigma^x -> 0 with x growing with k (full ranges:
 k = 3 0.81-1.06, k = 4 1.64-2.16, k = 5 2.82-3.76, k = 6 4.00-4.27 over one decade, k = 7 5.01 to 6.5); x is
-within 0.2 of k - 2 in 126 of 135 k = 3-5 rows and in the balanced one-decade k = 6-7 rows, and it tracks each
-row's duration exponent (within 0.2 in 95% of rows). Not tested: wrong-order and star
-saddles, which theory_saddles.md shows can be strict at k* >= 3.
+within 0.2 of k - 2 in 127 of 135 k = 3-5 rows and in the balanced one-decade k = 6-7 rows, and it tracks each
+row's duration exponent (within 0.2 in 164 of 171 rows, 96%; Hessians corrected 2026-10-10, section 11). Not
+tested: wrong-order and star saddles, which theory_saddles.md shows can be strict at k* >= 3.
 
 **Dead routes** (empirical; 7.5, 7.10): with fan-in init at chi = 2, 398 of 5,682 two-component runs stall, all
 with k >= 4 (none of 5,112 runs with k <= 3); the stalls checked with a 60x longer budget are dead (route ends at
@@ -605,3 +607,47 @@ Round-2 values as of that round; section 10 lists what round 3 changed.
 | (e) k = 6-7 and Hessians | "k = 6-7 = k - 2 on binary8/ht4"; x = 0.93-1.04, 1.94-2.05, 2.87-3.44, 4.00-4.04, 5.01; "raw and projected agree to 0.01" | **balanced init only** (fan-in k = 6: 3.68, 4.23); full ranges k = 3 0.81-1.06, k = 4 1.64-2.16, k = 5 2.82-3.76, mps8 {1,6} 4.27, k = 7 up to 6.5; raw and projected differ by up to 0.11 and the projection is biased at sigma >= 1e-3 (k = 2 small init quoted raw: -0.437, -0.581) (7.1, 7.2) |
 | (f) levels | TA mps4 "two short (log-time) plateaus"; "every k* >= 3 level within 0.2"; ht4 {0,1,2} 8 seeds | TA mps4 first level: power favoured (0.22 vs 0.53), law undetermined; B4 ht4 fan-in second level 4.73 ± 0.90 is an exception; ht4 {0,1,2} has 7 fitted seeds (7.1, 7.4, 8) |
 | (g) provenance | run classes, dropout tables, multi-component event CSV made by hand; ghost row in the extensions table | `stall_tables.py` writes `run_classes_by_sweep.csv`, `stall_dropout_*.csv`, `stall_capped_ends.csv`; `finalize.sh` also writes `bond_events2_multicomp_events.csv`; `r12_partial.csv` (an intermediate run of `r12.py` on an unfinished stall diagnosis, used nowhere) removed; ghost row (a lambda2K error record without model fields) fixed in `analysis.py`; the lost lambda2K run (start-up check tolerance) not rerun |
+
+## 11. Correction after the reproducibility check (2026-10-10)
+
+`notes/reviews/reproducibility_check.md` (finding F1) found `results/hessians.csv` stale. It is regenerated here
+from the final run records; three Hessian exponents and the counts of 7.2 change, and the "artefacts" of 7.2 and
+7.9 are withdrawn.
+
+- **Cause.** `hess_recompute.py` resumed from an existing output file and skipped every run whose first plateau
+  already had a row, so runs that were rerun or continued after the first Hessian pass (same run key, new record
+  and trajectory) kept Hessians computed on their superseded trajectories. Against the final records the committed
+  file had 11,961 rows for 11,781 (run, plateau) keys: 180 duplicate rows (multi-component teachers TA, TB, TC, TD,
+  N4; both copies correct) and 81 rows at another state than the record's plateau midpoint. 24 of them (balanced init:
+  mps8 {1,5} at sigma = 0.019, 0.03 and {2,5} at 0.01, 0.0182) were evaluated at t = 1e9 exactly, the end of a
+  shorter superseded trajectory, instead of at the final midpoints (t = 2e9 to 3e13): λ_min (projected) -8e-14 to
+  -1.2e-9 instead of -6e-9 to -1.4e-4. The other 57 (seven MPS cases: mps4 {0,3} at chi = 2 and 4, mps6 {0,3},
+  mps6 {0,5} at chi = 4, mps8 {1,5}, mps8 {2,5}, all small init, and balanced mps6 {1,3,5}) had midpoints within
+  0.73% and λ_min within 2.7% of the regenerated values. The remaining 11,700 rows are at the same states (λ_min
+  within 3.3e-6 relative: eigensolver roundoff on another machine).
+- **Regenerated** with the experiment's scripts (`hess_recompute.py`, then `make_figures.py` for the five
+  exponent tables, as in `finalize.sh`), with `LOCALITY_OUT` pointing to the local copy of the raw outputs, and
+  checked against the records: one row per (run, plateau) with a stored midpoint (11,781; none missing, none extra,
+  no duplicates), each at the record's midpoint exactly (a saved trajectory point) and carrying the record's own
+  λ_min. A full `finalize.sh` run into a fresh directory (26 min, 7 workers) reproduces every other committed table
+  (within 1e-9 relative or 1e-12 absolute after aligning rows; `levels_runs.csv` within 2e-8) and the report
+  figures `twocomp_exponents.png`, `trees_TA.png`, `bond_spectra.png` byte for byte.
+- **Changed numbers.** `twocomp_balanced_table`: mps8 {2,5} (k = 4) λ_min at the smallest sigma -3.5e-13 -> -1.1e-5,
+  x = 8.90 -> 2.01 (SE 0.66 -> 0.01); mps8 {1,5} (k = 5) -4.2e-10 -> -1.4e-6, x = 6.22 -> 3.49; their fallback
+  counts of negative eigenvalues at the smallest sigma 10 and 9 -> 0 (as in 169 of the other 170 k >= 3 rows).
+  `extensions_table`, balanced mps8 {1,5}: x = -5.42 -> 3.24. Every other x moves by less than 1e-3 (Markdown
+  tables of `twocomp`, `twocomp_chi4`, `robust` unchanged). x within 0.2 of k - 2: 126 -> **127 of 135** k = 3-5
+  rows (k = 4: 36 -> 37 of 38); the ranges k = 4 1.64-2.16 and k = 5 2.82-3.76 now hold without exclusions. Raw x
+  within 0.2 of the row's duration exponent p: **164 of 171** k >= 3 rows (96%; median |x - p| = 0.02); the
+  earlier "95% of 169" is 161 of 171 with the stale tables (161 of 169 without the two balanced-table rows).
+  Figure `twocomp_hessian.png` (report Fig. locality-hessian): 413 pixels, sub-pixel shifts of two k = 4 segments
+  near sigma = 0.1-0.2 (small init); the other four Hessian figures redraw pixel-identically from the old and the
+  new file (balanced rows are not drawn), so their committed files are kept.
+- **Withdrawn.** 7.2 and 7.9 explained x = 8.9 and 6.2 by a sign-correction phase (minimum speed where the route
+  amplitudes are tiny) and x = -5.4 by pinned states at t = 1e9 to 5e12. Both readings were of stale rows; with the
+  final records the three rows behave like the other MPS rows (|x - p| = 0.00, 0.11, 0.10).
+- **Code.** `hess_recompute.py` no longer resumes (every row recomputed, rows sorted by run key; it exits with an
+  error when no record or a trajectory is found); `analysis.load_records` points a record to
+  `$LOCALITY_OUT/traj/<file>` when its stored (remote) path does not exist, so every trajectory step runs on a
+  local copy with `LOCALITY_OUT` alone; `finalize.sh` stops at the first failing step (its `py()` wrapper ended in
+  `|| true`, so it printed "done" after failures).
