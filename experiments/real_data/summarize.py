@@ -40,7 +40,9 @@ def rank_events(t, fs, level=RATIO_LEVEL):
                     out[e, k] = t[0]
                 else:
                     a, b = ratio[i - 1, e, k], ratio[i, e, k]
-                    f = (np.log(level) - np.log(max(a, 1e-300))) / (np.log(b) - np.log(max(a, 1e-300)))
+                    f = (np.log(level) - np.log(max(a, 1e-300))) / (
+                        np.log(b) - np.log(max(a, 1e-300))
+                    )
                     out[e, k] = t[i - 1] + f * (t[i] - t[i - 1])
     return out
 
@@ -48,8 +50,10 @@ def rank_events(t, fs, level=RATIO_LEVEL):
 def summarize(path) -> dict:
     run = load(path)
     m, c = run["meta"], run["meta"]["case"]
-    row = {k: c[k] for k in ("tree", "ordering", "features", "chi", "sigma", "seed", "centred",
-                             "n_train")}
+    row = {
+        k: c[k]
+        for k in ("tree", "ordering", "features", "chi", "sigma", "seed", "centred", "n_train")
+    }
     row.update(name=m["name"], stop=m["stop"], wall=m["wall_total"], t_a=m.get("t_a", np.nan))
     if "p2" not in run:
         return row
@@ -73,28 +77,46 @@ def summarize(path) -> dict:
     per_drop = []
     for d in drops:
         lo, hi = d["t_lo"] - d["width"], d["t_hi"] + d["width"]
-        per_drop.append(sorted({(int(e), int(k) + 2) for e, k in np.argwhere((ev >= lo) & (ev <= hi))}))
+        per_drop.append(
+            sorted({(int(e), int(k) + 2) for e, k in np.argwhere((ev >= lo) & (ev <= hi))})
+        )
     row["drop_edges"] = per_drop
     first_k2 = np.nanmin(ev[:, 0]) if np.isfinite(ev[:, 0]).any() else np.nan
     row["t_first_rank2"] = float(first_k2)
+    # edges whose s_2/s_1 is >= RATIO_LEVEL already at the start of phase 2: their "event" is the
+    # threshold at tau = 0, not a resolved rank increase (fix round 1; e.g. the MPS edge 5 at sigma >= 0.2)
+    row["rank2_at_start"] = [int(e) for e in np.flatnonzero(ev[:, 0] == t[0])]
     if np.isfinite(first_k2):
         tol = max(1.0, 0.05 * first_k2)
         row["first_rank2_edges"] = [int(e) for e in np.flatnonzero(ev[:, 0] <= first_k2 + tol)]
         row["first_rank2_levels"] = [int(lv[e]) for e in row["first_rank2_edges"]]
+        row["first_rank2_at_start"] = bool(first_k2 == t[0])
     row["edge_levels"] = lv.tolist()
     row["edges"], row["parent"] = m["edges"], m["parent"]
     row["edge_sites"] = edge_sites(m)
     for lvl in LOSS_LEVELS:
         row[f"t_loss_{lvl}"] = time_to_loss(t, loss, lvl)
     test = lg["test"]
-    row.update(loss_end=float(lg["loss"][-1]), test_loss_end=float(test[-1, 0]),
-               test_acc_end=float(test[-1, 1]), train_acc_end=float(test[-1, 2]),
-               drift_max=float(np.nanmax(np.concatenate([run["p1_log"]["conservation_drift"],
-                                                         lg["conservation_drift"]]))),
-               t2=float(t[-1]), n_fine=int(len(lg.get("fine_t", []))))
+    row.update(
+        loss_end=float(lg["loss"][-1]),
+        test_loss_end=float(test[-1, 0]),
+        test_acc_end=float(test[-1, 1]),
+        train_acc_end=float(test[-1, 2]),
+        drift_max=float(
+            np.nanmax(
+                np.concatenate([run["p1_log"]["conservation_drift"], lg["conservation_drift"]])
+            )
+        ),
+        t2=float(t[-1]),
+        n_fine=int(len(lg.get("fine_t", []))),
+    )
     if "delta_K" in lg:
-        row.update(delta_K_end=float(lg["delta_K"][-1, 0]), kernel_scale_end=float(lg["delta_K"][-1, 1]),
-                   kernel_scale_0=float(run["p1_log"]["delta_K"][0, 1]), t2_unit=m.get("t2_unit"))
+        row.update(
+            delta_K_end=float(lg["delta_K"][-1, 0]),
+            kernel_scale_end=float(lg["delta_K"][-1, 1]),
+            kernel_scale_0=float(run["p1_log"]["delta_K"][0, 1]),
+            t2_unit=m.get("t2_unit"),
+        )
     return row
 
 
@@ -114,9 +136,12 @@ def main(runs_dir: str, out_prefix: str, workers: int = 8) -> None:
     with open(out.with_suffix(".json"), "w") as f:
         json.dump(rows, f, default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o))
     import csv
+
     flat_keys = [k for k in rows[0] if not isinstance(rows[0][k], list | dict)] if rows else []
-    keys = sorted({k for r in rows for k, v in r.items() if not isinstance(v, list | dict)},
-                  key=lambda k: flat_keys.index(k) if k in flat_keys else 999)
+    keys = sorted(
+        {k for r in rows for k, v in r.items() if not isinstance(v, list | dict)},
+        key=lambda k: flat_keys.index(k) if k in flat_keys else 999,
+    )
     with open(out.with_suffix(".csv"), "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=keys, extrasaction="ignore")
         w.writeheader()

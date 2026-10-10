@@ -1,0 +1,849 @@
+"""Fix round 1 of the real-data review (notes/reviews/real_data_round1.md), from committed outputs.
+
+Usage: uv run python experiments/real_data/fix1_analysis.py <results_dir> <out_prefix>
+           [--local <summary.json>] [--audit <audit_table.json>...] [--logs <agent-runs/real-data/logs>]
+
+The raw main-sweep trajectories are not available locally, so every number here is recomputed from the
+committed per-run / per-series JSON files in <results_dir> (events_table, routes_raw, hessians_raw,
+regime_analysis, scaling, chi8_scaling), plus optional extra summaries:
+  --local   summarize.py output of the fix-round reruns (configs/fix1_local.yaml)
+  --audit   the reviewers' audit tables (data/review_real_data/audit/*audit_table.json; one row per run
+            with final loss, times to loss levels and route-amplitude shares, from the experiment's code)
+  --logs    run logs of the remote sweeps (stop reasons of the chi = 8 runs)
+Sections (one key each in <out_prefix>.json; markdown tables in <out_prefix>.md):
+  first_route   clean k = 3 series (events_table: the same sibling pair rises inside drop 1 at every sigma
+                of the series); power law, log law and A / sigma + B, all with relative residuals
+  routes        route-amplitude rule after the rank-1 filter, de-duplicated into critical-point units
+  shares        share of sum lambda^2 on k <= 5 routes, one value per (order, seed)
+  locality      per (order, seed) at sigma = 0.1: share, final loss, times to loss levels; Spearman
+  hessians      per-seed lambda_min exponents at the common first plateau
+  mps_first     MPS first rank increase relative to the first drop (resolved vs at tau = 0)
+  regime        lazy floors per seed, convergence of the lazy runs, threshold sensitivity
+  chi8          two-point slopes of the rank-clock gap, wall-limited runs
+  clock         first-escape times t_a per seed (absolute clock), sigma = 0.1
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
+from scipy.stats import spearmanr
+
+sys.path.insert(0, str(Path(__file__).parent))
+from analysis import ERR_MAX, route_units  # noqa: E402
+
+
+def rel_fit(cols, y):
+    """Coefficients c minimising sum((cols . c) / y - 1)^2 (relative residuals) and the rms."""
+    a = np.vstack(cols).T / y[:, None]
+    c, *_ = np.linalg.lstsq(a, np.ones_like(y), rcond=None)
+    return c, float(np.sqrt(np.mean((a @ c - 1) ** 2)))
+
+
+def three_laws(sig, gap):
+    """Power law (log space), log law and A / sigma + B (relative residuals) for one series."""
+    sig, gap = np.asarray(sig, float), np.asarray(gap, float)
+    x = np.log(1 / sig)
+    p, a = np.polyfit(x, np.log(gap), 1)
+    pow_rms = float(np.sqrt(np.mean((np.exp(a + p * x) / gap - 1) ** 2)))
+    (la, lb), log_rms = rel_fit([np.ones_like(x), x], gap)
+    (kb, ka), k3_rms = rel_fit([np.ones_like(x), 1 / sig], gap)
+    b_unw, a_unw = np.polyfit(x, gap, 1)  # the round-0 (unweighted) log-law fit, for comparison
+    log_rms_unw = float(np.sqrt(np.mean(((a_unw + b_unw * x) / gap - 1) ** 2)))
+    return {
+        "power_p": float(p),
+        "power_rms": pow_rms,
+        "log_slope": float(lb),
+        "log_rms": log_rms,
+        "log_rms_unweighted": log_rms_unw,
+        "A": float(ka),
+        "B": float(kb),
+        "k3_rms": k3_rms,
+    }
+
+
+def mean_se(v):
+    v = np.asarray([x for x in v if x is not None and np.isfinite(x)], float)
+    if len(v) == 0:
+        return [np.nan, np.nan, 0]
+    return [
+        float(v.mean()),
+        float(v.std(ddof=1) / np.sqrt(len(v))) if len(v) > 1 else np.nan,
+        len(v),
+    ]
+
+
+def first_route_clean(events):
+    """Clean k = 3 first-route series: raw features, binary trees, the signature of drop 1 is one sibling
+    pair gaining its 2nd singular value at every sigma of the series (>= 4 sigma over >= 0.5 decade, as
+    in events_table.py). The rank crossing lies inside drop 1's window by construction, so the gap
+    drop 1 - drop 0 belongs to that route (the round-0 `first_route` could take a later drop)."""
+    out = []
+    for s in events:
+        sig = s["signature"]
+        if (
+            s["features"] != "raw"
+            or not s["tree"].startswith("binary")
+            or s["k"] != 3
+            or len(sig) != 2
+            or any(k != 2 for _, k in sig)
+            or set(s["drop_index"]) != {1}
+        ):
+            continue
+        fit = three_laws(s["sigmas"], s["dt"])
+        # same fits on the sigma grid of main.yaml's reduced orders only (0.05, 0.1, 0.2, 0.5)
+        sub = [
+            (a, g)
+            for a, g in zip(s["sigmas"], s["dt"])
+            if any(abs(a - b) < 1e-9 for b in (0.05, 0.1, 0.2, 0.5))
+        ]
+        fit4 = three_laws(*zip(*sub)) if len(sub) >= 3 else None
+        out.append(
+            {
+                "tree": s["tree"],
+                "seed": s["seed"],
+                "edges": [e for e, _ in sig],
+                "sigmas": s["sigmas"],
+                "gaps": s["dt"],
+                **fit,
+                "power_p_main_grid": fit4["power_p"] if fit4 else None,
+                "B_over_A": fit["B"] / fit["A"],
+            }
+        )
+    summary = {}
+    for tree in sorted({o["tree"] for o in out}) + ["all"]:
+        sel = [o for o in out if tree in ("all", o["tree"])]
+        summary[tree] = {
+            "n_series": len(sel),
+            "power_p": mean_se([o["power_p"] for o in sel]),
+            "power_p_range": [min(o["power_p"] for o in sel), max(o["power_p"] for o in sel)],
+            "power_rms_max": max(o["power_rms"] for o in sel),
+            "log_rms_range": [min(o["log_rms"] for o in sel), max(o["log_rms"] for o in sel)],
+            "log_rms_unweighted_range": [
+                min(o["log_rms_unweighted"] for o in sel),
+                max(o["log_rms_unweighted"] for o in sel),
+            ],
+            "k3_rms_max": max(o["k3_rms"] for o in sel),
+            "B_negative": sum(o["B"] < 0 for o in sel),
+        }
+    return {"series": out, "summary": summary}
+
+
+def refit_all_series(events):
+    """Every events_table series refitted with relative residuals for both laws (round 0 fitted the
+    log law unweighted): power exponent and log slope with their rms."""
+    out = []
+    for s in events:
+        f = three_laws(s["sigmas"], s["dt"])
+        out.append(
+            {
+                k: s[k]
+                for k in ("tree", "features", "seed", "signature", "k", "connected", "drop_index")
+            }
+            | {
+                k: f[k]
+                for k in ("power_p", "power_rms", "log_slope", "log_rms", "log_rms_unweighted")
+            }
+            | {
+                "sigma_range": [min(s["sigmas"]), max(s["sigmas"])],
+                "n_sigma": len(s["sigmas"]),
+                "preferred": "power" if f["power_rms"] < f["log_rms"] else "log",
+            }
+        )
+    return out
+
+
+def shares_per_seed(states, sigma=0.05):
+    """Share of sum lambda^2 on k <= 5 routes (and on k = 3) per (order, seed) at one sigma: one value per
+    independent init, instead of pooling the same critical point over sigma."""
+    rows = []
+    for r in states:
+        if "pairs" not in r or abs(r["sigma"] - sigma) > 1e-9 or r["features"] != "raw":
+            continue
+        lam = np.array([p["lam"] for p in r["pairs"]])
+        k = np.array([p["k"] for p in r["pairs"]])
+        rows.append(
+            {
+                "ordering": r["ordering"],
+                "seed": r["seed"],
+                "rank1_rel_err": r["rank1_rel_err"],
+                "share_k3": float((lam[k == 3] ** 2).sum() / (lam**2).sum()),
+                "share_k5": float((lam[k <= 5] ** 2).sum() / (lam**2).sum()),
+                "best_k3": float(max(lam[k == 3])),
+                "plateau_loss": r["train_loss"],
+            }
+        )
+    by = defaultdict(list)
+    for r in sorted(rows, key=lambda r: (r["ordering"], r["seed"])):
+        by[r["ordering"]].append(r["share_k5"])
+        if r["ordering"] != "quadtree":
+            by["scrambled (3 orders)"].append(r["share_k5"])
+    n3, n5 = 4, 12  # sibling pairs (k = 3) and pairs with k <= 5 among the 28 pairs of bottom cores
+    summary = {k: {"mean_se": mean_se(v), "values": v} for k, v in sorted(by.items())}
+    return {
+        "sigma": sigma,
+        "rows": rows,
+        "summary": summary,
+        "pair_count_chance_k5": n5 / 28,
+        "pair_count_chance_k3": n3 / 28,
+    }
+
+
+LEVELS = (0.25, 0.2, 0.15)
+
+
+def locality_units(states, local_rows, audit_rows, sigma=0.1):
+    """One row per (order, seed) at sigma: k <= 5 share at the first plateau (routes_raw for the four
+    committed orders, the audit tables for the reviewers' extra orders), final train loss and test
+    accuracy at tau_end, times to loss levels (tau clock), escape time t_a. Sources: 'fix1' = this round's
+    reruns of main.yaml cases (configs/fix1_local.yaml), 'audit' = review runs with the same code and
+    settings (seed 0: 6 random orders, row-major, transposed quadtree; seed 1: the last two)."""
+    share = {}
+    for r in states:
+        if "pairs" in r and abs(r["sigma"] - sigma) < 1e-9 and r["features"] == "raw":
+            lam = np.array([p["lam"] for p in r["pairs"]])
+            k = np.array([p["k"] for p in r["pairs"]])
+            share[(r["ordering"], r["seed"])] = (
+                float((lam[k <= 5] ** 2).sum() / (lam**2).sum()),
+                r["rank1_rel_err"],
+            )
+    rows = {}
+    for r in local_rows:
+        if r.get("tree") != "binary" or abs(r["sigma"] - sigma) > 1e-9 or "loss_end" not in r:
+            continue
+        key = (r["ordering"], r["seed"])
+        sh = share.get(key, (np.nan, np.nan))
+        rows[key] = {
+            "ordering": r["ordering"],
+            "seed": r["seed"],
+            "source": "fix1",
+            "share_k5": sh[0],
+            "rank1_rel_err": sh[1],
+            "loss_end": r["loss_end"],
+            "test_acc": r["test_acc_end"],
+            "tau_end": r["t2"],
+            "stop": r["stop"],
+            "t_a": r["t_a"],
+            **{f"tau_L{lv}": r.get(f"t_loss_{lv}", np.nan) for lv in LEVELS},
+        }
+    for r in audit_rows:
+        if r.get("tree") != "binary":
+            continue
+        seed = int(re.search(r"seed(\d+)", r["name"]).group(1))
+        key = (r["ordering"], seed)
+        if key in rows:  # same case as a fix1 rerun: keep the rerun, record the agreement
+            rows[key]["audit_loss_end"] = r["L_end"]
+            continue
+        rows[key] = {
+            "ordering": r["ordering"],
+            "seed": seed,
+            "source": "audit",
+            "share_k5": r["share_k5"] + r["share_k3"],
+            "rank1_rel_err": r["rank1_err"],
+            "loss_end": r["L_end"],
+            "test_acc": r["test_acc"],
+            "tau_end": 1e4,
+            "stop": "completed",
+            "t_a": r["t_a"],
+            **{f"tau_L{lv}": r.get(f"tau_L{lv}", np.nan) for lv in LEVELS},
+        }
+    rows = sorted(rows.values(), key=lambda r: (r["seed"], r["loss_end"]))
+    ok = [r for r in rows if np.isfinite(r["share_k5"])]
+
+    def rho(sel):
+        if len(sel) < 4:
+            return None
+        res = spearmanr([r["share_k5"] for r in sel], [r["loss_end"] for r in sel])
+        return {"n": len(sel), "rho": float(res.statistic), "p": float(res.pvalue)}
+
+    committed = {"quadtree", "scrambled0", "scrambled1", "scrambled2"}
+    out = {
+        "sigma": sigma,
+        "rows": rows,
+        "spearman_all": rho(ok),
+        "spearman_committed_orders": rho([r for r in ok if r["ordering"] in committed]),
+        "spearman_seed0": rho([r for r in ok if r["seed"] == 0]),
+    }
+    by = defaultdict(list)
+    for r in rows:
+        by[r["ordering"]].append(r)
+    out["per_order"] = {
+        o: {
+            "n": len(v),
+            "loss_end": mean_se([r["loss_end"] for r in v]),
+            "loss_values": [r["loss_end"] for r in v],
+            "share_k5": mean_se([r["share_k5"] for r in v]),
+            **{
+                f"tau_L{lv}_median": float(np.nanmedian([r[f"tau_L{lv}"] for r in v]))
+                if any(np.isfinite(r[f"tau_L{lv}"]) for r in v)
+                else None
+                for lv in LEVELS
+            },
+        }
+        for o, v in sorted(by.items())
+    }
+    # rank of the quadtree among the orders run at the same seed (final loss and time to L <= 0.25)
+    ranks = {}
+    for seed in sorted({r["seed"] for r in rows}):
+        sel = [r for r in rows if r["seed"] == seed]
+        q = [r for r in sel if r["ordering"] == "quadtree"]
+        if not q or len(sel) < 2:
+            continue
+        q = q[0]
+        ranks[seed] = {
+            "n_orders": len(sel),
+            "lower_final_loss_than_quadtree": sum(r["loss_end"] < q["loss_end"] for r in sel),
+            "reach_L0.25_before_quadtree": sum(
+                np.nan_to_num(r["tau_L0.25"], nan=np.inf) < q["tau_L0.25"] for r in sel
+            ),
+        }
+    out["quadtree_rank_per_seed"] = ranks
+    return out
+
+
+def hessian_exponents(hess, levels=(("binary", 0.265, 0.275), ("mps", 0.225, 0.235))):
+    """Per-seed exponent of |lambda_min| (gauge-projected) vs sigma at the common first plateau (same
+    saddle: plateau loss inside the band), every seed with >= 3 sigma values; sigma range per seed."""
+    out = {}
+    for tree, lo, hi in levels:
+        sel = [
+            r for r in hess if "proj_min" in r and r["tree"] == tree and lo <= r["loss_mid"] <= hi
+        ]
+        per = {}
+        for seed in sorted({r["seed"] for r in sel}):
+            rs = sorted((r for r in sel if r["seed"] == seed), key=lambda r: r["sigma"])
+            if len(rs) < 3:
+                continue
+            s = np.array([r["sigma"] for r in rs])
+            lam = -np.array([r["proj_min"] for r in rs])
+            p = float(np.polyfit(np.log(s), np.log(lam), 1)[0])
+            per[seed] = {
+                "exponent": p,
+                "sigmas": s.tolist(),
+                "decades": float(np.log10(s[-1] / s[0])),
+                "n_neg": [r["proj_n_neg"] for r in rs],
+            }
+        out[tree] = {
+            "band": [lo, hi],
+            "n_runs": len(sel),
+            "per_seed": per,
+            "mean_se": mean_se([v["exponent"] for v in per.values()]),
+        }
+    return out
+
+
+def mps_first_rise(scaling, local_rows=()):
+    """Timing of the MPS first rank increase relative to the first loss drop's peak, from the committed
+    rank-clock gaps (scaling.json grank_mixed: t_first_rank2 - t_drop0 per sigma 0.05 ... 0.5). A gap
+    near -t_drop0 (< -5 here; drop 0 peaks at tau ~ 10-12) means the event was recorded at tau = 0: s2/s1
+    was >= 0.05 from the start of phase 2 (not a resolved rank increase). Local reruns, if given, report
+    the same directly (`first_rank2_at_start`)."""
+    sigmas = [0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5]
+    rows = []
+    for m in scaling["mps_snake/raw"]["grank_mixed"]:
+        seed = m["seed"][1]
+        for s, g in zip(sigmas, m["gaps"]):
+            rows.append({"seed": seed, "sigma": s, "gap": g, "at_start": g < -5})
+    resolved = [r for r in rows if not r["at_start"]]
+    local = [
+        {
+            "seed": r["seed"],
+            "sigma": r["sigma"],
+            "first": r.get("first_rank2_edges"),
+            "at_start": r.get("first_rank2_at_start"),
+            "gap": r["t_first_rank2"] - r["drops"][0]["t"],
+            "drop0_peak": r["drops"][0]["t"],
+        }
+        for r in local_rows
+        if r.get("tree") == "mps" and r.get("drops")
+    ]
+    return {
+        "rows": rows,
+        "n": len(rows),
+        "at_start": sum(r["at_start"] for r in rows),
+        "resolved_gap_range": [min(r["gap"] for r in resolved), max(r["gap"] for r in resolved)],
+        "resolved_before_peak": sum(r["gap"] < 0 for r in resolved),
+        "n_resolved": len(resolved),
+        "local_reruns": local,
+    }
+
+
+def regime_checks(reg):
+    """Lazy floors per seed vs where the other runs end; convergence of the lazy runs at their horizon;
+    the sigma = 1.4 'rich' label; label sensitivity to the thresholds (labels stored per run)."""
+    floors = {
+        r["seed"]: r["L_lin_floor"] for r in reg if r["model"] == "centred" and r["sigma"] == 4.0
+    }
+    lazy = [r for r in reg if r["label"] == "lazy"]
+    plain = [r for r in reg if r["model"] == "plain" and r["sigma"] >= 0.1]
+    rich = [r for r in reg if r["model"] == "centred" and abs(r["sigma"] - 1.4) < 1e-9]
+    sens = defaultdict(lambda: defaultdict(int))
+    for r in reg:
+        for key, lab in r["labels"].items():
+            sens[key][f"{r['sigma']:g}|{lab}"] += 1
+    per_seed = {}
+    for seed, fl in sorted(floors.items()):
+        mine = [r for r in plain if r["seed"] == seed]
+        per_seed[seed] = {
+            "lazy_floor": fl,
+            "plain_end_sigma_ge_0.1": [
+                min(r["loss_end"] for r in mine),
+                max(r["loss_end"] for r in mine),
+            ],
+            "plain_end_below_floor": sum(r["loss_end"] < fl for r in mine),
+            "n_plain": len(mine),
+            "rich_1.4_end": [r["loss_end"] for r in rich if r["seed"] == seed],
+        }
+    return {
+        "floors": floors,
+        "floor_mean": float(np.mean(list(floors.values()))),
+        "per_seed": per_seed,
+        "lazy_runs": [
+            {
+                "sigma": r["sigma"],
+                "seed": r["seed"],
+                "L_T": r["loss_end"],
+                "L_lin_T": r["L_lin_T"],
+                "floor": r["L_lin_floor"],
+                "excess_over_floor": r["loss_end"] - r["L_lin_floor"],
+                "test_acc": r["test_acc_end"],
+            }
+            for r in lazy
+        ],
+        "rich_sigma_1.4": [
+            {
+                "seed": r["seed"],
+                "n_drops": r["n_drops"],
+                "delta_K": r["delta_K_end"],
+                "L_T": r["loss_end"],
+                "L_lin_T": r["L_lin_T"],
+                "floor": r["L_lin_floor"],
+                "t2": r["t2"],
+            }
+            for r in rich
+        ],
+        "label_sensitivity": {k: dict(v) for k, v in sorted(sens.items())},
+    }
+
+
+def chi8_checks(chi8, logs_dir=None):
+    """Two-point slopes (sigma = 0.05 -> 0.14) of the rank-clock gap t_first_rank2 - t_drop0 per seed
+    (chi8_scaling.json grank_mixed; the first route's identity per sigma is not stored there, only the set
+    of routes per seed), and the runs stopped by the wall limit (run logs)."""
+    out = {}
+    for tree in ("binary_quadtree/raw", "binary_scrambled/raw"):
+        sl = []
+        for m in chi8[tree]["grank_mixed"]:
+            g05, g14 = m["gaps"][0], m["gaps"][1]
+            sl.append(
+                {
+                    "seed": m["seed"][1],
+                    "slope": float(np.log(g05 / g14) / np.log(0.14 / 0.05)),
+                    "routes": m["first_edges"],
+                    "single_route": len(m["first_edges"]) == 1,
+                }
+            )
+        out[tree] = {
+            "two_point": sl,
+            "mean_se": mean_se([s["slope"] for s in sl]),
+            "mean_se_single_route": mean_se([s["slope"] for s in sl if s["single_route"]]),
+        }
+    if logs_dir:
+        stops = defaultdict(int)
+        for fn in ("chi8.log", "chi8b.log"):
+            for line in open(Path(logs_dir) / fn):
+                if line.startswith("{"):
+                    d = json.loads(line)
+                    if d.get("status") not in (None, "exists"):
+                        tree = (
+                            "mps"
+                            if "_mps_" in d["name"]
+                            else ("quadtree" if "quadtree" in d["name"] else "scrambled")
+                        )
+                        stops[f"{tree}|{d['status']}"] += 1
+        out["stops"] = dict(stops)
+    return out
+
+
+def clock(reg, local_rows, audit_rows, sigma=0.1):
+    """First-escape time t_a per seed at sigma (absolute clock): binary quadtree (plain main-sweep runs in
+    regime_analysis.json), the fix1 reruns (scrambled orders, MPS snake) and the audit runs. Since
+    t_a ~ sigma^-(K-2) per seed (K = 15 binary, 16 MPS), the MPS / binary ratio grows like 1/sigma."""
+    rows = [
+        {
+            "tree": "binary",
+            "ordering": "quadtree",
+            "seed": r["seed"],
+            "t_a": r["t_a"],
+            "source": "regime_analysis",
+        }
+        for r in reg
+        if r["model"] == "plain" and abs(r["sigma"] - sigma) < 1e-9
+    ]
+    rows += [
+        {
+            "tree": r["tree"],
+            "ordering": r["ordering"],
+            "seed": r["seed"],
+            "t_a": r["t_a"],
+            "source": "fix1",
+        }
+        for r in local_rows
+        if abs(r["sigma"] - sigma) < 1e-9
+        and not (r["tree"] == "binary" and r["ordering"] == "quadtree")
+    ]
+    for r in audit_rows:
+        seed = int(re.search(r"seed(\d+)", r["name"]).group(1))
+        if not any(
+            q["ordering"] == r["ordering"] and q["tree"] == r["tree"] and q["seed"] == seed
+            for q in rows
+        ):
+            rows.append(
+                {
+                    "tree": r["tree"],
+                    "ordering": r["ordering"],
+                    "seed": seed,
+                    "t_a": r["t_a"],
+                    "source": "audit",
+                }
+            )
+    quad = {r["seed"]: r["t_a"] for r in rows if r["ordering"] == "quadtree"}
+    mps = {r["seed"]: r["t_a"] for r in rows if r["tree"] == "mps" and r["ordering"] == "snake"}
+    ratio = {s: mps[s] / quad[s] for s in mps if s in quad}
+    return {
+        "sigma": sigma,
+        "rows": rows,
+        "mps_over_quadtree": ratio,
+        "binary_orders_faster_than_mps": {
+            s: sum(r["t_a"] < mps[s] for r in rows if r["tree"] == "binary" and r["seed"] == s)
+            for s in mps
+        },
+    }
+
+
+def load_json(p):
+    return json.load(open(p))
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("results_dir")
+    ap.add_argument("out_prefix")
+    ap.add_argument("--local", default=None)
+    ap.add_argument("--audit", nargs="*", default=[])
+    ap.add_argument("--logs", default=None)
+    a = ap.parse_args()
+    R = Path(a.results_dir)
+    events, routes = load_json(R / "events_table.json"), load_json(R / "routes_raw.json")
+    hess, reg = load_json(R / "hessians_raw.json"), load_json(R / "regime_analysis.json")
+    scaling, chi8, tables = (
+        load_json(R / "scaling.json"),
+        load_json(R / "chi8_scaling.json"),
+        load_json(R / "tables.json"),
+    )
+    local = [r for r in load_json(a.local) if "error" not in r] if a.local else []
+    audit = [r for p in a.audit for r in load_json(p)]
+    white = tables["white"]["s2s"]
+    small = [
+        v
+        for k, v in white.items()
+        if k.startswith("binary") and float(k.split("|")[1]) <= 0.1 + 1e-9
+    ]
+    res = {
+        "first_route": first_route_clean(events),
+        "events_refit": refit_all_series(events),
+        "routes": route_units(routes),
+        "shares_s0.05": shares_per_seed(routes, 0.05),
+        "locality": locality_units(routes, local, audit),
+        "hessians": hessian_exponents(hess),
+        "mps_first": mps_first_rise(scaling, local),
+        "regime": regime_checks(reg),
+        "chi8": chi8_checks(chi8, a.logs),
+        "clock": clock(reg, local, audit),
+        "white_s2s_sigma_le_0.1": {
+            "s2s_runs": round(sum(v["s2s_fraction"] * v["runs"] for v in small)),
+            "runs": sum(v["runs"] for v in small),
+        },
+    }
+    out = Path(a.out_prefix)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    json.dump(res, open(out.with_suffix(".json"), "w"), indent=1, default=float)
+    open(out.with_suffix(".md"), "w", encoding="utf-8").write(markdown(res) + "\n")
+    print(markdown(res))
+
+
+def _f(x, fmt=".3g"):
+    if x is None or (isinstance(x, float) and not np.isfinite(x)):
+        return "-"
+    return format(x, fmt)
+
+
+def _ms(v, fmt=".3f"):
+    m, se, n = v
+    if n > 1:
+        return f"{m:{fmt}} ± {se:{fmt}} (n = {n})"
+    return f"{m:{fmt}} (n = 1)" if n else "-"
+
+
+def _md_first_route(res):
+    fr = res["first_route"]
+    md = [
+        "## First route (k = 3): clean series",
+        "",
+        "Series = one seed whose first route (one sibling pair) rises inside drop 1 at every sigma of the "
+        "series (events_table.json). Gap = drop 1 - drop 0 (tau clock). All laws fitted with relative "
+        "residuals; 'unw.' = the round-0 unweighted log-law fit.",
+        "",
+        "| tree | seed | edges | sigma (n) | power p (rms) | log law rms (unw.) | A / sigma + B: A, B (rms) "
+        "| B/A | p on 0.05/0.1/0.2/0.5 |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for s in fr["series"]:
+        md.append(
+            f"| {s['tree']} | {s['seed']} | {s['edges']} | {min(s['sigmas']):g}-{max(s['sigmas']):g} "
+            f"({len(s['sigmas'])}) | {s['power_p']:.3f} ({s['power_rms']:.3f}) | {s['log_rms']:.3f} "
+            f"({s['log_rms_unweighted']:.3f}) | {s['A']:.1f}, {s['B']:.1f} ({s['k3_rms']:.3f}) "
+            f"| {s['B_over_A']:.2f} | {_f(s['power_p_main_grid'], '.3f')} |"
+        )
+    md += [
+        "",
+        "| tree | series | power p (mean ± SE) | range | log rms range (unw.) | max rms power / A/sigma+B "
+        "| B < 0 |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for t, v in fr["summary"].items():
+        lr, lu = v["log_rms_range"], v["log_rms_unweighted_range"]
+        md.append(
+            f"| {t} | {v['n_series']} | {_ms(v['power_p'])} | {v['power_p_range'][0]:.2f}-"
+            f"{v['power_p_range'][1]:.2f} | {lr[0]:.2f}-{lr[1]:.2f} ({lu[0]:.2f}-{lu[1]:.2f}) "
+            f"| {v['power_rms_max']:.3f} / {v['k3_rms_max']:.3f} | {v['B_negative']}/{v['n_series']} |"
+        )
+    md += [
+        "",
+        "## All events_table series refitted (both laws with relative residuals)",
+        "",
+        "| tree | features | seed | drop # | signature | k | sigma (n) | power p (rms) "
+        "| log slope (rms; unw. rms) | preferred |",
+        "|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for s in res["events_refit"]:
+        k = f"{s['k']}" + ("" if s["connected"] else " (disc.)")
+        md.append(
+            f"| {s['tree']} | {s['features']} | {s['seed']} | {sorted(set(s['drop_index']))} "
+            f"| {s['signature']} | {k} | {s['sigma_range'][0]:g}-{s['sigma_range'][1]:g} ({s['n_sigma']}) "
+            f"| {s['power_p']:.2f} ({s['power_rms']:.3f}) | {s['log_slope']:.3g} ({s['log_rms']:.3f}; "
+            f"{s['log_rms_unweighted']:.2f}) | {s['preferred']} |"
+        )
+    return md
+
+
+def _md_routes(res):
+    ru = res["routes"]
+    per = ", ".join(f"{k} {v[0]}/{v[1]}" for k, v in ru["per_state_hits"].items())
+    tog = ru["pairs_rising_together_in_kept"]
+    md = [
+        "",
+        "## Route-amplitude rule, rank-1 states, critical-point units",
+        "",
+        f"States: {ru['n_states']['all']}, dropped (rank1_rel_err > {ERR_MAX}): {ru['n_states']['dropped']}. "
+        f"Hits per kept state: {per}. Units: {ru['n_units']}; outcomes {ru['outcomes']} (chance per unit "
+        f"{ru['chance']}). The first pair is two edges crossing together in {tog[0]}/{tog[1]} kept states.",
+        "",
+        "| ordering | seed | sigmas | plateau L | predicted pair | first pair | outcome |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for u in ru["units"]:
+        extra = f" ({sum(u['hits'])}/{len(u['hits'])})" if u["outcome"] == "mixed" else ""
+        sig = ", ".join(f"{s:g}" for s in u["sigmas"])
+        md.append(
+            f"| {u['ordering']} | {u['seed']} | {sig} | {u['plateau_loss']:.3f} | {u['pred']} | {u['obs']} "
+            f"| {u['outcome']}{extra} |"
+        )
+    sh = res["shares_s0.05"]
+    md += [
+        "",
+        f"## Share of sum lambda^2 on k <= 5 routes, one value per (order, seed), sigma = {sh['sigma']}",
+        "",
+        f"Pair-count chance level: {sh['pair_count_chance_k5']:.2f} (12 of 28 pairs have k <= 5).",
+        "",
+        "| order | mean ± SE over seeds | values (seeds 0-4) |",
+        "|---|---|---|",
+    ]
+    for k, v in sh["summary"].items():
+        md.append(
+            f"| {k} | {_ms(v['mean_se'], '.2f')} | {', '.join(f'{x:.3f}' for x in v['values'])} |"
+        )
+    return md
+
+
+def _md_locality(res):
+    lo = res["locality"]
+    md = [
+        "",
+        f"## Locality per (order, seed), sigma = {lo['sigma']} (tau_end = 1e4)",
+        "",
+        "| seed | order | source | k <= 5 share | L(tau_end) | test acc | tau(L<=0.25) | tau(L<=0.2) "
+        "| tau(L<=0.15) | t_a |",
+        "|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for r in lo["rows"]:
+        md.append(
+            f"| {r['seed']} | {r['ordering']} | {r['source']} | {_f(r['share_k5'], '.2f')} "
+            f"| {r['loss_end']:.4f} | {r['test_acc']:.3f} | {_f(r['tau_L0.25'], '.4g')} "
+            f"| {_f(r['tau_L0.2'], '.4g')} | {_f(r['tau_L0.15'], '.4g')} | {r['t_a']:.3g} |"
+        )
+    for k in ("spearman_all", "spearman_committed_orders", "spearman_seed0"):
+        v = lo[k]
+        if v:
+            md.append(
+                f"\n{k}: share vs L(tau_end): rho = {v['rho']:.2f}, p = {v['p']:.2g}, n = {v['n']}"
+            )
+    md += [
+        "",
+        "| order | n | L(tau_end) mean ± SE | values | median tau(L<=0.25) / (0.2) / (0.15) |",
+        "|---|---|---|---|---|",
+    ]
+    for o, v in lo["per_order"].items():
+        vals = ", ".join(f"{x:.3f}" for x in v["loss_values"])
+        taus = " / ".join(_f(v[f"tau_L{lv}_median"], ".4g") for lv in LEVELS)
+        md.append(f"| {o} | {v['n']} | {_ms(v['loss_end'], '.4f')} | {vals} | {taus} |")
+    ranks = "; ".join(
+        f"seed {s}: {v['lower_final_loss_than_quadtree']}/{v['n_orders'] - 1} lower, "
+        f"{v['reach_L0.25_before_quadtree']}/{v['n_orders'] - 1} earlier"
+        for s, v in lo["quadtree_rank_per_seed"].items()
+    )
+    md.append(
+        f"\nOther orders with a lower final loss than the quadtree / reaching L <= 0.25 first: {ranks}"
+    )
+    return md
+
+
+def _md_rest(res):
+    md = [
+        "",
+        "## Hessian at the first plateau: per-seed exponent of |lambda_min| vs sigma",
+        "",
+        "| tree | plateau band | seed | exponent | sigmas (decades) | n_neg (projected) |",
+        "|---|---|---|---|---|---|",
+    ]
+    for t, v in res["hessians"].items():
+        for seed, w in v["per_seed"].items():
+            sig = ", ".join(f"{s:g}" for s in w["sigmas"])
+            md.append(
+                f"| {t} | {v['band'][0]}-{v['band'][1]} | {seed} | {w['exponent']:.3f} | {sig} "
+                f"({w['decades']:.2f}) | {w['n_neg']} |"
+            )
+        md.append(f"| {t} | | mean ± SE | {_ms(v['mean_se'])} | | |")
+    mp = res["mps_first"]
+    g0, g1 = mp["resolved_gap_range"]
+    md += [
+        "",
+        "## MPS first rank increase vs the first drop",
+        "",
+        f"{mp['n']} runs: {mp['at_start']} recorded at tau = 0 (s2/s1 >= 0.05 from the start of phase 2, "
+        f"gap < -5); {mp['n_resolved']} resolved, {mp['resolved_before_peak']} of them before the first drop's "
+        f"rate peak (gap {g0:.2f} to {g1:.2f}).",
+    ]
+    if mp["local_reruns"]:
+        md.append(
+            "Local reruns: "
+            + "; ".join(
+                f"seed {r['seed']} sigma {r['sigma']:g}: {r['first']} at_start={r['at_start']} gap {r['gap']:.2f}"
+                for r in mp["local_reruns"]
+            )
+        )
+    rg = res["regime"]
+    floors = ", ".join(f"{s}: {v:.4f}" for s, v in rg["floors"].items())
+    md += [
+        "",
+        "## Regime map checks",
+        "",
+        f"Lazy floor L_lin(inf) per seed: {floors} (mean {rg['floor_mean']:.3f}).",
+        "",
+        "| seed | lazy floor | plain runs sigma 0.1-0.3: L(1e4) range | below floor | rich sigma 1.4: L(T) |",
+        "|---|---|---|---|---|",
+    ]
+    for s, v in rg["per_seed"].items():
+        lo_, hi_ = v["plain_end_sigma_ge_0.1"]
+        rich = ", ".join(f"{x:.4f}" for x in v["rich_1.4_end"])
+        md.append(
+            f"| {s} | {v['lazy_floor']:.4f} | {lo_:.4f}-{hi_:.4f} | {v['plain_end_below_floor']}/{v['n_plain']} "
+            f"| {rich} |"
+        )
+    lz = rg["lazy_runs"]
+    exc = [r["excess_over_floor"] for r in lz]
+    md.append(
+        f"\nLazy-labelled runs ({len(lz)}): L(T) = {min(r['L_T'] for r in lz):.3f}-{max(r['L_T'] for r in lz):.3f}, "
+        f"L(T) - floor = {min(exc):.3f}-{max(exc):.3f}: not converged at the horizon."
+    )
+    md.append(
+        "sigma = 1.4 runs: "
+        + "; ".join(
+            f"seed {r['seed']}: {r['n_drops']} drops, delta_K {r['delta_K']:.3g}, L(T) {r['L_T']:.4f} vs floor "
+            f"{r['floor']:.4f}, T {r['t2']:.4g}"
+            for r in rg["rich_sigma_1.4"]
+        )
+    )
+    md += [
+        "",
+        "Label counts per sigma under each threshold pair (dK = delta_K threshold, rho = separation threshold):",
+        "",
+    ]
+    for key, v in rg["label_sensitivity"].items():
+        items = sorted(v.items(), key=lambda kv: (float(kv[0].split("|")[0]), kv[0]))
+        md.append(f"- {key}: " + ", ".join(f"{k} {n}" for k, n in items))
+    c8 = res["chi8"]
+    md += ["", "## chi = 8", ""]
+    for t in ("binary_quadtree/raw", "binary_scrambled/raw"):
+        v = c8[t]
+        sl = ", ".join(
+            f"seed {s['seed']}: {s['slope']:.2f}"
+            + ("" if s["single_route"] else f" (routes {s['routes']})")
+            for s in v["two_point"]
+        )
+        md.append(
+            f"- {t}: two-point slopes (0.05 -> 0.14, rank clock) {sl}; mean {_ms(v['mean_se'], '.2f')}; "
+            f"seeds with one route {_ms(v['mean_se_single_route'], '.2f')}"
+        )
+    if "stops" in c8:
+        md.append(f"- stop reasons (run logs): {c8['stops']}")
+    ck = res["clock"]
+    md += [
+        "",
+        f"## Absolute clock: first-escape time t_a at sigma = {ck['sigma']}",
+        "",
+        "| tree | order | seed | t_a | source |",
+        "|---|---|---|---|---|",
+    ]
+    for r in sorted(ck["rows"], key=lambda r: (r["seed"], r["t_a"])):
+        md.append(
+            f"| {r['tree']} | {r['ordering']} | {r['seed']} | {r['t_a']:.3g} | {r['source']} |"
+        )
+    ratio = ", ".join(f"{s}: {v:.2f}" for s, v in sorted(ck["mps_over_quadtree"].items()))
+    faster = ", ".join(f"{s}: {v}" for s, v in sorted(ck["binary_orders_faster_than_mps"].items()))
+    md.append(
+        f"\nt_a(MPS) / t_a(quadtree) per seed: {ratio}; binary runs with t_a below the MPS's, per seed: {faster}"
+    )
+    w = res["white_s2s_sigma_le_0.1"]
+    md += [
+        "",
+        f"## Whitened features: S2S fraction of binary runs at sigma <= 0.1: {w['s2s_runs']}/{w['runs']} "
+        f"= {w['s2s_runs'] / w['runs']:.2f}",
+    ]
+    return md
+
+
+def markdown(res):
+    md = ["# Real data, fix round 1: re-analysis from committed outputs (`fix1_analysis.py`)", ""]
+    md += _md_first_route(res) + _md_routes(res) + _md_locality(res) + _md_rest(res)
+    return "\n".join(md)
+
+
+if __name__ == "__main__":
+    main()
