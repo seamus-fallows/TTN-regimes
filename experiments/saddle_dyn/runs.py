@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import math
+import time
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +24,7 @@ from sdyn import OUT, THRESH, Event, Model, amplitudes, escape_type, integrate
 CELLS = yaml.safe_load((Path(__file__).parent / "configs" / "cells.yaml").read_text())
 T_MAX = 1e30
 RELAX = 50.0  # H-B: time between the visit and the re-gauge (old directions relax at O(1) rates)
+RELAX_HA = 200.0  # H-A: time from theta_S + eps xi to the re-gauge / re-reference
 
 
 def make_model(cell):
@@ -56,10 +58,20 @@ def pick_steps(ts, t_end, n):
     return sorted(idx)
 
 
-def floor_index(model, res, t_end, n=300):
-    """Phi = max_t int_0^t |g_err,new| ds / |theta_new(t)| (roundoff bound, sdyn.grad_err_bound), on
-    ~n log-spaced steps (trapezoid rule)."""
-    idx = pick_steps(res.t, t_end, n)
+def floor_index(model, res, t_end, n=200):
+    """Phi = max_t int_0^t |g_err,new| ds / |theta_new(t)| (roundoff bound, sdyn.grad_err_bound), by the
+    trapezoid rule on steps log-spaced in t and in t_end - t (the escape at the end is fast and its
+    bound is ~1e10 times the plateau's, so it must be resolved, not spread over a long interval)."""
+    idx = set(pick_steps(res.t, t_end, n))
+    last = int(np.searchsorted(res.t, t_end, side="right") - 1)
+    if last > 0:
+        back = t_end - res.t[: last + 1]  # decreasing to 0
+        pos = back[back > 0]
+        if len(pos):
+            grid = np.logspace(math.log10(max(pos.min(), 1e-12)), math.log10(pos.max()), n)
+            j = np.searchsorted(-back, -grid)  # first step with t_end - t <= grid value
+            idx |= set(np.clip(j, 0, last).tolist())
+    idx = sorted(idx)
     ts = res.t[idx]
     errs, news = [], []
     for i in idx:
@@ -121,23 +133,87 @@ def continue_after(model, y, duration, rtol, atol):
                 q_forgotten=bool(a["q"] < 0.1 * model.s_q))
 
 
+def escape_phase(model, y, t_start, rtol, atol, wall):
+    """Exact orthogonal re-gauge at y (each bond's q-message -> e_0), reference S = the rank-one old
+    part there (the saddle point the run has settled on), then the cancellation-free flow to the
+    escape. Times are absolute (t_start + local)."""
+    yg = model.regauge(torch.from_numpy(np.asarray(y)))
+    out = dict(regauge_err=float((model.W(yg) - model.W(torch.from_numpy(np.asarray(y)))).abs().max()))
+    model.set_ref(model.old_part(yg))
+    out["ref_q_dev"] = float(model.W(model.ref)[model.q]) - model.s_q
+    Q0 = model.conserved(yg)
+    res, info = integrate(model, yg.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2)
+    out["info"] = info
+    out["esc"] = escape_record(model, res, t0=t_start)
+    out["last"] = last_state_record(model, res)
+    out["last"]["t_last"] += t_start
+    out["cons_drift"] = float((model.conserved(torch.from_numpy(res.y[:, -1])) - Q0).abs().max())
+    te = out["esc"]["t_esc_0.001"]
+    t_floor = (te - t_start) if te is not None else float(res.t[-1])
+    out["floor_phi"], out["min_new_norm"] = floor_index(model, res, max(t_floor, 0.0))
+    out["traj"] = trajectory(model, res, n=100, t_shift=t_start)
+    out["res"] = res
+    return out
+
+
+def merge_escapes(first, second):
+    """First crossing of each threshold over two consecutive phases (escape records)."""
+    rec = {}
+    for thr in THRESH:
+        k = f"t_esc_{thr:g}"
+        rec[k] = first[k] if first[k] is not None else second[k]
+    src = first if first.get("amps_esc") is not None else second
+    for k in ("amps_esc", "esc_type", "esc_ratio"):
+        rec[k] = src.get(k)
+    return rec
+
+
 def run_ha(cell, seed, eps, rtol=1e-10, atol=1e-15, plain=False, wall=3600.0, follow=True):
+    """Phase 1: RELAX_HA time units from theta_S + eps xi (cancellation-free about theta_S, or plain);
+    phase 2: re-gauge and re-reference to the saddle point reached, then on to the escape."""
+    t_wall = time.time()
     model = make_model(cell)
     y0 = ha_init(model, cell, seed, eps)
     model.set_ref(None if plain else model.theta_S)
     Q0 = model.conserved(y0)
-    res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2)
+    res1, info1 = integrate(model, y0.numpy(), RELAX_HA, rtol, atol, wall=600.0, stop_after=1e-2, trap=False)
     rec = dict(kind="HA", cell=cell, seed=seed, eps=eps, rtol=rtol, atol=atol, plain=plain, k_star=model.k_star,
-               order=CELLS[cell]["order"], L_S=model.L_S, **info)
-    rec.update(escape_record(model, res))
-    rec["escaped"] = rec["t_esc_0.001"] is not None
-    rec.update(last_state_record(model, res))
-    rec["cons_drift"] = float((model.conserved(torch.from_numpy(res.y[:, -1])) - Q0).abs().max())
-    t_floor = rec["t_esc_0.001"] if rec["escaped"] else float(res.t[-1])
-    rec["floor_phi"], rec["min_new_norm"] = floor_index(model, res, t_floor)
-    rec["traj"] = trajectory(model, res)
-    if follow and rec["escaped"] and res.status == "event":
-        rec["after"] = continue_after(model, res.y[:, -1], 2 * rec["t_esc_0.001"] + 100, rtol, atol)
+               order=CELLS[cell]["order"], L_S=model.L_S, phase1=info1)
+    esc1 = escape_record(model, res1)
+    drift1 = float((model.conserved(torch.from_numpy(res1.y[:, -1])) - Q0).abs().max())
+    if res1.status == "event" or plain:
+        # escaped during the relaxation (large eps), or the plain-loss cross-check: no re-reference
+        if plain and res1.status == "t_max":
+            res2, info2 = integrate(model, res1.y[:, -1], T_MAX, rtol, atol, wall=wall, stop_after=1e-2)
+            rec["phase2"] = info2
+            esc1 = merge_escapes(esc1, escape_record(model, res2, t0=RELAX_HA))
+            rec.update(last_state_record(model, res2))
+            rec["t_last"] += RELAX_HA
+            res_last = res2
+        else:
+            rec.update(last_state_record(model, res1))
+            res_last = res1
+        rec.update(esc1)
+        rec["status"] = "escaped" if esc1["t_esc_0.001"] is not None else res_last.status
+        rec["escaped"] = esc1["t_esc_0.001"] is not None
+        rec["cons_drift"] = drift1
+        rec["floor_phi"] = None
+        rec["traj"] = trajectory(model, res1, n=60)
+        y_end = res_last.y[:, -1]
+    else:
+        ph = escape_phase(model, res1.y[:, -1], RELAX_HA, rtol, atol, max(60.0, wall - (time.time() - t_wall)))
+        rec["phase2"] = ph["info"]
+        rec.update(merge_escapes(esc1, ph["esc"]))
+        rec.update(ph["last"])
+        rec["escaped"] = rec["t_esc_0.001"] is not None
+        rec["status"] = "escaped" if rec["escaped"] else ph["info"]["status"]
+        rec["cons_drift"] = max(drift1, ph["cons_drift"])
+        rec["regauge_err"], rec["ref_q_dev"] = ph["regauge_err"], ph["ref_q_dev"]
+        rec["floor_phi"], rec["min_new_norm"] = ph["floor_phi"], ph["min_new_norm"]
+        rec["traj"] = trajectory(model, res1, n=30) + ph["traj"]
+        y_end = ph["res"].y[:, -1]
+    if follow and rec["escaped"] and rec["t_esc_0.01"] is not None:
+        rec["after"] = continue_after(model, y_end, 2 * rec["t_esc_0.001"] + 100, rtol, atol)
     return rec
 
 
@@ -191,34 +267,20 @@ def run_hb(cell, seed, sigma, rtol=1e-10, atol=1e-15, wall=3600.0, follow=False)
         rec["floor_phi"] = None
         return rec
     t_g = t_v + RELAX
-    y = torch.from_numpy(res1b.y[:, -1])
-    yg = model.regauge(y)
-    rec["regauge_err"] = float((model.W(yg) - model.W(y)).abs().max())
-    model.set_ref(model.old_part(yg))
-    rec["ref_q_dev"] = float(model.W(model.ref)[model.q]) - s_q
-    Q0 = model.conserved(yg)
-    res2, info2 = integrate(model, yg.numpy(), T_MAX, rtol, atol, wall=max(60.0, wall - info["secs"]), stop_after=1e-2)
-    rec["phase2"] = info2
-    esc2 = escape_record(model, res2, t0=t_g)
-    for thr in THRESH:  # first crossing of each threshold over phases 1b and 2
-        k = f"t_esc_{thr:g}"
-        rec[k] = esc1b[k] if esc1b[k] is not None else esc2[k]
-    src = esc1b if esc1b.get("amps_esc") is not None else esc2
-    for k in ("amps_esc", "esc_type", "esc_ratio"):
-        rec[k] = src.get(k)
+    ph = escape_phase(model, res1b.y[:, -1], t_g, rtol, atol, max(60.0, wall - info["secs"]))
+    rec["phase2"] = ph["info"]
+    rec.update(merge_escapes(esc1b, ph["esc"]))
+    rec.update(ph["last"])
     rec["escaped"] = rec["t_esc_0.001"] is not None
-    rec["status"] = "escaped" if rec["escaped"] else res2.status
+    rec["status"] = "escaped" if rec["escaped"] else ph["info"]["status"]
     rec["dt"] = rec["t_esc_0.001"] - rec["t_q"] if rec["escaped"] and rec["t_q"] is not None else None
-    rec.update(last_state_record(model, res2))
-    rec["cons_drift"] = float((model.conserved(torch.from_numpy(res2.y[:, -1])) - Q0).abs().max())
-    t_floor = (rec["t_esc_0.001"] - t_g) if rec["escaped"] and esc2["t_esc_0.001"] is not None else float(res2.t[-1])
-    rec["floor_phi"], rec["min_new_norm"] = floor_index(model, res2, max(t_floor, 0.0))
-    rec["traj2"] = trajectory(model, res2, n=80, t_shift=t_g)
+    rec["cons_drift"] = ph["cons_drift"]
+    rec["regauge_err"], rec["ref_q_dev"] = ph["regauge_err"], ph["ref_q_dev"]
+    rec["floor_phi"], rec["min_new_norm"] = ph["floor_phi"], ph["min_new_norm"]
+    rec["traj2"] = ph["traj"]
     if follow and rec["escaped"]:
-        rec["after"] = continue_after(model, res2.y[:, -1], 2 * (rec["t_esc_0.001"] - t_v) + 100, rtol, atol)
+        rec["after"] = continue_after(model, ph["res"].y[:, -1], 2 * (rec["t_esc_0.001"] - t_v) + 100, rtol, atol)
     return rec
-
-
 def out_path(kind, cell, seed, x, tag=""):
     return OUT / kind / cell / f"s{seed:03d}_x{x:.6g}{('_' + tag) if tag else ''}.json"
 

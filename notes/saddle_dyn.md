@@ -243,6 +243,22 @@ slow, the grid is cut from the small end and the range reached is reported; wind
    step falls below 1e-7 of the local time. Runs that had finished with the previous version are
    kept (a run that hit the resolution limit failed outright, it did not return a wrong number;
    C2 seed 7, eps = 1e-5: t_esc identical to 1e-14 in both versions).
+6. **H-A re-reference after relaxation; restart first step (16:15; numerics only; H-A rerun).**
+   (a) A perturbed run settles on a nearby point of the saddle manifold (old amplitudes and bond
+   directions shifted by O(eps)), not on theta_S, so with S = theta_S the telescoping terms at the
+   q entry stay O(eps) (4.5e-4 in HT4W, eps = 1e-4) and dominate the roundoff of the dormant
+   velocities; the floor index then flagged most small-eps runs of the HT4 cells. As in H-B, the
+   run now relaxes for 200 time units (cancellation-free about theta_S), then is re-gauged
+   (orthogonal, exact) and re-referenced to the rank-one old part reached; the roundoff bound on the
+   dormant velocities drops ~3000x (HT4W seed 0, eps = 1e-4: 1.7e-22 -> 5.9e-26), and the
+   escape time from that state is unchanged (5.295052e17 with either reference). The floor index
+   is computed from the re-reference on. (b) Solver restarts (item 5) used LSODA's automatic first
+   step, which is huge on a flat plateau, so the restarted (nonstiff) solver failed with istate -5
+   (repeated corrector failures) against the O(1) eigenvalues of the learned directions; restarts
+   now start with a step of 0.01 and failed steps are retried (at most 5 per run, recorded).
+   The H-A runs of the second attempt (15:55-16:13, ~700 runs, about theta_S) are set aside in
+   `/root/outputs/saddle_dyn_HA_try2_thetaref/` and the whole H-A grid is rerun with this code.
+   H-B already re-referenced (item 4); only its runs that failed in a restart are rerun.
 
 # Part II: results
 

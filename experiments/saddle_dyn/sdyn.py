@@ -34,6 +34,8 @@ OUT = Path("/root/outputs/saddle_dyn")
 
 
 TRAP_DL = 1e-30  # trap rule: at 10 log-spaced checks spanning a decade with t > 1e6, either
+RESTART_H = 1e-2  # first step of a restarted solver: LSODA's automatic choice is huge on a flat plateau
+# and its nonstiff start then fails (istate -5) against the O(1) eigenvalues of the learned directions
 TRAP_R = 1e-45  # 0 < L - L_S < TRAP_DL, or every residual amplitude |Delta[r]| < TRAP_R (dead routes)
 
 
@@ -364,7 +366,8 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
     # re-zeroed when its step falls below 1e-7 of the local time, so that fast transitions at late
     # absolute times (escapes at t ~ 1e13-1e20, where float64 spacing in t is O(0.01-1e4)) stay resolved.
     off, t_loc_old, n_restart = 0.0, 0.0, 0
-    solver = LSODA(rhs, 0.0, y0, t_max, rtol=rtol, atol=atol, jac=jac)
+    fails = []  # (absolute t, LSODA istate) of failed steps; each is retried from the last good step
+    solver = LSODA(rhs, 0.0, y0, t_max, rtol=rtol, atol=atol, jac=jac, first_step=RESTART_H)
     nxt, count = 1e6, 0
     while True:
         if time.time() - t_wall > wall:
@@ -372,8 +375,14 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
             break
         msg = solver.step()
         if solver.status == "failed":
-            res.status = "failed: " + str(msg)
-            break
+            fails.append((off + t_loc_old, int(solver._lsoda_solver._integrator.istate)))
+            if len(fails) > 5:
+                res.status = "failed: " + str(msg)
+                break
+            off += t_loc_old  # fresh solver (order 1, small first step) from the last good step
+            t_loc_old = 0.0
+            solver = LSODA(rhs, 0.0, res.y[-1], t_max - off, rtol=rtol, atol=atol, jac=jac, first_step=RESTART_H)
+            continue
         t_loc, y = solver.t, np.array(solver.y, copy=True)
         t = off + t_loc
         g_new = [ev.g(t, y) for ev in evs]
@@ -405,7 +414,7 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
             off += t_loc
             t_loc_old = 0.0
             n_restart += 1
-            solver = LSODA(rhs, 0.0, y, t_max - off, rtol=rtol, atol=atol, jac=jac)
+            solver = LSODA(rhs, 0.0, y, t_max - off, rtol=rtol, atol=atol, jac=jac, first_step=RESTART_H)
         if trap and t >= nxt:
             nxt = t * 10**0.1
             dL = evalf(y)[1]
@@ -420,4 +429,4 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
     res.t = np.array(res.t)
     res.y = np.array(res.y).T
     return res, dict(status=res.status, nfev=nfev[0], n_steps=len(res.t) - 1, n_restart=n_restart,
-                     secs=time.time() - t_wall)
+                     fails=fails, secs=time.time() - t_wall)
