@@ -209,3 +209,75 @@ MPS 56 (5/5); sigma = 0.5: 85, 374, 28.
 - **Bottom-up order:** Kendall tau between an edge's level and the time of its first rank increase is
   positive on every tree (quadtree 0.31 +- 0.02, scrambled 0.17 +- 0.02, MPS 0.27 +- 0.01, raw): ranks grow
   from the leaves towards the root on average (R3), with exceptions.
+
+### 4.8 Regimes (step 5): S2S -> rich -> lazy with the centred model [empirical; theory comparison derived]
+Binary quadtree, chi = 4, raw features, 5 seeds per sigma. Centred model (train f - f_0) at sigma = 0.5-4
+(horizon min(3000, 1e4 kernel units), kernel on 128 test images). At sigma <= 0.3 the plain-model runs of
+the main sweep are used (centring is immaterial there: f_0 ~ sigma^15; sigma = 0.5 overlaps and agrees);
+their delta_K is computed post hoc from theta_0 and theta(T) on the same probe images. Labels: lazy if
+delta_K(T) < 0.1, else S2S if >= 2 loss drops with all rho > 3, else rich. The notes' convergence rule
+(L < 1e-3 L0) is dropped: no chi = 4 TTN can reach it on 4000 labels (`regime_analysis.py`).
+
+| sigma | labels (5 runs) | delta_K(T) | train L(T) | linearized L_lin(T) | test acc |
+|---|---|---|---|---|---|
+| 0.05-0.3 (plain) | S2S 27/30, rich 3/30 | 1e13-1e41 | 0.095-0.17 | 0.500 | 0.90-0.96 |
+| 0.5 (centred) | S2S 2, rich 3 | 1e13-1e15 | 0.095 | 0.500 | 0.954 |
+| 0.7 | S2S 3, rich 2 | 1e9-1e11 | 0.085 | 0.500 | 0.961 |
+| 1.0 | S2S 3, rich 2 | 1e5-1e7 | 0.080 | 0.465 | 0.961 |
+| 1.4 | rich 5 | 13-1100 | 0.083 | 0.166 | 0.962 |
+| 2.0 | lazy 4, rich 1 (delta_K = 0.104) | 0.006-0.10 | 0.150 | 0.151 | 0.931 |
+| 2.8, 4.0 | lazy 5 + 5 | 2e-7-6e-4 | 0.151 | 0.151 | 0.931 |
+
+- **Lazy regime exists and is exactly the linearized model** (sigma >= 2): L(T) equals the closed-form
+  L_lin(T) of the model linearized at theta_0 to three digits, and runs at sigma = 2.8 and 4.0 give
+  identical losses per seed (kernel units). The tangent kernel's rank is 304 of 528 parameters, exactly
+  sum_v F_v chi_v - sum_e chi_e^2 (`theory_regimes.md` R2). The lazy floor L_lin(inf) = 0.105 lies well
+  above what feature learning reaches (deficient bonds: chi = 4 << 256, R7).
+- **Boundaries.** S2S at small sigma (plateaus growing as sigma -> 0, section 4.6); a mixed S2S / rich zone at
+  sigma = 0.5-1.0; rich, non-incremental at sigma = 1.4; lazy from sigma = 2. In function-space terms the
+  kernel scale at init, tr Theta_0 / 128, is ~3e-5 at sigma = 1 and ~1e4 at sigma = 2: raw cos/sin features
+  have |Phi| = 1 spread over 2^16 dimensions, so per-core sigma = 1 is still a small init in function space.
+  Threshold sensitivity: delta_K threshold 0.05 / 0.2 gives 2/5 / 5/5 lazy at sigma = 2 (others unchanged);
+  separation threshold 2 / 5 moves S2S <-> rich labels at sigma = 0.07-1.0 (`results/regime_analysis.json`).
+- **Generalization:** rich runs (sigma = 1-1.4) have the best test accuracy (0.961-0.962), S2S runs 0.95
+  (lower at sigma < 0.1, where the horizon cuts the later escapes), lazy runs 0.931 (they fit only the
+  304-dimensional tangent space).
+
+### 4.9 Whitened site features [empirical]
+Per-site whitening (uncentred second moment) raises the function-space init scale ~256x at equal sigma.
+The first escape is asymptotic only at smaller sigma: per-seed t1 exponents 12.91 ± 0.04 (binary quadtree),
+12.83 ± 0.05 (scrambled), 13.83 ± 0.09 (MPS) over sigma = 0.05-0.5, against 13 / 13 / 14. At sigma = 0.5
+the run is rich (one drop to L ~ 0.07, all ranks at once). At sigma <= 0.1 binary runs are S2S (80% of runs).
+The first route is again a sibling pair (k = 3) in most runs, but the classified gap exponents are weaker
+and noisier (0.6 ± 0.3, 2 seeds with a consistent route). Whitening brings the site marginals closer to the
+theory's product of identities, but it does not make the dynamics cleaner: it amplifies near-constant
+pixels and moves the small-init asymptote to smaller sigma.
+
+## 5. Teacher-student prediction -> real data
+
+| prediction (source) | observed on MNIST 3 vs 5, 4x4, chi = 4 | verdict | evidence |
+|---|---|---|---|
+| first plateau t1 ∝ sigma^-(K-2) for any input law (theory_covariance C4) | per-seed exponents 13.000 / 13.000 / 14.000 ± 0.000 (binary quadtree 5 seeds, scrambled 15, MPS 5), t1 = 1e6-1e20 | yes (exact) | `results/scaling_raw`, `scaling.json` |
+| bond ranks grow stepwise, one route at a time (Q1) | discrete escapes of s_k/s_1 from 1e-5-1e-3 to O(1); one significant negative Hessian eigenvalue at small-sigma plateaus | yes | `bond_spectra_raw_*`, `plateau_hessians` |
+| flat plateaus at rank-constrained critical points | plateaus creep (loss keeps decreasing within the rank profile); S2S signature holds with rate-peak drops, rho grows as sigma -> 0 | partly | `tables.md`, section 4.6 |
+| binary trees at rank 1: next route = two sibling bottom cores, k = 3 (R2) | 35/35 quadtree, 86/89 scrambled runs | yes | `tables.md` |
+| MPS: next route on one edge, k = 2 | 34/35 runs (single edge, edge 5) | yes | `tables.md` |
+| k = 3 gap ∝ sigma^-1 (H2) | per-seed exponents 1.01 ± 0.14 (quadtree), 0.97 ± 0.11, 1.27 ± 0.02, 0.91 ± 0.23 (scrambled orders); log law rejected (rms 0.56-0.91 vs 0.03-0.14) | yes | `scaling.json` (first_route) |
+| k = 2 gap ∝ log(1/sigma) | MPS edges 4 / 3: log-law rms 0.09 / 0.14 vs power 0.35 / 0.25; slopes 15.3 ± 1.5, 31.4 ± 1.1 | yes | `scaling.json` (edge_scaling) |
+| k >= 4 later routes: sigma^-(k-2) | binary later events steeper (one quadtree seed: 3.3 for a 4th event; per-edge 2.1-2.4), but route identification of late events is not clean | partly | `events_table.md` |
+| strict saddle iff k = 2 (H3), via lambda_min scaling | MPS: lambda_min ∝ sigma^0.04±0.03 (strict); binary: ∝ sigma^0.877±0.005 (higher order; predicted 1) | yes (binary exponent 12% low) | `plateau_hessians` |
+| next route = lowest degree, then largest amplitude; locality beats weight (R8) | largest sibling amplitude picks the first route in 34/35 (quadtree), 78/89 (scrambled); larger-amplitude k = 5, 7 routes escape later | yes | `route_amplitudes`, `tables.md` |
+| bottom-up rank growth (R3) | Kendall tau(level, time) > 0 on all trees (0.17-0.31) | partly (a tendency) | `tables.md` |
+| locality: quadtree faster than scrambled | at sigma <= 0.2 much faster (sigma = 0.1: L(1e4) 0.098 vs 0.207, acc 0.954 vs 0.872); quadtree puts 88% of the residual interaction on k <= 5 routes, scrambled 21%; gone at sigma = 0.5 | yes (at small init) | section 4.7 |
+| MPS between quadtree and scrambled (brief) | MPS fastest at every sigma: all its routes are 2-core strict saddles | no | section 4.7 |
+| regimes: S2S -> rich -> lazy with sigma (H4) | S2S (sigma <= 0.3), mixed (0.5-1), rich (1.4), lazy (>= 2), lazy = linearized fit exactly; kernel rank = R2 formula | yes | `regime_sweep`, `regime_analysis.json` |
+
+## 6. Caveats and open points
+- One dataset pair (MNIST 3 vs 5) at 4x4 for the main claims; chi = 8, Fashion-MNIST and 8x8 checks: section 7.
+- Events are judged from loss-rate peaks and threshold crossings of data-weighted spectra (s_k/s_1 = 0.05), not
+  from teacher overlaps; later events can merge and their routes are only partly identified.
+- The horizon tau = 1e4 cuts the later escapes at sigma < 0.1 (k >= 5 routes need ~1e4-1e5), which lowers the
+  small-sigma test accuracy in the locality and regime tables: those numbers are at fixed training time.
+- The binary first-plateau lambda_min exponent (0.88) is below the k = 3 value (1); the MPS far-edge rises scale
+  like power laws (exponent ~1) where rank-1 counting predicts k = 2; both are open.
+- Gradient flow only (no GD/SGD); empirical loss on 4000 fixed samples.

@@ -158,42 +158,83 @@ def per_seed_fit(xs, ys):
     return np.polyfit(xs, ys, 1)[0]
 
 
+def _sigma_ticks(ax):
+    from matplotlib.ticker import FixedLocator, NullLocator, ScalarFormatter
+    ax.xaxis.set_major_locator(FixedLocator([0.05, 0.1, 0.2, 0.5]))
+    ax.xaxis.set_minor_locator(NullLocator())
+    ax.xaxis.set_major_formatter(ScalarFormatter())
+
+
+def classified_first_route(rows, tree_key_):
+    """{(ordering, seed): [(sigma, gap)]} with gap = (loss drop carrying the seed's first route) - (first
+    drop), only at sigma values where the first route equals the one at the smallest sigma."""
+    groups = defaultdict(list)
+    for r in rows:
+        if r.get("drops") and tree_key(r) == tree_key_:
+            groups[(r["ordering"], r["seed"])].append(r)
+    out = {}
+    for key, rs in groups.items():
+        rs.sort(key=lambda r: r["sigma"])
+        ref = rs[0].get("first_rank2_edges")
+        pts = []
+        for r in rs:
+            later = [d for d in r["drops"][1:] if d["t_hi"] + d["width"] >= r["t_first_rank2"]]
+            if r.get("first_rank2_edges") == ref and later:
+                pts.append((r["sigma"], later[0]["t"] - r["drops"][0]["t"]))
+        out[key] = pts
+    return out
+
+
 def fig_scaling(rows, out, feats):
-    fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.4 * TEXT_WIDTH))
+    rows = [r for r in rows if r["features"] == feats]
+    fig, axes = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 0.36 * TEXT_WIDTH))
     stats = {}
     for label in [t[2] for t in TREES]:
         by_seed = defaultdict(list)
         for r in rows:
-            if tree_key(r) == label and r["features"] == feats and np.isfinite(r.get("t1", np.nan)):
-                by_seed[(r["ordering"], r["seed"])].append((r["sigma"], r["t1"], r.get("gaps", [np.nan])))
+            if tree_key(r) == label and np.isfinite(r.get("t1", np.nan)):
+                by_seed[(r["ordering"], r["seed"])].append((r["sigma"], r["t1"]))
         slopes = []
-        for key, pts in by_seed.items():
+        for pts in by_seed.values():
             pts.sort()
-            s, t1 = np.array([p[0] for p in pts]), np.array([p[1] for p in pts])
-            axes[0].loglog(s, t1, color=TREE_COLOR[label], lw=0.5, alpha=0.6)
-            if len(s) >= 3:
-                slopes.append(per_seed_fit(s, t1))
-        stats[label] = (np.mean(slopes), np.std(slopes) / np.sqrt(max(len(slopes), 1)), len(slopes))
-        # gap to the second drop
-        sig = sorted({r["sigma"] for r in rows if tree_key(r) == label and r["features"] == feats})
-        means, ses = [], []
-        for s in sig:
-            g = [r["gaps"][0] for r in rows if tree_key(r) == label and r["features"] == feats
-                 and abs(r["sigma"] - s) < 1e-9 and r.get("gaps")]
-            means.append(np.mean(g) if g else np.nan)
-            ses.append(np.std(g) / np.sqrt(len(g)) if len(g) > 1 else np.nan)
-        axes[1].errorbar(sig, means, yerr=ses, color=TREE_COLOR[label], marker="o", ms=3, lw=1,
-                         capsize=2, label=label)
-    for label, (m, se, n) in stats.items():
-        axes[0].plot([], [], color=TREE_COLOR[label], label=f"{label}: {m:.3f} $\\pm$ {se:.3f} ({n})")
+            s_, t1 = np.array([p_[0] for p_ in pts]), np.array([p_[1] for p_ in pts])
+            axes[0].loglog(s_, t1, color=TREE_COLOR[label], lw=0.5, alpha=0.6)
+            if len(s_) >= 3:
+                slopes.append(per_seed_fit(s_, t1))
+        stats[label] = (float(np.mean(slopes)), float(np.std(slopes) / np.sqrt(max(len(slopes), 1))), len(slopes))
+        axes[0].plot([], [], color=TREE_COLOR[label], label=f"{label}: {-stats[label][0]:.3f} ({stats[label][2]})")
     axes[0].set_xlabel(r"$\sigma$")
     axes[0].set_ylabel(r"$t_1$ (first escape)")
-    axes[0].legend(fontsize=6, frameon=False, title="per-seed slope", title_fontsize=6)
-    axes[1].set_xscale("log")
-    axes[1].set_yscale("log")
+    axes[0].legend(fontsize=5.5, frameon=False, title=r"exponent of $t_1 \propto \sigma^{-p}$", title_fontsize=6)
+    # (b) classified first-route gap on binary trees
+    for label in ("binary, quadtree", "binary, scrambled"):
+        for pts in classified_first_route(rows, label).values():
+            if len(pts) >= 4:
+                axes[1].loglog([p_[0] for p_ in pts], [p_[1] for p_ in pts], color=TREE_COLOR[label],
+                               lw=0.7, marker="o", ms=2)
+        axes[1].plot([], [], color=TREE_COLOR[label], marker="o", ms=2, label=label)
+    xs = np.array([0.05, 0.5])
+    axes[1].plot(xs, 15 / xs, color=MUTED, lw=0.8, ls="--", label=r"$\propto\sigma^{-1}$ ($k=3$)")
     axes[1].set_xlabel(r"$\sigma$")
-    axes[1].set_ylabel("gap first -> second drop")
+    axes[1].set_ylabel("gap to the first-route drop")
     axes[1].legend(fontsize=6, frameon=False)
+    # (c) MPS: time of the first rank increase on edges 4 and 3 vs ln(1/sigma)
+    for e, ls in ((4, "-"), (3, "--")):
+        by_seed = defaultdict(list)
+        for r in rows:
+            if tree_key(r) == "MPS, snake" and r.get("drops"):
+                t_e = np.array(r["rank_events"], float)[e, 0] - r["drops"][0]["t"]
+                by_seed[r["seed"]].append((r["sigma"], t_e))
+        for pts in by_seed.values():
+            pts.sort()
+            axes[2].plot([np.log(1 / p_[0]) for p_ in pts], [p_[1] for p_ in pts],
+                         color=TREE_COLOR["MPS, snake"], lw=0.7, ls=ls, marker="o", ms=2)
+        axes[2].plot([], [], color=TREE_COLOR["MPS, snake"], ls=ls, label=f"MPS edge {e}")
+    axes[2].set_xlabel(r"$\ln(1/\sigma)$")
+    axes[2].set_ylabel("time of first rank increase")
+    axes[2].legend(fontsize=6, frameon=False)
+    for ax in axes[:2]:
+        _sigma_ticks(ax)
     fig.tight_layout()
     savefig(fig, Path(out) / f"scaling_{feats}")
     plt.close(fig)
@@ -308,6 +349,12 @@ def fig_regime(regime_json, out):
         axes[2].scatter(x, r["test_acc_end"], s=10, color=c, marker=mk, lw=0)
     axes[0].axhline(0.1, color=MUTED, lw=0.6, ls="--")
     axes[0].set_yscale("log")
+    for ax in axes:
+        ax.set_xscale("log")
+        from matplotlib.ticker import FixedLocator, NullLocator, ScalarFormatter
+        ax.xaxis.set_major_locator(FixedLocator([0.05, 0.1, 0.3, 1, 3]))
+        ax.xaxis.set_minor_locator(NullLocator())
+        ax.xaxis.set_major_formatter(ScalarFormatter())
     axes[0].set_ylabel(r"$\delta_K(T)$")
     axes[1].set_ylabel("train loss at T (open: linearized)")
     axes[2].set_ylabel("test accuracy at T")
