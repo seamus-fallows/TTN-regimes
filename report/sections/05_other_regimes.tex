@@ -1,38 +1,251 @@
-% sections/05_other_regimes.tex -- Other regimes (lazy, rich non-incremental, stalled; discrete
-% steps, SGD noise, finite samples). SKELETON.
-% Sources: PLAN.md Q5 (lazy/rich parts) and Q8; briefs regime-map and optim-samples; results in
-% experiments/regime_map/, experiments/optim_samples/ and their notes.
+% sections/05_other_regimes.tex -- Other regimes (lazy, rich non-incremental, stalled, large bond
+% dimension; discrete steps, SGD noise, finite samples; optimizers used in practice).
+% Sources of 5.1-5.4: as for Sec. 3 (notes/regime_map.md section 3, experiments/regime_map/ with
+% results/report/*.csv from report_tables.py, the review notes/reviews/regime_map_round1.md, theory
+% notes/theory_regimes.md v2 with the fix-round corrections), plus Sec. 4.6 for the trap. Sources of 5.5
+% and 5.6: see their own comments. WITHDRAWN (5.1-5.4), do not reintroduce: "the NTK slope approaches -1 as
+% c2 x^2 fades"; probe-kernel levels as tests of P16/P20 ("delta_K ~ 4-5" under muP-TTN); "delta_K ~
+% chi^0.03 (muP)" and "chi^-0.84 (NTK)" as the tensor-kernel result; the interim scipy two-copy numbers
+% ("rich at every sigma", 0.80 vs 1.13).
 \section{Other regimes}\label{sec:other-regimes}
 
-\placeholder{Skeleton. The regimes other than saddle-to-saddle, and how discrete steps, gradient
-noise and finite samples modify the gradient-flow picture.}
+This section looks at the regimes of \cref{sec:regime-map} other than saddle-to-saddle: lazy training and its
+failure below the cut dimension, the rich window between the two boundaries, runs that stall, and the limit of
+large bond dimension under three parameterizations; then at how discrete steps, gradient noise and finite
+samples (\cref{sec:other-optim}) and the optimizers used in practice (\cref{sec:other-optimizers}) modify the
+gradient-flow picture. Settings of the first four subsections: \cref{sec:regime-protocol,app:exp-regimes}.
 
 \subsection{Lazy regime}\label{sec:other-lazy}
-\placeholder{Large initialization in the centred and two-copy models: linearized dynamics, kernel
-at initialization, time rescaling by $\isc^{2(\Kc-1)}$.}
-% TODO: tangent kernel at init (theory_regimes.md); relative kernel change vs sigma; known in
-% general (chizat2019lazy, jacot2018neural, woodworth2020kernel): mark \knownresult; the TTN kernel
-% itself (its spectrum vs tree) may be new.
+
+At large $\isc$ the centred model trains like its linearization at $\params_0$: the function moves along the range
+of the tangent kernel $\TK=\Jac\Pre\Jac\T$, which hardly changes. Lazy training is known in general
+\knownresult[\citealp{jacot2018neural,chizat2019lazy,lee2019wide}]; what the tree adds is the kernel. At
+initialization $\E\TK$ is a multiple of the identity at every bond dimension, but the rank of $\TK$ is the dimension
+of the manifold of tensors with the given bond ranks, which reaches $d^\Ns$ only when every bond is full
+(\cref{prop:A-kernel}) \proven{} \newresult[on every tree].
+
+\paragraph{Lazy only with full bonds.}
+\derived{} \empirical{} \knownresult[that a linearized model fits only the projection of the target on its
+tangent space: \citealp{chizat2019lazy}, Thm~2.5; \citealp{ghorbani2019limitations}, Thm~2] With a bond below its
+cut dimension the linearized flow fits only the projection of $\Wt$ on the range of $\TK$ and stops at
+$\frac12\normF{P_\perp\Wt}^2$, on binary4 a fraction $(1-\chi/d^2)^2$ of $\Loss(0)$ on average ($0.44$, $0.31$,
+$0.11$ at $\chi=3$, $4$, $6$; \cref{app:boundaries}). In addition the centred target $\Wt+\Wz$ is unrealizable at
+every $\isc$, and gradient flow ends on its best approximation (\cref{fig:other-regimes}(a)): at small $\isc$ this
+floor rises like $\isc^{2\Kc}$ (mean $(1-\dim\mathcal M_\chi/d^\Ns)\,\isc^{2\Kc}/\normF{\Wt}^2$, the seed median about
+$0.7$ times it, \eqref{eq:A-centred-floor}), and at large $\isc$ it saturates at the lazy residual: at $\isc=40$ the
+final loss of each of the 18 centred runs at $\chi=3$, $4$, $6$ equals its residual computed at initialization to
+$0.13\%$, with $\dTK^{\rm probe}<10^{-3}$. Once the floor exceeds the convergence threshold (for every seed from
+$\isc=1.0$, $1.0$, $1.6$) the runs are stalled by the rule of \cref{tab:regimes}, though their dynamics are
+kernel-like at large $\isc$.
+A lazy regime therefore needs every bond at its cut dimension (binary4: $\chi\ge9$), which grows like $d^{\Ns/2}$
+for the middle bonds.
+
+\paragraph{Anisotropic, ill-conditioned kernels.}
+\derived{} \empirical{} \newresult[for TTNs; the mean kernels of MPS and TT models:
+\citealp{guo2021neural,wesel2025tensor}] A single initialization has an isotropic kernel only if every bond is far
+above its cut dimension; at a capped full bond the cores next to it are square Gaussian matrices and
+$\lambda_{\min}(\TK)/\bar\lambda\sim10^{-4}$ (\cref{app:boundaries}). The lazy fit then converges in a kernel time of
+order $(\bar\lambda/\lambda_{\min})\ln(1/{\rm tol})$. On the binary tree with $\Ns=8$, $d=2$, the square full bonds
+($\chi=16$) are not lazy within the step limit: every run from $\isc=2.3$ stops there at the same seed-dependent
+loss, $\Loss/\Loss(0)=0.05$--$0.44$, for every $\isc$. Over-parameterized twice (bonds $8$ above two sites, $32$
+above four), the runs are lazy in 2 of 5 at $\isc=1.42$ and in 4 of 5 or 6 at each $\isc$ from $2.47$ to $7.6$ (the
+others stopped at the step limit at $\Loss/\Loss(0)=0.0014$--$0.0054$ with $\dTK^{\rm probe}<0.02$); the kernel
+boundary is $1.45$ (probe kernel, median of four seeds). At practical $\chi$ the lazy regime is thus kernel
+regression with a random, tree-dependent and anisotropic kernel, not with its mean.
+
+\paragraph{Lazy by the kernel is not small motion.}
+\derived{} Under the standard parameterization the root of binary4 carries a share $\chi^2/(2d^2+\chi^2)$ of the
+kernel, and its own kernel block does not depend on it: a lazy run can be a trained readout over fixed random
+features, with the root moving by more than $100\%$ while $\dTK<0.1$ (\cref{app:boundaries}). Per-core changes
+should be reported next to $\dTK$ (\cref{sec:other-large-chi}).
 
 \subsection{Rich, non-incremental regime}\label{sec:other-rich}
-\placeholder{Intermediate scales where features move but transitions overlap; what sets the
-crossover.}
-% TODO: overlapping events (rho_i <= 3); compare with DLN lazy-to-rich exact solutions (Domine et
-% al.; kunin2024get; Tu, Aranguri & Jacot mixed regime).
+
+Between the two boundaries the runs converge and move their kernel ($\dTK^{\rm probe}$ of the binary4 rich runs:
+$0.10$ to $10^7$, median 68), but their events overlap: some $\sep i\le3$.
+
+\paragraph{What sets the crossover.}
+\derived{} (aligned initialization) \empirical{} (random) The plateaus between events grow like
+$\isc^{-(\Kc-2)}$ as $\isc\to0$ while the event widths stay $O(1)$, so the separation ratios fall through $3$ as
+$\isc$ grows; for aligned initialization \cref{prop:A-s2s-aligned} gives the boundary exactly, with the threshold
+exponent of \citet{gissin2020implicit} \knownresult. From random initialization the crossover is a seed property:
+on binary4 the per-seed boundaries at one $\chi$ span a factor $1.9$--$16$ for $\chi\le12$ and $1.4$--$2.7$ for
+$\chi\ge16$ (six seeds). In $\isc$ the rich window spans a factor $18$--$23$ on binary4 at large $\chi$ and $2.7$ on
+the binary tree with $\Ns=8$ (\cref{sec:regime-sigma-chi}). If both boundaries have finite limits in the
+function-space scale $\fsc=\isc^\Kc$, the window shrinks to a band of width $O(1/\Kc)$ in $\ln\isc$
+\conjecture.
+
+\paragraph{Transients.}
+\empirical{} During an escape, components not yet learned rise transiently (for matrix-like pairs the peak falls
+like $\isc^{2(1-\varrho)}$, \conjecture, \cref{app:boundaries}). In 116 of the $9{,}165$ runs such a transient
+crossed $\frac12$ before the component was learned (14 more cross $\frac12$ repeatedly only in a component never
+learned); with events dated at the first crossing, 15 runs would be rich instead of saddle-to-saddle. Events are
+therefore dated by the final rise (\cref{sec:setup-diagnostics}).
+
+\paragraph{Lazy, then rich.}
+\derived{} ($\Ns=4$) \empirical{} \knownresult[analogues: mixed lazy and active dynamics,
+\citealp{tu2024mixed}; lazy-then-rich transitions, \citealp{lyu2024dichotomy}] The two-copy model is realizable at
+a deficient bond when $2\chi$ reaches the teacher's bond rank. At large $\isc$ it first fits the tangent part lazily
+and sits at the lazy residual, then escapes by rotating its bond subspaces, after a gradient-flow time
+$\propto\isc^2$, a kernel time $\propto\isc^{2\Kc}$ (\cref{app:boundaries}). On binary4 at $\chi=3$ (six seeds) the
+runs converge (rich) for $\isc=1.0$--$4.0$, end at $\Loss/\Loss(0)=0.005$--$0.05$ at $\isc=6.3$, at $0.13$--$0.44$ at
+$\isc=10$, and at the lazy residual from $\isc=16$ on: the escape leaves any fixed budget as $\isc$ grows. A light
+root with a deficient bond behaves the same way, lazy and then rich (\cref{sec:regime-imbalance,app:boundaries}).
+
+\paragraph{Merged first escapes.}
+\empirical{} \newresult{} In the two-copy model at small $\isc$ the two copies start identical, so their
+near-origin escapes coincide: each copy learns part of both of the first two components at once, and the first
+two events merge. On binary4 at $\chi=18$, $24$, $36$ the smallest $\isc$ ($0.010$) is labelled saddle-to-saddle in
+5, 4 and 5 of six seeds and the next ($0.016$) in 4, 3 and 2, but the crossing $\min_i\sep i=5$ exists in only 2,
+3 and 0 seeds (the largest $\min_i\sep i$ at these $\isc$ is $7.1$, $14.4$, $4.8$), so the sweep fails condition
+(iii) of the saddle-to-saddle signature. Adam's runs from small initialization are rich,
+non-incremental in the same sense (\cref{sec:other-optimizers}).
 
 \subsection{Stalled runs}\label{sec:other-stalled}
-\placeholder{Runs that do not converge within the budget: long initial plateaus at small
-$\isc$ and large $\Kc$, and the relation to barren plateaus.}
-% TODO: escape time ~ sigma^{-(K-2)} makes small-init deep trees stall; contrast with barren
-% plateau results for TN learning: barren plateaus for global, but not local, losses of
-% unitary-embedded MPS (liu2022presence); none in the energy optimization of isometric MPS/TTNS/MERA
-% (miao2024isometric; barthel2025absence).
+
+A run is stalled when its loss is still above $10^{-3}\Loss(0)$ at the end of its budget (\cref{tab:regimes}). In
+the maps of \cref{sec:regime-map} this has four causes: the floor of an unrealizable centred target
+(\cref{sec:other-lazy}); a plateau longer than the budget, since a route through $k$ cores takes a time
+$\propto\isc^{-(k-2)}$ (\cref{sec:s2s-locality}); a dead route, whose end cores have decayed to roundoff under the
+conservation laws (the trap of \cref{prop:A-trap}); and the step limit, met by unfinished lazy fits at square
+bonds and by some deep-tree runs (for example on MPS with $\Ns=8$ at $\isc=0.1$ after $2\cdot10^4$ steps, at
+$t=1.4\cdot10^9$ of a budget of $5.7\cdot10^9$). Only the first is specific to the centred model.
+
+\paragraph{Bond dimension equal to the teacher rank.}
+\empirical{} confirming the prediction of \cref{app:boundaries} (mechanism: \conjecture, heuristic) With
+$\chi=\ncomp$ the last component must use the last free channel of every bond, through a route of all $\Kc$ cores,
+and fan-in initialization makes the root bonds child-heavy ($\E\Q e=\isc^2(1-1/\chi)\Id\succ0$), so the route ends
+decay at a rate $\propto\isc^2$ while the escape needs a time $\propto\isc^{-(\Kc-2)}$ (\cref{sec:s2s-failure}); for
+$\Kc\ge5$ the route can die first.
+The stall test (\cref{tab:stall-test}; $d=3$, $\chi=3$, odeco teacher $(3,2,1)$, $\isc=0.3$, $0.45$, $0.6$, six
+seeds, budgets $6\cdot10^4$--$1.6\cdot10^7$ time units) confirms it: most runs on the binary tree with $\Ns=8$
+($\Kc=7$) and on the MPS with $\Ns=8$ ($\Kc=8$; every fan-in run) never learn the last component, in the plain as
+in the centred model, so $\Wz$ is not the cause. From fan-in initialization the stalled route is dead: its third
+bond singular value ends at roundoff (below $10^{-12}$; in 28 of 32 stalled plain runs). Gauge-balanced
+initialization (the same
+$\Wz$ re-gauged to $\Q e=0$) removes the dead routes but not the stall: the route still decays, its third singular
+value is $1.4\cdot10^{-5}$ (median) at the end, and 12 of 18 runs do not escape. This is the trap of
+\cref{sec:s2s-failure} in the regime maps; that section gives the odeco and pattern-teacher evidence, the
+criterion for a dead route and the conflicts that remain open.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Stall test at $\chi$ equal to the teacher rank: $d=3$, $\chi=3$, odeco teacher $(3,2,1)$,
+    $\isc\in\{0.3,0.45,0.6\}$, six seeds; ``balanced'': the same $\Wz$ with $\Q e=0$ on every bond. Stall types
+    from the third bond singular value of $\W$ at the end, minimized over edges: dead below $10^{-12}$, decaying
+    up to $10^{-4}$ (no stalled run is above); the centred runs did not record the spectra of $\W$.
+    Source: \texttt{stall\_test\_summary.csv}.}
+  \label{tab:stall-test}
+  \footnotesize
+  \begin{tabular}{@{}lllcccc@{}}
+    \toprule
+    model & tree ($\Kc$) & initialization & converged & stalled: dead route & decaying & not typed \\
+    \midrule
+    plain   & binary8 (7) & fan-in   & 4/18 & 12 & 2  & -- \\
+            &             & balanced & 6/18 & 0  & 12 & -- \\
+            & MPS8 (8)    & fan-in   & 0/18 & 16 & 2  & -- \\
+    centred & binary8 (7) & fan-in   & 4/18 & -- & -- & 14 \\
+            &             & balanced & 8/18 & -- & -- & 10 \\
+            & MPS8 (8)    & fan-in   & 0/18 & -- & -- & 18 \\
+            &             & balanced & 3/12 & -- & -- & 9 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Stalls across the number of cores.}
+\empirical{} In the plain-model $\isc\times\Kc$ sweeps (\cref{app:exp-regimes}), 546 of the 795 stalled runs end
+with a dead route, 212 with a route still decaying and 37 on a long plateau (by the $\ncomp$-th bond singular value
+at the end, with the thresholds of \cref{tab:stall-test} and $10^{-4}$). Spare channels help where every route end has one: on the binary tree with $\Ns=8$ at $d=3$, $\chi=6$
+no run stalls at $\isc\le0.63$ (30 runs), but on the MPS with $\Ns=8$ every run stalls, its end bonds being capped
+at $d=3$, the teacher rank; at $d=2$ the MPS with full bonds still stall in up to 3 of 6 seeds. With the centred
+model at $\chi=4$ the stalls below the boundary sit at a partial fit and are fixed by the initialization
+(\cref{sec:regime-K}). At practical budgets stalls thus occupy part of the saddle-to-saddle side of every deep
+tree whose route ends lack spare channels, as on the pattern-teacher routes of \cref{sec:s2s-failure}.
+
+\paragraph{Long plateaus are not barren plateaus.}
+\derived{} From small initialization the gradient is $O(\isc^{\Kc-1})$ and the first plateau lasts
+$\propto\isc^{-(\Kc-2)}$ (\cref{sec:s2s-escape}): deep trees at small $\isc$ stall as if on a barren plateau. The
+cause differs: the gradient is small because the initialization is, not because it concentrates around zero over
+random initializations of fixed norm, and with the fan-in normalization at $\isc=1$ the initial function has unit
+norm on every tree (\cref{prop:init-norm}). For tensor networks, barren plateaus are known for global but not local
+losses of unitary-embedded MPS \knownresult[\citealp{liu2022presence}] and are absent from the energy optimization of
+isometric MPS, TTNS and MERA \knownresult[\citealp{miao2024isometric,barthel2025absence}].
 
 \subsection{Large bond dimension: NTK versus \texorpdfstring{$\mu$P}{muP}}\label{sec:other-large-chi}
-\placeholder{Per-core scalings for an infinite-bond-dimension limit with and without feature
-learning.}
-% TODO: spectral condition per core (Yang, Simon & Bernstein 2023; Yang & Hu 2021 abc
-% parameterizations); express via per-core init scales and lr multipliers (Sec. 2.4 variant (e)).
+
+As $\chi$ grows at fixed $\isc$, the scales of the cores and their learning-rate multipliers decide whether the
+features still move. We compare three parameterizations, written as initial scales and multipliers $\lrm v$
+(\cref{sec:setup-init}, variant (e)): the \emph{standard} one (SP: fan-in initialization, $\lrm v=1$); \emph{NTK}
+($\lrm v=1/\fanin v$, so that every core contributes equally to the expected kernel); and \emph{$\mu$P-TTN}, the
+spectral condition of \citet{yang2024spectral} applied with the injective norm of each core, since a core only
+ever acts on product vectors: fan-in initialization except at the root, which is scaled by
+$(\sum_\ell m_\ell)^{-1/2}=(2\chi)^{-1/2}$ on binary4 ($m_\ell$ its child-leg dimensions), and $\lrm v=\bd v/\fanin v$
+(\cref{app:boundaries}) \derived{} \newresult[the spectral condition is known; factor-wise rules for structured
+layers: \citealp{qiu2024compute,potapczynski2024searching}].
+
+\paragraph{Predictions.}
+\derived{} (binary4, centred, isotropic limit $\chi\gg d^2$, fixed $\xi=\normF{\Wt}/\fsc$) In each parameterization
+the first- and second-order constants $c_1$, $c_2$ of the law \eqref{eq:A-lazy-dk} carry the same power of $\chi$, so
+the kernel change scales as $\chi^{-3}$ (SP), $\chi^{-1}$ (NTK) and $\chi^0$ ($\mu$P-TTN); the parameters move as in
+\cref{tab:large-chi} (\cref{app:boundaries}; constants in \path{notes/theory_regimes.md}, R4 and R12). Under SP the
+root, with fan-in $\chi^2$, carries almost all of the kernel and the model becomes linear in the root over fixed
+random features: lazy at any fixed $\isc$ as $\chi$ grows, centred or not. Under NTK the cores move by
+$O(\chi^{-1/2})$ or less, also lazy in the limit, as for the NTK of MPS \knownresult[\citealp{guo2021neural}].
+Under $\mu$P-TTN every core's update stays of order one.
+
+\paragraph{Measurements.}
+\empirical{} confirming the predictions, except for the SP leaf cores ($6.5$ standard errors steeper) and, at $3.3$
+standard errors, the SP parameter change. Binary4, $d=3$, teacher $(3,2,1)$, centred,
+$\isc=1.5$ ($\xi=1.11$), $\chi=16$--$128$ (four values, $0.9$ decade), six seeds; tensor kernel
+(\cref{fig:other-regimes}(b), (c); \cref{tab:large-chi}). Under $\mu$P-TTN the kernel change approaches the
+predicted level, $5.1$, $5.7$, $6.1$, $6.2$ at $\chi=16$, $32$, $64$, $128$ against $6.2$--$6.3$: feature learning
+survives. Under NTK the fit over $\chi=16$--$128$ is pulled by $\chi=16$--$32$, where $\dTK$ is still $0.4$--$0.6$;
+between $\chi=64$ and $128$ the slope is $-1.01$, with levels $0.250$ and $0.124$ against $0.240$ and $0.120$ from
+the second-order law with the NTK constants. Under SP the kernel change falls like $\chi^{-3.02\pm0.06}$, while at
+$\chi=128$ the root still moves by $9\%$ and the leaf cores by $2\cdot10^{-4}$ (medians; \cref{fig:other-regimes}(c)). At $\isc=1$ ($\xi=3.74$, further from the
+lazy limit) the slopes are shallower (SP $-2.58\pm0.06$, NTK $-0.62\pm0.02$, $\mu$P-TTN $+0.089\pm0.024$): the
+exponents hold as $\xi\to0$. The plain model gives the same exponents within the errors ($\isc=1.5$: $-3.06\pm0.07$,
+$-0.83\pm0.04$, $+0.095\pm0.024$): with full, over-parameterized bonds, centring does not change the scaling. Scope:
+binary4 only; runs on the binary tree with $\Ns=8$ are incomplete and not interpreted. The factor-wise rule of
+structured layers, applied to a TTN, makes the initial kernel of that tree vanish like $\chi^{-2}$ and slows the
+initial fit about linearly in $\chi$ (\cref{app:boundaries}). The $\mu$P-TTN limit itself is not derived; on binary4
+it may be a two-population mean field with a pairwise coupling through the root \conjecture.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Exponents $p$ of $\chi^p$ at large bond dimension: binary4, $d=3$, teacher $(3,2,1)$, centred model,
+    $\isc=1.5$, $\chi=16$--$128$, six seeds; least-squares slopes over the 24 runs with standard errors from the
+    scatter; in brackets the prediction of \cref{app:boundaries}. $\dTK$: tensor kernel; $\dth$: all parameters;
+    root and leaf cores: relative Frobenius change (the spectral change of the $\mu$P-TTN root is predicted
+    $O(1)$). Source: \texttt{large\_chi\_slopes\_tensor.csv}.}
+  \label{tab:large-chi}
+  \footnotesize
+  \begin{tabular}{@{}lllll@{}}
+    \toprule
+    & $\dTK$ & $\dth$ & root & leaf cores \\
+    \midrule
+    SP & $-3.02\pm0.06$ ($-3$) & $-1.63\pm0.04$ ($-\frac32$) & $-1.02\pm0.03$ ($-1$) & $-2.96\pm0.07$ ($-\frac52$) \\
+    NTK & $-0.79\pm0.04$ ($-1$) & $-0.52\pm0.03$ ($-\frac12$) & $-0.93\pm0.02$ ($-1$) & $-0.53\pm0.03$ ($-\frac12$) \\
+    $\mu$P-TTN & $+0.085\pm0.024$ ($0$) & $-0.064\pm0.018$ ($0$) & $-0.50\pm0.01$ ($-\frac12$) & $-0.065\pm0.018$ ($0$) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics{regime_map/other.pdf}
+  \caption{Lazy regime and large bond dimension; binary tree with $\Ns=4$, $d=3$, teacher $(3,2,1)$, centred model,
+    six seeds. (a)~Final loss against $\isc$ (dots: medians) for $\chi=3$, $4$, $6$ (deficient bonds) and $\chi=9$ (full);
+    solid: the Eckart--Young minimum of $\Wt+\Wz$ across the cut, median over seeds; dotted: $0.7$ times the
+    small-$\isc$ mean \eqref{eq:A-centred-floor}; dashed: the convergence threshold $10^{-3}$. Runs stop at
+    $10^{-6}$; with deficient bonds they end on the minimum once it exceeds that, and are stalled above the
+    threshold. (b)~Kernel change (tensor kernel) against $\chi$ at $\isc=1.5$: seeds (dots), medians (lines),
+    predicted slopes $-3$, $-1$, $0$ (dashed, through the $\chi=128$ medians) and the predicted NTK levels
+    (crosses). (c)~Relative change of the root (solid) and leaf cores (dashed), medians.
+    Takeaway: below the cut dimension the large-$\isc$ end is a floor, not a lazy fit; at large $\chi$ only
+    $\mu$P-TTN keeps the kernel and the leaf cores moving.}
+  \label{fig:other-regimes}
+\end{figure}
 
 \subsection{Discrete steps, gradient noise and finite samples}\label{sec:other-optim}
 % Sources: notes/optim_samples.md (fix round 1), agent-runs/optim-samples/REPORT.md, reviews

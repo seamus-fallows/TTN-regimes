@@ -1,0 +1,9 @@
+exp,d,chi,bonds,n_runs,sigma_min,sigma_max,sigma_first_stalled_above_0p8,sigma_all_stalled,sigma_first_lazy,sigma_lazy_majority,n_lazy
+sigma_chi_b8,3,3,uniform,48,0.3,4,0.9104,0.9104,,,0
+sigma_chi_b8,3,6,uniform,42,0.3,4,0.9104,0.9104,,,0
+sigma_chi_b8,3,24,uniform,35,0.45,4,1.342,1.342,,,0
+sigma_chi_b8_d2,2,2,uniform,78,0.3,10,0.9655,1.293,,,0
+sigma_chi_b8_d2,2,4,uniform,78,0.3,10,0.9655,1.293,,,0
+sigma_chi_b8_d2,2,8,uniform,78,0.3,10,1.293,1.732,,,0
+sigma_chi_b8_d2,2,16,uniform,72,0.3,10,1.732,1.732,,,0
+sigma_chi_b8_d2,2,32,"{'2': 8, '4': 32}",69,0.35,10,1.871,,1.415,1.871,26
