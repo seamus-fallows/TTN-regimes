@@ -188,20 +188,21 @@ sections cited, and novelty is discussed in \cref{sec:intro-prior}.
     with a shorter route is learned first (locality beats weight) \derived{} \empirical{} (teacher B4,
     \cref{fig:teaser}a).
   \item\label{it:intro-failure} \textbf{Failure modes: dead routes} (\cref{sec:s2s-failure}). A sequence
-    can end early when a route dies (an end core decays to roundoff); a conservation-law mechanism
-    explains the decay in a reduced model \derived, but its criterion is neither necessary nor sufficient
-    \empirical. Most runs with $\Kc=7,8$ and the bond dimension equal to the teacher rank never learn the
-    last component, and 398 of 5,682 pattern-teacher runs stall, all with $k\ge4$; balanced initialization
+    can end early when a route dies (an end core decays to roundoff): 398 of 5,682 pattern-teacher runs
+    stall, all with $k\ge4$, and most runs with $\Kc=7,8$ and the bond dimension equal to the teacher rank
+    never learn the last component \empirical. A conserved quantity of each route end decides which ends die
+    \derived; computed from the initialization alone, it separates the runs that stall ($89\%$ of those it
+    predicts dead, $1.8\%$ of the others), with known gaps from $k=6$ on \empirical. Balanced initialization
     removes the dead routes in the runs checked, but not all stalls \empirical.
   \item\label{it:intro-regimes} \textbf{The map of regimes} (\cref{sec:regime-map}; \cref{sec:other-lazy,%
     sec:other-rich,sec:other-large-chi}). With the initial function removed, raising $\isc$ moves training
     from saddle-to-saddle through a rich window to lazy training \empirical, which needs full bonds
     \derived{} \empirical; on binary4 both boundaries scale as $\chi^{-1/2}$, the lazy one as predicted
     \derived{} \empirical. The saddle-to-saddle boundary rises with $\Kc$ and, with the initial function kept
-    and spare channels, does not tend to $1$: at $\Kc=8$--$15$ all 97 per-seed lower bounds exceed both
-    candidate laws, and 76 of 96 seeds stay saddle-to-saddle up to where the initial function overlaps the
-    teacher, about $1.15\sqrt d$ \empirical. At large $\chi$ a $\mu$P-type parameterization keeps the
-    kernel moving \derived{} \empirical.
+    and spare channels, does not tend to $1$: at $\Kc=8$--$15$ the per-seed lower bounds on it ($1.07$--$2.03$,
+    85 of 96 seeds) all exceed 1 and both candidate laws, and 76 of the 96 seeds stay saddle-to-saddle up to
+    the scale at which the initial function overlaps the teacher (about $\sqrt d$ there) \empirical. At large
+    $\chi$ a $\mu$P-type parameterization keeps the kernel moving \derived{} \empirical.
   \item\label{it:intro-optim} \textbf{Steps, noise and practical optimizers}
     (\cref{sec:other-optim,sec:other-optimizers}). Gradient descent is stable at the balanced global
     minimum only below $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$ \proven, and below it keeps gradient flow's sequence

@@ -223,18 +223,22 @@ what would settle it.
     near-tied escapes at accessible $\isc$ \conjecture{} (heuristic, \cref{prop:A-agf-race}). \emph{What
     would settle it:} a law for how route amplitudes are carried through each escape, tested against the
     per-seed prefactors already measured (\cref{sec:s2s-escape,sec:s2s-locality}).
-  \item \textbf{Why routes die, and how often.} The reduced model of \cref{prop:A-trap} explains the decay
-    of route ends at a rate $\propto\isc^2$ and the role of balance, but its criterion, evaluated at the
-    start of the plateau, is neither sufficient nor necessary (seven dead runs had a live end); balanced
-    initialization removes dead routes yet delays some escapes by $10^5$ or more; HT routes stall far less
-    often than the heuristic predicts; spare channels raise the stalls on routes whose ends are capped,
-    for no known reason; and whether the odeco runs at $\Kc=7,8$ that end with live route ends face long
-    plateaus or slowly dying routes is a \conjecture{} (from fan-in initialization most stalls of the regime
-    map are dead routes; \cref{sec:s2s-failure}). One route (MPS8, $D=\{1,5\}$, from the saddle) is steeper
-    than predicted ($3.67\pm0.20$ against $3$), with no mechanism. \emph{What would settle it:} following the
-    criterion of \cref{prop:A-trap} through the whole plateau, a reduced model with capped end bonds, and
-    the dead fraction against $\isc$ at $k\ge5$ for fan-in and balanced initialization (predicted to tend
-    to the probability that all route ends are unfavourable, \conjecture).
+  \item \textbf{Why routes die, and how often.} The conserved quantity $C_u$ of each route end
+    (\cref{prop:A-trap}) predicts from the initialization which pattern-teacher runs trap ($89\%$ of the
+    predicted-dead runs stall, $1.8\%$ of the others), why HT routes with $k=5$ never stall, and why spare
+    channels protect only ends whose own bond has them (\cref{sec:s2s-failure}). Open: from $k=6$ on,
+    three-core clusters of inner route cores are a further death channel that the criterion omits, and
+    whether a route with one dying end escapes (after $\propto\isc^{-(2k-6)}$) is a \conjecture, contradicted at
+    $k=6$ by one gradient-flow run; with spare inner channels at $k=4$ the reduced route model depends on a
+    choice of basis; the odeco traps are predicted only from the state after the second escape; spare
+    channels raise the stalls on routes whose ends are both capped, reproduced per run but without an
+    isolated mechanism; balanced initialization removes dead routes yet delays some escapes by $10^5$ or
+    more; and whether the odeco runs at $\Kc=7,8$ that end with live route ends face long plateaus or slowly
+    dying routes is a \conjecture{} (from fan-in initialization most stalls of the regime map are dead
+    routes). One route (MPS8, $D=\{1,5\}$, from the saddle) is steeper than predicted ($3.67\pm0.20$ against
+    $3$), with no established mechanism. \emph{What would settle it:} the cluster channel added to the reduced
+    flow and tested at $k=6$--$8$, a reduced route model with vector amplitudes for spare inner channels, a
+    $\isc$-free model of the second odeco plateau, and long runs continued from pinned states.
   \item \textbf{The learning order in closed form.} The race of independent components is exact only on
     MPS; where cores without sites couple the components it still names the first component in
     $95$--$100\%$ of the runs on binary8 and HT4 but in only 537 of 640 on binary4, and it has no closed
@@ -247,10 +251,11 @@ what would settle it.
     binary and HT trees, and $\isc$ scans down to $10^{-6}$ with $1{,}000$ seeds for adjacent pairs.
   \item \textbf{Regime boundaries at large $\Kc$ and large $\chi$.} With the initial function kept and
     spare channels, the saddle-to-saddle boundary does not tend to $1$, the limit of aligned
-    initialization: at $\Kc=8$--$15$ ($d=2$, $3$) all 97 per-seed lower bounds exceed both candidate laws,
-    $\isc_c^{\Kc}=\text{const}$ and $\isc_c^{\Kc}/\sqrt{d^\Ns}=\text{const}$, and 76 of 96 seeds stay
-    saddle-to-saddle up to where the initial function overlaps the teacher, about $1.15\sqrt d$
-    \empirical{} (this setup only). The proposed mechanism, the model unlearning its initial function on
+    initialization: at $\Kc=8$--$15$ ($d=2$, $3$) the lower bounds of the 85 censored seeds ($1.07$--$2.03$) all
+    exceed 1 and both candidate laws, $\isc_c^{\Kc}=\text{const}$ and $\isc_c^{\Kc}/\sqrt{d^\Ns}=\text{const}$, and 76 of
+    the 96 seeds stay saddle-to-saddle up to the scale at which the initial function overlaps the teacher
+    (about $\sqrt d$ at these $\Kc$; about $1.15\sqrt d$ in the limit) \empirical{} (this setup only). The
+    proposed mechanism, the model unlearning its initial function on
     the plateau, is consistent with the data but not confirmed (\conjecture). With the initial function
     removed and full bonds the two laws are not resolved, so whether $\isc_c(\Kc)$ tends to $\sqrt d$, a
     fixed amplitude per component, remains a \conjecture{} (\cref{sec:regime-K}). Its $\chi^{-1/2}$ scaling is measured on one tree over less than a decade and is
