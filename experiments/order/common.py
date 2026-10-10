@@ -53,6 +53,7 @@ def single_thread():
 
     torch.set_num_threads(1)
     threadpool_limits(1)
+    torch.set_flush_denormal(True)  # decaying dead routes otherwise crawl through denormals
 
 
 RAW = _dir_option("--raw", "ORDER_RAW", Path("/root/outputs/order"))  # raw outputs (not in git)
@@ -303,3 +304,47 @@ def projected_hessian(spec, teacher, y):
     _, eigs = project_out_gauge(h, u)
     raw = torch.linalg.eigvalsh(0.5 * (h + h.T))
     return eigs.numpy(), spec.n_params - gauge_complement(u).shape[1], raw.numpy()
+
+
+def gf_events(spec, teacher, y0, t_max, rtol=1e-9, atol=1e-14, loss_floor=1e-8, dead_floor=1e-25):
+    """Gradient flow (LSODA + exact Hessian) with exact event location of the first up-crossing of
+    every a_r = 1/2; stops when L < loss_floor L(0) (converged), when min_r |a_r| < dead_floor (some
+    route has died: stalled, any later escape would be seeded by roundoff), or at t_max.
+
+    Returns (times (R,), final overlaps, final loss, min |a_r| before its event (R,), status, t_end,
+    number of steps); status 'converged', 'stalled', 't_max' or 'failed'."""
+    loss, rhs = loss_grad_fn(spec, teacher)
+    l0 = loss(torch.from_numpy(y0)).item()
+    n = teacher.n_components
+
+    def up(r):
+        def ev(t, y):
+            return overlaps(spec, teacher, y)[r] - 0.5
+        ev.direction = 1
+        return ev
+
+    def done(t, y):
+        with torch.no_grad():
+            return loss(torch.from_numpy(y)).item() - loss_floor * l0
+
+    def dead(t, y):
+        return np.abs(overlaps(spec, teacher, y)).min() - dead_floor
+
+    done.terminal = dead.terminal = True
+    dead.direction = -1
+
+    def jac(t, y):
+        return -torch.autograd.functional.hessian(loss, torch.from_numpy(y), vectorize=True).numpy()
+
+    sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac,
+                    events=[up(r) for r in range(n)] + [done, dead])
+    times = np.array([te[0] if len(te) else np.inf for te in sol.t_events[:n]])
+    a_steps = np.array([overlaps(spec, teacher, y) for y in sol.y.T])
+    min_dormant = [float(np.abs(a_steps[sol.t < times[r], r]).min()) if np.any(sol.t < times[r])
+                   else float("nan") for r in range(n)]
+    status = ("failed" if sol.status < 0 else "converged" if len(sol.t_events[n])
+              else "stalled" if len(sol.t_events[n + 1]) else "t_max")
+    with torch.no_grad():
+        l_end = loss(torch.from_numpy(sol.y[:, -1])).item()
+    return (times, overlaps(spec, teacher, sol.y[:, -1]), l_end, min_dormant, status,
+            float(sol.t[-1]), len(sol.t))

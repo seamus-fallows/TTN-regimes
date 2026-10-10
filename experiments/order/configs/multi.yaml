@@ -1,10 +1,10 @@
 # Step 4: full order of R = 3, 4 odeco components with geometric weights (1, rho, rho^2, rho^3).
-# Library gradient flow (integrate_gf, LSODA, rtol 1e-9, atol 1e-14), 1500 log-spaced records,
-# stop at L < 1e-8 L(0) or t = 1e9. d = 4 (odeco needs d >= R), chi = 4.
+# Gradient flow (LSODA + exact Hessian, rtol 1e-9, atol 1e-14) with exact event location,
+# stop at L < 1e-8 L(0), when an overlap decays below 1e-25 (stalled) or t = 1e9. d = 4, chi = 4.
 # sigma per tree: at smaller sigma the later components of K >= 5 trees fall below the float64
 # floor or their routes die (conservation-law trap), see notes/order.md; the first event does not
 # depend on sigma for m >= 3.
-name: multi
+name: multi2
 trees: ["binary:4", "mps:4", "mps:6", "binary:8"]
 d: [4]
 chi: [4]

@@ -38,8 +38,9 @@ def load(name):
                          times=times, tau=np.array(r["tau"]), weights=weights,
                          stalled=bool(np.any(~np.isfinite(times))),
                          floor=bool(np.nanmin(r["min_dormant"]) < FLOOR),
-                         tie=bool(unresolved(times)),
-                         drift=r["drift"]))
+                         tie=bool(unresolved(times, exact="n_steps" in r)),
+                         status=r.get("status"),
+                         drift=r.get("drift", np.nan)))
     return pd.DataFrame(rows)
 
 
@@ -48,9 +49,11 @@ def load(name):
 TIE = 2 * np.log(10 ** (11 / 1500))
 
 
-def unresolved(times):
+def unresolved(times, exact=False):
+    """Events too close to order: within two record intervals for log-grid runs (multi); with exact
+    event location (multi2, `common.gf_events`) only coincident times (relative 1e-9)."""
     t = np.sort(times[np.isfinite(times)])
-    return len(t) > 1 and np.any(np.diff(np.log(t)) < TIE)
+    return len(t) > 1 and np.any(np.diff(np.log(t)) < (1e-9 if exact else TIE))
 
 
 def perm(x):
@@ -67,7 +70,7 @@ def race_perm_distribution(taus, weights, n_samples=200000, seed=0):
 
 
 def main():
-    name = sys.argv[1] if len(sys.argv) > 1 else "multi"
+    name = sys.argv[1] if len(sys.argv) > 1 else "multi2"
     df = load(name)
     summary, perms = [], []
     for (tree, n_comp, rho), g in df.groupby(["tree", "R", "rho"]):
