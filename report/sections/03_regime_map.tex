@@ -46,8 +46,8 @@ at $d=2$, fan-in initialization with one scale $\isc$ for every core unless stat
 \cref{tab:regimes}, with the tensor kernel ($\dTK$) on binary4 and the probe kernel ($\dTK^{\rm probe}$) on the larger
 trees (\cref{sec:setup-diagnostics}). Boundaries
 are found per seed (six seeds; saddle-to-saddle where $\min_i\sep i$ crosses $3$, lazy where the kernel change
-crosses $0.1$) and reported as medians, or as geometric means $\times/$ their geometric standard error $f$ (the
-interval from the mean divided by $f$ to the mean times $f$). Settings: \cref{app:exp-regimes}; supplementary
+crosses $0.1$) and reported as medians, or as geometric means $\times/$ their geometric standard error (a factor:
+the interval from the mean divided by it to the mean times it). Settings: \cref{app:exp-regimes}; supplementary
 results: \cref{app:D-regimes}.
 
 % ===========================================================================================
@@ -60,8 +60,8 @@ values of $\isc\in[0.004,4]$ (\cref{fig:regime-map}(a)).
 \paragraph{Three regimes, ordered in $\isc$.}
 \empirical{} At every $\chi$ the runs are saddle-to-saddle at small $\isc$ and rich (converged, $\dTK\ge0.1$,
 overlapping events) at intermediate $\isc$; at large $\isc$ they are lazy if $\chi\ge9$ and stalled on a floor if
-$\chi<9$. The saddle-to-saddle boundary falls from $0.24$ at $\chi=3$ to $0.136$ at $\chi=9$ and $0.043$ at
-$\chi=36$ (not monotone at small $\chi$: $0.099$ at $\chi=4$ and $0.075$ at $\chi=12$, where per-seed values
+$\chi<9$. The saddle-to-saddle boundary (geometric means) falls from $0.24$ at $\chi=3$ to $0.136$ at $\chi=9$
+and $0.043$ at $\chi=36$ (not monotone at small $\chi$: $0.099$ at $\chi=4$ and $0.075$ at $\chi=12$, where per-seed values
 spread by up to a factor 16; \cref{sec:other-rich}). Below it the smallest separation ratio grows like
 $\isc^{-1}$ per seed (fitted exponents $1.015$--$1.048$ in 96 of 101 fits, against $\Kc-2=1$, \derived{} for the
 first gap, \cref{app:boundaries}): the gaps grow while the event widths stay at the values of aligned
@@ -69,11 +69,12 @@ initialization (\cref{prop:A-s2s-aligned}). The $\chi$-dependence of $\isc_c$ is
 and fits: \cref{app:D-regimes}.
 
 \paragraph{The lazy boundary.}
-\empirical{} confirming \derived{} \cref{prop:A-lazy} With the tensor kernel and $\chi=32$--$128$ the lazy
+\empirical{} confirming \derived{} (\cref{prop:A-lazy}). With the tensor kernel and $\chi=32$--$128$ the lazy
 boundary lies inside the predicted brackets, $0.07\%$ below the lower edge at $\chi=128$:
 $\isc_{\rm lazy}\sqrt\chi=6.40$--$6.56$ against the asymptote $6.50$ of \eqref{eq:A-sigma-lazy}. At $\chi=9$--$16$,
 where the isotropic constants are not expected to hold, it lies $1.5$--$6\%$ above the bracket
-($\isc_{\rm lazy}\sqrt\chi=8.96$ at $\chi=9$). At large $\chi$ a coherent second-order kernel change sets the
+($\isc_{\rm lazy}\sqrt\chi=8.96$ at $\chi=9$, from the 3 seeds with a tensor-kernel boundary; the six-seed
+$\isc\times\chi$ sweep gives $\isc_{\rm lazy}=3.16$ there, $12\%$ above). At large $\chi$ a coherent second-order kernel change sets the
 boundary (\cref{sec:other-lazy}). \knownresult[the criterion, a threshold on the kernel change:
 \citealp{geiger2020disentangling}; a coherent second-order kernel change in wide networks:
 \citealp{bordelon2022selfconsistent}] \newresult[the TTN constants]
@@ -86,17 +87,18 @@ across the cut $01|23$, and no run is lazy (\cref{sec:other-lazy}).
 \paragraph{Both boundaries scale like $\chi^{-1/2}$.}
 \empirical{} With full bonds, fits to the per-seed boundaries give the slope $-0.53\pm0.05$ against $\chi$ for the
 saddle-to-saddle boundary ($\chi=16$--$128$) and $-0.504\pm0.011$ for the lazy boundary ($\chi=32$--$128$). At
-$\chi=32$--$128$, $\isc_c\sqrt\chi=0.27$--$0.33$, and the rich window $\isc_{\rm lazy}/\isc_c$ spans a factor
+$\chi=32$--$128$, $\isc_c\sqrt\chi=0.27$--$0.33$ (medians), and the rich window $\isc_{\rm lazy}/\isc_c$ spans a factor
 $19$--$24$ in $\isc$ ($18$--$23$ with the probe kernel), about $10^4$ in the function-space scale $\fsc=\isc^3$.
 At large $\chi$ the map thus depends on $\isc\sqrt\chi$, or on the per-bond Gram scale $\chi\isc^2/d^2$ (the
 eigenvalue scale of the subtree Grams $\Sub v\T\Sub v$): saddle-to-saddle below about $0.01$, lazy above about
 $4.7$. Neither $\isc^\Kc$ (slope $0$) nor $\isc^3\chi/d^2$, the amplitude per path times the number of paths (slope
-$-\frac13$, $2.7$--$2.9$ standard errors from the saddle-to-saddle slope), collapses the data. Scope: one tree (a
+$-\frac13$, $2.7$--$2.9$ standard errors from the saddle-to-saddle slope in per-seed fits, $3.7$ in the pooled
+fit), collapses the data. Scope: one tree (a
 three-factor matrix product), fan-in initialization, less than one decade of $\chi$. The saddle-to-saddle
 scaling is not derived; heuristically, the leaf Grams grow like $\chi\isc^2/d^2$ while the root is light by
 $\sqrt\chi$, so the effective per-core amplitude of the escape grows like $\isc\sqrt\chi$ \conjecture.
-\knownresult[as a scaling: the width-dependent scales $\isc^2w$ of \citealp{tu2024mixed} and $\fsc\sqrt h$ of
-\citealp{geiger2020disentangling}]
+\knownresult[as a scaling: the width-dependent scales of \citealp{tu2024mixed} (the initialization variance
+times the width) and \citealp{geiger2020disentangling} (the output scale times the square root of the width)]
 
 \paragraph{Seven cores.}
 \empirical{} On the binary tree with $\Ns=8$ ($\Kc=7$) the regimes come in the same order. At $d=3$ no centred run
@@ -144,8 +146,8 @@ $8$, $10$, $12$; 11--14 values of $\isc$ from $\max(10^{-8/\Kc},0.02)$ to $2$ (\
 \empirical{} \newresult[for TTNs] The saddle-to-saddle boundary rises with $\Kc$: medians of the per-seed
 boundaries $0.17$, $0.49$, $0.61$, $0.68$ and $0.75$ at $\Kc=3$--$7$ (quartiles in \cref{app:D-regimes}), with all
 six seeds resolved except at $\Kc=6$ (four). It stays above the aligned-initialization boundary
-$a_{0c}(\Kc)=0.066$--$0.49$ of \cref{prop:A-s2s-aligned}. The plain model gives the same boundaries within one grid
-step up to $\Kc=7$; beyond, it must first remove $\Wz$.
+$a_{0c}(\Kc)=0.066$--$0.49$ of \cref{prop:A-s2s-aligned}. The plain model, at the same $\chi=4$, gives the same
+boundaries within one grid step up to $\Kc=7$; beyond, it must first remove $\Wz$.
 
 \paragraph{Beyond seven cores.}
 \empirical{} At $\Kc=8$, $10$, $12$, $15$ at most one of six seeds is resolved: the run after the last
@@ -162,7 +164,9 @@ find no crossing: at every sampled $\isc$ they stay saddle-to-saddle up to the s
 itself overlaps a teacher component (76 seeds; this scale is about $\sqrt d$ at these $\Kc$ and tends to about
 $1.15\sqrt d$), where the event rule stops applying, or to the end of the budget (9 seeds); the other 11 cross at
 $0.86$--$1.37$. The lower bounds on $\isc_c$, $1.07$--$2.03$, all exceed 1 and both laws fitted on the resolved cells,
-so in the plain model $\isc_c$ does not tend to 1. A proposed mechanism, consistent with the data but not tested
+so $\isc_c\to1$ is rejected for the plain model at $\Kc\le15$ (binary trees, $\chi=4$, teacher $(3,2)$, $d=2$, $3$);
+this comparison of the bounds with the laws, and the rule that censors a seed at the scale where the initial
+function overlaps a component, on which it relies, were added after the pre-registration. A proposed mechanism, consistent with the data but not tested
 causally, is that the plain model unlearns
 $\Wz$ while it waits on the plateau, which lowers the effective amplitude \conjecture. The centred model with full
 bonds has no $\Wz$ to unlearn but is affordable only up to $\Kc=8$ at $d=2$ and $\Kc=4$ at $d=3$: there $\isc_c$ rises
@@ -193,7 +197,8 @@ the more frequent stalls with $\chi$ equal to the teacher rank.
     parameter & effect & measured (predicted) & status \\
     \midrule
     scale $\isc$ & saddle-to-saddle, rich, then lazy or a floor & binary4: $\isc_c=0.24$ to $0.023$
-      ($\chi=3$--$128$), $\isc_{\rm lazy}=3.0$ to $0.57$ ($\chi=9$--$128$) & \empirical \\
+      (geometric means, $\chi=3$--$128$), $\isc_{\rm lazy}=3.0$ to $0.57$ (medians, $\chi=9$--$128$; at $\chi=9$
+      from 3 seeds, $3.16$ in the six-seed sweep) & \empirical \\
     bond dimension $\chi$, full bonds & both boundaries $\propto\chi^{-1/2}$ & slopes $-0.53\pm0.05$ and
       $-0.504\pm0.011$ ($-\frac12$ for the lazy one); $\isc_{\rm lazy}\sqrt\chi=6.40$--$6.56$ ($6.50$); rich window
       $19$--$24$ & \empirical; \derived{} (lazy constants) \\
@@ -205,11 +210,11 @@ the more frequent stalls with $\chi$ equal to the teacher rank.
     root imbalance $\lambda$ at fixed $\fsc$ & light root: lazy at a $100\times$ smaller $\fsc$ &
       $\dTK\propto\lambda^2$ (slope $1.85\pm0.06$; $1.8$--$1.9$), saturation $0.59$--$0.61$ ($0.6$--$0.7$) &
       \empirical{} \derived \\
-    parameter\-ization, large $\chi$ & lazy (SP, NTK) or not ($\mu$P-TTN) & $\dTK\propto\chi^{-3.02\pm0.06}$ ($-3$);
+    parameter\-ization, large $\chi$ & lazy (SP, NTK) or not ($\mu$P-TTN) & SP: $\dTK\propto\chi^{-3.02\pm0.06}$ ($-3$);
       NTK: local slope $-1.01$ between $\chi=64$ and $128$ ($-1$; full-range fit $-0.79\pm0.04$); $\mu$P-TTN: $\dTK\to6.2$
       ($6.2$--$6.3$); \cref{sec:other-large-chi} & \empirical{} \derived \\
     thresholds $\delta_*$, $\sep{}$ & boundaries move, labels robust & $\times1.30$--$1.35$ for $\delta_*$:
-      $0.05\to0.2$ ($1.27$--$1.36$); $\times2.14$--$2.34$ for $\sep{}$: $2\to5$ ($2.5$); at most $7.7\%$ of labels
+      $0.05\to0.2$ at $\chi\ge32$ ($1.27$--$1.36$), up to $\times1.97$ at $\chi=9$; $\times2.14$--$2.34$ for $\sep{}$: $2\to5$ ($2.5$); at most $7.7\%$ of labels
       change, each to a neighbouring regime; \cref{app:D-regimes} & \empirical \\
     \bottomrule
   \end{tabularx}
@@ -236,7 +241,7 @@ outside; on this one-decade grid no widest point near balance can be read off. W
 the floor from $\fsc=1$.
 
 \paragraph{Kernel change at fixed $\fsc$.}
-\empirical{} confirming \derived{} (\cref{app:boundaries}) At $\chi=16$, $\fsc=3.375$, $\dTK$ grows like $\lambda^2$
+\empirical{} confirming \derived{} (\cref{app:boundaries}). At $\chi=16$, $\fsc=3.375$, $\dTK$ grows like $\lambda^2$
 from small $\lambda$ (local slope $1.85\pm0.06$ between $\lambda=0.03$ and $0.1$, predicted $1.8$--$1.9$) and
 saturates at $0.59$--$0.61$ for $\lambda\ge10$ (medians; at the lower edge of the predicted $0.6$--$0.7$); the runs
 are lazy up to $\lambda=0.3$ and rich from $\lambda=1$. In the aligned mode a small root is the only core that

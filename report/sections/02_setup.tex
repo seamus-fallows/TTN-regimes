@@ -107,7 +107,7 @@ dimension limits the tensors the network can represent; a lazy regime needs ever
   \centering
   \caption{Tree families for $\Ns$ sites ($\Kc$ cores; depth: edges on the longest root-to-leaf
     path), and the two further trees of the locality experiments. Binary-tree depths are for
-    $\Ns=2^m$; otherwise the sites are split recursively into halves ($\lceil\Ns/2\rceil$,
+    $\Ns$ a power of $2$; otherwise the sites are split recursively into halves ($\lceil\Ns/2\rceil$,
     $\lfloor\Ns/2\rfloor$), a pair of sites becomes a bottom core and a single site joins the core
     above, so $\Kc=\Ns-1$.}
   \label{tab:trees}
@@ -400,8 +400,8 @@ The terms below are used from \cref{sec:intro} on; \cref{sec:s2s} states the res
 \paragraph{Learned saddles and routes.}
 From small initialization gradient flow rests, between escapes, near a \emph{learned saddle}
 $\params_S$: a critical point that represents a partial fit $\W_S$ (for orthonormal teachers the sum
-of the learned components, \eqref{eq:partial-fit}; in general a best approximation of $\Wt$ with the
-current bond ranks). Each bond uses only its first $\rank\mat{(\W_S)}{e}$ (\emph{learned}) channels;
+of the learned components, \eqref{eq:partial-fit}; in general a critical point of the loss restricted to
+the current bond ranks, \cref{sec:teacher-ttn}). Each bond uses only its first $\rank\mat{(\W_S)}{e}$ (\emph{learned}) channels;
 the others are zero. A new channel opened in one core meets zeros in its neighbours and leaves $\W$
 unchanged: new channels move $\W$ only when every core of a connected set $\mathcal C$ opens one together, and
 then by a product of $\abs{\mathcal C}$ small entries, a small TTN on $\mathcal C$ attached to the learned network
@@ -410,14 +410,15 @@ entries, while the quadratic (Gauss--Newton) term $\frac12\normS{\Delta\W}^2$ is
 so near the saddle it behaves like a fresh $\abs{\mathcal C}$-core TTN started near zero
 (\cref{prop:A-escape-degree}). The \emph{ends} of a route are its leaves as a subtree; the
 \emph{slice} of an end is that core's part on the route's new channel (for a leaf core, one column).
-The learned channels can also rotate; when such moves descend faster than the cheapest route is
+The learned channels can also rotate; whether such moves descend faster than the cheapest route is
 decided in \cref{app:saddle-order}.
 
 \paragraph{Route size $k$ and $k^*$.}
 For an orthonormal pattern teacher with one learned component, the route that adds component $r$ is
 the Steiner subtree $\mathrm{St}(V_D)$ of the cores that carry the sites $D$ where $r$ differs from the
 learned component, and the bonds whose rank must grow are exactly its edges
-(\cref{prop:teacher-spectra,prop:A-steiner}) \proven. Its size $k=\abs{\mathrm{St}(V_D)}$ is the number of
+(\cref{prop:teacher-spectra,prop:A-steiner}) \proven. Its size $k=\abs{\mathrm{St}(V_D)}$, also called its
+\emph{degree} (the order in the new entries at which it lowers the loss), is the number of
 cores that must move together, and $k^*$ is the smallest $k$ among the components not yet learned (in
 general, the smallest route with a nonzero local residual, \cref{prop:A-escape-degree}). If $D$ lies on
 one core ($k=1$), that core fits the component through its learned channel and the flow does not stop.
@@ -487,14 +488,15 @@ Each run, trained up to time $T$, receives one label (\cref{tab:regimes}).
 \begin{table}[t]
   \centering
   \caption{Regime of one run trained up to time $T$ (S2S signature: \cref{sec:setup-diagnostics}).
-    Threshold sensitivity: the kernel threshold $0.1$ is varied over $\{0.05,0.1,0.2\}$, the
-    separation threshold $3$ over $\{2,3,5\}$.}
+    Threshold sensitivity: the kernel threshold $\delta_*=0.1$ is varied over $\{0.05,0.1,0.2\}$, the
+    separation threshold $3$ (on $\sep{}$) over $\{2,3,5\}$.}
   \label{tab:regimes}
   \begin{tabularx}{\textwidth}{@{}lX@{}}
     \toprule
     regime & rule \\
     \midrule
-    lazy & the loss converges and $\dTK(T)<0.1$ (so $\dth$ is small as well) \\
+    lazy & the loss converges and $\dTK(T)<0.1$ (this does not imply a small $\dth$:
+      \cref{sec:other-lazy}) \\
     saddle-to-saddle & $\dTK(T)\ge0.1$ and the S2S signature (i)--(iii) \\
     rich, non-incremental & $\dTK(T)\ge0.1$ and the loss converges, but some $\sep{i}\le3$
       (overlapping transitions) \\
@@ -545,9 +547,11 @@ cannot separate the two: it calls $k=3$ plateaus strict for $\isc\gtrsim0.01$--$
 Scaling fits use at least five initialization scales over at least one decade and at least five
 seeds per point, and report mean $\pm$ standard error, a fitted exponent with its standard error,
 and the theoretical prediction. Fits that fall short of this rule are reported but marked
-\emph{limited range}, with their range of $\isc$ and their seed count. Every regime boundary comes
-with the threshold sensitivity check of \cref{tab:regimes}, and every number states the dynamics that
-produced it (integrator tolerances, step size, batch size).
+\emph{limited range}, with their range of $\isc$ and their seed count. Threshold sensitivity (the
+variations in \cref{tab:regimes}) is reported for the boundaries of binary4 and the large-$\Kc$ fits
+(\cref{app:D-regimes}); the other boundaries (the sweep over $\Kc$ in \cref{fig:regime-map}(b), the binary
+tree with $\Ns=8$ and the imbalance map) use the default thresholds only. Every number states the dynamics
+that produced it (integrator tolerances, step size, batch size).
 
 % ===========================================================================================
 \subsection{What the results may depend on}\label{sec:setup-scope}
@@ -612,7 +616,8 @@ table says where.
   $\G{v}$, $\Gm{v}{e}$; $\fanin{v}$; $\params$ & core of $v$, matricized with its $e$-leg as rows; its
     fan-in; all parameters & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-conservation} \\
   $h_v$; $\Sub{v}$, $C_v$; $C$ & message of core $v$; contraction of the subtree below $v$ and of the rest,
-    $\mat{\W}{\edge v}=\Sub vC_v\T$; alone, a positive constant (bounds, fits such as $C\isc^\gamma$)
+    $\mat{\W}{\edge v}=\Sub vC_v\T$ (for a route end $u$, $C_u$ is instead the conserved quantity listed
+    below); alone, a positive constant (bounds, fits such as $C\isc^\gamma$)
     & \eqref{eq:messages}, \S\labelcref{sec:setup-model} \\
   $\W$, $\Wt$, $\Wz$; $f_\params$, $f^*$ & tensor of the student, of the teacher, at initialization; model and
     teacher functions & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-loss} \\
@@ -638,7 +643,7 @@ table says where.
     that carry them, $m=\abs{V_D}$ ($D_{jr}$, $V_{jr}$, $m_{jr}$ for components $j$, $r$ in
     \cref{app:derivations}); Steiner subtree, the smallest subtree that contains a set of cores
     & \S\labelcref{sec:setup-loss} \\
-  $\Loss$, $\lossn$, $\Loss_0$; $\W_S$, $\Loss_S$ & population loss, $\Loss/\Loss(0)$, $\Loss(0)$; partial fit
+  $\Loss$, $\Loss_0$; $\W_S$, $\Loss_S$ & population loss, $\Loss(0)$; partial fit
     of the components in $S$, its loss & \eqref{eq:loss}, \eqref{eq:partial-fit} \\
   $\nsamp$, $(x_j,y_j)$, $\Lemp$; $\batch$; $\varsigma$ & training-set size, samples, empirical loss; minibatch
     size; label-noise standard deviation & \S\labelcref{sec:setup-loss}, \S\labelcref{sec:setup-dynamics} \\
@@ -677,7 +682,8 @@ table says where.
   $\dTK$, $\dTK^{\rm probe}$; $\delta_*$; $\dth$ & relative kernel change (tensor, probe kernel); its
     threshold; relative parameter change & \S\labelcref{sec:setup-diagnostics}, \cref{tab:regimes} \\
   $\Hess$, $\Hperp$; $\lambda_{\min}$, $\lambda_{\max}$ & Hessian, its gauge projection; their smallest and
-    largest eigenvalues & \S\labelcref{sec:setup-diagnostics} \\
+    largest eigenvalues ($\lambda_2(\Hess)$: the second largest, \cref{app:optimizer,app:D-optim})
+    & \S\labelcref{sec:setup-diagnostics} \\
   $\tev{r}$, $\wev{r}$; $\sep{i}$, $\tmid{i}$; $\omega_\Kc$ & time and width of event $r$; separation ratio of
     consecutive events, plateau midpoint; width of an aligned event at unit weight
     & \S\labelcref{sec:setup-diagnostics}, \eqref{eq:separation}; \cref{prop:A-s2s-aligned} \\
@@ -685,7 +691,8 @@ table says where.
   $\isc_c$, $\isc_{\rm lazy}$; $a_{0c}$ & saddle-to-saddle and lazy boundaries in $\isc$;
     saddle-to-saddle boundary of aligned initialization (per-core amplitude)
     & \S\labelcref{sec:regime-map}; \cref{prop:A-s2s-aligned} \\
-  $c_1$, $c_2$; $x_W$ & first- and second-order constants of the kernel change at the lazy boundary;
+  $c_1$, $c_2$; $x_W$ & first- and second-order constants of the kernel change at the lazy boundary (not
+    the route couplings $c_r$ at $r=1$, $2$);
     size of $\Wz$ against the teacher, $\isc^\Kc\sqrt{d^\Ns}/(\tw2d)$ & \eqref{eq:A-lazy-dk};
     \cref{app:D-regimes} \\
   \midrule
@@ -706,8 +713,10 @@ table says where.
     root-mean-square-overlap heuristic for $\mathcal T$ & \eqref{eq:s2s-first}; \S\labelcref{sec:s2s-escape};
     \cref{app:supp-s2s-escape} \\
   $\Delta t_2$, $\lambda_2$; $A$ & time between the first two events; $k=2$ escape rate
-    $\tw2\tw1^{(\Kc-2)/\Kc}$; prefactor of a plateau law & \eqref{eq:locality-rule} \\
-  head start; $c_r$ & factor $1-\tw2/\tw1$: the route grew during the previous plateau; coupling of the
+    $\tw2\tw1^{(\Kc-2)/\Kc}$ (its analogue under correlated inputs in \cref{app:covariance}); prefactor of a
+    plateau law & \eqref{eq:locality-rule} \\
+  head start, head-start factor; $c_r$ & the ratio $\tw2/\tw1$ (the route grew by $\isc^{-\tw2/\tw1}$ during
+    the previous plateau), and the factor $1-\tw2/\tw1$ it leaves on the next escape time; coupling of the
     route of component $r$ & \S\labelcref{sec:s2s-locality}; \eqref{eq:A-coupling} \\
   $\Gamma$; $\Gamma^{(\ell)}$, $\lambda_\ell$ & piggyback matrix (the saddle is strict if
     $\lambda_{\max}(\Gamma)>\tw j$); generalized piggyback operator, its largest eigenvalue
@@ -716,11 +725,17 @@ table says where.
     matrix (in \cref{app:derivations} and \S\labelcref{sec:teacher-generic} the singular-value index is
     $n$, since $j$ is the learned component) & \cref{app:derivations} \\
   $\beta(\ov r)$ & local growth exponent of an overlap & \eqref{eq:A-growth-exponent} \\
-  $C_u$; $Q_{\nu\nu}$; $X_{\rm nv}$, $Y_{\rm nv}$ & conserved quantity of a route end $u$; imbalance of its bond
-    on the route's new direction $\nu$; new entries of the end, of its partner, that pair with nothing at
-    second order & \cref{prop:A-trap} \\
-  $I$; $F_u$, $n_u$ & regularized incomplete beta function; fan-in and number of normal physical directions
-    of a route end & \S\labelcref{sec:s2s-failure} \\
+  $C_u$; $Q_{\nu\nu}$, $Q^{(u)}_e$; $X_{\rm nv}$, $Y_{\rm nv}$ & conserved quantity of a route end $u$ (not the
+    environment $C_v$); $\nu\T Q^{(u)}_e\nu$, the imbalance of its bond $e$ oriented end minus partner
+    ($Q^{(u)}_e=\Q e$ if $u$ is the child of $e$, $-\Q e$ if it is the parent) on the route's new direction
+    $\nu$; new entries of the end, of its partner, that pair with nothing at second order
+    & \cref{prop:A-trap} \\
+  visible degree, $j_{\rm vis}$ & of a route end: its slice decays at a rate $\propto\isc^{2(j_{\rm vis}-1)}$
+    ($j_{\rm vis}=2$ if the partner carries sites, $3$ at an HT or binary leaf of a rank-one saddle)
+    & \cref{prop:A-trap} \\
+  $I$; $F_u$, $n_u$ & identity matrix, and with arguments the regularized incomplete beta function; fan-in and
+    number of normal physical directions of a route end & \S\labelcref{sec:setup-model};
+    \S\labelcref{sec:s2s-failure} \\
   \midrule
   \multicolumn{3}{@{}l}{\itshape Order of learning} \\
   $w$; $\gamma$; $n$; $P$ & weight ratio $\tw2/\tw1$ (smaller over larger); exponent in
@@ -734,15 +749,19 @@ table says where.
   $\lr_c$; $\lambda_{\rm bal}$, $\lambda_{\rm GF}$ & $2/(\Kc\tw1^{2-2/\Kc})$, the step size up to which GD keeps
     the saddle sequence; largest Hessian eigenvalue at the balanced global minimum, at the minimum that
     gradient flow reaches & \eqref{eq:optim-etac}; \S\labelcref{sec:other-optim} \\
-  $c_e$; $h$ & shift of event $e$ per unit step under GD; step of the balanced scalar map,
+  $c_e$; $h$ & shift of event $e$ per unit step under GD (here $e$ numbers events, not bonds); step of the
+    balanced scalar map,
     $\lr\tw1^{2-2/\Kc}$ & \S\labelcref{sec:other-optim}; \cref{fig:optim-gd} \\
   $\lr^*_{\rm ms}$; $\kappa_{\rm n}$ & mean-square stability limit of SGD; noise factor of the first escape
     under SGD & \eqref{eq:A-ms-threshold}; \eqref{eq:A-sgd-first} \\
-  $c_{\rm col}$, $x$; $T_{\rm GF}$, $T_{\rm SGD}$ & collapse constant and $x=c_{\rm col}(\lr/\batch)T_{\rm GF}$ (the only
-    use of $x$ other than an input); length of a plateau under gradient flow, under SGD
+  $c_{\rm col}$, $x$; $T_{\rm GF}$, $T_{\rm SGD}$ & collapse constant and $x=c_{\rm col}(\lr/\batch)T_{\rm GF}$ (other
+    local uses of $x$: the scaled amplitude of the scalar map, \cref{fig:optim-gd,app:optimizer}; a Perron vector,
+    \cref{app:saddle-order}; an escape signature, \cref{app:supp-s2s-hopper}); length of a plateau under
+    gradient flow, under SGD
     & \eqref{eq:optim-collapse} \\
   $\beta$; $\beta_1$, $\beta_2$, $\epsilon$ & heavy-ball momentum; Adam's averaging parameters and its
-    regularizer ($\varepsilon$ is the perturbation scale) & \S\labelcref{sec:other-optimizers} \\
+    regularizer ($\varepsilon$ is the perturbation scale; in \cref{prop:A-trap,app:supp-s2s-trap},
+    $\beta_1$, $\beta_2$ are the inner route entries of a route with $k=4$) & \S\labelcref{sec:other-optimizers} \\
   $n_1$, $n_{\rm sign}$; $\isc_\times$ & Adam: steps to the first escape, their part in the sign regime;
     crossover scale & \eqref{eq:adam-eps} \\
   $P_{\W}$; $\mathrm{HSVD}_\chi$ & projector onto the tangent space at $\W$ of the fixed-rank manifold;
