@@ -183,53 +183,73 @@ Full GF (RK45 with event location, rtol 1e-9, atol 1e-14), d = 2. Commands `swee
   agree with the independent GF table of `notes/theory_escape.md` 5.5 (rho = 0.7, d = chi = 2: 0.137 /
   0.054 / 0.026 here vs their estimate 0.155 / 0.064 / 0.024 at sigma = 0.1 / 0.01 / 0.001).
 
-### 7.3 H1b (complete)
+### 7.3 H1b (complete; revised after review)
 
 Full GF with LSODA and the exact Hessian (rtol 1e-10, atol 1e-15), event times by root finding on the
-dense output, gauge-projected Hessian (`ttn.diagnostics`) at the minimum-speed point between the two
-events. `h1b.py configs/h1b_*.yaml`, `analyze_h1b.py`; `results/h1b_*.csv`, `results/h1b_fits.csv`,
-figures `results/h1b_correction_time.png`, `results/h1b_natural.png`, `results/h1b_example.png`.
+dense output (full precision; a fine record window around the events), gauge-projected Hessian
+(`ttn.diagnostics`, fixed cut 6c42d85) and the raw Hessian at the minimum-speed point between the two
+events; runs stop as "stalled" if a component's slice of some core falls to 1e-14 x the largest core
+norm. d = 2, chi = 4. `h1b.py configs/h1b_*.yaml`, `analyze_h1b.py`; `results/h1b_*.csv`,
+`results/h1b_fits.csv`, `results/h1b_local_slopes.csv`; figures `results/h1b_correction_time.png`,
+`results/h1b_natural.png`, `results/h1b_example.png`.
 
-1. **Controlled start at the wrong saddle, binary4 (m = 2)**: component 2 learned exactly (balanced,
-   amplitude rho^(1/3)) plus a fan-in perturbation of scale sigma; 8 seeds x 6 sigma (1e-7..1e-2) x 4 rho,
-   d = 2, chi = 4. In all 192 runs the learned bond index rotates to component 1 (a_2 falls below 6e-4,
-   the second singular value stays ~0), the loss then sits at s_2^2/2 = 0.125 / 0.245 / 0.32 / 0.405, and
-   component 2 is relearned after ~sigma^-1. **Strict saddle by the primary rule**: lambda_min at the
-   plateau midpoint is sigma-independent (per-seed exponent of |lambda_min| vs sigma: 0.000) and equals
-   -0.39685 / -0.26637 / -0.18566 / -0.09655 to 5 digits for rho = 0.5 / 0.7 / 0.8 / 0.9 (prediction
-   -(1-rho) rho^(1/3): identical). **Correction time = ln(1/sigma)/|lambda_min| + const**: per-seed
-   slopes of t_corr vs ln(1/sigma) 2.555 +- 0.036, 3.809 +- 0.056, 5.466 +- 0.082, 10.51 +- 0.16 vs
-   1/|lambda_min| = 2.520, 3.754, 5.386, 10.357 (ratio 1.014-1.015, within 1 SE). A power law
-   t = c sigma^-p fits 10x worse in the same space (rms 1.5-6.0 vs 0.13-0.56; p = 0.08).
-2. **Controlled start, MPS4 (m = 4)**: no rotation (a_2 >= 0.96 when a_1 crosses 1/2), component 1 is
-   added in a new bond index; |lambda_min| at the midpoint scales as sigma^2.007 +- 0.016 (rho 0.5) and
-   sigma^2.000 +- 0.014 (rho 0.8), i.e. a higher-order saddle (k - 2 = 2); t_1 ~ sigma^-1.97 +- 0.03. The
-   fixed 1e-3 threshold would call some sigma = 0.05-0.1 midpoints strict (n_neg up to 1.6 on average),
-   the scaling rule does not.
-3. **Natural wrong-order runs, binary4** (the seeds whose first event was component 2 in b4_sigma, chi = 4;
-   up to 40 per (rho, sigma), rho 0.7-0.9, sigma 1e-4..0.1; 421 runs): for sigma <= 0.01, 92.5-100% rotate
-   (the rest add component 1 in a new index); at sigma = 0.1 only 2.5-42% rotate (the 3-core add route,
-   ~sigma^-1 = 10, competes). For the rotating runs |lambda_pred| (t_1 - t_2) has mean 1.07-1.38
-   (SE 0.14-0.30) at every sigma from 1e-4 to 1e-2: **no ln(1/sigma) growth**, as predicted in section 5
-   (a log law would raise it by ln 100 = 4.6 over this range). The wrong "plateau" is not resolved:
-   separation ratio (t_1 - t_2)/max(width) has median 0.3-0.6, > 3 in 0-7.5% of runs; lambda_min at the
-   minimum-speed point lies between 0 and the saddle value. So in natural runs a wrong order shows up as a
-   brief overshoot of the smaller component, then a plateau at s_2^2/2 with the smaller component
-   forgotten, then its relearning.
-4. **Natural wrong-order runs, MPS4 (m = 4)** (seeds whose first event was component 2 in the main sweep,
-   d = 2, chi = 4, sigma = 0.01, 20 per rho = 0.5, 0.8): no rotation (a_2 >= 0.999 when a_1 crosses 1/2);
-   component 1 is added in a new bond index after a median gap of 2.4e4 / 2.6e4 (~sigma^-2: a 4-core
-   route); lambda_min at the plateau midpoint has median -8.7e-5 / -8.5e-5 (raw -9.0e-5 / -8.6e-5),
-   |lambda_min|/lambda_max ~ 6e-5 (single-sigma fallback rule: non-strict; the sigma scaling in item 2 is
-   the primary evidence). **One run stalled** (rho 0.8, seed 25): after component 2 is learned, component
-   1's overlap decays (1e-12 at t = 1e5, 1e-50 at t = 1e7): its route dies (the conservation-law trap of
-   `notes/theory_saddles.md` 8) and GF stays at the wrong saddle (L = 0.5) indefinitely (run stopped when
-   a_1 < 1e-25). So for m >= 3 a wrong order is either kept (larger component learned later) or, rarely,
-   permanent.
+**Saddle starts** (component 2 learned exactly, balanced, plus a fan-in perturbation of scale sigma;
+8 seeds x 6 sigma 1e-7..1e-2; per-seed fits, mean +- SE over seeds; slope of t1 against ln(1/sigma)):
 
-All lambda_min values above were computed with the fixed gauge projection (library commit 6c42d85,
-rtol 1e-3) and are reported with the raw (unprojected) value in `results/h1b_*.csv`
-(`lam_min_raw`); for binary4 the two agree to 6 digits at sigma <= 1e-3.
+| pair | rho | class (runs) | slope | 1/|lambda_pred| | lambda_min at the midpoint (raw) | lambda_pred |
+|---|---|---|---|---|---|---|
+| binary4 (m = 2, k = 3) | 0.5 / 0.7 / 0.8 / 0.9 | rotated 192/192 | 2.555 / 3.809 / 5.466 / 10.51 (+-1.5%) | 2.520 / 3.754 / 5.386 / 10.357 | -0.39665 / -0.26626 / -0.18559 / -0.09651 | -0.39685 / -0.26637 / -0.18566 / -0.09655 |
+| MPS4 cores 0,2 (m = 2, k = 3) | 0.5 / 0.8 / 0.9 | rotated 144/144 | 2.8282 / 5.5903 / 10.541 (+-0.1%) | 2.8284 / 5.5902 / 10.541 | -0.35359 / -0.17890 / -0.09488 | -0.35355 / -0.17888 / -0.09487 |
+| MPS4 cores 1,2 (m = 2, k = 2) | 0.5 / 0.8 / 0.9 | added 144/144 | 1.4130 / 1.1171 / 1.0533 (+-0.1%) | 1.4142 / 1.1180 / 1.0541 | -0.70704 / -0.89427 / -0.94850 (x3) | -0.70711 / -0.89443 / -0.94868 |
+
+- **Rotation (m = 2, k >= 3; binary4 and MPS4 cores 0,2)**: the learned bond index rotates to component 1,
+  a_2 falls below 6e-4, the loss sits at s_2^2/2, component 2 is relearned after ~sigma^-1. lambda_min is
+  sigma-independent (per-seed exponent of |lambda_min| vs sigma: 0.0000 +- 0.0001): strict by the
+  primary rule. The fitted slopes of binary4 are 1.4% above 1/|lambda| only because the fit includes
+  sigma = 1e-2: the local slope x |lambda| between consecutive sigma is 1.07, 1.018, 1.002, 1.0002,
+  1.0000 from sigma = 1e-2 down to 1e-7 (all rho); for MPS4 cores 0,2 it is 1.0000 +- 0.0005 throughout.
+  A power law t = c sigma^-p fits 10-80x worse in the same space (rms 1.5-6.0 vs 0.02-0.56).
+- **Adding (m = 2, k = 2; MPS4 cores 1,2)**: lambda_min = -s_2^(1/2) = -s_1 s_2^((K-2)/K) with multiplicity
+  3 = chi_e - 1 (4 negative eigenvalues: those three plus the piggyback one, e.g. -0.161 at rho = 0.8);
+  component 1 is added on a spare index of the shared bond, a_2 stays 1 (minimum 1.0000 in 144/144), and
+  t1 follows ln(1/sigma)/(s_1 s_2^((K-2)/K)) (local slope x |lambda| -> 1.0000 at small sigma). At sigma =
+  1e-2 the projected lambda_min is biased (-0.58..-0.80; library note on saddle starts at moderate sigma);
+  the raw values are quoted.
+- **m >= 3 (MPS4 odeco, k = 4; MPS6 odeco, k = 6)**: no rotation (a_2 >= 0.96 resp. >= 0.9996 when a_1
+  crosses 1/2); component 1 is added in a new bond index. |lambda_min| at the midpoint scales as
+  sigma^2.007 +- 0.016 / sigma^2.000 +- 0.014 (MPS4, rho 0.5 / 0.8; 8 seeds x 5 sigma 0.01-0.1) and
+  sigma^4.22 +- 0.09 (MPS6, rho 0.8; 5 seeds x 5 sigma 0.05-0.2): higher-order saddles, |lambda_min| ->
+  0 like sigma^(k-2) (MPS6 slightly steeper than 4 over this range). t1 ~ sigma^-1.97 +- 0.03 (MPS4)
+  and sigma^-4.26 +- 0.13 (MPS6). One MPS6 seed of six stalls at every sigma (its route dies).
+  BINARY8_SADDLE The fixed 1e-3 threshold would call some MPS4 midpoints at sigma = 0.05-0.1 strict
+  (n_neg up to 1.6 on average); the scaling rule does not.
+
+**Natural wrong-order runs** (random init; seeds whose first event was component 2 in the sigma or
+pattern sweeps; up to 40 per (rho, sigma)):
+
+| set | sigma | runs | class | |lambda_pred| (t1 - t2), mean | median t1 - t2 | resolved wrong plateau (separation > 3) |
+|---|---|---|---|---|---|---|
+| binary4 (k = 3), rho 0.7-0.9 | 1e-4..1e-2 | 301 | rotated 296, added 2, other 3 | 1.07-1.38 (SE 0.14-0.29), flat in sigma | 3.0-10.6 | 0-2.5% |
+| binary4, rho 0.7-0.9 | 0.1 | 120 | rotated 30, added 52, other 38 | - | 2.7-6.3 | 5-7.5% |
+| MPS4 cores 0,2 (k = 3), rho 0.8, 0.9 | 1e-4..1e-2 | 240 | rotated 237, added 1, other 2 | 0.98-1.24 (SE 0.10-0.17), flat | 4.7-12.4 | 0% |
+| MPS4 cores 1,2 (k = 2), rho 0.8, 0.9 | 1e-4..1e-2 | 150 | added 150 | 0.19-0.28 | 0.13-0.23 | 0% |
+| MPS4 odeco (m = 4), rho 0.5, 0.8 | 1e-2 | 40 | added 39, stalled 1 | - | 2.4e4-2.6e4 | 95-100% |
+
+- **k >= 3 (rotation)**: in natural runs the wrong order is followed by rotation within O(1/|lambda|):
+  |lambda| (t1 - t2) is flat in sigma (a ln(1/sigma) law would raise it by 4.6 over this range) and no
+  wrong plateau is resolved; the visible signature is an overshoot of the smaller component, then a
+  plateau at s_2^2/2 with it forgotten, then its relearning. All 421 + 240 runs now have a resolved
+  minimum-speed point (round 1 left 43 binary4 runs at sigma = 1e-4 without one; they are included now, and
+  the means barely move: 1.08-1.15 at sigma = 1e-4). lambda_min there lies between 0 and the saddle
+  value for sigma <= 1e-2 (at sigma = 0.1 it is about -0.30, below the saddle value: the point is not near
+  the saddle); see `results/h1b_natural.png`.
+- **k = 2 (adding)**: the larger component follows within 0.1-1 time units of the smaller (a near-tie);
+  a_2 never falls back below 1/2 (median minimum after t1: 0.62-0.68); nothing is forgotten.
+- **m >= 3**: the wrong plateau is resolved (separation 750-1080 median); the larger component is added
+  after ~sigma^-2 (k = 4); a_2 stays 1; one run of 40 stalls (route dies; component 1's overlap falls to
+  1e-50 by t = 1e7). lambda_min at the midpoint: median -2.7e-4 / -1.5e-4 (raw -2.7e-4 / -1.5e-4),
+  |lambda_min|/lambda_max ~ 1e-4 (single-sigma fallback; the sigma scaling of the saddle starts is the
+  primary evidence).
 
 ### 7.4 Control: "matrix-like" (m = 2) versus tensor-like pattern teachers on one tree (complete)
 
