@@ -1,0 +1,109 @@
+dataset,tree,chi,init,teacher,pclass,learned_before,event,k
+locality,mps8,3,fanin,00000000(1) 00011000(0.4) 01000010(0.7),main,"0,1",route,6
+locality,mps8,3,fanin,00000000(1) 00011000(0.4) 01000010(0.7),rare,"0,1",route,6
+locality,binary8,3,fanin,00000000(1) 00011000(0.4) 01000010(0.7),main,"0,2",route,5
+locality,binary8,3,fanin,00000000(1) 00011000(0.4) 01000010(0.7),main,"0,1",route,5
+locality,binary8,3,fanin,00000000(1) 00011000(0.4) 01000010(0.7),rare,"0,2",route,5
+locality,binary8,3,fanin,00000000(1) 00011000(0.4) 01000010(0.7),rare,"0,1",route,5
+locality,ht4,3,fanin,0000(1) 0110(0.3) 1001(0.6),main,"0,2",route,5
+locality,ht4,3,fanin,0000(1) 0110(0.3) 1001(0.6),main,"0,1",route,5
+locality,ht4,3,fanin,0000(1) 0110(0.3) 1001(0.6),rare,"0,2",route,5
+locality,ht4,3,fanin,0000(1) 0110(0.3) 1001(0.6),rare,"0,1",route,5
+locality,ht4,3,balanced,0000(1) 0110(0.3) 1001(0.6),main,"0,2",route,5
+locality,ht4,3,balanced,0000(1) 0110(0.3) 1001(0.6),main,"0,1",route,5
+locality,ht4,3,balanced,0000(1) 0110(0.3) 1001(0.6),rare,"0,2",route,5
+locality,ht4,3,balanced,0000(1) 0110(0.3) 1001(0.6),rare,"0,1",route,5
+s2s_core,binary8,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,1",route,7
+s2s_core,binary8,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,2",route,7
+s2s_core,binary8,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"1,2",route,7
+s2s_core,binary8,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,7
+s2s_core,binary8,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,7
+s2s_core,binary8,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,7
+s2s_core,binary8,6,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,1",route,7
+s2s_core,binary8,6,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,2",route,7
+s2s_core,binary8,6,fanin,"odeco [1.0, 0.85, 0.7]",main,"1,2",route,7
+s2s_core,binary8,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,7
+s2s_core,binary8,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,7
+s2s_core,binary8,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,7
+s2s_core,ht4,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,1",route,7
+s2s_core,ht4,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,2",route,7
+s2s_core,ht4,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"1,2",route,7
+s2s_core,ht4,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,7
+s2s_core,ht4,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,7
+s2s_core,ht4,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,7
+s2s_core,mps8,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,1",route,8
+s2s_core,mps8,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,2",route,8
+s2s_core,mps8,3,fanin,"odeco [1.0, 0.85, 0.7]",main,"1,2",route,8
+s2s_core,mps8,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,8
+s2s_core,mps8,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,8
+s2s_core,mps8,3,fanin,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,8
+s2s_core,mps8,6,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,1",route,8
+s2s_core,mps8,6,fanin,"odeco [1.0, 0.85, 0.7]",main,"0,2",route,8
+s2s_core,mps8,6,fanin,"odeco [1.0, 0.85, 0.7]",main,"1,2",route,8
+s2s_core,mps8,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,8
+s2s_core,mps8,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,8
+s2s_core,mps8,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,8
+s2s_core,ht4,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,7
+s2s_core,ht4,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,7
+s2s_core,ht4,6,fanin,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,7
+s2s_core,binary8,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,7
+s2s_core,binary8,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,7
+s2s_core,binary8,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,7
+s2s_core,ht4,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,7
+s2s_core,ht4,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,7
+s2s_core,ht4,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,7
+s2s_core,mps8,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"0,1",route,8
+s2s_core,mps8,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"0,2",route,8
+s2s_core,mps8,3,balanced,"odeco [3.0, 2.0, 1.0]",main,"1,2",route,8
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64]",main,"0,1",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64]",main,"0,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64]",main,"1,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81]",main,"0,1",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81]",main,"0,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81]",main,"1,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,1",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,1,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,1,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,2,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"1,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"1,2,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"1,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"2,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,1",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,1,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,1,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,2,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"1,2",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"1,2,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"1,3",route,7
+order,binary8,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"2,3",route,7
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64]",main,"0,1",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64]",main,"0,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64]",main,"1,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81]",main,"0,1",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81]",main,"0,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81]",main,"1,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,1",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,1,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,1,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,2,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"0,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"1,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"1,2,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"1,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.8, 0.64, 0.512]",main,"2,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,1",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,1,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,1,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,2,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"0,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"1,2",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"1,2,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"1,3",route,6
+order,mps6,4,fanin,"odeco [1.0, 0.9, 0.81, 0.729]",main,"2,3",route,6

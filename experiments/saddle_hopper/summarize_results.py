@@ -1,7 +1,9 @@
 """Collect the validation outputs into the summary tables and figures of notes/saddle_hopper.md.
 
 Reads results/*.csv written by validate_*.py; writes results/summary_sequences.csv,
-results/summary_laws.csv, results/mismatches.csv, results/fig_laws.png, results/fig_match.png.
+results/summary_laws.csv, results/baselines.csv (hopper vs trivial order rules), results/mismatches.csv,
+results/exponent_mismatches.csv, results/locality_rare_trend.csv, results/fig_laws.png,
+results/fig_match.png.
 usage: uv run python experiments/saddle_hopper/summarize_results.py
 """
 
@@ -105,7 +107,12 @@ def sequences():
     out = pd.DataFrame(rows)
     out.to_csv(RES / "summary_sequences.csv", index=False)
     two = loc[loc.name.str.startswith("S=")]
-    per = two[two.result != "unscored"].groupby(["tree", "family", "init"]).result.value_counts().unstack(fill_value=0)
+    per = (
+        two[two.result != "unscored"]
+        .groupby(["tree", "family", "init"])
+        .result.value_counts()
+        .unstack(fill_value=0)
+    )
     per["match"] = (per.get("main", 0) + per.get("rare", 0)) / per.sum(axis=1)
     per.to_csv(RES / "summary_twocomp_per_tree.csv")
     return out
@@ -390,12 +397,99 @@ def rare_trend():
             continue
         med = np.median(sorted(g.sigma.unique()))
         lo, hi = g[g.sigma < med], g[g.sigma > med]
-        rows.append(dict(zip(["sweep", "name", "tree", "start", "chi", "w"], key), n=len(g),
-                         rare=int((g.result == "rare").sum()),
-                         frac_rare_small_sigma=float((lo.result == "rare").mean()),
-                         frac_rare_large_sigma=float((hi.result == "rare").mean())))
+        rows.append(
+            dict(
+                zip(["sweep", "name", "tree", "start", "chi", "w"], key),
+                n=len(g),
+                rare=int((g.result == "rare").sum()),
+                frac_rare_small_sigma=float((lo.result == "rare").mean()),
+                frac_rare_large_sigma=float((hi.result == "rare").mean()),
+            )
+        )
     out = pd.DataFrame(rows)
     out.to_csv(RES / "locality_rare_trend.csv", index=False)
+    return out
+
+
+def weight_order(w: str, sep: str) -> str:
+    ws = [float(x) for x in str(w).split("/")]
+    return sep.join(str(i) for i in np.argsort(-np.array(ws), kind="stable"))
+
+
+def baselines():
+    """Hopper vs trivial order rules on the same runs (saddle_hopper_verification.md section 4).
+
+    B1: weight order (largest first), no rotation (locality's class "greedy"); B1r: weight order, rotation
+    ignored; B2: any order, no rotation. "main" counts rare-branch runs as misses; "trap-flag stalls" are
+    the stalled runs that count as main only through the k >= 4 trap flag (admissible, not predicted)."""
+    loc = pd.read_csv(RES / "locality_runs_scored.csv")
+    sc = loc[loc.result != "unscored"].copy()
+    sc["word"] = sc.w.map(lambda w: weight_order(w, ">"))
+    # predictions do not depend on sigma or seed, so the single main order of a row group is the order
+    # of its main-branch runs
+    g = ["sweep", "name", "tree", "start", "chi", "w"]
+    ok = (sc.result == "main") & sc.cls.isin(["greedy", "other_order"]) & (sc.n_main_orders == 1)
+    main_order = sc[ok].groupby(g).order.agg(lambda x: x.iloc[0] if x.nunique() == 1 else None)
+    sc = sc.join(main_order.rename("main_order"), on=g)
+    stall = sc.cls == "stalled"
+    one = ~stall & (sc.n_main_orders == 1)
+    two = sc.name.str.startswith("S=")
+    subsets = [
+        ("all scored", np.ones(len(sc), bool)),
+        ("not stalled", ~stall),
+        ("one main order, not stalled", one),
+        (
+            "  of which saddle start (first component fixed by protocol)",
+            one & (sc.start == "saddle"),
+        ),
+        ("  of which fan-in/balanced, two components", one & (sc.start != "saddle") & two),
+        ("  of which fan-in/balanced, multi-component", one & (sc.start != "saddle") & ~two),
+        (
+            "  of which main order differs from weight order (route rule)",
+            one & (sc.main_order != sc.word),
+        ),
+        ("several main orders (race / joint event), not stalled", ~stall & (sc.n_main_orders > 1)),
+    ]
+    rows = []
+    for name, m in subsets:
+        x = sc[m]
+        rows.append(
+            dict(
+                dataset="locality",
+                subset=name,
+                runs=len(x),
+                hopper_main_or_rare=x.result.isin(["main", "rare"]).mean(),
+                hopper_main=(x.result == "main").mean(),
+                trap_flag_stalls=int(((x.cls == "stalled") & (x.result == "main")).sum()),
+                B1=(x.cls == "greedy").mean(),
+                B1r=(x.order == x.word).mean(),
+                B2=x.cls.isin(["greedy", "other_order"]).mean(),
+            )
+        )
+    s2s = pd.read_csv(RES / "s2s_core_runs_scored.csv")
+    s2s = s2s[s2s.result != "unscored"]
+    comp = s2s.cls == "complete"
+    for name, m in (
+        ("all scored", np.ones(len(s2s), bool)),
+        ("complete, binary4 (the only tree with one main order)", comp & (s2s.tree == "binary4")),
+        ("complete, other trees (all 6 orders main)", comp & (s2s.tree != "binary4")),
+    ):
+        x = s2s[m]
+        rows.append(
+            dict(
+                dataset="s2s_core",
+                subset=name,
+                runs=len(x),
+                hopper_main_or_rare=x.result.isin(["main", "rare"]).mean(),
+                hopper_main=(x.result == "main").mean(),
+                trap_flag_stalls=int((x.cls == "trapped").sum()),
+                B1=(x.order == "1-2-3").mean(),
+                B1r=np.nan,
+                B2=np.nan,
+            )
+        )
+    out = pd.DataFrame(rows)
+    out.to_csv(RES / "baselines.csv", index=False)
     return out
 
 
@@ -472,8 +566,16 @@ def fig_laws(lw):
             if not logscale:  # integer predictions: offset the datasets and show the fit errors
                 x = d.predicted + 0.14 * (i - 1)
                 se = pd.to_numeric(d.se, errors="coerce")
-                ax.errorbar(x[sel_ds], y[sel_ds], yerr=se[sel_ds].where(se[sel_ds] < 3), fmt="none",
-                            ecolor=COLORS[i % 3], elinewidth=0.8, alpha=0.6, zorder=2)
+                ax.errorbar(
+                    x[sel_ds],
+                    y[sel_ds],
+                    yerr=se[sel_ds].where(se[sel_ds] < 3),
+                    fmt="none",
+                    ecolor=COLORS[i % 3],
+                    elinewidth=0.8,
+                    alpha=0.6,
+                    zorder=2,
+                )
             ax.scatter(
                 x[sel_ds & ok],
                 y[sel_ds & ok],
@@ -566,6 +668,7 @@ def fig_match(sq):
 def main():
     sq = sequences()
     lw = laws()
+    bl = baselines()
     mm = mismatches()
     ec = exponent_causes()
     rt = rare_trend()
@@ -578,13 +681,17 @@ def main():
         .agree.agg(lambda x: f"{int((x.astype(str) == 'True').sum())}/{len(x)}")
         .to_string()
     )
+    print(bl.to_string(float_format=lambda v: f"{v:.4f}"))
     print(mm.groupby(["dataset", "cause"]).runs.sum().to_string())
     print(ec.groupby(ec.cause.str.split(":").str[0].str.split("(").str[0]).size().to_string())
-    print("rare runs thinner at small sigma:", int((rt.frac_rare_small_sigma < rt.frac_rare_large_sigma).sum()),
-          "equal:", int((rt.frac_rare_small_sigma == rt.frac_rare_large_sigma).sum()), "of", len(rt))
-
-
-
+    print(
+        "rare runs thinner at small sigma:",
+        int((rt.frac_rare_small_sigma < rt.frac_rare_large_sigma).sum()),
+        "equal:",
+        int((rt.frac_rare_small_sigma == rt.frac_rare_large_sigma).sum()),
+        "of",
+        len(rt),
+    )
 
 
 def exponent_causes():
