@@ -175,4 +175,13 @@ background. Notation is defined in \cref{sec:setup} and collected in \texttt{mac
 \input{sections/B_experimental_details}
 \input{sections/C_reproducibility}
 
+% Appendix D collects material moved out of the main text (one file per main section; see notes/report_style.md).
+\section{Supplementary results}\label{app:supp}
+Material moved here from the main text: detailed tables, secondary checks, and the provenance and corrections
+of each result after review.
+\InputIfFileExists{sections/D_s2s}{}{}
+\InputIfFileExists{sections/D_regimes}{}{}
+\InputIfFileExists{sections/D_optim}{}{}
+\InputIfFileExists{sections/D_covariance}{}{}
+
 \end{document}
