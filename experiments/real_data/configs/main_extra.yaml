@@ -1,0 +1,8 @@
+# The 14 runs of the analysed main sweep (234 runs) that main.yaml (220 cases) does not generate: scrambled1
+# at sigma = 0.07, 0.14, 0.3 finished before the grid of the robustness variants was trimmed (REPORT,
+# "Reduced grids") and were kept. Seed 4 has no sigma = 0.3 run (not finished before the trim). Same output
+# directory as main.yaml: main.yaml + main_extra.yaml regenerate the analysed sweep exactly.
+defaults: {t2: 1.0e+4, n_per_decade: 30, n_linear: 1000, wall_limit: 5400, chi: 4}
+cases:
+  - {tree: binary, ordering: scrambled1, features: raw, sigmas: [0.07, 0.14, 0.3], seeds: [0, 1, 2, 3]}
+  - {tree: binary, ordering: scrambled1, features: raw, sigmas: [0.07, 0.14], seeds: [4]}

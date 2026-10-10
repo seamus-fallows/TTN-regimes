@@ -1,5 +1,24 @@
 # real-data: do the teacher-student TTN phenomena survive on real images? (B5)
 
+> **Addendum (fix round 1, local, 2026-10-10; branch wip/real-data-fix).** After the round-1 review
+> (`notes/reviews/real_data_round1.md`) several statements below are corrected in `notes/real_data.md`
+> section 8, which supersedes this report where they differ. In short: the k = 3 first-route gap had an
+> attribution bug (corrected: A/sigma + B fits all 11 clean series, free exponent 1.22 ± 0.03, not "1.01");
+> both gap laws are now fitted with relative residuals (log-law rms 0.11-0.30, still rejected); the
+> "locality" result is narrowed to a pixel-order/orientation effect measured by route amplitudes (an
+> equally local transposed quadtree is among the worst orders); "the MPS is fastest at every sigma / fails
+> on every task" is narrowed to the tau = t - t_a clock on MNIST with the snake order (slower on the
+> absolute clock, slowest on Fashion, shape and order confounded); the MPS first route is merged with the
+> escape (10/35 rank events are the threshold at tau = 0), so its verdict is "partly"; the regime map's
+> "rich" rests on one sigma, the lazy runs are unconverged and the lazy floor is not above feature learning
+> for every seed; counts over sigma are de-duplicated into critical-point units; chi = 8 and Fashion
+> exponents that no committed output produces are withdrawn. **Round 2** (raw outputs local): every pending
+> item was rerun with the fixed code (first-route fits over all 124 binary runs: 1.20 ± 0.03, A/sigma + B with
+> B < 0 in 10/10; with fair fits 6 of 9 later MPS edges rise in log time, so the review's "2 of 9" was a fit
+> artifact), and a pre-registered order test was run (`notes/real_data.md` section 9) over 27 pixel
+> orders: a data-only route-amplitude share predicts the final loss (rho = -0.60 [-0.82, -0.22]) but not the time
+> to reach L <= 0.25.
+
 Status: done - Branch: agent/real-data - Updated: 2026-10-10 04:25 UTC
 
 ## Summary

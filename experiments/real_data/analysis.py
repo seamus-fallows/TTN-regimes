@@ -17,6 +17,7 @@ Definitions (notes/diagnostics.md, adapted to data without a teacher; see notes/
 from __future__ import annotations
 
 import json
+from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -31,6 +32,7 @@ from ttn.dynamics import merged_rows
 
 LEARNED = 0.02
 F_EVENT = 0.05
+ERR_MAX = 0.05  # rank-1 filter for route-amplitude states (relative distance from a rank-1 product)
 
 
 def load(path) -> dict:
@@ -221,3 +223,86 @@ def loss_drops(t: np.ndarray, loss: np.ndarray, valley_factor: float = 3.0,
                     "t_hi": float(t_hi), "loss_before": float(loss[b[j]]),
                     "loss_after": float(loss[end]), "n_samples": int(c - a + 1)})
     return out
+
+
+def route_pred_obs(r):
+    """(predicted first pair = sibling pair with the largest lambda, observed first pair) as edge indices."""
+    sib = [p for p in r["pairs"] if p["k"] == 3]
+    best = max(sib, key=lambda p: p["lam"])
+    e = r["edges"]
+    return sorted([e.index(best["u"]), e.index(best["w"])]), sorted(
+        r.get("first_rank2_edges") or []
+    )
+
+
+def share_vec(r):
+    lam = np.array([p["lam"] for p in r["pairs"]])
+    return lam**2 / (lam**2).sum()
+
+
+def route_units(states, err_max=ERR_MAX, tv_max=0.2, dl_max=0.01):
+    """Route-amplitude rule de-duplicated into critical-point units.
+
+    States with rank1_rel_err > err_max are dropped (the rank-1 formula does not apply; this also drops
+    the plateau midpoints taken after the route had risen). Runs of the same (order, seed) at different
+    sigma sit at the same rank-1 critical point when nothing switches, so they are one trial, not
+    several: within an (order, seed), states are linked when their normalised lambda^2 patterns differ by
+    less than tv_max in total variation and their plateau losses by less than dl_max; connected groups
+    (single linkage over sigma order) are units. A unit is 'hit' if the largest sibling amplitude
+    predicts the first pair in all its states, 'mixed' if in some, 'miss' if in none."""
+    keep = [r for r in states if "pairs" in r and r["rank1_rel_err"] <= err_max]
+    by = defaultdict(list)
+    for r in keep:
+        by[(r["ordering"], r["features"], r["seed"])].append(r)
+    units = []
+    for key, rs in sorted(by.items()):
+        rs.sort(key=lambda r: r["sigma"])
+        groups = []
+        for r in rs:
+            v = share_vec(r)
+            for g in groups:
+                if any(
+                    0.5 * np.abs(share_vec(q) - v).sum() < tv_max
+                    and abs(q["train_loss"] - r["train_loss"]) < dl_max
+                    for q in g
+                ):
+                    g.append(r)
+                    break
+            else:
+                groups.append([r])
+        for g in groups:
+            hits = [p == o for p, o in map(route_pred_obs, g)]
+            pred, obs = route_pred_obs(g[0])
+            units.append(
+                {
+                    "ordering": key[0],
+                    "features": key[1],
+                    "seed": key[2],
+                    "sigmas": [r["sigma"] for r in g],
+                    "plateau_loss": float(np.mean([r["train_loss"] for r in g])),
+                    "pred": pred,
+                    "obs": obs,
+                    "hits": hits,
+                    "outcome": "hit" if all(hits) else ("mixed" if any(hits) else "miss"),
+                }
+            )
+    n_states = {"all": len(states), "kept": len(keep), "dropped": len(states) - len(keep)}
+    per_state = defaultdict(lambda: [0, 0])
+    for r in keep:
+        k = "quadtree" if r["ordering"] == "quadtree" else "scrambled"
+        p, o = route_pred_obs(r)
+        per_state[k][0] += p == o
+        per_state[k][1] += 1
+    together = sum(len(r.get("first_rank2_edges") or []) == 2 for r in keep)
+    count = defaultdict(int)
+    for u in units:
+        count[u["outcome"]] += 1
+    return {
+        "units": units,
+        "n_units": len(units),
+        "outcomes": dict(count),
+        "n_states": n_states,
+        "per_state_hits": {k: v for k, v in per_state.items()},
+        "pairs_rising_together_in_kept": [together, len(keep)],
+        "chance": 0.25,
+    }

@@ -2,77 +2,155 @@
 
 **Question.** Do the phenomena established with teachers (first plateau ~ sigma^-(K-2), stepwise
 bond-rank growth, the route/locality rule, the regime map) appear when a TTN is trained by gradient
-flow on a real dataset? Findings: `notes/real_data.md`. Running report: `agent-runs/real-data/REPORT.md`.
+flow on a real dataset? Findings: `notes/real_data.md` (section 8 = fix round 1, which supersedes
+earlier statements where they differ). Running report: `agent-runs/real-data/REPORT.md`.
 
 ## Setup
 - Data: MNIST 3 (y = +1) vs 5 (y = -1), balanced, n_train = 4000, n_test = 1600 (data seed 0), images
   cropped to 24 x 24 and block-averaged to 4 x 4 (N = 16 sites). `download.py` fetches the raw IDX
-  files (MNIST from the torchvision mirror, Fashion-MNIST from zalandoresearch) into
-  `/root/outputs/real_data/data/` and writes 4x4 and 8x8 versions.
+  files (MNIST from the torchvision mirror, Fashion-MNIST from zalandoresearch) and writes 4x4 and 8x8
+  versions. The data directory is `/root/outputs/real_data/data` unless the environment variable
+  `REAL_DATA_DIR` points elsewhere (read by `data.py`).
 - Features phi(x) = (cos(pi x/2), sin(pi x/2)) ("raw"), or per-site whitened with the uncentred second
   moment ("white"). Model: f = <W, (x)_i phi_i>, empirical square loss, fan-in init with per-core
   sigma (`TTNSpec.init`), float64, one thread per process.
 - Trees (`data.pixel_order`, `data.make_tree`): `binary16` (K = 15) on the Morton/quadtree order
   ("quadtree"), `mps16` (K = 16) on the boustrophedon order ("snake"), `binary16` on a random
-  permutation ("scrambled<k>", permutation seed k + 12345). Bond dimension chi (default 4).
+  permutation ("scrambled<k>", permutation seed k + 12345), and for the order test quadtreeT, rowmajor, colmajor,
+  hilbert, mortonrev (`data.pixel_order`). Bond dimension chi (default 4).
 - Dynamics: gradient flow, two phases (`run.py`): DP5 through the first plateau until the loss has
   dropped by 1%, then LSODA (Gauss-Newton Newton matrix) on the clock tau = t - t_a for a horizon T2;
   rtol 1e-8, atol 1e-14. Library `Recorder` (log + fine rows) plus test metrics and data-weighted
   bond spectra (`data.function_spectra`).
 - Analysis definitions (`notes/real_data.md` section 3): learning events = peaks of the loss rate -dL/dt
   (FWHM widths; separation ratios as in `notes/diagnostics.md`); which edges gain rank = data-weighted
-  s_k/s_1 crossing 0.05; merged log + fine rows.
+  s_k/s_1 crossing 0.05; merged log + fine rows. A route's drop is the drop whose widened window contains
+  its rank crossing (fix round 1); power law, log law and A/sigma + B are all fitted with relative residuals.
 
-## How to run (in this order)
+## How to run
+Raw outputs go to `/root/outputs/real_data/<sweep>/` (remote) or any directory given as argument; they are
+not in git. `D = /root/outputs/real_data`, `A = $D/analysis`, `R = experiments/real_data/results`.
 ```
-uv run python experiments/real_data/download.py /root/outputs/real_data/data
-# sweeps (resumable; one thread per process; ~60 processes saturate the 64-core memory bandwidth)
-uv run python experiments/real_data/run.py experiments/real_data/configs/main.yaml   /root/outputs/real_data/main 48
-uv run python experiments/real_data/run.py experiments/real_data/configs/regime.yaml /root/outputs/real_data/regime 12
-uv run python experiments/real_data/run.py experiments/real_data/configs/chi8.yaml    /root/outputs/real_data/chi8 24
-uv run python experiments/real_data/run.py experiments/real_data/configs/fashion.yaml /root/outputs/real_data/fashion 24
-uv run python experiments/real_data/run.py experiments/real_data/configs/img8.yaml    /root/outputs/real_data/img8 12
-# analysis (A = /root/outputs/real_data/analysis, R = experiments/real_data/results or a fresh directory)
-uv run python experiments/real_data/summarize.py /root/outputs/real_data/main $A/main_summary 8
-uv run python experiments/real_data/summarize.py /root/outputs/real_data/regime $A/regime_summary 8
-uv run python experiments/real_data/route_amplitudes.py $A/main_summary.json /root/outputs/real_data/main $A/routes_raw.json 6 _raw_binary
-uv run python experiments/real_data/plateau_hessians.py $A/main_summary.json /root/outputs/real_data/main $A/hessians_raw.json 6 _raw_binary_quadtree,_raw_mps
-uv run python experiments/real_data/regime_analysis.py $A/regime_summary.json /root/outputs/real_data/regime $A/regime_analysis.json 8 $A/main_summary.json /root/outputs/real_data/main 0.3
+uv run python experiments/real_data/download.py $D/data          # or set REAL_DATA_DIR to an existing copy
+# sweeps (resumable; one thread per process; ~60 processes saturate a 64-core machine's memory bandwidth)
+uv run python experiments/real_data/run.py experiments/real_data/configs/main.yaml       $D/main 48
+uv run python experiments/real_data/run.py experiments/real_data/configs/main_extra.yaml $D/main 14  # 14 scrambled1 runs kept from before the grid trim
+uv run python experiments/real_data/run.py experiments/real_data/configs/regime.yaml     $D/regime 12
+uv run python experiments/real_data/run.py experiments/real_data/configs/fashion.yaml    $D/fashion 24
+uv run python experiments/real_data/run.py experiments/real_data/configs/chi8.yaml       $D/chi8 24
+uv run python experiments/real_data/run.py experiments/real_data/configs/chi8b.yaml      $D/chi8b 21  # second half of chi8 (same cases), run in parallel
+uv run python experiments/real_data/run.py experiments/real_data/configs/img8.yaml       $D/img8 12
+uv run python experiments/real_data/run.py experiments/real_data/configs/tol_check.yaml  $D/tol_check 2  # 100x tighter tolerances
+# analysis of the main and regime sweeps
+uv run python experiments/real_data/summarize.py $D/main $A/main_summary 8
+uv run python experiments/real_data/summarize.py $D/regime $A/regime_summary 8
+uv run python experiments/real_data/route_amplitudes.py $A/main_summary.json $D/main $A/routes_raw.json 6 _raw_binary
+uv run python experiments/real_data/plateau_hessians.py $A/main_summary.json $D/main $A/hessians_raw.json 6 _raw_binary_quadtree,_raw_mps
+uv run python experiments/real_data/regime_analysis.py $A/regime_summary.json $D/regime $A/regime_analysis.json 8 $A/main_summary.json $D/main 0.3
 uv run python experiments/real_data/scaling.py $A/main_summary.json $R/scaling.json
 uv run python experiments/real_data/tables.py $A/main_summary.json $R/tables $A/routes_raw.json
 uv run python experiments/real_data/events_table.py $A/main_summary.json $R/events_table
-uv run python experiments/real_data/make_figures.py $A/main_summary.json /root/outputs/real_data/main $R raw $A/routes_raw.json $A/hessians_raw.json $A/regime_analysis.json
+uv run python experiments/real_data/make_figures.py $A/main_summary.json $D/main $R raw $A/routes_raw.json $A/hessians_raw.json $A/regime_analysis.json
+# robustness sweeps (chi8_runs = one directory with links to the runs of chi8/ and chi8b/)
+uv run python experiments/real_data/summarize.py $D/fashion $A/fashion_summary 8
+uv run python experiments/real_data/tables.py $A/fashion_summary.json $R/fashion_tables
+uv run python experiments/real_data/scaling.py $A/fashion_summary.json $R/fashion_scaling.json
+uv run python experiments/real_data/plateau_hessians.py $A/fashion_summary.json $D/fashion $R/fashion_hessians.json 6 _raw_binary_quadtree,_raw_binary_scrambled0,_raw_mps
+uv run python experiments/real_data/make_figures.py $A/fashion_summary.json $D/fashion $R/fashion raw
+uv run python experiments/real_data/summarize.py $D/chi8_runs $A/chi8_summary 8
+uv run python experiments/real_data/tables.py $A/chi8_summary.json $R/chi8_tables
+uv run python experiments/real_data/scaling.py $A/chi8_summary.json $R/chi8_scaling.json
+uv run python experiments/real_data/summarize.py $D/img8 $A/img8_summary 8
+uv run python experiments/real_data/tables.py $A/img8_summary.json $R/img8_tables
 ```
-`run.py <config> <out_dir> <workers>` skips finished cases and appends a line per run to `<out_dir>/runs.jsonl`.
-Config keys: `DEFAULTS` in `run.py` (dataset, size, pos/neg classes, n_train, tree, ordering, chi, features,
-centred, sigmas, seeds, t2, t2_units = abs | kernel, grid density, tolerances, hessian = gn | dense,
-kernel_probe, wall_limit). Scripts never write into the run directories; the analysis output paths are
-arguments.
+The robustness commands are reconstructed from the scripts' interfaces (the remote shell history is not
+kept); the committed `fashion_*`, `chi8_*`, `img8_*` files are their outputs. `run.py <config> <out_dir>
+<workers>` skips finished cases and appends a line per run to `<out_dir>/runs.jsonl`. Config keys: `DEFAULTS`
+in `run.py` (dataset, size, pos/neg classes, n_train, tree, ordering, chi, features, centred, sigmas, seeds,
+t2, t2_units = abs | kernel, grid density, tolerances, hessian = gn | dense, kernel_probe, wall_limit, tag).
+Scripts never write into the run directories; the analysis output paths are arguments.
+
+### Fix round 1 (local, 2026-10-10)
+The raw outputs above were not available (remote machine stopped). The fix round re-analyses the committed
+outputs and reruns two light subsets of `main.yaml` locally (`L = .../TTN_regimes/data/real_data_local`):
+```
+export REAL_DATA_DIR=<directory with mnist_4x4.npz>          # e.g. data/review_real_data/data
+uv run python experiments/real_data/run.py experiments/real_data/configs/fix1_local.yaml $L/fix1 12  # 20 binary (sigma = 0.1) + 5 MPS (phase 1)
+uv run python experiments/real_data/run.py experiments/real_data/configs/fix1_mps.yaml   $L/fix1_mps 12  # 35 MPS, tau <= 1000
+uv run python experiments/real_data/summarize.py $L/fix1 $L/fix1_summary 8
+uv run python experiments/real_data/summarize.py $L/fix1_mps $L/fix1_mps_summary 8
+uv run python experiments/real_data/scaling.py $L/fix1_mps_summary.json $R/fix1_mps_scaling.json   # MPS per-edge fits (fair)
+uv run python experiments/real_data/events_table.py --refit <round-0 events_table.json> $R/events_table  # fair refit
+uv run python experiments/real_data/fix1_analysis.py $R $R/fix1_analysis --local $L/fix1_summary.json $L/fix1_mps_summary.json \
+    --audit <review>/audit/audit_table.json <review>/audit/b2/audit_table.json --logs agent-runs/real-data/logs
+uv run python experiments/real_data/make_figures.py --json $R $R      # figures from committed JSON only
+```
+`<review>` = `data/review_real_data` (the round-1 reviewers' runs with this code: 6 more random orders, row-major
+and transposed-quadtree binary trees, MPS with other pixel orders; seed 0 and 1, sigma = 0.1).
+**Round 2 (raw outputs local in `data/real_data`, read only):** `summarize.py` on main, fashion, chi8 + chi8b (the
+remote `chi8_runs/` links point to these two; map in `data/real_data/SYMLINKS_on_remote.txt`) and img8 into
+`$L/full/`, then `scaling.py`, `tables.py`, `events_table.py`, `make_figures.py` and `fix1_analysis.py --main
+$L/full/main_summary.json` as in "How to run". This regenerated `scaling.json`, `tables.*`,
+`scaling_raw.*` (removed in fix round 1 because its middle panel plotted misattributed gaps; now regenerated
+with the window-checked attribution over all runs, next to `first_route_gaps` and `scaling_fix1`), the raw-curve
+figures (MNIST and Fashion), `events_table.*` and the `chi8_*`/`fashion_*`/`img8_*` tables and scaling files from the
+raw outputs with the fixed code; nothing from the review's list is pending (`notes/real_data.md` 8.12).
+
+### Pre-registered order test (notes/real_data.md section 9)
+```
+uv run python experiments/real_data/order_predictor.py $R/extra_orders_predictor.json 4 <orders...>   # data-only predictor S
+uv run python experiments/real_data/run.py experiments/real_data/configs/extra_orders.yaml $L/extra_orders 8  # 27 orders x 3 seeds
+uv run python experiments/real_data/summarize.py $L/extra_orders $L/extra_orders_summary 8
+uv run python experiments/real_data/order_test.py $R/extra_orders_predictor.json $L/extra_orders_summary.json $R/order_test     --main $L/full/main_summary.json --routes $R/routes_raw.json [--plateau $L/routes_extra.json]
+```
+Committed: `results/extra_orders_predictor.json` (S, before the runs), `extra_orders_summary.csv`, `order_test.{json,md}`,
+`routes_extra_orders.json` (plateau-state amplitudes of the 81 runs, exploratory) and the figure `order_test`.
+Reused identical cases are copied into `$L/extra_orders` before the run (quadtree seeds 0-2 from the main sweep,
+quadtreeT and rowmajor seeds 0-1 from the review runs), so the runner skips them.
 
 ## Files
 | file | role |
 |---|---|
 | `download.py` | data download and downsampling |
-| `data.py` | tasks, features, pixel orderings, trees, `GNProblem` (closed-form per-sample Jacobian, Gauss-Newton Newton matrix), `DenseHessianProblem` (exact Hessian, N <= 16), `messages`, `function_spectra` |
+| `data.py` | tasks, features, pixel orderings (quadtree, quadtreeT, rowmajor, colmajor, snake, hilbert, mortonrev, scrambled<k>), trees, `GNProblem` (closed-form per-sample Jacobian, Gauss-Newton Newton matrix), `DenseHessianProblem` (exact Hessian, N <= 16), `messages`, `function_spectra`; `REAL_DATA_DIR` |
 | `run.py` | two-phase gradient-flow runner (re-anchored clock in phase 1, LSODA phase 2), `RealRecorder` |
-| `analysis.py` | loading, rate-peak loss drops, events, time-to-loss |
-| `summarize.py` | one summary row per run (drops, rho, S2S, rank events, edges per drop, loss levels) |
-| `scaling.py` | per-seed fits: t1, classified first-route gaps, per-edge times; power vs log laws |
-| `events_table.py` | per-event route degree vs gap exponent |
+| `analysis.py` | loading, rate-peak loss drops, events, time-to-loss; `route_units` (rank-1 filter, critical-point units) |
+| `summarize.py` | one summary row per run (drops, rho, S2S, rank events incl. those already met at tau = 0, edges per drop, loss levels) |
+| `scaling.py` | per-seed fits: t1, classified first-route gaps (window-checked attribution), per-edge times; power law, log law, A/sigma + B with relative residuals |
+| `events_table.py` | per-event route degree vs gap exponent; `--refit` for an existing table |
 | `route_amplitudes.py` | route amplitudes lambda_uw at the rank-1 plateau (binary trees) |
 | `plateau_hessians.py` | exact Hessian at the first plateau, raw and gauge-projected |
 | `regime_analysis.py` | regime labels, post-hoc delta_K, linearized-model reference L_lin(t) |
-| `tables.py`, `make_figures.py` | tables and figures |
-| `configs/` | `main`, `regime`, `chi8`, `fashion`, `img8`; `pilot`, `smoke*` (development) |
+| `tables.py`, `make_figures.py` | tables and figures (`make_figures.py --json`: the figures that need only committed JSON) |
+| `fix1_analysis.py` | fix round 1: re-analysis from committed outputs (+ local reruns, review runs) -> `results/fix1_analysis.{json,md}` |
+| `order_predictor.py` | data-only predictor of the pre-registered order test (best rank-1 fit, route-amplitude share) -> `results/extra_orders_predictor.json` |
+| `order_test.py` | registered analysis of the order test (seed-averaged outcomes, Spearman, bootstrap CIs, permutation p) -> `results/order_test.{json,md}` |
+| `configs/` | `main` (+ `main_extra`: 14 scrambled1 runs main.yaml does not generate), `regime`, `fashion`, `chi8` + `chi8b` (same cases, two runners), `img8`, `tol_check`; `fix1_local`, `fix1_mps` (fix round 1); `extra_orders` (order test); `pilot`, `smoke*` (development) |
+| `results/` | small outputs: tables, JSON summaries, figures (`fix1_*` = fix round 1, `order_test*`, `extra_orders*` = pre-registered order test; all regenerated from the raw outputs in round 2) |
 
-## Results (details and evidence: `notes/real_data.md`)
-- First plateau t1 ∝ sigma^-(K-2) exactly (13.000 binary16, 14.000 mps16).
-- First route after the escape: a sibling pair of bottom cores on binary trees (k = 3), gap ∝ sigma^-1
-  (1.01 ± 0.14 quadtree); a single edge on the MPS (k = 2), gap ∝ log(1/sigma); Hessians: MPS strict,
-  binary higher order (lambda_min ∝ sigma^0.88).
-- Route amplitudes at the rank-1 plateau predict the first route in 34/35 (quadtree) and 78/89 (scrambled).
-- Locality: quadtree >> scrambled at small sigma (88% vs 21% of the residual interaction on k <= 5 routes);
-  the MPS is fastest at every sigma (2-core routes everywhere); no locality advantage at sigma = 0.5.
-- Regimes (centred): S2S (sigma <= 0.3) -> rich (1.4) -> lazy (>= 2), lazy = linearized model exactly.
-- Robustness: Fashion-MNIST sneaker vs ankle boot (structure yes, locality advantage none: rank-1 solvable task),
-  chi = 8 and 8x8 images (N = 64, t1 exponent 61.0000 / 62.0000): same structure; tolerance check passed.
+## Results (details and evidence: `notes/real_data.md`; section 8 = fix round 1)
+- First plateau t1 ∝ sigma^-(K-2) (13.000 binary16, 14.000 mps16): an identity of small-init flow [proven],
+  an integrator check rather than evidence.
+- First route after the escape on binary trees: a sibling pair of bottom cores (k = 3) in all 20 (order, seed)
+  pairs; its gap follows A/sigma + B (all 11 clean series and all 10 window-checked seed series of the full sweep,
+  B < 0; free exponent 1.22 ± 0.03 / 1.20 ± 0.03, not robust); the
+  log law is rejected with the same relative-residual weighting (`first_route_gaps`). The round-0 "1.01 ± 0.14"
+  came from an attribution bug.
+- MPS: the first rank increase (edge 5) is merged with the escape (10/35 runs already above threshold at
+  tau = 0); with relative-residual fits over the full horizon, 6 of 9 later edges (3, 4, 6-9) rise in log time,
+  edges 1, 2 do not; the plateau after the escape is a strict saddle,
+  the binary rank-1 plateau a higher-order one (lambda_min ∝ sigma^0.95 ± 0.07) (`scaling_fix1`, `plateau_hessians`).
+- Route amplitudes at the rank-1 plateau predict the first sibling pair in 22 of 26 (order, seed, critical
+  point) units (2 mixed, 2 miss; chance 1/4) and 11/11 review runs (`route_amplitudes`).
+- Pixel order: at sigma <= 0.14 the quadtree order ends lowest at every seed, but an equally local transposed
+  quadtree is among the worst orders and early learning is not faster. Pre-registered test (27 orders x 3 seeds,
+  sigma = 0.1): the share of route amplitude on k <= 5 routes, computed from the data alone, predicts the final
+  loss across orders (Spearman -0.60 [-0.82, -0.22]; within 20 random orders -0.55 [-0.85, -0.09]) but not the time
+  to L <= 0.25 (-0.30 [-0.59, +0.06]): an order effect, not locality as such (`order_test`, `locality_orders`).
+- MPS vs binary: the snake MPS is fastest only on the tau = t - t_a clock on MNIST; on the absolute clock its
+  first escape is later for 4 of 5 seeds at sigma = 0.1, and on Fashion it is the slowest tree.
+- Regimes (centred): S2S at small sigma, rich at sigma = 1.4 (one sigma), lazy from 2 with L(T) = L_lin(T);
+  boundaries depend on the thresholds; the lazy runs are not converged at their horizon (`regime_sweep`).
+- Robustness: Fashion-MNIST (rank-1 strict saddle, no order advantage), chi = 8 (23 runs wall-limited; locality
+  direction as at chi = 4 at sigma <= 0.14), 8x8 images (one permutation, two seeds, tau = 3000); tolerance check
+  passed; local reruns reproduce t_a to 1e-14 and L(1e4) to 5 digits.

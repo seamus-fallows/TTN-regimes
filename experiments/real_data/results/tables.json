@@ -111,18 +111,33 @@
    "MPS snake": {
     "sibling": 0.0,
     "single": 0.9714285714285714,
+    "at_start": 10,
+    "single_resolved": [
+     25,
+     25
+    ],
     "kendall": "0.27 \u00b1 0.014",
     "n": 35
    },
    "binary quadtree": {
     "sibling": 1.0,
     "single": 0.0,
+    "at_start": 0,
+    "single_resolved": [
+     0,
+     35
+    ],
     "kendall": "0.307 \u00b1 0.021",
     "n": 35
    },
    "binary scrambled": {
     "sibling": 0.9662921348314607,
     "single": 0.033707865168539325,
+    "at_start": 1,
+    "single_resolved": [
+     3,
+     88
+    ],
     "kendall": "0.171 \u00b1 0.024",
     "n": 89
    }
@@ -210,18 +225,33 @@
    "MPS snake": {
     "sibling": 0.0,
     "single": 0.6,
+    "at_start": 19,
+    "single_resolved": [
+     6,
+     6
+    ],
     "kendall": "0.464 \u00b1 0.05",
     "n": 25
    },
    "binary quadtree": {
     "sibling": 0.64,
     "single": 0.08,
+    "at_start": 9,
+    "single_resolved": [
+     1,
+     16
+    ],
     "kendall": "0.614 \u00b1 0.031",
     "n": 25
    },
    "binary scrambled": {
     "sibling": 0.72,
     "single": 0.08,
+    "at_start": 8,
+    "single_resolved": [
+     0,
+     17
+    ],
     "kendall": "0.564 \u00b1 0.054",
     "n": 25
    }
@@ -229,32 +259,40 @@
  },
  "routes": {
   "quadtree|raw": {
-   "n": 35,
-   "hit": 0.9714285714285714
+   "units": 6,
+   "hit": 5,
+   "mixed": 1,
+   "miss": 0
   },
   "scrambled0|raw": {
-   "n": 35,
-   "hit": 0.8571428571428571
+   "units": 8,
+   "hit": 7,
+   "miss": 1,
+   "mixed": 0
   },
   "scrambled1|raw": {
-   "n": 34,
-   "hit": 0.9411764705882353
+   "units": 6,
+   "hit": 5,
+   "mixed": 1,
+   "miss": 0
   },
   "scrambled2|raw": {
-   "n": 20,
-   "hit": 0.8
+   "units": 6,
+   "hit": 5,
+   "miss": 1,
+   "mixed": 0
   }
  },
  "route_share": {
   "quadtree": {
-   "3": "0.147 \u00b1 0.021",
-   "5": "0.732 \u00b1 0.027",
-   "7": "0.122 \u00b1 0.014"
+   "3": "0.0882 \u00b1 0.0041",
+   "5": "0.806 \u00b1 0.018",
+   "7": "0.106 \u00b1 0.015"
   },
-  "scrambled (3 orders)": {
-   "3": "0.0265 \u00b1 0.0053",
-   "5": "0.185 \u00b1 0.029",
-   "7": "0.788 \u00b1 0.029"
+  "scrambled (pooled orders)": {
+   "3": "0.0203 \u00b1 0.012",
+   "5": "0.148 \u00b1 0.07",
+   "7": "0.831 \u00b1 0.069"
   }
  }
 }

@@ -1,0 +1,13 @@
+# Fix round 1 (local reruns, 2026-10-10). The raw main-sweep outputs are on a stopped remote machine, and the
+# committed outputs only have pooled means. Regenerates two subsets of main.yaml with the same settings and seeds:
+# (1) the four binary pixel orders at sigma = 0.1, tau = 1e4: per-(order, seed) final losses and times to loss
+#     levels (locality distributions);
+# (2) the snake MPS at sigma = 0.1 with a short phase 2 (tag "short"): its first-escape time t_a per seed
+#     (absolute clock vs the binary trees). Phase 1 does not depend on t2.
+defaults: {t2: 1.0e+4, n_per_decade: 30, n_linear: 1000, wall_limit: 5400, chi: 4}
+cases:
+  - {tree: binary, ordering: quadtree, features: raw, sigmas: [0.1], seeds: [0, 1, 2, 3, 4]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.1], seeds: [0, 1, 2, 3, 4]}
+  - {tree: binary, ordering: scrambled1, features: raw, sigmas: [0.1], seeds: [0, 1, 2, 3, 4]}
+  - {tree: binary, ordering: scrambled2, features: raw, sigmas: [0.1], seeds: [0, 1, 2, 3, 4]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.1], seeds: [0, 1, 2, 3, 4], t2: 100, n_linear: 10, tag: short}

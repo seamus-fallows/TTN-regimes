@@ -658,59 +658,78 @@
    "excluded": [
     [
      0,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      0,
-     0.14
+     0.14,
+     "between drops"
     ],
     [
      0,
-     0.5
+     0.5,
+     "other route"
     ],
     [
      1,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      1,
-     0.14
+     0.14,
+     "between drops"
     ],
     [
      1,
-     0.5
+     0.5,
+     "other route"
     ],
     [
      2,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      2,
-     0.14
+     0.14,
+     "between drops"
     ],
     [
      2,
-     0.5
+     0.5,
+     "other route"
     ],
     [
      3,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      3,
-     0.5
+     0.14,
+     "between drops"
+    ],
+    [
+     3,
+     0.5,
+     "other route"
     ],
     [
      4,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      4,
-     0.14
+     0.14,
+     "between drops"
     ],
     [
      4,
-     0.5
+     0.5,
+     "other route"
     ]
    ],
    "routes": [
@@ -745,7 +764,30 @@
      ]
     ]
    ],
+   "points": [
+    [
+     0,
+     []
+    ],
+    [
+     1,
+     []
+    ],
+    [
+     2,
+     []
+    ],
+    [
+     3,
+     []
+    ],
+    [
+     4,
+     []
+    ]
+   ],
    "ranges": [],
+   "per_seed": [],
    "power_p": [
     NaN,
     NaN,
@@ -766,7 +808,52 @@
     NaN,
     0
    ],
+   "k3_A": [
+    NaN,
+    NaN,
+    0
+   ],
+   "k3_B": [
+    NaN,
+    NaN,
+    0
+   ],
    "k3_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_power_p": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_power_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_log_slope": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_log_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_A": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_B": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_rms": [
     NaN,
     NaN,
     0
@@ -777,55 +864,78 @@
    "excluded": [
     [
      0,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      0,
-     0.14
+     0.14,
+     "between drops"
     ],
     [
      0,
-     0.5
+     0.5,
+     "other route"
     ],
     [
      1,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      1,
-     0.14
+     0.14,
+     "between drops"
     ],
     [
      1,
-     0.5
+     0.5,
+     "other route"
     ],
     [
      2,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      2,
-     0.5
+     0.14,
+     "between drops"
+    ],
+    [
+     2,
+     0.5,
+     "other route"
     ],
     [
      3,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      3,
-     0.14
+     0.14,
+     "other route"
     ],
     [
      3,
-     0.5
+     0.5,
+     "other route"
     ],
     [
      4,
-     0.05
+     0.05,
+     "between drops"
     ],
     [
      4,
-     0.5
+     0.14,
+     "between drops"
+    ],
+    [
+     4,
+     0.5,
+     "other route"
     ]
    ],
    "routes": [
@@ -861,7 +971,30 @@
      ]
     ]
    ],
+   "points": [
+    [
+     0,
+     []
+    ],
+    [
+     1,
+     []
+    ],
+    [
+     2,
+     []
+    ],
+    [
+     3,
+     []
+    ],
+    [
+     4,
+     []
+    ]
+   ],
    "ranges": [],
+   "per_seed": [],
    "power_p": [
     NaN,
     NaN,
@@ -882,7 +1015,52 @@
     NaN,
     0
    ],
+   "k3_A": [
+    NaN,
+    NaN,
+    0
+   ],
+   "k3_B": [
+    NaN,
+    NaN,
+    0
+   ],
    "k3_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_power_p": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_power_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_log_slope": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_log_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_A": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_B": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_rms": [
     NaN,
     NaN,
     0
