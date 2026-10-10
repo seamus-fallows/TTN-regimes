@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791596840,
+  "reason": "done",
+  "outputs": {
+    "files": 3389,
+    "bytes": 218707422,
+    "sample": [
+      "s2s_core/aligned/binary4.npz",
+      "s2s_core/aligned/mps4.npz",
+      "s2s_core/aligned/ht4.npz",
+      "s2s_core/aligned/binary8.npz",
+      "s2s_core/aligned/mps8.npz"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}

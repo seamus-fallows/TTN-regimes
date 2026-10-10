@@ -1,0 +1,12 @@
+# Step 1: aligned balanced init (Saxe-type modes) vs exact solutions (ttn.theory).
+name: aligned
+trees: [[binary, 4], [binary, 8], [mps, 4], [mps, 8], [ht, 4]]
+d: 4
+chi: 3
+weights: [3.0, 2.0, 1.0]
+teacher_seed: 1000
+# Per-core amplitude, same for every core and component; chosen so the last escape is at t ~ 100.
+a0: {binary4: 0.01, mps4: 0.07, binary8: 0.29, ht4: 0.29, mps8: 0.34}
+methods: [dopri5, lsoda]
+rtol: 1.0e-10
+atol: 1.0e-14

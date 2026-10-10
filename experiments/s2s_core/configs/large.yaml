@@ -1,0 +1,25 @@
+# Later gaps at K = 7, 8 (binary8, ht4, mps8): runs need ~15 min each because later plateaus are long
+# (gaps ~1e6-1e7 at sigma = 0.07) and LSODA advances slowly on them. Looser tolerances than main.yaml
+# (rtol 1e-6, atol 1e-9 sigma; event times checked against rtol 1e-8 on one run) and a longer budget.
+# chi = 6, separated teacher. No amplitude-based roundoff stop (see k78.yaml).
+name: large
+trees: [[binary, 8], [ht, 4], [mps, 8]]
+d: 4
+chis: [6]
+teachers:
+  separated: [3.0, 2.0, 1.0]
+teacher_seed: 1000
+inits: [fanin]
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+sigmas:
+  binary8: [0.3, 0.2, 0.15, 0.1, 0.07]
+  ht4: [0.3, 0.2, 0.15, 0.1, 0.07]
+  mps8: [0.3, 0.2, 0.15, 0.1, 0.07]
+integrator:
+  method: lsoda
+  rtol: 1.0e-6
+  atol_rel: 1.0e-9
+  wall_limit: 2400
+  max_steps: 200000
+  roundoff_stop: false
+hessians: true
