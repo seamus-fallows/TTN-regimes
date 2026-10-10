@@ -88,6 +88,23 @@ def per_seed(df: pd.DataFrame, arm: str) -> pd.DataFrame:
             tag = "" if thr == 3.0 else f"_{thr:g}"
             rec.update({f"sigma_c{tag}": sc, f"status{tag}": st, f"lo{tag}": lo, f"hi{tag}": hi,
                         f"y{tag}": math.log(sc**K / u0[key]) if np.isfinite(sc) else np.nan})
+        # local exponent of rho vs sigma over the three largest-sigma S2S-like runs with a measured
+        # ratio below the boundary (or below the domain limit), to compare with -(K - 2) (R9)
+        recs = sorted(g.to_dict("records"), key=lambda x: x["sigma"])
+        top = [x for x in recs if np.isfinite(rec["hi"]) and x["sigma"] < rec["hi"]] if np.isfinite(rec["hi"]) else recs
+        top = [x for x in top if run_class(x, 3.0, x["model"] == "plain")[0] == "S"
+               and run_class(x, 3.0, x["model"] == "plain")[1] > 0][-3:]
+        if len(top) >= 2:
+            ls = np.log([x["sigma"] for x in top])
+            lr = np.log([x["rhos"][0] for x in top])
+            rec["rho_slope_top"] = float(np.polyfit(ls, lr, 1)[0])
+            rec["rho_slope_range"] = f"{top[0]['sigma']:.3g}-{top[-1]['sigma']:.3g}"
+        # domain limit of this seed: a(0) scales exactly as sigma^K (same init draw), so the sigma at
+        # which max_r |a_r(0)| = 0.1 follows from any run
+        if "a0" in g and g.a0.notna().all() and (g.model == "plain").all():
+            x = g.iloc[0]
+            amax = float(np.max(np.abs(x["a0"])))
+            rec["sigma_dom"] = float(x["sigma"] * (0.1 / amax) ** (1 / K)) if amax > 0 else np.nan
         # cost of the walker: total wall time and the slowest run
         rec["wall_total"] = g.wall.sum()
         rec["wall_max"] = g.wall.max()
@@ -125,6 +142,8 @@ def cells(ps: pd.DataFrame, thr: float = 3.0) -> pd.DataFrame:
                 rec["y_med_se"] = max(float(boot(y, np.median).std()), 1e-3)
             # random-part shrinkage parameter of H_W at the median boundary
             rec["shrink"] = med**K * d ** ((K + 1) / 2) / (min(WEIGHTS) * d)
+        if "sigma_dom" in g:
+            rec["sigma_dom_med"] = float(g.sigma_dom.median())
         hi_lb = g.loc[g[f"status{tag}"].isin(["all_s2s", "domain"]), f"lo{tag}"]
         if len(hi_lb):
             rec["censored_high_min_lb"] = float(hi_lb.min())
@@ -225,6 +244,93 @@ def all_fits(arm: str, ps: pd.DataFrame) -> list[dict]:
     return rows
 
 
+def censored_table(ps: pd.DataFrame, fits: list[dict]) -> pd.DataFrame:
+    """Seeds censored above (S2S-like up to the domain limit or to sigma_max), with their lower
+    bound lo, compared with the H_A and H_B predictions whose gamma is fitted on the resolved cells
+    (rho* = 3, subset 'all')."""
+    g = {f["fit"]: f for f in fits if f["thr"] == 3.0 and f["subset"] == "all"}
+    if not {"joint_A", "joint_B"} <= set(g):
+        return pd.DataFrame()
+    gA, gB = g["joint_A"]["gamma"], g["joint_B"]["gamma"]
+    cen = ps[ps.status.isin(["domain", "all_s2s"])].copy()
+    out = []
+    for _, r in cen.iterrows():
+        K, d = int(r.K), int(r.d)
+        u0 = aligned_boundary_a0(K, WEIGHTS) ** K
+        sA = (u0 * math.exp(-gA)) ** (1 / K)
+        sB = (u0 * math.exp(-gB) * d ** ((K + 1) / 2)) ** (1 / K)
+        out.append(dict(K=K, d=d, seed=int(r.seed), status=r.status, lo=r.lo, hi=r.hi,
+                        sigma_dom=r.get("sigma_dom", np.nan), y_lb=math.log(r.lo**K / u0),
+                        sigma_HA=sA, sigma_HB=sB, above_HA=bool(r.lo > sA), above_HB=bool(r.lo > sB)))
+    return pd.DataFrame(out)
+
+
+def censored_y(ps: pd.DataFrame, thr: float = 3.0) -> pd.DataFrame:
+    """Per seed: x = ln sqrt(D), and y exact ('ok*'), a lower bound (S2S-like up to the domain limit
+    or sigma_max: y > ln(lo^K / u_0c)) or an upper bound ('never_s2s': y < ln(hi^K / u_0c))."""
+    tag = "" if thr == 3.0 else f"_{thr:g}"
+    out = []
+    u0 = {}
+    for _, r in ps.iterrows():
+        K, d, st = int(r.K), int(r.d), r[f"status{tag}"]
+        if K not in u0:
+            u0[K] = aligned_boundary_a0(K, WEIGHTS, rho_thr=thr) ** K
+        x = (K + 1) / 2 * math.log(d)
+        if st.startswith("ok"):
+            out.append(dict(K=K, d=d, x=x, y=r[f"y{tag}"], kind="exact"))
+        elif st in ("domain", "all_s2s") and np.isfinite(r[f"lo{tag}"]):
+            out.append(dict(K=K, d=d, x=x, y=math.log(r[f"lo{tag}"] ** K / u0[K]), kind="lower"))
+        elif st == "never_s2s" and np.isfinite(r[f"hi{tag}"]):
+            out.append(dict(K=K, d=d, x=x, y=math.log(r[f"hi{tag}"] ** K / u0[K]), kind="upper"))
+    return pd.DataFrame(out)
+
+
+def tobit(cy: pd.DataFrame, fixed_beta=None):
+    """Censored-normal ML fit y = -gamma + beta x + s eps over seeds (not pre-registered; uses the
+    censored seeds that the pre-registered fits leave out). Returns (gamma, beta, s, loglik)."""
+    from scipy.optimize import minimize
+
+    x, y, k = cy.x.values, cy.y.values, cy.kind.values
+    ex, lo, up = k == "exact", k == "lower", k == "upper"
+
+    def nll(p):
+        g, b, ls = (p[0], fixed_beta, p[1]) if fixed_beta is not None else p
+        sd = math.exp(ls)
+        z = (y - (-g + b * x)) / sd
+        return -(stats.norm.logpdf(z[ex]).sum() - ex.sum() * ls + stats.norm.logsf(z[lo]).sum()
+                 + stats.norm.logcdf(z[up]).sum())
+
+    p0 = [-float(np.mean(y)), 0.5, math.log(np.std(y) + 1e-3)]
+    if fixed_beta is not None:
+        p0 = [p0[0] + fixed_beta * float(np.mean(x)), p0[2]]
+    res = minimize(nll, p0, method="Nelder-Mead", options=dict(maxiter=20000, xatol=1e-8, fatol=1e-10))
+    p = res.x
+    if fixed_beta is not None:
+        return float(p[0]), fixed_beta, float(math.exp(p[1])), -float(res.fun)
+    return float(p[0]), float(p[1]), float(math.exp(p[2])), -float(res.fun)
+
+
+def tobit_summary(ps: pd.DataFrame, arm: str, thr: float = 3.0, n_boot: int = 300) -> list[dict]:
+    cy = censored_y(ps, thr)
+    if len(cy) < 5:
+        return []
+    g, b, sd, ll = tobit(cy)
+    llA, llB = tobit(cy, 0.0)[3], tobit(cy, 1.0)[3]
+    bs = []
+    cells_ = [grp for _, grp in cy.groupby(["K", "d"])]
+    for _ in range(n_boot):  # resample seeds within each (K, d) cell
+        smp = pd.concat([c.iloc[RNG.integers(0, len(c), len(c))] for c in cells_])
+        bs.append(tobit(smp)[1])
+    se = float(np.std(bs))
+    return [dict(arm=arm, thr=thr, subset="tobit_all_seeds", fit="tobit", n_cells=len(cells_),
+                 K_range=f"{cy.K.min()}-{cy.K.max()}", gamma=g, beta=b, se_gamma=np.nan, se_beta=se,
+                 chi2=np.nan, dof=len(cy) - 3, p=np.nan, birge=np.nan, sd=sd,
+                 n_exact=int((cy.kind == "exact").sum()), n_lower=int((cy.kind == "lower").sum()),
+                 n_upper=int((cy.kind == "upper").sum()),
+                 LR_A=2 * (ll - llA), p_A=float(stats.chi2.sf(2 * (ll - llA), 1)),
+                 LR_B=2 * (ll - llB), p_B=float(stats.chi2.sf(2 * (ll - llB), 1)))]
+
+
 def decision(f_joint: dict, f_A: dict, f_B: dict) -> str:
     b, se = f_joint["beta"], f_joint["se_beta"]
     zA, zB = abs(b) / se, abs(b - 1) / se
@@ -275,6 +381,10 @@ def fig_round2(arm: str, ps: pd.DataFrame, path: str, title: str):
             ax.plot(Ks, (u0 * np.exp(-gB) * d ** ((Ks + 1) / 2)) ** (1 / Ks), "--", color=COL[d], lw=1,
                     label=f"H_B fit (beta = 1), d = {d}")
         ax.axhline(math.sqrt(d), color=COL[d], lw=0.6, ls=":")
+        if "sigma_dom_med" in c:
+            cd = cl[(cl.d == d) & np.isfinite(cl.get("sigma_dom_med", np.nan))]
+            ax.plot(cd.K + off, cd.sigma_dom_med, "_", color=COL[d], ms=14, mew=2,
+                    label=f"d = {d}: domain limit (median)")
     if fits:
         gA = fits[0.0]["gamma"]
         ax.plot(Ks, (u0 * np.exp(-gA)) ** (1 / Ks), "-", color="0.4", lw=1, label="H_A fit (beta = 0)")
@@ -352,6 +462,17 @@ def main():
         fig_round2(arm, ps, fpath, {"P": "plain, chi = 4", "C": "centred, full bonds"}[arm])
         fr = all_fits(arm, ps)
         fit_rows += fr
+        for thr in THRS:
+            tb = tobit_summary(ps, arm, thr)
+            fit_rows += tb
+            for t in tb:
+                print(arm, f"rho*={thr:g} tobit (all seeds, not pre-registered): beta = {t['beta']:.3f} +- {t['se_beta']:.3f}",
+                      f"(exact {t['n_exact']}, lower {t['n_lower']}, upper {t['n_upper']}); LR vs H_A p = {t['p_A']:.2g}, vs H_B p = {t['p_B']:.2g}")
+        cen = censored_table(ps, fr)
+        if len(cen):
+            save(cen, f"censored_{arm}.csv")
+            print(arm, "censored seeds:", len(cen), "above H_A:", int(cen.above_HA.sum()),
+                  "above H_B:", int(cen.above_HB.sum()))
         for thr in THRS:
             for sub in ("all", "no_shrink", "all_robust"):
                 get = {r["fit"]: r for r in fr if r["thr"] == thr and r["subset"] == sub}

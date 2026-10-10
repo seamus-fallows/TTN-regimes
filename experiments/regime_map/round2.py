@@ -149,7 +149,12 @@ def walker_next(rows: list[dict], K: int, d: int, thr: float = 3.0, domain: bool
         if rho[last] > 0 and np.isfinite(rho[last]):
             step = max(f**0.5, min((rho[last] / thr) ** (1 / max(K - 2, 1)) * 1.05, f**3))
         new = sorted({min(hi * step, smax), min(hi * step * f, smax)})
-        return [x for x in new if x < smax * 0.9999] if dom else new, "open"
+        if dom:
+            new = [x for x in new if x < smax * 0.9999]
+            if not new:  # the step would leave the domain: close in on the domain limit instead
+                ratio = smax / hi
+                new = [hi * ratio ** (1 / 3), hi * ratio ** (2 / 3)]
+        return new, "open"
     j = after[0]
     i = max(k for k in S if k < j)
     lo, hi = sig[i], sig[j]
