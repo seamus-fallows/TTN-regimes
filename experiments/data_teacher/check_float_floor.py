@@ -1,9 +1,11 @@
 """Float64-floor check (lead's note; review of round 1: cover the runs behind the claims).
 
 A dormant direction whose signal falls below roundoff is re-seeded by roundoff, not by the init.
-- CP-teacher runs with overlaps (pilot npz and dense library Trajectories): minimum over t, before
-  component r's first learning event (a_r = 1/2), of the sliding-window envelope (+-5 output points)
-  of |a_r| (a sign change passes through 0 without losing the signal); flagged below 1e-12.
+- CP-teacher runs with overlaps (pilot npz and dense library Trajectories): minimum over t between the
+  first escape (L < 0.9 L(0)) and component r's first learning event (a_r = 1/2) of the sliding-window
+  envelope (+-5 output points) of |a_r| (a sign change passes through 0 without losing the signal);
+  flagged below 1e-12. (Before the first escape everything is ~sigma^K, small but without
+  cancellation.)
 - TTN-teacher dense runs (no overlaps): minimum of max_e s_2^e between the first escape (L < 0.9 L(0))
   and the second-escape event (s_2^e >= 0.03 sigma_2^e(T)); flagged below 1e-14 (QR accuracy ~1e-15).
 Saddle-start runs (r2_saddle) start from noise eps on O(1) cores: the route amplitudes are ~eps and the
@@ -44,10 +46,17 @@ for name in pilot + dense:
             t, loss = tr.data["t"], tr.data["loss"]
             sp, tsp = np.nan_to_num(tr.data["spectra"]), tr.data["teacher_spectra"]
         if ov.size:
+            # the danger is a dormant component whose signal falls near roundoff AFTER the first
+            # escape (O(1) learned terms present); before it, W and its gradient are ~sigma^K and
+            # sigma^(K-1), small but computed without cancellation (at sigma = 3e-4, K = 4 the initial
+            # overlaps are ~1e-15 by construction)
+            k0 = int(np.argmax(loss < 0.9 * loss[0]))
             for r in range(ov.shape[1]):
                 a = ov[:, r]
                 k = np.argmax(a >= 0.5) if (a >= 0.5).any() else len(a)
-                mn, env = envelope_min(a, k)
+                if k <= k0 + 1:
+                    continue  # learned in the first escape
+                mn, env = envelope_min(a[k0:], k - k0)
                 rows.append(dict(sweep=name, run=f.stem, signal=f"a_{r}", min_abs=mn, min_signal=env,
                                  flag=env < 1e-12))
         elif sp is not None:
