@@ -321,11 +321,13 @@ GD does in \cref{sec:other-optimizers}.
     $x=q/\tw1^{1/\Kc}$, $h=\lr\tw1^{2-2/\Kc}$ (points at 0: returns to the origin). Bottom: outcome classes at the
     18 steps marked below the axis, pooled over $\isc=0.003$--$0.3$ (15--25 runs per step). GF-like:
     monotone loss ending at gradient flow's loss (within $5\%$ plus $10^{-3}\Loss_0$); catapult: the same
-    after a rise of the loss; thrown back: loss above $0.9\Loss_0$ after the first event; diverged: above
-    $10^6\Loss_0$. (b)~Relative error of the first event time, mean $\pm$ s.e.; lines: $\lr c_1/\tev1^{\rm GF}$,
-    no fit. (c)~All runs in the $(\isc,\lr)$ plane (plain model with $\chi=3$ and $9$, $\isc\le0.3$; centred,
-    $\chi=9$, $\isc\ge1$): dotted, $\lr_c$; solid, $2/\lambda_{\rm GF}$ (mean over seeds); dashed, the largest
-    step at which a run still reaches gradient flow's loss.}
+    after a rise of the loss; thrown back: loss above $0.9\Loss_0$ after the first event; bounded oscillation:
+    a loss that keeps oscillating above gradient flow's level; diverged: above $10^6\Loss_0$. (b)~Relative error
+    of the first event time, mean $\pm$ s.e.\ over the five seeds; lines: $\lr c_1/\tev1^{\rm GF}$, no fit.
+    (c)~All runs in the $(\isc,\lr)$ plane, coloured by outcome class as in (a) (plain model with $\chi=3$ and
+    $9$, $\isc\le0.3$; centred, $\chi=9$, $\isc\ge1$): dotted, $\lr_c$; solid, $2/\lambda_{\rm GF}$ (mean over
+    seeds); dashed, the largest step at which a run still reaches gradient flow's loss. Data: experiment
+    \texttt{optim\_samples} (\cref{tab:repro-figures}).}
   \label{fig:optim-gd}
 \end{figure}
 
@@ -437,11 +439,12 @@ compressing it.
   \caption{Online SGD, binary tree with $\Ns=4$ ($\Kc=3$), $d=\chi=3$, odeco teacher $(3,2,1)$. (a)~Change
     against gradient flow at $\lr=5\cdot10^{-4}$ ($0.47\lr^*_{\rm ms}$ at $\batch=1$): first escape (filled; five
     initializations with ten noise seeds each) and second plateau (open; three initializations, runs
-    that kept component 1), mean $\pm$ s.e.\ across initializations; dotted: \eqref{eq:optim-collapse} with
-    $c_\gamma$ from (b). (b)~Second plateau from the aligned route, mean $\pm$ s.e.\ over the escaped runs of
-    six noise seeds; $b_0=0.01$, $0.005$, $0.003$, $0.002$ from light to dark ($T_{\rm GF}=50$--$250$); circles
-    $\batch=64$, squares $\batch=16$; triangles: all runs trapped; grey: three laws, one fitted $c_\gamma$ each.
-    (c)~Minimum of $\ov1$ during each run of (b).}
+    that kept component 1), mean $\pm$ s.e.\ across initializations, $\isc=0.03$, $0.1$, $0.3$ from light to
+    dark; dotted: \eqref{eq:optim-collapse} with $c_\gamma$ from (b). (b)~Second plateau from the aligned route,
+    mean $\pm$ s.e.\ over the escaped runs of six noise seeds; $b_0=0.01$, $0.005$, $0.003$, $0.002$ from light
+    to dark ($T_{\rm GF}=50$--$250$); circles $\batch=64$, squares $\batch=16$; triangles: all runs trapped; grey:
+    three laws, one fitted $c_\gamma$ each. (c)~Minimum of $\ov1$ during each run of (b) (colours as in (b));
+    dashed: $\frac12$. Data: experiment \texttt{optim\_samples} (\cref{tab:repro-figures}).}
   \label{fig:optim-sgd}
 \end{figure}
 
@@ -484,7 +487,8 @@ teacher-manifold dimension in both settings, is unexplained.
     limit: kernel regression with the initial tangent kernel, values below $10^{-20}$ drawn at $10^{-6}$);
     dashed: the teacher-manifold dimension 28, the tangent dimension 112 at $\chi=4$, $d^\Ns=256$; grey: the
     zero predictor. (c)~Effective bond rank (bond singular values above $0.2$, a tenth of the smallest
-    teacher weight, averaged over the six edges), $\chi=4$.}
+    teacher weight, averaged over the six edges), $\chi=4$; grey: the teacher's bond rank 2. Data: experiment
+    \texttt{optim\_samples} (\cref{tab:repro-figures}).}
   \label{fig:optim-samples}
 \end{figure}
 
@@ -564,10 +568,11 @@ non-incremental by \cref{tab:regimes}.
     odeco teacher $(3,2,1)$, fan-in initialization, $\isc=0.008$, seed 0. Columns: gradient flow, Adam
     ($\lr=10^{-3}$), GD re-gauged at every step ($\lr=0.02$), Riemannian GD ($\lr=0.1$), one-site ALS,
     each on its own clock. Rows: normalized loss, overlaps $\ov r$, bond singular values of the cut
-    $\{1,2\}|\{3,4\}$. Gradient flow and Adam learn one component at a time in the same order, with
-    plateaus at the partial-fit levels $\Lpart1/\Lpart0=0.36$ and $\Lpart2/\Lpart0=0.07$; the other
-    three have none. This is the only one of the 60 ALS and DMRG runs in which no two components cross
-    $\ov r=\frac12$ in the same micro-step.}
+    $\{1,2\}|\{3,4\}$ (colour: component $r$ and singular-value index $k$). Gradient flow and Adam learn one
+    component at a time in the same order, with plateaus at the partial-fit levels $\Lpart1/\Lpart0=0.36$ and
+    $\Lpart2/\Lpart0=0.07$; the other three have none. This is the only one of the 60 ALS and DMRG runs in which
+    no two components cross $\ov r=\frac12$ in the same micro-step. Data: experiment \texttt{optimizers}, sweep
+    \texttt{scaling\_b4} (\cref{tab:repro-figures}).}
   \label{fig:optimizers-side}
 \end{figure}
 
@@ -598,12 +603,14 @@ under $\epsilon$. Only $\Kc=8$ was tested.
     $(3,2,1)$, fan-in initialization; medians over six seeds of gradient flow's first-escape time $t_1$
     and of Adam's $\lr n_1$ ($\epsilon=10^{-8}$). Gradient flow follows $\isc^{-1}$; Adam does not
     depend on $\isc$, and $\lr n_1\to0.17$ as $\lr\to0$ ($0.30$, $0.18$, $0.16$, $0.17$ for
-    $\lr=10^{-2}$ to $10^{-4}$). Right: MPS, $\Ns=8$ ($\Kc=8$), same teacher, balanced initialization;
-    median steps to the first escape over the runs that escaped within $2\cdot10^5$ steps, for
+    $\lr=10^{-2}$ to $10^{-4}$). Right: MPS, $\Ns=8$ ($\Kc=8$), same teacher, balanced initialization, six
+    seeds; median steps to the first escape over the runs that escaped within $2\cdot10^5$ steps, for
     $\epsilon=10^{-8}$ (solid) and $10^{-30}$ (dotted); triangles, drawn at the budget, mark $\isc$ with
-    runs that did not escape; dashed: \eqref{eq:adam-eps} with median inputs. Without $\epsilon$ the
-    escape takes 121--139 ($\lr=10^{-3}$) and 23.5--29.3 steps ($\lr=10^{-2}$) at every $\isc$; with
-    $\epsilon=10^{-8}$ the law $\isc^{-6}$ returns below $\isc\approx0.05$--$0.1$.}
+    runs that did not escape; dashed: \eqref{eq:adam-eps} with median inputs. Colour: Adam's step $\lr$, light
+    to dark, the same in both panels; black: gradient flow. Without $\epsilon$ the escape takes 121--139
+    ($\lr=10^{-3}$) and 23.5--29.3 steps ($\lr=10^{-2}$) at every $\isc$; with $\epsilon=10^{-8}$ the law
+    $\isc^{-6}$ returns below $\isc\approx0.05$--$0.1$. Data: experiment \texttt{optimizers}, sweeps
+    \texttt{scaling\_b4}, \texttt{eps\_mps8} and \texttt{deep} (\cref{tab:repro-figures}).}
   \label{fig:optimizers-adam-escape}
 \end{figure}
 

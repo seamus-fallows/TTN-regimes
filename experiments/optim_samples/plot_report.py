@@ -123,7 +123,7 @@ def fig_gd():
         ylabel=r"$(t_1^{\rm GD}-t_1^{\rm GF})/t_1^{\rm GF}$",
     )
     ax_err.set_title("(b) first event, binary $N=4$", fontsize=8.5)
-    ax_err.legend(loc="upper left", fontsize=7, handletextpad=0.2)
+    ax_err.legend(loc="upper left", fontsize=8, handletextpad=0.2)
 
     # (c) learning-rate axis: every run in the (sigma, eta) plane, coloured by class
     rng = np.random.default_rng(0)
@@ -155,7 +155,7 @@ def fig_gd():
     ax_lr.plot(ends[:, 0], ends[:, 1], "--", color=tp.INK, lw=0.8, label="catapults end")
     ax_lr.scatter([], [], marker="o", s=9, color=tp.INK_SECONDARY, lw=0, label="plain model")
     ax_lr.scatter([], [], marker="s", s=9, color=tp.INK_SECONDARY, lw=0, label="centred, $\\chi=9$")
-    ax_lr.legend(loc="lower left", fontsize=7, handlelength=1.6, borderaxespad=0.2)
+    ax_lr.legend(loc="lower left", fontsize=8, handlelength=1.6, borderaxespad=0.2)
     ax_lr.set(
         xscale="log",
         yscale="log",
@@ -171,7 +171,7 @@ def fig_gd():
         [lab for _, lab in CLASSES],
         loc="outside lower center",
         ncol=5,
-        fontsize=7.5,
+        fontsize=8,
         handlelength=1.2,
         columnspacing=1.2,
     )
@@ -239,7 +239,7 @@ def fig_sgd():
         ylabel="relative change vs. GF",
     )
     ax_b.set_title("(a) first escape, second plateau", fontsize=8.5)
-    ax_b.legend(loc="upper right", fontsize=6.5, handlelength=1.5, labelspacing=0.2)
+    ax_b.legend(loc="upper right", fontsize=8, handlelength=1.5, labelspacing=0.2)
 
     # (b) aligned route start: T_SGD / T_GF against z = (eta/B) T_GF; laws with one fitted c each
     cond = pd.read_csv(RES / "p9_conditions.csv")
@@ -288,7 +288,7 @@ def fig_sgd():
         ylabel=r"$T_{\rm SGD}/T_{\rm GF}$ (escaped runs)",
     )
     ax_p9.set_title("(b) later plateau, aligned route", fontsize=8.5)
-    ax_p9.legend(loc="upper left", fontsize=6.5, handlelength=1.6)
+    ax_p9.legend(loc="center left", bbox_to_anchor=(0.0, 0.6), fontsize=8, handlelength=1.6)
 
     # (c) the learned component during those runs: minimum of a_1 per run
     p = pd.read_csv(RES / "p9_sgd.csv")
@@ -309,7 +309,7 @@ def fig_sgd():
     ax_p10.minorticks_off()
     ax_p10.set(xlabel=r"$\eta/\eta^*_{\rm ms}(B)$", ylabel=r"$\min_t a_1(t)$")
     ax_p10.set_title("(c) learned component", fontsize=8.5)
-    ax_p10.legend(loc="lower left", fontsize=6.5, handletextpad=0.1, labelspacing=0.2)
+    ax_p10.legend(loc="lower left", fontsize=8, handletextpad=0.1, labelspacing=0.2)
     tp.savefig(fig, RES / "report_sgd")
     plt.close(fig)
 
@@ -355,16 +355,24 @@ def fig_samples():
             marks = [(28, "28"), (112, "112")] if "χ=4" in setup else [(28, "28"), (256, "256")]
             for x, txt in marks:
                 ax.axvline(x, color=tp.MUTED, lw=0.7, ls="--")
-                ax.text(x * 1.06, 60, txt, fontsize=6.5, color=tp.INK_SECONDARY)
+                ax.text(x * 1.06, 60, txt, fontsize=8, color=tp.INK_SECONDARY)
         else:
             ax.axhline(2, color=tp.MUTED, lw=0.7)
             ax.set(ylabel="mean effective bond rank")
-    axes[1].text(300, 2.5e-6, "exact\n(<$10^{-20}$)", fontsize=6.5, color=tp.INK_SECONDARY)
+    axes[1].text(
+        230,
+        1e-6,
+        r"exact ($<10^{-20}$)",
+        fontsize=8,
+        color=tp.INK_SECONDARY,
+        ha="right",
+        va="center",
+    )
     handles = [
         plt.Line2D([], [], color=color[lab], marker="o", ms=3, lw=1) for lab, _ in SAMPLE_SERIES
     ]
     fig.legend(
-        handles, [t for _, t in SAMPLE_SERIES], loc="outside lower center", ncol=4, fontsize=7.5
+        handles, [t for _, t in SAMPLE_SERIES], loc="outside lower center", ncol=4, fontsize=8
     )
     tp.savefig(fig, RES / "report_samples")
     plt.close(fig)
