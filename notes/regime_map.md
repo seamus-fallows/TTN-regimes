@@ -8,6 +8,22 @@ W_0 = W(theta_0), J = dW/dtheta at theta_0 (a D x P matrix, D = prod_i d_i), tan
 T = J J^T, centred model: L = 1/2 ||W(theta) - W_0 - W*||^2. Defaults: d = 3, odeco teacher with
 weights [3, 2, 1] (||W*||^2 = 14).
 
+## 0. Summary: which parameter moves which boundary
+
+Status tags as in the project. Setting: whitened inputs, exact population loss, odeco teachers,
+fan-in init, gradient flow; centred model (target W* + W_0) unless stated; 6 seeds per point.
+
+| parameter | S2S boundary sigma_c | lazy boundary sigma_lazy | other effects |
+|---|---|---|---|
+| bond dimension chi (binary N = 4, full bonds, chi = 16-128) | ~ chi^(-0.52 +- 0.05); sigma_c sqrt(chi) ~ 0.29 (**empirical**; not derived) | ~ chi^(-0.52 +- 0.02); sigma_lazy sqrt(chi) = 6.1-6.3 vs theory P5 6.50 chi^-1/2 (**empirical**, confirms **derived** P5) | the map collapses in sigma sqrt(chi) (per-bond Gram scale); sigma^K and sigma^K chi^(K-1) rejected (2.1b) |
+| chi below the cut dimension | moves down with chi (0.24 at chi = 3 -> 0.14 at chi = 9, N = 4) | **no lazy regime**: centred runs stall at the Eckart-Young floor of W_0 + W* (**derived** R7, **empirical** 44/44 runs) | the stall onset follows the floor; plain model converges instead (2.1) |
+| chi = teacher rank, K >= 7 | masked by stalls (dead routes, fan-in) | - | balanced init removes dead routes, not the stall (2.2) |
+| number of cores K (centred, d = 2, chi = 4) | 0.17, 0.49, 0.61, 0.80, 0.75, 1.0, 0.90, 0.92, [0.63, 1.36] for K = 3..15; per-component amplitude sigma_c^K / sqrt(D) ~ 0.01 for K >= 4 -> sigma_c -> sqrt(d), not 1 (**empirical** + **derived** from R9) | not mapped beyond K = 7 (K = 7: lazy only with 2x-overparameterized full bonds, kernel boundary 1.45) | stalls (long/dead routes) take over the S2S side for MPS at K >= 8 and the floor masks the boundary at K >= 12 (2.3) |
+| root imbalance lambda at fixed alpha (N = 4, chi = 16-24) | S2S region largest near lambda = sqrt(chi) (balance), shrinks for strong imbalance either way | light root (lambda << sqrt(chi)) moves the lazy boundary down by ~100x in alpha; heavy root keeps delta_K ~ 0.5 (not lazy) | delta_K ~ lambda^2 (local slope 1.86 vs theory 1.8-1.9) (2.4) |
+| parameterization at large chi (N = 4) | - | SP: delta_K ~ chi^-3.09; NTK: chi^-0.84 (-> -1); muP-TTN: chi^+0.03 (feature learning kept) | matches theory P16 (2.5) |
+| construction (two-copy vs centred) | two-copy: events 1-2 merge at large chi (not comparable) | two-copy lower: 5.16 vs 6.50 chi^-1/2 (P6 confirmed, measured 4.8-5.0) | two-copy escapes from the lazy residual at deficient bonds (2.x) |
+| thresholds | rho 2 -> 5 moves sigma_c by x2.15-2.34 (asymptotic prediction 2.5) | delta_K 0.05 -> 0.2 moves it by x1.89 (chi = 9) -> 1.33 (chi >= 48); P7: 1.3-1.36 | labels robust; boundaries shift as predicted (2.1) |
+
 ## 1. Theory (derived here; to be compared with `notes/theory_regimes.md` when it lands)
 
 *Written before `notes/theory_regimes.md` (draft) landed. That note agrees with every statement
@@ -375,7 +391,7 @@ Two maps (6 seeds; figures `phase_sigma_chi_b8.png`, `phase_sigma_chi_b8_d2.png`
 8/32 (full, 2x):**
 - S2S boundary 0.83 [0.72, 0.97] for chi = 4, 8, 16 and 0.53 [0.46, 0.61] for the 2x-overparameterized
   full bonds (more channels move the boundary down, as at N = 4). Theory P15 (plain model, chi = 16,
-  12 seeds, first-run widths unknown) gives a median 0.71.
+  12 seeds) gives a median 0.71.
 - **Lazy regime at K = 7 exists only with overparameterized full bonds:** 8/32: lazy from sigma ~ 1.4
   (2/5 seeds at 1.42, majority from 2.5), kernel boundary (delta_K = 0.1 crossing) 1.45 (median of
   seeds); the remaining large-sigma runs are "stalled" because the lazy fit had not finished within the
