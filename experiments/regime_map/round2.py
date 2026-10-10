@@ -277,4 +277,11 @@ if __name__ == "__main__":
         h, m = map(int, a.stop_at.split(":"))
         now = dt.datetime.now(dt.timezone.utc)
         stop = now.replace(hour=h, minute=m, second=0, microsecond=0).timestamp()
-    run(a.arms.split(","), a.n_proc, a.out, stop)
+    from concurrent.futures.process import BrokenProcessPool
+
+    for attempt in range(5):  # a worker killed from outside breaks the pool: rebuild from the rows
+        try:
+            run(a.arms.split(","), a.n_proc, a.out, stop)
+            break
+        except BrokenProcessPool as e:
+            print("BrokenProcessPool, restarting from the saved rows:", e, flush=True)

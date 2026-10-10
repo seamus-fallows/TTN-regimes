@@ -120,6 +120,9 @@ def cells(ps: pd.DataFrame, thr: float = 3.0) -> pd.DataFrame:
                 b = boot(sc[ok], np.median)
                 rec.update(sigma_c_lo=float(np.percentile(b, 2.5)), sigma_c_hi=float(np.percentile(b, 97.5)))
                 rec["y_se"] = float(boot(y, np.mean).std())
+                # robust variant (not pre-registered): median of y, bootstrap SE of the median
+                rec["y_med"] = float(np.median(y))
+                rec["y_med_se"] = max(float(boot(y, np.median).std()), 1e-3)
             # random-part shrinkage parameter of H_W at the median boundary
             rec["shrink"] = med**K * d ** ((K + 1) / 2) / (min(WEIGHTS) * d)
         hi_lb = g.loc[g[f"status{tag}"].isin(["all_s2s", "domain"]), f"lo{tag}"]
@@ -199,6 +202,9 @@ def all_fits(arm: str, ps: pd.DataFrame) -> list[dict]:
         subsets = {"all": use}
         if arm == "P":
             subsets["no_shrink"] = use[use.shrink < 1]
+        # not pre-registered: the same cells with medians of y (one outlying seed, y ~ -10, moves a
+        # cell mean by ~2 for 6 seeds)
+        subsets["all_robust"] = use.assign(y_mean=use.y_med, y_se=use.y_med_se)
         for name, u in subsets.items():
             x = (u.K + 1) / 2 * np.log(u.d)
             if len(u) >= 3:
@@ -336,6 +342,10 @@ def main():
         for thr in THRS:
             save(cells(ps, thr), f"cells_{arm}_rho{thr:g}.csv")
         save(d_ratio(ps), f"ratio_{arm}.csv")
+        tim = df.groupby(["K", "d"]).agg(P=("P", "first"), n_runs=("wall", "size"), wall_med=("wall", "median"),
+                                         wall_max=("wall", "max"), steps_med=("n_steps", "median"),
+                                         stopped_max_steps=("stop", lambda x: int((x == "max_steps").sum())))
+        save(tim.reset_index(), f"timing_{arm}.csv")
         fpath = os.path.join(a.out, f"round2_sigma_c_{arm}.png")
         if os.path.exists(fpath) and not a.force:
             raise FileExistsError(fpath)
@@ -343,7 +353,7 @@ def main():
         fr = all_fits(arm, ps)
         fit_rows += fr
         for thr in THRS:
-            for sub in ("all", "no_shrink"):
+            for sub in ("all", "no_shrink", "all_robust"):
                 get = {r["fit"]: r for r in fr if r["thr"] == thr and r["subset"] == sub}
                 if {"joint", "joint_A", "joint_B"} <= set(get):
                     print(arm, f"rho*={thr:g}", sub, "beta = %.3f +- %.3f" % (get["joint"]["beta"], get["joint"]["se_beta"]),

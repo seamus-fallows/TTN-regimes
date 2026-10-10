@@ -74,6 +74,23 @@ Raw outputs are not in git; rerunning step 1 regenerates them (seeded; ~2-4 h on
 the remote outputs is in `data/regime_map/` of the main checkout (2026-10-10, read-only); fix-round
 reruns and the tensor-kernel cache in `data/regime_map_local/` (both gitignored).
 
+## Round 2: sigma_c(K) in realizable problems (pre-registered: `notes/regime_map.md` section 4)
+Question: does the S2S/rich boundary sigma_c(K) tend to a constant (1 or sqrt(d)) as K grows? Laws
+compared: sigma_c^K = const (H_A) vs sigma_c^K / sqrt(D) = const (H_B), through
+y = ln(sigma_c^K / u_0c(K)) = -gamma + beta ln sqrt(D) (beta = 0: H_A, beta = 1: H_B).
+- Arm P (`r2_plain`): plain model (target W*), chi = 4 = 2 x teacher rank, teacher weights (3, 2),
+  `binary_tree(N)` with N = 4..16 (K = 3..15), d = 2 and 3, 6 seeds.
+- Arm C (`r2_centred_full`): centred model, full bonds (chi_e = cut dimension), same teacher;
+  d = 2 for K = 3..8 and d = 3 for K = 3..4 (larger P was too slow).
+- Per seed, `round2.py` walks sigma adaptively until the first S2S-like -> rich-like transition
+  (rho* = 3) is bracketed within 2^(1/(K-2)) in sigma. Plain runs whose initial overlap
+  max_r |a_r(0)| >= 0.1 are outside the event rule's domain ('D').
+```
+uv run python experiments/regime_map/round2.py run --arms P --n-proc 300   # raw: /root/outputs/regime_map_r2/
+uv run python experiments/regime_map/round2.py run --arms C --n-proc 48
+uv run python experiments/regime_map/round2_analysis.py --force           # results/round2/
+```
+
 ## Experiments (configs)
 | config | what |
 |---|---|
