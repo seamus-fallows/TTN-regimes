@@ -42,3 +42,7 @@ $2.65 so far this session). Estimated total so far: about $38.
 
 2026-10-10 ~16:00 UTC: regime-map DELETED after verified copy of round 1 + round 2 outputs (13,325 files, 1.69 GB;
 round-2 session $3.60, 3.47 h). Running: saddle-dyn ($1.02/h). Estimated total so far: about $43.
+
+2026-10-10 ~23:00 UTC (handoff): saddle-dyn finished at 19:13 UTC (session $2.95, 2.88 h as last reported) and
+stopped itself; NOT yet deleted (Vast needs a fresh 2FA login); disk cost only until deleted. All other machines
+deleted after verified copies. Estimated total so far: about $46 of the $300 budget.

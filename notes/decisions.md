@@ -132,3 +132,15 @@ here too.
   memory-light (reverse-mode) version (34 GB at chi = 128, two-copy) — library task for the cleanup pass.
 - **regime-map round 2 (remote, restarted):** realizable K sweep (spare channels or full bonds), d = 2 and 3,
   pre-registered comparison of sigma^K vs sigma^K/sqrt(D), to settle sigma_c at large K (now: brackets, conjecture).
+
+## 2026-10-10 (evening) — Second monitoring miss; Vast 2FA expiry; handoff
+
+- **Missed completion again.** saddle-dyn finished at 19:13 UTC; the lead noticed at ~21:57. Cause: Vast's login
+  expired ("Vast wants a fresh 2FA login"), crab-student reported the agent as "unknown", and the watcher had been
+  changed to ignore "unknown" (to avoid exiting on transient API errors). Lesson: a watcher must also watch the
+  agent's branch (the "Autosave (done)" commit and REPORT status), not only the crab-student state, and must treat
+  a persistent "unknown" as an alarm.
+- **Vast 2FA** must be refreshed by the user (`vastai tfa login --method-type totp -c <code>`); until then the last
+  machine cannot be started, copied from or deleted (it is stopped; disk cost only).
+- **Handoff** written at the top of CLAUDE.md: what remains is the 2FA login, the copy + delete of saddle-dyn, its
+  verification (workflow saved in notes/handoff/), filling three placeholders, and final bookkeeping.
