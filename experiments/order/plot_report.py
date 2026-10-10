@@ -73,7 +73,9 @@ def extract_examples(raw: Path, res: Path, n_points: int = 600) -> None:
             for col, key in [(1, "loss"), (2, "a1"), (3, "a2")]
         }
         rows.append(pd.DataFrame(dict(case=case, t=keep, **sample)))
-    pd.concat(rows).to_csv(res / "report_examples.csv", index=False, float_format="%.8g")
+    pd.concat(rows).to_csv(
+        res / "report_examples.csv", index=False, float_format="%.8g", lineterminator="\n"
+    )
 
 
 # ---- figure 1: which component is learned first -------------------------------------------------
