@@ -136,8 +136,8 @@ def random_job(args):
 
 def saddle_job(args):
     """stop_aq (passed with the job, not as a module global, which spawned workers would not see): stop
-    once a_q < stop_aq. 0.1 (sweep), 0.6 (threshold scan), 0.85 (ht4 completion: the strict escape on ht4
-    ends at a blended point with a_q ~ 0.67 that is left only in ~1/eps time)."""
+    once a_q < stop_aq. 0.1 (sweep), 0.6 (threshold scan; on ht4 the strict escape
+    ends at a blended point with a_q ~ 0.67 that is left only in ~1/eps time), 0.99 (ht4 completion runs)."""
     tree, n, w, sigma, seed, stop_aq = args if len(args) == 6 else (*args, 0.1)
     torch.set_num_threads(1)
     path = OUT_ROOT / "r2_star_saddle" / f"{tree}{n}_w{w}_s{sigma}_seed{seed}.npz"
@@ -197,9 +197,10 @@ if __name__ == "__main__":
             rows = pool.map(random_job, jobs, chunksize=1)
         pd.DataFrame(rows).to_csv(RESULTS / "r2_star_random.csv", index=False)
     elif a.mode == "complete_ht":
-        # the 5 ht4 runs (w = 1.42, eps = 1e-6) of the sweep, which with stop_aq = 0.6 would wait ~1/eps
-        # in the second stage; the threshold bracket needs only "a_q < 0.9 before a_r > 1/2"
-        jobs = [("ht", 4, 1.42, 1e-6, seed, 0.85) for seed in range(5)]
+        # the 5 ht4 runs (w = 1.42, eps = 1e-6) missing from the sweep: on ht4 the strict escape from
+        # theta_q ends at the blended rank-1 point, which at w = 1.42 has a_q = 0.984 (star_blended.py), and
+        # going below a_q = 0.9 takes the polynomial ~1/eps stage; stop at departure (a_q < 0.99) instead
+        jobs = [("ht", 4, 1.42, 1e-6, seed, 0.99) for seed in range(5)]
         with Pool(5) as pool:
             pool.map(saddle_job, jobs, chunksize=1)
     elif a.mode == "threshold":

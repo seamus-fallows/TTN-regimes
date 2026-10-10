@@ -7,7 +7,7 @@
 (2) Random-init runs (results/r2_star_random.csv): super-critical (w = 1.6) vs sub-critical (1.2): peak
     of a_q, its minimum afterwards, time spent at the "q learned" level L = w^2 and at the "q forgotten"
     level L = 2, vs sigma. Fix round 2: super-critical runs are classified per seed by what a_q does
-    (keeps q / near q / blended); the decay of a_q is steep but not a power law (local exponents drift),
+    (q last / near q / blended); the decay of a_q is steep but not a power law (local exponents drift),
     so only per-seed local exponents are reported.
 Usage: uv run python experiments/data_teacher/analyze_r2_star.py
 Writes results/r2_star_saddle.csv, r2_star_threshold.csv, r2_star_rotation_law.csv, r2_star_depth.csv,
@@ -50,7 +50,15 @@ def main():
         t, ov = d["t"], d["overlaps"]
         k_r = np.argmax((ov[:, 1:] > 0.5).any(axis=1)) if (ov[:, 1:] > 0.5).any() else len(t)
         k_rot = np.argmax(ov[:, 0] < 0.9) if (ov[:, 0] < 0.9).any() else len(t)
-        r["rotate"] = bool(k_rot < k_r)
+        # fix round 2: also "departure" a_q < 0.99 before a_r > 1/2. Near the threshold the strict escape
+        # ends at a blended rank-1 point with a_q > 0.9 (star_blended.py: 0.984 at w = 1.42), so on ht4
+        # a_q < 0.9 needs the slow polynomial stage; the two rules agree wherever both fire (eps <= 1e-3).
+        # Runs that reached the time cap (t = 1e9) without either event kept q: False. Runs stopped earlier
+        # by their own stop rule before an event are undecided (nan).
+        k_dep = np.argmax(ov[:, 0] < 0.99) if (ov[:, 0] < 0.99).any() else len(t)
+        capped = t[-1] >= 1e9
+        r["rotate"] = bool(k_rot < k_r) if (min(k_rot, k_r) < len(t) or capped) else np.nan
+        r["depart"] = bool(k_dep < k_r) if (min(k_dep, k_r) < len(t) or capped) else np.nan
         r["t_rotate"] = float(t[k_rot]) if k_rot < len(t) else np.nan
         r["aq_min"] = float(ov[:, 0].min())
         rows.append(r)
@@ -58,18 +66,24 @@ def main():
     sad.to_csv(RESULTS / "r2_star_saddle.csv", index=False)
     sad["forget"] = sad["rotate"]
     thr = []
+    for (tree, sigma), g in sad.groupby(["tree", "sigma"]):
+        for crit in ("rotate", "depart"):
+            f = g[g[crit].notna()].groupby("w")[crit].mean()
+            wc = threshold(f.index.values, f.values)
+            thr.append(dict(tree=tree, sigma=sigma, criterion=crit, w_c=wc, rho_c_over_sq=np.sqrt(2) * wc / 2.0,
+                            w_star=W_STAR, n=int(g[crit].notna().sum()),
+                            w_below=f[f < 0.5].index.max() if (f < 0.5).any() else np.nan,
+                            w_above=f[f >= 0.5].index.min() if (f >= 0.5).any() else np.nan))
     fig, axes = plt.subplots(2, 3, figsize=(15, 8))
     for j, tree in enumerate(sorted(sad.tree.unique())):
         ax = axes[0, j]
         for i, (sigma, g) in enumerate(sad[sad.tree == tree].groupby("sigma")):
-            f = g.groupby("w")["forget"].mean()
+            f = g[g.depart.notna()].groupby("w")["depart"].mean()
             wc = threshold(f.index.values, f.values)
-            thr.append(dict(tree=tree, sigma=sigma, w_c=wc, rho_c_over_sq=np.sqrt(2) * wc / 2.0,
-                            w_star=W_STAR, n=len(g)))
             ax.plot(np.sqrt(2) * f.index.values / 2.0, f.values, "o-", color=f"C{i}",
                     label=f"sigma={sigma:g}: w_c={wc:.3f}")
         ax.axvline(1.0, color="k", lw=0.8, ls="--")
-        ax.set(xlabel="rho(S) / s_q", ylabel="fraction leaving q (a_q < 0.9) before learning r",
+        ax.set(xlabel="rho(S) / s_q", ylabel="fraction leaving q (a_q < 0.99) before learning r",
                title=f"{tree}: start at theta_q + noise", ylim=(-0.05, 1.05))
         ax.legend(fontsize=7)
     t = pd.DataFrame(thr)
@@ -80,7 +94,7 @@ def main():
     # exact Hessians of r2_star_hessian.csv match it to 1e-15 at w = 1.2 ... 1.6)
     from lawfit import per_seed, per_seed_local
     n_cores = {"mps4": 4, "binary4": 3, "ht4": 7}
-    rot = sad[sad.rotate].assign(gap=lambda x: x["t_rotate"])
+    rot = sad[sad.rotate == True].assign(gap=lambda x: x["t_rotate"])  # noqa: E712
     ps, sm = per_seed(rot, ["tree", "w"], min_points=3)
     if len(sm):
         _, sl = per_seed_local(rot, ["tree", "w"], n_small=3)
@@ -108,18 +122,18 @@ def main():
     # Review of round 2 (MEDIUM 4): random-init super-critical runs never sit at "q learned" (time at
     # that loss level <= 0.13, one seed <= 1.7, vs 24-538 at "q forgotten"), so this is not the P8
     # forgetting of a learned component. The init direction (seed) fixes what happens, at every sigma:
-    # "keeps q" (a_q -> 1 and stays; r, r' learned right after), "near q" (a_q peaks at 0.75-0.99, then
-    # decays), "blended" (a_q peaks at 0.55-0.68, near the blended rank-1 point, then decays).
+    # "q last" (r and r' are learned first, then q, which is never lost), "near q" (a_q peaks at
+    # 0.78-0.99, then decays), "blended" (a_q peaks at 0.55-0.68, near the blended rank-1 point, then decays).
     sup = rnd[rnd.w == 1.6].copy()
     cls = sup.groupby(["tree", "seed"]).agg(peak=("aq_peak", "median"), kept=("forgotten", lambda x: not x.any()))
-    cls["cls"] = np.where(cls.kept, "keeps q", np.where(cls.peak < 0.72, "blended", "near q"))
+    cls["cls"] = np.where(cls.kept, "q last", np.where(cls.peak < 0.72, "blended", "near q"))
     sup = sup.merge(cls["cls"].reset_index(), on=["tree", "seed"])
     sup["forgot_time"] = sup["time_at_forgot_level"]
     sup.to_csv(RESULTS / "r2_star_random_classes.csv", index=False)
     # depth: min a_q (signed; it crosses zero for some seeds at small sigma) and the time on the
     # "q forgotten" plateau, per seed vs sigma; local exponents between neighbouring sigma show the drift
     ex = []
-    for (tree, seed), g in sup[sup.cls != "keeps q"].groupby(["tree", "seed"]):
+    for (tree, seed), g in sup[sup.cls != "q last"].groupby(["tree", "seed"]):
         g = g.sort_values("sigma")
         pos = g[g.aq_min_after > 0]
         loc = np.diff(np.log(pos.aq_min_after.values)) / np.diff(np.log(pos.sigma.values))
@@ -140,7 +154,7 @@ def main():
     print(dep.round(4).to_string())
     for j, tree in enumerate(sorted(rnd.tree.unique())):
         ax = axes[1, j]
-        for c, col in (("blended", "C3"), ("near q", "C1"), ("keeps q", "C2")):
+        for c, col in (("blended", "C3"), ("near q", "C1"), ("q last", "C2")):
             g = sup[(sup.tree == tree) & (sup.cls == c)]
             for k, (seed, gg) in enumerate(g.groupby("seed")):
                 gg = gg.sort_values("sigma")

@@ -206,22 +206,27 @@ def main():
             g = ok[(ok.teacher == tname) & (ok.tree == tree)]
             if not len(g):
                 continue
-            m = g.groupby("sigma")["gap"].mean()
+            # normalized per seed (relative to that seed's smallest eps), then averaged: seeds with a
+            # missing small-eps run would otherwise shift the mean
+            g = g.sort_values("sigma").copy()
+            g = g[g.groupby("seed")["sigma"].transform("min") == g.sigma.min()]  # seeds with the smallest eps
+            ref = g[g.sigma == g.sigma.min()].set_index("seed")["gap"]
             if tree == "mps":
                 if not np.isfinite(pa.get((tname, tree), np.nan)):
                     continue
-                x, y = np.log(1 / m.index.values), m.values / pa[(tname, tree)]
-                k = np.argmax(x)
-                axes[0].plot(x - x[k], y - y[k], "o-", ms=3, label=tname)
+                g["y"] = (g["gap"] - g["seed"].map(ref)) / pa[(tname, tree)]
+                m = g.groupby("sigma")["y"].mean()
+                axes[0].plot(np.log(g.sigma.min() / m.index.values), m.values, "o-", ms=3, label=tname)
             else:
-                z = m.index.values * m.values
-                axes[j].plot(m.index, z / z[np.argmin(m.index.values)], "o-", ms=3, label=tname)
+                g["z"] = g["sigma"] * g["gap"] / (g.sigma.min() * g["seed"].map(ref))
+                m = g.groupby("sigma")["z"].mean()
+                axes[j].plot(m.index, m.values, "o-", ms=3, label=tname)
     x = np.linspace(-np.log(ok.sigma.max() / ok.sigma.min()), 0, 10)
     axes[0].plot(x, x, "k--", lw=1, label="slope 1 (prediction)")
-    axes[0].set(xlabel="ln(1/eps) - ln(1/eps_min)", ylabel="gamma_e (t_esc - t_esc(eps_min))",
+    axes[0].set(xlabel="ln(1/eps) - ln(1/eps_min)", ylabel="gamma_e (t_esc - t_esc(eps_min)), per seed",
                 title="MPS students: log law with slope 1/gamma (realized edge)")
     for j, tree in ((1, "binary"), (2, "ht")):
-        axes[j].set(xscale="log", xlabel="eps", ylabel="eps t_esc / (eps t_esc at eps_min)", ylim=(0, 2),
+        axes[j].set(xscale="log", xlabel="eps", ylabel="eps t_esc / (eps t_esc at eps_min), per seed", ylim=(0, 2),
                     title=f"{tree} students: flat = sigma^-1 (k = 3)")
     for ax in axes:
         ax.legend(fontsize=5.5, ncol=2)
