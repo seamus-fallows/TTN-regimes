@@ -171,8 +171,9 @@ perceptrons \knownresult[\citealp{amari2006singularities}]. Equivariance alone i
 preconditioning is gauge-equivariant up to damping \derived{} but moves all cores at once from their
 current values. Balance and the flattest minimum (\cref{prop:A-pattern-rule}) rest on the conserved
 $\Q e$, the charges of the gauge symmetry under Euclidean gradient flow (\cref{prop:conservation}); on
-binary4 their measured relative drift is about $10^{-11}$ under gradient flow and, growing with $\isc$,
-$4\cdot10^{-5}$--$2\cdot10^{-3}$ under GD and $10^{-3}$--$5\cdot10^{-2}$ under heavy ball (momentum flows conserve fewer quantities, with time- and velocity-dependent laws,
+binary4 their median relative drift is about $10^{-11}$ under gradient flow and, growing with $\isc$ from
+$0.002$ to $0.128$, $2\cdot10^{-5}$--$3\cdot10^{-4}$ under GD and $4\cdot10^{-4}$--$7\cdot10^{-3}$ under heavy ball (on
+binary8 and MPS8 at $\isc=0.8$, $6\cdot10^{-4}$ and $10^{-2}$) (momentum flows conserve fewer quantities, with time- and velocity-dependent laws,
 \citealp{marcotte2024keep}), while Adam, equivariant only under coordinate permutations and sign flips,
 breaks them at order one \empirical. Where an entry of the table rests on one tree, one teacher or a
 single $\isc$, the sections cited give its scope.
@@ -300,7 +301,8 @@ what would settle it.
     correlated inputs, timing every later route on binary16 in several pixel orders, and sample-size sweeps
     over teachers with manifolds of different dimension.
   \item \textbf{Exact theory and scope.} The theorems of \citet{kumar2025towards} on the dynamics after an
-    escape need non-degenerate critical points, which the gauge orbits exclude for $\chi\ge2$; a quotient
+    escape need non-degenerate critical points, which the gauge orbits exclude (already the rescaling of a
+    core against its neighbour makes every critical point with a nonzero core degenerate); a quotient
     (Morse--Bott) version would make the escape path rigorous. Whether the per-bond conservation laws are
     all the conservation laws (the algorithm of \citealp{marcotte2023abide}, run on small trees) and the
     explicit metric $(\Jac\Jac\T)^{-1}$ of balanced TTNs are open. Beyond the model: input laws that are not
