@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791607036,
+  "reason": "done",
+  "outputs": {
+    "files": 753,
+    "bytes": 179752911,
+    "sample": [
+      "order/pilots/b4_sigma.csv",
+      "order/pilots/m4_sigma.csv",
+      "order/pilots/b8_sigma.csv",
+      "order/main/runs.jsonl",
+      "order/main/runs_orig.jsonl"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}

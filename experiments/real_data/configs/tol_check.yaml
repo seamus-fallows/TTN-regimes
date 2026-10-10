@@ -1,0 +1,5 @@
+# Integrator accuracy check: two main-sweep cases rerun with 100x tighter tolerances (compare drops / losses)
+defaults: {t2: 1.0e+4, n_per_decade: 30, n_linear: 1000, wall_limit: 14400, chi: 4, rtol: 1.0e-10, atol: 1.0e-16, tag: tight}
+cases:
+  - {tree: binary, ordering: quadtree, features: raw, sigmas: [0.1], seeds: [0]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.1], seeds: [0]}

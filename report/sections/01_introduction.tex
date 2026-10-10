@@ -13,8 +13,9 @@ dynamics.}
 % TODO(intro): motivation in three steps.
 %  1. TTNs (MPS/tensor trains, HT, binary trees) are used as ML models (Stoudenmire & Schwab 2016;
 %     Novikov et al.; Cheng et al. 2019; Liu et al. 2019) and their training is delicate (init
-%     scale, barren plateaus: Liu et al. 2022; Miao & Barthel), but their training dynamics is not
-%     characterized.
+%     scale; barren plateaus for global, but not local, losses of unitary-embedded MPS: Liu et al.
+%     2022; none in the energy optimization of isometric MPS/TTNS/MERA: Miao & Barthel 2024, Barthel
+%     & Miao 2025), but their training dynamics is not characterized.
 %  2. A TTN regression model is multilinear and degree-K homogeneous in the cores, like a deep linear
 %     network, where small init gives saddle-to-saddle / incremental learning (Saxe et al. 2014;
 %     Jacot et al. 2021) and large init gives lazy training (Chizat et al. 2019). What does the
@@ -56,9 +57,13 @@ versus rich, tensor networks for learning) and what is new here.}
 %    wang2020beyond, hariz2022implicit.
 %  - Homogeneous nets near small init: kumar2024directional, kumar2025early.
 %  - Tensor networks for ML: stoudenmire2016supervised, novikov2018exponential, cohen2016expressive,
-%    levine2018deep; barren plateaus: liu2022presence, miao2024isometric, barthel2025absence.
+%    levine2018deep; barren plateaus for global, not local, losses of unitary-embedded MPS:
+%    liu2022presence; none in the energy optimization of isometric MPS/TTNS/MERA: miao2024isometric,
+%    barthel2025absence.
 %  State explicitly which of our results are new (mark \newresult) and which reproduce known
-%  results in the TTN setting (mark \knownresult with the reference).
+%  results in the TTN setting (mark \knownresult with the reference). Prior and concurrent work for
+%  each "new" claim: notes/reviews/citation_check.md, section (b); keep the narrowed tags of App. A
+%  and Sec. 5 (e.g. KKT balance, blow-up identity, head start, Adam's epsilon law, EoS amplitude).
 
 \subsection{Outline}\label{sec:intro-outline}
 \placeholder{Roadmap of the report.}

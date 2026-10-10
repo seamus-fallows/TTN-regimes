@@ -1,0 +1,22 @@
+# Round 2, item 1, random fan-in init (the protocol of round 1) on the N = 4 trees where the asymptotic
+# regime is reachable: mps4 (K = 4, first escape ~ sigma^-2) and binary4 (K = 3, ~ sigma^-1). Same d = 2
+# teachers as configs/r2_saddle.yaml (N = 4 block). Library integrator, two-stage dense grid (run_dense.py).
+name: r2_random
+base: {n_sites: 4, d: 2, chi: 4}
+cases:
+  nonorth_c0.2: {kind: nonorth, s2: 0.7, overlap: 0.2}
+  nonorth_c0.45: {kind: nonorth, s2: 0.7, overlap: 0.45}
+  misaligned_20: {kind: misaligned, weights: [1.0, 0.8], alpha: 1.0, theta_deg: 20}
+  randbin_302: {kind: ttn_teacher, teacher_tree: binary, teacher_ranks: [2, 2], decay: 1.0, teacher_seed: 302}
+  randbin_303: {kind: ttn_teacher, teacher_tree: binary, teacher_ranks: [2, 2], decay: 1.0, teacher_seed: 303}
+  randmps_301: {kind: ttn_teacher, teacher_tree: mps, teacher_ranks: [2, 2, 2], decay: 1.5, teacher_seed: 301}
+trees: [mps, binary]
+sigmas:
+  mps: [0.0003, 0.001, 0.003, 0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]
+  binary: [0.0001, 0.0003, 0.001, 0.01, 0.0158, 0.0251, 0.0398, 0.0631, 0.1]
+seeds: [0, 5]
+t_max: {mps: 1.0e+10, binary: 1.0e+10}
+n_dense: 3000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-4

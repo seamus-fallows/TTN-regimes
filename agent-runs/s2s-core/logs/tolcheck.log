@@ -1,0 +1,34 @@
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:247: RuntimeWarning: All-NaN slice encountered
+  return bool(np.any(np.nanmax(sl, axis=0) < 1e-8 * sigma))
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:330: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+                                        run     tree      init class_loose class_tight order_loose order_tight                                   events_loose                                   events_tight   t_end_loose   t_end_tight
+0  binary8_chi3_w3-2-1_balanced_s0.15_seed0  binary8  balanced     stalled     stalled      [0, 2]      [0, 2]   [43125.957646933726, nan, 630864.3156821603]     [43125.9678169528, nan, 630865.2304275146]  1.382755e+08  1.382755e+08
+1     binary8_chi3_w3-2-1_fanin_s0.15_seed0  binary8     fanin     stalled     stalled      [0, 2]      [0, 2]  [33589.746985509526, nan, 1225161.9899148126]  [33589.763133879795, nan, 1225166.2733407659]  1.382755e+08  1.382755e+08
+2     binary8_chi3_w3-2-1_fanin_s0.15_seed3  binary8     fanin     trapped     trapped      [0, 1]      [0, 1]   [24979.716975273775, 2647410.517653624, nan]   [24979.724157349156, 2647418.470463565, nan]  2.832382e+07  2.832382e+07
+3      ht4_chi3_w3-2-1_balanced_s0.15_seed0      ht4  balanced     stalled     stalled      [1, 0]      [1, 0]    [66408.74231536547, 9695.853718685721, nan]    [66408.93939820043, 9695.855680643108, nan]  1.908356e+07  1.908356e+07
+4         ht4_chi3_w3-2-1_fanin_s0.15_seed0      ht4     fanin     trapped     trapped      [0, 1]      [0, 1]    [7908.604765121393, 83108.21420053403, nan]    [7908.604820185124, 83108.34861704176, nan]  8.464633e+05  8.464633e+05
+5         ht4_chi3_w3-2-1_fanin_s0.15_seed9      ht4     fanin     stalled     stalled      [1, 0]      [1, 0]    [57360.85283406046, 8842.506727880938, nan]    [57360.96376195802, 8842.508478626527, nan]  1.908356e+07  1.908356e+07
+6     mps8_chi3_w3-2-1_balanced_s0.15_seed0     mps8  balanced     stalled     stalled      [0, 2]      [0, 2]  [1245500.8009573477, nan, 14535529.306966705]  [1245500.8836132376, nan, 14535579.118393308]  9.364426e+08  9.364426e+08
+7        mps8_chi3_w3-2-1_fanin_s0.15_seed0     mps8     fanin     trapped     trapped      [0, 1]      [0, 1]  [1360291.6280665027, 21243481.393876687, nan]   [1360291.975514919, 21243505.726530943, nan]  2.316047e+08  2.316047e+08
+8        mps8_chi3_w3-2-1_fanin_s0.15_seed4     mps8     fanin     stalled     stalled         [0]         [0]                 [392256.09204001003, nan, nan]                 [392256.10623717285, nan, nan]  9.364426e+08  9.364426e+08

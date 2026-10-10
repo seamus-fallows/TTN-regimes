@@ -15,18 +15,547 @@ event detection; Hessian and kernel computations.}
 % probe set seed; machines used (vCPU type), wall times, total cost from notes/spend.md.
 
 \subsection{Saddle-to-saddle experiments}\label{app:exp-s2s}
-\placeholder{Settings of the experiments of \cref{sec:s2s} (s2s-core, locality, order).}
-% TODO: table per experiment: trees, N, d, chi, teacher (type, weights), sigma grid, seeds, t_max,
-% loss floor, number of runs, cost.
+Settings of \cref{sec:s2s-phenomenology,sec:s2s-aligned,sec:s2s-escape} and of the odeco runs of
+\cref{sec:s2s-failure} (experiment s2s-core; the locality experiment is in \cref{app:exp-locality}).
+Experiment folder \path{experiments/s2s_core/} (README with every command in order; YAML configurations
+in \path{configs/}); findings in \path{notes/s2s_core.md}; reviews in \path{notes/reviews/s2s_core_round1.md}
+and \path{notes/reviews/s2s_core_round2_verification.md}, whose errata E1--E21 are applied in \cref{sec:s2s}.
+Numbers that are not single entries of a results table are computed by \path{report_numbers.py} into
+\path{results/report_numbers.csv}.
+\placeholder{Order experiment (\cref{sec:s2s-order}): settings to be added.}
+
+\paragraph{Problems.}
+Whitened Gaussian inputs, exact population loss, double precision. Odeco teachers
+(\path{ttn.teachers.odeco_teacher}) with $\ncomp=3$, $d=4$ at every site and Haar-random site bases from
+teacher seed 1000, a stream independent of the initialization seeds; weights $(3,2,1)$ (separated) and
+$(1,0.85,0.7)$ (close). Trees binary4, MPS4, binary8, HT4 and MPS8 ($\Kc=3,4,7,7,8$); nominal bond
+dimension $\chi=3$ or $6$, capped by \eqref{eq:bond-cap} (at $\chi=6$: MPS4 bonds $(4,6,4)$, MPS8 end bonds
+and HT4 leaf bonds $4$, all other bonds $6$). Initializations: fan-in \eqref{eq:init} with seeds $0$--$9$;
+\emph{balanced}, the same $\Wz$ re-gauged to $\Q e=0$ on every bond (\path{s2s.gauge_balance}); \emph{aligned},
+the same per-core amplitude on every core and component (\path{ttn.network.aligned_init}). The
+leading-order sweeps also use MPS, binary and HT trees with up to 16 sites (\cref{tab:exp-s2s}).
+
+\paragraph{Dynamics.}
+Gradient flow by SciPy's LSODA (\path{ttn.dynamics.integrate_gf}) with the exact Hessian as Jacobian,
+instead of the default integrator of \cref{sec:setup-dynamics}: past the first escape the flow is stiff,
+and an explicit method needs a number of steps $\propto\isc^{-(\Kc-2)}$ per plateau (Radau, tried on one
+$\Kc=7$ run, did not finish in 25 minutes). Tolerances: relative $10^{-8}$ and absolute $10^{-11}\isc$
+(sweeps \texttt{main}, \texttt{first}, \texttt{balanced}), or $10^{-6}$ and $10^{-9}\isc$ (\texttt{large},
+\texttt{k78}, whose plateaus last up to $10^{7}$); on binary8 at $\chi=6$, $\isc=0.07$, the looser tolerances
+move the event times by $7\cdot10^{-7}$ relative. Aligned runs: Dormand--Prince 5(4) and LSODA with
+tolerances $10^{-10}$ and $10^{-14}$. Events are last upward crossings of $\ov r=\frac12$ and widths final
+rises from $0.1$ to $0.9$ (\cref{sec:setup-diagnostics}), both refined by re-integrating the event window on
+linear grids until the rise holds at least 40 samples (\path{s2s.zoom_rise}); no duration is read off the
+logarithmic output grid. The plateau midpoint is the time of minimum parameter speed between two events;
+the parameters there are saved, and the Hessian, raw and gauge-projected
+(\path{ttn.diagnostics.project_out_gauge}), was recomputed from them after the library's projection fix
+(\path{recompute_hessians.py}). Bond spectra are recorded on the output grid and, in all but the first 332
+complete runs of \texttt{main}, in the event windows. The conservation drift (per integration chunk, as in
+\eqref{eq:drift}) has median $9\cdot10^{-10}$ and exceeds $10^{-6}$ in 11 of 1,576 runs (at most
+$3.3\cdot10^{-6}$; ten MPS8 runs and one binary8 run).
+
+\paragraph{Leading-order flow.}
+$T(Z)$ and $r_1$ (\cref{rem:A-recipe}) come from \path{s2s.correlation_flow_blowup}: the flow
+$\dot\params=\nabla g$ from the initialization at $\isc=1$, by DOP853 with relative tolerance $10^{-10}$,
+integrated in segments until the second-largest component amplitude $\abs{\ip{\W}{\U r}}$ is below $10^{-6}$
+of the largest and no longer growing relative to it, with a cap at amplitude $10^{30}$; the remaining time
+of a balanced mode from the stop is added. The 40 binary4 close-teacher jobs and 2 separated binary4 jobs
+at $\chi=6$ stopped at the cap with the direction still converging; $T$ is converged regardless (the time
+left beyond amplitude $A$ is $\propto A^{-(\Kc-2)/\Kc}$), and an independent integration of the spherical
+flow agrees to $1.5\cdot10^{-11}$ (binary4) and $1.7\cdot10^{-10}$ (MPS4) relative on all 160 binary4 and
+MPS4 jobs (verification review). Round-1 values of $T$, from a stop at amplitude $10^6$, were biased by up to
+$2.2\cdot10^{-3}$ relative (binary4, close teacher) and are superseded.
+
+\paragraph{Sweeps and run counts.} \Cref{tab:exp-s2s}.
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the s2s-core experiment, one configuration file each in
+    \texttt{experiments/s2s\_core/configs/} except the last two rows. Seeds $0$--$9$ unless stated; ``sep.''
+    and ``close'': the two teachers.}
+  \label{tab:exp-s2s}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.3cm}X r@{}}
+    \toprule
+    sweep & content & runs \\
+    \midrule
+    \texttt{aligned} & five trees, sep., $\chi=3$, balanced aligned initialization; Dormand--Prince and LSODA & 10 \\
+    \texttt{main} & five trees, $\chi=3,6$, both teachers, fan-in; $\Kc=3,4$: 8 values of $\isc$ in $[0.003,0.1]$;
+      $\Kc=7,8$: 6 values in $[0.07,0.4]$ at $\chi=3$, plus 50 runs at $\isc=0.03$, $0.05$ ($\chi=3$) and 76 runs at
+      $\chi=6$ ($\isc=0.03$--$0.1$) made before these were dropped or moved to \texttt{large}, all kept & 1,126 \\
+    \texttt{large} & binary8, HT4, MPS8, $\chi=6$, sep., fan-in, $\isc\in\{0.07,0.1,0.15,0.2,0.3\}$, wall-clock
+      limit $2400$\,s & 150 \\
+    \texttt{k78} & binary8, HT4, MPS8, $\chi=3$, sep., fan-in and balanced, $\isc\in\{0.15,0.2,0.3\}$, no amplitude
+      stop & 180 \\
+    \texttt{balanced} & binary4, MPS4, $\chi=3,6$, sep., balanced, $\isc\in\{0.003,0.01,0.03\}$ & 120 \\
+    \texttt{first}, \texttt{first\_k78} & first escape only, 8 values of $\isc$: binary4, MPS4 ($\isc=0.002$--$0.1$;
+      $\chi=3,6$, both teachers, fan-in and balanced); binary8, HT4, MPS8 ($\isc=0.01$--$0.4$; sep., fan-in,
+      $\chi=3,6$, MPS8 at $\chi=3$ only; binary8 also close and balanced at $\chi=3$, 6--9 seeds); 231
+      (initialization, teacher) pairs & 1,848 \\
+    \texttt{lo\_d} & leading-order flow only: binary4, MPS4, $d=2,3,4$, $\chi=d^2$, one component of weight 1,
+      200 seeds & 1,200 \\
+    \texttt{lo\_chi} & leading-order flow: the five trees, $\chi=1$--$16$ (binary8 to 12) with one component of
+      weight 1, and $\chi=3,6,12$ with weights $(3,2,1)$; 100 seeds & 5,400 \\
+    \texttt{lo\_K} & leading-order flow: MPS with $\Ns=3$--$8,10,12$, binary with $\Ns=4,6,8,12,16$, HT with
+      $\Ns=3,4,6,8$ ($\Kc=3$--$15$), $\chi=3$, weights $(3,2,1)$, 50 seeds & 850 \\
+    continuation & stalled or unresolved runs continued from their final state (\path{continue_stalled.py}) & 23 \\
+    tolerance check & 9 runs of \texttt{k78} rerun with tolerances $10^{-8}$, $10^{-11}\isc$ (\path{tolcheck.py}) & 9 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Budgets and run classes.}
+Runs stop at $\Loss\le10^{-9}\Loss(0)$; at $t_{\max}$, $10^3$ times the RMS-overlap escape time of the weakest
+component; at a wall-clock limit ($300$\,s in \texttt{main}, $400$\,s in \texttt{balanced}, $2400$\,s in
+\texttt{large} and \texttt{k78}, so the number of unresolved runs depends on the machine) or a step limit per
+output chunk; and, except in the first ${\sim}310$ runs of \texttt{main}, when a component never learned has a
+route-end slice below $10^{-8}\isc$ for a whole output chunk (a dead end, after which nothing is physics).
+\texttt{main} also stopped when every dormant amplitude $\abs{\ip{\W}{\U r}}$ stayed below $10^{-15}$ for a
+chunk; at $\Kc=7,8$ this was too strict (the amplitude is a product of $\Kc$ per-core amplitudes and can be
+$10^{-15}$ while each of them is $10^{-3}$), so those runs are classed unresolved unless a slice is dead, and
+the cells were rerun without it in \texttt{k78}. Classes (\path{analyze_main.py}): \emph{complete} (all three
+components learned); \emph{trapped} (a component never learned has a route-end slice below $10^{-8}\isc$ after
+the first escape); \emph{stalled} (the time budget ended with every such slice above it); \emph{unresolved}
+(wall-clock limit or the amplitude stop). The classes do not depend on the tolerance: the 9 runs of the
+tolerance check keep their class and order, and their event times change by at most $3.6\cdot10^{-6}$
+relative. At $\Kc=7,8$ the trapped fractions are lower bounds, since some stalled runs end with slices still
+decaying (\path{slice_trends.py}).
+
+\paragraph{Fits.}
+Exponents are fitted per seed, $\ln$ of the time against $\ln\isc$ with at least four values of $\isc$, on run
+sets classified by the saddle sequence (\path{analyze_main.fit_sets}): $\tev1$ on the runs whose first
+component is the seed's most frequent one; $\tev2-\tev1$ on the runs whose first two components are the
+seed's most frequent pair, with $\sep1>3$; $\tev3-\tev2$ on complete runs in the seed's most frequent order
+with $\sep1,\sep2>3$. The Hessian slopes use the same sets. Each cell comes from one sweep (\texttt{large} at
+$\Kc=7,8$ with $\chi=6$, \texttt{main} otherwise); sweeps with different tolerances are never pooled. The cut
+$\sep i>3$ matters only for binary4 with the close teacher, where it leaves some seeds with four or five
+values of $\isc$ (about $0.8$ decade); without it, overlapping and wrong-order runs are mixed in and the
+second gap gives $0.92\pm0.11$ at $\chi=3$ and $1.12\pm0.05$ at $\chi=6$ (verification review, E9).
+First-escape exponents are also given with the offset $\delta_\Kc\tw{r_1}^{-(2-2/\Kc)}$ of
+\eqref{eq:s2s-first} subtracted from $\tev1$.
+
+\paragraph{Continued runs.}
+\path{continue_stalled.py} integrates a stalled or unresolved run further from its saved final state, with the
+escape time resolved like every event. Three samples: the 8 stalled \texttt{k78} runs with the shortest predicted
+remaining plateau (3 seeds); a seeded random sample (\texttt{-{}-seed 1}) of 8 of the 74 \texttt{k78} runs (73
+stalled, 1 trapped) whose estimate is at most 100 times the time already integrated, one of them also in the
+first sample; and 8 MPS8 runs of \texttt{large}, spread over the ratio of estimate to elapsed time
+($0.2$--$420$). The budget multiplier of the third sample was not recorded, and the README command selects a
+different set (verification review, E13); its results are reported as measured.
+
+\paragraph{Excluded and superseded runs.}
+The scipy pilots made before the library existed, part of them before the teacher and initialization streams
+were separated, support no claim. Superseded after review round 1: $T$ from the amplitude-$10^6$ stop (kept as
+\texttt{T\_v1} in the raw records), gap fits on pooled run sets, Hessians with the earlier gauge projection, and
+decay rates fitted into the floating-point floor (now fitted above $10^{-9}$ absolute). No run was dropped:
+runs that do not complete are reported in their class. The raw records (3,417 files, about 220\,MB; local copy
+\path{data/s2s_core/}) are not in the repository; \cref{app:reproducibility} says how to regenerate them.
+
+\subsection{Locality of later escapes}\label{app:exp-locality}
+Settings of \cref{sec:s2s-locality,sec:s2s-failure}. Experiment folder \path{experiments/locality/}
+(README; one YAML configuration per sweep in \path{configs/}, written by \path{make_configs.py});
+findings, and the changes made after two review rounds, in \path{notes/locality.md}, sections 7--10;
+reviews in \path{notes/reviews/locality_round1.md} and
+\path{notes/reviews/locality_round2_verification.md}.
+
+\paragraph{Problems.}
+Whitened Gaussian inputs, exact population loss, double precision, the library model
+(\path{ttn.dynamics.Problem}). Pattern teachers (\path{ttn.teachers.pattern_teacher}) with $d=2$ and
+random orthonormal site bases, teacher seed 1000, from a stream independent of the initialization
+seeds. Two-component teachers have patterns $0^\Ns$ and the indicator of $D$, weights $(1,0.5)$, also
+$(1,0.25)$, $(1,0.75)$ and $(2,1)$, on 60 (tree, $D$) pairs. Multi-component teachers (patterns as
+site values, weights in brackets): TA $0000$ ($1$), $1100$ ($0.6$), $1110$ ($0.35$); TB as TA plus
+$1111$ ($0.2$); N4 $0000$ ($1$), $1100$ ($0.6$), $1111$ ($0.4$); B4 $0000$ ($1$), $0110$ ($0.3$), $1001$
+($0.6$); E8 $0^8$ ($1$), $0^31^20^3$ ($0.4$), $010^41\,0$ ($0.7$); TC $0^8$ ($1$), $1^20^6$ ($0.6$),
+$1^40^4$ ($0.35$), $1^8$ ($0.2$); TD $0^8$ ($1$), $0^31^20^3$ ($0.6$), $1^20^6$ ($0.35$). Bond dimension
+$\chi=2$, except $\chi=3$ for B4, N4 and E8, and $\chi\in\{4,8\}$, $d=4$ in the robustness sweep. Trees:
+MPS4, MPS6, MPS8 ($\Kc=4,6,8$), binary4, binary8 ($\Kc=3,7$), HT4, HT8 ($\Kc=7,15$), star3 ($\Kc=4$: a
+root without sites and three children carrying sites $\{0,1\}$, $\{2,3\}$, $\{4,5\}$) and midroot6
+($\Kc=6$: the MPS6 chain rooted at the core of site 3).
+
+\paragraph{Protocols and dynamics.}
+\emph{Small}: fan-in initialization \eqref{eq:init}. \emph{Saddle}: the exact balanced saddle $\tw1\U1$
+(\path{ttn.network.aligned_init}) plus a fan-in perturbation of per-core scale $\isc$.
+\emph{Balanced}: the fan-in $\Wz$ re-gauged so that $\Q e=0$ on every bond. Gradient flow by SciPy's
+LSODA (\path{solve_ivp}) with the exact Hessian as Jacobian, relative and absolute tolerances $10^{-9}$
+and $10^{-14}$, instead of the default integrator of \cref{sec:setup-dynamics}; Radau as fallback
+(fewer than $1\%$ of runs). Event times are located by root finding on the dense output; event $r$ is
+the last upward crossing of $\ov r=\frac12$, and a run with an overlap that crosses $\frac12$ more than
+once is a \emph{rotation}. Budgets: $t_{\max}=10^{14}$ and a wall-clock limit of $1500$\,s per run
+($900$\,s for the $k\ge6$ rows of the main sweep, $2400$\,s in the $k\ge6$ extension and the stall
+diagnosis). A run is \emph{stalled} when, after an overlap has passed $\frac12$, every gradient entry stays
+below $10^{-12}$ for more than 5,000 consecutive evaluations (300,000 in the stall diagnosis, which
+also keeps the trajectory). The Hessian is computed by automatic differentiation at the plateau
+midpoint (minimum gradient norm between consecutive events), raw and with the gauge directions
+projected out (\path{ttn.diagnostics.project_out_gauge}, relative cutoff $10^{-3}$). An earlier cutoff,
+$10^{-10}$, kept the generators of nearly unused bond channels, whose normalized direction overlaps the
+escape route, and biased the $k=2$ values to $-0.44$ to $-0.46$ instead of $-0.5000$; all Hessians were
+recomputed (\path{hess_recompute.py}). The fixed projection is still biased on the short
+small-initialization $k=2$ plateaus at $\isc\ge10^{-3}$ ($-0.411$ and $-0.502$ against raw $-0.437$ and
+$-0.581$), so raw values are quoted there; raw and projected $\isc$-exponents of $\lambda_{\min}$ differ by
+up to $0.11$.
+
+\paragraph{Sweeps.} \Cref{tab:exp-locality}; initialization seeds $0$--$7$ ($0$--$4$ for the $k\ge6$ rows
+of the main sweep).
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the locality experiment (\cref{sec:s2s-locality,sec:s2s-failure}), one
+    configuration file each in \texttt{experiments/locality/configs/}; tables and fits use only the
+    runs of these configurations.}
+  \label{tab:exp-locality}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm}X r@{}}
+    \toprule
+    sweep & content & runs \\
+    \midrule
+    \texttt{twocomp} & 60 (tree, $D$) pairs, small and saddle (HT8 saddle only), weights $(1,0.5)$;
+      7 values of $\isc$ in $[10^{-4},0.1]$ for $k\le3$ (lower end $10^{-4}$ to $8\cdot10^{-3}$), 6 values
+      in $[0.01,0.2]$, $[0.03,0.3]$, $[0.08,0.5]$, $[0.15,0.6]$, $[0.2,0.6]$ for $k=4,5,6,7,8$ & 5,682 \\
+    \texttt{twocomp\_balanced} & the 24 cases with $k\ge4$ (small), balanced initialization & 1,008 \\
+    \texttt{twocomp\_chi4} & the same 24 cases, fan-in, $\chi=4$ & 1,005 \\
+    \texttt{robust} & MPS4, binary4, HT4 (6 cases with $k\le4$): $(\chi,d)\in\{(4,2),(2,4),(4,4),(8,4)\}$,
+      weights $(1,0.25)$, $(1,0.75)$; MPS4 $\{1,2\}$ also from the saddle & 1,840 \\
+    \texttt{k5\_extension} & MPS6 $\{1,3,5\}$, MPS8 $\{1,5\}$, saddle and balanced,
+      $\isc\in\{0.012,0.019,0.03\}$ & 96 \\
+    \texttt{khigh\_extension} & binary8 $\{0,2,4\}$, HT4 $\{0,1,2\}$, HT4 all sites, MPS8 $\{1,6\}$;
+      balanced, 8 values of $\isc$ over one decade & 256 \\
+    \texttt{lambda2\_K} & MPS4, MPS6, MPS8 with $k=2$, weights $(2,1)$, saddle, 7 values of $\isc$ in
+      $[10^{-4},0.1]$ & 168 \\
+    \texttt{multicomp} & TA, TB, N4, B4 on MPS4, binary4, HT4 (HT4 also balanced); E8 and TC on MPS8 and
+      binary8; TD on MPS8; small, 6 values of $\isc$ & 1,008 \\
+    \texttt{multicomp\_wide} & B4, N4, TA, TB on MPS4 (7--9 values of $\isc$ down to $10^{-5}$); TC, TD on
+      MPS8 from the saddle (7 values in $[10^{-4},0.1]$) & 384 \\
+    \texttt{stall\_diagnosis} & 22 (case, $\isc$) pairs with stalls and escaping controls, longer patience
+      & 170 \\
+    \midrule
+    total & & 11,617 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Analysis.}
+Run classes: greedy, other order, rotation, stalled, timeout, incomplete, error. Fits as in
+\cref{sec:s2s-locality} (per seed, at least three $\isc$; rotations excluded; the log law is fitted on
+the residuals of $\ln\Delta t_2$, like the power law). Several components: plateaus detected by
+\path{ttn.diagnostics.find_plateaus} on $\Loss(t)$ (linear time, separation ratio above $3$), matched to
+a predicted level within $5\%$; laws of levels too short to detect from the time spent within $2\%$ of
+the level. Bond events: effective ranks just after the event ($\ov2=0.9$) against the plateau midpoint,
+threshold $0.05$ times the teacher's singular value ($0.03$, $0.1$ as sensitivity); rank profiles of
+several components in the middle of the time spent within $2\%$ of each predicted level. Growth
+exponent: least squares of $\ln\dot{\ov2}$ against $\ln\ov2$ over $\ov2\in[10^{-4},10^{-2}]$.
+
+\paragraph{Accuracy.}
+The conservation drift $\max_e\normmax{\Q e(T)-\Q e(0)}$ is at most $10^{-6}$ in every run ($99.9\%$
+below $3.5\cdot10^{-8}$, median $1.2\cdot10^{-9}$), against Gram entries of order one after learning.
+Relative to the initial imbalance $\abs{\Q e(0)}\sim\isc^2$ it is at most $1.6\cdot10^{-4}$ in every run
+with $k\ge4$, where the imbalance matters (\cref{sec:s2s-failure}), but up to $0.5$ for $k\le3$ at
+$\isc\le10^{-3}$, where $\isc^2$ is below the absolute tolerance; those runs never stall, and their gaps
+agree with an independent integration to $10^{-7}$--$10^{-9}$. LSODA (tolerances $10^{-9}$ and
+$10^{-10}$), Radau and RK45 agree on a $k=6$ gap to $3\cdot10^{-8}$. A reviewer's independent code (dense
+contraction, automatic differentiation, Radau at relative tolerance $10^{-10}$) reproduced the gaps of
+11 rows to $10^{-7}$--$10^{-9}$, the gauge-projected $\lambda_{\min}$ to $7\cdot10^{-11}$ and the Steiner
+counts of all 60 (tree, $D$) pairs.
+
+\paragraph{Excluded runs.}
+One \texttt{lambda2\_K} run (MPS8, seed 7, $\isc=10^{-4}$) was lost to the runner's start-up check,
+which compared two implementations of the velocity at the exact saddle without an absolute floor.
+Six slow runs did not finish within their time limit; they belong to rows reported as not measured
+($k=8$) or as spanning $0.6$ decades (HT8, $k=7$). Round-1 tables (rows on $\isc$ grids outside the
+committed configurations, rotation runs pooled, Hessians with the biased projection, a bond-rank
+statistic taken at the end of the run) are superseded. The raw run records and trajectories (every
+accepted integration step of every run, 8\,GB) are not in the repository; \cref{app:reproducibility}
+says how to regenerate them.
+
+\paragraph{Local pilot.}
+The pilot in \path{experiments/pilot_h2_locality/} (README; code \path{h2sim.py},
+\path{run_sweep.py} and \path{analyze.py}) is an independent implementation of the same model, used as
+a cross-check in \cref{sec:s2s-locality}. $d=\chi=2$; MPS4, binary4, MPS6, binary8; teacher seed 1000, weights $(1,0.5)$;
+$D=\{0,1\}$, $\{0,\Ns-1\}$, all sites, $\{0,2\}$, $\{0,3\}$, $\{0,4\}$; fan-in initialization with seeds
+$0$--$7$ ($\Ns=4$; $\isc\in[10^{-3},0.1]$ on MPS4, $[2\cdot10^{-4},0.05]$ on binary4) and $0$--$5$ (MPS6,
+$\isc\in[0.05,0.3]$; binary8, $[0.07,0.3]$): 784 runs, 19 of them rerun with a 100 times longer horizon,
+plus 340 runs from the saddle (seeds $0$--$3$, five $\isc$). Gradient flow by LSODA with the exact
+Hessian (relative tolerance $10^{-10}$, absolute $10^{-13}\isc$); events are first crossings of
+$\ov r=\frac12$, located by root finding; $t_1$ and $t_2$ agree with LSODA at $10^{-12}$, Radau, BDF,
+DOP853 and RK45 to $1.8\cdot10^{-7}$ relative (47 comparisons). A run \emph{collapses} when, at
+$t\ge30\,t_1$, the largest second bond singular value is below $10^{-9}$ of its value after the first
+escape and still falling, or at roundoff; horizons $10^5\isc^{-(\Kc-2)}$ ($\Ns=4$) and
+$10^4\isc^{-(\Kc-2)}$. Fits per seed, mean $\pm$ s.d.\ over seeds; gap fits for $k\ge3$ use runs with a
+distinct intermediate plateau. A first sweep, made before the teacher and initialization streams
+were separated, was discarded.
 
 \subsection{Regime-map experiments}\label{app:exp-regimes}
 \placeholder{Grids, seeds and time budgets of the phase diagrams of \cref{sec:regime-map}.}
 
 \subsection{Covariance and teacher experiments}\label{app:exp-data-teacher}
-\placeholder{Settings of \cref{sec:covariance-teacher}.}
+Settings of \cref{sec:covariance-teacher}. Experiment folder \path{experiments/data_teacher/} (README with
+the run order; YAML configurations in \path{configs/}; the star and correlated-input sweeps are defined
+in \path{r2_star.py} and \path{r2_corr.py}); findings in \path{notes/data_teacher.md}; reviews in
+\path{notes/reviews/} (\path{data_teacher_round1.md}, \path{data_teacher_round2.md} and
+\path{data_teacher_round3_verification.md}, whose errata are applied in \cref{sec:covariance-teacher});
+theory in \cref{app:teachers,app:covariance}.
 
-\subsection{Optimizer and sample-size experiments}\label{app:exp-optim}
-\placeholder{Learning rates, batch sizes, training-set sizes and seeds of \cref{sec:other-optim}.}
+\paragraph{Problems.}
+Exact population loss, double precision, fan-in initialization \eqref{eq:init}; teacher seeds from a
+stream independent of the initialization seeds. Site covariances \path{ttn.losses.power_law_cov}$(d,\beta)$
+(eigenvalues $\propto k^{-\beta}$, trace $d$), rotated by $\theta$ in the $(e_1,e_2)$ plane where misaligned.
+\begin{itemize}
+  \item \emph{Aligned covariance} ($\Ns=4$, $d=\chi=4$): odeco teachers on covariance eigenvectors, T1 $(1,0.8)$
+    and T2 $(1,0.6)$ with the smaller component on $e_1$, $\beta=0.25$; one-component teachers on $e_1$ or $e_4$
+    with $\beta=0$--$1.5$ ($\Lambda=0.008$--$33$); three components $(1,0.7,0.5)$ for the exact-clock check. Variants
+    from the same initialization: $(\Sig,\tw{})$, $(\Id,\tw{})$, $(\Id,\Lambda\tw{})$, $(\Id,\Lambda^{1/2}\tw{})$, and $(\Id,\Lambda^{1/2}\tw{})$
+    from the mapped initialization (physical legs multiplied by $\Sigi i^{1/2}$).
+  \item \emph{Round 1, generic teachers} ($\Ns=4$, $d=\chi=4$): misaligned covariance with an odeco teacher on
+    $e_1$, $e_2$ (weights $(1,0.8)$), $\beta\in\{0.5,1\}$, $\theta\in\{0,10,20,30,45\}^\circ$, also as the absorbed white problem
+    from the mapped initialization; non-orthogonal CP teachers $\fac2i=ce_1+(1-c^2)^{1/2}e_2$, weights $(1,\tw2)$;
+    correlated inputs (one-factor model, odeco teacher on $e_1$, $e_2$, weights $(1,0.7)$, $\rho=0$--$0.5$), with
+    the dense second-moment matrix from Isserlis' theorem (\path{correlated.py}, checked against Monte
+    Carlo and the closed form for $\Ns=2$).
+  \item \emph{Random TTN teachers}: MPS4 teachers with $d=3$, bond ranks $(2,3,2)$, bond index $k$ weighted by
+    $0.5^k$, $\normF{\Wt}=1$, teacher seeds 101--105, MPS4 student with $\chi=4$; cross-tree: MPS8 teachers
+    ($d=2$, bond ranks 2, index weights $0.6^k$, $\normF{\Wt}=1$) on a binary8 student ($\chi=4$), teacher seeds 201--203,
+    then 203, 204, 209, 212, 218, and 491, 548, 643, 694, 846 (the five of seeds 200--999 whose root cut
+    exceeds every bottom bond by the largest margins); binary8 teachers (seeds 201--203) on an MPS8 student.
+  \item \emph{Round 2, generic teachers} ($d=2$, $\chi=4$, \cref{tab:dt-saddle}): CP $c=0.2$, $0.45$ ($\Ns=4$) and
+    $0.45$, $0.7$ ($\Ns=8$), weights $(1,0.7)$; misaligned $\theta=20^\circ$ ($\beta=1$ at $\Ns=4$, $\beta=2$ at $\Ns=8$) and $45^\circ$
+    ($\beta=2$, $\Ns=8$); random binary-tree teachers (seeds 302, 303) and random MPS teachers (seed 301 at
+    $\Ns=4$, 303 at $\Ns=8$), bond ranks 2, bond index $k$ weighted by $q^k$ ($q=1$ and $1.5$), $\normF{\Wt}=1$.
+    Correlated inputs: $d=3$, site-aligned odeco teacher $(1,0.6)$, $\rho=0$--$0.4$.
+  \item \emph{Stars} ($d=2$, $\chi=3$): $q=0000$ (weight 2), $r=1010$, $r'=1001$ (weight $w$); the binary8 analogue
+    has $r$, $r'$ differing from $q=0^8$ on sites $\{0,2\}$ and $\{0,4\}$.
+\end{itemize}
+
+\paragraph{Dynamics.}
+\begin{itemize}
+  \item Round-1 runs at a single $\isc$ (and the aligned-covariance sweeps): SciPy DOP853 on the flat
+    parameter vector, tolerances $10^{-9}$ and $10^{-14}$, 2000 logarithmic output times; checked against the
+    library integrator (event times and losses to $7\cdot10^{-7}$), conservation drift at most $1.1\cdot10^{-9}$.
+  \item $\isc$ sweeps: \path{ttn.dynamics.integrate_gf} (LSODA, tolerances $10^{-9}$ and $10^{-14}$) in two stages:
+    until $\Loss<0.98\Loss(0)$, then on 3000 times geometric in $t-t_A$, with the recorder's fine rows; stopped
+    at $\Loss<10^{-6}$--$10^{-4}\Loss(0)$ or at $\tmax$ (up to $10^{10}$).
+  \item Saddle start: the lowest-loss bond-rank-one critical point (L-BFGS from 12 starts on the
+    rank-constrained problem, balanced, zero-padded), stored in \path{results/r2_saddle_cores.pt}, since
+    gauge copies with losses one ulp apart shift per-run times on another platform (not the laws); fan-in
+    noise of scale $\varepsilon$; LSODA in chunks of doubling length until $\max_e\bs e2\ge0.2$ or $t=10^7$ ($10^{11}$ for
+    the small-$\varepsilon$ extension; $\max_e\bs e2\ge2\cdot10^{-3}$ for the re-timed misaligned teacher). Hessians at
+    the exact saddle, raw and gauge-projected; saddle type by the sign of $\lambda_{\min}$ (threshold $-10^{-6}$);
+    per-edge rates $\gamma_e$ from the Hessian block of the two cores of the edge.
+  \item Correlated inputs: SciPy LSODA with the exact Hessian as Jacobian, on the dense loss, in the two
+    stages above. Online SGD check: fresh Gaussian batches, $\batch=256$ and $4096$, $\lr=0.01$ and $0.002$.
+\end{itemize}
+
+\paragraph{Events and fits.}
+\begin{itemize}
+  \item Random initialization: $t_1$ is the first time $\Loss\le\frac12(\Loss(0)+L_1)$, $L_1$ the level of the
+    rank-one critical point visited (matched within $5\%$ at the point of minimum speed; runs with no such
+    point are \emph{unresolved} and left out); $\Delta t_2$ is the first onset event after $t_1$ minus $t_1$.
+    Onset event: $\bs e2\ge f\,\bst e2$ on some edge, $f\in\{0.03,0.05,0.1\}$ (and, from the saddle, at least 10
+    times its start value); event times from merged log and fine rows (within $0.5\%$ of fine-row
+    times). The re-timed misaligned teacher uses $\max_e\bs e2\ge1.8\cdot10^{-4}$, where $\bs e2(0)\le1.8\cdot10^{-5}$.
+  \item Correlated inputs: events at half the final singular values across $01|23$, final-rise widths;
+    $\Delta t_2$ is the time between the events of $\bs e2$ and $\bs e1$. Stars: $\params_q$ is left when $\ov q<0.99$
+    (departure) or $\ov q<0.9$ before any $\ov r>\frac12$; the two rules agree for every run with $\varepsilon\le10^{-3}$.
+  \item Fits per seed (\path{lawfit.py}): $t=A\ln(1/\isc)+B$ and $t\propto\isc^{-p}$, both scored in log space;
+    asymptotic fits through the three smallest $\isc$ (random initialization) or the five smallest $\varepsilon$
+    (saddle start). Errors are standard errors over seeds; per-seed fit errors are not propagated, and
+    changing the window moves slopes by $1$--$3\%$. Increments per halving: per-seed regression of
+    $\Delta t_2$ on $\log_2(1/\isc)$ with the actual $\isc$.
+  \item Rank-one predictions: \path{constrained.py} (L-BFGS on the bond-rank-constrained loss from many
+    starts) and \path{predict_rank1.py}; slopes $h_e$ from \path{theory_log_slope.py} and the exact-saddle
+    Hessians; heuristic exponents $\alpha$ from \path{p1_exponents.py}.
+\end{itemize}
+
+\paragraph{Sweeps and run counts.}
+\Cref{tab:exp-data-teacher}; about 9,100 runs in all.
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the experiment of \cref{sec:covariance-teacher}: configuration files in
+    \texttt{configs/} of the experiment, except where a script is named.}
+  \label{tab:exp-data-teacher}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}p{3.6cm}r@{}}
+    \toprule
+    sweep & problem & $\isc$ or $\varepsilon$, seeds & runs \\
+    \midrule
+    \texttt{e1\_order} & aligned, T1, T2, four variants, binary4, MPS4 & $\isc=0.02$--$0.2$ (3 per tree), 40 & 1920 \\
+    \texttt{e1\_scaling\_sigma}, \texttt{\_lambda} & aligned, $\tev1$ against $\isc$ and $\Lambda$ & 6 $\isc$; 13 teachers; 10 & 360 + 520 \\
+    \texttt{e2\_misaligned}, \texttt{e4a\_nonorth}, \texttt{e3\_correlated} & round 1, one $\isc$ per tree & $0.05$, $0.1$; 20 & 800 + 560 + 240 \\
+    \texttt{e4a\_sigma}, \texttt{e2\_sigma} & MPS4, $c\in\{0,0.05,0.2,0.45\}$; $\theta\in\{0,5,20\}^\circ$ & 9 $\isc$, $3\cdot10^{-4}$--$0.3$; 10 & 360 + 270 \\
+    \texttt{e4b\_ttn} & random MPS4 teachers & 8 $\isc$, $10^{-3}$--$0.2$; 6 & 240 \\
+    \texttt{e4c\_cross}, \texttt{r2\_cross}, \texttt{r2\_cross\_b} & cross-tree, $\Ns=8$ & $0.3$--$0.5$; 8 & 48 + 120 + 120 \\
+    \texttt{r2\_random} & 6 generic teachers, MPS4, binary4 & 9 $\isc$ per tree; 5 & 540 \\
+    \texttt{r2\_saddle} (+\texttt{\_b}, \texttt{\_ext}, \texttt{\_m20}) & 13 generic teachers, 6 trees, saddle start & $\varepsilon=10^{-8}$--$5\cdot10^{-2}$; 5 & 1950 (+54 fine rows) \\
+    \texttt{r2\_corr.py} & correlated, $d=3$, MPS4, binary4 & 6 $\isc$, $0.0016$--$0.05$; 5 & 300 \\
+    \texttt{r2\_star.py} & stars: saddle start; random init & $\varepsilon=10^{-6}$--$10^{-2}$, 15 $w$; 6 $\isc$, 10 & 468 + 240 \\
+    \texttt{e3\_sgd\_check.py} & online SGD, binary4, $\rho=0.3$ & $\isc=0.05$; 3 & 9 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Checks and exclusions.}
+A float64-floor scan (\path{check_float_floor.py}) takes the smallest dormant signal between the first
+escape and the next learning event (overlap envelope below $10^{-12}$, or $\max_e\bs e2$ below $10^{-14}$ for TTN
+teachers): it flags only the odeco baselines ($c=0$, $\theta=0$) at $\isc\le3\cdot10^{-3}$, whose exponents without the
+flagged runs are in \path{results/report_float_floor_refit.csv}. Excluded: the round-1 single-$\isc$
+plateau durations (withdrawn), the pilot versions of \texttt{e4b} and \texttt{e4c}, seed 2 of MPS4
+under correlated inputs (minor saddle at every $\rho$), and 14 HT8 runs at $\varepsilon\le3\cdot10^{-4}$ (CP, $c=0.45$)
+stopped beyond $t=10^8$. An independent verification recomputed the Hessians at 12 stored saddles with
+its own code and reproduced the committed saddle-start escape times on Windows to $4\cdot10^{-9}$ (MPS4)
+and $4\cdot10^{-5}$ (binary4). Raw outputs (about 10\,GB, local copy \path{data/data_teacher/}) are not in the
+repository; the summary tables in \path{results/} suffice to redraw every figure.
+
+\subsection{Discrete steps, gradient noise and finite samples}\label{app:exp-optim}
+Settings of \cref{sec:other-optim}. Experiment folder \path{experiments/optim_samples/} (README with
+the script list; YAML configurations in \path{configs/}); findings in \path{notes/optim_samples.md}; the two
+reviews in \path{notes/reviews/} (\path{optim_samples_round1.md} and
+\path{optim_samples_round2_verification.md}, whose errata are applied in \cref{sec:other-optim}); theory
+in \cref{app:optimizer}.
+
+\paragraph{Problems.}
+Whitened Gaussian inputs, exact population loss (empirical loss in the finite-sample sweep), double
+precision. The GD and SGD loops of the experiment are its own (PyTorch), checked against
+\path{ttn.dynamics} (final losses agree to $10^{-14}$, event times to $5\cdot10^{-4}$;
+\path{validate_library.py}). Teacher seed 101, independent of the initialization seeds.
+\begin{itemize}
+  \item \emph{Main problems}: binary trees with $\Ns=4$ ($\Kc=3$) and $\Ns=8$ ($\Kc=7$), MPS with $\Ns=8$
+    ($\Kc=8$); $d=3$, $\chi=3$; odeco teacher with weights $(3,2,1)$ and Haar-random site bases;
+    $\lr_c=0.1541$, $0.0435$, $0.0366$. Fan-in initialization \eqref{eq:init}; \emph{imbalanced}: $\isc=0.1$
+    with the root core at scale 2, 4 or 6. Centred model (\cref{sec:setup-init}, variant (b)) with $\chi=9$, the
+    cut dimension of binary $\Ns=4$.
+  \item \emph{Aligned starts} (\path{ttn.network.aligned_init}): every per-core amplitude $0.05$ (SGD sweep);
+    component 1 at its balanced value $3^{1/3}$ and components 2 and 3 at $b_0$ (route test); the
+    balanced minimum plus a Gaussian perturbation of size $10^{-5}$ per entry (SGD stability test).
+  \item \emph{Strict route}: MPS with $\Ns=4$, $d=\chi=3$, pattern teacher with weights $(3,0.3)$ and patterns
+    $0000$, $1100$ (second component needs $k=2$), $\isc=0.1$.
+  \item \emph{Finite samples}: binary $\Ns=8$, $d=2$, odeco teacher $(3,2)$ (bond rank 2; teacher-rank TTN with 52
+    parameters, manifold dimension 28), students with $\chi=4$ (208 parameters, tangent dimension 112, the
+    measured rank of the Jacobian) and $\chi=16$ (832 parameters, all bonds full); binary $\Ns=6$ ($\Kc=5$), $d=3$,
+    teacher $(3,2)$ (manifold dimension 48), $\chi=4$ (tangent dimension 120). $\nsamp$ inputs with data seed
+    $500+$seed and noise-free labels; seed $s$ fixes both the data and the initialization.
+\end{itemize}
+
+\paragraph{Dynamics.}
+\begin{itemize}
+  \item \emph{Gradient-flow references}: SciPy DOP853 with relative and absolute tolerances $10^{-10}$ and
+    $10^{-14}$, instead of the default integrator of \cref{sec:setup-dynamics}; every upward crossing of
+    $\ov r\in\{0.1,0.5,0.9\}$ is located by the integrator's event finder; conservation drift
+    \eqref{eq:drift} at most $2\cdot10^{-12}$. In the $\chi=9$ sweep: LSODA (\path{ttn.dynamics.integrate_gf}, tolerances $10^{-8}$ and
+    $10^{-12}$, 3000 logged times), stopped at $\Loss=10^{-8}$; $\lambda_{\rm GF}$ is the top eigenvalue of the full
+    Hessian at the end. Route test and strict route: LSODA as well.
+  \item \emph{GD}: $\lr$ a multiple of $\lr_c$, or in the $\chi=9$ sweep of each run's own $2/\lambda_{\rm GF}$, for a
+    gradient-flow time $T$: 2800, 900, 300, 100, 40 for $\isc=0.003$, $0.01$, $0.03$, $0.1$, $0.3$ on binary
+    $\Ns=4$, 150 (binary $\Ns=8$), 60 (MPS), 100 (imbalanced), and as long as the reference took to converge
+    ($\chi=9$). Loss and overlaps at every step; sharpness (full Hessian), conservation drift and bond ranks
+    at 41 checkpoints; diverged: loss non-finite or above $10^6\Loss_0$.
+  \item \emph{Event shift}: $c_e$ from the variational equation $\dot\delta=-\Hess(\delta+\frac12\nabla\Loss)$,
+    $\delta(0)=0$, integrated along the reference path, $c_e=-\nabla\ov r\cdot\delta/\dot a_r$ at the event
+    (\path{predict_shift.py}); the Richardson check extrapolates the measured shifts at $0.01\lr_c$ and
+    $0.03\lr_c$ linearly to $\lr=0$.
+  \item \emph{Online SGD}: fresh Gaussian inputs every step, no label noise (except in the label-noise
+    runs of the strict route, $\zeta\in\{10,20,30\}$), an independent generator for every (initialization,
+    noise seed, $\batch$, $\lr$). Overlaps every 4 steps; runs continue to $1.3\max(t_1^{\rm GF},t_2^{\rm GF})+2$,
+    capped at 150, 60, 40 time units for $\isc=0.03$, $0.1$, $0.3$. Route test: \path{ttn.dynamics.run_sgd}
+    for up to $4T_{\rm GF}$, with $T_{\rm GF}$ from the one-dimensional aligned integral (checked against LSODA to
+    $10^{-8}$). Stability test: 25 time units; converged if the final loss is below the initial one,
+    diverged if non-finite or above $10^3$. Mean-square limits $\lr^*_{\rm ms}(\batch)$ from the dense
+    second-moment operator (\path{sgd_stability.py}), equal to \eqref{eq:A-ms-threshold}.
+  \item \emph{Finite samples}: GD on the empirical loss with step $1/\lambda_{\max}$ (power iteration on the
+    training Hessian every 200 steps), the relative parameter change per step capped at $1\%$ (near the
+    origin $1/\lambda_{\max}$ is huge), $6\cdot10^4$ steps ($3\cdot10^5$ in the long centred runs); no run reached
+    the training tolerance $10^{-8}$ (final training loss $2\cdot10^{-7}$--$2\cdot10^{-4}$ of its initial value
+    for small initialization from $\nsamp=256$). Lazy limit: minimum-norm least squares with the Jacobian at
+    initialization (relative cutoff $10^{-12}$), exact.
+  \item Auxiliary computations: Hessians at balanced and gauged minima on five trees ($\chi=3$, 5;
+    \path{check_sharpness.py}); the scalar map for $\Kc=3,4,7,8$, $h/h_c$ from 0.8 to 3.2 in steps of 0.005,
+    $6\cdot10^4$ iterations from $x=0.3$, attractor from the last 2000 (\path{map1d.py}); Hessians at the
+    second-plateau midpoint of the strict route ($\isc=0.01$--$0.1$, five seeds; \path{check_k2_saddle.py}).
+\end{itemize}
+
+\paragraph{Sweeps and run counts.}
+\Cref{tab:exp-optim}; 4,165 runs in total, plus 150 exact lazy limits.
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the experiment of \cref{sec:other-optim}: configuration files in the folder
+    \texttt{configs/} of the experiment, except the last four rows, which are defined in their scripts.
+    Seeds 0--4 unless stated; GF: gradient-flow references.}
+  \label{tab:exp-optim}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm}
+      >{\raggedright\arraybackslash}p{3.2cm}X r@{}}
+    \toprule
+    sweep & problem, $\isc$ & steps, batches, sizes & runs \\
+    \midrule
+    \texttt{gd\_sweep} & binary $\Ns=4$, $\isc=0.003$--$0.3$; binary and MPS $\Ns=8$, $\isc=0.9$; imbalanced &
+      $\lr/\lr_c$: 18 values in $[0.01,3]$ (10 for $\isc\le0.01$; 10 in $[0.1,1.05]$ imbalanced) & 700 + 50 GF \\
+    \texttt{gd\_order} & binary $\Ns=4$, $\isc=0.03$, $0.1$, $0.3$, seeds 5--44 & $\lr/\lr_c=0.1$, $0.3$, $0.5$,
+      $0.9$ & 480 + 120 GF \\
+    \texttt{gd\_centred\_chi9} & binary $\Ns=4$, $\chi=9$: centred $\isc=1$--$16$ (GF), $1$, $2$, $4$, $8$ (GD);
+      plain $\isc=0.1$, $0.3$ & $\lr\lambda_{\rm GF}/2$: 10 values in $[0.5,4]$ & 300 + 75 GF \\
+    \texttt{sgd\_sweep} & binary $\Ns=4$, $\isc=0.03$, $0.1$, $0.3$; aligned start & $\batch=1$--$256$ at
+      $\lr=5\cdot10^{-4}$; $\lr=10^{-4}$--$2\cdot10^{-3}$ at $\batch=4$, $10^{-3}$--$2\cdot10^{-2}$ at $\batch=64$; 10 noise
+      seeds per initialization (20 aligned) & 1780 \\
+    \texttt{p9\_sgd.py} & binary $\Ns=4$, aligned route, $b_0=0.01$, $0.005$, $0.003$, $0.002$ &
+      $\lr/\batch=3.125\cdot10^{-5}\cdot2^j$, $j=0,\dots,3$, at $\batch=64$ (and $16$ for $b_0=0.01$, $0.003$); 6
+      noise seeds & 144 \\
+    \texttt{sgd\_limit\_test.py} & binary $\Ns=4$, balanced minimum & $\lr/\lr^*_{\rm ms}\in[0.5,3]$ (8 values),
+      $\batch=1$, $16$ & 80 \\
+    \texttt{collapse\_test.py}, \texttt{check\_k2\_saddle.py} & MPS $\Ns=4$, strict route & SGD $\batch=1$,
+      $\lr=5\cdot10^{-4}$, $\zeta\in\{0,10,20,30\}$; GF at six $\isc\in[0.01,0.1]$ & 21 + 30 \\
+    \texttt{samples\_sweep} & binary $\Ns=8$, $d=2$: small $\isc=0.3$, $0.5$, centred $\isc=1$ ($\chi=4$, 16),
+      centred $\isc=1.5$, $2$ ($\chi=4$); binary $\Ns=6$, $d=3$: small $\isc=0.5$ & $\nsamp=16$--$512$ (11 values;
+      5 for $\isc\ge1.5$, and 256, 512 with $3\cdot10^5$ steps; 8 values $32$--$384$ for $\Ns=6$) & 385 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Events and classification.}
+\begin{itemize}
+  \item Overlap events, in the GD, gradient-flow and SGD sweeps and the route test: the last upward
+    crossing of $\ov r=\frac12$, with $\ov r\ge\frac12$ at the end of the record (\path{common.record_events}, or the
+    integrator's event finder for the DOP853 references); first crossings and the number of crossings
+    are kept to count transients; widths are final rises (the first crossing of $0.9$ minus the last
+    crossing of $0.1$ before it). The strict-route scripts (\path{collapse_test.py},
+    \path{check_k2_saddle.py}) use the first upward crossing of $\frac12$ on the logged trajectory. No
+    experiment of this section uses spectral events: bond spectra enter only through effective bond ranks
+    (singular values above $0.1$ times the smallest teacher weight, at checkpoints and at the end) and, in
+    the route test, through the second Schmidt value as the route amplitude.
+  \item GD outcome classes, checked in this order (\path{analyze_gd.py}): \emph{diverged}; \emph{GF-like}: final
+    loss at most $1.05\Loss_{\rm GF}(T)+10^{-3}\Loss_0$, with $\Loss_{\rm GF}(T)$ the reference at the same time, and no
+    step raising the loss by more than $10^{-3}\Loss_0$; \emph{catapult}: the same final loss after such a
+    rise; \emph{thrown back to the origin}: not at that level and the loss back above $0.9\Loss_0$ after the
+    first event; \emph{bounded oscillation}: over the last $20\%$ of the steps (at most 2000) the total
+    variation of the loss exceeds ten times its net change and the tail reaches above gradient flow's
+    level, or the end point is linearly unstable ($\lr\lambda_{\max}/2>1.001$); \emph{other}: none of these (it
+    did not occur in the runs shown). GF-like includes 39 of the 195 small-initialization runs that end,
+    like their references, on the last plateau ($\Loss/\Loss_0=0.071$).
+  \item SGD: the first escape is the first time any component reaches $\frac12$, compared with gradient
+    flow's; a run \emph{forgot} if its first-learned component later falls below $\frac12$. Runs are
+    classified before pooling; means $\pm$ s.e.\ are across initializations. Second plateaus use only
+    initializations with a resolved gradient-flow plateau ($\sep1>3$) and no near-tie (the eventually
+    second component does not peak between $0.15$ and $0.6$ during the first event), and only runs that
+    kept the first component and gradient flow's order. Spread exponents: per initialization, least
+    squares of $\ln{\rm sd}(\tev1)$ against $\ln(\lr/\batch)$. Collapse law: weighted least squares (weights
+    $1/{\rm s.e.}^2$) of $T_{\rm SGD}/T_{\rm GF}$ over the 19 conditions in which every run escaped, one $c_\gamma$
+    per law; \emph{trapped}: no persistent event by $4T_{\rm GF}$.
+  \item Finite samples: test error $\normF{\W-\Wt}^2/\normF{\Wt}^2$; \emph{recovered}: test error below
+    $10^{-2}$ (thresholds $10^{-3}$ and $10^{-1}$ give the same picture); effective bond rank: singular values
+    above $0.2$, a tenth of the smallest teacher weight, averaged over the edges; the lazy limit depends
+    only on the initial direction and is counted once per (setting, $\nsamp$, seed).
+\end{itemize}
+
+\paragraph{Excluded runs.}
+Superseded after review round 1 and not analysed: the first GD and SGD sweeps, whose events were first
+crossings and whose SGD runs stopped right after the second crossing; the first route test, whose
+$\batch=16$ and $64$ runs shared noise streams (kept as \path{p9_sgd_round1.csv}); the $\chi=3$
+centred-model sweep, whose gradient-flow references stalled because $\Wt+\Wz$ has bond rank up to 6
+there; and a first strict-route test on binary $\Ns=4$, where the pattern lies inside one core ($k=1$). On
+MPS $\Ns=8$, seed 3 never learns component 1 within $T=60$ under gradient flow and is left out of the
+oscillation-loss comparison; in the strict-route Hessians two runs at $\isc=0.01$ have no resolved plateau
+midpoint. Raw outputs (about 420\,MB, local copy \path{data/optim_samples/}) are not in the repository;
+the summary tables in \path{results/} suffice to redraw every figure (\cref{app:reproducibility}).
 
 \subsection{Optimizers used in practice}\label{app:exp-optimizers}
 Settings of \cref{sec:other-optimizers}. Experiment folder \path{experiments/optimizers/} (one YAML
@@ -129,8 +658,8 @@ initial value) or at their budget.
 \paragraph{Events and classification.}
 \begin{itemize}
   \item Event $r$ is the last upward crossing of $\ov r=\frac12$ after which $\ov r$ stays at least
-    $\frac12$; transient crossings, which the first-crossing rule of \cref{sec:setup-diagnostics}
-    would count, are not events. Width: final rise from $0.1$ to $0.9$. Saddle-to-saddle: every
+    $\frac12$; transient crossings are not events (\cref{sec:setup-diagnostics}). Width: final rise
+    from $0.1$ to $0.9$. Saddle-to-saddle: every
     separation ratio $\sep i>3$ (\cref{tab:regimes}).
   \item Discrete methods record loss and overlaps at every step for the first 2000 steps, then every
     $\max(1,n_{\rm steps}/(5\cdot10^4))$ steps. A first escape or gap shorter than two recording

@@ -1,0 +1,13 @@
+# Multiplicity test (notes/theory_escape.md 5.3): MPS4 pattern teacher whose components differ on the
+# adjacent cores 1, 2 (sharing a bond of dimension chi_e = 4): predicted P(smaller first) ~
+# sigma^(n (1-rho)/rho) with n = chi_e = 4 as sigma -> 0. Full GF down to sigma = 1e-5, 1000 seeds.
+name: pat_mps4_adj
+trees: ["mps:4"]
+d: [2]
+chi: [4]
+pattern: [[0, 0, 0, 0], [0, 1, 1, 0]]
+rho: [0.8, 0.9]
+sigma: [0.1, 0.01, 0.001, 0.0001, 0.00001]
+seeds: 1000
+proxies: false
+lo_race: false

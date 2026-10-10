@@ -13,11 +13,12 @@ import yaml
 from constrained import constrained_minima, metric_loss_of_dense, ranked_spec
 from run_generic import expand
 from setups import build
+from common import RESULTS  # noqa: E402
 
 HERE = Path(__file__).parent
 torch.set_num_threads(8)
 cfg = yaml.safe_load(open(HERE / "configs/e4c_cross.yaml"))
-obs = pd.read_csv(HERE / "results/e4c_cross_summary.csv")
+obs = pd.read_csv(RESULTS / "e4c_cross_summary.csv")
 rows = []
 for case in expand(cfg):
     if case["pair"] != "binary_on_mps":
@@ -43,5 +44,5 @@ for case in expand(cfg):
                          observed_first_edges=o["first_edge"].tolist(),
                          frac_match=float((o["first_edge"] == int(np.argmax(s2))).mean())))
 df = pd.DataFrame(rows)
-df.to_csv(HERE / "results/e4c_theory.csv", index=False)
+df.to_csv(RESULTS / "e4c_theory.csv", index=False)
 print(df.to_string())

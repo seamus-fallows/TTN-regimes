@@ -1,0 +1,6 @@
+tree,case,start,chi,runs,stalled,seeds,seeds_stall_all_sigma,seeds_stall_some_sigma
+mps8,S=25,small_balanced,2,48,2,8,0,1
+mps6,S=135,small_balanced,2,48,1,8,0,1
+mps8,S=15,small_balanced,2,48,4,8,0,2
+mps8,S=16,small_balanced,2,30,5,5,0,2
+mps8,S=07,small_balanced,2,30,4,5,0,1

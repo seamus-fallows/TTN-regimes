@@ -1,0 +1,16 @@
+# Fix round 2 (review of round 2, MEDIUM 3): misaligned8_20 on mps8 at smaller eps. Its strict escape
+# from the exact saddle ends at an intermediate saddle with s_2 = 3.7-3.9e-4 on every bond, below the
+# f = 0.05 onset threshold, so the escape is re-timed at s_2 = 1.8e-4 (analyze_r2_saddle.py); the
+# eps >= 1e-3 runs of r2_saddle.yaml resolve that level only up to eps = 1e-2. Runs stop once
+# max s_2 >= 2e-3 (after the intermediate level). Same output folder as r2_saddle.yaml.
+name: r2_saddle
+out_tag: r2_saddle_m20
+stop_s2: 2.0e-3
+t_cap: 1.0e+7
+trees:
+  8: [mps]
+teachers:
+  8:
+    misaligned8_20: {kind: misaligned, args: {theta_deg: 20, alpha: 2.0}}
+sigmas: [1.0e-6, 1.0e-5, 1.0e-4]
+seeds: [0, 5]

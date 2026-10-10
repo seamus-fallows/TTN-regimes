@@ -24,7 +24,9 @@ crossover.}
 \placeholder{Runs that do not converge within the budget: long initial plateaus at small
 $\isc$ and large $\Kc$, and the relation to barren plateaus.}
 % TODO: escape time ~ sigma^{-(K-2)} makes small-init deep trees stall; contrast with barren
-% plateau results for TN learning (liu2022presence; miao2024isometric; barthel2025absence).
+% plateau results for TN learning: barren plateaus for global, but not local, losses of
+% unitary-embedded MPS (liu2022presence); none in the energy optimization of isometric MPS/TTNS/MERA
+% (miao2024isometric; barthel2025absence).
 
 \subsection{Large bond dimension: NTK versus \texorpdfstring{$\mu$P}{muP}}\label{sec:other-large-chi}
 \placeholder{Per-core scalings for an infinite-bond-dimension limit with and without feature
@@ -33,13 +35,254 @@ learning.}
 % parameterizations); express via per-core init scales and lr multipliers (Sec. 2.4 variant (e)).
 
 \subsection{Discrete steps, gradient noise and finite samples}\label{sec:other-optim}
-\placeholder{Gradient descent versus gradient flow, the stability limit and edge of stability;
-SGD noise and plateau durations; sample complexity of the saddle-to-saddle and lazy regimes.}
-% TODO(Q8, H6): GD stability limit eta_max ~ 2 / (K s_1^{2-2/K}) from the sharpness at the
-% balanced minimum (verify or correct); EoS behaviour near eta_max (cohen2021gradient,
-% lewkowycz2020large, even2023sgd); does a large step or SGD noise shorten plateaus at small sigma
-% (plateau time vs batch size B and eta)? Finite n: test error vs n for small vs large init; low
-% hierarchical rank bias of S2S vs min-norm tangent-space solution of lazy (razin2022implicit).
+% Sources: notes/optim_samples.md (fix round 1), agent-runs/optim-samples/REPORT.md, reviews
+% notes/reviews/optim_samples_round1.md and notes/reviews/optim_samples_round2_verification.md (its
+% errata 1-7 override the note and are applied below), theory in notes/theory_optimizer.md v2 and
+% app:optimizer; settings in app:exp-optim; every number from experiments/optim_samples/results/*.csv.
+% WITHDRAWN, do not reintroduce: "an O(eta) step flips near-tied races and can remove a plateau" (and
+% the conjecture that flips vanish as sigma -> 0); the chi = 3 centred-model claims ("the GD limit is
+% 2/lambda_GF ~ sigma^{-2(K-1)}", "no bounded oscillation on the lazy side"); "event shifts match to
+% 3 digits for every event"; "P7 confirmed"; "B = 16 and 64 agree to 0.5%"; "no forgetting at
+% <= 0.24 eta*_ms"; "persistent order changes at B = 1" (all are forget-and-relearn runs);
+% "generalization degrades monotonically with the init scale"; from the theory note v1:
+% noise-driven escapes faster than gradient flow, eta_ms as the divergence threshold, an unbiased
+% SGD escape time, O(sigma^2) excess sharpness.
+
+Gradient flow is the limit of gradient descent (GD) as the step $\lr\to0$ and of online SGD as
+$\lr/\batch\to0$, and the population loss is the limit of the empirical loss as $\nsamp\to\infty$. How
+much of \cref{sec:s2s} survives finite values? GD keeps gradient flow's saddle sequence up to a sharp
+stability limit, with event times shifted by a computable $O(\lr)$; gradient noise never shortens a
+plateau, but it lengthens later ones and can trap the dynamics at a saddle; and from a finite training
+set small initialization recovers the teacher with its bond ranks, while the lazy limit fails as
+dimension counting predicts.
+
+\paragraph{Setup} (details in \cref{app:exp-optim}).
+Whitened Gaussian inputs, odeco teacher with weights $(3,2,1)$, $d=\chi=3$, fan-in initialization (seeds
+0--4); binary trees with $\Ns=4$ ($\Kc=3$) and $\Ns=8$ ($\Kc=7$), MPS with $\Ns=8$ ($\Kc=8$). GD and online SGD
+(fresh inputs at every step) run on the clock $t=\lr\times(\text{steps})$ and are compared with gradient
+flow from the same initial point (DOP853, tolerances $10^{-10}$ and $10^{-14}$). Events are persistent,
+as in \cref{sec:other-optimizers}: the last upward crossing of $\ov r=\frac12$.
+
+\paragraph{The stability limit.}
+\proven{} \knownresult[deep linear networks: \citealp{mulayoff2020unique,ghosh2025learning}]
+\newresult[general trees] At the balanced global minimum the Hessian $J\T J$ has largest eigenvalue
+$\lambda_{\rm bal}=\Kc\tw1^{2-2/\Kc}$, and every other aligned minimum is sharper (\cref{prop:A-pattern-rule};
+with $\bd e=\ncomp$ every other minimum, \derived), so GD can converge to a global minimum only if
+\begin{equation}\label{eq:optim-etac}
+  \lr<\lr_c=\frac{2}{\Kc\,\tw1^{2-2/\Kc}}
+\end{equation}
+($0.1541$, $0.0435$ and $0.0366$ for the three trees). Along the saddle-to-saddle path the sharpness is
+$O(\isc^{\Kc-2})$ on the first plateau and $\Kc\max_r\tw r^{2-2/\Kc}$ over the components learned so far
+\derived{} (\cref{app:optimizer}): a step above $\lr_c$ is felt only once component 1 is learned, and there
+is no catapult at the start (the condition $\lr\lambda_{\max}(\Hess)>2$ of \citet{lewkowycz2020large} fails
+near the origin). Measured \empirical{} on binary $\Ns=4$ ($\isc=0.003$--$0.3$, five seeds, up to 18 steps
+from $0.01\lr_c$ to $3\lr_c$; \cref{fig:optim-gd}a): all 195 runs with $\lr\le0.95\lr_c$ are GF-like and all
+80 at $1.05$--$1.3\lr_c$ oscillate (an independent code placed the edge between $0.99\lr_c$ and $1.01\lr_c$).
+Below $\lr_c$, GD learned the components in gradient flow's order in all 765 runs, including 40 more
+seeds on binary $\Ns=4$ and both deep trees at $\isc=0.9$; a larger step only enlarges transient excursions of
+near-tied components, which cross $\frac12$ and fall back (at $\isc=0.1$ in $0.09\pm0.04$ of 45
+initializations at $0.1\lr_c$ and $0.18\pm0.06$ at $0.9\lr_c$).
+
+\paragraph{Below the limit, GD is gradient flow on a shifted clock.}
+\derived{} \newresult[for TTNs] \knownresult[the modified flow: \citealp{barrett2021implicit}] To first
+order in $\lr$, GD follows the modified flow $\dot\params=-(\Id+\frac\lr2\Hess)\nabla\Loss$, whose critical
+points are those of $\Loss$: the saddles are gradient flow's, and each event moves by $\lr c_e+O(\lr^2)$,
+with $c_e$ computed without free parameter from the variational equation along the gradient-flow path
+(\cref{prop:A-gd-shift,app:exp-optim}). Measured \empirical: over 526 comparisons at $\lr\le0.1\lr_c$ the
+shift agrees with $\lr c_e$ within $0.3\%$, $1\%$ and $5\%$ in $66\%$, $90\%$ and $97\%$ of the cases, all 202
+first events within $1\%$; the 15 misses beyond $5\%$ are later events, worst where $c_e\approx0$ after a
+near-tied race and the $O(\lr^2)$ term dominates. Richardson extrapolation to $\lr\to0$ recovers $c_e$ to a median relative
+$1.2\cdot10^{-5}$ (57 events). Since $c_1$ grows like $\ln(1/\isc)$ while $\tev1\propto\isc^{-(\Kc-2)}$, the
+relative error of $\tev1$ vanishes as $\isc\to0$: at $0.9\lr_c$ it is $0.111$, $0.056$, $0.023$, $0.0099$ and
+$0.0036$ for $\isc=0.3$, $0.1$, $0.03$, $0.01$, $0.003$ (five seeds; \cref{fig:optim-gd}b). At small
+initialization every stable step thus reproduces gradient flow, the more closely the smaller $\isc$, as
+GD does in \cref{sec:other-optimizers}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{optim/gd.pdf}
+  \caption{Gradient descent against gradient flow: binary tree, $\Ns=4$ ($\Kc=3$), $d=\chi=3$, odeco teacher
+    $(3,2,1)$, five seeds. (a)~Top: attractor of the balanced scalar map $x\mapsto x+hx^{\Kc-1}(1-x^\Kc)$,
+    $x=q/\tw1^{1/\Kc}$, $h=\lr\tw1^{2-2/\Kc}$ (points at 0: returns to the origin). Bottom: outcome classes at the
+    18 steps marked below the axis, pooled over $\isc=0.003$--$0.3$ (15--25 runs per step). GF-like:
+    monotone loss ending at gradient flow's loss (within $5\%$ plus $10^{-3}\Loss_0$); catapult: the same
+    after a rise of the loss; thrown back: loss above $0.9\Loss_0$ after the first event; diverged: above
+    $10^6\Loss_0$. (b)~Relative error of the first event time, mean $\pm$ s.e.; lines: $\lr c_1/\tev1^{\rm GF}$,
+    no fit. (c)~All runs in the $(\isc,\lr)$ plane (plain model with $\chi=3$ and $9$, $\isc\le0.3$; centred,
+    $\chi=9$, $\isc\ge1$): dotted, $\lr_c$; solid, $2/\lambda_{\rm GF}$ (mean over seeds); dashed, the largest
+    step at which a run still reaches gradient flow's loss.}
+  \label{fig:optim-gd}
+\end{figure}
+
+\paragraph{Above the limit: edge of stability.}
+\derived{} \knownresult[the scalar map and its two-cycle: \citealp{ghosh2025learning}, Thm~1,
+\citealp{macdonald2025convergence}, Thm~5.3; edge of stability: \citealp{cohen2021gradient}] For
+$\lr_c<\lr<2/\lambda_2(\Hess)$ only the radial mode of component 1 is
+unstable, and GD on it is the balanced scalar map of \cref{fig:optim-gd}a (\cref{app:optimizer}): a
+two-cycle from $\lr_c$, period four from $1.245\lr_c$, chaos from $1.32\lr_c$, then returns to the origin
+interleaved with divergence ($\Kc=3$). Measured \empirical{} on binary $\Ns=4$: component 1 oscillates while
+components 2 and 3 are still learned, and the time-averaged excess loss equals $\tw1^2$ times the map's
+mean loss within $0.9\%$ at $1.05$--$1.3\lr_c$ (for example $0.4496$ against $0.4496$ at $1.2\lr_c$, 25 runs;
+\eqref{eq:A-eos-loss} is its small-excess limit). The map's bounded chaotic window does not survive:
+the network diverges at $1.5$--$1.75\lr_c$ (38 of 40 runs), is thrown back to the origin saddle and
+relearns its components again and again at $2\lr_c$ (25 of 25), and diverges from $2.5\lr_c$. The deep
+trees, started at $\isc=0.9$ where the gradient-flow states are $10$--$35\%$ sharper than
+$\lambda_{\rm bal}$, already oscillate or catapult at $0.9\lr_c$.
+
+\paragraph{Larger initialization: catapults.}
+\empirical{} \knownresult[catapults: \citealp{lewkowycz2020large}; flatter, more balanced minima in scalar
+networks: \citealp{kreisler2023gradient}, Thms~3.2--3.3; limit sharpness at most $2/\lr$ in two-factor
+factorization: \citealp{wang2022large}, Thm~3.2; balancing while oscillating beyond the edge:
+\citealp{ghosh2025learning}, Prop.~2] At larger $\isc$ the minimum that gradient
+flow reaches is sharper, and $2/\lambda_{\rm GF}$, with $\lambda_{\rm GF}$ the largest Hessian eigenvalue there,
+replaces $\lr_c$. We follow it into the lazy regime with the centred model (\cref{sec:setup-init}) on
+binary $\Ns=4$ at $\chi=9$, the cut dimension, where all 45 gradient-flow references converge:
+$\lambda_{\rm GF}\propto\isc^{3.965\pm0.014}$ over $\isc=1.41$--$16$ (five seeds), close to the scale
+$\isc^{2(\Kc-1)}=\isc^4$ of the tangent kernel at initialization (\cref{prop:A-kernel}), so $2/\lambda_{\rm GF}$
+equals $\lr_c$ for $\isc\le0.3$, $0.65\lr_c$ at $\isc=1$ and $2.7\cdot10^{-4}\lr_c$ at $\isc=8$
+(\cref{fig:optim-gd}c). With steps of $0.5$--$4$ times each run's own $2/\lambda_{\rm GF}$, all runs up to $0.95$
+times are GF-like at every $\isc$, and monotone GD ends between $0.95$ and $1.2$ times. Beyond, small
+initialization ($\isc=0.1$, $0.3$) oscillates and then diverges, since the balanced minimum is already the
+flattest; from $\isc=1$ on GD catapults: the loss spikes (by up to $2\cdot10^5\Loss_0$ at $\isc=8$) and then
+reaches gradient flow's final loss (86 of 90 runs below $10^{-6}\Loss_0$) at a flatter minimum, of
+sharpness $0.58$--$1.00$ times $2/\lr$ (per run), for steps up to $1.5$ ($\isc=1$) and $3$ ($\isc=2$--$8$) times
+$2/\lambda_{\rm GF}$; at $4$ times all runs diverge. For $\isc\ge2$ the window thus ends between
+$6/\lambda_{\rm GF}$ and $8/\lambda_{\rm GF}$, $1.5$--$2$ times the $4/\lambda_0$ of the two-layer model of
+\citet{lewkowycz2020large}. Imbalanced small initializations ($\isc=0.1$ with the root core at scale 2, 4
+or 6) reproduce the known selection: the 104 of 150 runs that converge end $0.05$--$3\%$ below
+$\min(\lambda_{\rm GF},2/\lr)$.
+
+\paragraph{SGD: the first plateau keeps its law.}
+\derived{} \newresult[for TTNs; framework: \citealp{li2017stochastic,ziyin2024typeii}] The per-sample
+gradient carries the Jacobian $J=\partial\W/\partial\params$, which vanishes at the origin like the drift,
+so noise cannot drive the first escape and its exponent $\Kc-2$ is unchanged. On an aligned mode it only
+delays and spreads the escape, by \eqref{eq:A-sgd-first}: the mean delay is
+$O(\lr(1+\kappa_{\rm n}/\batch)\ln(1/\isc))$ and the standard deviation $(\kappa_{\rm n}\tev1^{\rm GF}\lr/\batch)^{1/2}$,
+with $\kappa_{\rm n}\approx3^\Ns$ set by the kurtosis of the product features. This is consistent with
+the experiments of \citet{corlouer2026stochastic} on deep linear networks (their Fig.~2: order kept, SGD
+slower).
+Measured \empirical{} with online SGD on binary $\Ns=4$ (1780 runs; $\batch=1$--$256$; five initializations
+with ten noise seeds each): no setting shortened the first plateau (\cref{fig:optim-sgd}a). At $\batch=1$
+the mean delays are $+0.24\pm0.10$, $-0.01\pm0.12$ and $+0.13\pm0.07$ at $\isc=0.03$, $0.1$, $0.3$ (s.e.\ across
+initializations; escape times $24.2$, $7.2$, $2.3$), against $+0.17$, $+0.12$, $+0.08$ predicted: consistent,
+but resolved only at $\isc=0.03$. The spread scales as $(\lr/\batch)^p$ with $p=0.43$--$0.52$ (five sweeps, s.e.\ $0.01$--$0.05$),
+against $\frac12$.
+
+\paragraph{SGD: later plateaus are lengthened, and can trap.}
+\conjecture{} (heuristic law) \knownresult[mechanism: stochastic collapse, \citealp{chen2023stochastic}]
+Once a component is learned, a route of $k\ge3$ cores (\cref{sec:s2s-locality}) has no curvature, but its
+entries are coupled to the learned cores by zero-mean multiplicative noise of order one, which drives
+their log-amplitude down at a rate $c_\gamma\lr/\batch$. \Cref{prop:A-sgd-collapse} turns this into
+\begin{equation}\label{eq:optim-collapse}
+  \frac{T_{\rm SGD}}{T_{\rm GF}}=\frac{-\ln(1-x)}{x},\qquad x=c_\gamma\frac{\lr}{\batch}T_{\rm GF},
+\end{equation}
+for a $k=3$ plateau of gradient-flow length $T_{\rm GF}$, and trapping for $x\ge1$. Test \empirical{} on binary
+$\Ns=4$ from the aligned route (component 1 learned, components 2 and 3 at per-core amplitude
+$b_0=0.002$--$0.01$, so that $T_{\rm GF}=50$--$250$ is exact; $\lr/\batch=3.1\cdot10^{-5}$--$2.5\cdot10^{-4}$; 144 runs,
+six noise seeds per point; \cref{fig:optim-sgd}b): every escaped run was slower than gradient flow, and
+all 30 runs with $z=(\lr/\batch)T_{\rm GF}\ge0.025$ were trapped. One fitted $c_\gamma=32.6$ (the commuting-pair
+estimate of \cref{app:optimizer} gives 26 for this teacher) yields $\chi^2=379$ for 18 degrees of freedom, against 535 for a pole $1/(1-x)$ and 929 for
+$1+x/2$, and $x=1$ separates escaped from trapped conditions in 23 of 24 cases; but the effective $c_\gamma$
+grows from 30 at small $x$ to 45 near the trap, so the law holds to about $10\%$ only for
+$T_{\rm SGD}/T_{\rm GF}\lesssim1.5$. Only $\lr/\batch$ matters: $\batch=16$ and $64$ agree within $1.8$ combined s.e.\
+at eight matched points, although $\batch=64$ is higher at all three escaped points with $b_0=0.003$. From
+random initialization the second plateau is lengthened by
+$19.8\pm5.1\%$ at $\isc=0.03$, $\batch=1$ (the 16 of 30 runs that kept component 1) against $17.7\%$ from
+\eqref{eq:optim-collapse} with no further fit, but by $10.8\pm0.6\%$ against $4.4\%$ at $\isc=0.1$
+(\cref{fig:optim-sgd}a). Consequence \derived: at fixed $\lr/\batch$ a later plateau grows faster than
+$\isc^{-(k-2)}$ and becomes infinite at a finite $\isc$; on the aligned route at $\lr/\batch=1.25\cdot10^{-4}$,
+$T_{\rm SGD}/T_{\rm GF}=1.13$, $1.37$ and $2.5$--$2.7$ for $b_0=0.01$, $0.005$, $0.003$, and all runs are trapped at
+$0.002$: SGD stalls where gradient flow is only slow. A strict ($k=2$) route still escapes if
+$\abs{\lambda_-}>c_\gamma\lr/\batch$ \derived: on the MPS with $\Ns=4$ and a pattern teacher $(3,0.3)$ whose
+second component needs $k=2$, SGD at $\batch=1$ learned it in 5 of 5 runs, $8\pm5\%$ later than gradient
+flow \empirical. No SGD run escaped a plateau faster than gradient flow.
+
+\paragraph{SGD: stability limit and forgetting.}
+\derived{} \newresult[the reduction to the pattern basis] \knownresult[the criteria:
+\citealp{wu2018how,chemnitz2025characterizing}; exact mean square: \citealp{mulayoff2024exact}, Thm~5] At
+the minimum the noise vanishes, and
+the exact mean-square limit \eqref{eq:A-ms-threshold} on binary $\Ns=4$ is $\lr^*_{\rm ms}=0.00107$, $0.0161$
+and $0.112$ for $\batch=1$, $16$, $256$, against $\lr_c=0.154$: per sample, small-batch SGD is about 150 times
+less stable than GD, because Gaussian product features have kurtosis $3^\Ns$. Started $10^{-5}$ from the
+minimum, SGD converged in 5 of 5 runs up to $1.5\lr^*_{\rm ms}$ and diverged in 9 of 10 at $2.5\lr^*_{\rm ms}$
+($\batch=1$, $16$) \empirical, as the computed almost-sure threshold, about $1.9\lr^*_{\rm ms}$, predicts. Well
+below it, noise on long plateaus erases learned components, which are then relearned \empirical: in the
+random-initialization runs the first learned component fell back below $\frac12$ in $20$--$66\%$ of the runs at
+$0.47\lr^*_{\rm ms}$ (most in the longest runs), $4\%$ at $0.38\lr^*_{\rm ms}$, 1 of 50 at $0.24\lr^*_{\rm ms}$ and
+none below; these are also the only runs whose order differs from gradient flow's (10) or is unresolved
+(19). On the aligned-route plateaus (up to 1000 time units; \cref{fig:optim-sgd}c), $\ov1$ fell below
+$\frac12$ in 0 of 72 runs at $\lr\le0.076\lr^*_{\rm ms}$, 1 of 36 at $0.12$--$0.15\lr^*_{\rm ms}$ and 20 of 36 at
+$0.25$--$0.30\lr^*_{\rm ms}$, so the safe fraction $0.25\lr^*_{\rm ms}$ seen with another teacher
+(\cref{app:optimizer}) does not carry over. Near its limit SGD breaks the saddle sequence rather than
+compressing it.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{optim/sgd.pdf}
+  \caption{Online SGD, binary tree with $\Ns=4$ ($\Kc=3$), $d=\chi=3$, odeco teacher $(3,2,1)$. (a)~Change
+    against gradient flow at $\lr=5\cdot10^{-4}$ ($0.47\lr^*_{\rm ms}$ at $\batch=1$): first escape (filled; five
+    initializations with ten noise seeds each) and second plateau (open; three initializations, runs
+    that kept component 1), mean $\pm$ s.e.\ across initializations; dotted: \eqref{eq:optim-collapse} with
+    $c_\gamma$ from (b). (b)~Second plateau from the aligned route, mean $\pm$ s.e.\ over the escaped runs of
+    six noise seeds; $b_0=0.01$, $0.005$, $0.003$, $0.002$ from light to dark ($T_{\rm GF}=50$--$250$); circles
+    $\batch=64$, squares $\batch=16$; triangles: all runs trapped; grey: three laws, one fitted $c_\gamma$ each.
+    (c)~Minimum of $\ov1$ during each run of (b).}
+  \label{fig:optim-sgd}
+\end{figure}
+
+\paragraph{Finite samples: which interpolant?}
+\empirical{} \newresult[for TTN regression] Binary tree with $\Ns=8$, $d=2$ ($\W\in\R^{256}$), odeco teacher
+$(3,2)$ of bond rank 2 (its rank-2 TTNs form a manifold of dimension 28), $\nsamp$ Gaussian inputs with
+noise-free labels, five seeds; GD on the empirical loss (step $1/\lambda_{\max}$, $6\cdot10^4$ steps); students with
+$\chi=4$, whose tangent space at a random point has dimension 112 (\cref{prop:A-kernel}), and $\chi=16$, where
+all bonds are full; test error $\normF{\W-\Wt}^2/\normF{\Wt}^2$ (\cref{fig:optim-samples}). Small
+initialization ($\isc=0.3$, $0.5$) recovers the teacher with its bond ranks: test error below $10^{-2}$ in 5 of
+5 seeds from $\nsamp=256$ at $\chi=4$ (about $2\cdot10^{-3}$ at 256 and $2\cdot10^{-4}$ at 384, limited by unfinished
+training) and from $\nsamp=384$ at $\chi=16$, with mean effective bond rank $2.0$--$2.1$. For $\nsamp\le96$ it
+fits the training data (to $1.3\%$ of the initial loss) with a wrong tensor in 89 of 90 runs (mean test
+error $1.0$--$3.8$). The exact lazy limit, the minimum-norm solution
+of the model linearized at initialization, fails as dimension counting predicts \derived: at $\chi=4$ the
+teacher lies outside the tangent space, and the error is $1.7$--$32$ at every $\nsamp$, worse than predicting
+zero; at $\chi=16$ it is exact only from $\nsamp=d^\Ns=256$. The centred model at $\isc=1$, which is not lazy (its
+parameters move by $12$--$69\%$), reaches $0.01$--$0.04$ at $\nsamp=384$--$512$ with bond rank $2.4$--$2.9$; at
+$\isc=1.5$ and $2$ it had not converged after $3\cdot10^5$ steps and is not ranked. With $\Ns=6$, $d=3$
+($\W\in\R^{729}$, manifold dimension 48), small initialization recovers the teacher in 5 of 5 seeds at
+$\nsamp=384$, while the $\chi=4$ lazy limit is worse than predicting zero at every $\nsamp\le384$. The learned bond
+ranks are ordered small initialization $<$ centred $<$ lazy limit at every $\nsamp$, except at $\chi=16$ for
+$\nsamp\ge256$, where the lazy limit is exact. A bias of small initialization towards low (hierarchical)
+rank is known for tensor factorizations \knownresult[\citealp{razin2021implicit,razin2022implicit};
+tensor-train completion, empirically: \citealp{milanesi2021implicit}; matrices: \citealp{arora2019implicit}],
+and a linearized model can only fit the projection of the target on its tangent space
+\knownresult[\citealp{chizat2019lazy}, Thm~2.5; \citealp{ghorbani2019limitations}, Thm~2; lazy training of
+a tensor decomposition needs $\Omega(d^{\Ns-1})$ components for a rank-one target: \citealp{wang2020beyond},
+Thm~1].
+Scope: one teacher per
+setting, noise-free labels, GD with capped steps, and no monotone trend in $\isc$ within small
+initialization. The threshold of small initialization, 200--250 samples or 5--9 times the
+teacher-manifold dimension in both settings, is unexplained.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{optim/samples.pdf}
+  \caption{Finite training sets: binary tree, $\Ns=8$ ($\Kc=7$), $d=2$, odeco teacher $(3,2)$; mean $\pm$ s.e.\
+    over five seeds (data and initialization). (a), (b)~Test error against $\nsamp$ for $\chi=4$ and $16$ (lazy
+    limit: kernel regression with the initial tangent kernel, values below $10^{-20}$ drawn at $10^{-6}$);
+    dashed: the teacher-manifold dimension 28, the tangent dimension 112 at $\chi=4$, $d^\Ns=256$; grey: the
+    zero predictor. (c)~Effective bond rank (bond singular values above $0.2$, a tenth of the smallest
+    teacher weight, averaged over the six edges), $\chi=4$.}
+  \label{fig:optim-samples}
+\end{figure}
+
+\paragraph{When does gradient flow describe practical training?}
+\derived{} (from the results above; one teacher, trees with $\Ns\le8$) GD follows gradient flow whenever
+$\lr<2/\lambda_{\rm GF}(\isc)$, with event times off by $\lr c_e$ and, from small initialization, the same saddle
+sequence; this limit is $\lr_c$ at small initialization and falls like $\isc^{-2(\Kc-1)}$ on the lazy side, where
+steps up to $1.5$--$3$ times larger still reach gradient flow's loss through a catapult. SGD needs in
+addition $\lr<\lr^*_{\rm ms}(\batch)$ (about $10^{-3}\batch$ here), $c_\gamma(\lr/\batch)T\ll1$
+for every later plateau of length $T$, and $\lr$ a small fraction of $\lr^*_{\rm ms}$ when learned
+components must survive long plateaus ($0.1\lr^*_{\rm ms}$ was safe over 1000 time units). Because plateaus
+grow like $\isc^{-(k-2)}$, at fixed $\lr/\batch$ SGD eventually stalls or forgets where gradient flow is only
+slow.
 
 % ===========================================================================================
 \subsection{Optimizers used in practice}\label{sec:other-optimizers}
@@ -49,9 +292,12 @@ SGD noise and plateau durations; sample complexity of the saddle-to-saddle and l
 % ALS/DMRG/Riemannian GD "unrelated to the weights"; Adam's later plateaus at "half GF's rate" or set
 % by the adaptive edge of stability; Adam generalizes worse than gradient flow.
 
-Tensor-network models are mostly trained with Adam \citep{kingma2015adam}, with ALS and DMRG sweeps
-\citep{white1992density,holtz2012alternating,stoudenmire2016supervised} or with Riemannian methods
-\citep{uschmajew2013geometry,novikov2018exponential}. Which features of the gradient-flow picture of
+Tensor-network models are trained with Adam \citep{kingma2015adam}, with ALS and DMRG sweeps
+\citep{white1992density,holtz2012alternating} (in machine learning often with a gradient step on the
+merged two-site core instead of an exact local solve, \citealp{stoudenmire2016supervised}) or with
+Riemannian methods \citep{novikov2018exponential,steinlechner2016riemannian}, which use the geometry of
+fixed-rank tensor manifolds \citep{holtz2012manifolds,uschmajew2013geometry}. Which features of the
+gradient-flow picture of
 \cref{sec:s2s} survive them? \Cref{tab:optimizers} collects the answers, \cref{fig:optimizers-side}
 shows them from one initial point, and the evidence follows.
 
@@ -77,12 +323,16 @@ $0.0199\pm0.0000$ per e-fold of $1/\isc$, the asymptotic slope $\lr(\Kc-1)/2=0.0
 heavy ball escape after $1.001$--$1.006$ and $1.01$--$1.11$ times gradient flow's time.
 
 \paragraph{Adam: same order, but the first escape forgets $\isc$.}
-\derived{} \newresult[for TTNs] With $\epsilon=0$ Adam's step $-\lr\hat m_n/\sqrt{\hat v_n}$ is
+\derived{} \newresult[for TTNs; in aligned deep matrix factorization the sign-descent escape time is
+likewise bounded as the initialization vanishes: \citealp{sabanayagam2026optimizer}, Thm~2 and Prop.~6]
+With
+$\epsilon=0$ Adam's step $-\lr\hat m_n/\sqrt{\hat v_n}$ is
 invariant under a common rescaling of past gradients \knownresult[\citealp{kingma2015adam}], and near
 the origin $\nabla\Loss$ is homogeneous of degree $\Kc-1$; so the iterates from $c\params_0$ with step
 $c\lr$ are $c$ times those from $\params_0$ with step $\lr$, Adam sees $\isc$ only through $\isc/\lr$,
 and the number $n_1$ of steps to the first escape stays bounded as $\isc\to0$ (in the sign-flow limit
-$\lr\to0$ \knownresult[\citealp{balles2018dissecting}], $\lr n_1$ tends to a constant). Measured
+$\lr\to0$ at fixed $\beta_1,\beta_2$ \knownresult[\citealp{ma2022qualitative}; Adam as sign descent:
+\citealp{balles2018dissecting}], $\lr n_1$ tends to a constant). Measured
 \empirical: $p=0.009$--$0.013$ on binary $\Ns=4$ for four learning rates, RMSProp alike
 (\cref{fig:optimizers-adam-escape}); $p=0.049\pm0.022$ and $0.145\pm0.033$ ($\lr=10^{-3}$, $10^{-2}$;
 small but not zero) on binary $\Ns=8$, where gradient flow has $5.00\pm0.02$ ($\isc\le0.4$, prediction
@@ -107,7 +357,8 @@ non-incremental by \cref{tab:regimes}.
 \end{figure}
 
 \paragraph{Adam's $\epsilon$ brings the gradient-flow law back.}
-\derived{} \newresult{} Where $\abs{\partial_j\Loss}\ll\epsilon$ Adam is gradient flow with
+\derived{} \newresult[for TTNs; concurrently, the same law in aligned deep matrix factorization:
+\citealp{sabanayagam2026optimizer}, Prop.~7] Where $\abs{\partial_j\Loss}\ll\epsilon$ Adam is gradient flow with
 $t=\lr n/\epsilon$: from a small $\isc$ it crawls along the gradient-flow path until the gradient
 reaches $\epsilon$, then escapes as in the sign regime,
 \begin{equation}\label{eq:adam-eps}
@@ -242,6 +493,7 @@ preconditioning is gauge-equivariant up to damping \derived{} but moves all core
 current values. Balance and the flattest minimum (\cref{prop:A-pattern-rule}) rest on the conserved
 $\Q e$, the charges of the gauge symmetry under Euclidean gradient flow (\cref{prop:conservation});
 their measured relative drift is $10^{-11}$, $10^{-5}$ and $3\cdot10^{-4}$ under gradient flow, GD and
-heavy ball (momentum flows lose most conservation laws, \citealp{marcotte2024keep}), while Adam,
+heavy ball (momentum flows conserve fewer quantities than gradient flow, with time- and velocity-dependent
+laws, \citealp{marcotte2024keep}), while Adam,
 equivariant only under coordinate permutations and sign flips, breaks them at order one \empirical. A
 law for Adam's later plateaus is open (\cref{sec:open}).

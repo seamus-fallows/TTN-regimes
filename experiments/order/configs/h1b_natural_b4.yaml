@@ -1,0 +1,15 @@
+# H1b, natural wrong-order runs: binary4 seeds whose first event was the smaller component in the
+# b4_sigma sweep (chi = 4). Full GF to convergence; Hessian at the wrong plateau midpoint.
+# Prediction: rotation (a_2 -> 0, bond rank stays 1) after t_corr whose distribution does not
+# depend on sigma (|lambda| t_corr ~ ln(1/U) + c, U uniform).
+name: h1b_natural_b4
+mode: natural
+from_sweep: b4_sigma
+kind: binary
+n: 4
+d: 2
+chi: 4
+rho: [0.7, 0.8, 0.9]
+sigma: [0.1, 0.01, 0.001, 0.0001]
+max_seeds: 40
+t_max: 1.0e+9

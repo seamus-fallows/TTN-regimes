@@ -1,0 +1,25 @@
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:75: UserWarning: Attempting to set identical low and high xlims makes transformation singular; automatically expanding.
+  axes[0, j].set_xlim(1, None)
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:81: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:123: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:147: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:227: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/_core/fromnumeric.py:3862: RuntimeWarning: Mean of empty slice
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/_core/_methods.py:219: RuntimeWarning: Degrees of freedom <= 0 for slice
+  ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/_core/_methods.py:178: RuntimeWarning: invalid value encountered in divide
+  arrmean = um.true_divide(arrmean, div, out=arrmean,
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/numpy/_core/_methods.py:211: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:194: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+{"binary, quadtree": [-12.999996369232182, 1.0120053009270076e-06, 5], "binary, scrambled": [NaN, NaN, 0], "MPS, snake": [-13.999996892972959, 1.801826092354635e-06, 5]}
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:258: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()

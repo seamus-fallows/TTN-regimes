@@ -44,7 +44,7 @@ def constrained_minima(spec_r: TTNSpec, loss_of_dense, n_starts=20, seed=0, tol=
         res = minimize(fg, y0, jac=True, method="L-BFGS-B",
                        options=dict(maxiter=max_iter, gtol=gtol, ftol=1e-15, maxcor=50))
         w = to_dense(spec_r, spec_r.unflatten(torch.from_numpy(res.x))).detach()
-        found.append(dict(loss=res.fun, W=w, grad_norm=float(np.linalg.norm(res.jac))))
+        found.append(dict(loss=res.fun, W=w, grad_norm=float(np.linalg.norm(res.jac)), y=res.x))
     found.sort(key=lambda f: f["loss"])
     distinct = []
 

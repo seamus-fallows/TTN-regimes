@@ -1,0 +1,7 @@
+# 8x8 images (N = 64 sites): binary64 (K = 63) on the quadtree order, mps64 (K = 64) snake, binary64
+# scrambled; chi = 4, raw features; small study (cost ~1-2 h per run): two sigma, two seeds, tau <= 3000.
+defaults: {t2: 3000, n_per_decade: 30, n_linear: 600, wall_limit: 14400, chi: 4, size: 8}
+cases:
+  - {tree: binary, ordering: quadtree, features: raw, sigmas: [0.1, 0.3], seeds: [0, 1]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.1, 0.3], seeds: [0, 1]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.1, 0.3], seeds: [0, 1]}

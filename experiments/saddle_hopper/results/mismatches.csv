@@ -1,0 +1,41 @@
+dataset,cause,sweep,name,tree,start,chi,w,cls,runs,seeds,sigmas,orders
+locality,stall: pinned or very slow route under balanced init (no dead trap predicted),k5ext,S=135,mps6,small_balanced,2,1/0.5,stalled,5.0,"1,2,3",0.012-0.03,nan
+locality,stall: pinned or very slow route under balanced init (no dead trap predicted),k5ext,S=15,mps8,small_balanced,2,1/0.5,stalled,10.0,"0,1,2,3",0.012-0.03,nan
+locality,stall: pinned or very slow route under balanced init (no dead trap predicted),khigh,S=16,mps8,small_balanced,2,1/0.5,stalled,10.0,"0,3,4",0.05-0.186,nan
+locality,stall: pinned or very slow route under balanced init (no dead trap predicted),twocomp_balanced,S=07,mps8,small_balanced,2,1/0.5,stalled,4.0,3,0.2-0.387,nan
+locality,stall: pinned or very slow route under balanced init (no dead trap predicted),twocomp_balanced,S=135,mps6,small_balanced,2,1/0.5,stalled,1.0,3,0.03-0.03,nan
+locality,stall: pinned or very slow route under balanced init (no dead trap predicted),twocomp_balanced,S=15,mps8,small_balanced,2,1/0.5,stalled,4.0,"1,3",0.03-0.0476,nan
+locality,stall: pinned or very slow route under balanced init (no dead trap predicted),twocomp_balanced,S=16,mps8,small_balanced,2,1/0.5,stalled,5.0,"0,3",0.08-0.167,nan
+locality,stall: pinned or very slow route under balanced init (no dead trap predicted),twocomp_balanced,S=25,mps8,small_balanced,2,1/0.5,stalled,2.0,0,0.01-0.0182,nan
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",khigh,S=012,ht4,small_balanced,2,1/0.5,rotation,2.0,5,0.259-0.36,0>1
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,N4,ht4,small,3,1/0.6/0.4,rotation,1.0,3,0.25-0.25,1>0>2
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,N4,ht4,small_balanced,3,1/0.6/0.4,rotation,1.0,3,0.25-0.25,1>0>2
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TA,ht4,small,2,1/0.6/0.35,other_order,1.0,5,0.0549-0.0549,1>0>2
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TA,ht4,small,2,1/0.6/0.35,rotation,3.0,5,0.091-0.25,1>0>2
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TA,ht4,small_balanced,2,1/0.6/0.35,rotation,1.0,5,0.25-0.25,1>0>2
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TA,mps4,small,2,1/0.6/0.35,other_order,2.0,1,0.0457-0.0956,1>0>2
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TB,binary4,small,2,1/0.6/0.35/0.2,rotation,1.0,1,0.1-0.1,1>0>2>3
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TB,ht4,small,2,1/0.6/0.35/0.2,other_order,1.0,5,0.151-0.151,1>0>2>3
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TB,ht4,small,2,1/0.6/0.35/0.2,rotation,1.0,5,0.25-0.25,1>0>2>3
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TB,ht4,small_balanced,2,1/0.6/0.35/0.2,rotation,1.0,5,0.25-0.25,1>0>2>3
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TD,mps8,small,2,1/0.6/0.35,other_order,8.0,"1,5",0.02-0.2,0>2>1
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp,TD,mps8,small,2,1/0.6/0.35,rotation,1.0,7,0.2-0.2,0>2>1
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp_wide,TA,mps4,small,2,1/0.6/0.35,other_order,1.0,1,0.0316-0.0316,1>0>2
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp_wide,TB,mps4,small,2,1/0.6/0.35/0.2,other_order,1.0,1,0.00316-0.00316,1>0>2>3
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",multicomp_wide,TD,mps8,saddle,2,1/0.6/0.35,other_order,1.0,1,0.1-0.1,0>2>1
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",robust,S=12,mps4,small,2,1/0.75,rotation,1.0,4,0.0398-0.0398,0>1
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",twocomp,S=012345,mps6,small,2,1/0.5,rotation,2.0,1,0.24-0.5,0>1
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",twocomp,S=02,midroot6,small,2,1/0.5,other_order,1.0,3,0.1-0.1,1>0
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",twocomp_chi4,S=0123,ht4,small,4,1/0.5,rotation,1.0,1,0.15-0.15,0>1
+locality,"threshold artifact: events not separated (rho < 3), order not resolved",twocomp_chi4,S=024,binary8,small,4,1/0.5,rotation,2.0,0,0.347-0.5,0>1
+locality,threshold artifact: transient dip of a learned component during the next escape,khigh,S=012,ht4,small_balanced,2,1/0.5,rotation,5.0,5,0.05-0.186,0>1
+locality,threshold artifact: transient dip of a learned component during the next escape,twocomp,S=0123,ht4,small,2,1/0.5,rotation,3.0,"1,2",0.455-0.6,0>1
+locality,threshold artifact: transient dip of a learned component during the next escape,twocomp,S=234,mps6,small,2,1/0.5,rotation,1.0,6,0.1-0.1,0>1
+locality,threshold artifact: transient dip of a learned component during the next escape,twocomp_chi4,S=024,binary8,small,4,1/0.5,rotation,4.0,0,0.08-0.24,0>1
+order,finite sigma: add route competes with the rotation (theory_saddles 4.4; sigma = 0.05),multi2,odeco R=3 rho=0.9,binary4,small,4,,other order,0.015,,0.05,231
+order,finite sigma: add route competes with the rotation (theory_saddles 4.4; sigma = 0.05),multi2,odeco R=3 rho=0.9,binary4,small,4,,other order,0.015,,0.05,321
+order,finite sigma: add route competes with the rotation (theory_saddles 4.4; sigma = 0.05),multi2,odeco R=4 rho=0.9,binary4,small,4,,other order,0.005,,0.05,1342
+order,finite sigma: add route competes with the rotation (theory_saddles 4.4; sigma = 0.05),multi2,odeco R=4 rho=0.9,binary4,small,4,,other order,0.02,,0.05,1432
+order,finite sigma: add route competes with the rotation (theory_saddles 4.4; sigma = 0.05),multi2,odeco R=4 rho=0.9,binary4,small,4,,other order,0.01,,0.05,2314
+order,finite sigma: add route competes with the rotation (theory_saddles 4.4; sigma = 0.05),multi2,odeco R=4 rho=0.9,binary4,small,4,,other order,0.01,,0.05,2413
+order,finite sigma: add route competes with the rotation (theory_saddles 4.4; sigma = 0.05),multi2,odeco R=4 rho=0.9,binary4,small,4,,other order,0.01,,0.05,3214

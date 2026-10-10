@@ -1,0 +1,4 @@
+('mps', 4, 2, 4, 0.8, 0.05) P_g gf=0.606 lo=0.606 lo_sig=0.606 race=0.606 | agree gf-lo=1.000 gf-lo_sig=1.000 gf-race=1.000 | max loser a=7.46e-02 51s
+('binary', 8, 2, 4, 0.8, 0.1) P_g gf=0.606 lo=0.606 lo_sig=0.606 race=0.594 | agree gf-lo=1.000 gf-lo_sig=1.000 gf-race=0.978 | max loser a=8.39e-03 84s
+('binary', 4, 2, 4, 0.8, 0.05) P_g gf=0.750 lo=0.944 lo_sig=0.750 race=0.661 | agree gf-lo=0.806 gf-lo_sig=1.000 gf-race=0.911 | max loser a=4.62e-01 18s
+('binary', 4, 2, 4, 0.8, 0.005) P_g gf=0.878 lo=0.944 lo_sig=0.878 race=0.661 | agree gf-lo=0.933 gf-lo_sig=1.000 gf-race=0.783 | max loser a=4.69e-01 20s

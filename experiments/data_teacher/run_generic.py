@@ -16,7 +16,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT, component_events, crossings, map_cores
+from common import RESULTS, OUT_ROOT, component_events, crossings, map_cores
 from pilots.pilot_gf import run_gf
 from setups import build
 
@@ -104,6 +104,8 @@ def job(args):
 
 
 def expand(cfg):
+    if "cases" in cfg:  # explicit list of cases (dicts merged into base), tag = the case's key
+        return [dict(cfg["base"], **case, tag=tag) for tag, case in cfg["cases"].items()]
     keys = list(cfg.get("sweep", {}))
     cases = []
     for values in itertools.product(*(cfg["sweep"][k] for k in keys)):
@@ -131,5 +133,5 @@ if __name__ == "__main__":
     pd.to_pickle(rows, OUT_ROOT / cfg["name"] / "summary_rows.pkl")
     df = pd.DataFrame(rows)
     df.drop(columns=[c for c in ("events", "spectral_events") if c in df]).to_csv(
-        HERE / "results" / f"{cfg['name']}_summary.csv", index=False)
+        RESULTS / f"{cfg['name']}_summary.csv", index=False)
     print("wrote", len(df), "rows")

@@ -26,7 +26,7 @@ marked `\knownresult`; new results are marked `\newresult`. Status tags on every
   convergence and sigma^-(K-2) (show in our setup); new: KKT points balanced (proven), per-init prefactor
   recipe, KH formula only a lower bound for TTNs (factors up to 1e4), weak chi-dependence. Aligned-init exact
   solution (Saxe-type, known for DLNs) as a figure.
-- 4.2 Saddle sequence and locality — READY after verification (`locality`, local pilot, theory_saddles v2).
+- 4.2 Saddle sequence and locality — DRAFTED (report Sec. 4 locality subsection); was READY after verification (`locality`, local pilot, theory_saddles v2).
   Figures: exponent vs k across 9 trees; same teacher on MPS/binary/HT (TA/E8/S={3,4}); Hessian lambda_min
   scaling (H3); bond spectra at events (Steiner edges); growth exponent -> k from one run; route rule for
   several components (TD/TC). Claims: H2 confirmed k = 1-5 (+ k = 6-7 on binary8/ht4 balanced), exceptions
@@ -36,7 +36,7 @@ marked `\knownresult`; new results are marked `\newresult`. Status tags on every
   sigma-independent random order (race). Star teachers: collective piggyback (theory_saddles 4.6; data-teacher
   round 2 item 2).
 - 4.4 Failure modes — READY-ish (`locality` dead routes; `regime-map` stalls; theory R12/P14; optimizers MPS8):
-  dead routes at k >= 4 with tight bonds; balanced init reduces 10x; spare channels remove most.
+  dead routes at k >= 4 with tight bonds; balanced init reduces them ~10x; spare channels do NOT remove most (DRAFTED in report Sec. 4, failure modes).
 - 4.5 Dependence on each parameter — summary table (sigma, K, tree shape, chi, d, weights) pulling from 4.1-4.4.
 
 ## 5. Other regimes and optimizers (briefly)

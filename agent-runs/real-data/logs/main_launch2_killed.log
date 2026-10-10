@@ -1,0 +1,19 @@
+280 cases -> /root/outputs/real_data/main
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.1_seed2", "status": "phase1_step_size_underflow", "wall": 323.8}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled1_chi4_s0.05_seed3", "status": "phase1_step_size_underflow", "wall": 344.1}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.07_seed2", "status": "phase1_step_size_underflow", "wall": 345.8}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.05_seed2", "status": "phase1_step_size_underflow", "wall": 361.0}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi4_s0.07_seed4", "status": "phase1_step_size_underflow", "wall": 369.5}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.05_seed4", "status": "phase1_step_size_underflow", "wall": 381.2}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled1_chi4_s0.05_seed0", "status": "phase1_step_size_underflow", "wall": 390.0}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.07_seed0", "status": "phase1_step_size_underflow", "wall": 401.6}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi4_s0.05_seed4", "status": "phase1_step_size_underflow", "wall": 415.8}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.05_seed4", "status": "phase1_step_size_underflow", "wall": 429.5}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.07_seed4", "status": "phase1_step_size_underflow", "wall": 441.2}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.07_seed4", "status": "phase1_step_size_underflow", "wall": 466.1}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled1_chi4_s0.07_seed0", "status": "phase1_step_size_underflow", "wall": 513.4}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.05_seed0", "status": "phase1_step_size_underflow", "wall": 517.2}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.05_seed2", "status": "phase1_step_size_underflow", "wall": 521.2}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled1_chi4_s0.05_seed2", "status": "phase1_step_size_underflow", "wall": 587.5}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled1_chi4_s0.07_seed3", "status": "phase1_step_size_underflow", "wall": 410.1}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled1_chi4_s0.07_seed2", "status": "phase1_step_size_underflow", "wall": 469.7}

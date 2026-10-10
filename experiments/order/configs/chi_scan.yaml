@@ -1,0 +1,13 @@
+# Over-parameterization: does a larger bond dimension restore the greedy order?
+# Leading-order race only (per-component blow-up times; exact for odeco on an MPS),
+# uncapped bond dimensions (cap: false), no gradient-flow runs here (see chi_gf.yaml).
+name: chi_scan
+trees: ["mps:4", "mps:6", "mps:8", "binary:8"]
+d: [2]
+chi: [1, 2, 4, 8, 16, 32]
+cap: false
+rho: []
+sigma: []
+seeds: 500
+proxies: true
+lo_race: true

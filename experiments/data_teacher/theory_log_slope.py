@@ -12,6 +12,7 @@ import torch
 
 from constrained import constrained_minima, metric_loss_of_dense, ranked_spec
 from setups import build
+from common import RESULTS  # noqa: E402
 
 HERE = Path(__file__).parent
 rows = []
@@ -43,5 +44,5 @@ for c in (0.05, 0.2, 0.45):
         out.update(edge_star=best[1], A_pred=best[2])
         rows.append(out)
 df = pd.DataFrame(rows)
-df.to_csv(HERE / "results" / "e4a_theory_slopes.csv", index=False)
+df.to_csv(RESULTS / "e4a_theory_slopes.csv", index=False)
 print(df.round(4).to_string())

@@ -23,7 +23,7 @@ import yaml
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from common import OUT_ROOT  # noqa: E402
+from common import RESULTS, OUT_ROOT  # noqa: E402
 from constrained import constrained_minima, metric_loss_of_dense, ranked_spec  # noqa: E402
 from run_generic import dense_bond_spectra, expand  # noqa: E402
 from setups import build  # noqa: E402
@@ -98,8 +98,8 @@ def main():
     df = pd.DataFrame(rows)
     df["theory_ok"] = df["first_edge"] == df["edge_star"]
     df["naive_ok"] = df["first_edge"] == df["naive_edge"]
-    df.to_csv(HERE / "results" / "e4b_order.csv", index=False)
-    pd.DataFrame(theory).to_csv(HERE / "results" / "e4b_theory.csv", index=False)
+    df.to_csv(RESULTS / "e4b_order.csv", index=False)
+    pd.DataFrame(theory).to_csv(RESULTS / "e4b_theory.csv", index=False)
     fits = []
     fig, ax = plt.subplots(figsize=(7, 4.5))
     for i, (tag, g) in enumerate(df.groupby("teacher")):
@@ -121,9 +121,9 @@ def main():
            title="random MPS teachers on MPS-4: second escape (dashed: predicted slope)")
     ax.legend(fontsize=7)
     fig.tight_layout()
-    fig.savefig(HERE / "results" / "e4b_law.png", dpi=110)
+    fig.savefig(RESULTS / "e4b_law.png", dpi=110)
     f = pd.DataFrame(fits)
-    f.to_csv(HERE / "results" / "e4b_order_fits.csv", index=False)
+    f.to_csv(RESULTS / "e4b_order_fits.csv", index=False)
     print(pd.DataFrame(theory).to_string())
     print(f.to_string())
 

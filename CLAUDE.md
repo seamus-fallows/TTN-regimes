@@ -76,15 +76,19 @@ Recorder keeps "fine rows" (log + integrator steps where theta or log L moved by
 
 | Q | topic | literature | owner | status |
 |---|---|---|---|---|
-| Q1 | saddle sequence from small init | open | `s2s-core` | running |
-| Q2 | plateau scaling with sigma, K, chi | partly known | `s2s-core` | running |
-| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | round 1 DONE, merged, under review: H2 holds on 9 trees, k = 1..8 (~7k runs); route rule for several components; theory: Steiner identity proven, saddle order = k* derived (upper bound proven), several residuals: strict iff rho(S) > s_q |
-| Q4 | learning order | analogues known, TTN open | `order` | running |
-| Q5 | regime map | analogues known, TTN open | `regime-map` | running |
-| Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | running |
-| Q8 | learning rate, SGD, samples | partly known | `optim-samples` | round 1 DONE, merged, under review |
-| B1 | optimizer dependence (Adam, gauge-aware, ALS) | open | `optimizers` | round 1 merged + reviewed; fix round running |
-| B5 | real data (MNIST, quadtree vs MPS vs scrambled) | open | `real-data` | running |
+| Q1 | saddle sequence from small init | open | `s2s-core` | reviewed; fix round 1 merged (5647a0f); verification running (`notes/reviews/s2s_core_round2_verification.md`) |
+| Q2 | plateau scaling with sigma, K, chi | partly known | `s2s-core` | as Q1 |
+| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | DONE: reviewed twice + verified; report Sec. 4 locality subsection drafted |
+| Q4 | learning order | analogues known, TTN open | `order` | reviewed; fix round running (remote, small new runs) |
+| Q5 | regime map | analogues known, TTN open | `regime-map` | reviewed; fix round running LOCALLY (worktree `../wt/regime-map-fix`; machine cannot restart) |
+| Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | round 2 reviewed; fix round 2 merged (fe95253); verification running (`notes/reviews/data_teacher_round3_verification.md`) |
+| Q8 | learning rate, SGD, samples | partly known | `optim-samples` | DONE: reviewed + verified (errata in `notes/reviews/optim_samples_round2_verification.md`); report Sec. 5.5 drafted |
+| B1 | optimizer dependence (Adam, gauge-aware, ALS) | open | `optimizers` | DONE: reviewed + fixed; report Sec. 5.6 drafted |
+| B5 | real data (MNIST, quadtree vs MPS vs scrambled) | open | `real-data` | reviewed; fix round running LOCALLY (worktree `../wt/real-data-fix`) |
+
+Report: Sec. 2 (polished), 4 locality + failure modes, 5.5, 5.6, App. B/C entries drafted; App. A being trimmed;
+citation / prior-work audit running (`notes/reviews/citation_check.md`). Parallel report work happens in git worktrees
+`../wt/<name>` on branches `wip/<name>`, merged by the lead.
 
 ## Key findings so far
 
@@ -107,13 +111,16 @@ Recorder keeps "fine rows" (log + integrator steps where theta or log L moved by
   optimizers: Adam/RMSProp keep weight-ordered sequential learning but REMOVE the sigma^-(K-2) plateau scaling (first
   escape in a sigma-independent number of steps); re-gauged GD, Riemannian GD, Gram preconditioning, ALS, DMRG remove
   plateaus altogether. data-teacher: any non-orthogonality (misaligned covariance, CP overlap, correlations, generic TTN
-  teachers) turns MPS later plateaus into strict log-time saddles (analysis under revision after review).
-- **Locality (agent `locality`, ~10k GF runs, under review):** for two-component teachers the gap exponent is k - 2 with
-  k = Steiner-subtree core count, on 9 tree types for k = 1..8 (+-0.05 for k <= 4); k = 2 log law with head-start slope
-  (1 - s2/s1)/lambda2 (1/lambda2 from a saddle start); H3 by lambda_min scaling (-lambda2 for k = 2, sigma^(k-2) for k >= 3);
-  same teacher S = {3,4}, N = 8: MPS log, binary sigma^-3, HT sigma^-5.7; rising edges = Steiner edges in 98.7% of 5132
-  events; k readable from one run via the growth exponent; for >= 3 components the route rule at rank-constrained optima
-  (not literal H2) predicts 7/7 teachers; dead routes only k >= 4 with fan-in init, removed by balanced init or spare chi.
+  teachers) turns the escape of MPS students from the rank-one saddle (N = 4, 8) into a strict, log-time escape; binary/HT
+  students keep sigma^-1 there (verified; notes/reviews/data_teacher_round3_verification.md "safe to cite").
+- **Locality (agent `locality`, reviewed twice + verified; report Sec. 4 locality subsection):** for two-component
+  teachers the plateau exponent is k - 2 with k = cores in the Steiner subtree of the differing sites, confirmed for
+  k = 1-5 on 9 trees (named exceptions: mps8 {1,5} from the saddle start at chi = 2), k = 6-7 on binary8/ht4 with
+  balanced init only, k = 8 not measured; k = 2 log law with head start, lambda2 = s2 s1^((K-2)/K) incl. K-dependence;
+  H3 by lambda_min scaling; same teacher S = {3,4}, N = 8: MPS log, binary sigma^-3, HT ~sigma^-5; bond spectra:
+  leakage bound (non-Steiner edges ~ sigma^2) + single-route consistency; for >= 3 components the route rule at
+  rank-constrained optima (not literal H2) holds where tested (TC, TD); dead routes for k >= 4 under fan-in init,
+  balanced init reduces them ~10x, chi = 4 does NOT remove most (stalls rise on routes with both ends capped).
 - **Optimization (agent `optim-samples`, reviewed + verified):** eta_max = 2/(K s_1^(2-2/K)) exact at small init; below it
   GD keeps GF's persistent saddle sequence (765/765 runs) with an O(eta) event shift (c_e exact as eta -> 0; per-event
   accuracy 66/90/97% within 0.3/1/5% at eta <= 0.1 eta_max); above it a 1D-map 2-cycle, then divergence / return to the
@@ -128,8 +135,12 @@ Recorder keeps "fine rows" (log + integrator steps where theta or log L moved by
 - Experiments (interim): locality N=4 exponents match k = 1, 2, 3, 4 (incl. head-start log slope 1.005 vs 1.0);
   data-teacher: aligned covariance = race with weights Lambda s, landscape with sqrt(Lambda) s; optim-samples:
   eta_max = 2/(K s_1^(2-2/K)) exact, GD event shift predicted to 3 digits.
-- Theory (proven, report Appendix A prop:A-kkt): every KKT point of g = <W, W*> on the unit sphere with g* > 0 is exactly
-  balanced on every bond with core norms 1/K, so the near-origin escape direction is balanced and min-norm.
+- Theory (proven, report Appendix A prop:A-kkt; KNOWN in substance: Kumar & Haupt 2025a Lemma 5 for chains, and it follows
+  from the proof of Furman et al. 2026 Prop. F.10 for TTNs): every KKT point of g = <W, W*> on the unit sphere with g* > 0
+  is exactly balanced on every bond with core norms 1/K, so the near-origin escape direction is balanced and min-norm.
+- Prior-work audit (notes/reviews/citation_check.md, part b): also known or concurrent: Adam eps law (Sabanayagam & Lucey
+  2026, Prop. 7), EoS two-cycle amplitude (MacDonald et al. 2025), per-init blow-up identity and the k >= 3 head start
+  (AGF, Kunin et al. 2025; only our closed forms are new), trap overlaps Furman Thm G.1. Tag such results as known.
 - Lazy regime: the tangent kernel of a random TTN is isotropic only on average; a single draw is strongly
   anisotropic unless every chi_e >> cut dimension min(d^n_e, d^(N-n_e)), so finite-chi lazy runs have an order
   and end at the projected fit.

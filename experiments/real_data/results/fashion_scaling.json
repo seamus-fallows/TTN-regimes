@@ -1,0 +1,1070 @@
+{
+ "binary_quadtree/raw": {
+  "t1_exponent": [
+   12.999998030701656,
+   7.786498383387906e-07,
+   5
+  ],
+  "n_seeds": 5,
+  "g2_excluded": [
+   {
+    "seed": [
+     "quadtree",
+     0
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "quadtree",
+     1
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "quadtree",
+     2
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "quadtree",
+     3
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "quadtree",
+     4
+    ],
+    "sigmas_without_second_drop": []
+   }
+  ],
+  "grank_mixed": [
+   {
+    "seed": [
+     "quadtree",
+     0
+    ],
+    "first_edges": [
+     [
+      7
+     ],
+     [
+      10
+     ]
+    ],
+    "gaps": [
+     2213.151471850395,
+     819.1747734099548,
+     65.04452200492513
+    ]
+   },
+   {
+    "seed": [
+     "quadtree",
+     1
+    ],
+    "first_edges": [
+     [
+      3,
+      4
+     ],
+     [
+      7
+     ]
+    ],
+    "gaps": [
+     1889.0383982811443,
+     722.0155789570039,
+     19.013423779862816
+    ]
+   },
+   {
+    "seed": [
+     "quadtree",
+     2
+    ],
+    "first_edges": [
+     [
+      7
+     ],
+     [
+      10,
+      11
+     ]
+    ],
+    "gaps": [
+     1316.2099609712625,
+     507.73938970324576,
+     21.71074252170635
+    ]
+   },
+   {
+    "seed": [
+     "quadtree",
+     3
+    ],
+    "first_edges": [
+     [
+      4
+     ],
+     [
+      7
+     ]
+    ],
+    "gaps": [
+     1703.3761628296252,
+     636.1437832210164,
+     22.438868032504587
+    ]
+   },
+   {
+    "seed": [
+     "quadtree",
+     4
+    ],
+    "first_edges": [
+     [
+      3,
+      4
+     ],
+     [
+      7
+     ]
+    ],
+    "gaps": [
+     2415.182081214088,
+     889.1520955048775,
+     23.75615071271947
+    ]
+   }
+  ],
+  "g2_power_p": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_power_p": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_power_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_power_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_log_slope": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_log_slope": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_log_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_log_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_A": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_A": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_B": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_B": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_rms": [
+   NaN,
+   NaN,
+   0
+  ]
+ },
+ "binary_scrambled/raw": {
+  "t1_exponent": [
+   12.999999316735005,
+   3.621405873182809e-07,
+   5
+  ],
+  "n_seeds": 5,
+  "g2_excluded": [
+   {
+    "seed": [
+     "scrambled0",
+     0
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "scrambled0",
+     1
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "scrambled0",
+     2
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "scrambled0",
+     3
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "scrambled0",
+     4
+    ],
+    "sigmas_without_second_drop": []
+   }
+  ],
+  "grank_mixed": [
+   {
+    "seed": [
+     "scrambled0",
+     0
+    ],
+    "first_edges": [
+     [
+      0
+     ],
+     [
+      10
+     ]
+    ],
+    "gaps": [
+     2134.74677090894,
+     859.6710409203652,
+     116.39070525445555
+    ]
+   },
+   {
+    "seed": [
+     "scrambled0",
+     1
+    ],
+    "first_edges": [
+     [
+      0
+     ],
+     [
+      10
+     ]
+    ],
+    "gaps": [
+     2615.899960741891,
+     1081.8444651551129,
+     38.60847391407484
+    ]
+   },
+   {
+    "seed": [
+     "scrambled0",
+     2
+    ],
+    "first_edges": [
+     [
+      0
+     ],
+     [
+      10
+     ]
+    ],
+    "gaps": [
+     1807.2157923291759,
+     731.8877344426652,
+     98.65202008005095
+    ]
+   },
+   {
+    "seed": [
+     "scrambled0",
+     3
+    ],
+    "first_edges": [
+     [
+      7,
+      10
+     ],
+     [
+      10
+     ],
+     [
+      10,
+      11
+     ]
+    ],
+    "gaps": [
+     2732.5656224133545,
+     1078.7293592568228,
+     310.78015996126925
+    ]
+   },
+   {
+    "seed": [
+     "scrambled0",
+     4
+    ],
+    "first_edges": [
+     [
+      7,
+      8
+     ],
+     [
+      10
+     ]
+    ],
+    "gaps": [
+     1987.937608904461,
+     800.662893028615,
+     209.94987173074279
+    ]
+   }
+  ],
+  "g2_power_p": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_power_p": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_power_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_power_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_log_slope": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_log_slope": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_log_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_log_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_A": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_A": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_B": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_B": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_rms": [
+   NaN,
+   NaN,
+   0
+  ]
+ },
+ "mps_snake/raw": {
+  "t1_exponent": [
+   13.999998712605066,
+   4.576651560241535e-07,
+   5
+  ],
+  "n_seeds": 5,
+  "g2_excluded": [
+   {
+    "seed": [
+     "snake",
+     0
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "snake",
+     1
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "snake",
+     2
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "snake",
+     3
+    ],
+    "sigmas_without_second_drop": []
+   },
+   {
+    "seed": [
+     "snake",
+     4
+    ],
+    "sigmas_without_second_drop": []
+   }
+  ],
+  "grank_mixed": [
+   {
+    "seed": [
+     "snake",
+     0
+    ],
+    "first_edges": [
+     [
+      11
+     ],
+     [
+      12,
+      14
+     ],
+     [
+      14
+     ]
+    ],
+    "gaps": [
+     160.4137299971388,
+     55.41226486698243,
+     32.42784678023041
+    ]
+   },
+   {
+    "seed": [
+     "snake",
+     1
+    ],
+    "first_edges": [
+     [
+      3
+     ],
+     [
+      11
+     ]
+    ],
+    "gaps": [
+     171.57220679132695,
+     155.09479535000483,
+     7.002618840178887
+    ]
+   },
+   {
+    "seed": [
+     "snake",
+     2
+    ],
+    "first_edges": [
+     [
+      11
+     ],
+     [
+      11,
+      12,
+      13
+     ]
+    ],
+    "gaps": [
+     144.86502322472043,
+     102.22229388252599,
+     16.378013337093638
+    ]
+   },
+   {
+    "seed": [
+     "snake",
+     3
+    ],
+    "first_edges": [
+     [
+      3
+     ],
+     [
+      11
+     ]
+    ],
+    "gaps": [
+     158.5102126122805,
+     142.81660117003682,
+     20.005817766735124
+    ]
+   },
+   {
+    "seed": [
+     "snake",
+     4
+    ],
+    "first_edges": [
+     [
+      11
+     ],
+     [
+      12,
+      13
+     ]
+    ],
+    "gaps": [
+     154.19136379067825,
+     123.68883580692702,
+     21.654333568063755
+    ]
+   }
+  ],
+  "g2_power_p": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_power_p": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_power_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_power_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_log_slope": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_log_slope": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_log_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_log_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_A": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_A": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_B": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_B": [
+   NaN,
+   NaN,
+   0
+  ],
+  "g2_k3_rms": [
+   NaN,
+   NaN,
+   0
+  ],
+  "grank_k3_rms": [
+   NaN,
+   NaN,
+   0
+  ]
+ },
+ "edge_scaling": [],
+ "first_route": {
+  "binary_quadtree/raw": {
+   "n_seeds": 0,
+   "excluded": [
+    [
+     0,
+     0.05,
+     "between drops"
+    ],
+    [
+     0,
+     0.14,
+     "between drops"
+    ],
+    [
+     0,
+     0.5,
+     "other route"
+    ],
+    [
+     1,
+     0.05,
+     "between drops"
+    ],
+    [
+     1,
+     0.14,
+     "between drops"
+    ],
+    [
+     1,
+     0.5,
+     "other route"
+    ],
+    [
+     2,
+     0.05,
+     "between drops"
+    ],
+    [
+     2,
+     0.14,
+     "between drops"
+    ],
+    [
+     2,
+     0.5,
+     "other route"
+    ],
+    [
+     3,
+     0.05,
+     "between drops"
+    ],
+    [
+     3,
+     0.14,
+     "between drops"
+    ],
+    [
+     3,
+     0.5,
+     "other route"
+    ],
+    [
+     4,
+     0.05,
+     "between drops"
+    ],
+    [
+     4,
+     0.14,
+     "between drops"
+    ],
+    [
+     4,
+     0.5,
+     "other route"
+    ]
+   ],
+   "routes": [
+    [
+     0,
+     [
+      7
+     ]
+    ],
+    [
+     1,
+     [
+      7
+     ]
+    ],
+    [
+     2,
+     [
+      7
+     ]
+    ],
+    [
+     3,
+     [
+      7
+     ]
+    ],
+    [
+     4,
+     [
+      7
+     ]
+    ]
+   ],
+   "points": [
+    [
+     0,
+     []
+    ],
+    [
+     1,
+     []
+    ],
+    [
+     2,
+     []
+    ],
+    [
+     3,
+     []
+    ],
+    [
+     4,
+     []
+    ]
+   ],
+   "ranges": [],
+   "per_seed": [],
+   "power_p": [
+    NaN,
+    NaN,
+    0
+   ],
+   "power_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "log_slope": [
+    NaN,
+    NaN,
+    0
+   ],
+   "log_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "k3_A": [
+    NaN,
+    NaN,
+    0
+   ],
+   "k3_B": [
+    NaN,
+    NaN,
+    0
+   ],
+   "k3_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_power_p": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_power_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_log_slope": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_log_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_A": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_B": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_rms": [
+    NaN,
+    NaN,
+    0
+   ]
+  },
+  "binary_scrambled0/raw": {
+   "n_seeds": 0,
+   "excluded": [
+    [
+     0,
+     0.05,
+     "between drops"
+    ],
+    [
+     0,
+     0.14,
+     "between drops"
+    ],
+    [
+     0,
+     0.5,
+     "other route"
+    ],
+    [
+     1,
+     0.05,
+     "between drops"
+    ],
+    [
+     1,
+     0.14,
+     "between drops"
+    ],
+    [
+     1,
+     0.5,
+     "other route"
+    ],
+    [
+     2,
+     0.05,
+     "between drops"
+    ],
+    [
+     2,
+     0.14,
+     "between drops"
+    ],
+    [
+     2,
+     0.5,
+     "other route"
+    ],
+    [
+     3,
+     0.05,
+     "between drops"
+    ],
+    [
+     3,
+     0.14,
+     "other route"
+    ],
+    [
+     3,
+     0.5,
+     "other route"
+    ],
+    [
+     4,
+     0.05,
+     "between drops"
+    ],
+    [
+     4,
+     0.14,
+     "between drops"
+    ],
+    [
+     4,
+     0.5,
+     "other route"
+    ]
+   ],
+   "routes": [
+    [
+     0,
+     [
+      10
+     ]
+    ],
+    [
+     1,
+     [
+      10
+     ]
+    ],
+    [
+     2,
+     [
+      10
+     ]
+    ],
+    [
+     3,
+     [
+      10,
+      11
+     ]
+    ],
+    [
+     4,
+     [
+      10
+     ]
+    ]
+   ],
+   "points": [
+    [
+     0,
+     []
+    ],
+    [
+     1,
+     []
+    ],
+    [
+     2,
+     []
+    ],
+    [
+     3,
+     []
+    ],
+    [
+     4,
+     []
+    ]
+   ],
+   "ranges": [],
+   "per_seed": [],
+   "power_p": [
+    NaN,
+    NaN,
+    0
+   ],
+   "power_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "log_slope": [
+    NaN,
+    NaN,
+    0
+   ],
+   "log_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "k3_A": [
+    NaN,
+    NaN,
+    0
+   ],
+   "k3_B": [
+    NaN,
+    NaN,
+    0
+   ],
+   "k3_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_power_p": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_power_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_log_slope": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_log_rms": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_A": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_B": [
+    NaN,
+    NaN,
+    0
+   ],
+   "rank_k3_rms": [
+    NaN,
+    NaN,
+    0
+   ]
+  }
+ }
+}

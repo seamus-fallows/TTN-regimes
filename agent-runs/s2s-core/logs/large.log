@@ -1,0 +1,192 @@
+large: 150 runs to do -> /root/outputs/s2s_core/large
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[1/150 453s] binary8_chi6_w3-2-1_fanin_s0.07_seed4: converged (452s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[2/150 477s] binary8_chi6_w3-2-1_fanin_s0.1_seed1: converged (477s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[3/150 481s] binary8_chi6_w3-2-1_fanin_s0.1_seed9: converged (480s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[4/150 605s] binary8_chi6_w3-2-1_fanin_s0.07_seed2: converged (605s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[5/150 618s] binary8_chi6_w3-2-1_fanin_s0.07_seed5: converged (617s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[6/150 622s] binary8_chi6_w3-2-1_fanin_s0.07_seed0: converged (622s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[7/150 642s] binary8_chi6_w3-2-1_fanin_s0.1_seed2: converged (642s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[8/150 649s] binary8_chi6_w3-2-1_fanin_s0.07_seed6: converged (649s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[9/150 659s] binary8_chi6_w3-2-1_fanin_s0.1_seed0: converged (658s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[10/150 667s] binary8_chi6_w3-2-1_fanin_s0.1_seed5: converged (666s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[11/150 673s] binary8_chi6_w3-2-1_fanin_s0.07_seed7: converged (672s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[12/150 677s] binary8_chi6_w3-2-1_fanin_s0.1_seed6: converged (677s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[13/150 680s] binary8_chi6_w3-2-1_fanin_s0.07_seed1: converged (679s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[14/150 723s] binary8_chi6_w3-2-1_fanin_s0.07_seed3: converged (722s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[15/150 751s] binary8_chi6_w3-2-1_fanin_s0.07_seed9: converged (750s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[16/150 763s] binary8_chi6_w3-2-1_fanin_s0.1_seed4: converged (762s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[17/150 796s] binary8_chi6_w3-2-1_fanin_s0.1_seed3: converged (795s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[18/150 893s] binary8_chi6_w3-2-1_fanin_s0.1_seed8: converged (892s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[19/150 1071s] binary8_chi6_w3-2-1_fanin_s0.1_seed7: converged (1071s)
+/root/work/TTN-regimes/experiments/s2s_core/s2s.py:317: RuntimeWarning: All-NaN slice encountered
+  "slice_min": np.nan_to_num(np.nanmin(sn[window, :, r], axis=0), nan=-1).tolist(),
+[20/150 1124s] binary8_chi6_w3-2-1_fanin_s0.07_seed8: converged (1124s)
+[21/150 1140s] binary8_chi6_w3-2-1_fanin_s0.15_seed2: converged (460s)
+[22/150 1214s] binary8_chi6_w3-2-1_fanin_s0.15_seed5: converged (451s)
+[23/150 1241s] binary8_chi6_w3-2-1_fanin_s0.15_seed0: converged (568s)
+[24/150 1260s] ht4_chi6_w3-2-1_fanin_s0.07_seed0: converged (120s)
+[25/150 1286s] mps8_chi6_w3-2-1_fanin_s0.1_seed9: completed (619s)
+[26/150 1293s] binary8_chi6_w3-2-1_fanin_s0.15_seed4: converged (542s)
+[27/150 1307s] binary8_chi6_w3-2-1_fanin_s0.15_seed1: converged (630s)
+[28/150 1373s] ht4_chi6_w3-2-1_fanin_s0.07_seed1: converged (159s)
+[29/150 1417s] binary8_chi6_w3-2-1_fanin_s0.15_seed6: converged (622s)
+[30/150 1431s] ht4_chi6_w3-2-1_fanin_s0.07_seed5: converged (138s)
+[31/150 1435s] ht4_chi6_w3-2-1_fanin_s0.07_seed3: converged (175s)
+[32/150 1437s] ht4_chi6_w3-2-1_fanin_s0.07_seed4: converged (151s)
+[33/150 1443s] ht4_chi6_w3-2-1_fanin_s0.07_seed6: converged (135s)
+[34/150 1477s] binary8_chi6_w3-2-1_fanin_s0.15_seed3: converged (754s)
+[35/150 1493s] binary8_chi6_w3-2-1_fanin_s0.15_seed9: converged (368s)
+[36/150 1516s] ht4_chi6_w3-2-1_fanin_s0.07_seed7: converged (143s)
+[37/150 1547s] ht4_chi6_w3-2-1_fanin_s0.07_seed8: converged (130s)
+[38/150 1585s] ht4_chi6_w3-2-1_fanin_s0.07_seed2: converged (344s)
+[39/150 1636s] binary8_chi6_w3-2-1_fanin_s0.15_seed8: converged (565s)
+[40/150 1637s] ht4_chi6_w3-2-1_fanin_s0.07_seed9: completed (206s)
+[41/150 1692s] mps8_chi6_w3-2-1_fanin_s0.15_seed1: completed (255s)
+[42/150 1703s] binary8_chi6_w3-2-1_fanin_s0.15_seed7: converged (811s)
+[43/150 1933s] mps8_chi6_w3-2-1_fanin_s0.1_seed6: completed (1291s)
+[44/150 1989s] mps8_chi6_w3-2-1_fanin_s0.15_seed2: completed (546s)
+[45/150 1993s] mps8_chi6_w3-2-1_fanin_s0.15_seed9: completed (357s)
+[46/150 1995s] mps8_chi6_w3-2-1_fanin_s0.15_seed4: completed (502s)
+[47/150 2135s] mps8_chi6_w3-2-1_fanin_s0.15_seed6: completed (588s)
+[48/150 2145s] binary8_chi6_w3-2-1_fanin_s0.2_seed0: converged (453s)
+[49/150 2165s] mps8_chi6_w3-2-1_fanin_s0.15_seed0: completed (730s)
+[50/150 2165s] mps8_chi6_w3-2-1_fanin_s0.1_seed5: completed (1543s)
+[51/150 2168s] mps8_chi6_w3-2-1_fanin_s0.15_seed7: completed (584s)
+[52/150 2266s] mps8_chi6_w3-2-1_fanin_s0.1_seed1: completed (1789s)
+[53/150 2283s] binary8_chi6_w3-2-1_fanin_s0.2_seed1: converged (579s)
+[54/150 2302s] mps8_chi6_w3-2-1_fanin_s0.15_seed8: completed (666s)
+[55/150 2330s] mps8_chi6_w3-2-1_fanin_s0.15_seed5: completed (814s)
+[56/150 2376s] ht4_chi6_w3-2-1_fanin_s0.1_seed0: converged (208s)
+[57/150 2405s] binary8_chi6_w3-2-1_fanin_s0.2_seed5: converged (410s)
+[58/150 2421s] binary8_chi6_w3-2-1_fanin_s0.2_seed3: converged (431s)
+[59/150 2428s] ht4_chi6_w3-2-1_fanin_s0.1_seed1: converged (162s)
+[60/150 2437s] ht4_chi6_w3-2-1_fanin_s0.1_seed2: converged (155s)
+[61/150 2460s] ht4_chi6_w3-2-1_fanin_s0.1_seed3: converged (158s)
+[62/150 2468s] binary8_chi6_w3-2-1_fanin_s0.2_seed2: converged (534s)
+[63/150 2474s] ht4_chi6_w3-2-1_fanin_s0.1_seed4: converged (144s)
+[64/150 2495s] binary8_chi6_w3-2-1_fanin_s0.2_seed4: converged (501s)
+[65/150 2543s] mps8_chi6_w3-2-1_fanin_s0.1_seed3: completed (1938s)
+[66/150 2586s] mps8_chi6_w3-2-1_fanin_s0.15_seed3: completed (1109s)
+[67/150 2616s] ht4_chi6_w3-2-1_fanin_s0.1_seed9: completed (179s)
+[68/150 2627s] ht4_chi6_w3-2-1_fanin_s0.1_seed6: converged (222s)
+[69/150 2705s] ht4_chi6_w3-2-1_fanin_s0.1_seed7: converged (284s)
+[70/150 2721s] binary8_chi6_w3-2-1_fanin_s0.2_seed7: converged (576s)
+[71/150 2790s] ht4_chi6_w3-2-1_fanin_s0.1_seed5: converged (414s)
+[72/150 2813s] ht4_chi6_w3-2-1_fanin_s0.1_seed8: converged (385s)
+[73/150 2923s] binary8_chi6_w3-2-1_fanin_s0.2_seed8: converged (758s)
+[74/150 2972s] binary8_chi6_w3-2-1_fanin_s0.2_seed9: converged (807s)
+[75/150 2987s] binary8_chi6_w3-2-1_fanin_s0.2_seed6: converged (852s)
+[76/150 3068s] mps8_chi6_w3-2-1_fanin_s0.1_seed7: completed (2419s)
+[77/150 3200s] mps8_chi6_w3-2-1_fanin_s0.2_seed2: completed (726s)
+[78/150 3242s] mps8_chi6_w3-2-1_fanin_s0.2_seed4: completed (699s)
+[79/150 3256s] mps8_chi6_w3-2-1_fanin_s0.2_seed9: completed (535s)
+[80/150 3262s] mps8_chi6_w3-2-1_fanin_s0.2_seed0: completed (802s)
+[81/150 3386s] mps8_chi6_w3-2-1_fanin_s0.2_seed7: completed (759s)
+[82/150 3413s] binary8_chi6_w3-2-1_fanin_s0.3_seed1: converged (600s)
+[83/150 3423s] mps8_chi6_w3-2-1_fanin_s0.2_seed3: completed (928s)
+[84/150 3451s] mps8_chi6_w3-2-1_fanin_s0.2_seed8: completed (746s)
+[85/150 3549s] binary8_chi6_w3-2-1_fanin_s0.3_seed0: converged (759s)
+[86/150 3552s] mps8_chi6_w3-2-1_fanin_s0.2_seed1: completed (1084s)
+[87/150 3575s] mps8_chi6_w3-2-1_fanin_s0.1_seed2: completed (3094s)
+[88/150 3595s] binary8_chi6_w3-2-1_fanin_s0.3_seed2: converged (672s)
+[89/150 3656s] binary8_chi6_w3-2-1_fanin_s0.3_seed3: converged (684s)
+[90/150 3676s] binary8_chi6_w3-2-1_fanin_s0.3_seed4: converged (688s)
+[91/150 3682s] ht4_chi6_w3-2-1_fanin_s0.15_seed3: converged (231s)
+[92/150 3685s] ht4_chi6_w3-2-1_fanin_s0.15_seed0: converged (298s)
+[93/150 3694s] mps8_chi6_w3-2-1_fanin_s0.2_seed6: completed (1077s)
+[94/150 3703s] ht4_chi6_w3-2-1_fanin_s0.15_seed1: converged (290s)
+[95/150 3722s] ht4_chi6_w3-2-1_fanin_s0.15_seed2: converged (300s)
+[96/150 3757s] binary8_chi6_w3-2-1_fanin_s0.3_seed5: converged (689s)
+[97/150 3758s] ht4_chi6_w3-2-1_fanin_s0.15_seed4: converged (209s)
+[98/150 3840s] ht4_chi6_w3-2-1_fanin_s0.15_seed7: converged (245s)
+[99/150 3844s] mps8_chi6_w3-2-1_fanin_s0.2_seed5: completed (1258s)
+[100/150 3853s] ht4_chi6_w3-2-1_fanin_s0.15_seed9: completed (178s)
+[101/150 3855s] binary8_chi6_w3-2-1_fanin_s0.3_seed8: converged (598s)
+[102/150 3864s] ht4_chi6_w3-2-1_fanin_s0.15_seed8: converged (208s)
+[103/150 3879s] binary8_chi6_w3-2-1_fanin_s0.3_seed9: converged (617s)
+[104/150 3889s] binary8_chi6_w3-2-1_fanin_s0.3_seed6: converged (689s)
+[105/150 3893s] binary8_chi6_w3-2-1_fanin_s0.3_seed7: converged (651s)
+[106/150 3929s] ht4_chi6_w3-2-1_fanin_s0.15_seed5: converged (378s)
+[107/150 3930s] ht4_chi6_w3-2-1_fanin_s0.2_seed0: converged (75s)
+[108/150 3964s] ht4_chi6_w3-2-1_fanin_s0.2_seed1: converged (100s)
+[109/150 3966s] ht4_chi6_w3-2-1_fanin_s0.15_seed6: converged (392s)
+[110/150 3986s] ht4_chi6_w3-2-1_fanin_s0.2_seed3: converged (97s)
+[111/150 3988s] ht4_chi6_w3-2-1_fanin_s0.2_seed2: converged (109s)
+[112/150 3991s] ht4_chi6_w3-2-1_fanin_s0.2_seed4: converged (98s)
+[113/150 4032s] ht4_chi6_w3-2-1_fanin_s0.2_seed6: converged (102s)
+[114/150 4054s] mps8_chi6_w3-2-1_fanin_s0.3_seed9: completed (201s)
+[115/150 4055s] mps8_chi6_w3-2-1_fanin_s0.3_seed4: completed (332s)
+[116/150 4101s] mps8_chi6_w3-2-1_fanin_s0.3_seed0: completed (419s)
+[117/150 4108s] ht4_chi6_w3-2-1_fanin_s0.3_seed1: converged (117s)
+[118/150 4111s] ht4_chi6_w3-2-1_fanin_s0.2_seed7: converged (148s)
+[119/150 4118s] ht4_chi6_w3-2-1_fanin_s0.3_seed0: converged (130s)
+[120/150 4157s] mps8_chi6_w3-2-1_fanin_s0.1_seed8: wall_limit (3498s)
+[121/150 4162s] mps8_chi6_w3-2-1_fanin_s0.3_seed6: completed (404s)
+[122/150 4187s] ht4_chi6_w3-2-1_fanin_s0.2_seed5: converged (258s)
+[123/150 4210s] ht4_chi6_w3-2-1_fanin_s0.3_seed3: converged (155s)
+[124/150 4210s] mps8_chi6_w3-2-1_fanin_s0.3_seed2: completed (516s)
+[125/150 4219s] mps8_chi6_w3-2-1_fanin_s0.3_seed1: completed (534s)
+[126/150 4226s] mps8_chi6_w3-2-1_fanin_s0.07_seed1: wall_limit (4225s)
+[127/150 4234s] mps8_chi6_w3-2-1_fanin_s0.07_seed7: wall_limit (4234s)
+[128/150 4242s] ht4_chi6_w3-2-1_fanin_s0.3_seed2: converged (210s)
+[129/150 4249s] ht4_chi6_w3-2-1_fanin_s0.3_seed8: converged (131s)
+[130/150 4253s] ht4_chi6_w3-2-1_fanin_s0.3_seed7: converged (142s)
+[131/150 4254s] ht4_chi6_w3-2-1_fanin_s0.3_seed6: converged (146s)
+[132/150 4264s] mps8_chi6_w3-2-1_fanin_s0.07_seed3: wall_limit (4263s)
+[133/150 4272s] ht4_chi6_w3-2-1_fanin_s0.2_seed8: converged (305s)
+[134/150 4279s] mps8_chi6_w3-2-1_fanin_s0.3_seed8: completed (435s)
+[135/150 4280s] mps8_chi6_w3-2-1_fanin_s0.3_seed5: completed (523s)
+[136/150 4309s] ht4_chi6_w3-2-1_fanin_s0.2_seed9: completed (323s)
+[137/150 4310s] ht4_chi6_w3-2-1_fanin_s0.3_seed4: converged (255s)
+[138/150 4323s] mps8_chi6_w3-2-1_fanin_s0.3_seed7: completed (483s)
+[139/150 4348s] ht4_chi6_w3-2-1_fanin_s0.3_seed5: converged (246s)
+[140/150 4383s] ht4_chi6_w3-2-1_fanin_s0.3_seed9: completed (226s)
+[141/150 4410s] mps8_chi6_w3-2-1_fanin_s0.3_seed3: completed (707s)
+[142/150 4598s] mps8_chi6_w3-2-1_fanin_s0.07_seed5: wall_limit (4597s)
+[143/150 5021s] mps8_chi6_w3-2-1_fanin_s0.07_seed0: wall_limit (5021s)
+[144/150 5733s] mps8_chi6_w3-2-1_fanin_s0.1_seed4: wall_limit (5116s)
+[145/150 6035s] mps8_chi6_w3-2-1_fanin_s0.07_seed4: wall_limit (6034s)
+[146/150 6111s] mps8_chi6_w3-2-1_fanin_s0.07_seed6: wall_limit (6110s)
+[147/150 7217s] mps8_chi6_w3-2-1_fanin_s0.07_seed8: wall_limit (7217s)
+[148/150 7219s] mps8_chi6_w3-2-1_fanin_s0.1_seed0: wall_limit (6767s)
+[149/150 7524s] mps8_chi6_w3-2-1_fanin_s0.07_seed2: wall_limit (7523s)
+[150/150 7800s] mps8_chi6_w3-2-1_fanin_s0.07_seed9: wall_limit (7799s)
+done {"n": 150, "wall": 7800.407728433609}

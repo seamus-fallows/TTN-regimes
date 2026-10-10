@@ -1,0 +1,18 @@
+          teacher  n tree  l_saddle  n_rank1_minima     grad_norm  lambda_min  lambda_min_raw  n_negative    type  n_negative_lib    type_lib  lambda_max                                                                                                                                                        edge_gammas
+0  misaligned8_20  8  mps  0.002326               1  8.125233e-10   -0.000506       -0.000506          17  strict               0  non-strict  176.757794  [0.0005063761518410494, 0.0005063762257431826, 0.0005063764177982951, 0.0005063764199481005, 0.0005063763846709979, 0.0005063763998991127, 0.0005063763644904086]
+misaligned8_20 mps 1e-06 2 t_esc=nan
+misaligned8_20 mps 1e-06 3 t_esc=nan
+misaligned8_20 mps 1e-06 1 t_esc=nan
+misaligned8_20 mps 1e-06 4 t_esc=nan
+misaligned8_20 mps 1e-06 0 t_esc=nan
+misaligned8_20 mps 1e-05 2 t_esc=nan
+misaligned8_20 mps 1e-05 3 t_esc=nan
+misaligned8_20 mps 1e-05 4 t_esc=nan
+misaligned8_20 mps 1e-05 1 t_esc=nan
+misaligned8_20 mps 0.0001 3 t_esc=nan
+misaligned8_20 mps 0.0001 1 t_esc=nan
+misaligned8_20 mps 1e-05 0 t_esc=nan
+misaligned8_20 mps 0.0001 4 t_esc=nan
+misaligned8_20 mps 0.0001 0 t_esc=nan
+misaligned8_20 mps 0.0001 2 t_esc=nan
+wrote 15

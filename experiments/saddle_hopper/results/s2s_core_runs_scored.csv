@@ -1,0 +1,1577 @@
+sweep,tree,chi,teacher,init,sigma,seed,cls,order,result,cause
+main,binary4,3,close,fanin,0.003,0,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,1,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,2,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,3,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,4,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,5,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,6,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,7,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,8,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.003,9,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,0,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,1,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,2,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,3,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,4,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,5,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,6,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,7,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.005,8,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.005,9,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,0,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,1,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,2,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,3,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,4,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,5,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,6,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,7,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.01,8,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.01,9,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,0,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,1,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,2,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,3,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,4,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,5,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,6,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,7,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.02,8,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.02,9,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,0,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,1,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,2,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,3,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,4,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,5,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,6,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,7,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.03,8,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.03,9,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,0,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,1,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,2,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,3,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,4,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,5,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,6,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,7,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.05,8,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.05,9,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.07,0,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.07,1,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.07,2,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.07,3,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.07,4,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.07,5,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.07,6,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.07,7,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.07,8,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.07,9,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.1,0,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.1,1,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.1,2,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.1,3,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.1,4,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.1,5,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.1,6,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.1,7,complete,1-2-3,main,
+main,binary4,3,close,fanin,0.1,8,complete,1-3-2,rare,
+main,binary4,3,close,fanin,0.1,9,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,0,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,1,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,2,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,3,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,4,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,5,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,6,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,7,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,8,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.003,9,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,0,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,1,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,2,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,3,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,4,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,5,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,6,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,7,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,8,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.005,9,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,0,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,1,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,2,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,3,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,4,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,5,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,6,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,7,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,8,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.01,9,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,0,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,1,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,2,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,3,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,4,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,5,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,6,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,7,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,8,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.02,9,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,0,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,1,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,2,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,3,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,4,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,5,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,6,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,7,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,8,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.03,9,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,0,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,1,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,2,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,3,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,4,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,5,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,6,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,7,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,8,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.05,9,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,0,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,1,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,2,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,3,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,4,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,5,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,6,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,7,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,8,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.07,9,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,0,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,1,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,2,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,3,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,4,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,5,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,6,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,7,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,8,complete,1-2-3,main,
+main,binary4,3,separated,fanin,0.1,9,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,0,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,1,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,2,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,3,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,4,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,5,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,6,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,7,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,8,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.003,9,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,0,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,1,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,2,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,3,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,4,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,5,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,6,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,7,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,8,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.005,9,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,0,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,1,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,2,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,3,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,4,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,5,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,6,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,7,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,8,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.01,9,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,0,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,1,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,2,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,3,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,4,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,5,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,6,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,7,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,8,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.02,9,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,0,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,1,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,2,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,3,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,4,complete,1-3-2,rare,
+main,binary4,6,close,fanin,0.03,5,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,6,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,7,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,8,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.03,9,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,0,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,1,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,2,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,3,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,4,complete,1-3-2,rare,
+main,binary4,6,close,fanin,0.05,5,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,6,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,7,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,8,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.05,9,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,0,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,1,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,2,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,3,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,4,complete,1-3-2,rare,
+main,binary4,6,close,fanin,0.07,5,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,6,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,7,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,8,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.07,9,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,0,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,1,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,2,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,3,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,4,complete,1-3-2,rare,
+main,binary4,6,close,fanin,0.1,5,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,6,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,7,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,8,complete,1-2-3,main,
+main,binary4,6,close,fanin,0.1,9,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,0,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,1,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,2,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,3,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,4,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,5,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,6,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,7,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,8,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.003,9,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,0,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,1,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,2,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,3,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,4,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,5,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,6,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,7,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,8,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.005,9,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,0,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,1,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,2,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,3,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,4,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,5,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,6,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,7,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,8,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.01,9,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,0,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,1,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,2,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,3,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,4,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,5,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,6,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,7,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,8,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.02,9,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,0,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,1,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,2,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,3,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,4,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,5,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,6,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,7,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,8,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.03,9,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,0,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,1,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,2,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,3,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,4,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,5,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,6,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,7,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,8,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.05,9,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,0,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,1,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,2,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,3,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,4,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,5,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,6,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,7,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,8,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.07,9,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,0,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,1,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,2,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,3,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,4,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,5,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,6,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,7,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,8,complete,1-2-3,main,
+main,binary4,6,separated,fanin,0.1,9,complete,1-2-3,main,
+main,binary8,3,close,fanin,0.03,1,trapped,2-1,main,trap flagged
+main,binary8,3,close,fanin,0.03,2,unresolved,1-2,unscored,unresolved
+main,binary8,3,close,fanin,0.03,3,unresolved,1,unscored,unresolved
+main,binary8,3,close,fanin,0.03,4,trapped,2-3,main,trap flagged
+main,binary8,3,close,fanin,0.03,5,unresolved,1,unscored,unresolved
+main,binary8,3,close,fanin,0.03,6,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.03,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,close,fanin,0.03,8,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.03,9,unresolved,3,unscored,unresolved
+main,binary8,3,close,fanin,0.05,5,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.05,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,close,fanin,0.07,0,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.07,1,trapped,2-1,main,trap flagged
+main,binary8,3,close,fanin,0.07,2,unresolved,1-2,unscored,unresolved
+main,binary8,3,close,fanin,0.07,3,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.07,4,trapped,2-3,main,trap flagged
+main,binary8,3,close,fanin,0.07,5,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.07,6,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.07,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,close,fanin,0.07,8,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.07,9,trapped,3-1,main,trap flagged
+main,binary8,3,close,fanin,0.15,0,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.15,1,unresolved,2-1,unscored,unresolved
+main,binary8,3,close,fanin,0.15,2,complete,1-2-3,main,
+main,binary8,3,close,fanin,0.15,3,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.15,4,trapped,2-3,main,trap flagged
+main,binary8,3,close,fanin,0.15,5,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.15,6,complete,1-3-2,main,
+main,binary8,3,close,fanin,0.15,7,stalled,1-2,unscored,stalled
+main,binary8,3,close,fanin,0.15,8,stalled,1-3,unscored,stalled
+main,binary8,3,close,fanin,0.15,9,trapped,3-1,main,trap flagged
+main,binary8,3,close,fanin,0.1,0,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.1,1,unresolved,2-1,unscored,unresolved
+main,binary8,3,close,fanin,0.1,2,complete,1-2-3,main,
+main,binary8,3,close,fanin,0.1,3,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.1,4,trapped,2-3,main,trap flagged
+main,binary8,3,close,fanin,0.1,5,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.1,6,complete,1-3-2,main,
+main,binary8,3,close,fanin,0.1,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,close,fanin,0.1,8,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.1,9,trapped,3-1,main,trap flagged
+main,binary8,3,close,fanin,0.2,0,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.2,1,unresolved,2-1,unscored,unresolved
+main,binary8,3,close,fanin,0.2,2,stalled,1-2,unscored,stalled
+main,binary8,3,close,fanin,0.2,3,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.2,4,trapped,2-3,main,trap flagged
+main,binary8,3,close,fanin,0.2,5,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.2,6,complete,1-3-2,main,
+main,binary8,3,close,fanin,0.2,7,stalled,1-2,unscored,stalled
+main,binary8,3,close,fanin,0.2,8,stalled,1-3,unscored,stalled
+main,binary8,3,close,fanin,0.2,9,trapped,3-1,main,trap flagged
+main,binary8,3,close,fanin,0.3,0,stalled,1-3,unscored,stalled
+main,binary8,3,close,fanin,0.3,1,unresolved,2-1,unscored,unresolved
+main,binary8,3,close,fanin,0.3,2,stalled,1-2,unscored,stalled
+main,binary8,3,close,fanin,0.3,3,trapped,1-3,main,trap flagged
+main,binary8,3,close,fanin,0.3,4,trapped,2-3,main,trap flagged
+main,binary8,3,close,fanin,0.3,5,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.3,6,complete,1-3-2,main,
+main,binary8,3,close,fanin,0.3,7,stalled,1-2,unscored,stalled
+main,binary8,3,close,fanin,0.3,8,stalled,1-3,unscored,stalled
+main,binary8,3,close,fanin,0.3,9,trapped,3-1,main,trap flagged
+main,binary8,3,close,fanin,0.4,0,unresolved,1-3,unscored,unresolved
+main,binary8,3,close,fanin,0.4,1,stalled,2-3,unscored,stalled
+main,binary8,3,close,fanin,0.4,2,stalled,1-2,unscored,stalled
+main,binary8,3,close,fanin,0.4,3,trapped,1-3,main,trap flagged
+main,binary8,3,close,fanin,0.4,4,stalled,2-3,unscored,stalled
+main,binary8,3,close,fanin,0.4,5,trapped,1-2,main,trap flagged
+main,binary8,3,close,fanin,0.4,6,complete,1-3-2,main,
+main,binary8,3,close,fanin,0.4,7,complete,1-2-3,main,
+main,binary8,3,close,fanin,0.4,8,stalled,1-3,unscored,stalled
+main,binary8,3,close,fanin,0.4,9,trapped,3-1,main,trap flagged
+main,binary8,3,separated,fanin,0.03,0,unresolved,1,unscored,unresolved
+main,binary8,3,separated,fanin,0.03,1,trapped,2-1,main,trap flagged
+main,binary8,3,separated,fanin,0.03,2,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.03,3,unresolved,1,unscored,unresolved
+main,binary8,3,separated,fanin,0.03,4,trapped,2-3,main,trap flagged
+main,binary8,3,separated,fanin,0.03,5,unresolved,1,unscored,unresolved
+main,binary8,3,separated,fanin,0.03,6,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.03,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.03,8,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.03,9,unresolved,1,unscored,unresolved
+main,binary8,3,separated,fanin,0.05,0,unresolved,1,unscored,unresolved
+main,binary8,3,separated,fanin,0.05,1,trapped,2-1,main,trap flagged
+main,binary8,3,separated,fanin,0.05,2,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.05,3,unresolved,1,unscored,unresolved
+main,binary8,3,separated,fanin,0.05,4,trapped,2-3,main,trap flagged
+main,binary8,3,separated,fanin,0.05,5,unresolved,1,unscored,unresolved
+main,binary8,3,separated,fanin,0.05,6,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.05,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.05,9,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.07,0,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.07,1,unresolved,2-1,unscored,unresolved
+main,binary8,3,separated,fanin,0.07,2,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.07,3,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.07,4,trapped,2-3,main,trap flagged
+main,binary8,3,separated,fanin,0.07,5,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.07,6,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.07,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.07,8,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.07,9,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.15,0,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.15,1,unresolved,2-1,unscored,unresolved
+main,binary8,3,separated,fanin,0.15,2,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.15,3,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.15,4,trapped,2-3,main,trap flagged
+main,binary8,3,separated,fanin,0.15,5,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.15,6,complete,1-3-2,main,
+main,binary8,3,separated,fanin,0.15,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.15,8,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.15,9,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.1,0,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.1,1,unresolved,2-1,unscored,unresolved
+main,binary8,3,separated,fanin,0.1,2,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.1,3,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.1,4,trapped,2-3,main,trap flagged
+main,binary8,3,separated,fanin,0.1,5,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.1,6,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.1,7,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.1,8,unresolved,1-3,unscored,unresolved
+main,binary8,3,separated,fanin,0.1,9,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.2,0,stalled,1-3,unscored,stalled
+main,binary8,3,separated,fanin,0.2,1,unresolved,2-1,unscored,unresolved
+main,binary8,3,separated,fanin,0.2,2,stalled,1-2,unscored,stalled
+main,binary8,3,separated,fanin,0.2,3,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.2,4,trapped,2-3,main,trap flagged
+main,binary8,3,separated,fanin,0.2,5,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.2,6,complete,1-3-2,main,
+main,binary8,3,separated,fanin,0.2,7,stalled,1-2,unscored,stalled
+main,binary8,3,separated,fanin,0.2,8,stalled,1-3,unscored,stalled
+main,binary8,3,separated,fanin,0.2,9,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.3,0,stalled,1-3,unscored,stalled
+main,binary8,3,separated,fanin,0.3,1,stalled,2-1,unscored,stalled
+main,binary8,3,separated,fanin,0.3,2,stalled,1-2,unscored,stalled
+main,binary8,3,separated,fanin,0.3,3,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.3,4,trapped,2-3,main,trap flagged
+main,binary8,3,separated,fanin,0.3,5,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.3,6,complete,1-3-2,main,
+main,binary8,3,separated,fanin,0.3,7,stalled,1-2,unscored,stalled
+main,binary8,3,separated,fanin,0.3,8,stalled,1-3,unscored,stalled
+main,binary8,3,separated,fanin,0.3,9,unresolved,1-2,unscored,unresolved
+main,binary8,3,separated,fanin,0.4,0,stalled,1-3,unscored,stalled
+main,binary8,3,separated,fanin,0.4,1,stalled,2-1,unscored,stalled
+main,binary8,3,separated,fanin,0.4,2,stalled,1-2,unscored,stalled
+main,binary8,3,separated,fanin,0.4,3,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.4,4,trapped,2-3,main,trap flagged
+main,binary8,3,separated,fanin,0.4,5,trapped,1-2,main,trap flagged
+main,binary8,3,separated,fanin,0.4,6,complete,1-3-2,main,
+main,binary8,3,separated,fanin,0.4,7,stalled,1-2,unscored,stalled
+main,binary8,3,separated,fanin,0.4,8,stalled,1-3,unscored,stalled
+main,binary8,3,separated,fanin,0.4,9,stalled,1-2,unscored,stalled
+main,binary8,6,close,fanin,0.03,3,unresolved,1,unscored,unresolved
+main,binary8,6,close,fanin,0.03,7,unresolved,1,unscored,unresolved
+main,binary8,6,close,fanin,0.07,0,complete,1-2-3,main,
+main,binary8,6,close,fanin,0.07,1,complete,2-1-3,main,
+main,binary8,6,close,fanin,0.07,2,complete,1-2-3,main,
+main,binary8,6,close,fanin,0.07,3,unresolved,1-2,unscored,unresolved
+main,binary8,6,close,fanin,0.07,4,unresolved,3-2,unscored,unresolved
+main,binary8,6,close,fanin,0.07,5,complete,3-2-1,main,
+main,binary8,6,close,fanin,0.07,6,complete,1-2-3,main,
+main,binary8,6,close,fanin,0.07,7,unresolved,1-3,unscored,unresolved
+main,binary8,6,close,fanin,0.07,8,complete,1-3-2,main,
+main,binary8,6,close,fanin,0.07,9,complete,1-3-2,main,
+main,binary8,6,close,fanin,0.1,1,unresolved,2-1,unscored,unresolved
+main,binary8,6,close,fanin,0.1,2,complete,1-2-3,main,
+main,binary8,6,close,fanin,0.1,3,unresolved,1-2,unscored,unresolved
+main,binary8,6,close,fanin,0.1,4,unresolved,3-2,unscored,unresolved
+main,binary8,6,close,fanin,0.1,5,complete,3-2-1,main,
+main,binary8,6,close,fanin,0.1,6,complete,1-2-3,main,
+main,binary8,6,close,fanin,0.1,7,complete,1-3-2,main,
+main,binary8,6,close,fanin,0.1,8,unresolved,1-3,unscored,unresolved
+main,binary8,6,separated,fanin,0.03,0,unresolved,1,unscored,unresolved
+main,binary8,6,separated,fanin,0.03,7,unresolved,1,unscored,unresolved
+main,binary8,6,separated,fanin,0.03,8,unresolved,1,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,0,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,1,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,2,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,3,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,4,complete,3-2-1,main,
+main,binary8,6,separated,fanin,0.07,5,unresolved,3-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,6,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,7,unresolved,1-3,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,8,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.07,9,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.1,1,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.1,2,complete,1-2-3,main,
+main,binary8,6,separated,fanin,0.1,3,complete,1-2-3,main,
+main,binary8,6,separated,fanin,0.1,4,unresolved,3-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.1,5,unresolved,3-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.1,6,unresolved,1-2,unscored,unresolved
+main,binary8,6,separated,fanin,0.1,7,unresolved,1-3,unscored,unresolved
+main,binary8,6,separated,fanin,0.1,8,complete,1-2-3,main,
+main,binary8,6,separated,fanin,0.1,9,complete,1-2-3,main,
+main,ht4,3,close,fanin,0.07,0,unresolved,3-1,unscored,unresolved
+main,ht4,3,close,fanin,0.07,1,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.07,2,trapped,1-2,main,trap flagged
+main,ht4,3,close,fanin,0.07,3,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.07,4,trapped,3-1,main,trap flagged
+main,ht4,3,close,fanin,0.07,5,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.07,6,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.07,7,trapped,2-3,main,trap flagged
+main,ht4,3,close,fanin,0.07,8,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.07,9,complete,2-1-3,main,
+main,ht4,3,close,fanin,0.15,0,trapped,3-1,main,trap flagged
+main,ht4,3,close,fanin,0.15,1,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.15,2,trapped,1-2,main,trap flagged
+main,ht4,3,close,fanin,0.15,3,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.15,4,unresolved,3-1,unscored,unresolved
+main,ht4,3,close,fanin,0.15,5,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.15,6,unresolved,1-3,unscored,unresolved
+main,ht4,3,close,fanin,0.15,7,trapped,2-3,main,trap flagged
+main,ht4,3,close,fanin,0.15,8,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.15,9,unresolved,2-1,unscored,unresolved
+main,ht4,3,close,fanin,0.1,0,trapped,3-1,main,trap flagged
+main,ht4,3,close,fanin,0.1,1,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.1,2,trapped,1-2,main,trap flagged
+main,ht4,3,close,fanin,0.1,3,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.1,4,trapped,3-1,main,trap flagged
+main,ht4,3,close,fanin,0.1,5,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.1,6,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.1,7,trapped,2-3,main,trap flagged
+main,ht4,3,close,fanin,0.1,8,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.1,9,unresolved,2-1,unscored,unresolved
+main,ht4,3,close,fanin,0.2,0,trapped,3-1,main,trap flagged
+main,ht4,3,close,fanin,0.2,1,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.2,2,trapped,1-2,main,trap flagged
+main,ht4,3,close,fanin,0.2,3,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.2,4,complete,3-1-2,main,
+main,ht4,3,close,fanin,0.2,5,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.2,6,unresolved,1-3,unscored,unresolved
+main,ht4,3,close,fanin,0.2,7,trapped,2-3,main,trap flagged
+main,ht4,3,close,fanin,0.2,8,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.2,9,unresolved,2-1,unscored,unresolved
+main,ht4,3,close,fanin,0.3,0,trapped,3-1,main,trap flagged
+main,ht4,3,close,fanin,0.3,1,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.3,2,trapped,1-2,main,trap flagged
+main,ht4,3,close,fanin,0.3,3,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.3,4,complete,3-1-2,main,
+main,ht4,3,close,fanin,0.3,5,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.3,6,unresolved,1-3,unscored,unresolved
+main,ht4,3,close,fanin,0.3,7,trapped,2-3,main,trap flagged
+main,ht4,3,close,fanin,0.3,8,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.3,9,stalled,2-1,unscored,stalled
+main,ht4,3,close,fanin,0.4,0,trapped,3-1,main,trap flagged
+main,ht4,3,close,fanin,0.4,1,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.4,2,stalled,1-2,unscored,stalled
+main,ht4,3,close,fanin,0.4,3,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.4,4,stalled,3-1,unscored,stalled
+main,ht4,3,close,fanin,0.4,5,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.4,6,trapped,1-3,main,trap flagged
+main,ht4,3,close,fanin,0.4,7,trapped,2-3,main,trap flagged
+main,ht4,3,close,fanin,0.4,8,trapped,2-1,main,trap flagged
+main,ht4,3,close,fanin,0.4,9,stalled,2-1,unscored,stalled
+main,ht4,3,separated,fanin,0.07,0,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.07,1,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.07,2,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.07,3,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.07,4,complete,1-3-2,main,
+main,ht4,3,separated,fanin,0.07,5,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.07,6,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.07,7,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.07,8,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.07,9,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.15,0,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.15,1,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.15,2,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.15,3,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.15,4,complete,1-3-2,main,
+main,ht4,3,separated,fanin,0.15,5,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.15,6,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.15,7,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.15,8,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.15,9,stalled,2-1,unscored,stalled
+main,ht4,3,separated,fanin,0.1,0,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.1,1,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.1,2,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.1,3,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.1,4,complete,1-3-2,main,
+main,ht4,3,separated,fanin,0.1,5,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.1,6,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.1,7,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.1,8,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.1,9,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.2,0,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.2,1,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.2,2,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.2,3,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.2,4,complete,1-3-2,main,
+main,ht4,3,separated,fanin,0.2,5,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.2,6,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.2,7,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.2,8,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.2,9,stalled,2-1,unscored,stalled
+main,ht4,3,separated,fanin,0.3,0,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.3,1,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.3,2,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.3,3,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.3,4,complete,1-3-2,main,
+main,ht4,3,separated,fanin,0.3,5,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.3,6,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.3,7,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.3,8,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.3,9,stalled,2-1,unscored,stalled
+main,ht4,3,separated,fanin,0.4,0,unresolved,1-2,unscored,unresolved
+main,ht4,3,separated,fanin,0.4,1,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.4,2,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.4,3,trapped,1-2,main,trap flagged
+main,ht4,3,separated,fanin,0.4,4,complete,1-3-2,main,
+main,ht4,3,separated,fanin,0.4,5,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.4,6,trapped,1-3,main,trap flagged
+main,ht4,3,separated,fanin,0.4,7,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.4,8,trapped,2-1,main,trap flagged
+main,ht4,3,separated,fanin,0.4,9,stalled,2-1,unscored,stalled
+main,mps4,3,close,fanin,0.003,0,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.003,1,trapped,1-3,main,trap flagged
+main,mps4,3,close,fanin,0.003,2,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.003,3,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.003,4,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.003,5,stalled,1-2,unscored,stalled
+main,mps4,3,close,fanin,0.003,6,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.003,7,trapped,2-1,main,trap flagged
+main,mps4,3,close,fanin,0.003,8,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.003,9,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.005,0,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.005,1,trapped,1-3,main,trap flagged
+main,mps4,3,close,fanin,0.005,2,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.005,3,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.005,4,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.005,5,stalled,1-2,unscored,stalled
+main,mps4,3,close,fanin,0.005,6,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.005,7,trapped,2-1,main,trap flagged
+main,mps4,3,close,fanin,0.005,8,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.005,9,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.01,0,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.01,1,trapped,1-3,main,trap flagged
+main,mps4,3,close,fanin,0.01,2,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.01,3,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.01,4,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.01,5,stalled,1-2,unscored,stalled
+main,mps4,3,close,fanin,0.01,6,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.01,7,trapped,2-1,main,trap flagged
+main,mps4,3,close,fanin,0.01,8,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.01,9,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.02,0,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.02,1,trapped,1-3,main,trap flagged
+main,mps4,3,close,fanin,0.02,2,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.02,3,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.02,4,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.02,5,stalled,1-2,unscored,stalled
+main,mps4,3,close,fanin,0.02,6,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.02,7,trapped,2-1,main,trap flagged
+main,mps4,3,close,fanin,0.02,8,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.02,9,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.03,0,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.03,1,trapped,1-3,main,trap flagged
+main,mps4,3,close,fanin,0.03,2,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.03,3,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.03,4,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.03,5,stalled,1-2,unscored,stalled
+main,mps4,3,close,fanin,0.03,6,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.03,7,trapped,2-1,main,trap flagged
+main,mps4,3,close,fanin,0.03,8,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.03,9,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.05,0,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.05,1,trapped,1-3,main,trap flagged
+main,mps4,3,close,fanin,0.05,2,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.05,3,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.05,4,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.05,5,stalled,1-2,unscored,stalled
+main,mps4,3,close,fanin,0.05,6,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.05,7,trapped,2-1,main,trap flagged
+main,mps4,3,close,fanin,0.05,8,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.05,9,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.07,0,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.07,1,trapped,1-3,main,trap flagged
+main,mps4,3,close,fanin,0.07,2,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.07,3,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.07,4,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.07,5,stalled,1-2,unscored,stalled
+main,mps4,3,close,fanin,0.07,6,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.07,7,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.07,8,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.07,9,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.1,0,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.1,1,trapped,1-3,main,trap flagged
+main,mps4,3,close,fanin,0.1,2,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.1,3,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.1,4,complete,1-2-3,main,
+main,mps4,3,close,fanin,0.1,5,stalled,1-2,unscored,stalled
+main,mps4,3,close,fanin,0.1,6,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.1,7,complete,2-1-3,main,
+main,mps4,3,close,fanin,0.1,8,complete,3-1-2,main,
+main,mps4,3,close,fanin,0.1,9,complete,3-1-2,main,
+main,mps4,3,separated,fanin,0.003,0,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.003,1,complete,1-3-2,main,
+main,mps4,3,separated,fanin,0.003,2,complete,2-1-3,main,
+main,mps4,3,separated,fanin,0.003,3,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.003,4,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.003,5,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.003,6,trapped,1-3,main,trap flagged
+main,mps4,3,separated,fanin,0.003,7,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.003,8,complete,3-2-1,main,
+main,mps4,3,separated,fanin,0.003,9,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.005,0,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.005,1,complete,1-3-2,main,
+main,mps4,3,separated,fanin,0.005,2,complete,2-1-3,main,
+main,mps4,3,separated,fanin,0.005,3,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.005,4,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.005,5,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.005,6,trapped,1-3,main,trap flagged
+main,mps4,3,separated,fanin,0.005,7,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.005,8,complete,3-2-1,main,
+main,mps4,3,separated,fanin,0.005,9,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.01,0,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.01,1,complete,1-3-2,main,
+main,mps4,3,separated,fanin,0.01,2,complete,2-1-3,main,
+main,mps4,3,separated,fanin,0.01,3,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.01,4,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.01,5,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.01,6,trapped,1-3,main,trap flagged
+main,mps4,3,separated,fanin,0.01,7,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.01,8,complete,3-2-1,main,
+main,mps4,3,separated,fanin,0.01,9,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.02,0,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.02,1,complete,1-3-2,main,
+main,mps4,3,separated,fanin,0.02,2,complete,2-1-3,main,
+main,mps4,3,separated,fanin,0.02,3,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.02,4,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.02,5,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.02,6,trapped,1-3,main,trap flagged
+main,mps4,3,separated,fanin,0.02,7,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.02,8,complete,3-2-1,main,
+main,mps4,3,separated,fanin,0.02,9,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.03,0,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.03,1,complete,1-3-2,main,
+main,mps4,3,separated,fanin,0.03,2,complete,2-1-3,main,
+main,mps4,3,separated,fanin,0.03,3,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.03,4,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.03,5,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.03,6,trapped,1-3,main,trap flagged
+main,mps4,3,separated,fanin,0.03,7,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.03,8,complete,3-2-1,main,
+main,mps4,3,separated,fanin,0.03,9,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.05,0,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.05,1,complete,1-3-2,main,
+main,mps4,3,separated,fanin,0.05,2,complete,2-1-3,main,
+main,mps4,3,separated,fanin,0.05,3,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.05,4,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.05,5,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.05,6,trapped,1-3,main,trap flagged
+main,mps4,3,separated,fanin,0.05,7,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.05,8,complete,3-2-1,main,
+main,mps4,3,separated,fanin,0.05,9,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.07,0,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.07,1,complete,1-3-2,main,
+main,mps4,3,separated,fanin,0.07,2,complete,2-1-3,main,
+main,mps4,3,separated,fanin,0.07,3,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.07,4,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.07,5,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.07,6,trapped,1-3,main,trap flagged
+main,mps4,3,separated,fanin,0.07,7,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.07,8,complete,3-2-1,main,
+main,mps4,3,separated,fanin,0.07,9,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.1,0,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.1,1,complete,1-3-2,main,
+main,mps4,3,separated,fanin,0.1,2,complete,2-1-3,main,
+main,mps4,3,separated,fanin,0.1,3,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.1,4,complete,1-2-3,main,
+main,mps4,3,separated,fanin,0.1,5,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.1,6,trapped,1-3,main,trap flagged
+main,mps4,3,separated,fanin,0.1,7,trapped,1-2,main,trap flagged
+main,mps4,3,separated,fanin,0.1,8,complete,3-2-1,main,
+main,mps4,3,separated,fanin,0.1,9,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.003,0,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.003,1,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.003,2,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.003,3,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.003,4,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.003,5,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.003,6,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.003,7,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.003,8,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.003,9,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.005,0,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.005,1,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.005,2,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.005,3,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.005,4,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.005,5,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.005,6,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.005,7,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.005,8,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.005,9,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.01,0,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.01,1,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.01,2,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.01,3,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.01,4,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.01,5,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.01,6,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.01,7,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.01,8,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.01,9,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.02,0,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.02,1,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.02,2,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.02,3,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.02,4,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.02,5,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.02,6,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.02,7,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.02,8,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.02,9,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.03,0,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.03,1,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.03,2,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.03,3,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.03,4,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.03,5,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.03,6,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.03,7,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.03,8,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.03,9,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.05,0,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.05,1,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.05,2,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.05,3,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.05,4,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.05,5,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.05,6,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.05,7,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.05,8,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.05,9,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.07,0,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.07,1,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.07,2,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.07,3,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.07,4,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.07,5,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.07,6,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.07,7,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.07,8,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.07,9,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.1,0,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.1,1,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.1,2,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.1,3,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.1,4,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.1,5,complete,1-3-2,main,
+main,mps4,6,close,fanin,0.1,6,complete,2-3-1,main,
+main,mps4,6,close,fanin,0.1,7,complete,1-2-3,main,
+main,mps4,6,close,fanin,0.1,8,complete,2-1-3,main,
+main,mps4,6,close,fanin,0.1,9,complete,1-3-2,main,
+main,mps4,6,separated,fanin,0.003,0,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.003,1,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.003,2,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.003,3,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.003,4,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.003,5,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.003,6,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.003,7,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.003,8,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.003,9,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.005,0,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.005,1,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.005,2,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.005,3,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.005,4,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.005,5,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.005,6,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.005,7,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.005,8,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.005,9,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.01,0,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.01,1,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.01,2,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.01,3,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.01,4,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.01,5,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.01,6,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.01,7,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.01,8,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.01,9,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.02,0,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.02,1,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.02,2,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.02,3,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.02,4,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.02,5,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.02,6,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.02,7,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.02,8,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.02,9,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.03,0,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.03,1,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.03,2,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.03,3,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.03,4,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.03,5,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.03,6,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.03,7,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.03,8,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.03,9,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.05,0,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.05,1,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.05,2,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.05,3,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.05,4,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.05,5,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.05,6,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.05,7,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.05,8,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.05,9,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.07,0,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.07,1,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.07,2,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.07,3,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.07,4,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.07,5,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.07,6,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.07,7,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.07,8,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.07,9,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.1,0,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.1,1,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.1,2,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.1,3,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.1,4,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.1,5,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.1,6,complete,2-1-3,main,
+main,mps4,6,separated,fanin,0.1,7,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.1,8,complete,1-2-3,main,
+main,mps4,6,separated,fanin,0.1,9,complete,1-2-3,main,
+main,mps8,3,close,fanin,0.03,0,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.03,1,trapped,1,main,trap flagged
+main,mps8,3,close,fanin,0.03,2,unresolved,2,unscored,unresolved
+main,mps8,3,close,fanin,0.03,3,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.03,4,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.03,5,trapped,1,main,trap flagged
+main,mps8,3,close,fanin,0.03,6,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.03,7,unresolved,2,unscored,unresolved
+main,mps8,3,close,fanin,0.03,8,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.03,9,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.07,0,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.07,1,trapped,1,main,trap flagged
+main,mps8,3,close,fanin,0.07,2,unresolved,2,unscored,unresolved
+main,mps8,3,close,fanin,0.07,3,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.07,4,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.07,5,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.07,6,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.07,7,unresolved,2,unscored,unresolved
+main,mps8,3,close,fanin,0.07,8,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.07,9,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.15,0,unresolved,1-3,unscored,unresolved
+main,mps8,3,close,fanin,0.15,1,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.15,2,unresolved,2-1,unscored,unresolved
+main,mps8,3,close,fanin,0.15,3,trapped,1-2,main,trap flagged
+main,mps8,3,close,fanin,0.15,4,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.15,5,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.15,6,trapped,1-3,main,trap flagged
+main,mps8,3,close,fanin,0.15,7,trapped,2-3,main,trap flagged
+main,mps8,3,close,fanin,0.15,8,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.15,9,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.1,0,unresolved,1-3,unscored,unresolved
+main,mps8,3,close,fanin,0.1,1,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.1,2,unresolved,2,unscored,unresolved
+main,mps8,3,close,fanin,0.1,3,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.1,4,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.1,5,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.1,6,unresolved,1-3,unscored,unresolved
+main,mps8,3,close,fanin,0.1,7,trapped,2-3,main,trap flagged
+main,mps8,3,close,fanin,0.1,8,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.1,9,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.2,0,unresolved,1-3,unscored,unresolved
+main,mps8,3,close,fanin,0.2,1,unresolved,1,unscored,unresolved
+main,mps8,3,close,fanin,0.2,2,stalled,2,unscored,stalled
+main,mps8,3,close,fanin,0.2,3,trapped,1-2,main,trap flagged
+main,mps8,3,close,fanin,0.2,4,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.2,5,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.2,6,trapped,1-3,main,trap flagged
+main,mps8,3,close,fanin,0.2,7,trapped,2-3,main,trap flagged
+main,mps8,3,close,fanin,0.2,8,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.2,9,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.3,0,trapped,1-3,main,trap flagged
+main,mps8,3,close,fanin,0.3,1,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.3,2,stalled,2,unscored,stalled
+main,mps8,3,close,fanin,0.3,3,trapped,1-2,main,trap flagged
+main,mps8,3,close,fanin,0.3,4,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.3,5,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.3,6,trapped,1-3,main,trap flagged
+main,mps8,3,close,fanin,0.3,7,trapped,2-1,main,trap flagged
+main,mps8,3,close,fanin,0.3,8,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.3,9,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.4,0,trapped,1-3,main,trap flagged
+main,mps8,3,close,fanin,0.4,1,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.4,2,stalled,2,unscored,stalled
+main,mps8,3,close,fanin,0.4,3,trapped,1-2,main,trap flagged
+main,mps8,3,close,fanin,0.4,4,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.4,5,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.4,6,trapped,1-3,main,trap flagged
+main,mps8,3,close,fanin,0.4,7,trapped,2-1,main,trap flagged
+main,mps8,3,close,fanin,0.4,8,stalled,1,unscored,stalled
+main,mps8,3,close,fanin,0.4,9,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.03,0,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.03,1,trapped,1,main,trap flagged
+main,mps8,3,separated,fanin,0.03,2,unresolved,2,unscored,unresolved
+main,mps8,3,separated,fanin,0.03,3,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.03,4,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.03,5,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.03,6,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.03,7,unresolved,2,unscored,unresolved
+main,mps8,3,separated,fanin,0.03,8,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.03,9,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.07,0,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.07,1,trapped,1,main,trap flagged
+main,mps8,3,separated,fanin,0.07,2,unresolved,2,unscored,unresolved
+main,mps8,3,separated,fanin,0.07,3,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.07,4,trapped,1,main,trap flagged
+main,mps8,3,separated,fanin,0.07,5,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.07,6,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.07,7,unresolved,2,unscored,unresolved
+main,mps8,3,separated,fanin,0.07,8,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.07,9,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.15,0,trapped,1-2,main,trap flagged
+main,mps8,3,separated,fanin,0.15,1,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.15,2,trapped,2-1,main,trap flagged
+main,mps8,3,separated,fanin,0.15,3,trapped,1-2,main,trap flagged
+main,mps8,3,separated,fanin,0.15,4,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.15,5,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.15,6,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.15,7,trapped,2-3,main,trap flagged
+main,mps8,3,separated,fanin,0.15,8,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.15,9,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.1,0,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.1,1,trapped,1,main,trap flagged
+main,mps8,3,separated,fanin,0.1,2,trapped,2-1,main,trap flagged
+main,mps8,3,separated,fanin,0.1,3,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.1,4,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.1,5,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.1,6,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.1,7,unresolved,2,unscored,unresolved
+main,mps8,3,separated,fanin,0.1,8,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.1,9,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.2,0,trapped,1-2,main,trap flagged
+main,mps8,3,separated,fanin,0.2,1,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.2,2,unresolved,2,unscored,unresolved
+main,mps8,3,separated,fanin,0.2,3,trapped,1-2,main,trap flagged
+main,mps8,3,separated,fanin,0.2,4,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.2,5,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.2,6,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.2,7,trapped,2-1,main,trap flagged
+main,mps8,3,separated,fanin,0.2,8,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.2,9,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.3,0,trapped,1-2,main,trap flagged
+main,mps8,3,separated,fanin,0.3,1,unresolved,1,unscored,unresolved
+main,mps8,3,separated,fanin,0.3,2,trapped,2-1,main,trap flagged
+main,mps8,3,separated,fanin,0.3,3,trapped,1-2,main,trap flagged
+main,mps8,3,separated,fanin,0.3,4,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.3,5,trapped,1,main,trap flagged
+main,mps8,3,separated,fanin,0.3,6,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.3,7,trapped,2-1,main,trap flagged
+main,mps8,3,separated,fanin,0.3,8,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.3,9,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.4,0,trapped,1-2,main,trap flagged
+main,mps8,3,separated,fanin,0.4,1,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.4,2,trapped,2-1,main,trap flagged
+main,mps8,3,separated,fanin,0.4,3,trapped,1-2,main,trap flagged
+main,mps8,3,separated,fanin,0.4,4,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.4,5,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.4,6,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.4,7,trapped,2-1,main,trap flagged
+main,mps8,3,separated,fanin,0.4,8,stalled,1,unscored,stalled
+main,mps8,3,separated,fanin,0.4,9,stalled,1,unscored,stalled
+main,mps8,6,close,fanin,0.03,3,unresolved,1,unscored,unresolved
+main,mps8,6,close,fanin,0.07,0,unresolved,2-3,unscored,unresolved
+main,mps8,6,close,fanin,0.07,1,unresolved,1,unscored,unresolved
+main,mps8,6,close,fanin,0.07,2,unresolved,1,unscored,unresolved
+main,mps8,6,close,fanin,0.07,3,unresolved,1,unscored,unresolved
+main,mps8,6,close,fanin,0.07,4,unresolved,2,unscored,unresolved
+main,mps8,6,close,fanin,0.07,5,unresolved,1-3,unscored,unresolved
+main,mps8,6,close,fanin,0.07,6,unresolved,1-2,unscored,unresolved
+main,mps8,6,close,fanin,0.07,7,trapped,3-1,main,trap flagged
+main,mps8,6,close,fanin,0.07,8,unresolved,1,unscored,unresolved
+main,mps8,6,close,fanin,0.07,9,unresolved,2,unscored,unresolved
+main,mps8,6,close,fanin,0.1,0,unresolved,2-3,unscored,unresolved
+main,mps8,6,close,fanin,0.1,2,unresolved,1-3,unscored,unresolved
+main,mps8,6,close,fanin,0.1,4,unresolved,2,unscored,unresolved
+main,mps8,6,close,fanin,0.1,7,trapped,3-1,main,trap flagged
+main,mps8,6,close,fanin,0.1,9,unresolved,2,unscored,unresolved
+main,mps8,6,separated,fanin,0.03,5,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,0,unresolved,2,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,1,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,2,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,3,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,4,unresolved,2,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,5,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,6,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,7,unresolved,1-2,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,8,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.07,9,unresolved,2,unscored,unresolved
+main,mps8,6,separated,fanin,0.1,2,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.1,3,unresolved,1,unscored,unresolved
+main,mps8,6,separated,fanin,0.1,5,unresolved,1-3,unscored,unresolved
+main,mps8,6,separated,fanin,0.1,6,unresolved,1-2,unscored,unresolved
+main,mps8,6,separated,fanin,0.1,7,unresolved,1-2,unscored,unresolved
+main,mps8,6,separated,fanin,0.1,8,unresolved,1-2,unscored,unresolved
+main,mps8,6,separated,fanin,0.1,9,unresolved,2,unscored,unresolved
+large,binary8,6,separated,fanin,0.07,0,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.07,1,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.07,2,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.07,3,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.07,4,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.07,5,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.07,6,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.07,7,complete,1-3-2,main,
+large,binary8,6,separated,fanin,0.07,8,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.07,9,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.15,0,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.15,1,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.15,2,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.15,3,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.15,4,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.15,5,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.15,6,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.15,7,complete,1-3-2,main,
+large,binary8,6,separated,fanin,0.15,8,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.15,9,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.1,0,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.1,1,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.1,2,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.1,3,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.1,4,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.1,5,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.1,6,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.1,7,complete,1-3-2,main,
+large,binary8,6,separated,fanin,0.1,8,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.1,9,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.2,0,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.2,1,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.2,2,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.2,3,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.2,4,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.2,5,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.2,6,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.2,7,complete,1-3-2,main,
+large,binary8,6,separated,fanin,0.2,8,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.2,9,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.3,0,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.3,1,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.3,2,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.3,3,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.3,4,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.3,5,complete,3-2-1,main,
+large,binary8,6,separated,fanin,0.3,6,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.3,7,complete,1-3-2,main,
+large,binary8,6,separated,fanin,0.3,8,complete,1-2-3,main,
+large,binary8,6,separated,fanin,0.3,9,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.07,0,complete,1-3-2,main,
+large,ht4,6,separated,fanin,0.07,1,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.07,2,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.07,3,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.07,4,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.07,5,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.07,6,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.07,7,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.07,8,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.07,9,trapped,1-2,main,trap flagged
+large,ht4,6,separated,fanin,0.15,0,complete,1-3-2,main,
+large,ht4,6,separated,fanin,0.15,1,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.15,2,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.15,3,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.15,4,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.15,5,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.15,6,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.15,7,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.15,8,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.15,9,trapped,1-2,main,trap flagged
+large,ht4,6,separated,fanin,0.1,0,complete,1-3-2,main,
+large,ht4,6,separated,fanin,0.1,1,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.1,2,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.1,3,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.1,4,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.1,5,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.1,6,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.1,7,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.1,8,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.1,9,trapped,1-2,main,trap flagged
+large,ht4,6,separated,fanin,0.2,0,complete,1-3-2,main,
+large,ht4,6,separated,fanin,0.2,1,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.2,2,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.2,3,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.2,4,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.2,5,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.2,6,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.2,7,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.2,8,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.2,9,trapped,1-2,main,trap flagged
+large,ht4,6,separated,fanin,0.3,0,complete,1-3-2,main,
+large,ht4,6,separated,fanin,0.3,1,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.3,2,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.3,3,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.3,4,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.3,5,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.3,6,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.3,7,complete,1-2-3,main,
+large,ht4,6,separated,fanin,0.3,8,complete,2-1-3,main,
+large,ht4,6,separated,fanin,0.3,9,trapped,1-2,main,trap flagged
+large,mps8,6,separated,fanin,0.07,0,unresolved,2-1,unscored,unresolved
+large,mps8,6,separated,fanin,0.07,1,unresolved,1,unscored,unresolved
+large,mps8,6,separated,fanin,0.07,2,trapped,1-3,main,trap flagged
+large,mps8,6,separated,fanin,0.07,3,unresolved,1-3,unscored,unresolved
+large,mps8,6,separated,fanin,0.07,4,unresolved,2-1,unscored,unresolved
+large,mps8,6,separated,fanin,0.07,5,unresolved,1-3,unscored,unresolved
+large,mps8,6,separated,fanin,0.07,6,trapped,1-2,main,trap flagged
+large,mps8,6,separated,fanin,0.07,7,trapped,1-2,main,trap flagged
+large,mps8,6,separated,fanin,0.07,8,trapped,1-2,main,trap flagged
+large,mps8,6,separated,fanin,0.07,9,unresolved,2,unscored,unresolved
+large,mps8,6,separated,fanin,0.15,0,stalled,2-1,unscored,stalled
+large,mps8,6,separated,fanin,0.15,1,stalled,1,unscored,stalled
+large,mps8,6,separated,fanin,0.15,2,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.15,3,stalled,1-3,unscored,stalled
+large,mps8,6,separated,fanin,0.15,4,stalled,2-1,unscored,stalled
+large,mps8,6,separated,fanin,0.15,5,stalled,1-3,unscored,stalled
+large,mps8,6,separated,fanin,0.15,6,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.15,7,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.15,8,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.15,9,stalled,2,unscored,stalled
+large,mps8,6,separated,fanin,0.1,0,unresolved,2-1,unscored,unresolved
+large,mps8,6,separated,fanin,0.1,1,stalled,1,unscored,stalled
+large,mps8,6,separated,fanin,0.1,2,trapped,1-3,main,trap flagged
+large,mps8,6,separated,fanin,0.1,3,stalled,1-3,unscored,stalled
+large,mps8,6,separated,fanin,0.1,4,unresolved,2-1,unscored,unresolved
+large,mps8,6,separated,fanin,0.1,5,stalled,1-3,unscored,stalled
+large,mps8,6,separated,fanin,0.1,6,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.1,7,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.1,8,unresolved,1-2,unscored,unresolved
+large,mps8,6,separated,fanin,0.1,9,stalled,2,unscored,stalled
+large,mps8,6,separated,fanin,0.2,0,stalled,2-1,unscored,stalled
+large,mps8,6,separated,fanin,0.2,1,trapped,1-2,main,trap flagged
+large,mps8,6,separated,fanin,0.2,2,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.2,3,stalled,1-3,unscored,stalled
+large,mps8,6,separated,fanin,0.2,4,stalled,2-1,unscored,stalled
+large,mps8,6,separated,fanin,0.2,5,stalled,1-3,unscored,stalled
+large,mps8,6,separated,fanin,0.2,6,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.2,7,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.2,8,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.2,9,stalled,2,unscored,stalled
+large,mps8,6,separated,fanin,0.3,0,stalled,2-1,unscored,stalled
+large,mps8,6,separated,fanin,0.3,1,trapped,1-2,main,trap flagged
+large,mps8,6,separated,fanin,0.3,2,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.3,3,stalled,1-3,unscored,stalled
+large,mps8,6,separated,fanin,0.3,4,stalled,2-1,unscored,stalled
+large,mps8,6,separated,fanin,0.3,5,stalled,1-3,unscored,stalled
+large,mps8,6,separated,fanin,0.3,6,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.3,7,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.3,8,stalled,1-2,unscored,stalled
+large,mps8,6,separated,fanin,0.3,9,stalled,2,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,0,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,1,complete,2-1-3,main,
+k78,binary8,3,separated,balanced,0.15,2,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,3,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,4,stalled,2-1,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,5,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,6,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,7,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,8,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.15,9,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,0,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,1,complete,2-1-3,main,
+k78,binary8,3,separated,balanced,0.2,2,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,3,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,4,stalled,2-1,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,5,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,6,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,7,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,8,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.2,9,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,0,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,1,complete,2-1-3,main,
+k78,binary8,3,separated,balanced,0.3,2,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,3,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,4,stalled,2-1,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,5,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,6,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,7,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,8,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,balanced,0.3,9,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,fanin,0.15,0,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,fanin,0.15,1,stalled,2-1,unscored,stalled
+k78,binary8,3,separated,fanin,0.15,2,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,fanin,0.15,3,trapped,1-2,main,trap flagged
+k78,binary8,3,separated,fanin,0.15,4,trapped,2-3,main,trap flagged
+k78,binary8,3,separated,fanin,0.15,5,trapped,1-2,main,trap flagged
+k78,binary8,3,separated,fanin,0.15,6,unresolved,1-3,unscored,unresolved
+k78,binary8,3,separated,fanin,0.15,7,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,fanin,0.15,8,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,fanin,0.15,9,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,fanin,0.2,0,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,fanin,0.2,1,stalled,2-1,unscored,stalled
+k78,binary8,3,separated,fanin,0.2,2,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,fanin,0.2,3,trapped,1-2,main,trap flagged
+k78,binary8,3,separated,fanin,0.2,4,trapped,2-3,main,trap flagged
+k78,binary8,3,separated,fanin,0.2,5,trapped,1-2,main,trap flagged
+k78,binary8,3,separated,fanin,0.2,6,complete,1-3-2,main,
+k78,binary8,3,separated,fanin,0.2,7,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,fanin,0.2,8,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,fanin,0.2,9,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,fanin,0.3,0,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,fanin,0.3,1,stalled,2-1,unscored,stalled
+k78,binary8,3,separated,fanin,0.3,2,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,fanin,0.3,3,trapped,1-2,main,trap flagged
+k78,binary8,3,separated,fanin,0.3,4,trapped,2-3,main,trap flagged
+k78,binary8,3,separated,fanin,0.3,5,trapped,1-2,main,trap flagged
+k78,binary8,3,separated,fanin,0.3,6,complete,1-3-2,main,
+k78,binary8,3,separated,fanin,0.3,7,stalled,1-2,unscored,stalled
+k78,binary8,3,separated,fanin,0.3,8,stalled,1-3,unscored,stalled
+k78,binary8,3,separated,fanin,0.3,9,stalled,1-2,unscored,stalled
+k78,ht4,3,separated,balanced,0.15,0,stalled,2-1,unscored,stalled
+k78,ht4,3,separated,balanced,0.15,1,complete,1-3-2,main,
+k78,ht4,3,separated,balanced,0.15,2,complete,1-3-2,main,
+k78,ht4,3,separated,balanced,0.15,3,stalled,1-2,unscored,stalled
+k78,ht4,3,separated,balanced,0.15,4,stalled,1-3,unscored,stalled
+k78,ht4,3,separated,balanced,0.15,5,complete,1-2-3,main,
+k78,ht4,3,separated,balanced,0.15,6,unresolved,1-3,unscored,unresolved
+k78,ht4,3,separated,balanced,0.15,7,complete,2-3-1,main,
+k78,ht4,3,separated,balanced,0.15,8,complete,2-1-3,main,
+k78,ht4,3,separated,balanced,0.15,9,stalled,2-1,unscored,stalled
+k78,ht4,3,separated,balanced,0.2,0,stalled,2-1,unscored,stalled
+k78,ht4,3,separated,balanced,0.2,1,complete,1-3-2,main,
+k78,ht4,3,separated,balanced,0.2,2,complete,1-3-2,main,
+k78,ht4,3,separated,balanced,0.2,3,stalled,1-2,unscored,stalled
+k78,ht4,3,separated,balanced,0.2,4,stalled,1-3,unscored,stalled
+k78,ht4,3,separated,balanced,0.2,5,complete,1-2-3,main,
+k78,ht4,3,separated,balanced,0.2,6,complete,1-3-2,main,
+k78,ht4,3,separated,balanced,0.2,7,complete,2-3-1,main,
+k78,ht4,3,separated,balanced,0.2,8,complete,2-1-3,main,
+k78,ht4,3,separated,balanced,0.2,9,stalled,2-1,unscored,stalled
+k78,ht4,3,separated,balanced,0.3,0,stalled,2-1,unscored,stalled
+k78,ht4,3,separated,balanced,0.3,1,complete,1-3-2,main,
+k78,ht4,3,separated,balanced,0.3,2,complete,1-3-2,main,
+k78,ht4,3,separated,balanced,0.3,3,stalled,1-2,unscored,stalled
+k78,ht4,3,separated,balanced,0.3,4,stalled,1-3,unscored,stalled
+k78,ht4,3,separated,balanced,0.3,5,complete,1-2-3,main,
+k78,ht4,3,separated,balanced,0.3,6,complete,1-3-2,main,
+k78,ht4,3,separated,balanced,0.3,7,complete,2-3-1,main,
+k78,ht4,3,separated,balanced,0.3,8,complete,2-1-3,main,
+k78,ht4,3,separated,balanced,0.3,9,stalled,2-1,unscored,stalled
+k78,ht4,3,separated,fanin,0.15,0,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.15,1,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.15,2,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.15,3,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.15,4,complete,1-3-2,main,
+k78,ht4,3,separated,fanin,0.15,5,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.15,6,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.15,7,trapped,2-1,main,trap flagged
+k78,ht4,3,separated,fanin,0.15,8,trapped,2-1,main,trap flagged
+k78,ht4,3,separated,fanin,0.15,9,stalled,2-1,unscored,stalled
+k78,ht4,3,separated,fanin,0.2,0,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.2,1,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.2,2,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.2,3,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.2,4,complete,1-3-2,main,
+k78,ht4,3,separated,fanin,0.2,5,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.2,6,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.2,7,trapped,2-1,main,trap flagged
+k78,ht4,3,separated,fanin,0.2,8,trapped,2-1,main,trap flagged
+k78,ht4,3,separated,fanin,0.2,9,stalled,2-1,unscored,stalled
+k78,ht4,3,separated,fanin,0.3,0,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.3,1,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.3,2,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.3,3,trapped,1-2,main,trap flagged
+k78,ht4,3,separated,fanin,0.3,4,complete,1-3-2,main,
+k78,ht4,3,separated,fanin,0.3,5,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.3,6,trapped,1-3,main,trap flagged
+k78,ht4,3,separated,fanin,0.3,7,trapped,2-1,main,trap flagged
+k78,ht4,3,separated,fanin,0.3,8,trapped,2-1,main,trap flagged
+k78,ht4,3,separated,fanin,0.3,9,stalled,2-1,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,0,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,1,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,2,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,3,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,4,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,5,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,6,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,7,stalled,2-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,8,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.15,9,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,0,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,1,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,2,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,3,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,4,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,5,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,6,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,7,stalled,2-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,8,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.2,9,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,0,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,1,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,2,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,3,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,4,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,5,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,6,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,7,stalled,2-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,8,stalled,1-3,unscored,stalled
+k78,mps8,3,separated,balanced,0.3,9,stalled,1-2,unscored,stalled
+k78,mps8,3,separated,fanin,0.15,0,trapped,1-2,main,trap flagged
+k78,mps8,3,separated,fanin,0.15,1,trapped,1,main,trap flagged
+k78,mps8,3,separated,fanin,0.15,2,trapped,2-1,main,trap flagged
+k78,mps8,3,separated,fanin,0.15,3,trapped,1-2,main,trap flagged
+k78,mps8,3,separated,fanin,0.15,4,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.15,5,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.15,6,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.15,7,trapped,2-3,main,trap flagged
+k78,mps8,3,separated,fanin,0.15,8,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.15,9,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.2,0,trapped,1-2,main,trap flagged
+k78,mps8,3,separated,fanin,0.2,1,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.2,2,trapped,2-1,main,trap flagged
+k78,mps8,3,separated,fanin,0.2,3,trapped,1-2,main,trap flagged
+k78,mps8,3,separated,fanin,0.2,4,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.2,5,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.2,6,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.2,7,trapped,2-1,main,trap flagged
+k78,mps8,3,separated,fanin,0.2,8,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.2,9,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.3,0,trapped,1-2,main,trap flagged
+k78,mps8,3,separated,fanin,0.3,1,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.3,2,trapped,2-1,main,trap flagged
+k78,mps8,3,separated,fanin,0.3,3,trapped,1-2,main,trap flagged
+k78,mps8,3,separated,fanin,0.3,4,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.3,5,trapped,1,main,trap flagged
+k78,mps8,3,separated,fanin,0.3,6,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.3,7,trapped,2-1,main,trap flagged
+k78,mps8,3,separated,fanin,0.3,8,stalled,1,unscored,stalled
+k78,mps8,3,separated,fanin,0.3,9,stalled,1,unscored,stalled
+balanced,binary4,3,separated,balanced,0.003,0,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,1,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,2,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,3,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,4,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,5,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,6,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,7,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,8,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.003,9,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,0,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,1,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,2,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,3,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,4,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,5,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,6,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,7,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,8,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.01,9,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,0,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,1,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,2,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,3,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,4,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,5,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,6,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,7,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,8,complete,1-2-3,main,
+balanced,binary4,3,separated,balanced,0.03,9,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,0,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,1,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,2,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,3,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,4,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,5,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,6,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,7,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,8,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.003,9,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,0,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,1,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,2,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,3,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,4,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,5,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,6,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,7,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,8,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.01,9,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,0,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,1,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,2,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,3,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,4,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,5,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,6,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,7,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,8,complete,1-2-3,main,
+balanced,binary4,6,separated,balanced,0.03,9,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.003,0,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.003,1,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.003,2,complete,2-1-3,main,
+balanced,mps4,3,separated,balanced,0.003,3,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.003,4,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.003,5,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.003,6,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.003,7,complete,2-1-3,main,
+balanced,mps4,3,separated,balanced,0.003,8,complete,3-1-2,main,
+balanced,mps4,3,separated,balanced,0.003,9,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.01,0,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.01,1,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.01,2,complete,2-1-3,main,
+balanced,mps4,3,separated,balanced,0.01,3,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.01,4,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.01,5,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.01,6,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.01,7,complete,2-1-3,main,
+balanced,mps4,3,separated,balanced,0.01,8,complete,3-1-2,main,
+balanced,mps4,3,separated,balanced,0.01,9,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.03,0,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.03,1,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.03,2,complete,2-1-3,main,
+balanced,mps4,3,separated,balanced,0.03,3,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.03,4,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.03,5,complete,1-2-3,main,
+balanced,mps4,3,separated,balanced,0.03,6,complete,1-3-2,main,
+balanced,mps4,3,separated,balanced,0.03,7,complete,2-1-3,main,
+balanced,mps4,3,separated,balanced,0.03,8,complete,3-1-2,main,
+balanced,mps4,3,separated,balanced,0.03,9,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.003,0,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.003,1,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.003,2,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.003,3,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.003,4,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.003,5,complete,1-3-2,main,
+balanced,mps4,6,separated,balanced,0.003,6,complete,2-1-3,main,
+balanced,mps4,6,separated,balanced,0.003,7,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.003,8,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.003,9,complete,1-3-2,main,
+balanced,mps4,6,separated,balanced,0.01,0,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.01,1,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.01,2,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.01,3,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.01,4,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.01,5,complete,1-3-2,main,
+balanced,mps4,6,separated,balanced,0.01,6,complete,2-1-3,main,
+balanced,mps4,6,separated,balanced,0.01,7,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.01,8,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.01,9,complete,1-3-2,main,
+balanced,mps4,6,separated,balanced,0.03,0,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.03,1,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.03,2,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.03,3,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.03,4,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.03,5,complete,1-3-2,main,
+balanced,mps4,6,separated,balanced,0.03,6,complete,2-1-3,main,
+balanced,mps4,6,separated,balanced,0.03,7,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.03,8,complete,1-2-3,main,
+balanced,mps4,6,separated,balanced,0.03,9,complete,1-3-2,main,

@@ -1,0 +1,9 @@
+                                     run  component  t_end_before  predicted_remaining  measured_remaining  ratio_measured_over_predicted     stop        wall
+0  binary8_chi3_w3-2-1_fanin_s0.15_seed2          2  1.382755e+08         2.898722e+07        2.474071e+07                       0.853504  stop_fn   35.449484
+1   binary8_chi3_w3-2-1_fanin_s0.2_seed2          2  3.281341e+07         1.855142e+07        1.477175e+07                       0.796260  stop_fn   27.773323
+2  mps8_chi3_w3-2-1_balanced_s0.15_seed6          1  9.364426e+08         5.567937e+08        3.026357e+08                       0.543533  stop_fn  105.383983
+3   binary8_chi3_w3-2-1_fanin_s0.3_seed2          2  4.321108e+06         2.787319e+06        2.297825e+06                       0.824385  stop_fn   25.647736
+4   mps8_chi3_w3-2-1_balanced_s0.2_seed6          1  1.666667e+08         1.076776e+08        5.852631e+07                       0.543533  stop_fn   30.084334
+5   mps8_chi3_w3-2-1_balanced_s0.3_seed6          1  1.463192e+07         1.285942e+07        6.298269e+06                       0.489778  stop_fn   37.900751
+6   ht4_chi3_w3-2-1_balanced_s0.15_seed9          2  1.908356e+07         1.899192e+07        1.620969e+07                       0.853504  stop_fn   22.940710
+7    ht4_chi3_w3-2-1_balanced_s0.2_seed9          2  4.528618e+06         4.661443e+06        3.978562e+06                       0.853504  stop_fn   20.346039

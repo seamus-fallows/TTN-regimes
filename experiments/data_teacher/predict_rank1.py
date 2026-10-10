@@ -19,7 +19,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT
+from common import RESULTS, OUT_ROOT
 from constrained import (constrained_minima, matrix_loss_of_dense, metric_loss_of_dense,
                          ranked_spec)
 from correlated import moment_matrix, site_cross_cov
@@ -77,6 +77,6 @@ if __name__ == "__main__":
         out = [x for res in pool.map(one, jobs) for x in res]
     df = pd.DataFrame([r for r, _ in out])
     tag = "_".join(names)
-    df.to_csv(HERE / "results" / f"rank1_predictions_{tag}.csv", index=False)
+    df.to_csv(RESULTS / f"rank1_predictions_{tag}.csv", index=False)
     torch.save([(r, w) for r, w in out], OUT_ROOT / f"rank1_predictions_{tag}.pt")
     print(df.to_string())

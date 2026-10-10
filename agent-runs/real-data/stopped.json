@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791609996,
+  "reason": "done",
+  "outputs": {
+    "files": 491,
+    "bytes": 900872324,
+    "sample": [
+      "real_data/main_placeholders.txt",
+      "real_data/data/mnist_4x4.npz",
+      "real_data/data/mnist_8x8.npz",
+      "real_data/data/fashion_4x4.npz",
+      "real_data/data/fashion_8x8.npz"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}

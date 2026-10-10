@@ -15,7 +15,7 @@ import yaml
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from common import OUT_ROOT, plateau_level  # noqa: E402
+from common import RESULTS, OUT_ROOT, plateau_level  # noqa: E402
 
 HERE = Path(__file__).parent
 CFG = yaml.safe_load(open(HERE / "configs/e1_order.yaml"))
@@ -51,7 +51,7 @@ def main():
                         P_swap_given_first0=swap_given[0], P_swap_given_first1=swap_given[1],
                         all_learned=g["learned_all"].mean(), max_q_drift=g["q_drift"].max()))
     tab = pd.DataFrame(tab)
-    tab.to_csv(HERE / "results/e1_order_table.csv", index=False)
+    tab.to_csv(RESULTS / "e1_order_table.csv", index=False)
     print(tab.to_string())
 
     # 2. Paired comparison: Sigma vs whitened with Lambda s (race) and sqrt(Lambda) s.
@@ -72,12 +72,12 @@ def main():
                                t1_sigma=ta, t1_other=tb, rel_dt1=(tb - ta) / ta,
                                t2_sigma=sa, t2_other=sb, rel_dt2=(sb - sa) / sa))
     paired = pd.DataFrame(paired)
-    paired.to_csv(HERE / "results/e1_paired.csv", index=False)
+    paired.to_csv(RESULTS / "e1_paired.csv", index=False)
     agg = paired.groupby(["tree", "teacher", "other", "sigma"]).agg(
         n=("seed", "size"), same_first=("same_first", "mean"), same_swaps=("same_swaps", "mean"),
         rel_dt1_mean=("rel_dt1", "mean"), rel_dt1_absmax=("rel_dt1", lambda x: x.abs().max()),
         rel_dt2_mean=("rel_dt2", "mean"), rel_dt2_sem=("rel_dt2", "sem"))
-    agg.to_csv(HERE / "results/e1_paired_agg.csv")
+    agg.to_csv(RESULTS / "e1_paired_agg.csv")
     print(agg.to_string())
 
     # 3. Plateau levels after the first learning event vs 1/2 Lambda_r s_r^2 of the other comp.
@@ -100,7 +100,7 @@ def main():
                              measured=meas, predicted=pred, rel_err=(meas - pred) / pred,
                              separation=(tb - ta)))
     plat = pd.DataFrame(plat)
-    plat.to_csv(HERE / "results/e1_plateaus.csv", index=False)
+    plat.to_csv(RESULTS / "e1_plateaus.csv", index=False)
     print(plat.groupby(["tree", "teacher", "sigma", "learned"]).agg(
         n=("seed", "size"), measured=("measured", "mean"), predicted=("predicted", "mean"),
         rel_err_med=("rel_err", "median")).to_string())
@@ -136,7 +136,7 @@ def plot_probs(tab):
     fig.suptitle("Comp 2 = smaller weight on the high-variance eigenvector. Filled: P(comp 2 learned "
                  "first); open: P(a learned component is later unlearned = swap)", fontsize=9)
     fig.tight_layout()
-    fig.savefig(HERE / "results/e1_order_probs.png", dpi=110)
+    fig.savefig(RESULTS / "e1_order_probs.png", dpi=110)
 
 
 def plot_paired(paired):
@@ -158,7 +158,7 @@ def plot_paired(paired):
         ax.set_title(title)
     axes[0].legend(fontsize=7)
     fig.tight_layout()
-    fig.savefig(HERE / "results/e1_paired_times.png", dpi=110)
+    fig.savefig(RESULTS / "e1_paired_times.png", dpi=110)
 
 
 def plot_examples(df):
@@ -196,7 +196,7 @@ def plot_examples(df):
             ax.set_xlabel("t (linear)")
         axes[i, 0].legend(fontsize=7)
     fig.tight_layout()
-    fig.savefig(HERE / "results/e1_examples.png", dpi=110)
+    fig.savefig(RESULTS / "e1_examples.png", dpi=110)
 
 
 if __name__ == "__main__":

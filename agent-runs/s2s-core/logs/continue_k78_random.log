@@ -1,0 +1,9 @@
+                                        run  component  t_end_before  predicted_remaining  measured_remaining  measured_remaining_grid  ratio_measured_over_predicted       stop         wall  predicted_over_elapsed
+0     mps8_chi3_w3-2-1_balanced_s0.15_seed6          1  9.364426e+08         5.567937e+08        3.037989e+08             2.996294e+08                       0.545622    stop_fn    65.077511                0.594584
+1      ht4_chi3_w3-2-1_balanced_s0.15_seed4          1  1.908356e+07         4.533180e+07        2.193068e+07             2.198198e+07                       0.483781    stop_fn    32.020673                2.375437
+2      binary8_chi3_w3-2-1_fanin_s0.3_seed7          2  4.321108e+06         4.905523e+07        5.295738e+07             5.285462e+07                       1.079546    stop_fn    42.813523               11.352465
+3     mps8_chi3_w3-2-1_balanced_s0.15_seed1          2  9.364426e+08         1.106430e+10                 NaN                      NaN                            NaN  completed   328.317438               11.815245
+4     mps8_chi3_w3-2-1_balanced_s0.15_seed5          2  9.364426e+08         3.027727e+10        2.499215e+10             2.471219e+10                       0.825443    stop_fn   252.612734               32.332216
+5     mps8_chi3_w3-2-1_balanced_s0.15_seed3          2  9.364426e+08         3.489200e+10        8.386776e+09             8.450498e+09                       0.240364    stop_fn   245.660856               37.260160
+6  binary8_chi3_w3-2-1_balanced_s0.15_seed2          2  1.382755e+08         8.046976e+09        3.943504e+09             3.902085e+09                       0.490060    stop_fn    58.231443               58.195261
+7        mps8_chi3_w3-2-1_fanin_s0.15_seed5          1  9.364426e+08         6.353594e+10        1.393548e+11             1.370644e+11                       2.193322    stop_fn  1199.595364               67.848197

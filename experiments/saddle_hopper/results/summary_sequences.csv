@@ -1,0 +1,67 @@
+dataset,family,tree,init,runs,scored,main,rare,mismatch,unscored,match,main_frac,deterministic_runs
+locality,"2 comp, k = 1",all 9 trees,fan-in,512.0,511.0,511.0,0.0,0.0,1.0,1.0,1.0,0.0
+locality,"2 comp, k = 1",all 9 trees,saddle start,224.0,224.0,224.0,0.0,0.0,0.0,1.0,1.0,0.0
+locality,"2 comp, k = 2",all 9 trees,fan-in,664.0,659.0,639.0,19.0,1.0,5.0,0.9984825493171472,0.9696509863429439,659.0
+locality,"2 comp, k = 2",all 9 trees,saddle start,671.0,671.0,671.0,0.0,0.0,0.0,1.0,1.0,671.0
+locality,"2 comp, k = 3",all 9 trees,fan-in,1976.0,1969.0,1944.0,23.0,2.0,7.0,0.9989842559674962,0.9873031995937024,1467.0
+locality,"2 comp, k = 3",all 9 trees,saddle start,1232.0,1232.0,1232.0,0.0,0.0,0.0,1.0,1.0,1232.0
+locality,"2 comp, k = 4",all 9 trees,balanced,384.0,384.0,372.0,10.0,2.0,0.0,0.9947916666666666,0.96875,240.0
+locality,"2 comp, k = 4",all 9 trees,fan-in,1056.0,1056.0,1030.0,26.0,0.0,0.0,1.0,0.9753787878787878,768.0
+locality,"2 comp, k = 4",all 9 trees,saddle start,384.0,384.0,384.0,0.0,0.0,0.0,1.0,1.0,384.0
+locality,"2 comp, k >= 5",all 9 trees,balanced,928.0,928.0,823.0,59.0,46.0,0.0,0.9504310344827587,0.8868534482758621,544.0
+locality,"2 comp, k >= 5",all 9 trees,fan-in,1245.0,1245.0,1204.0,29.0,12.0,0.0,0.9903614457831326,0.9670682730923694,909.0
+locality,"2 comp, k >= 5",all 9 trees,saddle start,778.0,777.0,777.0,0.0,0.0,1.0,1.0,1.0,777.0
+locality,B4,binary4,fan-in,48.0,48.0,47.0,1.0,0.0,0.0,1.0,0.9791666666666666,48.0
+locality,B4,ht4,balanced,48.0,48.0,36.0,12.0,0.0,0.0,1.0,0.75,0.0
+locality,B4,ht4,fan-in,48.0,48.0,37.0,11.0,0.0,0.0,1.0,0.7708333333333334,0.0
+locality,B4,mps4,fan-in,104.0,104.0,104.0,0.0,0.0,0.0,1.0,1.0,104.0
+locality,E8,binary8,fan-in,48.0,48.0,38.0,10.0,0.0,0.0,1.0,0.7916666666666666,0.0
+locality,E8,mps8,fan-in,48.0,48.0,36.0,12.0,0.0,0.0,1.0,0.75,48.0
+locality,N4,binary4,fan-in,48.0,48.0,48.0,0.0,0.0,0.0,1.0,1.0,0.0
+locality,N4,ht4,balanced,48.0,48.0,42.0,5.0,1.0,0.0,0.9791666666666666,0.875,48.0
+locality,N4,ht4,fan-in,48.0,48.0,42.0,5.0,1.0,0.0,0.9791666666666666,0.875,48.0
+locality,N4,mps4,fan-in,120.0,120.0,118.0,2.0,0.0,0.0,1.0,0.9833333333333333,120.0
+locality,TA,binary4,fan-in,48.0,48.0,48.0,0.0,0.0,0.0,1.0,1.0,0.0
+locality,TA,ht4,balanced,48.0,48.0,39.0,8.0,1.0,0.0,0.9791666666666666,0.8125,48.0
+locality,TA,ht4,fan-in,48.0,48.0,44.0,0.0,4.0,0.0,0.9166666666666666,0.9166666666666666,48.0
+locality,TA,mps4,fan-in,120.0,120.0,115.0,2.0,3.0,0.0,0.975,0.9583333333333334,120.0
+locality,TB,binary4,fan-in,48.0,48.0,47.0,0.0,1.0,0.0,0.9791666666666666,0.9791666666666666,0.0
+locality,TB,ht4,balanced,48.0,48.0,38.0,9.0,1.0,0.0,0.9791666666666666,0.7916666666666666,0.0
+locality,TB,ht4,fan-in,48.0,48.0,46.0,0.0,2.0,0.0,0.9583333333333334,0.9583333333333334,0.0
+locality,TB,mps4,fan-in,120.0,120.0,110.0,9.0,1.0,0.0,0.9916666666666667,0.9166666666666666,120.0
+locality,TC,binary8,fan-in,48.0,48.0,48.0,0.0,0.0,0.0,1.0,1.0,0.0
+locality,TC,mps8,fan-in,48.0,48.0,45.0,3.0,0.0,0.0,1.0,0.9375,0.0
+locality,TC,mps8,saddle start,56.0,56.0,56.0,0.0,0.0,0.0,1.0,1.0,56.0
+locality,TD,mps8,fan-in,48.0,48.0,32.0,7.0,9.0,0.0,0.8125,0.6666666666666666,48.0
+locality,TD,mps8,saddle start,56.0,56.0,55.0,0.0,1.0,0.0,0.9821428571428571,0.9821428571428571,56.0
+s2s_core,"odeco R=3, close",binary4,fan-in,160.0,160.0,147.0,13.0,0.0,0.0,1.0,0.91875,
+s2s_core,"odeco R=3, close",binary8,fan-in,91.0,46.0,46.0,0.0,0.0,45.0,1.0,1.0,
+s2s_core,"odeco R=3, close",ht4,fan-in,60.0,48.0,48.0,0.0,0.0,12.0,1.0,1.0,
+s2s_core,"odeco R=3, close",mps4,fan-in,160.0,152.0,152.0,0.0,0.0,8.0,1.0,1.0,
+s2s_core,"odeco R=3, close",mps8,fan-in,86.0,20.0,20.0,0.0,0.0,66.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",binary4,balanced,60.0,60.0,60.0,0.0,0.0,0.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",binary4,fan-in,160.0,160.0,160.0,0.0,0.0,0.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",binary8,balanced,30.0,3.0,3.0,0.0,0.0,27.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",binary8,fan-in,181.0,91.0,91.0,0.0,0.0,90.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",ht4,balanced,30.0,17.0,17.0,0.0,0.0,13.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",ht4,fan-in,140.0,132.0,132.0,0.0,0.0,8.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",mps4,balanced,60.0,60.0,60.0,0.0,0.0,0.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",mps4,fan-in,160.0,160.0,160.0,0.0,0.0,0.0,1.0,1.0,
+s2s_core,"odeco R=3, separated",mps8,balanced,30.0,0.0,0.0,0.0,0.0,30.0,,,
+s2s_core,"odeco R=3, separated",mps8,fan-in,168.0,42.0,42.0,0.0,0.0,126.0,1.0,1.0,
+data_teacher,star w=1.6,binary4,fan-in,60.0,60.0,42.0,18.0,0.0,0.0,1.0,0.7,
+data_teacher,star w=1.6,mps4,fan-in,60.0,60.0,30.0,30.0,0.0,0.0,1.0,0.5,
+order,"odeco R=3, rho=0.8",binary4,fan-in,,,0.705,0.29500000000000004,0.0,,1.0,0.705,
+order,"odeco R=3, rho=0.9",binary4,fan-in,,,0.49,0.48,0.03,,0.97,0.49,
+order,"odeco R=4, rho=0.8",binary4,fan-in,,,0.565,0.435,0.0,,1.0,0.565,
+order,"odeco R=4, rho=0.9",binary4,fan-in,,,0.3,0.645,0.055,,0.9450000000000001,0.3,
+order,"odeco R=3, rho=0.8",binary8,fan-in,,,1.0001,0.0,0.0,,1.0001,1.0001,
+order,"odeco R=3, rho=0.9",binary8,fan-in,,,0.9999,0.0,0.0,,0.9999,0.9999,
+order,"odeco R=4, rho=0.8",binary8,fan-in,,,1.0,0.0,0.0,,1.0,1.0,
+order,"odeco R=3, rho=0.8",mps4,fan-in,,,0.99995,0.0,0.0,,0.99995,0.99995,
+order,"odeco R=3, rho=0.9",mps4,fan-in,,,0.99998,0.0,0.0,,0.99998,0.99998,
+order,"odeco R=4, rho=0.8",mps4,fan-in,,,0.99992,0.0,0.0,,0.99992,0.99992,
+order,"odeco R=4, rho=0.9",mps4,fan-in,,,1.0,0.0,0.0,,1.0,1.0,
+order,"odeco R=3, rho=0.8",mps6,fan-in,,,0.99998,0.0,0.0,,0.99998,0.99998,
+order,"odeco R=3, rho=0.9",mps6,fan-in,,,0.99991,0.0,0.0,,0.99991,0.99991,
+order,"odeco R=4, rho=0.9",mps6,fan-in,,,1.0,0.0,0.0,,1.0,1.0,

@@ -1,0 +1,57 @@
+binary_quadtree/raw t1 exp 13.000 +- 0.000 (n=5) | g2 power p 1.11 +- 0.13 (n=5) rms: power 0.153 log 0.303 k3 0.133 | excluded 0 | rank gap p 1.68 +- 0.42 (n=2) rms: power 0.322 log 0.321 k3 0.057 mixed 3
+binary_quadtree/white t1 exp 12.905 +- 0.043 (n=5) | g2 power p 0.29 +- 0.14 (n=4) rms: power 0.555 log 0.318 k3 0.261 | excluded 1 | rank gap p nan +- nan (n=0) rms: power nan log nan k3 nan mixed 5
+binary_scrambled/raw t1 exp 13.000 +- 0.000 (n=15) | g2 power p 1.01 +- 0.08 (n=15) rms: power 0.425 log 0.335 k3 0.224 | excluded 0 | rank gap p 1.29 +- 0.05 (n=9) rms: power 0.071 log 0.280 k3 0.041 mixed 6
+binary_scrambled/white t1 exp 12.829 +- 0.047 (n=5) | g2 power p 0.48 +- 0.14 (n=4) rms: power 0.603 log 0.439 k3 0.406 | excluded 1 | rank gap p nan +- nan (n=0) rms: power nan log nan k3 nan mixed 5
+mps_snake/raw t1 exp 14.000 +- 0.000 (n=5) | g2 power p -0.07 +- 0.33 (n=2) rms: power 0.495 log 0.196 k3 0.202 | excluded 3 | rank gap p nan +- nan (n=0) rms: power nan log nan k3 nan mixed 5
+mps_snake/white t1 exp 13.828 +- 0.085 (n=5) | g2 power p -1.02 +- 0.51 (n=4) rms: power 1.751 log 0.525 k3 0.524 | excluded 1 | rank gap p nan +- nan (n=0) rms: power nan log nan k3 nan mixed 5
+classified first route (binary): gap to the first rank increase on the seed's route
+  binary_quadtree/raw          seeds 3 power p 1.11 +- 0.07 rms power 0.018 log 0.175 k3 0.019 | excluded (seed, sigma) [(1, 0.05, 'between drops'), (1, 0.07, 'between drops'), (1, 0.5, 'merged'), (2, 0.5, 'other route'), (3, 0.3, 'between drops'), (3, 0.5, 'merged'), (4, 0.2, 'other route'), (4, 0.3, 'other route'), (4, 0.5, 'other route')] | ranges [(0.05, 0.5, 7), (0.05, 0.3, 6), (0.05, 0.2, 5)]
+  binary_quadtree/white        seeds 1 power p 0.91 +- nan rms power 0.014 log 0.060 k3 0.022 | excluded (seed, sigma) [(0, 0.2, 'between drops'), (0, 0.5, 'other route'), (1, 0.2, 'other route'), (1, 0.5, 'other route'), (2, 0.2, 'other route'), (2, 0.5, 'other route'), (3, 0.5, 'other route'), (4, 0.07, 'between drops'), (4, 0.1, 'other route'), (4, 0.2, 'other route'), (4, 0.5, 'other route')] | ranges [(0.05, 0.2, 4)]
+  binary_scrambled0/raw        seeds 2 power p 1.23 +- 0.07 rms power 0.041 log 0.230 k3 0.024 | excluded (seed, sigma) [(1, 0.05, 'between drops'), (1, 0.07, 'between drops'), (1, 0.1, 'between drops'), (1, 0.14, 'between drops'), (1, 0.3, 'between drops'), (1, 0.5, 'between drops'), (2, 0.2, 'between drops'), (2, 0.3, 'between drops'), (2, 0.5, 'other route'), (3, 0.14, 'other route'), (3, 0.2, 'other route'), (3, 0.3, 'other route'), (3, 0.5, 'other route'), (4, 0.5, 'between drops')] | ranges [(0.05, 0.5, 7), (0.05, 0.3, 6)]
+  binary_scrambled0/white      seeds 0 power p nan +- nan rms power nan log nan k3 nan | excluded (seed, sigma) [(0, 0.2, 'other route'), (0, 0.5, 'other route'), (1, 0.2, 'other route'), (1, 0.5, 'other route'), (2, 0.05, 'between drops'), (2, 0.07, 'between drops'), (2, 0.1, 'other route'), (2, 0.2, 'between drops'), (2, 0.5, 'other route'), (3, 0.2, 'between drops'), (3, 0.5, 'other route'), (4, 0.2, 'merged'), (4, 0.5, 'other route')] | ranges []
+  binary_scrambled1/raw        seeds 4 power p 1.27 +- 0.02 rms power 0.030 log 0.269 k3 0.046 | excluded (seed, sigma) [(2, 0.5, 'other route'), (4, 0.14, 'between drops'), (4, 0.2, 'other route'), (4, 0.5, 'other route')] | ranges [(0.05, 0.5, 7), (0.05, 0.5, 7), (0.05, 0.3, 6), (0.05, 0.5, 7)]
+  binary_scrambled2/raw        seeds 1 power p 1.13 +- nan rms power 0.012 log 0.263 k3 0.033 | excluded (seed, sigma) [(0, 0.5, 'between drops'), (1, 0.2, 'between drops'), (1, 0.5, 'other route'), (2, 0.2, 'other route'), (2, 0.5, 'other route'), (4, 0.5, 'between drops')] | ranges [(0.05, 0.5, 4)]
+per-edge first rank increase (tau after the first drop):
+  binary_quadtree/raw          edge  0 level  1 seeds 2  power p 2.21 +- 0.12 (rms 0.362)  log slope 234 +- 2.1e+02 (rms 0.482)
+  binary_quadtree/raw          edge  1 level  1 seeds 2  power p 2.19 +- 0.25 (rms 0.266)  log slope 174 +- 1.5e+02 (rms 0.494)
+  binary_quadtree/raw          edge  2 level  2 seeds 1  power p 2.44 +- nan (rms 0.126)  log slope 326 +- nan (rms 0.610)
+  binary_quadtree/raw          edge  3 level  1 seeds 3  power p 0.74 +- 0.37 (rms 0.308)  log slope 78.7 +- 33 (rms 0.331)
+  binary_quadtree/raw          edge  4 level  1 seeds 3  power p 0.77 +- 0.34 (rms 0.290)  log slope 81.4 +- 32 (rms 0.322)
+  binary_quadtree/raw          edge  5 level  2 seeds 1  power p 2.44 +- nan (rms 0.124)  log slope 328 +- nan (rms 0.609)
+  binary_quadtree/white        edge  1 level  1 seeds 2  power p 1.44 +- 0.80 (rms 0.340)  log slope 189 +- 1.4e+02 (rms 0.277)
+  binary_quadtree/white        edge  2 level  2 seeds 3  power p 1.46 +- 0.08 (rms 0.064)  log slope 333 +- 16 (rms 0.349)
+  binary_quadtree/white        edge  5 level  2 seeds 3  power p 1.45 +- 0.08 (rms 0.060)  log slope 332 +- 17 (rms 0.349)
+  binary_quadtree/white        edge 11 level  1 seeds 1  power p 2.49 +- nan (rms 4.211)  log slope 251 +- nan (rms 0.461)
+  binary_scrambled0/raw        edge  0 level  1 seeds 2  power p 1.17 +- 0.07 (rms 0.085)  log slope 711 +- 1.8e+02 (rms 0.246)
+  binary_scrambled0/raw        edge  1 level  1 seeds 2  power p 1.15 +- 0.06 (rms 0.080)  log slope 716 +- 1.8e+02 (rms 0.244)
+  binary_scrambled0/raw        edge  2 level  2 seeds 2  power p 1.06 +- 0.35 (rms 0.185)  log slope 1.08e+03 +- 2.3e+02 (rms 0.254)
+  binary_scrambled0/raw        edge  3 level  1 seeds 3  power p 1.39 +- 0.39 (rms 0.244)  log slope 897 +- 2.5e+02 (rms 0.353)
+  binary_scrambled0/raw        edge  4 level  1 seeds 3  power p 1.39 +- 0.40 (rms 0.239)  log slope 872 +- 2.4e+02 (rms 0.359)
+  binary_scrambled0/raw        edge  5 level  2 seeds 2  power p 1.06 +- 0.35 (rms 0.185)  log slope 1.08e+03 +- 2.3e+02 (rms 0.254)
+  binary_scrambled0/raw        edge  7 level  1 seeds 1  power p 2.10 +- nan (rms 0.182)  log slope 761 +- nan (rms 0.553)
+  binary_scrambled0/raw        edge  8 level  1 seeds 1  power p 2.11 +- nan (rms 0.189)  log slope 761 +- nan (rms 0.552)
+  binary_scrambled0/raw        edge  9 level  2 seeds 1  power p 2.11 +- nan (rms 0.191)  log slope 757 +- nan (rms 0.553)
+  binary_scrambled0/raw        edge 10 level  1 seeds 3  power p 0.93 +- 0.45 (rms 0.265)  log slope 127 +- 18 (rms 0.326)
+  binary_scrambled0/raw        edge 11 level  1 seeds 3  power p 0.93 +- 0.46 (rms 0.270)  log slope 123 +- 21 (rms 0.330)
+  binary_scrambled0/raw        edge 12 level  2 seeds 1  power p 2.11 +- nan (rms 0.190)  log slope 759 +- nan (rms 0.552)
+  binary_scrambled0/white      edge  2 level  2 seeds 1  power p 2.02 +- nan (rms 0.139)  log slope 269 +- nan (rms 0.496)
+  binary_scrambled0/white      edge  3 level  1 seeds 1  power p 2.19 +- nan (rms 0.622)  log slope 749 +- nan (rms 0.189)
+  binary_scrambled0/white      edge  9 level  2 seeds 1  power p 1.20 +- nan (rms 0.449)  log slope 1.19e+03 +- nan (rms 0.283)
+  binary_scrambled0/white      edge 10 level  1 seeds 1  power p 1.50 +- nan (rms 1.196)  log slope 677 +- nan (rms 0.405)
+  binary_scrambled0/white      edge 11 level  1 seeds 1  power p 1.64 +- nan (rms 1.644)  log slope 680 +- nan (rms 0.486)
+  binary_scrambled0/white      edge 12 level  2 seeds 1  power p 1.22 +- nan (rms 0.456)  log slope 1.19e+03 +- nan (rms 0.283)
+  binary_scrambled1/raw        edge 10 level  1 seeds 5  power p 1.24 +- 0.18 (rms 0.156)  log slope 148 +- 17 (rms 0.316)
+  binary_scrambled1/raw        edge 11 level  1 seeds 5  power p 1.26 +- 0.19 (rms 0.168)  log slope 145 +- 16 (rms 0.321)
+  mps_snake/raw                edge  0 level  1 seeds 5  power p 0.94 +- 0.05 (rms 0.101)  log slope 1.13e+03 +- 1.8e+02 (rms 0.125)
+  mps_snake/raw                edge  1 level  2 seeds 5  power p 1.27 +- 0.08 (rms 0.105)  log slope 156 +- 15 (rms 0.276)
+  mps_snake/raw                edge  2 level  3 seeds 5  power p 1.00 +- 0.08 (rms 0.131)  log slope 94.2 +- 7.6 (rms 0.141)
+  mps_snake/raw                edge  3 level  4 seeds 5  power p 0.83 +- 0.19 (rms 0.252)  log slope 30.3 +- 0.77 (rms 0.029)
+  mps_snake/raw                edge  4 level  5 seeds 5  power p 0.90 +- 0.23 (rms 0.347)  log slope 14.7 +- 1.5 (rms 0.028)
+  mps_snake/raw                edge  6 level  7 seeds 4  power p 0.90 +- 0.09 (rms 0.166)  log slope 411 +- 24 (rms 0.067)
+  mps_snake/raw                edge  7 level  8 seeds 5  power p 1.21 +- 0.15 (rms 0.362)  log slope 1.89e+03 +- 1e+02 (rms 0.108)
+  mps_snake/raw                edge  8 level  9 seeds 5  power p 1.14 +- 0.12 (rms 0.296)  log slope 1.92e+03 +- 1.1e+02 (rms 0.102)
+  mps_snake/raw                edge  9 level 10 seeds 5  power p 1.12 +- 0.11 (rms 0.271)  log slope 1.91e+03 +- 1.1e+02 (rms 0.104)
+  mps_snake/white              edge  0 level  1 seeds 2  power p 0.81 +- 0.43 (rms 0.296)  log slope 235 +- 81 (rms 0.157)
+  mps_snake/white              edge  1 level  2 seeds 1  power p 1.19 +- nan (rms 0.424)  log slope 147 +- nan (rms 0.086)
+  mps_snake/white              edge 13 level 14 seeds 1  power p 0.75 +- nan (rms 0.262)  log slope 2.38e+03 +- nan (rms 0.120)
+  mps_snake/white              edge 14 level 15 seeds 3  power p 0.36 +- 0.16 (rms 0.251)  log slope 1.58e+03 +- 6.5e+02 (rms 0.191)
