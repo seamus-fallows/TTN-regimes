@@ -670,15 +670,229 @@ exponents for $k=5$ and $6$ are seed-dependent and up to two units steeper than 
 $k=5$, with 3 of 6 seeds escaping).
 
 \subsection{Order of learning}\label{sec:s2s-order}
-\placeholder{Which component is learned first, how random the order is, and how a wrong order is
-corrected.}
-% TODO(Q4, H1, H1b): P(larger first) vs s2/s1 in {0.5, ..., 0.99}, K, chi, d with binomial error
-% bars (>= 200 seeds); race-model / basin prediction overlay; matrix-like teacher as control
-% (greedy). H1b: after the smaller component is learned first, a strict saddle with Hessian
-% eigenvalue q (s_learned - s_new) < 0 rotates the learned component in time O(log 1/sigma).
-% Three or more components: Kendall tau with the greedy order. Known ingredients: odeco components
-% are attracting fixed points of the tensor power method (anandkumar2014tensor); directional
-% convergence near small init (Kumar & Haupt).
+% Sources: notes/order.md (sections 0 and 6-11 were revised in the fix round and override older text;
+% section 11 lists the changed claims), agent-runs/order/REPORT.md, experiments/order/README.md and
+% results/*.csv, review notes/reviews/order_round1.md and the verification
+% notes/reviews/order_round2_verification.md (errata E1-E10 applied; safe-to-cite list C1-C17 used for
+% tags and known/new); theory notes/theory_escape.md section 5 and notes/theory_saddles.md 4.3-4.6.
+% Settings: app:exp-order. Figures: experiments/order/plot_report.py.
+% WITHDRAWN or narrowed, do not reintroduce: "H1b holds for m = 2" (only for pairs on non-adjacent
+% cores, k >= 3; adjacent pairs add the larger component); the m = 2 law without n, or "confirmed"
+% (it is "consistent with"); "adjacent pairs still steepen toward n = chi_e", and also "n = chi_e is not
+% supported by GF" or "is reached" (E2: supported at the small-sigma end on MPS4, rho = 0.9 only); the
+% round-1 chi^2 test of d (shared seeds); "no d effect at the 0.04 level" (E3: 0.06); "R = 4: gradient
+% flow mostly stalls before the last component"; R = 3 comparisons of gradient flow and race model on
+% different run sets; "R = 3: GF less greedy than independent clocks in 6/6 cases, combined z = -1.9"
+% and the open issue that went with it (E1: paired test finds no difference); "lambda_min between 0 and
+% the saddle value" (E4); "a power law fits 10-80x worse" (E9: 11-88x, from the CSV); the binary4
+% results (greedy limit, strict wrong-order saddle, rotation) as new (known for deep linear networks);
+% "later escapes 10% to 2x later than the LO blow-up" (not reproducible from committed data); R >= 3
+% statistics outside d = chi = 4 and the single sigma per tree.
+
+Which component is learned first, and how random is the answer? With aligned initialization every tree learns
+the components in the order of their weights (\cref{sec:s2s-aligned}), and a deep linear network of depth three
+leaves the origin along its top singular pair as $\isc\to0$ \knownresult[\citealp{jacot2022saddletosaddle}, Thm~2;
+with probability one if the gradient at the origin has full rank]. In a
+TTN with random initialization the answer depends on $m$, the number of cores that carry a site on which the two
+components differ ($m=\abs{N(D)}$ in the notation of \cref{sec:s2s-locality}; for odeco teachers $m=\Ns$ on an MPS,
+$4$ on binary8 and $2$ on binary4): the order is a race set by the initialization when $m\ge3$ and greedy as
+$\isc\to0$ when $m=2$.
+
+\paragraph{Prediction.}
+As $\isc\to0$ the first component learned is the local maximum of $g=\ip{\W}{\Wt}$ on the sphere whose basin
+contains the initial direction, since the spherical flow does not depend on $\isc$ (\cref{sec:s2s-escape})
+\derived. For $m\ge3$ every component is such a maximum (\emph{tensor-like} pairs); for $m=2$ only the larger one,
+the smaller having $n$ unstable directions, with $n=\bd e$ if its two cores share the bond $e$ and $n=1$ otherwise
+(\emph{matrix-like} pairs; \cref{prop:A-component-hessian}) \derived. With weights $(1,\varrho)$:
+\begin{enumerate}[label=(\roman*)]
+  \item \emph{Race.} On an MPS the components of an odeco teacher evolve independently at leading order (LO;
+    \cref{prop:A-reduced}); component $r$ blows up at $\isc^{-(\Kc-2)}\hat t_{1,r}/\tw r$ with $\hat t_{1,r}$ \iid, so
+    \begin{equation}\label{eq:order-race}
+      P(\text{larger first})=P\big(\hat t_{1,2}/\hat t_{1,1}>\varrho\big),
+    \end{equation}
+    independent of $\isc$ (\cref{prop:A-race}) \proven{} (at LO). Cores without sites (binary, HT trees) couple the
+    components and make the race approximate.
+  \item \emph{Matrix-like pairs.} $P(\text{smaller first})\to0$ \derived, as $\isc^{\,n(1-\varrho)/\varrho}$
+    \derived{} (heuristic argument of \cref{prop:A-matrix-like}(b); for $n=\bd e$ a \conjecture): to end near the
+    smaller component, all $n$ unstable deviations must start below $\isc^{(1-\varrho)/\varrho}$. When a wrong order
+    does happen, the deviation is therefore of order one at the start of the wrong plateau, and the correction in
+    (iii) takes a time $O(1/\abs{\lambda_{\min}})$, not $\ln(1/\isc)/\abs{\lambda_{\min}}$ \derived{} (heuristic).
+  \item \emph{After a wrong first escape} (\cref{rem:A-wrong-order}) \derived{}, with the Hessian at the saddle
+    \proven{} (\cref{prop:A-hessian,prop:A-piggyback-graph}) and $k$ the Steiner count \eqref{eq:locality-k}:
+    \emph{rotation} for $m=2$, $k\ge3$: the saddle is strict along the piggyback direction,
+    $\lambda_{\min}=-(1-\varrho)\varrho^{(\Kc-2)/\Kc}$; the learned bond index turns to $\U1$, and $\U2$ is forgotten (the
+    loss rests at $\frac12\varrho^2$) and relearned after a plateau $\propto\isc^{-(k-2)}$. \emph{Adding} for $m=2$,
+    $k=2$: a two-core route with $\lambda_{\min}=-\varrho^{(\Kc-2)/\Kc}$ (multiplicity $\bd e-1$) puts $\U1$ on a spare
+    channel and nothing is forgotten. \emph{Kept} for $m\ge3$: no negative Hessian eigenvalue; $\U1$ is added after a
+    plateau $\propto\isc^{-(k-2)}$ and the wrong order stays.
+\end{enumerate}
+A correction through a strict saddle thus exists only where the wrong order becomes rare as $\isc\to0$.
+
+\paragraph{What is known and what is new.}
+Near the origin the direction converges to a KKT point of $g$ selected by the initialization
+\knownresult[\citealp{kumar2025early}, Thm~1]. Binary4 is a depth-3 linear network (\cref{rem:A-binary4-dln}), whose
+greedy limit \knownresult[\citealp{jacot2022saddletosaddle}, Thm~2; their probability-one proof for depth three
+assumes a full-rank gradient at the origin] and strict wrong-order saddles \knownresult[\citealp{achour2024loss},
+Thm~7; \citealp{jacot2022saddletosaddle}, Lemma~15] are known; the binary4 results below are checks. The
+tensor-versus-matrix dichotomy appears elsewhere: in multi-spike tensor PCA of order $p\ge3$ the recovery order is
+a greedy selection on (weight)$\times$(initial correlation)$^{p-2}$, for $p=2$ the order of the signal-to-noise
+ratios \knownresult[\citealp{benarous2025stochastic}, Thm~1.5; gradient flow: \citealp{benarous2025permutation},
+Thm~1.3]; the tensor power method converges to the component with the largest weight times initial overlap
+\knownresult[symmetric third-order odeco tensors: \citealp{anandkumar2014tensor}, Lemma~5.1]; units quadratic in
+their weights are ordered by their initialization \knownresult[\citealp{zhang2026saddletosaddle}, Prop.~5]; and
+over-parameterized orthogonal tensor decomposition learns the largest component first
+\knownresult[\citealp{ge2021understanding}; proven for a modified gradient flow]. New for TTNs \newresult: the
+classification by $m$; the exact, $\isc$-independent race on MPS; the order statistics; the finite-$\isc$ law of
+matrix-like pairs; a selection rule; the branches after a wrong first escape beyond binary4; three components.
+
+\paragraph{Setup} (\cref{app:exp-order}).
+Two-component teachers $\Wt=\U1+\varrho\U2$: odeco on five trees, or pattern teachers on MPS4 and MPS6 whose
+components differ on the sites $D$ (numbered from $0$; on an MPS core $i$ carries site $i$), in the standard site
+basis, which the rotation invariance of the initialization makes general; $d=2$ unless stated, fan-in
+initialization, exact population loss, double precision. The component learned first is the one whose overlap $\ov r$
+first crosses $\frac12$; probabilities are frequencies over seeds $0$--$399$ ($0$--$999$ in the $\isc$ scans of binary4
+and MPS4), the same for every $\varrho$ and $\isc$, with Wilson 95\% intervals or binomial s.e.\ ($\le0.025$).
+
+\paragraph{Tensor-like pairs: a race set by the initialization} (\cref{fig:order-first}(a,b)).
+\empirical{} \newresult{} In the main sweep (five trees, 28 settings of $(d,\chi)$, six values of $\varrho$, $\isc=0.01$;
+67,200 runs) $P(\text{larger first})$ is $0.60$--$0.88$ at $\varrho=0.5$ and $0.51$--$0.65$ at $\varrho=0.8$ on the 23
+tensor-like settings. In all 40,800 MPS runs the first component learned is the winner of the run's own LO race
+(single-component blow-up times $\hat t_{1,r}$), $\arg\min_r\hat t_{1,r}/\tw r$; on binary8, whose internal cores are
+shared, in $96$--$99.5\%$ of the runs of each setting. The race curves \eqref{eq:order-race} lie at $0.66$--$0.89$
+and $0.55$--$0.66$, with gradient flow $0.018\pm0.019$ below them over the 102 MPS cells, a fluctuation of the shared
+seeds. The order does not depend on $\isc$: $P(\text{smaller first})=0.185$, $0.395$, $0.490$ at $\varrho=0.5$, $0.8$,
+$0.95$ for every $\isc\in[0.003,0.1]$ on MPS4 ($\chi=4$), and $0.240$, $0.4075$, $0.4875$ for every $\isc\in[0.01,0.1]$ on
+binary8, with the same winner per seed (at $\isc=0.3$ at most $1\%$ change). MPS6 pattern pairs with $m=3$, $4$ behave
+alike, and the order becomes more random as $m$ grows: on MPS6 at $\isc=0.01$, $\varrho=0.8$,
+$P(\text{smaller first})=0.17$, $0.32$, $0.41$, $0.46$ for $m=2$ ($D=\{0,5\}$), $3$, $4$, $6$ (odeco).
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics{order/first.pdf}
+  \caption{Which component is learned first: weights $(1,\varrho)$, $d=2$; dots: gradient flow, Wilson 95\% intervals
+    (400 seeds; 1,000 for binary4 and MPS4 in (b)). (a)~$\isc=0.01$, $\chi=4$, odeco teachers; lines: the race
+    \eqref{eq:order-race} of the same initializations (dotted for binary4, where it is not the dynamics).
+    (b)~$\varrho=0.8$; lines: fitted $C\isc^\gamma$ for $m=2$ (\cref{tab:order-gamma}); zero counts not drawn. (c)~Uncapped
+    bonds, $\varrho=0.8$: race (lines, 500 initializations), gradient flow at $\chi=16$, $32$. $D$: differing sites of
+    pattern teachers. Takeaway: for $m\ge3$ a race set by the initialization, independent of $\isc$ and slowly greedier
+    with $\chi$; for $m=2$ the wrong order dies out as a power of $\isc$.}
+  \label{fig:order-first}
+\end{figure}
+
+\paragraph{Number of cores, bond dimension, physical dimension; a selection rule} (\cref{fig:order-first}(c)).
+\empirical{} \newresult{} The order becomes more random with $\Kc$ and greedier with $\chi$, through the spread of the
+race: on MPS with $d=\chi=2$, $\mathrm{sd}\ln\hat t_1=0.59$, $0.93$, $1.20$ and $P(\text{larger first})=0.79$, $0.69$,
+$0.63$ at $\varrho=0.5$ for $\Kc=4$, $6$, $8$. With capped bonds the gain stops once the end bonds reach their cap $d$
+(MPS8, $d=4$: $0.60$, $0.73$, $0.76$ at $\chi=2$, $4$, $8$). With uncapped bonds $\mathrm{sd}\ln\hat t_1\propto\chi^{-(0.48\text{--}0.54)}$ ($\chi\ge4$), its growth with $\Kc$
+approaches $\sqrt{\Kc-2}$, and at $\chi=32$, $\varrho=0.8$ the race gives $0.86$ (MPS4) to $0.72$ (binary8), confirmed by
+gradient flow: the greedy order returns, as in over-parameterized tensor decomposition, but slowly. On an MPS, $d$
+enters only through the caps \derived; at equal bonds independent seed sets show no effect of $d$ on binary8 and
+MPS4 ($\abs{\Delta P}\le0.021$; differences above about $0.06$ excluded at 95\%). With $X_r$ the projection of the
+initialization onto the orbit of component $r$'s balanced rank-one configuration,
+$\ln\hat t_{1,r}\approx\mathrm{const}-q\ln X_r$ with $q=(0.99$--$1.25)(\Kc-2)$ (s.e.\ $1$--$4\%$), and ``the winner is $\arg\max_r\tw rX_r^{\Kc-2}$'' names
+$76$--$92\%$ of the winners on the tensor-like settings, also out of sample: the TTN form of the
+(weight)$\times$(overlap)$^{p-2}$ rule of tensor PCA.
+
+\paragraph{Matrix-like pairs: greedy as $\isc\to0$, slowly} (\cref{fig:order-first}(b), \cref{tab:order-gamma}).
+\derived{} (heuristic exponent) \empirical{} \newresult[the power law in $\isc$; the limit is known for binary4] For the
+three pairs on non-adjacent cores ($n=1$: odeco binary4, and $D=\{0,5\}$ on MPS6 and $D=\{0,2\}$ on MPS4)
+$P(\text{smaller first})$ is consistent with $C\isc^{(1-\varrho)/\varrho}$ for $\varrho=0.7$--$0.95$: fits over the whole
+measured range lie below $(1-\varrho)/\varrho$ in 12 of 13 sets, by up to $24\%$ ($2.5$--$3.3$ s.e.\ at $\varrho=0.95$ and for
+MPS4 $D=\{0,2\}$ at $\varrho=0.9$, otherwise within $1.8$ s.e.), but fits over the three smallest values of $\isc$ agree
+within $1.1$ s.e.\ in all 13 (verification review): the deficit is pre-asymptotic. The wrong-order seeds are nested
+in all 18 matrix-like sets (a seed wrong at some $\isc$ is wrong at every larger $\isc$), as the threshold picture of
+(ii) predicts. Adjacent pairs ($n=\bd e=4$) are $2.2$--$3.4$ times steeper; on MPS4 at $\varrho=0.9$ the fit over
+$\isc=10^{-5}$--$10^{-3}$ gives $0.40\pm0.05$, consistent with $n(1-\varrho)/\varrho=0.444$, while at $\varrho=0.8$ and on MPS6
+(down to $\isc=0.003$) the exponents stay below it: $n=\bd e$ remains a \conjecture{} supported at the small-$\isc$
+end. Binary4 is far greedier than a race of independent clocks (\cref{fig:order-first}(a): $0.87$ against $0.73$ at
+$\varrho=0.8$).
+
+\begin{table}[tbp]
+  \centering
+  \caption{Matrix-like pairs: exponent $\gamma$ of $P(\text{smaller first})=C\isc^{\gamma}$, binomial maximum likelihood
+    over the whole $\isc$ range, s.e.\ from a bootstrap over seeds (shared across $\isc$); $d=2$, $\chi=4$ for the pattern
+    pairs. Prediction \eqref{eq:A-matrix-like}: $n(1-\varrho)/\varrho$, $n=1$ for non-adjacent cores, $n=\bd e=4$
+    (conjectured) for adjacent ones. --: not run, or (MPS6 $\{2,3\}$, $\varrho=0.7$) events at two $\isc$ only. Source:
+    \texttt{sigma\_fits.csv}.}
+  \label{tab:order-gamma}
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}llcccc@{}}
+    \toprule
+    pair & $\isc$ range, seeds & $\varrho=0.7$ & $0.8$ & $0.9$ & $0.95$ \\
+    \midrule
+    binary4, $\chi=2$ & $10^{-4}$--$0.1$, 1,000 & $0.370\pm0.034$ & $0.237\pm0.018$ & $0.103\pm0.008$ & $0.042\pm0.004$ \\
+    binary4, $\chi=4$ & $10^{-4}$--$0.1$, 1,000 & $0.42\pm0.05$ & $0.248\pm0.018$ & $0.102\pm0.008$ & $0.040\pm0.004$ \\
+    MPS6, $D=\{0,5\}$ & $0.003$--$0.1$, 400 & $0.46\pm0.06$ & $0.249\pm0.029$ & $0.101\pm0.014$ & -- \\
+    MPS4, $D=\{0,2\}$ & $10^{-5}$--$0.1$, 1,000 & -- & $0.240\pm0.017$ & $0.095\pm0.006$ & -- \\
+    \multicolumn{2}{@{}l}{prediction $(1-\varrho)/\varrho$ ($n=1$)} & $0.429$ & $0.250$ & $0.111$ & $0.053$ \\
+    \midrule
+    MPS6, $D=\{2,3\}$ (adjacent) & $0.003$--$0.1$, 400 & -- & $0.67\pm0.09$ & $0.22\pm0.03$ & -- \\
+    MPS4, $D=\{1,2\}$ (adjacent) & $10^{-5}$--$0.1$, 1,000 & -- & $0.82\pm0.06$ & $0.31\pm0.02$ & -- \\
+    \multicolumn{2}{@{}l}{conjecture $4(1-\varrho)/\varrho$ ($n=\bd e=4$)} & $1.71$ & $1.00$ & $0.444$ & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{After a wrong first escape} (\cref{fig:order-wrong}).
+\empirical{} \newresult[beyond binary4, which is known] \emph{Saddle starts} (the exact wrong saddle plus a fan-in
+perturbation of scale $\isc$, $d=2$, $\chi=4$, Hessian at the plateau midpoint; for $m=2$, 8 seeds at
+$\isc=10^{-7}$--$10^{-2}$) follow the predicted branch in every run: binary4 and MPS4 $D=\{0,2\}$ rotate (192 and 144
+runs), MPS4 $D=\{1,2\}$ adds (144,
+$\ov2$ stays at $1$), the odeco MPS4, MPS6 and binary8 keep the wrong order ($\ov2\ge0.96$). At $\varrho=0.8$ the midpoint
+$\lambda_{\min}$ (raw) is $-0.18559$, $-0.17890$ and $-0.89427$ (three times) against $-0.18566$, $-0.17888$ and
+$-0.89443$, independent of $\isc$; the escape takes $\ln(1/\isc)/\abs{\lambda_{\min}}$ plus a constant, with slopes
+$5.466\pm0.082$, $5.5903\pm0.0045$, $1.1171\pm0.0009$ against $5.386$, $5.590$, $1.118$ (mean $\pm$ s.e.\ over seeds; the
+binary4 excess comes from $\isc=10^{-2}$, and the local slope times $\abs{\lambda_{\min}}$ tends to $1.0000$ at
+$\isc=10^{-7}$), and a power law fits $11$--$88$ times worse in rms residual ($95$--$106$ on the adding branch). On the
+kept branch $\abs{\lambda_{\min}}\propto\isc^{1.999\pm0.014}$, $\isc^{4.22\pm0.09}$, $\isc^{5.2\pm0.3}$ and
+$\tev1\propto\isc^{-1.98\pm0.03}$, $\isc^{-4.26\pm0.13}$, $\isc^{-5.3\pm0.3}$ on MPS4, MPS6, binary8 ($k-2=2$, $4$, $5$; 8, 5, 6
+seeds over factors 10, 4 and 2.3 in $\isc$): higher-order saddles; one MPS6 seed of six stalls. \emph{Natural runs}
+(initializations that learned the smaller component first, up to 40 per $(\varrho,\isc)$) show no $\ln(1/\isc)$ part,
+as (ii) predicts: 296 of 301 binary4 runs and 237 of 240 MPS4 $D=\{0,2\}$ runs rotate, with
+$\abs{\lambda_{\min}}(\tev1-\tev2)=0.98$--$1.38$ on average per $(\varrho,\isc)$, flat in $\isc$ (slope $-0.02\pm0.03$ per unit of
+$\ln(1/\isc)$), and a wrong plateau is resolved in at most $2.5\%$ of runs: the smaller component overshoots and
+falls to zero while the larger rises, then come a plateau at $\frac12\varrho^2$ and the relearning. All 150 adjacent
+runs add, within $0.1$--$1$ time units; on MPS4 odeco the wrong plateau is resolved and 39 of 40 runs add after it,
+while one stalls.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics{order/wrong.pdf}
+  \caption{After a wrong first escape, from the wrong saddle ($\U2$ learned, $\varrho=0.8$) plus a fan-in perturbation
+    of scale $\isc$; $d=2$, $\chi=4$. (a)--(c)~Overlaps of one run per branch (seed 0): (a)~binary4 ($\isc=10^{-4}$): the
+    learned bond index turns to $\U1$ at $t\approx57$, $\U2$ is forgotten and relearned at $t\approx1.3\cdot10^4$;
+    (b)~MPS4, $D=\{1,2\}$ ($\isc=10^{-4}$): $\U1$ is added at $t\approx11$, $\ov2$ stays at $1$; (c)~MPS4 odeco ($\isc=0.01$):
+    $\U1$ is added after a $\isc^{-2}$ plateau ($t\approx2.4\cdot10^4$). (d)~Escape time in units of the predicted
+    $1/\abs{\lambda_{\min}}$, mean over 8 seeds for each $\varrho$ (binary4: $0.5$, $0.7$, $0.8$, $0.9$; MPS4: $0.5$, $0.8$, $0.9$;
+    they nearly coincide); lines: slope 1. Takeaway: $m=2$ wrong-order saddles are strict and are left at the predicted
+    rate, by rotation or by adding; for $m\ge3$ nothing corrects the wrong order.}
+  \label{fig:order-wrong}
+\end{figure}
+
+\paragraph{Three and four components.}
+\empirical{} \newresult{} Odeco teachers with weights $(1,\varrho,\varrho^2)$, $\varrho=0.8$, $0.9$, $d=\chi=4$, 200 seeds, one
+$\isc$ per tree ($0.05$ binary4, $0.1$ MPS4, $0.2$ MPS6, $0.25$ binary8, keeping dormant components above the float64
+floor; the last two lie outside the checked $\isc$-independence range), compared with a race of independent clocks
+drawn from the pooled $\hat t_{1,r}$ of the same runs. Binary4 ($m=2$) is far greedier (greedy order in $0.705\pm0.032$
+and $0.490\pm0.035$ of runs at $\varrho=0.8$, $0.9$, against $0.518$ and $0.319$). For $m\ge3$ the order is a random permutation favouring the
+larger components, consistent with the model in every case ($\abs z\le1.6$; MPS4: $0.35$ and $0.23$ against $0.36$ and
+$0.25$) and no less greedy than each run's own LO race (41 runs greedy only in gradient flow, 43 only in the race;
+McNemar $p\ge0.45$ in every case; verification review); the own race names the first event in $97$--$100\%$ of runs
+and the whole order in $70$--$89\%$. Runs that stalled or did not finish by $t=10^9$ are excluded from both sides: at
+most 5 of 200 on MPS4 and binary8, about half on MPS6, whose values are conditional on completion. With four
+components and $\chi=4$, most runs stop before learning all four (MPS4 289 of 400, MPS6 396 of 399, binary8 389 of
+393; binary4 none), and none of 22 runs without any stall stop learns all four by $t=10^9$: the stalls of
+\cref{sec:s2s-failure,sec:other-stalled}, here also at $\Kc=4$. Teachers with stars reorder in yet another way: a
+learned larger component is forgotten and relearned last (\cref{sec:teacher-star}).
+
+\paragraph{Status.}
+H1 (the order is set by the initialization's basin) holds for tensor-like pairs (\derived{} at LO, exact on MPS;
+\empirical{} on four trees) and fails for matrix-like pairs, which are greedy as $\isc\to0$. H1b (correction through
+a strict saddle in a time $\propto\ln(1/\isc)$) holds only for $m=2$ pairs on non-adjacent cores, and natural runs
+correct in $O(1/\abs{\lambda_{\min}})$; adjacent pairs add the larger component, tensor-like pairs keep the wrong order.
+Open: the prefactor of the $m=2$ law, the exponent of adjacent pairs, and a closed-form race when cores without
+sites couple the components.
 
 \subsection{Failure modes}\label{sec:s2s-failure}
 % Odeco part written from notes/s2s_core.md 2.7 and the s2s-core round-2 verification (safe-to-cite

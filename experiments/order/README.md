@@ -51,6 +51,7 @@ corrected through a strict saddle (H1b)? With R >= 3 components, what is the dis
 | `analyze_dtest.py` | independent-seed d test (d_test_* configs) |
 | `fill_tables.py` | writes the generated R = 3 / no-stop tables into notes/order.md from results/*.csv |
 | `analyze_main.py`, `analyze_sigma.py`, `analyze_rule.py`, `analyze_h1b.py`, `analyze_multi.py`, `analyze_chi.py` | summaries and figures from saved results |
+| `plot_report.py` | the two figures of report Sec. 4.5 (`results/report_order_first`, `report_order_wrong`), from committed CSVs only; `--raw DIR` rewrites `results/report_examples.csv` (three example trajectories) from the raw `h1b_saddle_*` runs |
 | `style.py` | plot style (fixed categorical colour order) |
 | `run_queue.sh` | runs a list of configs in sequence |
 | `configs/` | YAML configs (below) |
@@ -69,6 +70,7 @@ uv run python experiments/order/multi.py experiments/order/configs/multi3.yaml  
 uv run python experiments/order/multi.py experiments/order/configs/multi.yaml    # R = 3, 4 (raw: multi2)
 uv run python experiments/order/multi.py experiments/order/configs/multi_nostop.yaml
 uv run python experiments/order/analyze_multi.py multi3      # or multi2 / multi_nostop
+uv run python experiments/order/plot_report.py [--raw data/order]   # report figures (Sec. 4.5)
 # or several in sequence: experiments/order/run_queue.sh [--raw DIR] [--res DIR] b4_sigma m4_sigma ...
 ```
 
