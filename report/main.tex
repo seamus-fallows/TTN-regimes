@@ -138,18 +138,18 @@
   % At most 200 words. Status words (provably, confirmed) follow the tags of Sections 3-6.
   We study how gradient flow trains tree tensor networks,
   $f(x)=\langle W,\phi_0(x_0)\otimes\cdots\otimes\phi_{N-1}(x_{N-1})\rangle$ with $W$ contracted from $K$ cores on a
-  tree, on the population loss of a teacher. From small initialization (scale $\sigma$) it is
-  saddle-to-saddle: it rests at critical points with fixed bond ranks, and each escape raises the ranks along a
-  route, a connected set of cores that move together; on large trees, routes often die first. The first
+  tree, on a teacher's population loss. From small initialization (scale $\sigma$) it is
+  saddle-to-saddle: it rests at fixed-rank critical points, and each escape raises the bond ranks along a
+  route, a connected set of cores moving together; on large trees, routes often die first. The first
   plateau lasts $\propto\sigma^{-(K-2)}$, with a prefactor computed per initialization. Later the tree decides:
   the smallest route, of $k^*$ cores, gives no plateau ($k^*=1$), a logarithmic one ($k^*=2$) or one
   $\propto\sigma^{-(k^*-2)}$ (confirmed to $k^*=5$). With one learned component and a spare bond channel,
   $k^*$ is provably the saddle order under a spectral condition, met by two-component teachers learned in
-  weight order; from $k^*=5$ on the order can be lower. Non-orthogonal teachers make the next saddle strict on
-  matrix product states, not on binary or hierarchical Tucker trees. The learning order is a race set by the
-  initialization unless competing components differ on two cores only. Without the initial function,
-  larger $\sigma$ leads through a rich regime to a lazy one, which needs every bond at the rank of the
-  matricization it cuts.
+  weight order; from $k^*=5$ on, non-strict saddles can have lower order. Non-orthogonal teachers make the next
+  saddle strict on matrix product states, not on the binary and hierarchical Tucker trees tested, whose
+  internal cores carry no site. The learning order is a race set by the initialization unless components
+  differ on two cores only. Without the initial function, larger $\sigma$ leads through a rich regime to a
+  lazy one, which needs every bond at its largest possible rank.
 \end{abstract}
 
 \tableofcontents
