@@ -1,6 +1,6 @@
 # Order of learning (Q4; hypotheses H1, H1b) — agent `order`
 
-Status: **in progress** (steps 1 done; steps 2-4 running). Experiment folder `experiments/order/`
+Status: **complete (round 1)**, 2026-10-10. Experiment folder `experiments/order/`
 (README there: configs, commands, cost). Tags: **proven**, **derived** (assumptions stated),
 **empirical**, **conjecture**. Companion theory notes: `notes/theory_escape.md` (v2; sections 3, 5 cover
 the same ground from the escape side) and `notes/theory_saddles.md` (v2; section 4, H1b).
@@ -9,13 +9,15 @@ the same ground from the escape side) and `notes/theory_saddles.md` (v2; section
 
 | # | claim | status | evidence |
 |---|---|---|---|
-| O1 | Near the origin the order is decided by the leading-order (LO) flow of g = <W, W*>, whose outcome does not depend on sigma (exact scaling symmetry) | derived (corollary of Kumar & Haupt 2025a) | per-seed GF = LO on 180/180 seeds (pilot); MPS4 P(greedy) identical for sigma 0.003-0.1 |
+| O1 | Near the origin the order is decided by the leading-order (LO) flow of g = <W, W*>, whose outcome does not depend on sigma (exact scaling symmetry) | derived (corollary of Kumar & Haupt 2025a) | per-seed GF = LO race on 40800/40800 MPS runs; P identical for sigma 0.003-0.1 (MPS4, binary8, MPS6 patterns) |
 | O2 | m >= 3 (cores carrying the differing sites): every component is a local max of g on the sphere, order random (H1) | derived | P(larger first) = 0.60-0.88 at rho = 0.5 on MPS4-8 and binary8 (400 seeds per setting) |
 | O3 | Odeco teacher on an MPS: the LO flow decouples into one independent chain per component; winner = argmin tau_r/s_r | derived (exact at leading order) | 40800/40800 MPS GF runs agree with the per-seed race |
 | O4 | P(greedy) falls toward 1/2 with K and rises slowly with chi; d enters only through bond caps (MPS) | empirical (+ derived for d) | sd log tau table, d-pairs chi^2 |
-| O5 | Selection rule: argmax_r s_r X_r^(K-2), X_r = projection of the init on component r's KKT orbit, predicts 76-92% of winners; fitted exponent ~K-2 | empirical | `results/main_rules.csv` |
-| O6 | m = 2 (binary4 = depth-3 DLN; matrix-like pattern pairs): greedy as sigma -> 0, P(smaller first) ~ sigma^(n(1-rho)/rho) | derived (heuristic for the exponent) | binary4 sigma scan (pilot): gamma within 1 SE of (1-rho)/rho for rho = 0.7-0.9 |
-| O7 | H1b: a wrong order is corrected through a strict saddle (lambda_min = -(s_1-s_2) s_2^((K-2)/K)) only for m = 2; the rotation takes ln(1/delta)/|lambda_min| | derived; Hessian checked | saddle-start slope 5.39 vs 5.386 (pilot) |
+| O5 | Selection rule: argmax_r s_r X_r^q, X_r = projection of the init on component r's KKT orbit, fitted q ~ K-2, predicts 76-92% of winners on m >= 3 trees | empirical | `results/main_rules.csv` |
+| O6 | m = 2 (binary4 = depth-3 DLN; matrix-like pattern pairs): greedy as sigma -> 0, P(smaller first) ~ sigma^(n(1-rho)/rho), n = 1 (separated) or chi_e (adjacent) | derived (heuristic for the exponent) | 7.2, 7.4, 7.4b: gamma within 1.5 SE of (1-rho)/rho on binary4, MPS6, MPS4 (rho 0.7-0.9); adjacent pairs 3.2-3.4x steeper |
+| O7 | H1b: a wrong order is corrected through a strict saddle (lambda_min = -(s_1-s_2) s_2^((K-2)/K)) only for m = 2; the rotation takes ln(1/delta)/|lambda_min| from the saddle, but only O(1/|lambda_min|) in natural runs | derived; Hessian checked | 7.3: eigenvalue to 5 digits, slopes within 1.5%, natural |lambda| dt = 1.1-1.4 flat in sigma |
+| O8 | Over-parameterized (uncapped) bonds: sd(log tau) ~ (K-2)^0.61 chi^-0.53, greedy order restored only slowly | empirical | 7.5 |
+| O9 | R = 3: the full order is a random permutation close to an iid race (Thurstone) model for m >= 3; R = 4 = chi: GF mostly stalls before learning the last component | empirical | 7.6 |
 
 ## 1. Setting
 
@@ -371,7 +373,11 @@ from the saddle, forget-and-relearn, O(1/lambda) correction in natural runs, no 
 ## 10. Open issues
 
 - Prefactor C(rho) of the m = 2 law and the pre-asymptotic regime (rho = 0.95 never reaches small P).
-- Adjacent m = 2 pairs: is the asymptotic exponent n (1-rho)/rho with n = chi_e reached in GF (7.4b)?
+- Adjacent m = 2 pairs: the GF exponent is 3.2-3.4x the separated one down to sigma = 1e-5 and still
+  rising; reaching n = chi_e = 4 needs smaller sigma (or the LO emulation of theory_escape).
 - Why the KKT-projection rule misses 8-24% of winners: the alignment phase mixes the non-aligned part of
   the init into the escape direction; a closed form for the distribution of tau on a chain is open.
-- R >= 3: stalls of later components (conservation-law trap) at chi = R; see 7.6.
+- R >= 3: stalls of later components at chi = R (7.6): test gauge-balanced inits and larger chi; the
+  order statistics of 7.6 are conditional on completed runs.
+- binary8 / HT trees with shared internal cores: the independent race is 96-99% exact; a coupled
+  closed-form race is open.

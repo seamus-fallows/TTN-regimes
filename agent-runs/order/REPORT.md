@@ -1,101 +1,156 @@
 # order: which teacher component a TTN learns first, and how random the order is (Q4, H1, H1b)
 
-Status: working - Branch: agent/order - Updated: 2026-10-09 20:56 UTC
+Status: done - Branch: agent/order - Updated: 2026-10-10 02:56 UTC
 
 ## Summary
-Interim (main sweep still running). Theory (notes/order.md, consistent with the draft
-notes/theory_saddles.md): what decides the order is m, the number of cores carrying sites where the
-two components differ. **m >= 3** (odeco on MPS N >= 4, binary N = 8): every component is a local
-maximum of g = <W, W*> on the sphere, so the order is random; P(greedy) is independent of sigma;
-on an MPS it is an exact race between independent per-component flows, P = P(tau_2/tau_1 > rho).
-**m = 2** (binary N = 4, a depth-3 deep linear network, and "matrix-like" pattern pairs): only the
-largest component is a local maximum; at finite sigma the smaller one still comes first with
-probability ~ sigma^((1-rho)/rho), and the order is then corrected through a strict saddle (H1b).
-Pilots confirm all three predictions quantitatively (details under Results). The full sweep (step 1),
-sigma scans, m-controls, the chi scan, H1b runs and the R >= 3 runs are queued.
+Asked: is incremental learning in TTNs greedy (largest component first) or decided by the init, on
+what does it depend, and is a wrong order corrected through a strict saddle (H1b)? Answer: it depends on
+**m, the number of cores carrying the sites where two components differ**. For **m >= 3** (odeco teachers
+on MPS N >= 4 and binary N = 8) every component is an attractor of the first escape and the order is
+**random and independent of sigma**: P(larger first) = 0.60-0.88 at weight ratio rho = 0.5 and 0.50-0.65 at
+rho = 0.8. On an MPS it is an exact race, winner = argmin tau_r/s_r of independent leading-order blow-up
+times (100% of 40800 GF runs). The order gets more random with K and more greedy with chi, slowly:
+sd(log tau) ~ (K-2)^0.6 chi^-0.53 with over-parameterized bonds. For **m = 2** (binary N = 4, a depth-3
+deep linear network, and "matrix-like" pattern pairs) the order is greedy as sigma -> 0, with
+P(smaller first) ~ sigma^((1-rho)/rho) measured in GF. **H1b holds only for m = 2**: from the wrong saddle,
+the gauge-projected Hessian has lambda_min = -(s_1-s_2) s_2^((K-2)/K) (5 digits) and the learned bond index
+rotates to the larger component after ln(1/sigma)/|lambda_min|. In natural runs, though, the correction
+takes only O(1/|lambda_min|) with no resolved plateau. For m >= 3 there is no strict saddle, and a wrong
+order is kept (rarely the larger component's route even dies). With three components, the full order on m >= 3 trees is a random permutation that favours large components and is close to an iid race (Thurstone) model. With four components and bond dimension equal to the teacher rank, gradient flow mostly stalls before learning the last component.
 
 ## Results
+All numbers: full gradient flow on the exact population loss, float64, unless marked "LO" (leading-order
+flow of g = <W, W*>). Odeco/pattern teachers in the standard basis, weights (1, rho), fan-in init, d = 2
+unless stated. Notes with derivations and full tables: `notes/order.md`; code/configs/commands:
+`experiments/order/README.md`; tables `experiments/order/results/*.csv`.
 
-### Step 1 (interim, complete): order statistics, two odeco components, weights (1, rho)
-Full gradient flow (scipy RK45 = Dormand-Prince 5(4), rtol 1e-9, atol 1e-14, event location at the
-first crossing a_r = 1/2), sigma = 0.01, 400 init seeds (the same seeds for every rho), 28 distinct
-(tree, d, chi) settings (binary4/8, MPS4/6/8; d 2, 4; chi 2, 4, 8 with standard bond caps), 67200 runs.
-Command: `sweep.py configs/main.yaml`, `analyze_main.py main`; table `experiments/order/results/main_summary.csv`,
-figure `results/main_pg_vs_rho.png`. 1105 runs first stopped with a step-size failure at t ~ 1e13-1e14
-(float64 time resolution; MPS8 only); all were re-integrated with a clock restart (`repair.py`), 0 left,
-and no winner changed.
+**1. Order statistics (step 1; `configs/main.yaml`, `results/main_summary.csv`, figure
+`results/main_pg_vs_rho.png`).** 28 (tree, d, chi) settings x 6 rho x 400 seeds at sigma = 0.01, RK45
+rtol 1e-9 / atol 1e-14 with event location (67200 runs; 1105 MPS8 runs re-integrated after a float64
+time-resolution failure, winners unchanged).
 
-P(larger first), selected (binomial SE <= 0.025):
-
-| tree (K, m) | d, chi -> P at rho = 0.5 / 0.8 / 0.9 |
+| tree (K, m) | P(larger first) at rho = 0.5 / 0.8 / 0.9, for (d, chi) = (2,2) ... (4,8) |
 |---|---|
-| binary4 (3, 2) | 2,2: 0.99/0.86/0.69; 2,4: 1.00/0.87/0.70; 4,4: 1.00/0.91/0.76; 4,8: 1.00/0.92/0.77 |
-| mps4 (4, 4) | 2,2: 0.79/0.60/0.54; 2,4: 0.82/0.61/0.55; 4,4: 0.87/0.61/0.52; 4,8: 0.88/0.65/0.55 |
-| mps6 (6, 6) | 2,2: 0.69/0.55/0.52; 2,8: 0.76/0.60/0.54; 4,4: 0.81/0.61/0.56; 4,8: 0.82/0.62/0.53 |
-| binary8 (7, 4) | 2,2: 0.70/0.58/0.53; 2,4: 0.76/0.59/0.54; 4,4: 0.78/0.59/0.51; 4,8: 0.86/0.64/0.57 |
-| mps8 (8, 8) | 2,2: 0.63/0.51/0.50; 2,4: 0.71/0.58/0.54; 4,4: 0.73/0.55/0.52; 4,8: 0.76/0.58/0.53 |
+| binary4 (3, 2) | 0.99-1.00 / 0.86-0.92 / 0.69-0.77 (sigma-dependent, see 2) |
+| mps4 (4, 4) | (2,2) 0.79/0.60/0.54; (4,8) 0.88/0.65/0.55 |
+| mps6 (6, 6) | (2,2) 0.69/0.55/0.52; (4,8) 0.82/0.62/0.53 |
+| binary8 (7, 4) | (2,2) 0.70/0.58/0.53; (4,8) 0.86/0.64/0.57 |
+| mps8 (8, 8) | (2,2) 0.63/0.51/0.50; (4,8) 0.76/0.58/0.53 |
 
-Findings (all at sigma = 0.01, 400 seeds per setting):
-- **H1 holds for m >= 3 (empirical + derived): the order is random.** Even at rho = 0.5 the smaller
-  component is learned first in 12-40% of inits on MPS4-8 and binary8; at rho = 0.9 P is 0.50-0.57.
-- **Exact race model (derived, verified per seed).** Per init, the leading-order race
-  (winner = argmin tau_r / s_r, tau_r the blow-up time of the LO flow with only component r present)
-  predicts the GF winner in **100.0% of the 40800 MPS runs** and 96-99% of binary8 runs (shared internal
-  cores make it approximate). The race curve P(tau_2/tau_1 > rho) from the pooled blow-up times overlays
-  the GF points (figure).
-- **Dependence on K, chi, d (empirical).** sd(log tau) grows with K (MPS d=2, chi=2: 0.59, 0.93, 1.20 for
-  K = 4, 6, 8) and falls with chi (MPS8 d=4: 1.19, 0.76, 0.66 for chi = 2, 4, 8), so P(greedy) falls toward
-  1/2 with K and rises with chi, slowly (`results/main_settings.csv`, `results/main_spread.png`).
-  d matters only through the bond caps on MPS: settings with identical bonds and d = 2 vs 4 differ by
-  chi^2 = 9.2 / 0.6 / 1.3 (6 dof each) for MPS4 / 6 / 8 (`results/main_d_pairs.csv`).
-- **binary4 (m = 2, a depth-3 deep linear network) is close to greedy and sigma-dependent**: P = 0.99-1.00
-  at rho = 0.5; the independent race (0.90-0.97) underestimates it, as expected for a unique local max.
-- **Selection rule "s_r X_r^q" (lead's request; `analyze_rule.py`, `results/main_rules.csv`).** With
-  X_r = projection of the init onto the nearest balanced bond-rank-one configuration of component r (its
-  KKT orbit), the fitted exponent of log tau vs -log X is q = 2.1-2.4 (MPS4), 4.1-4.9 (MPS6), 4.9-6.2
-  (binary8), 6.4-7.3 (MPS8), i.e. ~K-2 as in the Kumar-Haupt escape time, and "argmax s_r X_r^q" predicts
-  76-92% of GF winners on the m >= 3 trees (exact race: 97-100%). Weaker predictors on the same trees:
-  |grad T_r(theta_0)|^2 82-91%, product of per-core overlaps 75-90%, |T_r(theta_0)| 68-77%, slice norm
-  66-83%. The library heuristic `ttn.theory.winner_probability` (decoupled balanced modes) misses
-  P(greedy) by -0.13 to +0.07 (c_r = |T_r(0)|^(1/K)) and -0.27 to +0.05 (product-Gaussian c_r) on the
-  m >= 3 trees (`results/main_heuristic.csv`).
+- Per-seed agreement of GF with the LO race (argmin tau_r/s_r): 100% on all 40800 MPS runs, 96-99% on
+  binary8 (shared internal cores), 79-94% on binary4 (where the race is not the right model).
+- d matters only through bond caps on MPS (pairs with identical bonds, d = 2 vs 4: chi^2 = 9.2 / 0.6 / 1.3
+  with 6 dof for MPS4/6/8; fresh-seed check of the one 2.9-SE outlier: consistent).
+- Selection rule (lead's request): with X_r = projection of the init on component r's KKT orbit,
+  log tau_r ~ -q log X_r with q = 2.1-2.4 / 4.1-4.9 / 4.9-6.2 / 6.4-7.3 for MPS4 / MPS6 / binary8 / MPS8
+  (~K-2), and argmax s_r X_r^q predicts 76-92% of winners (`results/main_rules.csv`). The library's
+  decoupled-mode heuristic misses P by -0.27 to +0.07.
 
-### Pilots for steps 2-3 (final runs queued)
-- binary4 sigma scan (pilot, 1000 seeds, chi 4): P(wrong order) = C sigma^gamma, gamma = 0.42 +- 0.05,
-  0.248 +- 0.018, 0.102 +- 0.008, 0.040 +- 0.004 (seed bootstrap) for rho = 0.7, 0.8, 0.9, 0.95; predicted
-  (1-rho)/rho = 0.43, 0.25, 0.11, 0.053 (rho = 0.95 never reaches the small-P regime: P >= 0.34 for all sigma).
-- MPS4 sigma scan (400 seeds): P(greedy) identical for every sigma in 0.003-0.1.
-- H1b: binary4 started at the wrong saddle + noise sigma rotates to the larger component after
-  t_corr = 57.06 (sigma 1e-4) and 81.87 (1e-6), slope 5.39 vs 1/|lambda_min| = 5.386 (rho 0.8, one seed);
-  gauge-projected Hessian at the exact wrong saddle: lambda_min = -0.18566 = -(1-rho) rho^(1/3).
+**2. sigma dependence (`b4_sigma`, `m4_sigma`, `b8_sigma`; `results/sigma_fits.csv`,
+`results/sigma_scan.png`).** m >= 3: P identical for every sigma in 0.003-0.1 (MPS4) and 0.01-0.1 (binary8);
+>= 99% of seeds have the same winner at every sigma <= 0.1. m = 2 (binary4, 1000 seeds, sigma 1e-4..1e-2,
+seed-bootstrap SE): P(smaller first) ~ sigma^gamma, gamma = 0.35 +- 0.05 / 0.45 +- 0.09 (rho 0.7; chi 2 / 4),
+0.232 +- 0.027 / 0.232 +- 0.028 (0.8), 0.110 +- 0.010 / 0.105 +- 0.010 (0.9), 0.045 / 0.041 +- 0.005 (0.95),
+against (1-rho)/rho = 0.43, 0.25, 0.11, 0.053 (rho = 0.95 never reaches small P).
+
+**3. Controls on one tree (MPS6, `pat_mps6_*`).** P(smaller first) at sigma = 0.01, rho = 0.7 / 0.8 / 0.9:
+m = 2 adjacent 0.00 / 0.045 / 0.20; m = 2 ends 0.065 / 0.17 / 0.33 (gamma = 0.46 / 0.25 / 0.10, as
+predicted); m = 3 0.22 / 0.32 / 0.45; m = 4 0.33 / 0.41 / 0.47; m = 6 (odeco) 0.40 / 0.46 / 0.49.
+P(smaller first) rises monotonically with m; m >= 3 are sigma-independent. 
+
+Multiplicity (MPS4, GF to sigma = 1e-5, 1000 seeds): the separated m = 2 pair has gamma = 0.240 +- 0.017 / 0.095 +- 0.006 (rho 0.8 / 0.9; predicted 0.25 / 0.111); the adjacent pair (shared bond, chi_e = 4) has 3.2-3.4x larger exponents, 0.82 +- 0.06 / 0.31 +- 0.02, still steepening toward n (1-rho)/rho = 1.0 / 0.44 (theory_escape 5.3).
+
+**4. H1b (`h1b_*`; `results/h1b_fits.csv`, figures `results/h1b_example.png`,
+`results/h1b_correction_time.png`, `results/h1b_natural.png`).** LSODA + exact Hessian, rtol 1e-10, events
+by root finding; Hessians gauge-projected with the fixed library cut (6c42d85), raw values also stored.
+- binary4 started at the wrong saddle + noise sigma (8 seeds x 6 sigma 1e-7..1e-2 x 4 rho): all 192
+  runs rotate (a_2 < 6e-4 afterwards), plateau at s_2^2/2, relearning after ~sigma^-1. lambda_min =
+  -0.39685 / -0.26637 / -0.18566 / -0.09655 = -(1-rho) rho^(1/3), sigma-exponent 0.000 (strict). Per-seed
+  slopes of t_corr vs ln(1/sigma): 2.555 +- 0.036, 3.809 +- 0.056, 5.466 +- 0.082, 10.51 +- 0.16 vs
+  1/|lambda_min| = 2.520, 3.754, 5.386, 10.357; log law rms 0.13-0.56 vs power law 1.5-6.0.
+- MPS4 from the wrong saddle: no rotation, |lambda_min| ~ sigma^(2.00 +- 0.01) (higher-order saddle),
+  t_1 ~ sigma^(-1.97 +- 0.03).
+- Natural wrong-order runs, binary4 (421 runs): at sigma <= 0.01, 92.5-100% rotate. |lambda| (t_1 - t_2) =
+  1.07-1.38 (+-0.14-0.30), flat in sigma from 1e-4 to 1e-2, so there is no ln(1/sigma) growth. The
+  separation ratio has median 0.3-0.6, so no wrong plateau is resolved. MPS4 (40 runs): no rotation; the
+  larger component is added after ~2.5e4; 1 run stalls (route dies).
+
+**5. Over-parameterized bonds (`chi_scan`, `chi_gf`; `results/chi_scan*.csv`, `results/chi_scan.png`).**
+LO race, uncapped chi = 1..32, 500 seeds: sd(log tau) = 0.57 (K-2)^(0.61+-0.03) chi^-(0.53+-0.01) (rms 5%).
+P(larger first) at chi = 32, rho = 0.8: 0.86 (MPS4), 0.78 (MPS6), 0.73 (MPS8); GF at chi = 32 agrees (MPS4
+0.84, binary8 0.745; per-seed race agreement 100% / 99.5%). Greedy order is restored only slowly
+(P >= 0.9 at rho = 0.9 would need chi ~ 160 for K = 4, ~570 for K = 8, by extrapolation).
+
+**6. Three and four components (step 4; `configs/multi.yaml` -> raw `multi2`, `results/multi2_summary.csv`,
+`results/multi2_perms.csv`, figure `results/multi2_orders.png`).** d = chi = 4, weights rho^(r-1), 200 seeds,
+sigma 0.05-0.25 by tree, LSODA + exact Hessian with exact event location and a stall stop.
+
+| R = 3 | rho | completed & used | P(greedy order) GF vs iid race | Kendall tau (greedy) GF vs model | own race = GF order |
+|---|---|---|---|---|---|
+| binary4 | 0.8 / 0.9 | 200 / 200 | 0.70 vs 0.52 / 0.49 vs 0.32 | 0.80 vs 0.60 / 0.58 vs 0.33 | 0.64 / 0.53 |
+| mps4 | 0.8 / 0.9 | 195 / 195 | 0.35 vs 0.35 / 0.23 vs 0.25 | 0.36 vs 0.39 / 0.14 vs 0.19 | 0.86 / 0.89 |
+| mps6 | 0.8 / 0.9 | 85 / 88 | 0.25 vs 0.29 / 0.20 vs 0.22 | 0.25 vs 0.27 / 0.16 vs 0.13 | 0.82 / 0.77 |
+| binary8 | 0.8 / 0.9 | 180 / 177 | 0.23 vs 0.28 / 0.19 vs 0.22 | 0.19 vs 0.25 / 0.05 vs 0.12 | 0.72 / 0.70 |
+
+- For m >= 3 the full order is a random permutation favouring large components, within ~1-2 SE of the
+  iid race (Thurstone) model built from the measured blow-up times. Each seed's own LO race predicts
+  the complete order in 70-89% of runs. binary4 (m = 2) is far more greedy than the race model.
+- Excluded runs are counted: in "stalled" runs some component's overlap decays below 1e-25 (its route
+  dies). With R = 3 this happens in 2.5% (MPS4), 1-1.5% (binary8) and ~45% (MPS6, sigma 0.2) of runs.
+  With **R = 4 = chi** most runs stall: MPS4 145/200, MPS6 ~195/200, binary8 ~170/185, binary4 0/200.
+  The abandoned library-integrator run (integrated to t = 1e9 with no stop) gives the same stall
+  classification on all 1679 overlapping runs, so this is GF behaviour, not a stopping artefact. It
+  looks like the conservation-law trap of theory_saddles section 8; it is outside Q4 and is passed on
+  to s2s-core/locality.
+- 17 slow runs (15 binary8 R = 4, 1 MPS6 R = 3, 1 binary8 R = 3) were still integrating when this report
+  was written. They are not in the tables, but they cannot change the R = 3 conclusions (2 of 1600 runs).
 
 ## What was done
-1. Read brief, repo, model, diagnostics, plan; merged origin/main repeatedly (literature, core fixes,
-   theory drafts, library v0).
-2. Theory in notes/order.md (54174e2 and later).
-3. Pilots (scratch scripts), then experiment code in experiments/order/ (22094ee, 7b440f4).
+1. Read brief, repo, notes; merged origin/main repeatedly (literature, core fixes, theory notes v1/v2,
+   library v0/final, gauge-projection fix).
+2. Theory (notes/order.md): leading-order scale invariance, m-count classification, exact MPS race,
+   m = 2 wrong-order law, H1b Hessian (54174e2 and later).
+3. Pilots (scratch) -> experiment code `experiments/order/` (22094ee, 7b440f4, 608e564).
+4. Step 1 main sweep + repair (6d9c81b); sigma scans, H1b (recomputed after the projection fix),
+   pattern controls, chi scan, R >= 3 (later commits; see git log).
 
 ## Decisions
-- **Teacher basis = standard basis** (basis='standard'): fan-in Gaussian init is invariant in law
-  under orthogonal rotations of physical legs, so all order statistics are identical to Haar-random
-  bases; the standard basis makes the component slices explicit and the per-seed LO comparison exact.
-  It also means no teacher randomness at all (so the pre-57d5262 stream bug could not touch these runs).
-- **First-event runs use scipy solve_ivp RK45 (Dormand-Prince 5(4)) with event location**, not
-  ttn.dynamics.integrate_gf: the library integrator has no event/stop-on-condition, and stopping at
-  the first event makes 36k runs cheap (1-10 s each). Same method and tolerances (rtol 1e-9,
-  atol 1e-14); will be cross-checked against integrate_gf on a subset.
-- **Full trajectories (H1b) use LSODA with the exact Hessian** (same as integrate_gf(method="lsoda"));
-  R >= 3 runs use the library integrator directly.
-- **sigma = 0.01 for the main sweep**: for m >= 3 the outcome is sigma-independent (checked), for
-  binary4 sigma matters and is scanned separately (b4_sigma).
+- **Teacher basis = standard basis**: the fan-in init is rotation-invariant in law on every physical leg,
+  so order statistics equal those of Haar bases; slices become explicit, the per-seed LO comparison exact,
+  and the pre-57d5262 teacher/init stream bug could not touch these runs.
+- **First-event runs use scipy solve_ivp RK45 (Dormand-Prince 5(4)) with event location** instead of
+  ttn.dynamics.integrate_gf: the library integrator had no stop-at-event (and v0 only log-grid output);
+  stopping at the first event makes 100k+ runs cheap and gives exact event times. Same method/tolerances.
+  Clock restart when the step size hits the float64 resolution of t (repair.py).
+- **Full trajectories (H1b, R >= 3) use LSODA with the exact Hessian (as integrate_gf(method="lsoda")) with
+  exact event location and a stall stop** (some overlap < 1e-25), because the library integrator cannot
+  stop on events and stalled runs otherwise run to t_max through denormals.
+- **sigma = 0.01 for step 1**, after checking sigma-independence for m >= 3; binary4's sigma dependence
+  is measured separately (b4_sigma).
+- **Wrong-order probability fits** use binomial ML with a seed bootstrap SE (the same seeds at every sigma)
+  and also a fit restricted to sigma <= 0.01 (further from saturation).
+- **R >= 3 uses larger sigma (0.05-0.25 by tree)**: at smaller sigma, dormant components of K >= 5 trees
+  fall below the float64 floor; for m >= 3 the first escape does not depend on sigma.
+- **Uncapped bonds for the chi scan**: with standard caps chi saturates at the ends (theory_escape 5.1);
+  uncapped bonds test over-parameterization directly.
 
 ## Files left on the machine
-- `/root/outputs/order/`: raw outputs (JSON lines per sweep, H1b trajectories); see README.
+`/root/outputs/order/` (173 MB): raw JSON lines per sweep (`main`, `b4_sigma`, `m4_sigma`, `b8_sigma`,
+`pat_*`, `chi_scan`, `chi_gf`, `multi2`, `symmetry_check`; `main/runs_orig.jsonl` = before repair),
+H1b trajectories (`h1b_*/*.npz`), pilots (`pilots/`, `multi/` = abandoned log-grid R >= 3 run). All are
+regenerated by the configs (README); the committed summaries in `experiments/order/results/` are enough
+to redraw every figure except `h1b_example.png` (needs the npz) and the analyses that read runs.jsonl.
 
 ## Caveats and next steps
-- R >= 3 at small sigma hits the float64 floor (dormant overlaps < 1e-14 on MPS6 at sigma = 0.03) and
-  a conservation-law stall was seen (MPS4, d = chi = 4, R = 4: one component's overlap decays to 1e-254);
-  step 4 will use larger sigma, flag floor runs and report stalls separately.
+- binary4 rho = 0.95: measured exponent 1.6-2.4 SE below (1-rho)/rho (pre-asymptotic, P >= 0.33).
+- Adjacent m = 2 pairs: exponent between n = 1 and n = chi_e at accessible sigma (theory: slow approach).
+- The KKT-projection rule misses 8-24% of winners; a closed form for the blow-up-time distribution
+  of a chain is open.
+- R >= 3: the order statistics are conditional on completed runs; stall rates depend on sigma and chi = R and were not explored further (gauge-balanced inits were not tested).
+- Throughput bug found late: workers did not cap OpenBLAS threads (fixed with threadpoolctl); only speed
+  was affected.
+- Suggested report figures: `main_pg_vs_rho.png`, `sigma_scan.png`, `h1b_example.png`,
+  `h1b_correction_time.png`, `chi_scan.png`, `multi2_orders.png`.
 
 ## Log
 - 18:18 Started; read brief and repo; merged origin/main.
