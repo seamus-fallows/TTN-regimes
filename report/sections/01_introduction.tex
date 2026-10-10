@@ -50,21 +50,23 @@ number by number. The main focus is the saddle-to-saddle regime (\cref{sec:s2s})
 \paragraph{The answer in one paragraph.}
 From small initialization, gradient flow on a TTN is saddle-to-saddle. It rests near critical points of
 the problem with all bond ranks fixed, and each escape raises the bond ranks along a \emph{route}, a
-connected set of cores that must move together. The first escape takes a time $\propto\isc^{-(\Kc-2)}$
-whose prefactor one leading-order integration predicts for each initialization. After it, the tree
-decides: the cheapest route has $k^*$ cores, the Steiner subtree of the cores that carry the sites where
-the next component differs, and the next plateau is absent, logarithmic in $1/\isc$, or
-$\propto\isc^{-(k^*-2)}$ for $k^*=1$, $2$, $\ge3$, so one teacher has different plateau laws on different
-trees; $k^*$ is the order of the saddle under a spectral condition that we prove sufficient and that
-can fail from $k^*=5$ on. Which component comes first is a race set by the initialization when two
-components differ on three or more cores, and greedy as $\isc\to0$ when they differ on two.
-Non-orthogonal teachers make the saddle after the first escape strict and logarithmic on an MPS but leave
-it of higher order on binary and hierarchical Tucker trees. Raising $\isc$ moves training through a
-rich, non-incremental window into the lazy regime, which exists only when every bond reaches its cut
-dimension. Discrete steps below a sharp stability limit keep the saddle sequence; gradient noise
-lengthens later plateaus and can trap; Adam removes the $\isc$-dependence of the first escape; ALS,
-DMRG and Riemannian gradient descent remove the plateaus. \Cref{tab:intro-summary} gives one row per
-question, and the numbered list below states the main findings with their novelty.
+connected set of cores that must move together \derived{} \empirical. The first escape takes a time
+$\propto\isc^{-(\Kc-2)}$ \proven, whose prefactor one leading-order integration predicts for each
+initialization \empirical. After it, the tree decides: the cheapest route has $k^*$ cores, the Steiner
+subtree of the cores that carry the sites where the next component differs \proven, and the next plateau
+is absent, logarithmic in $1/\isc$, or $\propto\isc^{-(k^*-2)}$ for $k^*=1$, $2$, $\ge3$ \derived{}
+\empirical, so one teacher has different plateau laws on different trees \empirical; $k^*$ is the order
+of the saddle under a spectral condition, and the order can be lower from $k^*=5$ on \proven. Which
+component comes first is a race set by the initialization when two components differ on three or more
+cores, and greedy as $\isc\to0$ when they differ on two \derived{} \empirical. Non-orthogonal teachers
+make the saddle after the first escape strict and logarithmic on an MPS but leave it of higher order on
+binary and hierarchical Tucker trees \derived{} \empirical. Raising $\isc$ moves training through a rich,
+non-incremental window into the lazy regime \empirical, which exists only when every bond reaches its cut
+dimension \derived{} \empirical. Discrete steps below a sharp stability limit keep the saddle sequence
+\derived{} \empirical; gradient noise lengthens later plateaus and can trap \empirical; Adam removes the
+$\isc$-dependence of the first escape \derived{} \empirical; ALS, DMRG and Riemannian gradient descent
+remove the plateaus \derived{} \empirical. \Cref{tab:intro-summary} gives one row per question, and the
+numbered list below states the main findings with their novelty.
 
 \begin{table}[tbp]
   \centering
@@ -73,7 +75,7 @@ question, and the numbered list below states the main findings with their novelt
     depth-3 linear network (\cref{rem:A-binary4-dln}). Details and scope in the sections named.}
   \label{tab:intro-summary}
   \footnotesize
-  \setlength{\tabcolsep}{2.5pt}\renewcommand{\arraystretch}{1.1}
+  \setlength{\tabcolsep}{2.5pt}\renewcommand{\arraystretch}{1.04}
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.45cm}>{\raggedright\arraybackslash}X
       >{\raggedright\arraybackslash}p{1.95cm}>{\raggedright\arraybackslash}p{2.85cm}
       >{\raggedright\arraybackslash}p{1.05cm}@{}}
@@ -337,7 +339,8 @@ descent curve whose order is its number of cores, and with several components ``
 delivers the least suppressed escape''; one parity saddle has a lower bound on its order; points off the
 minimum-norm set can be spurious minima; and polynomial-size TTNs are hard for statistical-query
 learners. They do not treat dynamics. Our routes can be proper subtrees of one such component, our lower
-bound on the saddle order is general (\cref{app:saddle-order}), and our results are dynamical.
+bound on the saddle order holds at every saddle with one learned component that meets a spectral
+condition (\cref{app:saddle-order}), and our results are dynamical.
 
 \paragraph{Tensor factorization.} Small initialization biases CP factorization towards low rank, learned
 one rank-one term at a time \citep{razin2021implicit}, and hierarchical tensor factorization towards low
