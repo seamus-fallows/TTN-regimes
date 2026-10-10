@@ -141,8 +141,9 @@ subsection shows such runs and which saddles the plateaus are.
 Odeco teachers (\cref{sec:setup-loss}) with $\ncomp=3$, $d=4$, Haar-random site bases and weights $(3,2,1)$
 (\emph{separated}) or $(1,0.85,0.7)$ (\emph{close}); trees binary4 ($\Kc=3$), MPS4 ($\Kc=4$), binary8 and HT4
 ($\Kc=7$), MPS8 ($\Kc=8$); $\chi=3=\ncomp$ or $\chi=6$, capped by \eqref{eq:bond-cap}. Fan-in initialization
-with seeds $0$--$9$ at eight values of $\isc\in[0.003,0.1]$ ($\Kc=3,4$) or five or six in $[0.07,0.4]$
-($\Kc=7,8$, whose later plateaus grow like $\isc^{-5}$ and $\isc^{-6}$); also the same $\Wz$ re-gauged to
+with seeds $0$--$9$ at eight values of $\isc\in[0.003,0.1]$ ($\Kc=3,4$) or five or six in $[0.07,0.4]$, plus some
+runs at $0.03$ and $0.05$ ($\Kc=7,8$, whose later plateaus grow like $\isc^{-5}$ and $\isc^{-6}$); also the same $\Wz$
+re-gauged to
 $\Q e=0$ (\emph{balanced}). A run is \emph{complete} if it learns all three components; \cref{sec:s2s-failure}
 treats the others.
 
@@ -393,7 +394,8 @@ $k=1$, a logarithmic
 one for $k=2$, and the exponent is $k-2$ for $k=3$ (all nine trees), $4$ and $5$, on trees with $\Kc$ from $3$ to
 $15$: it follows the Steiner count, not $\Kc$ or the tree family. Named exceptions: the saddle-start $k=4$ rows
 and HT8 $\{1,2\}$ are carried by seeds that stall at some $\isc$ (\cref{sec:s2s-failure}); the MPS rows with
-$k=5$ exceed $3$ for $\isc\in[0.03,0.3]$ but give $2.97$--$3.15$ at $\isc\le0.03$ or on never-stalling seeds,
+$k=5$ give $2.86$--$3.76$ for $\isc\in[0.03,0.3]$, mostly above $3$, but $2.97$--$3.15$ at $\isc\le0.03$ or on
+never-stalling seeds,
 except MPS8 $\{1,5\}$ from the saddle, $3.67\pm0.20$ (limited range: 4 seeds, $0.4$ decade). For $k=6$, $7$ the
 exponent is $k-2$ on binary8 and HT4 \emph{with balanced initialization only}, over one decade; MPS8 with $k=6$
 gives $4.51\pm0.19$, and the other $k\ge6$ rows (limited range) show only that the exponent grows with $k$. $k=8$
