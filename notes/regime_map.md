@@ -337,6 +337,13 @@ runs each; error from the residual scatter). sigma = 1.5 is the theory's check p
   rich at every sigma in the grid for chi >= 18 (S2S boundary 0.015 vs 0.075 centred at chi = 24).
   So the two-copy model is a faithful cross-check of the lazy boundary (up to the predicted shift) but
   **not of the S2S boundary at large chi**: its incremental structure is changed by the mirror copy.
+- **Deficient bonds, large sigma: lazy, then rich (library runs, chi = 3, 6 seeds).** The two-copy model
+  is realizable at chi = 3 (bond 2 chi = 6 >= teacher rank), so instead of stalling at the floor it
+  escapes from the lazy residual (theory_regimes R7 / P8): converged ("rich", delta_K = 0.3-1.3) at
+  sigma = 1.6, 2.5 and 4.0 (at 4.0 in 1/6 runs before the time budget, the others at l < 1e-3 at the
+  budget end), partially at sigma = 6.3 (l = 0.01-0.04 at the budget) and not at sigma = 10 (plateau at
+  l = 0.44, the lazy residual; delta_K = 0.05). The escape is pushed beyond any fixed budget as sigma
+  grows (tau_esc ~ sigma^6 in kernel time, P8). **Empirical.**
 
 ### 2.y Integrator and diagnostic checks
 
