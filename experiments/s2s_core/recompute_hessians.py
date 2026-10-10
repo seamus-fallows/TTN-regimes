@@ -63,7 +63,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--raw", nargs="+", required=True)
     ap.add_argument("--workers", type=int, default=60)
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
     ap.add_argument("--tag", default="hess")
     args = ap.parse_args()
     files = [f for r in args.raw for f in sorted(Path(r).glob("*.json")) if f.name != "summary.json"]

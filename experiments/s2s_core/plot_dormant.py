@@ -30,7 +30,7 @@ TREES = ["binary4", "mps4", "binary8", "ht4", "mps8"]
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", default=str(HERE / "results"))
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
     args = ap.parse_args()
     res, out = Path(args.results), Path(args.out)
     tp.set_style()

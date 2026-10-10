@@ -395,14 +395,20 @@ def _json(x):
 
 
 def correlation_flow_blowup(spec: TTNSpec, teacher: CPTeacher, theta_hat: torch.Tensor,
-                            amp_stop: float = 1e6, rtol: float = 1e-10):
+                            amp_start: float = 1e6, amp_max: float = 1e30, ratio_tol: float = 1e-6,
+                            rtol: float = 1e-10):
     """Blow-up time T of theta' = grad <W(theta), W*> from theta_hat (prediction P1 in
-    notes/s2s_core.md: t_1 = sigma^-(K-2) T(theta_hat) + O(1) for the init sigma * theta_hat).
+    notes/s2s_core.md, = theory_escape E1: t_1 = sigma^-(K-2) T(theta_hat) + O(1) for the init
+    sigma * theta_hat).
 
-    Integrates until some |<W, U_r>| reaches amp_stop and adds the remaining blow-up time of a
-    balanced aligned mode, q^-(K-2) / ((K-2) s_r) with q = |<W, U_r>|^(1/K). Also returns the
-    component that blows up (r1) and, at the stop, the core-norm fractions |G_v|^2 / |theta|^2 and
-    the largest relative imbalance |Q_e|_F / |theta|^2 (KKT points are balanced, core norms 1/K).
+    Integrates in segments, raising the stop amplitude max_r |<W, U_r>| by 1e3 per segment from
+    amp_start, until the direction has converged: the second-largest component amplitude is below
+    ratio_tol x the largest and did not grow relative to it over the last segment (on matrix-like
+    trees the flow can linger near a smaller component's saddle before turning; stopping at a fixed
+    amplitude then gives the wrong r1 and a biased T: review s2s_core round 1, B2 / issue 6). Adds the
+    remaining blow-up time of a balanced aligned mode, q^-(K-2) / ((K-2) s_r), q = |<W, U_r>|^(1/K).
+    Returns T, the component that blows up (r1), the stop amplitude and amplitude ratio, and the core-
+    norm fractions |G_v|^2 / |theta|^2 and largest relative imbalance |Q_e|_F / |theta|^2 at the stop.
     """
     K = spec.n_cores
     w = teacher.weights
@@ -415,23 +421,32 @@ def correlation_flow_blowup(spec: TTNSpec, teacher: CPTeacher, theta_hat: torch.
     def amps(x):
         return (teacher.component_overlaps(spec, spec.unflatten(torch.tensor(x))) * w).numpy()
 
-    def big(_, x):
-        return np.max(np.abs(amps(x))) - amp_stop
+    x = theta_hat.numpy().copy()
+    atol = 1e-14 * np.abs(x).max()
+    t0, target, prev_ratio, nfev, status = 0.0, amp_start, np.inf, 0, 0
+    while True:
+        def big(_, y, target=target):
+            return np.max(np.abs(amps(y))) - target
 
-    big.terminal = True
-    x0 = theta_hat.numpy().copy()
-    sol = solve_ivp(rhs, (0, 1e12), x0, method="DOP853", rtol=rtol, atol=1e-14 * np.abs(x0).max(), events=big)
-    x = sol.y[:, -1]
+        big.terminal = True
+        sol = solve_ivp(rhs, (t0, t0 + 1e12), x, method="DOP853", rtol=rtol, atol=atol, events=big)
+        x, t0, nfev, status = sol.y[:, -1], sol.t[-1], nfev + int(sol.nfev), int(sol.status)
+        a = np.sort(np.abs(amps(x)))
+        ratio = a[-2] / a[-1] if len(a) > 1 else 0.0
+        if status != 1 or (ratio <= ratio_tol and ratio <= prev_ratio) or target >= amp_max:
+            break
+        prev_ratio, target = ratio, target * 1e3
     a = amps(x)
     r1 = int(np.argmax(np.abs(a)))
     q = abs(a[r1]) ** (1 / K)
-    T = sol.t[-1] + q ** (-(K - 2)) / ((K - 2) * w[r1].item())
+    T = t0 + q ** (-(K - 2)) / ((K - 2) * w[r1].item())
     cores = spec.unflatten(torch.tensor(x))
     n2 = float(np.sum(x**2))
     fractions = [c.pow(2).sum().item() / n2 for c in cores]
     imbalance = max(qq.norm().item() for qq in conserved_quantities(spec, cores).values()) / n2
-    return {"T": float(T), "r1": r1, "status": int(sol.status), "core_fractions": fractions,
-            "imbalance": imbalance, "nfev": int(sol.nfev)}
+    return {"T": float(T), "r1": r1, "status": status, "amp_stop": float(np.abs(a).max()),
+            "ratio_stop": float(ratio), "core_fractions": fractions, "imbalance": imbalance,
+            "nfev": nfev}
 
 
 def p3_prefactor(d: int, n_sites: int, K: int, s: float) -> float:

@@ -9,6 +9,7 @@ optional).
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -17,6 +18,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).parent))
+import analyze_main as am  # noqa: E402
 
 from ttn import plotting as tp  # noqa: E402
 
@@ -37,9 +41,9 @@ KS = {"binary4": 3, "mps4": 4, "binary8": 7, "ht4": 7, "mps8": 8}
 
 
 def pick_sweep(runs: pd.DataFrame, tree: str, chi: int, teacher: str, init: str = "fanin") -> str | None:
-    """The sweep that carries a cell: K = 7, 8 cells are taken from the dedicated sweeps (k78 at
-    chi = 3, large at chi = 6; no amplitude-based roundoff stop, longer budgets) when they have it."""
-    prefs = (["k78"] if chi == 3 else ["large"]) + ["main"] if KS[tree] >= 7 else ["main"]
+    """The sweep that carries a cell: K = 7, 8 at chi = 6 from `large` (longer budget, no amplitude
+    stop); everything else from `main` (at K = 7, 8, chi = 3 the k78 sweep has only 3 sigmas)."""
+    prefs = (["large"] if chi == 6 and KS[tree] >= 7 else []) + ["main"]
     for sw in prefs:
         if len(runs[(runs.sweep == sw) & (runs.tree == tree) & (runs.chi == chi) & (runs.teacher == teacher)
                     & (runs.init == init)]):
@@ -48,10 +52,11 @@ def pick_sweep(runs: pd.DataFrame, tree: str, chi: int, teacher: str, init: str 
 
 
 def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teacher: str):
-    """(d): t_1, t_2 - t_1, t_3 - t_2 vs sigma, one thin line per seed (complete runs at the seed's
-    modal order), runs that did not complete marked at the bottom."""
+    """(d): t_1, t_2 - t_1, t_3 - t_2 vs sigma, one thin line per seed, each on the runs where that
+    step is a resolved S2S step of the seed's modal sequence (`analyze_main.fit_sets`, the sets of the
+    fits in the titles: mean +- SE over seeds, number of seeds)."""
     trees = [t for t in TREES if t in set(runs.tree)]
-    fig, axes = plt.subplots(1, len(trees), figsize=(tp.TEXT_WIDTH, 2.3), layout="constrained", squeeze=False)
+    fig, axes = plt.subplots(1, len(trees), figsize=(tp.TEXT_WIDTH, 2.5), layout="constrained", squeeze=False)
     colors = tp.palette(3)
     names = [("t1", "$t_1$"), ("gap1", "$t_2-t_1$"), ("gap2", "$t_3-t_2$")]
     for ax, tree in zip(axes[0], trees):
@@ -60,12 +65,11 @@ def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teache
         d = runs[(runs.sweep == sw) & (runs.tree == tree) & (runs.chi == chi) & (runs.teacher == teacher)
                  & (runs.init == "fanin")].copy()
         d["gap1"], d["gap2"] = d.t2 - d.t1, d.t3 - d.t2
-        comp = d[d["class"] == "complete"]
-        for seed, g in comp.groupby("seed"):
-            modal = g.order.mode().iloc[0]
-            g = g[g.order == modal].sort_values("sigma")
+        for seed, g in d.groupby("seed"):
+            sets = am.fit_sets(g)
             for (col, _), c in zip(names, colors):
-                ax.plot(g.sigma, g[col], color=c, lw=0.7, alpha=0.7, marker="o", ms=1.8)
+                if col in sets and len(sets[col]):
+                    ax.plot(sets[col].sigma, sets[col][col], color=c, lw=0.7, alpha=0.7, marker="o", ms=1.8)
         f = fits[(fits.sweep == sw) & (fits.tree == tree) & (fits.chi == chi) & (fits.teacher == teacher)
                  & (fits.init == "fanin")]
         lab = [f"[{sw}]"]
@@ -74,17 +78,14 @@ def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teache
             if len(p):
                 lab.append(f"{nm}: {p.mean():.2f}$\\pm${p.std(ddof=1) / np.sqrt(len(p)) if len(p) > 1 else 0:.2f} ({len(p)})")
         # Guide with slope -(K-2) through the median t_1 at the largest sigma.
-        if len(comp):
-            s0 = comp.sigma.max()
-            y0 = comp[comp.sigma == s0].t1.median()
-            xs = np.array([comp.sigma.min(), s0])
+        if d.t1.notna().any():
+            s0 = d[d.t1.notna()].sigma.max()
+            y0 = d[d.sigma == s0].t1.median()
+            xs = np.array([d.sigma.min(), s0])
             ax.plot(xs, y0 * (xs / s0) ** (-(K - 2)), color="k", lw=0.8, ls="--")
-        n_inc = (d["class"] != "complete").groupby(d.sigma).sum()
         log_axes(ax)
-        ax.set_xlabel(r"$\sigma$")
         ax.set_title(f"{tree} (K={K}) " + "\n".join(lab), fontsize=6.5)
-        n_tot = d.groupby("sigma").size()
-        ax.set_xlabel(r"$\sigma$" + f"  (complete {int(n_tot.sum() - n_inc.sum())}/{int(n_tot.sum())})")
+        ax.set_xlabel(r"$\sigma$" + f"  (complete {int((d['class'] == 'complete').sum())}/{len(d)})")
     axes[0][0].set_ylabel("time")
     handles = [plt.Line2D([], [], color=c, lw=1.2, label=nm) for (_, nm), c in zip(names, colors)]
     handles.append(plt.Line2D([], [], color="k", lw=0.8, ls="--", label=r"$\sigma^{-(K-2)}$"))
@@ -94,34 +95,35 @@ def fig_gaps(runs: pd.DataFrame, fits: pd.DataFrame, out: Path, chi: int, teache
 
 def fig_hessian(runs: pd.DataFrame, fits: pd.DataFrame, out: Path):
     """(f): most negative gauge-projected Hessian eigenvalue at the first and second plateau midpoints
-    vs sigma, one line per seed (complete runs at the seed's modal order), against the route
-    prediction -(K-2) slope; the per-seed slope (mean +- SE) is the saddle-type rule of
-    notes/diagnostics.md (0: strict, k-2: higher order)."""
-    comp = runs[(runs["class"] == "complete") & (runs.init == "fanin")]
-    comp = comp[[pick_sweep(runs, r.tree, r.chi, r.teacher) == r.sweep for r in comp.itertuples()]]
-    trees = [t for t in TREES if t in set(comp.tree) and comp[comp.tree == t].sigma.nunique() >= 4]
-    fig, axes = plt.subplots(1, len(trees), figsize=(tp.TEXT_WIDTH, 2.3), layout="constrained", squeeze=False)
+    vs sigma, one line per seed (separated teacher, fan-in, the gap1 / gap2 run sets of
+    `analyze_main.fit_sets`), with the per-seed slope (mean +- SE): the saddle-type rule of
+    notes/diagnostics.md (0: strict, K - 2: higher order on these odeco routes)."""
+    runs = runs[(runs.teacher == "separated") & (runs.init == "fanin")]
+    runs = runs[[pick_sweep(runs, r.tree, r.chi, r.teacher) == r.sweep for r in runs.itertuples()]]
+    trees = [t for t in TREES if t in set(runs.tree) and runs[runs.tree == t].sigma.nunique() >= 4]
+    fig, axes = plt.subplots(1, len(trees), figsize=(tp.TEXT_WIDTH, 2.4), layout="constrained", squeeze=False)
     colors = tp.palette(2)
     for ax, tree in zip(axes[0], trees):
         K = KS[tree]
-        d = comp[(comp.tree == tree) & (comp.teacher == "separated")]
-        for seed, g in d.groupby(["chi", "seed"]):
-            modal = g.order.mode().iloc[0]
-            g = g[g.order == modal].sort_values("sigma")
+        d = runs[runs.tree == tree]
+        for _, g in d.groupby(["sweep", "chi", "seed"]):
+            sets = am.fit_sets(g)
             for i, c in ((1, colors[0]), (2, colors[1])):
-                v = -g[f"plateau{i}_lam_min"]
+                if f"gap{i}" not in sets:
+                    continue
+                v = -sets[f"gap{i}"][f"plateau{i}_lam_min"]
                 ok = v > 0
-                ax.plot(g.sigma[ok], v[ok], color=c, lw=0.6, alpha=0.7, marker="o", ms=1.6)
+                ax.plot(sets[f"gap{i}"].sigma[ok], v[ok], color=c, lw=0.6, alpha=0.7, marker="o", ms=1.6)
         f = fits[(fits.tree == tree) & (fits.teacher == "separated") & (fits.init == "fanin")
                  & fits.sweep.isin(set(d.sweep))]
         lab = []
         for i in (1, 2):
             sl = f[f"lam{i}_slope"].dropna()
             if len(sl) > 1:
-                lab.append(f"plateau {i}: slope {sl.mean():.2f}$\\pm${sl.std(ddof=1) / np.sqrt(len(sl)):.2f}")
+                lab.append(f"plateau {i}: {sl.mean():.2f}$\\pm${sl.std(ddof=1) / np.sqrt(len(sl)):.2f} ({len(sl)})")
         log_axes(ax)
         ax.set_xlabel(r"$\sigma$")
-        ax.set_title(f"{tree} (K={K}), predicted slope {K - 2}\n" + "\n".join(lab), fontsize=6.5)
+        ax.set_title(f"{tree} (K={K})\npredicted slope {K - 2}\n" + "\n".join(lab), fontsize=6.5)
     axes[0][0].set_ylabel(r"$-\lambda_{\min}$ (gauge-projected Hessian)")
     handles = [plt.Line2D([], [], color=colors[0], lw=1, label="first plateau"),
                plt.Line2D([], [], color=colors[1], lw=1, label="second plateau")]
@@ -167,7 +169,7 @@ def fig_first(first: pd.DataFrame, out: Path, chi: int, init: str = "fanin"):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", default=str(HERE / "results"))
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
     args = ap.parse_args()
     res, out = Path(args.results), Path(args.out)
     tp.set_style()

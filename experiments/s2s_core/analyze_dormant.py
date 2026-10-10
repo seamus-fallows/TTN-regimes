@@ -23,6 +23,7 @@ import pandas as pd
 
 HERE = Path(__file__).parent
 FLOOR = 1e-14
+FIT_FLOOR = 1e-9  # absolute; dead slices bottom out at ~1e-12 (atol / roundoff)
 
 
 def analyze(raw: Path):
@@ -66,22 +67,28 @@ def analyze(raw: Path):
         after = [v for row in s["dormant_min_between_events"][1:] for v in row.values()]
         if stuck and after and min(after) < FLOOR and ev:
             r = stuck[0]
-            last = (t > 1.5 * ev[-1]) & (amps[:, r] > 1e-28)
+            last = t > 1.5 * ev[-1]
             for core in range(sn.shape[1]):
-                y = sn[last, core, r]
-                ok = np.isfinite(y) & (y > 1e-13)
-                if ok.sum() >= 4:
-                    rate = -np.polyfit(t[last][ok], np.log(y[ok]), 1)[0]
+                y, tt = sn[last, core, r], t[last]
+                # Fit only above the float64 / atol floor: from the plateau start until the slice first
+                # drops below FIT_FLOOR (a dead slice then sits at ~1e-12 for the rest of the run, which
+                # biased the earlier fit low by 20-27x: review s2s_core round 1, B1).
+                below = np.flatnonzero(~(y > FIT_FLOOR))
+                end = below[0] if below.size else len(y)
+                y, tt = y[:end], tt[:end]
+                ok = np.isfinite(y)
+                if ok.sum() >= 4 and y[ok][-1] < 1e-2 * y[ok][0]:
+                    rate = -np.polyfit(tt[ok], np.log(y[ok]), 1)[0]
                     decays.append({**base, "component": r, "core": core, "rate": rate,
                                    "rate_over_sigma2": rate / s["sigma"] ** 2,
-                                   "slice_start": y[ok][0], "slice_end": y[ok][-1]})
+                                   "slice_start": y[ok][0], "slice_end": y[ok][-1], "n_fit": int(ok.sum())})
     return pd.DataFrame(phases), pd.DataFrame(decays), pd.DataFrame(drops)
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--raw", nargs="+", default=["/root/outputs/s2s_core/main"])
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
     ap.add_argument("--tag", default="dormant")
     args = ap.parse_args()
     out = Path(args.out)

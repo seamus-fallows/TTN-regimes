@@ -1,0 +1,2 @@
+usage: lo_sweep.py [-h] [--workers WORKERS] --out OUT config
+lo_sweep.py: error: the following arguments are required: --out

@@ -1,7 +1,7 @@
 """Step 1: aligned (Saxe-type) balanced init on an odeco teacher, TTN gradient flow vs the exact
 mode solutions of `ttn.theory.odeco_aligned_prediction`.
 
-    uv run python experiments/s2s_core/aligned.py experiments/s2s_core/configs/aligned.yaml
+    uv run python experiments/s2s_core/aligned.py experiments/s2s_core/configs/aligned.yaml --out DIR [--raw DIR] [--workers N]
 
 Writes results/aligned.csv (per tree: max |a_r^GF - a_r^theory|, event times GF vs theory, loss
 deviation, conservation drift) and the trajectories to /root/outputs/s2s_core/aligned/.
@@ -54,7 +54,8 @@ def run(args):
     dev = np.abs(tr["overlaps"] - pred["overlaps"])
     ev_gf = dg.crossing_times(t, tr["overlaps"], 0.5)
     ev_th = dg.crossing_times(t, pred["overlaps"], 0.5)
-    np.savez_compressed(out_dir / f"{tree}{n}.npz", t=t, overlaps=tr["overlaps"], loss=tr["loss"],
+    # One file per integrator (both used to write {tree}.npz, so figure (a) could show either run).
+    np.savez_compressed(out_dir / f"{tree}{n}_{cfg['method']}.npz", t=t, overlaps=tr["overlaps"], loss=tr["loss"],
                         pred_overlaps=pred["overlaps"], pred_loss=pred["loss"],
                         spectra=tr["spectra"], drift=tr["conservation_drift"])
     return {
@@ -77,10 +78,12 @@ def main():
 
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="directory for aligned.csv (e.g. results/)")
+    ap.add_argument("--raw", default=str(s2s.OUT), help="parent directory of the raw outputs")
+    ap.add_argument("--workers", type=int, default=10)
     args = ap.parse_args()
     config = yaml.safe_load(Path(args.config).read_text())
-    out_dir = s2s.OUT / config["name"]
+    out_dir = Path(args.raw) / config["name"]
     out_dir.mkdir(parents=True, exist_ok=True)
     jobs = []
     for (tree, n) in config["trees"]:
@@ -90,7 +93,7 @@ def main():
                    "a0": config["a0"][f"{tree}{n}"], "method": method,
                    "rtol": config["rtol"], "atol": config["atol"]}
             jobs.append((cfg, out_dir))
-    with Pool(len(jobs)) as pool:
+    with Pool(min(len(jobs), args.workers)) as pool:
         rows = pool.map(run, jobs)
     df = pd.DataFrame(rows)
     Path(args.out).mkdir(parents=True, exist_ok=True)

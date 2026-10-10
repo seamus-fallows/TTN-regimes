@@ -63,9 +63,20 @@ def job(args):
                                rtol=s.get("rtol", 1e-8), atol=s.get("atol_rel", 1e-11) * s["sigma"],
                                stop_fn=lambda dd: dd["overlaps"][-1, r] >= 0.9)
     t, a = tr["t"], tr["overlaps"]
-    t_esc = float(dg.crossing_times(t, a[:, r], 0.5)) if np.any(a[:, r] >= 0.5) else np.nan
+    t_esc_grid = float(dg.crossing_times(t, a[:, r], 0.5)) if np.any(a[:, r] >= 0.5) else np.nan
+    t_esc = t_esc_grid
+    if np.any(a[:, r] >= 0.9):
+        # Resolve the escape in linear time (the log output grid alone gives +-1.8%: review B3).
+        hi = np.flatnonzero(a[:, r] >= 0.9)[0]
+        lo = np.flatnonzero(a[: hi + 1, r] < 0.1)
+        i_lo = lo[-1] if lo.size else 0
+        gf = dict(method="lsoda", rtol=s.get("rtol", 1e-8), atol=s.get("atol_rel", 1e-11) * s["sigma"])
+        z = s2s.zoom_rise(problem, torch.as_tensor(tr["params"][i_lo]), t[i_lo], t[hi], r, **gf)
+        if z is not None:
+            t_esc = float(dg.crossing_times(z[0], z[1][:, r], 0.5, last=True))
     return {"run": f.stem, "component": r, "t_end_before": s["t_end"], "predicted_remaining": pred,
-            "measured_remaining": t_esc, "ratio_measured_over_predicted": t_esc / pred,
+            "measured_remaining": t_esc, "measured_remaining_grid": t_esc_grid,
+            "ratio_measured_over_predicted": t_esc / pred,
             "stop": tr.meta["stop_reason"], "wall": time.perf_counter() - t0}
 
 
@@ -74,8 +85,12 @@ def main():
     ap.add_argument("--raw", required=True)
     ap.add_argument("--n", type=int, default=6)
     ap.add_argument("--factor", type=float, default=4.0)
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
     ap.add_argument("--spread", action="store_true")
+    ap.add_argument("--random", action="store_true", help="seeded random sample of the candidates")
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--names", nargs="*", default=[], help="continue exactly these runs")
+    ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--max_ratio", type=float, default=1e3)
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
@@ -83,8 +98,16 @@ def main():
     # args.spread: evenly spaced over the distribution of predicted remaining plateau / elapsed time
     # (else the n shortest), skipping estimates beyond max_ratio x the elapsed time
     cands = [c for c in cands if c[0] <= args.max_ratio]
-    pick = cands[:: max(1, len(cands) // args.n)][: args.n] if args.spread else cands[: args.n]
-    with Pool(len(pick)) as pool:
+    if args.names:
+        pick = [c for c in cands if c[1].stem in set(args.names)]
+    elif args.random:
+        rng = np.random.default_rng(args.seed)
+        pick = [cands[i] for i in sorted(rng.choice(len(cands), size=min(args.n, len(cands)), replace=False))]
+    elif args.spread:
+        pick = cands[:: max(1, len(cands) // args.n)][: args.n]
+    else:
+        pick = cands[: args.n]
+    with Pool(min(len(pick), args.workers)) as pool:
         rows = pool.map(job, [(*c, args.factor) for c in pick])
     df = pd.DataFrame(rows)
     Path(args.out).mkdir(parents=True, exist_ok=True)

@@ -31,7 +31,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("name")
     ap.add_argument("--raw", default="/root/outputs/s2s_core/main")
-    ap.add_argument("--out", default=str(HERE / "results"))
+    ap.add_argument("--out", required=True, help="output directory (e.g. experiments/s2s_core/results)")
     args = ap.parse_args()
     raw = Path(args.raw)
     summ = json.loads((raw / f"{args.name}.json").read_text())
