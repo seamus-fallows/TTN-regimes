@@ -94,4 +94,37 @@ open additional 2-core routes, so later plateaus on the MPS should be log-time o
 
 ## 4. Results
 
-(pending)
+Setting unless stated: MNIST 3 vs 5, 4x4, raw cos/sin features, chi = 4, n_train = 4000, gradient flow
+(section 3), sigma in {0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5}, init seeds 0-4, horizon tau = 1e4 after
+the escape. Numbers marked (interim) come from the partial sweep and are updated in section 6.
+
+### 4.1 First plateau (R1): exact sigma^-(K-2) [empirical, derived]
+t1 ranges from ~1e6 (sigma = 0.5) to ~1e19-1e20 (sigma = 0.05). The per-seed exponent of t1 vs 1/sigma is
+13.000 +- 0.000 (binary16, K = 15) and 14.000 +- 0.000 (mps16, K = 16) to the digits shown. This is
+guaranteed: near the origin L = L0 - <T, W(theta)> + O(|W|^2), the first term is homogeneous of degree K,
+and the quadratic term is O(sigma^(2K)) against O(sigma^K), so the flow from sigma Z is the flow from Z
+with time rescaled by sigma^-(K-2) up to O(sigma^K) corrections. On real data this holds for the raw
+features at every sigma used. With whitened features the function-space scale at equal sigma is ~256x
+larger (E|Phi|^2 = 2^16 instead of 1), and the asymptote is reached only at smaller sigma (pilot: 12.6 on
+mps16 over sigma = 0.2-0.5).
+
+### 4.2 Stepwise bond-rank growth and the first route (R2) [empirical]
+After the escape all edges carry one data-weighted singular value. Then the next singular values escape
+one route at a time, from s_k/s_1 ~ 1e-5-1e-3 to O(0.1-1) (figure `bond_spectra_raw_s*`).
+- binary16 (quadtree): the first rank increase is on exactly two sibling bottom edges, a 3-core route
+  through their parent, in 35/35 runs (interim). For seeds 0, 2, 3 it is the pair under the top-right 2x2
+  pixel block (edges 3, 4), for seed 1 the top-left one (0, 1); seed 4 switches from (3, 4) at sigma <= 0.14
+  to (0, 1) at sigma >= 0.2.
+- mps16 (snake): the first rank increase is on a single edge (edge 5) in 35/35 runs (interim). It happens
+  during or right after the first escape: a strict 2-core route with a large rate.
+
+### 4.3 Which route: degree first, then amplitude (R2 + route amplitudes) [empirical]
+At the bond-rank-1 plateau of each quadtree run the route amplitudes lambda_uw (section 3) were computed
+for all 28 pairs of bottom cores. The sibling pair (k = 3) with the largest lambda is the pair that gains
+rank first in 34/35 runs; the largest sibling amplitude exceeds the second by 2-70x. The largest amplitudes
+overall belong to non-sibling pairs (k = 5, 7; e.g. lambda = 0.35 for k = 5 vs 0.05 for the best k = 3
+pair, sigma = 0.5, seed 0). These routes escape later: route degree beats amplitude, as on teachers
+(theory_saddles.md R8, "locality beats weight"). The plateau state is the same rank-1 critical point
+for all sigma at a given seed (relative distance from an exact rank-1 product <= 0.03 for sigma <= 0.2).
+There are at least two such points (seeds land on the (3,4) or (0,1) one), so the first escape is a
+seed-dependent choice among KKT points of <T, W>.
