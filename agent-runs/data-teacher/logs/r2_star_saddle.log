@@ -27,3 +27,4 @@ mps4 1.36 0.001 4 learn_r t=2.54e+03
 mps4 1.4 0.01 3 learn_r t=140
 mps4 1.4 0.01 0 learn_r t=300
 mps4 1.4 0.01 1 learn_r t=300
+mps4 1.4 0.01 4 learn_r t=300
