@@ -1413,7 +1413,7 @@ $0.7$--$1.2\,\lr^*_{\rm ms}$ components were repeatedly erased and relearned, or
 
 Here $\pd[i]=d$, and $\TK=\sum_v\lrm vJ_vJ_v\T$ on $\R^{d^\Ns}$, $J_v=\partial\W/\partial\G v$, is the tensor-space
 tangent kernel that drives the function-space dynamics of \eqref{eq:gf} (for whitened inputs the probe-set
-kernel of \cref{sec:setup-diagnostics} is $\Feat(x_p)\T\TK\Feat(x_{p'})$). Recall $\mat{\W}{\edge v}=\Sub vC_v\T$
+kernel of \cref{sec:setup-diagnostics} is $\Feat(x_p)\T\TK\Feat(x_{p'})$). Recall $\mat{\W}{\edge v}=\Sub v\bar T_v\T$
 (\cref{sec:setup-model}); the initialization is \eqref{eq:init} with scales $\iscv v$, $\fsc=\prod_v\iscv v$. A bond
 $e$ is \emph{full} if $\bd e$ reaches its cut dimension $\min(d^{n_e},d^{\Ns-n_e})$ ($n_e$ sites below $e$).
 
@@ -1421,7 +1421,7 @@ $e$ is \emph{full} if $\bd e$ reaches its cut dimension $\min(d^{n_e},d^{\Ns-n_e
   \proven{} \newresult[on every tree; for MPS and TT the bond-dimension-independent mean kernel is implicit
   in \citealp{guo2021neural,wesel2025tensor}; the rank in (c) is the manifold dimension of
   \citealp{uschmajew2013geometry}]
-  (a) $J_vJ_v\T=\bigotimes_{u\in\ch v}\Sub u\Sub u\T\otimes\Id_{d_v}\otimes C_vC_v\T$ (legs in site order).
+  (a) $J_vJ_v\T=\bigotimes_{u\in\ch v}\Sub u\Sub u\T\otimes\Id_{d_v}\otimes\bar T_v\bar T_v\T$ (legs in site order).
   (b) For all bond dimensions, $\E\,\TK=\frac{\fsc^2}{d^\Ns}\sum_v\frac{\lrm v\fanin v}{\iscv v^2}\,\Id$ and
   $\E[\Wz\otimes\Wz]=\frac{\fsc^2}{d^\Ns}\Id$; with $\iscv v=\isc$ and $\lrm v=1$ the kernel scale is
   $\bar\lambda:=\E\tr\TK/d^\Ns=\isc^{2(\Kc-1)}\sum_v\fanin v/d^\Ns$ (core $v$ contributes the term $\fanin v$).
@@ -1432,7 +1432,7 @@ $e$ is \emph{full} if $\bd e$ reaches its cut dimension $\min(d^{n_e},d^{\Ns-n_e
   dimensions, first reduce each $\bd e$ to its effective value); $\rank\TK=d^\Ns$ iff every bond is full.
 \end{proposition}
 \begin{proof}[Proof sketch]
-  (a) $\W$ is linear in $\G v$. (b) The cores are independent, $\Sub u$ and $C_v$ involve disjoint cores, and the
+  (a) $\W$ is linear in $\G v$. (b) The cores are independent, $\Sub u$ and $\bar T_v$ involve disjoint cores, and the
   initialization law is invariant under orthogonal maps of each physical leg (irreducible); the traces
   follow by induction from the leaves (\cref{prop:init-norm}). (c) $\rank\TK$ is the dimension of the tangent
   space of $\mathcal M_\chi$ at $\Wz$, parameters minus gauge \citep[Thms~2 and~4]{uschmajew2013geometry}.
@@ -1485,8 +1485,8 @@ with mean, by \cref{prop:A-kernel}(b),
   \frac{\E\Loss_{\rm end}}{\Loss(0)}\approx\Big(1-\frac{\dim\mathcal M_\chi}{d^\Ns}\Big)\frac{\isc^{2\Kc}}{\normF{\Wt}^2}.
 \end{equation}
 The formula needs $\bd e=\rank\mat{(\Wt)}{e}$. Measured floors on binary $\Ns=4$ ($d=3$, weights $(3,2,1)$, six seeds,
-$\isc\le0.63$) are $0.57$ times it on average at $\chi=3$ (median $0.48$), and $0.20$ and $0.072$ times it at $\chi=4$,
-$6$, where spare bond rank absorbs part of $\Wz$ \empirical. A typical run meets the convergence rule
+$\isc\le0.4$) are $0.57$ times it on average at $\chi=3$ (median $0.48$), and $0.20$ and $0.072$ times it at $\chi=4$,
+$6$ (medians $0.18$ and $0.044$), where spare bond rank absorbs part of $\Wz$ \empirical. A typical run meets the convergence rule
 $\Loss<10^{-3}\Loss(0)$ only below
 $\isc_{\rm floor}=[10^{-3}\normF{\Wt}^2/(1-\dim\mathcal M_\chi/d^\Ns)]^{1/(2\Kc)}$ ($0.56$ for binary $\Ns=4$, $0.74$ for $\Ns=8$;
 $d=\chi=3$, weights $(3,2,1)$); runs well above it are stalled, at a floor (median seed from $\isc\approx0.64$,
