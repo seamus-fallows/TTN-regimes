@@ -76,15 +76,19 @@ Recorder keeps "fine rows" (log + integrator steps where theta or log L moved by
 
 | Q | topic | literature | owner | status |
 |---|---|---|---|---|
-| Q1 | saddle sequence from small init | open | `s2s-core` | running |
-| Q2 | plateau scaling with sigma, K, chi | partly known | `s2s-core` | running |
-| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | round 1 DONE, merged, under review: H2 holds on 9 trees, k = 1..8 (~7k runs); route rule for several components; theory: Steiner identity proven, saddle order = k* derived (upper bound proven), several residuals: strict iff rho(S) > s_q |
-| Q4 | learning order | analogues known, TTN open | `order` | running |
-| Q5 | regime map | analogues known, TTN open | `regime-map` | running |
-| Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | running |
-| Q8 | learning rate, SGD, samples | partly known | `optim-samples` | round 1 DONE, merged, under review |
-| B1 | optimizer dependence (Adam, gauge-aware, ALS) | open | `optimizers` | round 1 merged + reviewed; fix round running |
-| B5 | real data (MNIST, quadtree vs MPS vs scrambled) | open | `real-data` | running |
+| Q1 | saddle sequence from small init | open | `s2s-core` | reviewed; fix round 1 merged (5647a0f); verification running (`notes/reviews/s2s_core_round2_verification.md`) |
+| Q2 | plateau scaling with sigma, K, chi | partly known | `s2s-core` | as Q1 |
+| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | DONE: reviewed twice + verified; report Sec. 4 locality subsection drafted |
+| Q4 | learning order | analogues known, TTN open | `order` | reviewed; fix round running (remote, small new runs) |
+| Q5 | regime map | analogues known, TTN open | `regime-map` | reviewed; fix round running LOCALLY (worktree `../wt/regime-map-fix`; machine cannot restart) |
+| Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | round 2 reviewed; fix round 2 merged (fe95253); verification running (`notes/reviews/data_teacher_round3_verification.md`) |
+| Q8 | learning rate, SGD, samples | partly known | `optim-samples` | DONE: reviewed + verified (errata in `notes/reviews/optim_samples_round2_verification.md`); report Sec. 5.5 drafted |
+| B1 | optimizer dependence (Adam, gauge-aware, ALS) | open | `optimizers` | DONE: reviewed + fixed; report Sec. 5.6 drafted |
+| B5 | real data (MNIST, quadtree vs MPS vs scrambled) | open | `real-data` | reviewed; fix round running LOCALLY (worktree `../wt/real-data-fix`) |
+
+Report: Sec. 2 (polished), 4 locality + failure modes, 5.5, 5.6, App. B/C entries drafted; App. A being trimmed;
+citation / prior-work audit running (`notes/reviews/citation_check.md`). Parallel report work happens in git worktrees
+`../wt/<name>` on branches `wip/<name>`, merged by the lead.
 
 ## Key findings so far
 
