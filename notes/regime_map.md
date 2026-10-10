@@ -896,3 +896,18 @@ runs do not finish, the report gives the largest K reached and how the run time 
    (~440 MB RSS), so 330 spawned workers ran out of the 125 GB of memory: the first launch died with
    BrokenProcessPool. The first 22 rows of arm P were discarded because they used the pre-amendment
    event handling (`/root/outputs/regime_map_r2/r2_plain_discarded_eventbug/`).
+4. **Arm C scope.** The full-bond dopri5 pilots (binary 8 and 10 at d = 2, binary 6 and 7 at d = 3;
+   P = 830-3900) had not finished after 20 min under full load. Arm C therefore uses LSODA and only
+   the trees with P <= 1152: d = 2 for K = 3-8, and d = 3 for K = 3-4. Arm C's d-contrast thus rests on
+   K = 3-4 only.
+   - Full bonds also differ between the two d (chi_e = 4 vs 9 at N = 4), so the arm C d-contrast mixes
+     d with chi. Arm P keeps chi = 4 at both d.
+5. **Out-of-memory crashes in arm P.** The arm P driver died twice (12:54 and 13:41 UTC) with
+   BrokenProcessPool.
+   - Cause: `run_regime.tensor_kernel` builds a D x D identity for its batched reverse passes. The
+     guard only bounded D x P, so trees with D = 2^14-2^15 (d = 2) or 3^9 (d = 3) allocated 2-9 GB per
+     run, and the kernel killed workers.
+   - Fix: the guard now also requires D^2 <= 2e7, and arm P skips the tensor kernel, which only the
+     lazy label needs, not sigma_c.
+   - Every completed row is kept (each relaunch resumes from the rows). Some walkers lost up to an hour
+     of wall-clock.
