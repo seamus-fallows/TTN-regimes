@@ -1,12 +1,17 @@
 """Figures for the real-data experiment from summarize.py output and the raw trajectories.
 
 Usage: uv run python experiments/real_data/make_figures.py <summary.json> <runs_dir> <out_dir> [features]
+           [routes.json hessians.json regime_analysis.json]
+       uv run python experiments/real_data/make_figures.py --json <results_dir> <out_dir>
+       (only the figures made from committed JSON files: route_amplitudes, plateau_hessians,
+        regime_sweep, and from fix1_analysis.json first_route_gaps, locality_orders)
 
 Figures (features = raw by default):
   loss_curves      train loss vs tau per tree, one curve per sigma (seed 0); linear-time inset view
   bond_spectra     s_k/s_1 on every edge vs tau (seed 0, sigma = 0.1), colour = edge level
   growth_order     time of each edge's first rank increase vs the edge's level, all seeds (sigma = 0.1)
-  scaling          t1 vs sigma per seed (slope -(K-2)); gap between the first two drops vs sigma
+  scaling          t1 vs sigma per seed (slope -(K-2)); classified first-route gap vs sigma (fix round 1:
+                   attribution by the drop window that contains the route's rank crossing); MPS edges 4, 3
   locality         mean +- SE train / test loss vs tau for quadtree, scrambled (3 orders), MPS
 """
 
@@ -166,23 +171,16 @@ def _sigma_ticks(ax):
 
 
 def classified_first_route(rows, tree_key_):
-    """{(ordering, seed): [(sigma, gap)]} with gap = (loss drop carrying the seed's first route) - (first
-    drop), only at sigma values where the first route equals the one at the smallest sigma."""
-    groups = defaultdict(list)
-    for r in rows:
-        if r.get("drops") and tree_key(r) == tree_key_:
-            groups[(r["ordering"], r["seed"])].append(r)
-    out = {}
-    for key, rs in groups.items():
-        rs.sort(key=lambda r: r["sigma"])
-        ref = rs[0].get("first_rank2_edges")
-        pts = []
-        for r in rs:
-            later = [d for d in r["drops"][1:] if d["t_hi"] + d["width"] >= r["t_first_rank2"]]
-            if r.get("first_rank2_edges") == ref and later:
-                pts.append((r["sigma"], later[0]["t"] - r["drops"][0]["t"]))
-        out[key] = pts
-    return out
+    """{(ordering, seed): [(sigma, gap)]}: gap = (loss drop whose window contains the seed's first-route rank
+    crossing) - (first drop), at sigma values where the first route equals the one at the smallest sigma;
+    crossings merged with drop 0 or between drops are left out (`scaling.first_route_points`, fix round 1)."""
+    from scaling import first_route_points
+
+    sel = [r for r in rows if tree_key(r) == tree_key_]
+    return {
+        (tree.split("_", 1)[1].split("/")[0], seed): [(s, g) for s, g, _, _ in d["kept"]]
+        for (tree, seed), d in first_route_points(sel).items()
+    }
 
 
 def fig_scaling(rows, out, feats):
@@ -273,13 +271,18 @@ def fig_locality(rows, runs_dir, out, feats, sigma=0.1, t_max=1e4):
     plt.close(fig)
 
 
-def fig_routes(routes_json, out):
+def fig_routes(routes_json, out, err_max=0.05):
     """Route amplitudes at the rank-1 plateau: lambda_uw against the route degree k, quadtree vs
-    scrambled; filled marker = the sibling pair that actually gained rank first."""
-    res = [r for r in json.load(open(routes_json)) if "pairs" in r and r["features"] == "raw"]
+    scrambled; filled marker = the sibling pair that actually gained rank first. Only states within
+    err_max of a rank-1 product (fix round 1: the amplitude formula assumes a rank-1 state)."""
+    states = [r for r in json.load(open(routes_json)) if "pairs" in r and r["features"] == "raw"]
+    res = [r for r in states if r["rank1_rel_err"] <= err_max]
     fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.38 * TEXT_WIDTH), sharey=True)
     rng = np.random.default_rng(1)
-    for ax, key, label in ((axes[0], "quadtree", "binary, quadtree"), (axes[1], "scrambled", "binary, scrambled")):
+    for ax, key, label in (
+        (axes[0], "quadtree", "binary, quadtree"),
+        (axes[1], "scrambled", "binary, scrambled"),
+    ):
         col = TREE_COLOR[label]
         n = 0
         for r in res:
@@ -291,38 +294,72 @@ def fig_routes(routes_json, out):
             for p_ in r["pairs"]:
                 first = sorted([edges.index(p_["u"]), edges.index(p_["w"])]) == obs
                 x = p_["k"] + rng.uniform(-0.35, 0.35)
-                ax.scatter(x, p_["lam"], s=10 if first else 4, color=col if first else "none",
-                           edgecolors=col, lw=0.5, alpha=1.0 if first else 0.5, zorder=3 if first else 2)
+                ax.scatter(
+                    x,
+                    p_["lam"],
+                    s=10 if first else 4,
+                    color=col if first else "none",
+                    edgecolors=col,
+                    lw=0.5,
+                    alpha=1.0 if first else 0.5,
+                    zorder=3 if first else 2,
+                )
         ax.set_yscale("log")
         ax.set_xticks([3, 5, 7])
         ax.set_xlabel(r"route degree $k$ (cores between the two bottom cores)")
-        ax.set_title(f"{label} ({n} runs)", fontsize=9)
+        ax.set_title(f"{label} ({n} rank-1 states)", fontsize=9)
     axes[0].set_ylabel(r"route amplitude $\lambda_{uw}$")
-    fig.text(0.5, -0.03, "filled: the pair whose edges gained rank first", ha="center", fontsize=7)
+    fig.text(
+        0.5,
+        -0.03,
+        f"filled: the pair whose edges gained rank first; {len(states) - len(res)} states farther "
+        f"than {err_max:g} from rank 1 left out",
+        ha="center",
+        fontsize=7,
+    )
     fig.tight_layout()
     savefig(fig, Path(out) / "route_amplitudes")
     plt.close(fig)
 
 
 def fig_hessians(hess_json, out, levels=(("mps", 0.225, 0.235), ("binary", 0.265, 0.275))):
-    """|lambda_min| of the Hessian at the first plateau's midpoint vs sigma; filled = gauge-projected,
-    open = raw; only runs at the common plateau level (same saddle)."""
+    """|lambda_min| of the Hessian at the first plateau's midpoint vs sigma, one line per seed; filled =
+    gauge-projected, open = raw; only runs at the common plateau level (same saddle)."""
     res = [r for r in json.load(open(hess_json)) if "raw_min" in r]
     fig, ax = plt.subplots(figsize=(TEXT_WIDTH / 2, 0.75 * TEXT_WIDTH / 2))
     labels = {"mps": "MPS, snake", "binary": "binary, quadtree"}
     for tree, lo, hi in levels:
         sel = [r for r in res if r["tree"] == tree and lo <= r["loss_mid"] <= hi]
         col = TREE_COLOR[labels[tree]]
-        sig = np.array([r["sigma"] for r in sel])
-        ax.scatter(sig, [-r["proj_min"] for r in sel], s=10, color=col, lw=0,
-                   label=f"{labels[tree]} (L = {np.mean([r['loss_mid'] for r in sel]):.2f})")
-        ax.scatter(sig * 1.04, [-r["raw_min"] for r in sel], s=10, facecolors="none", edgecolors=col, lw=0.6)
+        for i, seed in enumerate(sorted({r["seed"] for r in sel})):
+            rs = sorted((r for r in sel if r["seed"] == seed), key=lambda r: r["sigma"])
+            sig = np.array([r["sigma"] for r in rs])
+            ax.plot(
+                sig,
+                [-r["proj_min"] for r in rs],
+                color=col,
+                lw=0.6,
+                marker="o",
+                ms=2.5,
+                label=f"{labels[tree]} (L = {np.mean([r['loss_mid'] for r in sel]):.2f})"
+                if i == 0
+                else None,
+            )
+            ax.scatter(
+                sig * 1.04,
+                [-r["raw_min"] for r in rs],
+                s=8,
+                facecolors="none",
+                edgecolors=col,
+                lw=0.5,
+            )
     xs = np.array([0.05, 0.3])
     ax.plot(xs, 0.3 * xs, color=MUTED, lw=0.8, ls="--")
     ax.text(0.31, 0.09, r"$\propto\sigma$", fontsize=7, color=MUTED)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel(r"$\sigma$")
+    _sigma_ticks(ax)
     ax.set_ylabel(r"$|\lambda_{\min}|$ at the first plateau")
     ax.legend(fontsize=6, frameon=False, loc="lower right")
     fig.tight_layout()
@@ -331,7 +368,8 @@ def fig_hessians(hess_json, out, levels=(("mps", 0.225, 0.235), ("binary", 0.265
 
 
 def fig_regime(regime_json, out):
-    """Regime sweep: delta_K(T), train loss vs the linearized-model loss at the same time, test accuracy."""
+    """Regime sweep: delta_K(T), train loss vs the linearized-model loss at the same time (band: the lazy
+    floors L_lin(inf) of the five seeds), test accuracy."""
     from ttn.plotting import regime_colors
 
     rows = [r for r in json.load(open(regime_json)) if r.get("delta_K_end") is not None]
@@ -339,38 +377,226 @@ def fig_regime(regime_json, out):
     cols = regime_colors(cats)
     fig, axes = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 0.33 * TEXT_WIDTH))
     rng = np.random.default_rng(2)
+    floors = [r["L_lin_floor"] for r in rows]
+    axes[1].axhspan(min(floors), max(floors), color=MUTED, alpha=0.15, lw=0)
     for r in rows:
         x = r["sigma"] * np.exp(rng.uniform(-0.04, 0.04))
         mk = "o" if r.get("model") == "centred" else "s"
         c = cols.get(r["label"], MUTED)
         axes[0].scatter(x, r["delta_K_end"], s=10, color=c, marker=mk, lw=0)
         axes[1].scatter(x, r["loss_end"], s=10, color=c, marker=mk, lw=0)
-        axes[1].scatter(x, r["L_lin_T"], s=10, facecolors="none", edgecolors=MUTED, marker=mk, lw=0.6)
+        axes[1].scatter(
+            x, r["L_lin_T"], s=10, facecolors="none", edgecolors=MUTED, marker=mk, lw=0.6
+        )
         axes[2].scatter(x, r["test_acc_end"], s=10, color=c, marker=mk, lw=0)
     axes[0].axhline(0.1, color=MUTED, lw=0.6, ls="--")
     axes[0].set_yscale("log")
+    from matplotlib.ticker import FixedLocator, NullLocator, ScalarFormatter
+
     for ax in axes:
         ax.set_xscale("log")
-        from matplotlib.ticker import FixedLocator, NullLocator, ScalarFormatter
         ax.xaxis.set_major_locator(FixedLocator([0.05, 0.1, 0.3, 1, 3]))
         ax.xaxis.set_minor_locator(NullLocator())
         ax.xaxis.set_major_formatter(ScalarFormatter())
+        ax.set_xlabel(r"$\sigma$")
     axes[0].set_ylabel(r"$\delta_K(T)$")
     axes[1].set_ylabel("train loss at T (open: linearized)")
+    axes[1].text(
+        0.06,
+        max(floors),
+        r"band: lazy floors $L_{\rm lin}(\infty)$",
+        fontsize=5.5,
+        color=MUTED,
+        va="bottom",
+    )
     axes[2].set_ylabel("test accuracy at T")
-    for ax in axes:
-        ax.set_xscale("log")
-        ax.set_xlabel(r"$\sigma$")
     from matplotlib.lines import Line2D
+
     handles = [Line2D([], [], color=cols[k], marker="o", ls="", ms=4, label=k) for k in cats]
-    handles += [Line2D([], [], color=MUTED, marker="s", ls="", ms=4, label="plain model"),
-                Line2D([], [], color=MUTED, marker="o", ls="", ms=4, label="centred model")]
-    fig.legend(handles=handles, fontsize=7, frameon=False, loc="upper center", ncol=5, bbox_to_anchor=(0.5, 1.08))
+    handles += [
+        Line2D([], [], color=MUTED, marker="s", ls="", ms=4, label="plain model"),
+        Line2D([], [], color=MUTED, marker="o", ls="", ms=4, label="centred model"),
+    ]
+    fig.legend(
+        handles=handles,
+        fontsize=7,
+        frameon=False,
+        loc="upper center",
+        ncol=5,
+        bbox_to_anchor=(0.5, 1.08),
+    )
     fig.tight_layout()
     savefig(fig, Path(out) / "regime_sweep")
     plt.close(fig)
+ORDER_COLOR = dict(zip(["quadtree", "scrambled0", "scrambled1", "scrambled2"], palette(4)))
 
 
+def fig_first_route_clean(fix1_json, out):
+    """Clean k = 3 first-route series (fix1_analysis.json): gap vs sigma with the A / sigma + B fits (left),
+    and sigma x gap vs sigma (right), where A / sigma + B is a straight line of slope B."""
+    series = json.load(open(fix1_json))["first_route"]["series"]
+    fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.38 * TEXT_WIDTH))
+    markers = dict(zip(ORDER_COLOR, "osD^"))
+    seen = set()
+    for s in series:
+        order = s["tree"].split(":")[1]
+        col, mk = ORDER_COLOR[order], markers[order]
+        sig, gap = np.array(s["sigmas"]), np.array(s["gaps"])
+        xs = np.geomspace(sig.min(), sig.max(), 50)
+        lab = order if order not in seen else None
+        seen.add(order)
+        axes[0].loglog(sig, gap, ls="", marker=mk, ms=3, color=col, label=lab)
+        axes[0].loglog(xs, s["A"] / xs + s["B"], color=col, lw=0.8)
+        axes[1].plot(sig, sig * gap, ls="", marker=mk, ms=3, color=col)
+        axes[1].plot(xs, s["A"] + s["B"] * xs, color=col, lw=0.8)
+    xs = np.array([0.05, 0.5])
+    axes[0].plot(xs, 10 / xs, color=MUTED, lw=0.8, ls="--", label=r"$\propto\sigma^{-1}$")
+    axes[0].set_ylabel(r"gap drop 1 $-$ drop 0 ($\tau$)")
+    axes[1].set_ylabel(r"$\sigma\times$ gap")
+    axes[0].set_title(r"lines: $A/\sigma + B$ fits", fontsize=8)
+    axes[1].set_title(r"$A/\sigma+B$ is a line of slope $B<0$", fontsize=8)
+    for ax in axes:
+        ax.set_xlabel(r"$\sigma$")
+    _sigma_ticks(axes[0])
+    axes[0].legend(fontsize=6, frameon=False)
+    fig.tight_layout()
+    savefig(fig, Path(out) / "first_route_gaps")
+    plt.close(fig)
+
+
+def fig_locality_orders(fix1_json, out):
+    """Per (order, seed) at sigma = 0.1 (fix1_analysis.json 'locality'): final train loss vs the share of
+    sum lambda^2 on k <= 5 routes at the first plateau (left), and the final losses grouped by order (right)."""
+    lo = json.load(open(fix1_json))["locality"]
+    groups = {
+        "quadtree": ("quadtree", palette(4)[0]),
+        "rowmajor": ("local, other", palette(4)[2]),
+        "quadtreeT": ("local, other", palette(4)[2]),
+    }
+    random_col = palette(4)[1]
+    fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.4 * TEXT_WIDTH), sharey=True)
+    seen = set()
+    for r in lo["rows"]:
+        name, col = groups.get(r["ordering"], ("random", random_col))
+        mk = "o" if r["source"] == "fix1" else "s"
+        key = (name, r["source"])
+        lab = (
+            f"{name} ({'main-sweep case' if r['source'] == 'fix1' else 'review run'})"
+            if key not in seen
+            else None
+        )
+        seen.add(key)
+        axes[0].scatter(
+            r["share_k5"], r["loss_end"], s=14, color=col, marker=mk, lw=0, label=lab, zorder=3
+        )
+    sp = lo["spearman_all"]
+    axes[0].set_title(f"Spearman {sp['rho']:.2f} (p = {sp['p']:.1g}, n = {sp['n']})", fontsize=8)
+    axes[0].set_xlabel(r"share of $\sum\lambda^2$ on $k\leq5$ routes (first plateau)")
+    axes[0].set_ylabel(r"train loss at $\tau = 10^4$")
+    axes[0].legend(fontsize=5.5, frameon=False, loc="upper right")
+    names = list(lo["per_order"])
+    rng = np.random.default_rng(3)
+    for i, o in enumerate(names):
+        v = lo["per_order"][o]["loss_values"]
+        _, col = groups.get(o, ("random", random_col))
+        axes[1].scatter(i + rng.uniform(-0.12, 0.12, len(v)), v, s=12, color=col, lw=0, zorder=3)
+    axes[1].set_xticks(range(len(names)))
+    axes[1].set_xticklabels(names, rotation=60, fontsize=6)
+    axes[1].set_title(r"$\sigma = 0.1$, one point per seed", fontsize=8)
+    fig.tight_layout()
+    savefig(fig, Path(out) / "locality_orders")
+    plt.close(fig)
+
+
+def fig_scaling_fix1(fix1_json, regime_json, out):
+    """Fix round 1 replacement of `scaling_raw` from committed JSON: (a) t_a sigma^(K-2) per seed (constant:
+    the first-escape identity) for the quadtree (regime_analysis.json, plain runs) and the snake MPS (fix1 MPS
+    reruns); (b) MPS edges 4 and 3: rise time after the first drop vs ln(1/sigma) per seed with the
+    relative-residual log-law fit; (c) MPS first rise (edge 5) relative to the first drop's rate peak, x =
+    already above threshold at tau = 0."""
+    fx = json.load(open(fix1_json))
+    mr = fx.get("mps_reruns")
+    reg = [r for r in json.load(open(regime_json)) if r["model"] == "plain"]
+    fig, axes = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 0.36 * TEXT_WIDTH))
+    q_col, m_col = TREE_COLOR["binary, quadtree"], TREE_COLOR["MPS, snake"]
+    for seed in sorted({r["seed"] for r in reg}):
+        rs = sorted((r for r in reg if r["seed"] == seed), key=lambda r: r["sigma"])
+        s = np.array([r["sigma"] for r in rs])
+        axes[0].loglog(
+            s,
+            [r["t_a"] * r["sigma"] ** 13 for r in rs],
+            color=q_col,
+            lw=0.7,
+            marker="o",
+            ms=2,
+            label="binary quadtree ($K-2=13$)" if seed == 0 else None,
+        )
+    if mr:
+        for seed in sorted({r["seed"] for r in mr["runs"]}):
+            rs = [r for r in mr["runs"] if r["seed"] == seed]
+            s = np.array([r["sigma"] for r in rs])
+            axes[0].loglog(
+                s,
+                [r["t_a"] * r["sigma"] ** 14 for r in rs],
+                color=m_col,
+                lw=0.7,
+                marker="s",
+                ms=2,
+                label="MPS snake ($K-2=14$)" if seed == 0 else None,
+            )
+        fits = {e["edge"]: {f["seed"]: f for f in e["per_seed"]} for e in mr["edge_fits"]}
+        for e, ls in ((4, "-"), (3, "--")):
+            for seed in sorted({r["seed"] for r in mr["runs"]}):
+                rs = [r for r in mr["runs"] if r["seed"] == seed and r["rise"][e] is not None and r["rise"][e] > r["drop0"]]
+                x = np.log(1 / np.array([r["sigma"] for r in rs]))
+                y = np.array([r["rise"][e] - r["drop0"] for r in rs])
+                axes[1].plot(x, y, ls="", marker="o" if e == 4 else "^", ms=2.5, color=m_col)
+                f = fits.get(e, {}).get(seed)
+                if f:
+                    xs = np.linspace(x.min(), x.max(), 2)
+                    # intercept of the relative-residual fit given its slope (zero a-gradient at the joint optimum)
+                    a = np.sum(1 / y - f["log_slope"] * x / y**2) / np.sum(1 / y**2)
+                    axes[1].plot(xs, a + f["log_slope"] * xs, ls=ls, lw=0.6, color=m_col)
+            axes[1].plot(
+                [], [], ls=ls, marker="o" if e == 4 else "^", ms=2.5, color=m_col, label=f"edge {e}"
+            )
+        rng = np.random.default_rng(4)
+        for r in mr["runs"]:
+            x = r["sigma"] * np.exp(rng.uniform(-0.05, 0.05))
+            if r["first_at_start"]:
+                axes[2].scatter(x, -r["drop0"], marker="x", s=10, color=MUTED, lw=0.6)
+            else:
+                axes[2].scatter(x, r["rise"][r["first"][0]] - r["drop0"], s=8, color=m_col, lw=0)
+        axes[2].axhline(0, color=MUTED, lw=0.6, ls="--")
+        axes[2].set_xscale("log")
+        _sigma_ticks(axes[2])
+    axes[0].set_ylabel(r"$t_a\,\sigma^{K-2}$ (per seed)")
+    axes[0].set_xlabel(r"$\sigma$")
+    axes[0].legend(fontsize=5.5, frameon=False)
+    _sigma_ticks(axes[0])
+    axes[1].set_xlabel(r"$\ln(1/\sigma)$")
+    axes[1].set_ylabel(r"rise after the first drop ($\tau$)")
+    axes[1].legend(fontsize=6, frameon=False)
+    axes[1].set_title("MPS later routes", fontsize=8)
+    axes[2].set_xlabel(r"$\sigma$")
+    axes[2].set_ylabel("first rise - first drop peak")
+    axes[2].set_title(r"MPS first rise (x: at $\tau = 0$)", fontsize=8)
+    fig.tight_layout()
+    savefig(fig, Path(out) / "scaling_fix1")
+    plt.close(fig)
+def json_figures(results_dir, out_dir):
+    """Figures that need only committed JSON files (no raw trajectories)."""
+    from analysis import ERR_MAX
+
+    R = Path(results_dir)
+    set_style()
+    fig_routes(R / "routes_raw.json", out_dir, err_max=ERR_MAX)
+    fig_hessians(R / "hessians_raw.json", out_dir)
+    fig_regime(R / "regime_analysis.json", out_dir)
+    if (R / "fix1_analysis.json").exists():
+        fig_first_route_clean(R / "fix1_analysis.json", out_dir)
+        fig_locality_orders(R / "fix1_analysis.json", out_dir)
+        fig_scaling_fix1(R / "fix1_analysis.json", R / "regime_analysis.json", out_dir)
 def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None, hess_json=None,
          regime_json=None):
     set_style()
@@ -392,4 +618,7 @@ def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None, hess_js
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:])
+    if sys.argv[1] == "--json":
+        json_figures(*sys.argv[2:])
+    else:
+        main(*sys.argv[1:])

@@ -1,12 +1,12 @@
 """Fix round 1 of the real-data review (notes/reviews/real_data_round1.md), from committed outputs.
 
 Usage: uv run python experiments/real_data/fix1_analysis.py <results_dir> <out_prefix>
-           [--local <summary.json>] [--audit <audit_table.json>...] [--logs <agent-runs/real-data/logs>]
+           [--local <summary.json>...] [--audit <audit_table.json>...] [--logs <agent-runs/real-data/logs>] [--local-runs <dir>]
 
 The raw main-sweep trajectories are not available locally, so every number here is recomputed from the
 committed per-run / per-series JSON files in <results_dir> (events_table, routes_raw, hessians_raw,
 regime_analysis, scaling, chi8_scaling), plus optional extra summaries:
-  --local   summarize.py output of the fix-round reruns (configs/fix1_local.yaml)
+  --local   summarize.py outputs of the fix-round reruns (configs/fix1_local.yaml, fix1_mps.yaml)
   --audit   the reviewers' audit tables (data/review_real_data/audit/*audit_table.json; one row per run
             with final loss, times to loss levels and route-amplitude shares, from the experiment's code)
   --logs    run logs of the remote sweeps (stop reasons of the chi = 8 runs)
@@ -361,7 +361,7 @@ def mps_first_rise(scaling, local_rows=()):
             "drop0_peak": r["drops"][0]["t"],
         }
         for r in local_rows
-        if r.get("tree") == "mps" and r.get("drops")
+        if r.get("tree") == "mps" and r.get("drops") and r["name"].endswith("_short")
     ]
     return {
         "rows": rows,
@@ -471,6 +471,25 @@ def chi8_checks(chi8, logs_dir=None):
     return out
 
 
+def two_point(scaling, sig=(0.05, 0.14)):
+    """Robustness sweeps (3 sigma values): per seed, two-point slope ln(g(sigma_0) / g(sigma_1)) /
+    ln(sigma_1 / sigma_0) of the rank-clock gap (first s_2/s_1 >= 0.05 minus the first drop; grank_mixed),
+    the set of first-rising edges over the three sigma values, and MPS runs whose first rise is recorded at
+    tau = 0 (gap < -5, i.e. minus the first drop's time)."""
+    out = {}
+    for tree in ("binary_quadtree/raw", "binary_scrambled/raw", "mps_snake/raw"):
+        rows = []
+        for m in scaling[tree]["grank_mixed"]:
+            g = m["gaps"]
+            ok = g[0] > 0 and g[1] > 0
+            rows.append({"seed": m["seed"][1], "routes": m["first_edges"], "gaps": g,
+                         "slope": float(np.log(g[0] / g[1]) / np.log(sig[1] / sig[0])) if ok else None,
+                         "at_start": sum(x < -5 for x in g)})
+        out[tree] = {"rows": rows, "slope": mean_se([r["slope"] for r in rows if r["slope"] is not None]),
+                     "at_start": sum(r["at_start"] for r in rows)}
+    return out
+
+
 def clock(reg, local_rows, audit_rows, sigma=0.1):
     """First-escape time t_a per seed at sigma (absolute clock): binary quadtree (plain main-sweep runs in
     regime_analysis.json), the fix1 reruns (scrambled orders, MPS snake) and the audit runs. Since
@@ -498,6 +517,10 @@ def clock(reg, local_rows, audit_rows, sigma=0.1):
         if abs(r["sigma"] - sigma) < 1e-9
         and not (r["tree"] == "binary" and r["ordering"] == "quadtree")
     ]
+    uniq = {}
+    for r in rows:
+        uniq.setdefault((r["tree"], r["ordering"], r["seed"]), r)
+    rows = list(uniq.values())
     for r in audit_rows:
         seed = int(re.search(r"seed(\d+)", r["name"]).group(1))
         if not any(
@@ -527,6 +550,169 @@ def clock(reg, local_rows, audit_rows, sigma=0.1):
     }
 
 
+def repro_check(reg, local_rows, sigma=0.1):
+    """fix1 reruns of main.yaml cases vs the committed values of the same cases (quadtree at sigma, from
+    regime_analysis.json): t_a and the final train loss."""
+    ref = {r["seed"]: r for r in reg if r["model"] == "plain" and abs(r["sigma"] - sigma) < 1e-9}
+    out = []
+    for r in local_rows:
+        if r.get("ordering") == "quadtree" and abs(r["sigma"] - sigma) < 1e-9 and r["seed"] in ref:
+            q = ref[r["seed"]]
+            out.append(
+                {
+                    "seed": r["seed"],
+                    "t_a_rel_diff": abs(r["t_a"] / q["t_a"] - 1),
+                    "loss_end": r["loss_end"],
+                    "loss_end_committed": q["loss_end"],
+                }
+            )
+    return out
+
+
+def creep(local_rows, runs_dir):
+    """Loss decrease between consecutive drops (from the end of drop i's widened window to the start of drop
+    i+1's), relative to the decrease inside drop i+1's widened window; binary fix1 reruns (tau = 1e4)."""
+    from analysis import load
+
+    out = []
+    for r in local_rows:
+        if r.get("tree") != "binary" or len(r.get("drops", [])) < 2:
+            continue
+        p2 = load(Path(runs_dir) / f"{r['name']}.npz")["p2"]
+        t_, loss = p2["t"], np.minimum.accumulate(p2["loss"])
+        at = lambda x: float(np.interp(x, t_, loss))  # noqa: E731
+        for d0, d1 in zip(r["drops"][:-1], r["drops"][1:]):
+            a, b = d0["t_hi"] + d0["width"], d1["t_lo"] - d1["width"]
+            nxt = at(b) - at(d1["t_hi"] + d1["width"])
+            if b > a and nxt > 0:
+                out.append(
+                    {
+                        "ordering": r["ordering"],
+                        "seed": r["seed"],
+                        "creep_over_next_drop": (at(a) - at(b)) / nxt,
+                    }
+                )
+    v = [o["creep_over_next_drop"] for o in out]
+    return {
+        "intervals": out,
+        "n": len(v),
+        "range": [min(v), max(v)] if v else None,
+        "median": float(np.median(v)) if v else None,
+    }
+
+
+def mps_reruns(local_rows, tag="_t1000"):
+    """The 35 snake-MPS reruns (configs/fix1_mps.yaml, tau <= 1000): per run the first-escape time t_a, the
+    first drop's rate peak, each edge's first s_2/s_1 >= 0.05 time (tau clock; equal to tau = 0 when the
+    ratio is already above threshold at the start of phase 2) and the first rising edges; then per edge
+    and seed, rise time after the first drop T_e vs sigma fitted by a power law and by a log law, both with
+    relative residuals (`scaling.fit_seed`; seeds with T_e > 0 at >= 5 sigma values spanning a decade)."""
+    from scaling import fit_seed
+
+    runs = []
+    for r in local_rows:
+        if r.get("tree") != "mps" or not r["name"].endswith(tag) or not r.get("drops"):
+            continue
+        ev = np.array(r["rank_events"], float)[:, 0]
+        runs.append(
+            {
+                "sigma": r["sigma"],
+                "seed": r["seed"],
+                "t_a": r["t_a"],
+                "drop0": r["drops"][0]["t"],
+                "drop0_window": [
+                    r["drops"][0]["t_lo"] - r["drops"][0]["width"],
+                    r["drops"][0]["t_hi"] + r["drops"][0]["width"],
+                ],
+                "rise": [None if not np.isfinite(x) else float(x) for x in ev],
+                "at_start": r.get("rank2_at_start", []),
+                "first": r.get("first_rank2_edges"),
+                "first_at_start": r.get("first_rank2_at_start"),
+                "loss_end": r["loss_end"],
+            }
+        )
+    runs.sort(key=lambda r: (r["seed"], r["sigma"]))
+    if not runs:
+        return None
+    resolved = [r for r in runs if not r["first_at_start"]]
+    before_peak = [r for r in resolved if r["rise"][r["first"][0]] < r["drop0"]]
+    inside0 = [
+        r
+        for r in resolved
+        if r["drop0_window"][0] <= r["rise"][r["first"][0]] <= r["drop0_window"][1]
+    ]
+    n_edges = len(runs[0]["rise"])
+    edges = []
+    for e in range(n_edges):
+        fits = []
+        for seed in sorted({r["seed"] for r in runs}):
+            pts = sorted(
+                (r["sigma"], r["rise"][e] - r["drop0"])
+                for r in runs
+                if r["seed"] == seed and r["rise"][e] is not None and r["rise"][e] - r["drop0"] > 0
+            )
+            if len(pts) >= 5 and pts[-1][0] / pts[0][0] >= 9.9:
+                f = fit_seed(np.array([p[0] for p in pts]), np.array([p[1] for p in pts]))
+                fits.append(
+                    {
+                        "seed": seed,
+                        "n_sigma": len(pts),
+                        **{
+                            k: float(f[k]) for k in ("power_p", "power_rms", "log_slope", "log_rms")
+                        },
+                    }
+                )
+        if fits:
+            edges.append(
+                {
+                    "edge": e,
+                    "n_seeds": len(fits),
+                    "per_seed": fits,
+                    "log_preferred": sum(f["log_rms"] < f["power_rms"] for f in fits),
+                    **{
+                        k: mean_se([f[k] for f in fits])
+                        for k in ("power_p", "power_rms", "log_slope", "log_rms")
+                    },
+                }
+            )
+    return {
+        "runs": runs,
+        "n": len(runs),
+        "first_at_start": len(runs) - len(resolved),
+        "first_single_edge_resolved": sum(len(r["first"] or []) == 1 for r in resolved),
+        "n_resolved": len(resolved),
+        "first_edges_resolved": sorted({tuple(r["first"]) for r in resolved}),
+        "resolved_before_drop0_peak": len(before_peak),
+        "resolved_inside_drop0_window": len(inside0),
+        "edge_fits": edges,
+    }
+
+
+def mps_repro(scaling, mr):
+    """MPS reruns (tau <= 1000) vs the committed full-horizon runs: first rank-rise time minus the first
+    drop's peak, per (seed, sigma) (scaling.json grank_mixed lists them in sigma order 0.05 ... 0.5)."""
+    if not mr:
+        return None
+    sigmas = [0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5]
+    ref = {}
+    for m in scaling["mps_snake/raw"]["grank_mixed"]:
+        for s, gap in zip(sigmas, m["gaps"]):
+            ref[(m["seed"][1], s)] = gap
+    diffs = []
+    for r in mr["runs"]:
+        key = (r["seed"], r["sigma"])
+        if key in ref and r["first"]:
+            mine = (0.0 if r["first_at_start"] else r["rise"][r["first"][0]]) - r["drop0"]
+            diffs.append({"seed": key[0], "sigma": key[1], "rerun": mine, "committed": ref[key]})
+    d = [abs(x["rerun"] - x["committed"]) for x in diffs]
+    return {
+        "pairs": diffs,
+        "n": len(d),
+        "max_abs_diff": max(d) if d else None,
+        "median_abs_diff": float(np.median(d)) if d else None,
+    }
+
+
 def load_json(p):
     return json.load(open(p))
 
@@ -535,9 +721,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("results_dir")
     ap.add_argument("out_prefix")
-    ap.add_argument("--local", default=None)
+    ap.add_argument("--local", nargs="*", default=[])
     ap.add_argument("--audit", nargs="*", default=[])
     ap.add_argument("--logs", default=None)
+    ap.add_argument("--local-runs", default=None)
     a = ap.parse_args()
     R = Path(a.results_dir)
     events, routes = load_json(R / "events_table.json"), load_json(R / "routes_raw.json")
@@ -547,7 +734,8 @@ def main():
         load_json(R / "chi8_scaling.json"),
         load_json(R / "tables.json"),
     )
-    local = [r for r in load_json(a.local) if "error" not in r] if a.local else []
+    fashion = load_json(R / "fashion_scaling.json")
+    local = [r for p in a.local for r in load_json(p) if "error" not in r]
     audit = [r for p in a.audit for r in load_json(p)]
     white = tables["white"]["s2s"]
     small = [
@@ -565,12 +753,18 @@ def main():
         "mps_first": mps_first_rise(scaling, local),
         "regime": regime_checks(reg),
         "chi8": chi8_checks(chi8, a.logs),
+        "repro": repro_check(reg, local),
+        "two_point_chi8": two_point(chi8),
+        "two_point_fashion": two_point(fashion),
+        "mps_reruns": mps_reruns(local),
+        "creep": creep(local, a.local_runs) if a.local_runs else None,
         "clock": clock(reg, local, audit),
         "white_s2s_sigma_le_0.1": {
             "s2s_runs": round(sum(v["s2s_fraction"] * v["runs"] for v in small)),
             "runs": sum(v["runs"] for v in small),
         },
     }
+    res["mps_repro"] = mps_repro(scaling, res["mps_reruns"])
     out = Path(a.out_prefix)
     out.parent.mkdir(parents=True, exist_ok=True)
     json.dump(res, open(out.with_suffix(".json"), "w"), indent=1, default=float)
@@ -830,6 +1024,29 @@ def _md_rest(res):
     md.append(
         f"\nt_a(MPS) / t_a(quadtree) per seed: {ratio}; binary runs with t_a below the MPS's, per seed: {faster}"
     )
+    rp = res.get("repro") or []
+    if rp:
+        md += ["", "## Reproduction: fix1 reruns vs committed values (quadtree, sigma = 0.1)", ""]
+        md += [
+            f"- seed {r['seed']}: |t_a / t_a(committed) - 1| = {r['t_a_rel_diff']:.1e}, L(1e4) {r['loss_end']:.5f} vs "
+            f"{r['loss_end_committed']:.5f}"
+            for r in rp
+        ]
+    cr = res.get("creep")
+    if cr and cr["n"]:
+        md += [
+            "",
+            f"## Creep between drops (binary fix1 reruns, sigma = 0.1): {cr['n']} intervals, loss decrease "
+            f"between drops / next drop: median {cr['median']:.2f}, range {cr['range'][0]:.2f}-{cr['range'][1]:.2f}",
+        ]
+    for key, name in (("two_point_chi8", "chi = 8"), ("two_point_fashion", "Fashion-MNIST")):
+        tp = res.get(key)
+        if not tp:
+            continue
+        md += ["", f"## {name}: two-point slopes (sigma 0.05 -> 0.14) of the rank-clock gap; first rises at tau = 0", ""]
+        for tree, v in tp.items():
+            sl = ", ".join(f"seed {r['seed']}: {_f(r['slope'], '.2f')} (routes {r['routes']})" for r in v["rows"])
+            md.append(f"- {tree}: {sl}; mean {_ms(v['slope'], '.2f')}; runs with the first rise at tau = 0: {v['at_start']}")
     w = res["white_s2s_sigma_le_0.1"]
     md += [
         "",
@@ -839,9 +1056,56 @@ def _md_rest(res):
     return md
 
 
+def _md_mps_reruns(res):
+    mr = res.get("mps_reruns")
+    if not mr:
+        return []
+    md = [
+        "",
+        "## MPS reruns (configs/fix1_mps.yaml, tau <= 1000): first rise and per-edge laws",
+        "",
+        f"{mr['n']} runs; first rise already at tau = 0 (threshold met at the start of phase 2): {mr['first_at_start']}; "
+        f"resolved: {mr['n_resolved']}, of which a single edge {mr['first_single_edge_resolved']} (edges "
+        f"{mr['first_edges_resolved']}), before the first drop's rate peak {mr['resolved_before_drop0_peak']}, inside "
+        f"the first drop's widened window {mr['resolved_inside_drop0_window']}.",
+        "",
+        "| edge | seeds | power p (mean ± SE) | power rms | log slope | log rms | seeds preferring log |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for e in mr["edge_fits"]:
+        md.append(
+            f"| {e['edge']} | {e['n_seeds']} | {_ms(e['power_p'], '.2f')} | {e['power_rms'][0]:.3f} "
+            f"| {e['log_slope'][0]:.3g} ± {e['log_slope'][1]:.2g} | {e['log_rms'][0]:.3f} | {e['log_preferred']}/{e['n_seeds']} |"
+        )
+    md += [
+        "",
+        "| seed | sigma | t_a | first drop peak | first rising edges | at tau = 0 | rise of edges 5 / 4 / 3 / 2 |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for r in mr["runs"]:
+        rise = " / ".join(_f(r["rise"][e], ".4g") for e in (5, 4, 3, 2))
+        md.append(
+            f"| {r['seed']} | {r['sigma']:g} | {r['t_a']:.4g} | {r['drop0']:.2f} | {r['first']} | {r['first_at_start']} | {rise} |"
+        )
+    rp = res.get("mps_repro")
+    if rp and rp["n"]:
+        md += [
+            "",
+            f"Reproduction: first rise - first drop peak, reruns vs committed full-horizon runs ({rp['n']} runs): "
+            f"median |difference| {rp['median_abs_diff']:.3g}, max {rp['max_abs_diff']:.3g} (time units).",
+        ]
+    return md
+
+
 def markdown(res):
     md = ["# Real data, fix round 1: re-analysis from committed outputs (`fix1_analysis.py`)", ""]
-    md += _md_first_route(res) + _md_routes(res) + _md_locality(res) + _md_rest(res)
+    md += (
+        _md_first_route(res)
+        + _md_routes(res)
+        + _md_locality(res)
+        + _md_rest(res)
+        + _md_mps_reruns(res)
+    )
     return "\n".join(md)
 
 
