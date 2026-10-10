@@ -86,8 +86,8 @@ TikZ (\path{report/tikz/trees.tex}) when the report is built.
     \ref{fig:locality-exponents}, \ref{fig:locality-hessian} & \texttt{bash
       experiments/locality/finalize.sh R} writes every figure and table of
       \cref{sec:s2s-locality,sec:s2s-failure} into directory \texttt{R} (\texttt{LOCALITY\_EAGER=1}
-      without a C++ compiler; the run records hold absolute trajectory paths under
-      \texttt{/root/outputs/locality/traj/}, so elsewhere that directory must be a link to the copy).
+      without a C++ compiler; its steps open the absolute trajectory paths stored in the run records,
+      \texttt{/root/outputs/locality/traj/}, so on another machine that directory must link to the copy).
       Single steps, with scripts in \texttt{experiments/locality/} run by \texttt{uv run python}: these
       two by \texttt{make\_figures.py \$O/twocomp -{}-config experiments/locality/\allowbreak
       configs/twocomp.yaml -{}-hessians R/hessians.csv -{}-out R/twocomp}
