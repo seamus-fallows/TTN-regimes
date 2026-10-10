@@ -79,3 +79,10 @@ hard-coded section number (the numbering changes).
 - Withdrawn claims are not restated anywhere.
 - Pending inputs keep one short, clearly marked placeholder each: saddle-dyn (theorem dynamics: Sec. 4 new
   subsection, Sec. 1, App. A.4), regime-map round 2 (Sec. 3 large K), trap theory (Sec. 4 failure modes).
+
+## Additions (lead, after the Sec. 2 edit)
+
+- Event width: omega_r (w is the weight ratio). Correlation-flow blow-up time: \mathcal{T}(Z) (T is the run's end time).
+- Macros: \Pre = diag(eta) (no D); \mask = fraktur m (m = |V_D|).
+- Internal labels H1, H1b, H2, B1, B5 are replaced by words everywhere in the report.
+- The notation table is tab:notation in Sec. 2; the Conventions paragraph points to it.
