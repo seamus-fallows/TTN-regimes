@@ -231,7 +231,13 @@ def fig_sgd():
     ax_b.plot([], [], "o", ms=3, color=tp.INK_SECONDARY, label="first escape")
     ax_b.plot([], [], "s", ms=3.5, mfc="white", color=tp.INK_SECONDARY, label="second plateau")
     ax_b.plot(
-        [], [], ":", color=tp.INK_SECONDARY, lw=1.2, label=rf"$-\ln(1-x)/x$, $c_\gamma={c_p9:.1f}$"
+        # the report calls the collapse constant c_col (gamma is reserved for the order exponent)
+        [],
+        [],
+        ":",
+        color=tp.INK_SECONDARY,
+        lw=1.2,
+        label=rf"$-\ln(1-x)/x$, $c_{{\rm col}}={c_p9:.1f}$",
     )
     ax_b.set(
         xscale="log",
@@ -265,7 +271,7 @@ def fig_sgd():
             ls,
             color=tp.MUTED,
             lw=1,
-            label=rf"{formula}, $c_\gamma={fits[name]:.1f}$",
+            label=rf"{formula}, $c_{{\rm col}}={fits[name]:.1f}$",
         )
     for (b0, bb), g in cond.groupby(["b0", "B"]):
         e = g[g.escaped == 1]
