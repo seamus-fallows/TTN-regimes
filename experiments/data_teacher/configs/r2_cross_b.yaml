@@ -1,0 +1,17 @@
+# Fix round 2 (review of round 2, HIGH 1): step 4(c) teachers whose root cut {0123}|{4567} has a teacher
+# s_2 ABOVE EVERY bottom bond of the binary-8 student (root / largest bottom = 1.13, 1.10, 1.07, 1.06,
+# 1.05 for teacher seeds 548, 643, 694, 846, 491; scan of seeds 200-999), so a weight-order rule predicts
+# the root bond FIRST while P11 predicts it after a bottom bond on each half. Otherwise as r2_cross.yaml.
+name: r2_cross_b
+base: {kind: ttn_teacher, n_sites: 8, d: 2, chi: 4, decay: 0.6, pair: mps_on_binary, teacher_seed: 548}
+sweep:
+  teacher_seed: [548, 643, 694, 846, 491]
+trees: [binary]
+sigmas: {binary: [0.3, 0.4, 0.5]}
+seeds: [0, 8]
+t_max: {binary: 1.0e+6}
+n_rec: 2000
+rtol: 1.0e-9
+atol: 1.0e-14
+stop_rel_loss: 1.0e-4
+n_dense: 3000

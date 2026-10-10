@@ -58,3 +58,31 @@ def per_seed(df, group_cols, sigma_col="sigma", t_col="gap", min_points=4):
         p_mean=("p", "mean"), p_sem=("p", "sem"), rms_log_median=("rms_log", "median"),
         rms_pow_median=("rms_pow", "median"), log_wins=("log_wins", "sum")).reset_index()
     return ps, summ
+
+
+def per_seed_local(df, group_cols, sigma_col="sigma", t_col="gap", n_small=3, edge_col=None):
+    """Asymptotic slopes (theory_teachers.md section 9 protocol): per seed, a straight line through the
+    n_small smallest sigma, t = A ln(1/sigma) + B (slope A_loc) and log t = log C - p log sigma (p_loc).
+    With edge_col: the edge that grows first at each of those sigma; edge_loc = that edge if it is the
+    same at all of them (else -1: the seed's fit mixes routes). Returns (per_seed_table, summary_table)."""
+    rows = []
+    for key, g in df.groupby(group_cols + ["seed"]):
+        g = g[np.isfinite(g[t_col]) & (g[t_col] > 0)].sort_values(sigma_col).head(n_small)
+        if g[sigma_col].nunique() < n_small:
+            continue
+        x, t = np.log(1 / g[sigma_col].values), g[t_col].values
+        r = dict(zip(group_cols + ["seed"], key if isinstance(key, tuple) else (key,)))
+        r.update(n_loc=len(g), sigma_loc_max=float(g[sigma_col].max()),
+                 A_loc=float(np.polyfit(x, t, 1)[0]), p_loc=float(np.polyfit(x, np.log(t), 1)[0]))
+        if edge_col is not None:
+            e = g[edge_col].unique()
+            r["edge_loc"] = int(e[0]) if len(e) == 1 else -1
+        rows.append(r)
+    ps = pd.DataFrame(rows)
+    if not len(ps):
+        return ps, ps
+    summ = ps.groupby(group_cols).agg(
+        n_seeds_loc=("seed", "size"), sigma_loc_max=("sigma_loc_max", "max"),
+        A_loc_mean=("A_loc", "mean"), A_loc_sem=("A_loc", "sem"),
+        p_loc_mean=("p_loc", "mean"), p_loc_sem=("p_loc", "sem")).reset_index()
+    return ps, summ

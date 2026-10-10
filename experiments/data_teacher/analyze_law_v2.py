@@ -12,12 +12,16 @@ r2_random), following theory_teachers.md v2 section 9:
 - gauge-projected Hessian lambda_min at the plateau point (strict saddle: sigma-independent < 0;
   higher order: -> 0 with sigma);
 - per-seed fits of the log and the power law in the same (log) space (lawfit.py), runs grouped by the
-  visited saddle; mean +- s.e.m. over seeds.
+  visited saddle; mean +- s.e.m. over seeds;
+- asymptotic slopes (fix round 2): per seed through the 3 smallest sigma (A_loc, p_loc), compared with
+  R6 for the edge that grows first at those sigma (A_pred_edge; seeds whose first edge changes are
+  counted apart).
 Usage: uv run python experiments/data_teacher/analyze_law_v2.py <config name> [--procs 8]
-Writes results/<name>_v2_runs.csv, _v2_perseed.csv, _v2_summary.csv, _v2.png.
+Writes results/<name>_v2_runs.csv, _v2_perseed.csv, _v2_perseed_local.csv, _v2_summary.csv, _v2.png.
 """
 
 import argparse
+import json
 import multiprocessing as mp
 from pathlib import Path
 
@@ -32,7 +36,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from common import OUT_ROOT, RESULTS  # noqa: E402
 from constrained import constrained_minima, metric_loss_of_dense, ranked_spec  # noqa: E402
-from lawfit import per_seed  # noqa: E402
+from lawfit import per_seed, per_seed_local  # noqa: E402
 from run_generic import expand  # noqa: E402
 from setups import build  # noqa: E402
 
@@ -43,13 +47,14 @@ HERE = Path(__file__).parent
 
 
 def rank1_info(spec, teacher, metrics):
-    """Rank-one critical levels; predicted R6 slope for whitened MPS-4 students (else nan)."""
+    """Rank-one critical levels; predicted R6 slopes for whitened MPS-4 students (else nan): A_pred for
+    the predicted first edge e* = argmax s2(M_e), A_pred_edges for every edge."""
     spec1 = ranked_spec(spec, {v: 1 for v in spec.tree.edges})
     T = teacher.dense()
     mins = constrained_minima(spec1, metric_loss_of_dense(T, metrics), n_starts=12)
     out = []
     for m in mins:
-        a_pred = np.nan
+        a_pred, a_edges = np.nan, [np.nan] * len(spec.tree.edges)
         if metrics is None and spec.tree.name.startswith("mps") and T.ndim == 4:
             n = 4
             X = m["W"]
@@ -66,8 +71,9 @@ def rank1_info(spec, teacher, metrics):
                 s2.append(float(torch.linalg.svdvals(M)[1]))
             e = int(np.argmax(s2))
             # odeco teachers: no 2-core route (s2(M_e) = 0), no log-law prediction
-            a_pred = (1 - s2[e] / lam) / (lam ** 0.5 * s2[e]) if s2[e] > 1e-8 else np.nan
-        out.append(dict(level=float(m["loss"]), A_pred=a_pred))
+            a_edges = [(1 - x / lam) / (lam ** 0.5 * x) if x > 1e-8 else np.nan for x in s2]
+            a_pred = a_edges[e]
+        out.append(dict(level=float(m["loss"]), A_pred=a_pred, A_pred_edges=a_edges))
     return out
 
 
@@ -111,7 +117,7 @@ def analyze_run(args):
     j = int(np.argmin(np.abs(lv - lp) / lv))
     rel = abs(lv[j] - lp) / lv[j]
     row.update(plateau_level=lp, saddle=j, level_pred=lv[j], level_rel_err=rel,
-               A_pred=levels[j]["A_pred"], resolved=bool(rel < 0.05),
+               A_pred=levels[j]["A_pred"], A_pred_edges=json.dumps(levels[j]["A_pred_edges"]), resolved=bool(rel < 0.05),
                reason="" if rel < 0.05 else "speed minimum not at a rank-one level")
     l_vis = lv[j]
     k1 = int(np.argmax(loss <= 0.5 * (loss[0] + l_vis)))
@@ -159,7 +165,7 @@ def main():
     df = pd.DataFrame(rows)
     df.to_csv(RESULTS / f"{name}_v2_runs.csv", index=False)
     res = df[df.resolved == True].copy()  # noqa: E712
-    out_ps, out_sum = [], []
+    out_ps, out_sum, out_psl = [], [], []
     for f in (0.03, 0.05, 0.1):
         r = res.rename(columns={f"gap_{f}": "gap"})
         ps, summ = per_seed(r, ["case", "tree", "saddle"])
@@ -174,12 +180,29 @@ def main():
                     lam_raw_small_sigma=g[g.sigma == g.sigma.min()]["lambda_min_raw"].median(),
                     lam_raw_large_sigma=g[g.sigma == g.sigma.max()]["lambda_min_raw"].median()))).reset_index()
             summ = summ.merge(lam, on=["case", "tree", "saddle"], how="left")
+            # asymptotic slopes: per seed through the 3 smallest sigma (review of round 2, HIGH 2: the
+            # global fits include pre-asymptotic large-sigma points); seeds whose first edge changes
+            # between those sigma mix routes and are also reported separately
+            psl, sl = per_seed_local(r, ["case", "tree", "saddle"], edge_col=f"edge_{f}")
+            if len(psl):
+                ape = r.groupby(["case", "tree", "saddle"])["A_pred_edges"].first()
+                psl["A_pred_edge"] = [json.loads(ape[(c, t, sd)])[int(e)] if e >= 0 else np.nan
+                                      for c, t, sd, e in zip(psl.case, psl.tree, psl.saddle, psl.edge_loc)]
+                psl["f"] = f
+                single = psl[psl.edge_loc >= 0].groupby(["case", "tree", "saddle"]).agg(
+                    n_single_edge=("seed", "size"), A_loc_single_mean=("A_loc", "mean"),
+                    A_loc_single_sem=("A_loc", "sem"), A_pred_edge_mean=("A_pred_edge", "mean")).reset_index()
+                summ = summ.merge(sl, on=["case", "tree", "saddle"], how="left").merge(
+                    single, on=["case", "tree", "saddle"], how="left")
+                out_psl.append(psl)
             out_ps.append(ps)
             out_sum.append(summ)
     nres = df.groupby(["case", "tree"]).agg(n_runs=("seed", "size"),
                                             n_resolved=("resolved", "sum")).reset_index()
     summ = pd.concat(out_sum).merge(nres, on=["case", "tree"], how="left")
     pd.concat(out_ps).to_csv(RESULTS / f"{name}_v2_perseed.csv", index=False)
+    if out_psl:
+        pd.concat(out_psl).to_csv(RESULTS / f"{name}_v2_perseed_local.csv", index=False)
     summ.to_csv(RESULTS / f"{name}_v2_summary.csv", index=False)
     print(summ.round(4).to_string())
     # figure: per case, gap vs sigma (per seed, f = 0.03) and lambda_min vs sigma

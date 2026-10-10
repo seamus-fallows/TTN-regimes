@@ -3,15 +3,17 @@
 Per (tree, rho): gap = t(s_2 event) - t(s_1 event) on the 01|23 cut (final-rise events,
 theory_covariance.md 10.10), per seed vs sigma (6 values, factor 2 apart, 1.5 decades, 5 seeds):
 - per-seed log and power law fits in log space (lawfit.py), mean +- s.e.m.;
-- increments per halving of sigma, gap(sigma/2) - gap(sigma), per seed (theory_covariance.md: MPS4,
+- increments per halving of sigma: per-seed slope of the gap vs log2(1/sigma) (actual sigma values),
+  over all sigma and over the 3 smallest, mean +- s.e.m. over seeds (theory_covariance.md: MPS4,
   d = 3, s = (1, 0.6): 2.128 at rho = 0.4 and 14.39 at rho = 0.2, two-stage law through the
-  junk-rich saddle);
+  junk-rich saddle; this repeats theory_covariance.md check N14 with the same grid and events);
 - separation ratio rho_sep = gap / max(final-rise widths) (S2S needs > 3), over all runs;
 - runs are classified by the first saddle they visit (major / minor; see main()); fits use major-saddle runs;
 - gaps also in units of 1/L(0): gap x L(0)(rho) / L(0)(rho = 0) (the review: t_1 falls 14x while
   L(0) grows 12x between rho = 0 and 0.5).
 Usage: uv run python experiments/data_teacher/analyze_r2_corr.py
-Writes results/r2_corr_runs.csv (refreshed from the raw files), r2_corr_fits.csv, r2_corr_law.png.
+Writes results/r2_corr_runs.csv (refreshed from the raw files), r2_corr_fits.csv,
+r2_corr_increments_perseed.csv, r2_corr_law.png.
 """
 
 import json
@@ -44,15 +46,21 @@ def main():
     df_all = df
     df = df[df.saddle == "major"]
     ps, summ = per_seed(df, ["tree", "rho"], min_points=4)
+    # increment per halving of sigma = per-seed slope of gap vs log2(1/sigma) with the actual (rounded)
+    # sigma values (review of round 2: raw differences ignore the grid ratios 1.94-2.03, and pooling 20
+    # increments as independent understates the error); all sigma and the 3 smallest; s.e.m. over seeds
     inc = []
     for (tree, rho, seed), g in df.groupby(["tree", "rho", "seed"]):
         g = g.sort_values("sigma")
-        gaps = g["gap"].values
-        inc += [dict(tree=tree, rho=rho, seed=seed, inc=gaps[i] - gaps[i + 1])
-                for i in range(len(gaps) - 1)]
+        x, y = np.log2(1 / g["sigma"].values), g["gap"].values
+        if len(g) >= 3:
+            inc.append(dict(tree=tree, rho=rho, seed=seed, n_sigma=len(g), inc_all=np.polyfit(x, y, 1)[0],
+                            inc_small3=np.polyfit(x[:3], y[:3], 1)[0]))
     inc = pd.DataFrame(inc)
-    inc_s = inc.groupby(["tree", "rho"]).agg(inc_mean=("inc", "mean"), inc_sem=("inc", "sem"),
-                                            inc_small_sigma=("inc", "first")).reset_index()
+    inc.to_csv(RESULTS / "r2_corr_increments_perseed.csv", index=False)
+    inc_s = inc.groupby(["tree", "rho"]).agg(
+        n_seeds_inc=("seed", "size"), inc_mean=("inc_all", "mean"), inc_sem=("inc_all", "sem"),
+        inc_small3_mean=("inc_small3", "mean"), inc_small3_sem=("inc_small3", "sem")).reset_index()
     sep = df_all.groupby(["tree", "rho"]).agg(sep_min=("sep_ratio", "min"), sep_median=("sep_ratio", "median"),
                                           frac_sep_gt3=("sep_ratio", lambda x: float((x > 3).mean())),
                                           loss0=("loss0", "first")).reset_index()
