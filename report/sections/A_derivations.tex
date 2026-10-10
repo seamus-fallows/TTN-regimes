@@ -21,10 +21,10 @@
 % eigenvalue, r(.) spectral radius, ord(theta_S) saddle order, lambda_e escape rate of bond e at the
 % rank-one MPS saddle (eq. A-gamma-e), s_2(M_e)/sbar its head start, h_e its log slope, kappa_c the
 % head start under correlated inputs (A.6), c input correlation (A.6 only), Lambda_r covariance weight,
-% kappa_n SGD noise factor (eq. A-sgd-first), c_SGD collapse constant (prop. A-sgd-collapse),
+% kappa_n SGD noise factor (eq. A-sgd-first), c_col collapse constant (prop. A-sgd-collapse),
 % delta_K first-event offset (eq. A-first-event), omega_K aligned event width, beta(a_r) local growth
 % exponent (eq. A-growth-exponent). Renamed here: varrho -> w, N(D) -> V_D, rho_X -> r(A_X), gamma_e ->
-% lambda_e, kappa_e -> s_2(M_e)/sbar (as Sec. 6), c_gamma -> c_SGD, gamma(a_r) -> beta(a_r), sigma_k(M)
+% lambda_e, kappa_e -> s_2(M_e)/sbar (as Sec. 6), c_gamma -> c_col (as Sec. 5), gamma(a_r) -> beta(a_r), sigma_k(M)
 % -> s_n(M) and ||.||_2, kappa_K -> the ratio a_0c/sigma_c (A.8), c_e (spare channels) -> chi_e - r_e.
 \section{Derivations}\label{app:derivations}
 
@@ -1355,21 +1355,21 @@ $\lr_{\rm as}$ (checked on $\Ns=4$).
   \conjecture{} (heuristic law) \knownresult[mechanism: stochastic collapse, \citealp{chen2023stochastic}]
   At a later saddle with a route of degree $k\ge3$ the population Hessian vanishes on the route and the
   per-sample gradients vanish at zero route amplitude. Zero-mean multiplicative noise coupling the route
-  entries to mixed learned entries gives the log-amplitude of the coherent route a drift $-c_{\rm SGD}\lr/\batch$,
-  with a constant $c_{\rm SGD}$; added to the route equation, $\dot b=\tw rb^{k-1}-(c_{\rm SGD}\lr/\batch)b$. For $k=3$, with
+  entries to mixed learned entries gives the log-amplitude of the coherent route a drift $-c_{\rm col}\lr/\batch$,
+  with a constant $c_{\rm col}$; added to the route equation, $\dot b=\tw rb^{k-1}-(c_{\rm col}\lr/\batch)b$. For $k=3$, with
   $T_{\rm GF}=1/(\tw rb_0)$,
   \begin{equation}\label{eq:A-sgd-collapse}
-    \frac{T_{\rm SGD}}{T_{\rm GF}}=\frac{-\ln(1-x)}{x},\qquad x=c_{\rm SGD}\frac{\lr}{\batch}T_{\rm GF},
+    \frac{T_{\rm SGD}}{T_{\rm GF}}=\frac{-\ln(1-x)}{x},\qquad x=c_{\rm col}\frac{\lr}{\batch}T_{\rm GF},
   \end{equation}
   and the route amplitude decays (the route dies) for $x\ge1$; for general $k$ escape needs roughly $(k-2)x<1$. As
   $b_0$ scales with the initialization, at fixed $\lr/\batch$ SGD stalls on a later degenerate plateau once $\isc$ is
-  small enough; strict saddles escape if $\abs{\lambda_-}>c_{\rm SGD}\lr/\batch$.
+  small enough; strict saddles escape if $\abs{\lambda_-}>c_{\rm col}\lr/\batch$.
 \end{proposition}
-Solving $\dot z=-\tw r+(c_{\rm SGD}\lr/\batch)z$ for $z=1/b$ gives \eqref{eq:A-sgd-collapse}. Checked on binary $\Ns=4$ only (weights
+Solving $\dot z=-\tw r+(c_{\rm col}\lr/\batch)z$ for $z=1/b$ gives \eqref{eq:A-sgd-collapse}. Checked on binary $\Ns=4$ only (weights
 $(1,0.6)$, $\chi=2$, Gaussian sites; 21 runs): delays $1.02$--$2$ times $T_{\rm GF}$, no escape for $x\ge1$, never faster than
-gradient flow on this aligned route, $c_{\rm SGD}\approx1.35$ \empirical{} ($1.08$ from the commuting-pair estimate of
+gradient flow on this aligned route, $c_{\rm col}\approx1.35$ \empirical{} ($1.08$ from the commuting-pair estimate of
 \path{notes/theory_optimizer.md}, which gives $26$ for weights $(3,2,1)$, $d=\chi=3$, where the fit gives $32.6$,
-\cref{sec:other-optim}; $c_{\rm SGD}$ depends on the teacher, other trees untested). Near the stability limit SGD
+\cref{sec:other-optim}; $c_{\rm col}$ depends on the teacher, other trees untested). Near the stability limit SGD
 breaks the saddle sequence instead \empirical: with weights $(1,0.6)$ no learned component was erased in 13 runs
 at up to $0.25$--$0.32$ of the learned-block threshold, but with $(3,2,1)$ one was erased (mostly relearned) in
 20 of 36 runs of up to 1000 time units at $0.25$--$0.30\,\lr^*_{\rm ms}$ (\cref{sec:other-optim}); at
@@ -1494,10 +1494,12 @@ The boundary is a seed distribution: median per-seed $\isc_c=0.27$--$0.31$ for b
 $(3,2,1)$, and $0.71$ for $\Ns=8$, $d=2$, $\chi=16$, weights $(3,2)$ (plain model). These match aligned initialization
 with per-core amplitude $a_{0c}$ at $a_{0c}/\isc_c\approx0.22$ ($\Kc=3$, $d=3$) and $0.69$ ($\Kc=7$, $d=2$). That
 $a_{0c}(\Kc)\to1$ does not carry over to random initialization at large $\Kc$: in the plain model with spare
-channels the saddle-to-saddle region reaches, at $\Kc\ge8$, the domain limit of the event rule, which tends to
-$\sqrt d$ (per-seed lower bounds $1.2$--$2.0$; the plain model unlearns $\Wz$ on the plateau) \empirical{}; in the
-centred model with full bonds $\isc_c$ rises from $0.16$ to $0.83$ over $\Kc=3$--$8$, and its limit is open.
-\conjecture: $\isc_c\to\sqrt d$ (\cref{sec:regime-K}). For matrix-like pairs the transient
+channels (binary trees, $\chi=4$, weights $(3,2)$, $d=2$, $3$, $\Kc=8$--$15$) 85 of 96 seeds stay saddle-to-saddle
+up to the domain limit of the event rule or the end of the budget, with lower bounds $1.07$--$2.03$ on $\isc_c$, all
+above 1, and 11 cross at $\isc_c=0.86$--$1.37$ \empirical; the domain limit tends to about $1.15\sqrt d$. The plain
+model's cores shrink on the plateau (it unlearns $\Wz$), consistent with, but not shown to cause, the high
+boundary (\conjecture). In the centred model with full bonds $\isc_c$ rises from $0.16$ to $0.83$ over $\Kc=3$--$8$
+($d=2$), and its limit is open; \conjecture: $\isc_c\to\sqrt d$ (\cref{sec:regime-K}). For matrix-like pairs the transient
 overlap of a component not yet learned peaks at a value $\propto\isc^{2(1-w)}$ (\conjecture, heuristic), hence
 events are timed by their final rise. With $\chi$ equal to the teacher rank $\ncomp$ and $\Kc\ge5$, the last
 component needs a route through all $\Kc$ cores, which the child-heavy root bonds of fan-in
@@ -1506,7 +1508,7 @@ for some initializations, \cref{sec:s2s-failure}). \empirical: it was not learne
 of 2 at $\Kc=7$ ($d=3$); balanced initialization removed these stalls at $\Kc=5$ (leaving long plateaus) but not
 at $\Kc=7$; spare channels removed the stalls only where no route end is capped (binary $\Ns=8$: 30 runs at
 $d=3$, $\chi=6$; 26 at $d=2$), not where end bonds are capped at $\ncomp$ or $\ncomp+1$ (MPS with $\Ns=8$ at $d=3$,
-$\chi=6$: 50 of 50 stall; \cref{sec:other-stalled,sec:s2s-failure}).
+$\chi=6$: 50 of 50 stall; \cref{sec:s2s-failure}).
 
 \paragraph{Large bond dimension.} \derived{} \newresult[the spectral condition is
 \citealp{yang2024spectral}; factor-wise rules for structured layers:
