@@ -288,7 +288,123 @@ were separated, was discarded.
 \placeholder{Grids, seeds and time budgets of the phase diagrams of \cref{sec:regime-map}.}
 
 \subsection{Covariance and teacher experiments}\label{app:exp-data-teacher}
-\placeholder{Settings of \cref{sec:covariance-teacher}.}
+Settings of \cref{sec:covariance-teacher}. Experiment folder \path{experiments/data_teacher/} (README with
+the run order; YAML configurations in \path{configs/}; the star and correlated-input sweeps are defined
+in \path{r2_star.py} and \path{r2_corr.py}); findings in \path{notes/data_teacher.md}; reviews in
+\path{notes/reviews/} (\path{data_teacher_round1.md}, \path{data_teacher_round2.md} and
+\path{data_teacher_round3_verification.md}, whose errata are applied in \cref{sec:covariance-teacher});
+theory in \cref{app:teachers,app:covariance}.
+
+\paragraph{Problems.}
+Exact population loss, double precision, fan-in initialization \eqref{eq:init}; teacher seeds from a
+stream independent of the initialization seeds. Site covariances \path{ttn.losses.power_law_cov}$(d,\beta)$
+(eigenvalues $\propto k^{-\beta}$, trace $d$), rotated by $\theta$ in the $(e_1,e_2)$ plane where misaligned.
+\begin{itemize}
+  \item \emph{Aligned covariance} ($\Ns=4$, $d=\chi=4$): odeco teachers on covariance eigenvectors, T1 $(1,0.8)$
+    and T2 $(1,0.6)$ with the smaller component on $e_1$, $\beta=0.25$; one-component teachers on $e_1$ or $e_4$
+    with $\beta=0$--$1.5$ ($\Lambda=0.008$--$33$); three components $(1,0.7,0.5)$ for the exact-clock check. Variants
+    from the same initialization: $(\Sig,\tw{})$, $(\Id,\tw{})$, $(\Id,\Lambda\tw{})$, $(\Id,\Lambda^{1/2}\tw{})$, and $(\Id,\Lambda^{1/2}\tw{})$
+    from the mapped initialization (physical legs multiplied by $\Sigi i^{1/2}$).
+  \item \emph{Round 1, generic teachers} ($\Ns=4$, $d=\chi=4$): misaligned covariance with an odeco teacher on
+    $e_1$, $e_2$ (weights $(1,0.8)$), $\beta\in\{0.5,1\}$, $\theta\in\{0,10,20,30,45\}^\circ$, also as the absorbed white problem
+    from the mapped initialization; non-orthogonal CP teachers $\fac2i=ce_1+(1-c^2)^{1/2}e_2$, weights $(1,\tw2)$;
+    correlated inputs (one-factor model, odeco teacher on $e_1$, $e_2$, weights $(1,0.7)$, $\rho=0$--$0.5$), with
+    the dense second-moment matrix from Isserlis' theorem (\path{correlated.py}, checked against Monte
+    Carlo and the closed form for $\Ns=2$).
+  \item \emph{Random TTN teachers}: MPS4 teachers with $d=3$, bond ranks $(2,3,2)$, bond index $k$ weighted by
+    $0.5^k$, $\normF{\Wt}=1$, teacher seeds 101--105, MPS4 student with $\chi=4$; cross-tree: MPS8 teachers
+    ($d=2$, bond ranks 2, index weights $0.6^k$, $\normF{\Wt}=1$) on a binary8 student ($\chi=4$), teacher seeds 201--203,
+    then 203, 204, 209, 212, 218, and 491, 548, 643, 694, 846 (the five of seeds 200--999 whose root cut
+    exceeds every bottom bond by the largest margins); binary8 teachers (seeds 201--203) on an MPS8 student.
+  \item \emph{Round 2, generic teachers} ($d=2$, $\chi=4$, \cref{tab:dt-saddle}): CP $c=0.2$, $0.45$ ($\Ns=4$) and
+    $0.45$, $0.7$ ($\Ns=8$), weights $(1,0.7)$; misaligned $\theta=20^\circ$ ($\beta=1$ at $\Ns=4$, $\beta=2$ at $\Ns=8$) and $45^\circ$
+    ($\beta=2$, $\Ns=8$); random binary-tree teachers (seeds 302, 303) and random MPS teachers (seed 301 at
+    $\Ns=4$, 303 at $\Ns=8$), bond ranks 2, bond index $k$ weighted by $q^k$ ($q=1$ and $1.5$), $\normF{\Wt}=1$.
+    Correlated inputs: $d=3$, site-aligned odeco teacher $(1,0.6)$, $\rho=0$--$0.4$.
+  \item \emph{Stars} ($d=2$, $\chi=3$): $q=0000$ (weight 2), $r=1010$, $r'=1001$ (weight $w$); the binary8 analogue
+    has $r$, $r'$ differing from $q=0^8$ on sites $\{0,2\}$ and $\{0,4\}$.
+\end{itemize}
+
+\paragraph{Dynamics.}
+\begin{itemize}
+  \item Round-1 runs at a single $\isc$ (and the aligned-covariance sweeps): SciPy DOP853 on the flat
+    parameter vector, tolerances $10^{-9}$ and $10^{-14}$, 2000 logarithmic output times; checked against the
+    library integrator (event times and losses to $7\cdot10^{-7}$), conservation drift at most $1.1\cdot10^{-9}$.
+  \item $\isc$ sweeps: \path{ttn.dynamics.integrate_gf} (LSODA, tolerances $10^{-9}$ and $10^{-14}$) in two stages:
+    until $\Loss<0.98\Loss(0)$, then on 3000 times geometric in $t-t_A$, with the recorder's fine rows; stopped
+    at $\Loss<10^{-6}$--$10^{-4}\Loss(0)$ or at $\tmax$ (up to $10^{10}$).
+  \item Saddle start: the lowest-loss bond-rank-one critical point (L-BFGS from 12 starts on the
+    rank-constrained problem, balanced, zero-padded), stored in \path{results/r2_saddle_cores.pt}, since
+    gauge copies with losses one ulp apart shift per-run times on another platform (not the laws); fan-in
+    noise of scale $\varepsilon$; LSODA in chunks of doubling length until $\max_e\bs e2\ge0.2$ or $t=10^7$ ($10^{11}$ for
+    the small-$\varepsilon$ extension; $\max_e\bs e2\ge2\cdot10^{-3}$ for the re-timed misaligned teacher). Hessians at
+    the exact saddle, raw and gauge-projected; saddle type by the sign of $\lambda_{\min}$ (threshold $-10^{-6}$);
+    per-edge rates $\gamma_e$ from the Hessian block of the two cores of the edge.
+  \item Correlated inputs: SciPy LSODA with the exact Hessian as Jacobian, on the dense loss, in the two
+    stages above. Online SGD check: fresh Gaussian batches, $\batch=256$ and $4096$, $\lr=0.01$ and $0.002$.
+\end{itemize}
+
+\paragraph{Events and fits.}
+\begin{itemize}
+  \item Random initialization: $t_1$ is the first time $\Loss\le\frac12(\Loss(0)+L_1)$, $L_1$ the level of the
+    rank-one critical point visited (matched within $5\%$ at the point of minimum speed; runs with no such
+    point are \emph{unresolved} and left out); $\Delta t_2$ is the first onset event after $t_1$ minus $t_1$.
+    Onset event: $\bs e2\ge f\,\bst e2$ on some edge, $f\in\{0.03,0.05,0.1\}$ (and, from the saddle, at least 10
+    times its start value); event times from merged log and fine rows (within $0.5\%$ of fine-row
+    times). The re-timed misaligned teacher uses $\max_e\bs e2\ge1.8\cdot10^{-4}$, where $\bs e2(0)\le1.8\cdot10^{-5}$.
+  \item Correlated inputs: events at half the final singular values across $01|23$, final-rise widths;
+    $\Delta t_2$ is the time between the events of $\bs e2$ and $\bs e1$. Stars: $\params_q$ is left when $\ov q<0.99$
+    (departure) or $\ov q<0.9$ before any $\ov r>\frac12$; the two rules agree for every run with $\varepsilon\le10^{-3}$.
+  \item Fits per seed (\path{lawfit.py}): $t=A\ln(1/\isc)+B$ and $t\propto\isc^{-p}$, both scored in log space;
+    asymptotic fits through the three smallest $\isc$ (random initialization) or the five smallest $\varepsilon$
+    (saddle start). Errors are standard errors over seeds; per-seed fit errors are not propagated, and
+    changing the window moves slopes by $1$--$3\%$. Increments per halving: per-seed regression of
+    $\Delta t_2$ on $\log_2(1/\isc)$ with the actual $\isc$.
+  \item Rank-one predictions: \path{constrained.py} (L-BFGS on the bond-rank-constrained loss from many
+    starts) and \path{predict_rank1.py}; slopes $h_e$ from \path{theory_log_slope.py} and the exact-saddle
+    Hessians; heuristic exponents $\alpha$ from \path{p1_exponents.py}.
+\end{itemize}
+
+\paragraph{Sweeps and run counts.}
+\Cref{tab:exp-data-teacher}; about 9,100 runs in all.
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the experiment of \cref{sec:covariance-teacher}: configuration files in
+    \texttt{configs/} of the experiment, except where a script is named.}
+  \label{tab:exp-data-teacher}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}p{3.6cm}r@{}}
+    \toprule
+    sweep & problem & $\isc$ or $\varepsilon$, seeds & runs \\
+    \midrule
+    \texttt{e1\_order} & aligned, T1, T2, four variants, binary4, MPS4 & $\isc=0.02$--$0.2$ (3 per tree), 40 & 1920 \\
+    \texttt{e1\_scaling\_sigma}, \texttt{\_lambda} & aligned, $\tev1$ against $\isc$ and $\Lambda$ & 6 $\isc$; 13 teachers; 10 & 360 + 520 \\
+    \texttt{e2\_misaligned}, \texttt{e4a\_nonorth}, \texttt{e3\_correlated} & round 1, one $\isc$ per tree & $0.05$, $0.1$; 20 & 800 + 560 + 240 \\
+    \texttt{e4a\_sigma}, \texttt{e2\_sigma} & MPS4, $c\in\{0,0.05,0.2,0.45\}$; $\theta\in\{0,5,20\}^\circ$ & 9 $\isc$, $3\cdot10^{-4}$--$0.3$; 10 & 360 + 270 \\
+    \texttt{e4b\_ttn} & random MPS4 teachers & 8 $\isc$, $10^{-3}$--$0.2$; 6 & 240 \\
+    \texttt{e4c\_cross}, \texttt{r2\_cross}, \texttt{r2\_cross\_b} & cross-tree, $\Ns=8$ & $0.3$--$0.5$; 8 & 48 + 120 + 120 \\
+    \texttt{r2\_random} & 6 generic teachers, MPS4, binary4 & 9 $\isc$ per tree; 5 & 540 \\
+    \texttt{r2\_saddle} (+\texttt{\_b}, \texttt{\_ext}, \texttt{\_m20}) & 13 generic teachers, 6 trees, saddle start & $\varepsilon=10^{-8}$--$5\cdot10^{-2}$; 5 & 1950 (+54 fine rows) \\
+    \texttt{r2\_corr.py} & correlated, $d=3$, MPS4, binary4 & 6 $\isc$, $0.0016$--$0.05$; 5 & 300 \\
+    \texttt{r2\_star.py} & stars: saddle start; random init & $\varepsilon=10^{-6}$--$10^{-2}$, 15 $w$; 6 $\isc$, 10 & 468 + 240 \\
+    \texttt{e3\_sgd\_check.py} & online SGD, binary4, $\rho=0.3$ & $\isc=0.05$; 3 & 9 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Checks and exclusions.}
+A float64-floor scan (\path{check_float_floor.py}) takes the smallest dormant signal between the first
+escape and the next learning event (overlap envelope below $10^{-12}$, or $\max_e\bs e2$ below $10^{-14}$ for TTN
+teachers): it flags only the odeco baselines ($c=0$, $\theta=0$) at $\isc\le3\cdot10^{-3}$, whose exponents without the
+flagged runs are in \path{results/report_float_floor_refit.csv}. Excluded: the round-1 single-$\isc$
+plateau durations (withdrawn), the pilot versions of \texttt{e4b} and \texttt{e4c}, seed 2 of MPS4
+under correlated inputs (minor saddle at every $\rho$), and 14 HT8 runs at $\varepsilon\le3\cdot10^{-4}$ (CP, $c=0.45$)
+stopped beyond $t=10^8$. An independent verification recomputed the Hessians at 12 stored saddles with
+its own code and reproduced the committed saddle-start escape times on Windows to $4\cdot10^{-9}$ (MPS4)
+and $4\cdot10^{-5}$ (binary4). Raw outputs (about 10\,GB, local copy \path{data/data_teacher/}) are not in the
+repository; the summary tables in \path{results/} suffice to redraw every figure.
 
 \subsection{Discrete steps, gradient noise and finite samples}\label{app:exp-optim}
 Settings of \cref{sec:other-optim}. Experiment folder \path{experiments/optim_samples/} (README with
