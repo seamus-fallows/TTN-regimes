@@ -1,0 +1,6 @@
+# Smoke test of the re-anchored phase-1 clock at small sigma (escape at t ~ 1e18-1e20)
+defaults: {t2: 30, n_per_decade: 20, n_linear: 30, wall_limit: 900}
+cases:
+  - {tree: binary, ordering: quadtree, sigmas: [0.05], seeds: [4]}
+  - {tree: binary, ordering: scrambled0, sigmas: [0.05], seeds: [0]}
+  - {tree: mps, ordering: snake, sigmas: [0.05], seeds: [2]}

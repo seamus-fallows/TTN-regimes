@@ -1,0 +1,46 @@
+45 cases -> /root/outputs/real_data/chi8
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.05_seed0", "status": "completed", "wall": 7192.9}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.14_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.5_seed0", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.5_seed1", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.5_seed2", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.5_seed3", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.5_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.05_seed0", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.05_seed1", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.05_seed2", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.05_seed3", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.05_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.14_seed0", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.14_seed1", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.14_seed2", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.14_seed3", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.14_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.5_seed0", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.5_seed1", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.5_seed2", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.5_seed3", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi8_s0.5_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.5_seed3", "status": "max_wall_time", "wall": 7200.4}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.5_seed2", "status": "max_wall_time", "wall": 7200.5}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.14_seed0", "status": "max_wall_time", "wall": 7200.5}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.05_seed4", "status": "max_wall_time", "wall": 7200.6}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.05_seed3", "status": "max_wall_time", "wall": 7200.6}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.05_seed1", "status": "max_wall_time", "wall": 7200.6}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.14_seed3", "status": "max_wall_time", "wall": 7200.8}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.5_seed4", "status": "max_wall_time", "wall": 7200.8}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.14_seed0", "status": "max_wall_time", "wall": 7201.0}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.5_seed0", "status": "max_wall_time", "wall": 7201.1}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.05_seed0", "status": "max_wall_time", "wall": 7201.1}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.5_seed1", "status": "max_wall_time", "wall": 7201.3}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.14_seed3", "status": "max_wall_time", "wall": 7201.3}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.14_seed1", "status": "max_wall_time", "wall": 7201.4}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.05_seed3", "status": "max_wall_time", "wall": 7201.4}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.14_seed4", "status": "max_wall_time", "wall": 7201.6}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.05_seed4", "status": "max_wall_time", "wall": 7201.9}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.14_seed1", "status": "max_wall_time", "wall": 7202.0}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.05_seed2", "status": "max_wall_time", "wall": 7202.1}
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi8_s0.14_seed2", "status": "max_wall_time", "wall": 7202.2}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.14_seed2", "status": "max_wall_time", "wall": 7202.5}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.05_seed2", "status": "max_wall_time", "wall": 7202.6}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi8_s0.05_seed1", "status": "max_wall_time", "wall": 7202.6}

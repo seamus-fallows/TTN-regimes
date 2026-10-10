@@ -1,0 +1,15 @@
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:84: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:126: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:150: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:230: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:197: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+{"binary, quadtree": [-12.999996369232182, 1.0120053009270076e-06, 5], "binary, scrambled": [-12.999997184641426, 9.027360915235076e-07, 15], "MPS, snake": [-13.999996892972959, 1.801826092354635e-06, 5]}
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:261: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
+/root/work/TTN-regimes/experiments/real_data/make_figures.py:287: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()

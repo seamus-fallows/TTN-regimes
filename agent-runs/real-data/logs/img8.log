@@ -1,0 +1,13 @@
+12 cases -> /root/outputs/real_data/img8
+{"name": "mnist8_3v5_n4000_raw_mps_snake_chi4_s0.3_seed1", "status": "completed", "wall": 9574.4}
+{"name": "mnist8_3v5_n4000_raw_mps_snake_chi4_s0.3_seed0", "status": "completed", "wall": 9727.5}
+{"name": "mnist8_3v5_n4000_raw_binary_quadtree_chi4_s0.1_seed0", "status": "completed", "wall": 9792.9}
+{"name": "mnist8_3v5_n4000_raw_binary_scrambled0_chi4_s0.1_seed0", "status": "completed", "wall": 9868.7}
+{"name": "mnist8_3v5_n4000_raw_binary_quadtree_chi4_s0.3_seed1", "status": "completed", "wall": 9904.7}
+{"name": "mnist8_3v5_n4000_raw_binary_scrambled0_chi4_s0.1_seed1", "status": "completed", "wall": 9989.5}
+{"name": "mnist8_3v5_n4000_raw_binary_scrambled0_chi4_s0.3_seed0", "status": "completed", "wall": 10060.2}
+{"name": "mnist8_3v5_n4000_raw_mps_snake_chi4_s0.1_seed1", "status": "completed", "wall": 10135.1}
+{"name": "mnist8_3v5_n4000_raw_binary_quadtree_chi4_s0.1_seed1", "status": "completed", "wall": 10142.7}
+{"name": "mnist8_3v5_n4000_raw_mps_snake_chi4_s0.1_seed0", "status": "completed", "wall": 10143.2}
+{"name": "mnist8_3v5_n4000_raw_binary_quadtree_chi4_s0.3_seed0", "status": "completed", "wall": 10271.6}
+{"name": "mnist8_3v5_n4000_raw_binary_scrambled0_chi4_s0.3_seed1", "status": "completed", "wall": 10276.6}

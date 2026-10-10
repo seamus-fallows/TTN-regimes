@@ -1,0 +1,8 @@
+3 cases -> /root/outputs/real_data/smoke
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi4_s0.5_seed0", "status": "completed", "wall": 25.0}
+{"name": "mnist4_3v5_n4000_raw_binary_quadtree_chi4_s0.5_seed0", "status": "completed", "wall": 27.5}
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+{"name": "mnist4_3v5_n4000_raw_mps_snake_chi4_s0.5_seed0", "status": "completed", "wall": 99.2}
