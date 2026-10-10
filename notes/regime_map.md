@@ -758,3 +758,114 @@ table are unchanged. As the review found, the effect is rare and confined to a f
   keep the probe kernel for labels (current) or switch to the tensor kernel for N <= 8.
 - Not re-analysed: the interim scipy sweep (`b4_sigma_chi`, superseded), `large_chi_b8` (K = 7, not
   interpreted), the stall test (no label changes).
+
+## 4. Round 2: sigma_c(K) at large depth in realizable problems (pre-registered 2026-10-10 12:50 UTC)
+
+Written before any round-2 run. Changes made after the runs start are listed as amendments in 4.6.
+Raw outputs: `/root/outputs/regime_map_r2/`. Code: `experiments/regime_map/round2.py`.
+
+### 4.1 Question and setup
+
+Question: does the S2S/rich boundary sigma_c(K) tend to a constant as K grows, and is it 1 or sqrt(d)?
+Round 1 could not answer this. At K >= 8 the centred chi = 4 bonds are deficient, so the values were
+brackets or came from floor-stalled runs, and only d = 2 was run (section 3.2 item 4).
+
+- **Arm P (primary): plain model, spare channels.** The target is W*, which is realizable because
+  rank W* = R = 2 <= chi on every cut.
+  - chi = 4 = 2R on every bond, capped at the cut dimension.
+  - Odeco teacher with weights (3, 2) at both **d = 2 and d = 3**. The teacher spectrum, rank and chi
+    are identical, so only D = d^N changes between the two values of d.
+  - Trees: `binary_tree(N)`, N = 4..16, i.e. K = N - 1 = 3..15. This is one tree family, and
+    D = d^(K+1).
+  - Fan-in init, 6 seeds (init seeds 0-5, teacher seeds 1000 + seed).
+- **Arm C (secondary, if the budget allows): centred model with full bonds.** Every chi_e equals the
+  cut dimension, so the target W* + W_0 is realizable. This arm has the same teacher and trees, at the
+  K reachable in the budget (P grows like d^(N/2) chi).
+  - Arm C removes the init function from the target, so the random part of W_0 does not have to be
+    unlearned (see H_W).
+- **Rules and code.** The merged round-1 fix code: last-crossing events, refined on a linear grid, and
+  the labels of `notes/diagnostics.md`. Float64, `torch.set_num_threads(1)` per process, LSODA for
+  long stiff plateaus.
+- **Per-seed boundary.** With R = 2 there is a single ratio rho = rho_1. sigma_c is the sigma where rho
+  first drops through rho* = 3 coming from small sigma, interpolated log-log between the two runs that
+  bracket the crossing.
+  - A run that learned component 1 but not component 2 by the end of its budget counts as S2S-like when
+    (t_end - t_1) / w_1 > 3. This is a lower bound on rho.
+  - A run without any event carries no information and is skipped; a skipped run inside a bracket is
+    flagged.
+  - The sigma grid is adaptive per seed: a coarse ladder, then bisection, until the bracket is at most
+    a factor 2^(1/(K-2)) in sigma, i.e. about a factor 2 in rho.
+
+### 4.2 Hypotheses (all **conjecture** before this round)
+
+- **H_A (law A; theory_regimes P15, H4 "kappa_K -> 1").** sigma_c^K / u_0c(K) is independent of K and
+  of d.
+  - Consequences: sigma_c -> 1, and the d-ratio r_K := sigma_c(d=3) / sigma_c(d=2) = 1 at every K.
+- **H_B (law B; R9 effective amplitude u_eff = c sigma^K / sqrt(D) with c independent of K and d; the
+  round-1 conjecture).** sigma_c^K / (sqrt(D) u_0c(K)) is independent of K and of d.
+  - Consequences: sigma_c -> sqrt(d), and r_K = 1.5^(N/(2K)), which is 1.31 at K = 3, 1.26 at K = 7 and
+    1.24 at K = 15.
+  - Calibration from theory R9 (bin8, d = 2, full bonds, plain: sigma_c = 0.71) gives sigma_c(K = 15) =
+    1.07 (d = 2) and 1.32 (d = 3) under H_B, and 0.89 under H_A.
+- **H_W (plain model only; heuristic, this round).** In the plain model every core norm obeys
+  d||G_v||^2/dt = -2(||W||^2 - <W, W*>).
+  - At init, ||W||^2 ~ sigma^(2K) and <W, W*> ~ s sigma^K / sqrt(D).
+  - So before the first escape the cores shrink by a relative amount ~ sigma^K D^(1/2 - 1/K) / s: the
+    plain model unlearns the random part of W_0 while it waits on the plateau.
+  - Where sigma^K sqrt(D) / (s d) >~ 1 this shrinkage lowers the effective amplitude, so plain-model
+    plateaus are longer than H_A or H_B predict and the plain boundary lies above both.
+  - At the H_B boundary this happens for K >~ 7 (d = 2) and K >~ 5 (d = 3).
+  - Round-1 indication (old event rule, d = 2, chi = 4): plain binary 16 had rho ~ 4300 at sigma =
+    0.92, where H_B predicts ~ 20, and rho ~ 2 only at sigma = 2.
+  - Prediction: arm P gives beta > 1 (below) at large K, with sigma_c possibly above sqrt(d); arm C does
+    not.
+
+### 4.3 Statistic and fits
+
+- **Per-seed statistic.** y = ln(sigma_c^K / u_0c(K)). Here u_0c(K) = a_0c(K)^K is the exact
+  aligned-init boundary amplitude for weights (3, 2) at the same rho*, computed by
+  `analysis.aligned_boundary_a0`; it runs from 2.8e-4 at K = 3 to 1.19e-2 at K = 15.
+  - Dividing by u_0c removes the K-dependence that the threshold itself induces: rho ~ u^(-(K-2)/K),
+    so a fixed rho* corresponds to a K-dependent amplitude.
+- **Model.** y = -gamma + beta ln sqrt(D). H_A is beta = 0; H_B is beta = 1. Equivalently the
+  large-K limit is sigma_c -> d^(beta/2).
+- **Fits per arm**, each with standard errors:
+  1. Joint fit over both d with common gamma and beta (primary). Weighted least squares on the cell
+     means of y, with weights from a bootstrap over seeds (10^4 resamples).
+  2. Per-d fits (gamma_d, beta_d). These test the K-trend alone.
+  3. The d-contrast at fixed K: Delta y_K = y(d=3) - y(d=2) = beta (N/2) ln 1.5. This is a
+     one-parameter fit for beta_Delta, which needs no gamma if gamma does not depend on d. It is the
+     cleanest test because tree, chi, teacher spectrum and K are all identical.
+  4. The one-parameter laws (beta fixed at 0 or at 1, gamma free), per d and jointly: chi^2 / dof and
+     p-value.
+- **Reported per cell (K, d):** n resolved / 6; median sigma_c with a bootstrap 95% CI; the brackets of
+  unresolved seeds. Also the d-ratio r_K with a bootstrap CI.
+
+### 4.4 Decision rule
+
+- **A law is "favoured"** when all three hold:
+  - the primary beta is within 2 SE of the law's value;
+  - the other law's value is more than 3 SE away;
+  - the law's one-parameter fit has chi^2 / dof < 2.
+- **"Neither"** when beta is more than 3 SE from both 0 and 1.
+- **"Unresolved"** in every other case.
+- The rule is applied to arm P and arm C separately. For arm P it is applied twice: to all cells, and
+  to the cells without random-part shrinkage, sigma_c^K sqrt(D) / (s_2 d) < 1 (H_W).
+- **Data that would favour each hypothesis:**
+
+  | hypothesis | r_K | y vs K | other |
+  |---|---|---|---|
+  | H_A | ~1 at every K | flat in K at both d | |
+  | H_B | 1.24-1.31 at every K | grows like ln 2^(N/2) at d = 2 and ln 3^(N/2) at d = 3 | |
+  | H_W | | arm P: grows faster than ln sqrt(D) at large K (beta > 1) | sigma_c(K = 13-15) above sqrt(d), while arm C stays near beta = 1 |
+
+- **Censoring.** Seeds without a crossing inside the explored range are reported as one-sided bounds
+  and left out of the fits, with their count reported. A cell with more than 2 of 6 seeds censored is
+  left out of the fits and reported separately.
+- **Threshold sensitivity.** Repeat the fits at rho* = 2 and 5, recomputing u_0c for that rho*.
+- **Large-K value.** sigma_c at K = 13-15 with its CI, compared with 1 and sqrt(d).
+
+### 4.5 Budget
+
+About 3 h of wall-clock on this machine (384 cores). Arm P has priority over arm C. If the large-K
+runs do not finish, the report gives the largest K reached and how the run time scales with K.
