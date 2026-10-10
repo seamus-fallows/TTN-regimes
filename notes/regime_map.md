@@ -262,6 +262,36 @@ minimum over edges): dead route < 1e-12, decaying 1e-12..1e-4, long plateau >= 1
 - Consequence for the map: at chi = teacher rank and K >= 7, "stalled" occupies the whole S2S side
   at practical budgets; the S2S boundary is measured with spare channels or full bonds (2.3).
 
+### 2.5 Large bond dimension: SP, NTK and muP-TTN (binary N = 4)
+
+`configs/large_chi_b4.yaml`: chi = 4..128 (uncapped), parameterizations of theory_regimes section 4.3
+(SP: fan-in, eta = 1; NTK: eta_v = 1/F_v; muP-TTN: root init x (2 chi)^-1/2, eta_v = chi_v / F_v),
+centred and plain, sigma = 1.0 and 1.5, 6 seeds; `results/large_chi_large_chi_b4_*.png` and
+`large_chi_exponents_*.csv`. Slopes of log(quantity) vs log chi over chi = 16..128 (24 independent
+runs each; error from the residual scatter). sigma = 1.5 is the theory's check point (x = 1.11):
+
+| | delta_K | delta_theta | root (rel. Frobenius change) | leaf cores |
+|---|---|---|---|---|
+| SP, measured | -3.09 +- 0.09 | -1.63 +- 0.04 | -1.02 +- 0.03 | -2.96 +- 0.07 |
+| SP, theory P16 | -3 | -3/2 | -1 | -5/2 |
+| NTK, measured | -0.84 +- 0.06 | -0.52 +- 0.03 | -0.93 +- 0.02 | -0.53 +- 0.03 |
+| NTK, theory | -1 | -1/2 | -1 | -1/2 |
+| muP-TTN, measured | +0.03 +- 0.06 | -0.06 +- 0.02 | -0.50 +- 0.01 | -0.07 +- 0.02 |
+| muP-TTN, theory | 0 | 0 | -1/2 (Frobenius; spectral O(1)) | 0 |
+
+- **Feature learning survives under muP-TTN** (delta_K ~ 4-5 at every chi, slope 0.03 +- 0.06) and is
+  lost under SP (delta_K ~ chi^-3: the root dominates the kernel, the model becomes linear in the root)
+  and NTK (delta_K ~ chi^-0.84 here, approaching -1 as the second-order term c_2 x^2 fades). **Empirical**,
+  confirming theory P16 for delta_K, delta_theta and the root; the SP leaf-core exponent is steeper than
+  predicted at sigma = 1.5 (-2.96 vs -5/2) and closer at sigma = 1.0 (-2.58 +- 0.07).
+- At sigma = 1.0 (x = 3.74, further from the lazy limit) the SP and NTK delta_K slopes are shallower
+  (-2.66 +- 0.09, -0.68 +- 0.06): the exponents are asymptotic in x -> 0. muP-TTN is unchanged
+  (+0.03 +- 0.06).
+- Plain and centred models give the same exponents within errors at chi >= 16 (e.g. SP delta_K -3.16 +-
+  0.10 plain vs -3.09 +- 0.09 centred at sigma = 1.5): with full, overparameterized bonds centring does not
+  change the scaling (literature correction 1).
+- K = 7 (binary N = 8, d = 2, plain, sigma = 1, chi = 4..32; `large_chi_b8`): incomplete (see report).
+
 ### 2.x Two-copy cross-check (binary N = 4)
 
 *Interim data (scipy RK45), 6 seeds x 8 chi x 19 sigma.*
