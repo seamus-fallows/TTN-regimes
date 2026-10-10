@@ -146,7 +146,7 @@ rows or found by root finding on dense output; an event narrower than three samp
 \emph{unresolved}, and separation ratios involving it are lower bounds. Code per experiment:
 \path{notes/diagnostics.md}.
 
-\begin{table}[tbp]
+\begin{table}[t]
   \centering
   \caption{Event rules by experiment (the rules are defined in the text).}
   \label{tab:exp-common}\label{tab:exp-events}
@@ -333,7 +333,7 @@ $2.2\cdot10^{-3}$ relative (binary4, close teacher) and are superseded.
       weight 1, and $\chi=3,6,12$ with weights $(3,2,1)$; 100 seeds & 5,400 \\
     \texttt{lo\_K} & leading-order flow: MPS with $\Ns=3$--$8,10,12$, binary with $\Ns=4,6,8,12,16$, HT with
       $\Ns=3,4,6,8$ ($\Kc=3$--$15$), $\chi=3$, weights $(3,2,1)$, 50 seeds & 850 \\
-    continuation & stalled or unresolved runs continued from their final state (\path{continue_stalled.py}) & 23 \\
+    continuation & slow or unresolved runs continued from their final state (\path{continue_stalled.py}) & 23 \\
     tolerance check & 9 runs of \texttt{k78} rerun with tolerances $10^{-8}$, $10^{-11}\isc$ (\path{tolcheck.py}) & 9 \\
     \bottomrule
   \end{tabularx}
@@ -776,10 +776,10 @@ them.
 \subsection{Covariance and teacher experiments}\label{app:exp-data-teacher}
 Settings of \cref{sec:covariance-teacher}. Experiment folder \path{experiments/data_teacher/} (README with
 the run order; YAML configurations in \path{configs/}; the star and correlated-input sweeps are defined
-in \path{r2_star.py} and \path{r2_corr.py}); findings in \path{notes/data_teacher.md}; reviews in
-\path{notes/reviews/} (\path{data_teacher_round1.md}, \path{data_teacher_round2.md} and
-\path{data_teacher_round3_verification.md}, whose errata are applied in \cref{sec:covariance-teacher});
-theory in \cref{app:teachers,app:covariance}.
+in \path{r2_star.py} and \path{r2_corr.py}); findings in \path{notes/data_teacher.md}; theory in
+\cref{app:teachers,app:covariance}. Reviews in \path{notes/reviews/}: \path{data_teacher_round1.md},
+\path{data_teacher_round2.md} and the verification \path{data_teacher_round3_verification.md}, whose errata are
+applied in \cref{sec:covariance-teacher}.
 
 \paragraph{Problems.}
 Exact population loss, double precision, fan-in initialization \eqref{eq:init}; teacher seeds from a
@@ -931,8 +931,8 @@ precision. The GD and SGD loops of the experiment are its own (PyTorch), checked
   \item \emph{Gradient-flow references}: SciPy DOP853 with relative and absolute tolerances $10^{-10}$ and
     $10^{-14}$, instead of the default integrator of \cref{sec:setup-dynamics}; every upward crossing of
     $\ov r\in\{0.1,0.5,0.9\}$ is located by the integrator's event finder; conservation drift
-    \eqref{eq:drift} at most $2\cdot10^{-12}$. In the $\chi=9$ sweep: LSODA (\path{ttn.dynamics.integrate_gf}, tolerances $10^{-8}$ and
-    $10^{-12}$, 3000 logged times), stopped at $\Loss=10^{-8}$; $\lambda_{\rm GF}$ is the top eigenvalue of the full
+    \eqref{eq:drift} at most $2\cdot10^{-12}$. In the $\chi=9$ sweep the references use the library's LSODA with
+    tolerances $10^{-8}$ and $10^{-12}$ and 3000 logged times, stopped at $\Loss=10^{-8}$; $\lambda_{\rm GF}$ is the top eigenvalue of the full
     Hessian at the end. Route test and strict route: LSODA as well.
   \item \emph{GD}: $\lr$ a multiple of $\lr_c$, or in the $\chi=9$ sweep of each run's own $2/\lambda_{\rm GF}$, for a
     gradient-flow time $T$: 2800, 900, 300, 100, 40 for $\isc=0.003$, $0.01$, $0.03$, $0.1$, $0.3$ on binary
