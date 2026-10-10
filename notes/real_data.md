@@ -111,11 +111,12 @@ mps16 over sigma = 0.2-0.5).
 ### 4.2 Stepwise bond-rank growth and the first route (R2) [empirical]
 After the escape all edges carry one data-weighted singular value. Then the next singular values escape
 one route at a time, from s_k/s_1 ~ 1e-5-1e-3 to O(0.1-1) (figure `bond_spectra_raw_s*`).
-- binary16 (quadtree): the first rank increase is on exactly two sibling bottom edges, a 3-core route
-  through their parent, in 35/35 runs (interim). For seeds 0, 2, 3 it is the pair under the top-right 2x2
+- binary16: the first two edges to gain a second singular value are two sibling bottom edges, a 3-core
+  route through their parent, in 35/35 quadtree and 89/89 scrambled runs. In 35/35 and 86/89 they cross the
+  threshold together (within 5% in time). For seeds 0, 2, 3 it is the pair under the top-right 2x2
   pixel block (edges 3, 4), for seed 1 the top-left one (0, 1); seed 4 switches from (3, 4) at sigma <= 0.14
   to (0, 1) at sigma >= 0.2.
-- mps16 (snake): the first rank increase is on a single edge (edge 5) in 35/35 runs (interim). It happens
+- mps16 (snake): the first rank increase is on a single edge (edge 5) in 34/35 runs. It happens
   during or right after the first escape: a strict 2-core route with a large rate.
 
 ### 4.3 Which route: degree first, then amplitude (R2 + route amplitudes) [empirical]

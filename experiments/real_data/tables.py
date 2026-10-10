@@ -49,6 +49,18 @@ def sibling_pair(r) -> bool:
     return all(lv[e] == 1 for e in edges)  # two bottom edges rising together
 
 
+def first_two_siblings(r) -> bool:
+    """Binary trees: the first two edges to gain a 2nd singular value are both bottom edges with the same
+    parent (one k = 3 route), whatever the gap between their threshold crossings."""
+    ev = np.array(r["rank_events"], float)[:, 0]
+    ok = np.flatnonzero(np.isfinite(ev))
+    if len(ok) < 2:
+        return False
+    a, b = ok[np.argsort(ev[ok])[:2]]
+    lv, edges, parent = r["edge_levels"], r["edges"], r["parent"]
+    return lv[a] == 1 and lv[b] == 1 and parent[edges[a]] == parent[edges[b]]
+
+
 def main(summary_json, out_prefix, routes_json=None):
     rows = [r for r in json.load(open(summary_json)) if "error" not in r and not r.get("centred")
             and "drops" in r]
@@ -70,7 +82,7 @@ def main(summary_json, out_prefix, routes_json=None):
                 "runs": len(rs), "s2s_fraction": float(s2s),
                 "drops_mean": float(np.mean([r["n_drops"] for r in rs]))}
         # first rank increase and bottom-up order
-        md.append("\n| tree | runs | first rise = sibling bottom pair | = single edge | Kendall tau(level, time) |\n|---|---|---|---|---|")
+        md.append("\n| tree | runs | first rise = sibling bottom pair | first two rising edges = siblings | = single edge | Kendall tau(level, time) |\n|---|---|---|---|---|---|")
         by_tree = defaultdict(list)
         for r in sub:
             by_tree[tree_label(r)].append(r)
@@ -84,7 +96,8 @@ def main(summary_json, out_prefix, routes_json=None):
                 ok = np.isfinite(ev)
                 if ok.sum() >= 4:
                     taus.append(kendalltau(lv[ok], ev[ok]).statistic)
-            md.append(f"| {tree} | {len(rs)} | {sib:.2f} | {single:.2f} | {mse(taus)} |")
+            two = np.mean([first_two_siblings(r) for r in rs]) if rs[0]["tree"] == "binary" else np.nan
+            md.append(f"| {tree} | {len(rs)} | {sib:.2f} | {two:.2f} | {single:.2f} | {mse(taus)} |")
             out[feats].setdefault("first", {})[tree] = {"sibling": float(sib), "single": float(single),
                                                        "kendall": mse(taus), "n": len(rs)}
         # locality

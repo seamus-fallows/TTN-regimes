@@ -25,11 +25,11 @@
 | binary scrambled | 0.3 | 9 | 0.78 | 5.0 | 4.4 |
 | binary scrambled | 0.5 | 15 | 0.67 | 4.5 | 3.3 |
 
-| tree | runs | first rise = sibling bottom pair | = single edge | Kendall tau(level, time) |
-|---|---|---|---|---|
-| MPS snake | 35 | 0.00 | 0.97 | 0.27 ± 0.014 |
-| binary quadtree | 35 | 1.00 | 0.00 | 0.307 ± 0.021 |
-| binary scrambled | 89 | 0.97 | 0.03 | 0.171 ± 0.024 |
+| tree | runs | first rise = sibling bottom pair | first two rising edges = siblings | = single edge | Kendall tau(level, time) |
+|---|---|---|---|---|---|
+| MPS snake | 35 | 0.00 | nan | 0.97 | 0.27 ± 0.014 |
+| binary quadtree | 35 | 1.00 | 1.00 | 0.00 | 0.307 ± 0.021 |
+| binary scrambled | 89 | 0.97 | 1.00 | 0.03 | 0.171 ± 0.024 |
 
 | tree | sigma | tau(L<=0.25) | tau(L<=0.2) | tau(L<=0.15) | tau(L<=0.12) | train L(1e4) | test L(1e4) | test acc |
 |---|---|---|---|---|---|---|---|---|
@@ -75,11 +75,11 @@
 | binary scrambled | 0.2 | 5 | 0.40 | 5.6 | 2.5 |
 | binary scrambled | 0.5 | 5 | 0.40 | 2.6 | 3.5 |
 
-| tree | runs | first rise = sibling bottom pair | = single edge | Kendall tau(level, time) |
-|---|---|---|---|---|
-| MPS snake | 25 | 0.00 | 0.60 | 0.464 ± 0.05 |
-| binary quadtree | 25 | 0.64 | 0.08 | 0.614 ± 0.031 |
-| binary scrambled | 25 | 0.72 | 0.08 | 0.564 ± 0.054 |
+| tree | runs | first rise = sibling bottom pair | first two rising edges = siblings | = single edge | Kendall tau(level, time) |
+|---|---|---|---|---|---|
+| MPS snake | 25 | 0.00 | nan | 0.60 | 0.464 ± 0.05 |
+| binary quadtree | 25 | 0.64 | 0.96 | 0.08 | 0.614 ± 0.031 |
+| binary scrambled | 25 | 0.72 | 0.96 | 0.08 | 0.564 ± 0.054 |
 
 | tree | sigma | tau(L<=0.25) | tau(L<=0.2) | tau(L<=0.15) | tau(L<=0.12) | train L(1e4) | test L(1e4) | test acc |
 |---|---|---|---|---|---|---|---|---|
