@@ -31,3 +31,7 @@ Running: order ($0.84/h, fix round), data-teacher ($0.47/h, errata pass). Estima
 2026-10-10 afternoon: data-teacher DELETED after verified copy (errata session $0.47, 1.02 h); regime-map restarted for
 round 2 at $1.04/h (the earlier copy session cost < $0.5). Running: order ($0.84/h), regime-map ($1.04/h).
 Estimated total so far: about $34.
+
+2026-10-10 ~14:30 UTC: order DELETED after verified copy (fix-round session $2.16, 2.59 h). regime-map round 2 running
+($1.04/h). locality still stopped (disk only, ~$0.71/day; cannot restart; raw copy verified earlier, re-check pending).
+Estimated total so far: about $36.
