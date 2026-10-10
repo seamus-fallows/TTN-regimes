@@ -1,6 +1,6 @@
 # s2s-core: saddle-to-saddle phenomenology and escape-time scaling in TTNs (Q1, Q2)
 
-Status: done - Branch: agent/s2s-core - Updated: 2026-10-10 00:50 UTC
+Status: done - Branch: agent/s2s-core - Updated: 2026-10-10 00:46 UTC
 
 ## Summary
 Asked: does gradient flow (GF) on a TTN from small init show saddle-to-saddle (S2S) dynamics, which
@@ -56,7 +56,7 @@ Derived; known for DLNs (Saxe 2014 eq. 15), explicit for TTNs here.
 
 (separated teacher; t_1 column from the first-escape sweep, sigma down to 0.002 (K = 3, 4) and 0.01
 (K = 7, 8), with the predicted offset c_K removed. Close teacher: within 0.04 of K - 2 except binary4 gap
-2 (0.92 +- 0.11, 1.12 +- 0.05). mps8 completes no run within budget, see 5.)
+2 (0.92 +- 0.11, 1.12 +- 0.05). mps8 completes no run within budget, see 6.)
 
 **4. First-escape prefactor** (`first_*.csv`, `lo_*.csv`, figures c, e, e2):
 - per seed, t_1 / (sigma^-(K-2) T(theta_hat) + c_K) - 1 at the smallest sigma: <= 2e-3 (binary4),
