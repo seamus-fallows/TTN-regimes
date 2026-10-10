@@ -636,3 +636,51 @@ def fig_stall_fraction(specs, name="stalls_vs_K"):
     axes[0].set_ylabel("fraction of seeds stalled")
     fig.tight_layout()
     save_fig(fig, f"{name}.png")
+
+
+def fig_sigma_c_vs_K(specs, name="sigma_c_vs_K"):
+    """S2S boundary vs K: per-seed boundaries (median, quartiles) for each (exp, chi) series, with
+    the exact aligned-init boundary a0c(K) (the kappa_K -> 1 limit of H4) and the effective per-core
+    amplitude kappa_K = a0c(K) / sigma_c (theory_regimes R9; H4 holds iff kappa_K -> 1).
+    specs: list of (label, exp, chi or 'full'). Also writes the table."""
+    from analysis import aligned_boundary_a0, load, per_seed_table
+
+    rows = []
+    fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
+    colors = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
+    for (label, exp, chi), c in zip(specs, colors):
+        df = load(exp)
+        if chi != "full":
+            df = df[df.chi == chi]
+        w = tuple(df.weights.iloc[0]) if "weights" in df.columns and isinstance(df.weights.iloc[0], list) else (3.0, 2.0, 1.0)
+        tab = per_seed_table(df, ["kind", "n"])
+        for (kind, n), g in tab.groupby(["kind", "n"]):
+            K = int(g.K.iloc[0])
+            sc = g.sigma_c.dropna()
+            a0c = aligned_boundary_a0(K, w)
+            rows.append(dict(series=label, exp=exp, chi=chi, tree=f"{kind}{n}", K=K, n_seeds=len(g), n_resolved=len(sc),
+                             n_never=int((g.s2s_status == "never_s2s").sum()), n_unresolved=int((g.s2s_status == "unresolved").sum()),
+                             sigma_c_median=float(sc.median()) if len(sc) else np.nan,
+                             sigma_c_q1=float(sc.quantile(0.25)) if len(sc) else np.nan,
+                             sigma_c_q3=float(sc.quantile(0.75)) if len(sc) else np.nan, a0c=a0c,
+                             kappa=a0c / float(sc.median()) if len(sc) else np.nan))
+        t = pd.DataFrame([r for r in rows if r["series"] == label]).sort_values("K")
+        ok = t.sigma_c_median.notna()
+        axes[0].errorbar(t.K[ok], t.sigma_c_median[ok], yerr=[t.sigma_c_median[ok] - t.sigma_c_q1[ok], t.sigma_c_q3[ok] - t.sigma_c_median[ok]],
+                         fmt="o", color=c, ms=4, capsize=2, label=label)
+        axes[1].plot(t.K[ok], t.kappa[ok], "o", color=c, ms=4, label=label)
+    Ks = np.arange(3, 16)
+    axes[0].plot(Ks, [aligned_boundary_a0(k, (3.0, 2.0)) for k in Ks], "--", color=MUTED, lw=1,
+                 label=r"aligned init $a_{0c}(K)$ (teacher 3,2)")
+    axes[0].axhline(1.0, color=MUTED, lw=0.8, ls=":")
+    axes[1].axhline(1.0, color=MUTED, lw=0.8, ls=":")
+    axes[0].set_ylabel(r"S2S boundary $\sigma_c$ (per seed: median, quartiles)")
+    axes[1].set_ylabel(r"$\kappa_K=a_{0c}(K)/\sigma_c$")
+    for ax in axes:
+        ax.set_xlabel("number of cores K")
+        ax.legend(fontsize=6.5, frameon=False)
+    fig.tight_layout()
+    save_fig(fig, f"{name}.png")
+    out = pd.DataFrame(rows)
+    save_csv(out, f"{name}.csv")
+    return out

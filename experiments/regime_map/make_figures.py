@@ -30,6 +30,9 @@ FIGURES = {
     "sigma_chi_b8_d2": lambda: plots.fig_sigma_chi_b8("sigma_chi_b8_d2", None, {32: "8/32"}, floor=None),
     "sigma_K": lambda: [plots.fig_sigma_K("sigma_K", chi) for chi in (6, 3)],
     "sigma_K_d2": lambda: [plots.fig_sigma_K("sigma_K_d2", chi) for chi in (4, 2)],
+    "sigma_c_vs_K": lambda: plots.fig_sigma_c_vs_K([
+        ("centred, chi = 4 (2x rank)", "sigma_K_centred_d2", 4), ("plain, chi = 4 (2x rank)", "sigma_K_d2", 4),
+        ("plain, full bonds", "sigma_K_full_d2", "full"), ("plain, chi = 2 (= rank)", "sigma_K_d2", 2)]),
     "stalls": lambda: plots.fig_stall_fraction([
         ("d = 2, chi = teacher rank (2)", "sigma_K_d2", 2), ("d = 2, chi = 2 x rank (4)", "sigma_K_d2", 4),
         ("d = 2, full bonds", "sigma_K_full_d2", "full"), ("d = 3, chi = teacher rank (3)", "sigma_K", 3)]),
