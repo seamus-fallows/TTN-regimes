@@ -236,14 +236,16 @@ it may be a two-population mean field with a pairwise coupling through the root 
   \includegraphics{regime_map/other.pdf}
   \caption{Lazy regime and large bond dimension; binary tree with $\Ns=4$, $d=3$, teacher $(3,2,1)$, centred model,
     six seeds. (a)~Final loss against $\isc$ (dots: medians) for $\chi=3$, $4$, $6$ (deficient bonds) and $\chi=9$ (full);
-    solid: the Eckart--Young minimum of $\Wt+\Wz$ across the cut, median over seeds; dotted: $0.7$ times the
-    small-$\isc$ mean \eqref{eq:A-centred-floor}; dashed: the convergence threshold $10^{-3}$. Runs stop at
-    $10^{-6}$; with deficient bonds they end on the minimum once it exceeds that, and are stalled above the
-    threshold. (b)~Kernel change (tensor kernel) against $\chi$ at $\isc=1.5$: seeds (dots), medians (lines),
-    predicted slopes $-3$, $-1$, $0$ (dashed, through the $\chi=128$ medians) and the predicted NTK levels
-    (crosses). (c)~Relative change of the root (solid) and leaf cores (dashed), medians.
-    Takeaway: below the cut dimension the large-$\isc$ end is a floor, not a lazy fit; at large $\chi$ only
-    $\mu$P-TTN keeps the kernel and the leaf cores moving.}
+    solid: the Eckart--Young minimum of $\Wt+\Wz$ across the cut, median over seeds ($\chi=9$: line through the
+    medians); dotted: $0.7$ times the small-$\isc$ mean \eqref{eq:A-centred-floor}; dashed: the convergence threshold
+    $10^{-3}$. Runs stop at $10^{-6}$; with deficient bonds they end on the minimum once it exceeds that, and are
+    stalled above the threshold. (b)~Kernel change (tensor kernel) against $\chi=4$--$128$ at $\isc=1.5$ ($\chi=4$,
+    $8$: deficient bonds; every run at $\chi=4$ stalls): seeds (dots), medians (lines), predicted slopes $-3$, $-1$,
+    $0$ (dashed, through the $\chi=128$ medians; the fits of \cref{tab:large-chi} use $\chi=16$--$128$), the
+    predicted NTK levels (crosses) and the predicted $\mu$P-TTN level (grey band). (c)~Relative change of the root
+    (solid) and leaf cores (dashed), medians; colours as in (b). Data: experiment \texttt{regime\_map}
+    (\cref{tab:repro-figures}). Takeaway: below the cut dimension the large-$\isc$ end is a floor, not a lazy fit;
+    at large $\chi$ only $\mu$P-TTN keeps the kernel and the leaf cores moving.}
   \label{fig:other-regimes}
 \end{figure}
 

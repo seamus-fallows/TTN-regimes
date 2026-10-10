@@ -100,7 +100,9 @@ def panel_sigma_chi(ax):
     ax.fill_between(gx, lo, up, color=COL["rich"], alpha=0.16, lw=0)
     full = gx >= split
     ax.fill_between(gx[full], lzy[full], y1, color=COL["lazy"], alpha=0.16, lw=0)
-    ax.fill_between(gx[~full], fly[~full], y1, facecolor=COL["stalled"], edgecolor="white", hatch="////", lw=0)
+    ax.fill_between(
+        gx[~full], fly[~full], y1, facecolor=COL["stalled"], edgecolor="white", hatch="////", lw=0
+    )
     ax.axvline(split, color=tp.MUTED, lw=0.6, ls=":")
 
     # theory: P5 bracket and asymptote; slope -1/2 guide through the S2S boundary
@@ -246,7 +248,7 @@ def panel_p20(ax):
     ax.set_xlabel(r"root scale $\lambda$ ($\chi=16$, $\alpha=3.375$)")
     ax.set_ylabel(r"kernel change $\delta_\Theta(T)$")
     ax.set_title(r"(d) kernel change against $\lambda$", fontsize=8.5)
-    ax.legend(loc="lower right", fontsize=7)
+    ax.legend(loc="lower right", fontsize=8)
 
 
 def fig_map(out: str):
@@ -259,10 +261,19 @@ def fig_map(out: str):
     handles = [Patch(facecolor=COL[r], label=NAME[r]) for r in ("s2s", "rich", "lazy")]
     handles += [
         Patch(facecolor=COL["stalled"], label="stalled at a partial fit"),
-        Patch(facecolor=COL["stalled"], hatch="////", edgecolor="white", label="stalled at a floor"),
-        Line2D([], [], color=tp.INK, ls=(0, (1, 1.5)), lw=0.9, label=r"P5: $6.50\,\chi^{-1/2}$"),
+        Patch(
+            facecolor=COL["stalled"], hatch="////", edgecolor="white", label="stalled at a floor"
+        ),
+        Line2D(
+            [],
+            [],
+            color=tp.INK,
+            ls=(0, (1, 1.5)),
+            lw=0.9,
+            label=r"lazy asymptote $6.50\,\chi^{-1/2}$",
+        ),
     ]
-    fig.legend(handles=handles, loc="outside lower center", ncol=3, fontsize=7.5)
+    fig.legend(handles=handles, loc="outside lower center", ncol=3, fontsize=8)
     tp.savefig(fig, os.path.join(out, "report_map"))
     plt.close(fig)
 
@@ -291,7 +302,7 @@ def panel_floor(ax):
     ax.set_xlabel(r"per-core scale $\sigma$")
     ax.set_ylabel(r"$L(T)/L(0)$")
     ax.set_title(r"(a) deficient bonds: the floor", fontsize=8.5)
-    ax.legend(loc="lower right", fontsize=7, ncol=2, handletextpad=0.2, columnspacing=0.6)
+    ax.legend(loc="lower right", fontsize=8, ncol=2, handletextpad=0.2, columnspacing=0.6)
 
 
 PARAM = [("sp", "SP"), ("ntk", "NTK"), ("mup", r"$\mu$P-TTN")]
@@ -308,33 +319,39 @@ def panel_large_chi(ax, ax2):
         ax.plot(med.index, med.values, "o-", ms=3.0, lw=1.1, color=c, label=name)
         root = g.groupby("chi").root_change.median()
         leaf = g.groupby("chi").leaf_change.median()
-        ax2.plot(root.index, root.values, "o-", ms=3.0, lw=1.1, color=c, label=f"{name}, root")
-        ax2.plot(
-            leaf.index,
-            leaf.values,
-            "s--",
-            ms=2.8,
-            lw=0.9,
-            mfc="white",
-            color=c,
-            label=f"{name}, leaves",
-        )
+        ax2.plot(root.index, root.values, "o-", ms=3.0, lw=1.1, color=c)
+        ax2.plot(leaf.index, leaf.values, "s--", ms=2.8, lw=0.9, mfc="white", color=c)
     x = np.array([16, 128.0])
     for c, (lr, _), p in zip(cols, PARAM, (-3, -1, 0)):
         y128 = r[(r.lr == lr) & (r.chi == 128)].dK_tensor.median()
         ax.plot(x, y128 * (x / 128) ** p, color=tp.INK, lw=0.7, ls=(0, (3, 1.5)))
-    ax.plot([64, 128], [0.240, 0.120], "x", ms=5, color=tp.INK, label="R4, NTK")
+    ax.plot([64, 128], [0.240, 0.120], "x", ms=5, color=tp.INK, label="NTK, predicted")
     ax.axhspan(6.2, 6.3, color=tp.GRID, lw=0)
     ax.set(xscale="log", yscale="log", ylim=(1e-4, 30))
     ax.set_xlabel(r"bond dimension $\chi$")
     ax.set_ylabel(r"kernel change $\delta_\Theta(T)$")
     ax.set_title(r"(b) large $\chi$: kernel change", fontsize=8.5)
-    ax.legend(loc="lower left", fontsize=7)
+    ax.legend(loc="lower left", fontsize=8, handlelength=1.5, labelspacing=0.25)
+    # colours as in (b); line style tells the cores apart
+    style = [
+        Line2D([], [], color=tp.INK_SECONDARY, marker="o", ms=3.0, lw=1.1, label="root"),
+        Line2D(
+            [],
+            [],
+            color=tp.INK_SECONDARY,
+            marker="s",
+            ms=2.8,
+            mfc="white",
+            lw=0.9,
+            ls="--",
+            label="leaf cores",
+        ),
+    ]
     ax2.set(xscale="log", yscale="log")
     ax2.set_xlabel(r"bond dimension $\chi$")
     ax2.set_ylabel("relative change of the cores")
     ax2.set_title(r"(c) large $\chi$: root and leaf cores", fontsize=8.5)
-    ax2.legend(loc="lower left", fontsize=6.5, ncol=1)
+    ax2.legend(handles=style, loc="lower left", fontsize=8, handlelength=2.2)
 
 
 def fig_other(out: str):
