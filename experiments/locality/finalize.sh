@@ -43,7 +43,10 @@ py $X/plot_trees.py $O/multicomp --teacher E8 --n 8 --sigma 0.1 --seed 0 --level
 py $X/bond_events2.py $O/twocomp --out $R/bond_events2_twocomp.csv --workers $W > $R/bond_events2_twocomp_summary.txt
 py $X/bond_events2.py $O/multicomp $O/multicomp_wide --profiles --out $R/bond_profiles_multicomp.csv --workers $W \
    > $R/bond_profiles_multicomp_summary.txt
+py $X/bond_events2.py $O/multicomp $O/multicomp_wide --out $R/bond_events2_multicomp_events.csv --workers $W \
+   > $R/bond_events2_multicomp_events_summary.txt
 py $X/plot_bonds.py $O/twocomp --cases mps8:25 binary8:34 ht8:12s --sigma 0.05 --out $R/bond_spectra.png
-# dead routes: stall-diagnosis reruns, R12 criterion at the route ends
+# dead routes: run classes, sigma-dependent dropout, capped route ends; stall-diagnosis reruns and R12's criterion
+py $X/stall_tables.py --out $R
 py $X/r12.py $O/stalldiag --out $R/r12.csv --workers $W > $R/r12_summary.txt
 echo done

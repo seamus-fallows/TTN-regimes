@@ -1,0 +1,12 @@
+  row["rho"] = (tb - ta) / np.nanmax([wa, final_rise_width(cross, rb)])
+           sweep  runs  greedy  other_order  rotation  stalled  timeout  incomplete  error
+         twocomp  5682    5094          136        41      398        1          12      0
+twocomp_balanced  1008     908           24        60       16        0           0      0
+    twocomp_chi4  1005     864           17        18      106        0           0      0
+          robust  1840    1566          198        33       42        0           1      0
+           k5ext    96      62            0         0       34        0           0      0
+           khigh   256     229            1        16       10        0           0      0
+        lambda2K   168     167            0         0        0        0           0      1
+       multicomp  1008     609          247       102       50        0           0      0
+  multicomp_wide   384     312           38         4       30        0           0      0
+done

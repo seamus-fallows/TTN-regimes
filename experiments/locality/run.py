@@ -158,7 +158,9 @@ def run_one(case, sigma):
     # the compiled field must be the library's (agreement to roundoff)
     v_lib = problem.velocity(y0t)
     v_c = -grad(y0t)
-    assert torch.allclose(v_c, v_lib, rtol=1e-10, atol=1e-30 + 1e-12 * float(v_lib.abs().max()))
+    # (absolute floor: at an exact saddle the field is pure roundoff, ~1e-16 x the parameter scale; round 2 lost one
+    # lambda2(K) run at sigma = 1e-4 to a purely relative tolerance here)
+    assert torch.allclose(v_c, v_lib, rtol=1e-10, atol=1e-14 * (1.0 + float(y0t.abs().max())))
 
     memo = {}
 
