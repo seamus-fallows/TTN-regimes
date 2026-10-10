@@ -197,27 +197,26 @@ def _own_spectra(problem, theta, t):
 
 
 def final_rise(t, a, lo=0.1, mid=0.5, hi=0.9):
-    """(t_mid, width, n_up) of one component's final rise (notes/diagnostics.md).
+    """(t_mid, width, n_up) of one component's rise (notes/diagnostics.md).
 
-    t_mid is the LAST upward crossing of `mid` (the curve stays >= mid afterwards; NaN if it ends
-    below). The width is t(first reach of `hi` after the last sample below `mid`) minus t(last upward
-    crossing of `lo` before that), the final-rise width of `ttn.diagnostics.event_widths` (identical
-    to it unless a transient went above `hi` and fell back). n_up counts the upward crossings of
-    `mid`: n_up > 1 flags a transient excursion above `mid`, which the pre-fix rule took as the event."""
+    The rise is the one that first reaches `hi` (the component is then learned). t_mid is the LAST
+    upward crossing of `mid` before that point: a transient excursion above `mid` that fell back
+    before the component was learned does not set the event (the pre-fix rule took it when the log
+    grid caught it), and a later dip below `mid` after it was learned (while another component
+    escapes) does not move it either. width = t(first reach of `hi`) - t(last upward crossing of
+    `lo` before it), the final-rise width of `ttn.diagnostics.event_widths`. A component that never
+    reaches `hi`: t_mid = last upward crossing of `mid` (NaN if it ends below), width NaN. n_up counts
+    the upward crossings of `mid` before the first reach of `hi` (> 1: a pre-learning transient)."""
     t, a = np.asarray(t, float), np.asarray(a, float)
-    n_up = int(dg.upward_crossings(a, mid))
-    t_mid = float(dg.crossing_times(t, a, mid, last=True))
-    if not np.isfinite(t_mid):
-        return np.nan, np.nan, n_up
-    below = np.flatnonzero(~(a >= mid))
-    j = below[-1] + 1 if below.size else 0  # first sample of the final segment above mid
-    reach = np.flatnonzero(a[j:] >= hi)
+    reach = np.flatnonzero(a >= hi)
     if reach.size == 0:
-        return t_mid, np.nan, n_up
-    i_hi = j + reach[0]
-    s = max(j - 1, 0)
-    t_hi = float(dg.crossing_times(t[s:], a[s:], hi))
-    t_lo = float(dg.crossing_times(t[: i_hi + 1], a[: i_hi + 1], lo, last=True))
+        return float(dg.crossing_times(t, a, mid, last=True)), np.nan, int(dg.upward_crossings(a, mid))
+    i_hi = reach[0]
+    seg_t, seg_a = t[: i_hi + 1], a[: i_hi + 1]
+    n_up = int(dg.upward_crossings(seg_a, mid))
+    t_mid = float(dg.crossing_times(seg_t, seg_a, mid, last=True))
+    t_hi = float(dg.crossing_times(t, a, hi))
+    t_lo = float(dg.crossing_times(seg_t, seg_a, lo, last=True))
     return t_mid, t_hi - t_lo, n_up
 
 
@@ -225,11 +224,11 @@ def refine_events(problem: Problem, t, A, params, kw, n_dense=200, max_steps=100
     """Event times and final-rise widths resolved in linear time (fix round 1: last crossing).
 
     The log-time grid cannot resolve O(1)-wide events at late times (spacing ~1% of t). For each
-    component whose final rise is recorded, re-integrate from the saved parameters at the last log
-    point before the rise (last a_r < 0.1 before the first a_r >= 0.9 of the final segment above
-    1/2) to that point, on a linear grid of n_dense points, and take the last upward crossing of 1/2
-    and the final-rise width there (`final_rise`). Without a refinement window the coarse values of
-    `final_rise` on `merged` (log + fine rows, default the log rows) are kept.
+    component whose rise to 0.9 is recorded, re-integrate from the saved parameters at the last log
+    point before the rise (last a_r < 0.1 before the first a_r >= 0.9) to the first log point with
+    a_r >= 0.9, on a linear grid of n_dense points, and take the last upward crossing of 1/2 and the
+    rise width there (`final_rise`). Without a refinement window the coarse values of `final_rise` on
+    `merged` (log + fine rows, default the log rows) are kept.
 
     Returns (times, widths, refined, n_up, times_old): n_up per component from `merged`, and
     times_old = the event times of the pre-fix rule (first crossing; the coarse log-grid crossing if
@@ -243,13 +242,11 @@ def refine_events(problem: Problem, t, A, params, kw, n_dense=200, max_steps=100
     refined = []
     for r in range(R):
         a = A[:, r]
-        below = np.flatnonzero(~(a >= 0.5))
-        j = below[-1] + 1 if below.size else 0
-        reach = np.flatnonzero(a[j:] >= 0.9)
+        reach = np.flatnonzero(a >= 0.9)
         if reach.size == 0:
             refined.append(False)
             continue
-        i1 = j + reach[0]
+        i1 = reach[0]
         lo = np.flatnonzero(a[:i1] < 0.1)
         i0 = lo[-1] if lo.size else 0
         if i1 - i0 < 1:
@@ -279,6 +276,18 @@ def refine_events(problem: Problem, t, A, params, kw, n_dense=200, max_steps=100
     return times, widths, refined, n_up, times_old
 
 
+def tensor_kernel(spec: TTNSpec, theta, w=None) -> torch.Tensor:
+    """Tensor-space kernel J diag(w) J^T, J = d vec(W) / d theta (D x P), by D batched reverse-mode
+    passes. Same matrix as `ttn.diagnostics.tensor_tangent_kernel` (up to a common permutation of
+    vec(W)), whose forward construction allocates an identity of size (core size)^2 per core
+    (34 GB for the two-copy root at chi = 128)."""
+    th = theta.detach().clone().requires_grad_(True)
+    W = to_dense(spec, spec.unflatten(th)).reshape(-1)
+    eye = torch.eye(W.numel(), dtype=W.dtype)
+    (jac,) = torch.autograd.grad(W, th, grad_outputs=eye, is_grads_batched=True)
+    return (jac if w is None else jac * w) @ jac.T
+
+
 def tensor_kernel_change(problem: Problem, theta0, theta_end) -> float:
     """delta_K of the tensor-space kernel J D J^T (D = learning rates x mask), the kernel of
     notes/theory_regimes.md; NaN for trees too large for a dense D x P Jacobian."""
@@ -286,8 +295,8 @@ def tensor_kernel_change(problem: Problem, theta0, theta_end) -> float:
     if math.prod(spec.phys_dims) * spec.n_params > TENSOR_MAX:
         return np.nan
     w = kernel_weights(problem)
-    T0 = dg.tensor_tangent_kernel(spec, theta0, w)
-    T1 = dg.tensor_tangent_kernel(spec, theta_end, w)
+    T0 = tensor_kernel(spec, theta0, w)
+    T1 = tensor_kernel(spec, theta_end, w)
     return dg.kernel_change(T1, T0)
 
 

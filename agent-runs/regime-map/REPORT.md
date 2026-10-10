@@ -1,5 +1,20 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
+> **Addendum, fix round 1 (2026-10-10, local).** Several claims below were corrected after review
+> round 1 (`notes/reviews/regime_map_round1.md`). The authoritative list, old -> new with status tags,
+> is **`notes/regime_map.md` section 3 "Fix round 1 (local)"**; tables and figures are in
+> `experiments/regime_map/results/fix1/`, and every figure in `results/` was regenerated from the
+> copied raw outputs (`data/regime_map/`). In short: (1) events now use the last crossing of 1/2 before
+> a component is learned (15 labels change, all rich -> S2S; chi = 12 seed 4: 0.013 -> 0.034); the
+> deepest-run "prediction" is a calibrated consistency check of rho ~ 1/sigma, not an a-priori
+> prediction; with the tensor-space kernel the lazy boundary lies in P5's bracket at chi = 24-96 and
+> at its lower edge at 128 (the 128-probe kernel of the labels gives ~5% lower boundaries). (2) The sigma sqrt(chi) collapse is
+> empirical for N = 4, fan-in, chi = 16-128 (< 1 decade), the TTN analogue of known width scales.
+> (4) K >= 8 boundaries were floor-limited brackets (5/6, 5/6, 6/6, 5/6 seeds unresolved at K = 8,
+> 10, 12, 15); sigma_c -> sqrt(d) is a conjecture. (5) With the tensor kernel, muP-TTN delta_K -> 6.2
+> and NTK ~ chi^-1 at chi >= 64, as P16 predicts. (6) P20's slope and saturation hold with the tensor
+> kernel; "S2S widest at lambda = sqrt(chi)" is withdrawn. Pending: section 3.3 of the notes.
+
 Status: done - Branch: agent/regime-map - Updated: 2026-10-10 06:59 UTC
 
 ## Summary

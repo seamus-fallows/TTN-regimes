@@ -78,21 +78,29 @@ def label(l_end, dK, rhos, k_thr=0.1, rho_thr=3.0):
     return "rich"
 
 
-def _traj_path(exp: str, row: dict) -> str:
+def rid_of(row: dict) -> str:
+    """run_id of a result row taken from a DataFrame: keys that are missing for this row (NaN
+    because other rows have them, e.g. 'balance') are dropped first."""
     from run_regime import row_cfg, run_id
 
-    return os.path.join(OUT, exp, "traj", run_id(row_cfg(row)) + ".npz")
+    return run_id(row_cfg({k: v for k, v in row.items() if not _is_missing(v)}))
+
+
+def _traj_path(exp: str, row: dict) -> str:
+    return os.path.join(OUT, exp, "traj", rid_of(row) + ".npz")
 
 
 def relabel_last_crossing(df: pd.DataFrame, exp: str) -> pd.DataFrame:
-    """Event times by the last upward crossing of 1/2 (notes/diagnostics.md) for every run.
+    """Event times by the fixed rule of `run_regime.final_rise` for every run: the last upward
+    crossing of 1/2 before the component first reaches 0.9 (notes/diagnostics.md: a transient above
+    1/2 that falls back before the component is learned does not set the event).
 
-    Rows of the fixed driver (event_rule == 'last') already carry them. For pre-fix rows the stored
-    (refined) times are kept unless a component crossed 1/2 upward more than once on the recorded
-    log + fine rows of its trajectory (a transient above 1/2): its time and final-rise width are then
-    taken from those rows (`run_regime.final_rise`; fine rows resolve a rise with ~20 or more
-    samples). Adds n_up (upward crossings of 1/2 per component), bump (any n_up > 1), the pre-fix
-    event_times_old / rhos_old, and relabelled = whether the times changed."""
+    Starts from the pre-fix event times (the stored `event_times` of pre-fix rows, `event_times_old`
+    of rows written by the fixed driver) and replaces a component's time when it crossed 1/2 upward
+    more than once before first reaching 0.9 on the recorded log + fine rows of its trajectory (fine
+    rows resolve a rise with ~20 or more samples). The stored refined widths are kept: their window
+    (last 0.1 before the first 0.9) is the one of the fixed rule. Adds n_up, bump (any n_up > 1), the
+    pre-fix event_times_old / rhos_old, and relabelled = whether the times changed."""
     from run_regime import final_rise
 
     from ttn.dynamics import merged_rows
@@ -100,77 +108,108 @@ def relabel_last_crossing(df: pd.DataFrame, exp: str) -> pd.DataFrame:
     df = df.copy()
     if "event_rule" not in df.columns:
         df["event_rule"] = None
-    new_t, new_w, new_rho, old_t, old_rho, nup, changed = [], [], [], [], [], [], []
+    new_t, new_rho, old_t, old_rho, nup, changed = [], [], [], [], [], []
     for _, r in df.iterrows():
-        times = np.asarray(r.event_times, float)
+        fixed = r.event_rule == "last"
+        times = np.asarray(r.event_times_old if fixed else r.event_times, float)
         widths = np.asarray(r.event_widths, float)
-        if r.event_rule == "last":
-            new_t.append(list(times))
-            new_w.append(list(widths))
-            new_rho.append(list(r.rhos))
-            old_t.append(list(r.event_times_old))
-            old_rho.append(list(r.rhos_old))
-            nup.append(list(r.n_up))
-            changed.append(bool(np.any(np.asarray(r.n_up) > 1)))
-            continue
         old_t.append(list(times))
-        old_rho.append(list(r.rhos))
+        old_rho.append(list(r.rhos_old if fixed else r.rhos))
         path = _traj_path(exp, r.to_dict())
         if not os.path.exists(path):  # cannot be checked: keep the pre-fix values (flagged)
             new_t.append(list(times))
-            new_w.append(list(widths))
-            new_rho.append(list(r.rhos))
+            new_rho.append(list(old_rho[-1]))
             nup.append([-1] * len(times))
             changed.append(False)
             continue
         with np.load(path, allow_pickle=False) as z:
             data = {k: z[k] for k in ("t", "overlaps", "fine_t", "fine_overlaps") if k in z.files}
         m = merged_rows(data, keys=("overlaps",))
-        t2, w2, n2 = times.copy(), widths.copy(), []
+        t2, n2 = times.copy(), []
         for c in range(m["overlaps"].shape[1]):
-            t_mid, w, n = final_rise(m["t"], m["overlaps"][:, c])
+            t_mid, _, n = final_rise(m["t"], m["overlaps"][:, c])
             n2.append(n)
             if n > 1:
                 t2[c] = t_mid
-                # the stored (refined) width is already the final-rise width unless the transient
-                # itself reached 0.9 and fell back; only then take the recorded-rows value
-                if _transient_above(m["overlaps"][:, c], 0.9):
-                    w2[c] = w
         new_t.append(list(t2))
-        new_w.append(list(w2))
-        new_rho.append([float(x) for x in _ratios(t2, w2)])
+        new_rho.append([float(x) for x in _ratios(t2, widths)])
         nup.append(n2)
         changed.append(bool(np.any(~np.isclose(t2, times, equal_nan=True))))
-    df["event_times"], df["event_widths"], df["rhos"] = new_t, new_w, new_rho
+    df["event_times"], df["rhos"] = new_t, new_rho
     df["event_times_old"], df["rhos_old"], df["n_up"] = old_t, old_rho, nup
     df["bump"] = [bool(np.any(np.asarray(n) > 1)) for n in nup]
     df["relabelled"] = changed
     return df
 
 
-def add_tensor_kernel(df: pd.DataFrame, exp: str, mask=None) -> pd.DataFrame:
-    """Fill dK_tensor (tensor-space kernel change, `run_regime.tensor_kernel_change`) for pre-fix
-    rows from theta_end of their trajectories; the initial point is rebuilt from the config (same
-    seeds). mask: optional boolean Series selecting the rows to compute (it costs a few seconds per
-    run at chi = 128)."""
+TENSOR_CACHE = os.environ.get("REGIME_MAP_TENSOR_CACHE")  # dir of <exp>.csv (run_id, dK_tensor)
+
+
+def tensor_kernel_row(args) -> tuple[str, float]:
+    """(run_id, dK_tensor) of one saved run: theta_end from its trajectory, the initial point rebuilt
+    from the config (same seeds). Module-level so that spawned workers can run it."""
     import torch
     from run_regime import build, row_cfg, tensor_kernel_change
 
+    raw, exp, r = args
+    torch.set_num_threads(1)
+    rid = rid_of(r)
+    path = os.path.join(raw, exp, "traj", rid + ".npz")
+    if not os.path.exists(path):
+        return rid, np.nan
+    with np.load(path, allow_pickle=False) as z:
+        theta_end = torch.from_numpy(z["theta_end"])
+    cfg = {k: v for k, v in row_cfg(r).items() if not _is_missing(v)}
+    problem, theta0, _, _ = build(cfg)
+    return rid, float(tensor_kernel_change(problem, theta0, theta_end))
+
+
+def _cache_path(exp: str):
+    return os.path.join(TENSOR_CACHE, f"{exp}.csv") if TENSOR_CACHE else None
+
+
+def read_tensor_cache(exp: str) -> dict:
+    path = _cache_path(exp)
+    if path is None or not os.path.exists(path):
+        return {}
+    c = pd.read_csv(path)
+    return dict(zip(c.run_id, c.dK_tensor))
+
+
+def add_tensor_kernel(df: pd.DataFrame, exp: str, mask=None, n_proc: int = 1) -> pd.DataFrame:
+    """Fill dK_tensor (tensor-space kernel change, `run_regime.tensor_kernel_change`) for pre-fix
+    rows from theta_end of their trajectories (`tensor_kernel_row`). mask: optional boolean Series
+    selecting the rows to compute (a few seconds per run at chi = 128); n_proc > 1: spawned pool.
+    New values are appended to the cache TENSOR_CACHE/<exp>.csv when TENSOR_CACHE is set."""
     df = df.copy()
     if "dK_tensor" not in df.columns:
         df["dK_tensor"] = np.nan
+    cached = read_tensor_cache(exp)
+    ids = [rid_of(r) for r in df.to_dict("records")]
+    df["dK_tensor"] = [
+        v if np.isfinite(v) else cached.get(i, np.nan)
+        for v, i in zip(df.dK_tensor.astype(float), ids)
+    ]
     sel = df.dK_tensor.isna() if mask is None else (df.dK_tensor.isna() & mask)
-    for i in np.flatnonzero(sel.values):
-        r = df.iloc[i].to_dict()
-        path = _traj_path(exp, r)
-        if not os.path.exists(path):
-            continue
-        with np.load(path, allow_pickle=False) as z:
-            theta_end = torch.from_numpy(z["theta_end"])
-        cfg = {k: v for k, v in row_cfg(r).items() if not _is_missing(v)}
-        problem, theta0, _, _ = build(cfg)
-        df.iloc[i, df.columns.get_loc("dK_tensor")] = tensor_kernel_change(
-            problem, theta0, theta_end
+    todo = [(OUT, exp, df.iloc[i].to_dict()) for i in np.flatnonzero(sel.values)]
+    if not todo:
+        return df
+    if n_proc > 1:
+        from multiprocessing import get_context
+
+        with get_context("spawn").Pool(min(n_proc, len(todo))) as pool:
+            res = pool.map(tensor_kernel_row, todo, chunksize=1)
+    else:
+        res = [tensor_kernel_row(a) for a in todo]
+    new = dict(res)
+    df["dK_tensor"] = [
+        new.get(i, v) if not np.isfinite(v) else v for v, i in zip(df.dK_tensor.astype(float), ids)
+    ]
+    path = _cache_path(exp)
+    if path is not None:
+        os.makedirs(TENSOR_CACHE, exist_ok=True)
+        pd.DataFrame({"run_id": list(new), "dK_tensor": list(new.values())}).to_csv(
+            path, mode="a", header=not os.path.exists(path), index=False
         )
     return df
 
@@ -179,17 +218,13 @@ def _is_missing(v):
     return v is None or (isinstance(v, float) and not np.isfinite(v))
 
 
-def _transient_above(a, level):
-    """True if the curve reaches `level` and later falls below 1/2 again (a transient that high)."""
-    a = np.asarray(a, float)
-    above = np.flatnonzero(a >= level)
-    return bool(above.size and np.any(a[above[0] :] < 0.5))
-
-
 def _ratios(times, widths):
     from ttn.diagnostics import separation_ratios as sr
 
     return sr(np.asarray(times, float), np.asarray(widths, float))
+
+
+_LOADED: dict = {}  # (OUT, exp, cache size) -> table; relabelling reads every trajectory once
 
 
 def load(exp: str) -> pd.DataFrame:
@@ -197,7 +232,14 @@ def load(exp: str) -> pd.DataFrame:
 
     Library runs (run_regime.py) carry event_times / event_widths / rhos in their rows (pre-fix rows
     are relabelled with the last-crossing rule, `relabel_last_crossing`); interim runs
-    (pilots/interim.py) are re-analysed from their saved trajectories."""
+    (pilots/interim.py) are re-analysed from their saved trajectories. Memoized per raw root."""
+    key = (OUT, exp, len(read_tensor_cache(exp)))
+    if key not in _LOADED:
+        _LOADED[key] = _load(exp)
+    return _LOADED[key].copy()
+
+
+def _load(exp: str) -> pd.DataFrame:
     rows = []
     with open(os.path.join(OUT, exp, "results.jsonl")) as f:
         for line in f:
@@ -246,6 +288,11 @@ def load(exp: str) -> pd.DataFrame:
             rho_col.append(separation_ratios(ev))
         df["events"] = ev_col
         df["rhos"] = rho_col
+    cached = read_tensor_cache(exp)  # tensor-space kernel computed for pre-fix rows (fix round 1)
+    if cached:
+        cur = df.dK_tensor.astype(float) if "dK_tensor" in df.columns else pd.Series(np.nan, index=df.index)
+        ids = [rid_of(r) for r in df.to_dict("records")]
+        df["dK_tensor"] = [v if np.isfinite(v) else cached.get(i, np.nan) for v, i in zip(cur, ids)]
     df["min_rho"] = [float(np.min(np.asarray(r, float))) if len(r) else np.nan for r in df.rhos]
     df["n_events"] = [sum(np.isfinite(t) for t, _ in ev) for ev in df.events]
     for kt in K_THRESHOLDS:
@@ -489,11 +536,9 @@ def stall_type(exp: str, row: dict, R: int = 3) -> dict:
     value of every edge at the end; 'dead route' if its minimum over edges is < 1e-12 (at roundoff:
     the route cannot be revived by the float64 gradient), 'long plateau' if >= 1e-4, 'decaying'
     in between."""
-    from run_regime import row_cfg, run_id
-
     from ttn.dynamics import Trajectory
 
-    tr = Trajectory.load(os.path.join(OUT, exp, "traj", run_id(row_cfg(row)) + ".npz"))
+    tr = Trajectory.load(_traj_path(exp, row))
     # spectra of W itself: 'spectra' for plain runs; centred runs record W - W_0 there and W in
     # 'spectra_W' (runs from 2026-10-09 21:00 on); older centred runs cannot be classified
     key = (
@@ -585,9 +630,7 @@ def width_resolution(exp: str, row: dict, n_dense: int = 200) -> list[float]:
     """Time resolution of each refined event width: (t[i1] - t[i0]) / n_dense for the window that
     run_regime.refine_events re-integrated (last a_r < 0.1 before the first a_r >= 0.9, coarse log
     grid). A width below ~5 resolutions is an upper bound, so the run's rho values are lower bounds."""
-    from run_regime import row_cfg, run_id
-
-    path = os.path.join(OUT, exp, "traj", run_id(row_cfg(row)) + ".npz")
+    path = _traj_path(exp, row)
     if not os.path.exists(path):
         return []
     with np.load(path, allow_pickle=False) as z:
