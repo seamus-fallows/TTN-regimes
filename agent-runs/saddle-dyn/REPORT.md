@@ -29,3 +29,4 @@ Pending.
 - 15:38 first sweep stopped: scipy LSODA dense output unreliable (events, states); outputs set aside in /root/outputs/saddle_dyn_try1_badevents
 - 15:46 new step-wise driver validated; H-B re-gauge after 50-unit relaxation; sweeps relaunched (H-A 125 procs, H-B 62 procs)
 - 15:55 LSODA time-resolution failures at t ~ 1e13+ fixed by local-clock restarts; sweeps resumed
+- 16:21 H-A re-reference after relaxation, small first step on restarts, floor-index quadrature fixed; earlier attempts set aside; final H-A and H-B sweeps started

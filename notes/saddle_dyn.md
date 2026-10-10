@@ -258,7 +258,12 @@ slow, the grid is cut from the small end and the range reached is reported; wind
    now start with a step of 0.01 and failed steps are retried (at most 5 per run, recorded).
    The H-A runs of the second attempt (15:55-16:13, ~700 runs, about theta_S) are set aside in
    `/root/outputs/saddle_dyn_HA_try2_thetaref/` and the whole H-A grid is rerun with this code.
-   H-B already re-referenced (item 4); only its runs that failed in a restart are rerun.
+   (c) The floor index used the trapezoid rule on steps log-spaced in t only, so its last interval
+   spanned most of the plateau and multiplied the roundoff bound at the escape point (O(1)
+   amplitudes, ~1e10 times the plateau value) by it (HT4W seed 0, eps = 1e-4: Phi = 3.9, against
+   ~1e-5 with the escape resolved). The steps are now log-spaced in both t and t_esc - t.
+   For one code version, H-B is rerun as well (its second attempt is in
+   `/root/outputs/saddle_dyn_HB_try2_quadrature/`). Final sweeps started 16:21.
 
 # Part II: results
 
