@@ -1,8 +1,9 @@
-symmetry_check: 3000 jobs to run (0 done)
-  200/3000 jobs, 77s
-  400/3000 jobs, 146s
-  600/3000 jobs, 207s
-  800/3000 jobs, 276s
-  1000/3000 jobs, 345s
-  1200/3000 jobs, 411s
-  1400/3000 jobs, 480s
+symmetry_check: 1470 jobs to run (1530 done)
+  200/1470 jobs, 72s
+  400/1470 jobs, 136s
+  600/1470 jobs, 198s
+  800/1470 jobs, 260s
+  1000/1470 jobs, 325s
+  1200/1470 jobs, 388s
+  1400/1470 jobs, 450s
+done in 474s

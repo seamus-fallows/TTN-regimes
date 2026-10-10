@@ -359,7 +359,9 @@ Round 1 (raw `multi2`) used an overlap-based stall stop (|a_r| < 1e-25) and an o
 flag (|a_r| < 1e-14), which excluded 18-19 binary8 runs per rho that did learn every component later,
 and compared GF on completed runs with a model built from all runs (review item 3). R = 3 was rerun with
 the slice criterion (`configs/multi3.yaml`, `analyze_multi.py multi3`, `results/multi3_summary.csv`,
-`results/multi3_perms.csv`, `results/multi3_orders.png`).
+`results/multi3_perms.csv`, `results/multi3_orders.png`). Three of the 1600 runs (MPS6 rho 0.8 seed 46,
+rho 0.9 seed 94; binary8 rho 0.9 seed 130) were still integrating after 1.5 h and were stopped; they are
+missing from the tables (n = 199).
 
 **R = 3** (GF vs model on the same runs; z = (P_GF - P_model)/SE; first-event and full-order agreement
 of GF with each seed's own LO race):
@@ -368,7 +370,7 @@ of GF with each seed's own LO race):
 |---|---|---|---|---|---|---|
 | binary4 (2), sigma 0.05 | 0.8 | 200 of 200 (0 stalled, 0 unfinished) | 0.705 +- 0.032 vs 0.518 | +5.29 | 0.80 +- 0.02 vs 0.60 | 0.87 / 0.64 |
 | binary4 (2), sigma 0.05 | 0.9 | 200 of 200 (0 stalled, 0 unfinished) | 0.490 +- 0.035 vs 0.319 | +5.20 | 0.58 +- 0.03 vs 0.32 | 0.81 / 0.53 |
-| binary8 (4), sigma 0.25 | 0.8 | 197 of 199 (1 stalled, 1 unfinished) | 0.223 +- 0.030 vs 0.278 | -1.70 | 0.17 +- 0.04 vs 0.25 | 0.98 / 0.73 |
+| binary8 (4), sigma 0.25 | 0.8 | 198 of 200 (1 stalled, 1 unfinished) | 0.227 +- 0.030 vs 0.278 | -1.60 | 0.17 +- 0.04 vs 0.25 | 0.98 / 0.73 |
 | binary8 (4), sigma 0.25 | 0.9 | 196 of 199 (1 stalled, 2 unfinished) | 0.194 +- 0.028 vs 0.214 | -0.70 | 0.05 +- 0.05 vs 0.12 | 0.97 / 0.70 |
 | mps4 (4), sigma 0.1 | 0.8 | 195 of 200 (5 stalled, 0 unfinished) | 0.354 +- 0.034 vs 0.359 | -0.14 | 0.36 +- 0.04 vs 0.39 | 1.00 / 0.86 |
 | mps4 (4), sigma 0.1 | 0.9 | 195 of 200 (5 stalled, 0 unfinished) | 0.226 +- 0.030 vs 0.251 | -0.81 | 0.14 +- 0.05 vs 0.19 | 1.00 / 0.89 |
@@ -393,8 +395,9 @@ of GF with each seed's own LO race):
 component"; corrected:
 - Not all four components are learned by t = 1e9 in most runs [empirical, scope above]: MPS4 289/400
   (sigma 0.1), MPS6 396/399 (0.2), binary8 389/393 (0.25); binary4 0/400 (a deep linear network).
-- **Without any stall stop** (`configs/multi_nostop.yaml`, rho 0.8, 12 seeds per tree, to t = 1e9,
-  `results/multi_nostop_summary.csv`): NOSTOP_SUMMARY
+- **Without any stall stop** (`configs/multi_nostop.yaml`, rho 0.8, 12 seeds per tree, to t = 1e9; one
+  run per tree still integrating after 1.5 h was stopped, so 11 per tree,
+  `results/multi_nostop_summary.csv`): binary8: 0 of 11 runs learn all four components; learned at t = 1e9 (count:runs) 3:11; unlearned component (rank:runs) 1:6 2:1 3:1 4:3; mps6: 0 of 11 runs learn all four components; learned at t = 1e9 (count:runs) 2:7 3:4; unlearned component (rank:runs) 1:2 2:3 3:6 4:7.
 - How many components are learned at the stop (multi2 + no-stop): MPS4 3 of 4 in 288/289 incomplete
   runs; binary8 3 of 4 in all incomplete no-stop runs (the unlearned one is the largest in 6/11); MPS6
   only **2 of 4** in about half of the incomplete runs (multi2: 88 + 90 runs with 2, 111 + 107 with 3), so

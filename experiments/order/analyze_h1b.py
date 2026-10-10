@@ -113,9 +113,10 @@ def plot_saddle(sets):
     style.setup()
     fig, axes = plt.subplots(1, len(sets), figsize=(3.4 * len(sets), 2.9), squeeze=False,
                              gridspec_kw=dict(wspace=0.35))
+    rho_list = [0.5, 0.7, 0.8, 0.9]  # colour follows rho in every panel
     for ax, (title, df, fits) in zip(axes[0], sets):
-        for i, (rho, g) in enumerate(df.groupby("rho")):
-            col = style.SERIES[i]
+        for rho, g in df.groupby("rho"):
+            col = style.SERIES[rho_list.index(rho)]
             x = np.log(1 / g.sigma)
             ax.plot(x, g.t1, "o", color=col, ms=3, alpha=0.7, label=f"rho={rho}")
             f = fits[fits.rho == rho].iloc[0]

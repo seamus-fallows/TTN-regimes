@@ -47,6 +47,9 @@ corrected through a strict saddle (H1b)? With R >= 3 components, what is the dis
 | `multi.py` | R >= 3 components, full order |
 | `balance_check.py` | per-core balance of the LO escape direction |
 | `repair.py` | re-integrates first-event runs that failed on the float64 resolution of t (clock restart) |
+| `rebuild_h1b_csv.py` | rebuilds an h1b results CSV from the stored trajectories if a run was stopped early |
+| `analyze_dtest.py` | independent-seed d test (d_test_* configs) |
+| `fill_tables.py` | writes the generated R = 3 / no-stop tables into notes/order.md from results/*.csv |
 | `analyze_main.py`, `analyze_sigma.py`, `analyze_rule.py`, `analyze_h1b.py`, `analyze_multi.py`, `analyze_chi.py` | summaries and figures from saved results |
 | `style.py` | plot style (fixed categorical colour order) |
 | `run_queue.sh` | runs a list of configs in sequence |
