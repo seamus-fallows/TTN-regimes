@@ -9,6 +9,13 @@
 > section 2.6). Checks: `k4_invariance.py` and `gf_check_k4.py` (36/36 full gradient-flow runs agree).
 > The predictions, tables and Monte Carlo are regenerated; only the 20 MPS4 chi = 4 runs of seed 1 changed
 > (dead -> alive, all observed escaping) and the MPS4 {0,3} chi = 4 Monte Carlo row.
+>
+> **Stall-diagnosis table (erratum 2 of `notes/reviews/trap_k4_verification.md`), fixed:**
+> `results/stall_diagnosis_confusion.csv` was computed on all 170 stall-diagnosis runs, including 6
+> wrong-order (q = 1) runs, and read predicted dead 30 / 6 / 4 (dead / escaped / pinned), pinned 5 / 65 / 0.
+> `analyze_locality.py` now uses the k >= 4, q = 0 population of the other tables (164 runs): dead
+> 30 / 4 / 2, pinned 5 / 63 / 0, alive 2 / 58 / 0, the counts quoted in the note and the report. The 6 q = 1
+> runs are counted in `results/wrong_order_runs.csv`. No other output changed.
 
 Theory: `notes/theory_trap.md`. Question: can the init alone (plus the sigma-free correlation flow of
 the first plateau, no gradient flow of the loss) predict which committed runs end with a dead route?
@@ -56,7 +63,7 @@ the s2s_core classes from the committed `experiments/s2s_core/results/main_runs.
 | `results/locality_pilot_joined.csv.gz` | the same joined with the stall-diagnosis outcomes and the pilot's final amplitudes |
 | `results/summary_by_criterion.csv` | stalled / runs per predicted class, per criterion and protocol |
 | `results/confusion_by_case.csv`, `table_by_case.md`, `table_by_tree.md`, `table_by_k.md` | confusion tables per (tree, D, k, start, chi), per (tree, chi, start), per k |
-| `results/stall_diagnosis_confusion.csv` | predicted vs dead / pinned / escaped after 60x patience |
+| `results/stall_diagnosis_confusion.csv` | predicted vs dead / escaped / pinned after 60x patience, on the k >= 4, q = 0 runs of the other tables (164 runs; the counts quoted in the note and the report) |
 | `results/per_seed.csv` | per (case, seed): prediction and number of sigmas with a stall |
 | `results/wrong_order_runs.csv` | runs whose correlation flow escapes along the smaller component (excluded from the tables) |
 | `results/s2s_predictions.csv`, `table_s2s.md` | s2s_core: predicted order and init-only phase-2 verdict vs class |

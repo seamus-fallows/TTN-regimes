@@ -56,8 +56,12 @@ def load():
         x["sweep"] = f[:-4]
         pil.append(x[["sweep", "tree", "kind", "start", "sigma", "seed", "a2_end"]])
     pil = pd.concat(pil)
-    pil["S"] = [pilot_S(k, int(t[-1]) if t[-1].isdigit() else 0, t) for k, t in zip(pil.kind, pil.tree)]
-    df = df.merge(pil.drop(columns="kind"), how="left", on=["sweep", "tree", "S", "start", "sigma", "seed"])
+    pil["S"] = [
+        pilot_S(k, int(t[-1]) if t[-1].isdigit() else 0, t) for k, t in zip(pil.kind, pil.tree)
+    ]
+    df = df.merge(
+        pil.drop(columns="kind"), how="left", on=["sweep", "tree", "S", "start", "sigma", "seed"]
+    )
     dead = (df.source == "pilot") & (df.obs == "unresolved") & (df.a2_end.abs() < 1e-20)
     df.loc[dead, "obs"] = "dead"
     return df
@@ -72,12 +76,16 @@ def pilot_S(kind, _n, tree):
     elif kind == "global":
         sites = list(range(n))
     else:
-        sites = [int(c) for c in kind[len("sites"):].split("-")]
+        sites = [int(c) for c in kind[len("sites") :].split("-")]
     return "".join(map(str, sites))
 
 
 def rates(df, by, col):
-    t = df.groupby(by + [col]).bad.agg(["sum", "count"]).rename(columns={"sum": "stalled", "count": "runs"})
+    t = (
+        df.groupby(by + [col])
+        .bad.agg(["sum", "count"])
+        .rename(columns={"sum": "stalled", "count": "runs"})
+    )
     t["rate"] = (t.stalled / t.runs).round(3)
     return t
 
@@ -101,24 +109,39 @@ def main():
     summ.to_csv(RES / "summary_by_criterion.csv", index=False)
     # 2. per case (tree, teacher S, chi, protocol): stalled / runs per predicted class
     case = rates(sub, ["source", "tree", "S", "k", "start", "chi"], "verdict").reset_index()
-    wide = case.pivot_table(index=["source", "tree", "S", "k", "start", "chi"], columns="verdict",
-                            values=["stalled", "runs"], fill_value=0)
+    wide = case.pivot_table(
+        index=["source", "tree", "S", "k", "start", "chi"],
+        columns="verdict",
+        values=["stalled", "runs"],
+        fill_value=0,
+    )
     wide.columns = [f"{a}_{b}" for a, b in wide.columns]
     wide.reset_index().to_csv(RES / "confusion_by_case.csv", index=False)
-    # 3. stall diagnosis (dead / pinned / escaped after 60x patience) vs prediction
-    diag = df[df.obs_diag.notna() & (df.sweep == "stalldiag")]
+    # 3. stall diagnosis (dead / pinned / escaped after 60x patience) vs prediction, on the same
+    # k >= 4, q = 0 population as the other tables (the counts quoted in the note and the report)
+    diag = sub[sub.obs_diag.notna() & (sub.sweep == "stalldiag")]
     t3 = diag.groupby(["verdict", "obs_diag"]).size().unstack(fill_value=0)
     t3.to_csv(RES / "stall_diagnosis_confusion.csv")
     # 4. per seed: is the observed class constant across sigma, and does it match?
     g = sub.groupby(["source", "tree", "S", "start", "chi", "seed"])
-    per_seed = g.agg(pred=("verdict", "first"), n_sigma=("bad", "size"), n_bad=("bad", "sum")).reset_index()
+    per_seed = g.agg(
+        pred=("verdict", "first"), n_sigma=("bad", "size"), n_bad=("bad", "sum")
+    ).reset_index()
     per_seed.to_csv(RES / "per_seed.csv", index=False)
     with pd.option_context("display.width", 200, "display.max_rows", 500):
         print(summ.to_string(index=False))
         print(t3)
-        print(per_seed.groupby(["source", "pred"]).apply(
-            lambda x: pd.Series(dict(seeds=len(x), all_bad=(x.n_bad == x.n_sigma).sum(),
-                                     none_bad=(x.n_bad == 0).sum()))))
+        print(
+            per_seed.groupby(["source", "pred"]).apply(
+                lambda x: pd.Series(
+                    dict(
+                        seeds=len(x),
+                        all_bad=(x.n_bad == x.n_sigma).sum(),
+                        none_bad=(x.n_bad == 0).sum(),
+                    )
+                )
+            )
+        )
 
 
 if __name__ == "__main__":
