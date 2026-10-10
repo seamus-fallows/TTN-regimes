@@ -40,7 +40,8 @@ higher order on binary and HT trees, with escapes $\propto\varepsilon^{-1}$ from
 $\propto\isc^{-1}$ from random initialization; correlated sites were not run on HT. This is the central result
 (\cref{sec:teacher-generic,sec:cov-misaligned}). Rank-one plateaus sit at critical points of the
 bond-rank-constrained loss, blends rather than partial sums of components (on binary4 and MPS4; under
-correlated inputs only on binary4; \cref{sec:cov-misaligned,sec:teacher-ttn}); binary students learn bottom-up
+correlated inputs only on binary4, under misalignment up to $30^\circ$; \cref{sec:cov-misaligned,sec:teacher-ttn});
+binary students learn bottom-up
 (\cref{sec:teacher-mismatch}); two
 smaller components that share a core can destabilize a learned larger one (\cref{sec:teacher-star}); and on
 MNIST the same tree contrast appears with the data in place of the teacher (\cref{sec:real-data}).
@@ -169,8 +170,9 @@ not timed; there two-core routes can open on bottom edges at higher ranks, never
 Three ways to make the components non-orthogonal in the metric of the loss are compared on MPS4 and
 binary4: overlapping CP components, a misaligned covariance and correlated sites. In each the rank-one
 plateau is a predicted critical point of the rank-constrained loss, a blend rather than a partial fit
-(except on MPS4 under correlated inputs, where it keeps the pure component), and each turns the $\isc^{-2}$
-second plateau of MPS4 into a logarithmic one (\cref{tab:cov-slopes,fig:dt-mps-laws}).
+(except on MPS4 under correlated inputs, where it keeps the pure component, and beyond $30^\circ$ of
+misalignment), and each turns the $\isc^{-2}$ second plateau of MPS4 into a logarithmic one
+(\cref{tab:cov-slopes,fig:dt-mps-laws}).
 
 \paragraph{Overlapping CP components.}\label{sec:teacher-cp}
 The rank-one critical points are those of $g(x)=\ip{\bigotimes_ix_i}{\Wt}$ on unit rank-one tensors \proven. With
