@@ -65,7 +65,8 @@ corrected through a strict saddle (H1b)? With R >= 3 components, what is the dis
 uv run python experiments/order/sweep.py experiments/order/configs/main.yaml      # step 1
 uv run python experiments/order/analyze_main.py main
 uv run python experiments/order/sweep.py experiments/order/configs/b4_sigma.yaml  # sigma scans
-uv run python experiments/order/analyze_sigma.py b4_sigma m4_sigma b8_sigma pat_mps6_m2end ...
+uv run python experiments/order/analyze_sigma.py b4_sigma m4_sigma b8_sigma pat_mps6_m2end \
+    pat_mps6_m2adj pat_mps6_m3 pat_mps6_m4 pat_mps4_adj pat_mps4_sep   # committed sigma_*.csv (no arguments: also b4_pilot)
 uv run python experiments/order/h1b.py experiments/order/configs/h1b_saddle_b4.yaml
 uv run python experiments/order/analyze_h1b.py
 uv run python experiments/order/multi.py experiments/order/configs/multi3.yaml   # R = 3

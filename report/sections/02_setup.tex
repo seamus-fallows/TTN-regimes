@@ -1,20 +1,23 @@
 % sections/02_setup.tex -- Setup; keep in sync with notes/model.md and notes/diagnostics.md.
 \section{Setup: model, data, teacher, training and diagnostics}\label{sec:setup}
 
-This section fixes the model and the measurements used to classify training regimes. Every
-experiment uses these definitions; deviations are stated where they occur.
+This section fixes the model, the measurements used to classify training regimes, and the terms
+the later sections use: routes, saddle order and stalls (\cref{sec:setup-routes}), events and regime
+labels (\cref{sec:setup-diagnostics}). Every experiment uses these definitions; deviations are stated
+where they occur. \Cref{tab:notation} collects the notation.
 
 % ===========================================================================================
 \subsection{Tree tensor network regression}\label{sec:setup-model}
 
 \paragraph{Inputs.}
-An input $x$ has $\Ns$ sites; site $i$ carries a local feature vector $\feat{i}(x)\in\R^{\pd[i]}$
-(default $\pd[i]=d$). Unless stated otherwise $\feat{i}(x)=\xs{i}\sim\Normal(0,\Sigi{i})$,
-independent across sites, and the inputs are \emph{whitened}, $\Sigi{i}=\Id$. We write
+An input $x$ has $\Ns$ \emph{sites} (input positions), numbered $i=0,\dots,\Ns-1$ throughout; site $i$
+carries a local feature vector $\feat{i}(x)\in\R^{\pd[i]}$ (default $\pd[i]=d$). Unless stated
+otherwise $\feat{i}(x)=\xs{i}\sim\Normal(0,\Sigi{i})$, independent across sites, and the inputs are
+\emph{whitened}, $\Sigi{i}=\Id$. We write
 \begin{equation*}
-  \Feat(x)=\feat{1}(x)\otimes\dots\otimes\feat{\Ns}(x)\in\R^{\pd[1]\times\dots\times\pd[\Ns]},
+  \Feat(x)=\feat{0}(x)\otimes\dots\otimes\feat{\Ns-1}(x)\in\R^{\pd[0]\times\dots\times\pd[\Ns-1]},
   \qquad
-  \Sig=\Sigi{1}\otimes\dots\otimes\Sigi{\Ns}.
+  \Sig=\Sigi{0}\otimes\dots\otimes\Sigi{\Ns-1}.
 \end{equation*}
 
 \paragraph{Trees and cores.}
@@ -32,18 +35,18 @@ multiply to the \emph{fan-in}
 so $\G{v}$ is an $\fanin{v}\times\bd{v}$ matrix; the parameters are $\params=(\G{v})_{v\in\nodes}$.
 
 \paragraph{Model.}
-The tensor $\W(\params)\in\R^{\pd[1]\times\dots\times\pd[\Ns]}$ is the contraction of all cores
+The tensor $\W(\params)\in\R^{\pd[0]\times\dots\times\pd[\Ns-1]}$ is the contraction of all cores
 over all bonds, and the model is
 \begin{equation}\label{eq:model}
   f_\params(x)=\ip{\W(\params)}{\Feat(x)}.
 \end{equation}
-Equivalently, $f_\params$ is computed by passing messages $m_v(x)\in\R^{\bd{v}}$ from the leaves to
+Equivalently, $f_\params$ is computed by passing messages $h_v(x)\in\R^{\bd{v}}$ from the leaves to
 the root,
 \begin{equation}\label{eq:messages}
-  m_v(x)_a=\sum_{(j_i),(b_c)}\G{v}\big[(j_i)_{i\in\sites{v}},(b_c)_{c\in\ch{v}},a\big]
-  \prod_{i\in\sites{v}}\feat{i}(x)_{j_i}\prod_{c\in\ch{v}}m_c(x)_{b_c},
+  h_v(x)_a=\sum_{(j_i),(b_c)}\G{v}\big[(j_i)_{i\in\sites{v}},(b_c)_{c\in\ch{v}},a\big]
+  \prod_{i\in\sites{v}}\feat{i}(x)_{j_i}\prod_{c\in\ch{v}}h_c(x)_{b_c},
   \qquad
-  f_\params(x)=m_{\vroot}(x).
+  f_\params(x)=h_{\vroot}(x).
 \end{equation}
 The model is multilinear in the site features, and $\W$ is multilinear in the cores (each appears
 once), so $\params\mapsto\W(\params)$ is homogeneous of degree $\Kc$: $\G{v}\mapsto c_v\G{v}$
@@ -54,48 +57,59 @@ Let $\below{v}$ be the sites in the subtree rooted at $v$; the edge $\edge{v}$ s
 rest, and $\mat{\W}{\edge{v}}$ is the matricization of $\W$ with the sites of $\below{v}$ as rows.
 Contracting the subtree below $v$ and the rest separately gives
 $\mat{\W}{\edge{v}}=\Sub{v}C_v\T$ with $\Sub{v}\in\R^{(\prod_{i\in\below{v}}\pd[i])\times\bd{v}}$, so
-$\rank\mat{\W}{\edge{v}}\le\bd{v}$ \citep{hackbusch2009new,grasedyck2010hierarchical}. The
-\emph{bond spectrum} (Schmidt values) of $e=\edge{v}$ is the list
-$\bs{e}{1}\ge\dots\ge\bs{e}{\bd{v}}\ge0$ of the $\bd{v}$ largest singular values of $\mat{\W}{e}$;
-they include all nonzero ones, so $\sum_k(\bs{e}{k})^2=\normF{\W}^2$ on every edge. With anisotropic
-inputs we use the function-space spectra of $\mat{(\Sig^{1/2}\W)}{e}$,
-$\Sig^{1/2}=\bigotimes_i\Sigi{i}^{1/2}$. QR sweeps over the cores give them to about $10^{-15}$
-relative accuracy without forming $\W$.
+the \emph{bond rank} $\rank\mat{\W}{\edge{v}}$ is at most $\bd{v}$
+\citep{hackbusch2009new,grasedyck2010hierarchical}. A bipartition is written by its two site sets
+as digit strings, e.g.\ $01|23$ for $\{0,1\}$ against $\{2,3\}$ (ranges: $0$--$3|4$--$7$). The
+\emph{bond spectrum} of $e=\edge{v}$ is the list $\bs{e}{1}\ge\dots\ge\bs{e}{\bd{v}}\ge0$ of the
+$\bd{v}$ largest singular values of $\mat{\W}{e}$ (the Schmidt values of tensor-network practice; we
+say singular values). They include all nonzero ones, so the bond rank is the number of nonzero
+$\bs{e}{j}$, and $\sum_j(\bs{e}{j})^2=\normF{\W}^2$ on every edge. With anisotropic inputs we use the
+function-space spectra of $\mat{(\Sig^{1/2}\W)}{e}$, $\Sig^{1/2}=\bigotimes_i\Sigi{i}^{1/2}$. QR sweeps
+over the cores give them to about $10^{-15}$ relative accuracy without forming $\W$.
 
 \paragraph{Why this model.}
 It is the simplest genuine TTN. (i)~With at least three sites and an internal bond, $\W$ is a
 genuine tensor; a deep linear network is a chain with physical legs only at its two ends.
 (ii)~Whitened inputs reduce the population loss to a Frobenius distance (\cref{sec:setup-loss}), the
 setting in which \citet{saxe2014exact} solved deep linear networks. (iii)~The matrix product state
-(MPS) classifiers of \citet{stoudenmire2016supervised} compute, for each class label $\ell$,
-$f^\ell(x)=\ip{\W^\ell}{\bigotimes_i\feat{i}(x)}$ (the label index sits on one core), with non-Gaussian
+(MPS) classifiers of \citet{stoudenmire2016supervised} compute, for each class $y$,
+$f^y(x)=\ip{\W^y}{\bigotimes_i\feat{i}(x)}$ (the class index sits on one core), with non-Gaussian
 local features $(\cos(\pi\xs{i}/2),\sin(\pi\xs{i}/2))$ that are correlated across sites.
 (iv)~Training is then a fully observed tensor factorization. On HT trees it has the mode tree of the
-hierarchical tensor factorization of \citet{razin2022implicit} (one leaf matrix per site), but there
-each internal node is a local CP factorization (their Eq.~3),
-$\G{v}[b_1,\dots,b_c,a]=\sum_r\delta_{b_1r}\cdots\delta_{b_cr}M^{(v)}_{ra}$, trained on general losses
-such as tensor completion; our dense cores carry the matrix gauge symmetries of
-\cref{sec:setup-conservation} instead of one scalar invariant per local component.
+hierarchical tensor factorization of \citet{razin2022implicit}, whose internal nodes are local CP
+factorizations (their Eq.~3) with one scalar invariant per local component; our dense cores carry the
+matrix gauge symmetries of \cref{sec:setup-conservation} instead.
 
 % ===========================================================================================
 \subsection{Tree topologies}\label{sec:setup-trees}
 
-\Cref{tab:trees} lists the built-in topologies and \cref{fig:trees} draws them. Binary trees and
-MPS with the same $\Ns$ are the extremes of tree shape at nearly equal $\Kc$, the default pair for
-saddle-to-saddle studies. The hierarchical Tucker (HT) format adds one leaf core per site; with leaf
-bond dimension $d$ this adds no expressivity but changes $\Kc$ and the number of cores that must
-move to learn a component. Unless stated otherwise every edge has the same nominal bond dimension
-$\chi$, capped at the largest rank its bipartition allows,
+\Cref{tab:trees} lists the tree families and \cref{fig:trees} draws them; binary$N$, MPS$N$ and
+HT$N$ denote the member with $N$ sites (binary4, MPS8, \dots). Binary trees and MPS with the same
+$\Ns$ are the extremes of tree shape at nearly equal $\Kc$, the default pair for saddle-to-saddle
+studies. The hierarchical Tucker (HT) format adds one leaf core per site; with leaf bond dimension
+$d$ this adds no expressivity but changes $\Kc$ and the number of cores that must move to learn a
+component. Tree depth is not network depth: binary4 (tree depth one) computes the three-factor
+product $\mat{\W}{01|23}=ABC\T$ of its bottom cores $A$, $C$ (as $d^2\times\chi$ matrices) and its
+root $B$, a three-layer deep linear network on a $d^2\times d^2$ matrix. Results on binary4 can
+therefore be compared with deep-linear-network theory; tensor-specific behaviour starts with MPS4,
+binary8 and HT4. Unless stated otherwise every edge has the same nominal bond dimension $\chi$,
+capped at the largest rank its bipartition allows,
 \begin{equation}\label{eq:bond-cap}
   \bd{v}=\min\Big(\chi,\ \prod_{i\in\below{v}}\pd[i],\ \prod_{i\notin\below{v}}\pd[i]\Big).
 \end{equation}
+The cap $\min(\prod_{i\in\below{v}}\pd[i],\prod_{i\notin\below{v}}\pd[i])$, the largest rank
+$\mat{\W}{\edge{v}}$ can have, is the \emph{cut dimension} of $\edge{v}$, and a bond is \emph{full} when
+$\bd{v}$ reaches it (binary4 with $d=3$: both bonds have cut dimension $9$). A bond below its cut
+dimension limits the tensors the network can represent; a lazy regime needs every bond full
+(\cref{sec:regime-map}).
 
 \begin{table}[t]
   \centering
-  \caption{Built-in tree topologies for $\Ns$ sites ($\Kc$ cores; depth: edges on the longest
-    root-to-leaf path). Binary-tree depths are for $\Ns=2^m$; otherwise the sites are split
-    recursively into halves ($\lceil\Ns/2\rceil$, $\lfloor\Ns/2\rfloor$), a pair of sites becomes a
-    bottom core and a single site joins the core above, so $\Kc=\Ns-1$.}
+  \caption{Tree families for $\Ns$ sites ($\Kc$ cores; depth: edges on the longest root-to-leaf
+    path), and the two further trees of the locality experiments. Binary-tree depths are for
+    $\Ns=2^m$; otherwise the sites are split recursively into halves ($\lceil\Ns/2\rceil$,
+    $\lfloor\Ns/2\rfloor$), a pair of sites becomes a bottom core and a single site joins the core
+    above, so $\Kc=\Ns-1$.}
   \label{tab:trees}
   \begin{tabularx}{\textwidth}{@{}lXcc@{}}
     \toprule
@@ -103,11 +117,12 @@ $\chi$, capped at the largest rank its bipartition allows,
     \midrule
     binary & balanced binary tree; bottom cores carry two adjacent sites, internal cores none
              & $\Ns-1$ & $\log_2\Ns-1$ \\
-    MPS    & chain (caterpillar): core $k$ carries site $k$, its parent is core $k+1$
+    MPS    & chain (caterpillar): core $i$ carries site $i$, its parent is core $i+1$
              & $\Ns$ & $\Ns-1$ \\
     HT     & hierarchical Tucker: balanced binary tree over $\Ns$ leaf cores, one site each;
              internal cores none & $2\Ns-1$ & $\lceil\log_2\Ns\rceil$ \\
-    custom & any parent array and site assignment & -- & -- \\
+    star3  & a root without sites and three children carrying sites $01$, $23$, $45$ & $4$ & $1$ \\
+    midroot6 & the chain of MPS6 rooted at the core of site $3$ & $6$ & $3$ \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -121,7 +136,7 @@ $\chi$, capped at the largest rank its bipartition allows,
 The target is realizable, $f^*(x)=\ip{\Wt}{\Feat(x)}$. A \emph{CP teacher} has
 \begin{equation}\label{eq:cp-teacher}
   \Wt=\sum_{r=1}^{\ncomp}\tw{r}\U{r},\qquad
-  \U{r}=\fac{r}{1}\otimes\dots\otimes\fac{r}{\Ns},\qquad
+  \U{r}=\fac{r}{0}\otimes\dots\otimes\fac{r}{\Ns-1},\qquad
   \norm{\fac{r}{i}}=1,\qquad \tw{1}\ge\dots\ge\tw{\ncomp}>0.
 \end{equation}
 Three kinds are used:
@@ -129,10 +144,15 @@ Three kinds are used:
   \item \emph{Odeco} (orthogonally decomposable): $\ip{\fac{r}{i}}{\fac{r'}{i}}=\delta_{rr'}$ at every
     site (so $\ncomp\le\min_i\pd[i]$); by default the factors at each site are columns of an
     independent Haar-random orthogonal matrix.
-  \item \emph{Pattern teachers}: site $i$ has an orthonormal basis $(\beta^{(i)}_j)_j$ and component
-    $r$ uses $\fac{r}{i}=\beta^{(i)}_{\pi_r(i)}$ for a pattern $\pi_r\colon\{1,\dots,\Ns\}\to\{1,\dots,d\}$.
-    With $\pi_1=(1,1,1,1)$ and $\pi_2=(2,2,1,1)$ the second component differs from the first only on
-    $D=\{1,2\}$ (a \emph{local} component).
+  \item \emph{Pattern teachers}: site $i$ has an orthonormal basis $(\beta^{(i)}_j)_{j=0}^{d-1}$ and
+    component $r$ uses $\fac{r}{i}=\beta^{(i)}_{\pi_r(i)}$, where the \emph{pattern} $\pi_r$ maps
+    each site to a basis index in $\{0,\dots,d-1\}$; we write it as the digit string
+    $\pi_r(0)\pi_r(1)\cdots\pi_r(\Ns-1)$; powers mark repeats ($0^31^20^3=00011000$). Components with
+    distinct patterns are orthonormal. Two components \emph{differ} on the site set
+    $D=\{i:\pi_r(i)\ne\pi_{r'}(i)\}$: $0000$ and $1100$ differ on $D=\{0,1\}$, so the second is a
+    \emph{local} modification of the first. We write $V_D$ for the set of cores that carry a site of
+    $D$, $m=\abs{V_D}$, and $\mathrm{St}(V_D)$ for their \emph{Steiner subtree}, the smallest subtree
+    of $\tree$ that contains them ($V_D$ and every core on a path between two of its cores).
   \item \emph{Random CP}: $\fac{r}{i}=g/\norm{g}$ with independent $g\sim\Normal(0,\Id)$; the
     components are generically non-orthogonal.
 \end{itemize}
@@ -149,8 +169,8 @@ $\ov{r}=\ip{\W}{\U{r}}/\tw{r}$.
   \proven{} Let $e$ be an edge whose two sides both carry sites (every edge of the trees of
   \cref{tab:trees}). (a)~For an odeco teacher the bond spectrum of $\Wt$ on $e$ is
   $(\tw{1},\dots,\tw{\ncomp})$, for every tree. (b)~For a two-component pattern teacher whose
-  components differ exactly on the site set $D$, the bond rank of $\Wt$ on $e$ is $2$ if $e$ lies in
-  the smallest subtree of $\tree$ containing the nodes that carry the sites of $D$, and $1$ otherwise.
+  components differ exactly on the site set $D$, the bond rank of $\Wt$ on $e$ is $2$ if $e$ is an
+  edge of the Steiner subtree $\mathrm{St}(V_D)$, and $1$ otherwise.
 \end{proposition}
 \begin{proof}
   With $A$ the sites on one side of $e$, $x_r=\bigotimes_{i\in A}\fac{r}{i}$ and
@@ -160,8 +180,8 @@ $\ov{r}=\ip{\W}{\U{r}}/\tw{r}$.
   on both sides, so $x_1\perp x_2$, $y_1\perp y_2$: rank two. And $e$ separates two sites of $D$
   exactly when it lies on the tree path between their nodes.
 \end{proof}
-The number of cores in that subtree is the quantity $k$ of the locality hypothesis
-(\cref{sec:s2s-locality}).
+Its number of cores, $k=\abs{\mathrm{St}(V_D)}$, is the size of the route along which the second
+component is learned (\cref{sec:setup-routes}).
 
 \paragraph{Population loss.}
 Training minimizes the population square loss
@@ -181,37 +201,24 @@ Expanding \eqref{eq:loss},
 \begin{equation}\label{eq:loss-expanded}
   \Loss(\params)=\tfrac12\ipS{\W}{\W}-\ipS{\W}{\Wt}+\tfrac12\ipS{\Wt}{\Wt},
 \end{equation}
-and every term is an exact contraction:
-\begin{itemize}
-  \item For two TTNs $\W,\W'$ on the same tree (bond dimensions may differ),
-    $\ipS{\W}{\W'}=E_{\vroot}$, with environments $E_v\in\R^{\bd{v}\times\bd{v}'}$ computed from the
-    leaves to the root at a cost linear in $\Kc$,
-    \begin{equation}\label{eq:environment}
-      (E_v)_{aa'}=\sum\G{v}\big[(j_i),(b_c),a\big]\,\G{v}'\big[(j'_i),(b'_c),a'\big]
-      \prod_{i\in\sites{v}}(\Sigi{i})_{j_ij'_i}\prod_{c\in\ch{v}}(E_c)_{b_cb'_c}.
-    \end{equation}
-  \item For a CP teacher, $\ipS{\W}{\U{r}}$ is the student evaluated at the site vectors
-    $\Sigi{i}\fac{r}{i}$, so for any tree
-    \begin{equation}\label{eq:cp-inner}
-      \ipS{\W}{\Wt}=\sum_r\tw{r}\,f_\params\big(\Sigi{1}\fac{r}{1},\dots,\Sigi{\Ns}\fac{r}{\Ns}\big),
-      \qquad
-      \ipS{\Wt}{\Wt}=\sum_{r,r'}\tw{r}\tw{r'}\prod_i\fac{r}{i}{}\T\Sigi{i}\fac{r'}{i},
-    \end{equation}
-    where $f_\params(z_1,\dots,z_\Ns)$ is \eqref{eq:messages} with $\feat{i}(x)$ replaced by $z_i$.
-  \item A TTN teacher on another tree is glued to the student along the physical legs, and the
-    loopy network is contracted exactly along an optimized path.
-\end{itemize}
-For an odeco teacher with whitened inputs, \eqref{eq:loss-expanded} reads
-$\Loss=\tfrac12\normF{\W}^2-\sum_r\tw{r}^2\ov{r}+\tfrac12\sum_r\tw{r}^2$. A \emph{partial fit}
-$\W_S=\sum_{r\in S}\tw{r}\U{r}$ has loss $\tfrac12\sum_{r\notin S}\tw{r}^2$, so learning the components
-in decreasing order of $\tw{r}$ passes through the candidate plateau levels
+and every term is an exact contraction. Two TTNs on the same tree (bond dimensions may differ) are
+contracted from the leaves to the root at a cost linear in $\Kc$; for a CP teacher,
+$\ipS{\W}{\U{r}}$ is the student \eqref{eq:messages} evaluated at the site vectors
+$\Sigi{i}\fac{r}{i}$; a TTN teacher on another tree is glued to the student along the physical legs
+and the loopy network is contracted exactly along an optimized path. For an odeco teacher with
+whitened inputs, \eqref{eq:loss-expanded} reads
+$\Loss=\tfrac12\normF{\W}^2-\sum_r\tw{r}^2\ov{r}+\tfrac12\sum_r\tw{r}^2$. For orthonormal components
+(odeco or pattern teachers) and whitened inputs, the \emph{partial fit} $\W_S=\sum_{r\in S}\tw{r}\U{r}$
+of a set $S$ of components has loss
 \begin{equation}\label{eq:partial-fit}
-  \Lpart{k}=\tfrac12\sum_{r>k}\tw{r}^2,\qquad k=0,\dots,\ncomp.
+  \Loss_S=\tfrac12\sum_{r\notin S}\tw{r}^2,
 \end{equation}
+the candidate plateau levels; learning in decreasing order of $\tw{r}$ passes through
+$S=\emptyset,\{1\},\{1,2\},\dots$.
 
 \paragraph{Anisotropic and correlated inputs.}
-Anisotropic product covariances are handled exactly by \eqref{eq:loss}--\eqref{eq:cp-inner}; the
-default family has power-law site spectra,
+Anisotropic product covariances are handled exactly by the same contractions; the default family has
+power-law site spectra,
 $\Sigi{i}=c_\beta\diag(1^{-\beta},2^{-\beta},\dots,d^{-\beta})$ with $c_\beta$ fixed by
 $\tr\Sigi{i}=d$, aligned with the teacher's factors or rotated away from them. Cross-site
 correlations break the product structure of $\Sig$; for small $\Ns$ the loss is then computed with
@@ -242,54 +249,50 @@ messages \eqref{eq:messages} keep their size up the tree.
   $\E\normF{\G{v}}^2=\iscv{v}^2\bd{v}$, and hence $\E\norm{\params_0}^2=\sum_v\iscv{v}^2\bd{v}$.
 \end{proposition}
 \begin{proof}
-  Let $\Sub{v}$ be the contraction of the subtree below $v$ with its parent leg open ($\bd{v}$
-  columns). Conditionally on the children's subtrees, the independent entries of $\G{v}$, of variance
-  $\iscv{v}^2/\fanin{v}$, give $\E[\Sub{v}\T\Sub{v}]=\frac{\iscv{v}^2}{\fanin{v}}
-  \prod_{i\in\sites{v}}\pd[i]\prod_{c\in\ch{v}}\tr(\Sub{c}\T\Sub{c})\,\Id$. The children's subtrees are
-  independent and $\fanin{v}=\prod_{i\in\sites{v}}\pd[i]\prod_{c}\bd{c}$, so by induction from the
-  leaves $\E[\Sub{v}\T\Sub{v}]=\big(\prod_{u}\iscv{u}^2\big)\Id$ over the subtree of $v$; at the root
-  $\Sub{\vroot}$ is $\W$ flattened. Finally, $\E\normF{\G{v}}^2=\fanin{v}\bd{v}\,\iscv{v}^2/\fanin{v}$.
+  Let $\Sub{v}$ be the contraction of the subtree below $v$ ($\bd{v}$ columns). Given the children's
+  (independent) subtrees, the entries of $\G{v}$, of variance $\iscv{v}^2/\fanin{v}$, give
+  $\E[\Sub{v}\T\Sub{v}]=\frac{\iscv{v}^2}{\fanin{v}}\prod_{i\in\sites{v}}\pd[i]\prod_{c\in\ch{v}}
+  \tr(\Sub{c}\T\Sub{c})\,\Id$, so by induction from the leaves
+  $\E[\Sub{v}\T\Sub{v}]=(\prod_{u}\iscv{u}^2)\Id$ over the subtree of $v$; $\Sub{\vroot}$ is $\W$
+  flattened. Finally, $\E\normF{\G{v}}^2=\fanin{v}\bd{v}\,\iscv{v}^2/\fanin{v}$.
 \end{proof}
 
-We report both $\isc$ and the function-space scale $\fsc=\isc^{\Kc}$, the root-mean-square
-norm of $\W(\params_0)$: small $\isc$ makes $\W(\params_0)$ exponentially small in $\Kc$, while
-$\norm{\params_0}^2\approx\isc^2\sum_v\bd{v}$ grows with the bond dimensions.
+We report both $\isc$ and the function-space scale $\fsc=\prod_v\iscv{v}$ ($=\isc^{\Kc}$ with one
+scale), the root-mean-square norm of $\W(\params_0)$: small $\isc$ makes $\W(\params_0)$
+exponentially small in $\Kc$, while $\norm{\params_0}^2\approx\isc^2\sum_v\bd{v}$ grows with the
+bond dimensions.
 
 \paragraph{Variants.}
 \begin{enumerate}[label=(\alph*)]
   \item \emph{Imbalance}: per-core scales $\iscv{v}=\isc c_v$ with a fixed profile $(c_v)$ (for
     example root versus rest), compared at fixed $\prod_v\iscv{v}$.
-  \item \emph{Centred model}: the target is $\Wt+\W(\params_0)$, that is, $f_\params-f_{\params_0}$ is
-    trained on $f^*$ \citep[Sec.~3.2]{chizat2019lazy}. The initial function is removed at any $\isc$ without
-    changing the parameterization, so $\isc$ alone moves the model from small to large
-    initialization; overlaps and bond spectra refer to $\W-\W(\params_0)$. This is the main
-    construction of the regime map (\cref{sec:regime-map}).
+  \item \emph{Centred model}. The \emph{plain model} \eqref{eq:model} trained on $\Wt$ starts, at
+    large $\isc$, from a large random function $f_{\params_0}$. The centred model removes it: the
+    target is $\Wt+\W(\params_0)$, that is, $f_\params-f_{\params_0}$ is trained on $f^*$
+    \citep[Sec.~3.2]{chizat2019lazy}, so that $\isc$ changes the dynamics but not the target, and
+    $\isc$ alone moves the model from small to large initialization. Overlaps and bond spectra refer
+    to $\W-\W(\params_0)$. This is the main construction of the regime map (\cref{sec:regime-map}).
   \item \emph{Two-copy model} (\citealp[Sec.~3.1]{chizat2019lazy};
     \citealp[Sec.~4]{woodworth2020kernel}): $\W(\params^+)-\W(\params^-)$ with
     $\params^+(0)=\params^-(0)=\params_0$, zero at initialization for every $\isc$; a cross-check of
-    the centred model (\path{notes/model.md}, \path{notes/decisions.md}). It is stored as one TTN with
-    doubled bonds $2\bd{v}$ and block-diagonal cores ($\G{v}^\pm$ on the block where all bond indices
-    of $v$ are in the ``$\pm$'' half; the root holds $\G{\vroot}^+$ and $-\G{\vroot}^-$) and needs a
-    gradient mask (\cref{rem:two-copy-mask}). Both differences are contracted without cancellation,
-    as one TTN on doubled bonds in half-sums and half-differences of the two copies.
+    the centred model. It is trained as one TTN with doubled bonds and block-diagonal cores, which
+    needs a gradient mask (\cref{rem:two-copy-mask}; implementation in \cref{app:exp-common}).
   \item \emph{Aligned (decoupled) initialization} for CP teachers (\cref{prop:aligned}): cores
     diagonal in the teacher's basis, giving exactly solvable Saxe-type dynamics.
   \item \emph{Per-core learning-rate multipliers} $\lrm{v}$ \eqref{eq:gf}. A fixed
-    forward multiplier $c_v$ ($\G{v}=c_vH_v$, $H_v$ trained) is equivalent to the initial scale
-    $c_v\iscv{v}$ with the multiplier $c_v^2\lrm{v}$; this expresses the NTK and $\mu$P
+    forward multiplier $c_v$ ($\G{v}=c_v\tilde G_v$, $\tilde G_v$ trained) is equivalent to the
+    initial scale $c_v\iscv{v}$ with the multiplier $c_v^2\lrm{v}$; this expresses the NTK and $\mu$P
     parameterizations of wide networks \citep{yang2021tensor}, transposed to large bond dimension
     (\cref{sec:other-regimes}).
 \end{enumerate}
 
 \begin{remark}[The two-copy model needs a gradient mask]\label{rem:two-copy-mask}
-  \proven{} Gradient flow on the doubled TTN does not keep its block-diagonal form: for a root with
-  children $c_1,c_2$ and no sites, the root entry that pairs index $b_1$ of the $+$ half of
-  $\edge{c_1}$ with index $b_2$ of the $-$ half of $\edge{c_2}$ has gradient
-  $\ipS{\W-\Wt}{\Sub{c_1}^+[:,b_1]\otimes\Sub{c_2}^-[:,b_2]}$ (up to the order of sites), at
-  initialization $-\ipS{\Wt}{\Sub{c_1}^+[:,b_1]\otimes\Sub{c_2}^-[:,b_2]}$, generically nonzero; mixed
-  blocks of other cores also receive gradient. The two-copy dynamics is therefore the masked flow
-  $\dot\params=-\mask\odot\nabla\Loss(\params)$, $\mask$ the $0/1$ indicator of the diagonal blocks,
-  which keeps the blocks and equals gradient flow of
+  \proven{} Gradient flow on the doubled TTN does not keep its block-diagonal form: at a root with
+  children $c_1,c_2$ and no sites, the entry that pairs index $b_1$ of the $+$ half of $\edge{c_1}$
+  with index $b_2$ of the $-$ half of $\edge{c_2}$ has, at initialization, the gradient
+  $-\ipS{\Wt}{\Sub{c_1}^+[:,b_1]\otimes\Sub{c_2}^-[:,b_2]}$ (up to the order of sites), generically
+  nonzero. The two-copy dynamics is therefore the flow \eqref{eq:gf} with multipliers set to zero off
+  the diagonal blocks; it keeps the blocks and equals gradient flow of
   $\tfrac12\normS{\W(\params^+)-\W(\params^-)-\Wt}^2$ in $(\params^+,\params^-)$.
 \end{remark}
 
@@ -312,12 +315,10 @@ $\norm{\params_0}^2\approx\isc^2\sum_v\bd{v}$ grows with the bond dimensions.
   $\amp{v}{r}(0)=q_r(0)$ stays balanced, and $\dot q_r=q_r^{\Kc-1}(\tw{r}-q_r^{\Kc})$.
 \end{proposition}
 \begin{proof}
-  On the family \eqref{eq:aligned-init}, contracting the bond basis vectors gives
-  $\W=\sum_r\prodamp{r}\U{r}$ with orthonormal $\U{r}$. The derivative of $\W$ with respect to an
-  entry of $\G{v}$ is a product of basis vectors on the physical legs of $v$, the child-subtree
-  columns $\Sub{c}[:,b_c]$ and the environment column above $v$ indexed by $a$; on the family these
-  are multiples of $\bigotimes_{i\in\below{c}}\fac{b_c}{i}$ (and of the analogous product over the
-  sites outside $\below{v}$), so their inner product with $\W-\Wt=\sum_r(\prodamp{r}-\tw{r})\U{r}$
+  On the family \eqref{eq:aligned-init}, $\W=\sum_r\prodamp{r}\U{r}$ with orthonormal $\U{r}$. The
+  derivative of $\W$ with respect to an entry of $\G{v}$ is a product of physical basis vectors,
+  child-subtree columns and the environment column above $v$; on the family these are multiples of
+  products of teacher factors, so their inner product with $\W-\Wt=\sum_r(\prodamp{r}-\tw{r})\U{r}$
   vanishes unless all bond indices equal one $r$ ($a=1$ at the root). The gradient thus stays in the
   family, with component $(\prodamp{r}-\tw{r})\prod_{u\ne v}\amp{u}{r}$ along $\amp{v}{r}$; with
   $\lrm{v}=1$, $\ddt\amp{v}{r}^2=2(\tw{r}-\prodamp{r})\prodamp{r}$ for every $v$.
@@ -329,35 +330,35 @@ For $\Kc\ge3$ a balanced mode started at $q_r(0)\ll\tw{r}^{1/\Kc}$ reaches $\ov{
 \end{equation}
 and for $\Kc=2$ at $t_r=\log(\tw{r}/q_r(0)^2)/(2\tw{r})+O(q_r(0)^2/\tw{r}^2)$, by direct integration
 of the balanced ODE \proven. With $q_r(0)\propto\isc$ the first plateau grows like
-$\isc^{-(\Kc-2)}$, hence adaptive integration in double precision.
+$\isc^{-(\Kc-2)}$.
 
 % ===========================================================================================
 \subsection{Training dynamics}\label{sec:setup-dynamics}
 
 \paragraph{Gradient flow} is the reference dynamics,
 \begin{equation}\label{eq:gf}
-  \dot\params=-\Pre\,\nabla\Loss(\params),
+  \dot\params=-\boldsymbol{\lr}\odot\nabla\Loss(\params),
 \end{equation}
-where the diagonal $\Pre$ holds, for each parameter $j$ of core $v$, the learning-rate multiplier
-$\lrm{v}$ (default $1$) times an optional $0/1$ mask $\mask_j$ (\cref{rem:two-copy-mask}; default
-$1$). Here $t$ denotes gradient-flow time. The default integrator is the adaptive
-Dormand--Prince 5(4) pair \citep{dormand1980family} with relative and absolute tolerances $10^{-8}$
-and $10^{-12}$ and standard step-size control \citep[Sec.~II.4]{hairer1993solving}; steps follow the
-local time scale $\norm{\params}/\norm{\dot\params}$, so long plateaus are cheap. Past the first
-escape the flow is stiff, and many experiments use SciPy's LSODA with the exact Hessian as Jacobian
-(\cref{app:experiments}). Diagnostics are recorded at $t=0$ and at $200$ log-spaced times from
-$10^{-3}\min(\tau_0,\tau_\Loss,\tmax)$ to $\tmax$, where $\tau_0=\norm{\params}/\norm{\dot\params}$
-and $\tau_\Loss=\Loss/\abs{\dot\Loss}$ at $t=0$. This grid cannot resolve escapes, so the recorder
-also keeps a \emph{fine row} (loss, overlaps, bond spectra) after each integrator step at which
-$\params$ has moved by $1\%$ of its norm, or $\ln\Loss$ by $0.01$, since the last kept row; each rise
-is sampled about $20$ times or more (\path{Recorder} and \path{merged_rows} in \path{ttn/dynamics.py}).
-A run stops at $\tmax$, below a prescribed loss floor, or at step or wall-time limits. Accuracy is
-checked with the conservation laws (\cref{sec:setup-conservation}) and the aligned solutions
-(\cref{prop:aligned}).
+where the diagonal $\boldsymbol{\lr}$ holds, for each parameter of core $v$, the learning-rate
+multiplier $\lrm{v}$ (default $1$), set to zero where a gradient mask applies
+(\cref{rem:two-copy-mask}). Here $t$ denotes gradient-flow time. It is integrated by the adaptive
+Dormand--Prince 5(4) pair \citep{dormand1980family} with standard step-size control
+\citep[Sec.~II.4]{hairer1993solving} (relative and absolute tolerances $10^{-8}$ and $10^{-12}$) and,
+past the first escape, where the flow is stiff, mostly by LSODA with the exact
+Hessian; steps follow the local time scale, so long plateaus are cheap (choices and tolerances per
+experiment: \cref{app:exp-common}). Diagnostics are recorded on a log-spaced time grid plus
+\emph{fine rows}, kept whenever $\params$ has moved by $1\%$ of its norm, or $\ln\Loss$ by $0.01$,
+since the last kept row, so that every escape is sampled about $20$ times or more. A run stops at
+$\tmax$, below a prescribed loss, or at a step or wall-clock limit; together these are its
+\emph{budget}. Accuracy is checked with the conservation laws (\cref{sec:setup-conservation}) and the
+aligned solutions (\cref{prop:aligned}). All computations are in double precision: with
+$\isc=10^{-2}$ and $\Kc=7$, $\normF{\W(\params_0)}\approx10^{-14}$. A dormant component whose escape
+signal falls below about $10^{-15}\normF{\W}$ is seeded by roundoff, not by the initialization; such
+runs are flagged.
 
-\paragraph{Gradient descent} with learning rate $\lr$,
-$\params_{k+1}=\params_k-\lr\Pre\nabla\Loss(\params_k)$, is recorded at $t=\lr k$. A run has diverged when $\Loss$ becomes non-finite or exceeds
-$10^{6}\Loss(\params_0)$.
+\paragraph{Gradient descent} with learning rate $\lr$ iterates
+$\params\leftarrow\params-\lr\,\boldsymbol{\lr}\odot\nabla\Loss(\params)$, and each step advances $t$
+by $\lr$. A run has \emph{diverged} when $\Loss$ becomes non-finite or exceeds $10^{6}\Loss(\params_0)$.
 
 \paragraph{Stochastic gradient descent} uses the minibatch loss
 $\hat\Loss_{\batch}(\params)=\frac{1}{2\batch}\sum_{b=1}^{\batch}(f_\params(x_b)-y_b)^2$ in the
@@ -365,20 +366,14 @@ same update. Online SGD draws fresh inputs $x_b\sim\Normal(0,\Sig)$ with
 $y_b=f^*(x_b)$ at every step; with a fixed training set, each epoch uses a new random permutation.
 Optional label noise is drawn afresh each step.
 
-\paragraph{Precision.}
-All computations are in double precision: with $\isc=10^{-2}$ and $\Kc=7$,
-$\normF{\W(\params_0)}\approx10^{-14}$ and gradients are of order $10^{-12}$. A dormant component
-whose escape signal falls below about $10^{-15}\normF{\W}$ is seeded by roundoff, not by the
-initialization; such runs are flagged.
-
 % ===========================================================================================
 \subsection{Symmetries and conservation laws}\label{sec:setup-conservation}
 
 For a bond $e=\edge{v}$ joining core $v$ to its parent $p=\pa{v}$, let $\Gm{u}{e}$ denote core
 $u\in\{v,p\}$ matricized with its $e$-leg as rows (a $\bd{v}\times\fanin{v}$ matrix for $u=v$). For
-every invertible $B\in\GL(\bd{v})$ the \emph{gauge transformation}
+every invertible $\Omega\in\GL(\bd{v})$ the \emph{gauge transformation}
 \begin{equation}\label{eq:gauge}
-  \Gm{v}{e}\mapsto B\,\Gm{v}{e},\qquad \Gm{p}{e}\mapsto B^{-\top}\Gm{p}{e}
+  \Gm{v}{e}\mapsto \Omega\,\Gm{v}{e},\qquad \Gm{p}{e}\mapsto \Omega^{-\top}\Gm{p}{e}
 \end{equation}
 leaves $\W$, and hence any loss that depends on $\params$ only through $\W$, unchanged.
 
@@ -392,7 +387,7 @@ leaves $\W$, and hence any loss that depends on $\params$ only through $\W$, unc
   is constant in time, for every bond $e=\edge{v}$ with $p=\pa{v}$.
 \end{proposition}
 \begin{proof}
-  With $X=\Gm{v}{e}$, $Y=\Gm{p}{e}$ and $B=\Id+\epsilon M$ in \eqref{eq:gauge}, $X\mapsto X+\epsilon MX$
+  With $X=\Gm{v}{e}$, $Y=\Gm{p}{e}$ and $\Omega=\Id+\epsilon M$ in \eqref{eq:gauge}, $X\mapsto X+\epsilon MX$
   and $Y\mapsto Y-\epsilon M\T Y+O(\epsilon^2)$; first-order invariance of $\Loss$ for every $M$ gives
   $C:=\nabla_X\Loss\,X\T=Y(\nabla_Y\Loss)\T$, so $\ddt(XX\T)/\lrm{v}=-(C+C\T)=\ddt(YY\T)/\lrm{p}$.
 \end{proof}
@@ -416,84 +411,197 @@ symmetry-induced conservation laws \citep{kunin2021neural}. Consequences:
       {\max_e\normmax{\Q{e}(0)}+\max_u\normF{\G{u}(t)}^2/\lrm{u}},
     \end{equation}
     with $\normmax{\cdot}$ the largest absolute entry, measures the integration error relative to the
-    terms that cancel in $\Q{e}$; it must stay below $10^{-6}$ under gradient flow.
+    terms that cancel in $\Q{e}$; it is required to stay below $10^{-6}$ under gradient flow
+    (exceptions are reported in \cref{app:experiments}).
 \end{itemize}
 
 % ===========================================================================================
-\subsection{Regime diagnostics}\label{sec:setup-diagnostics}
+\subsection{Saddles, routes and saddle order}\label{sec:setup-routes}
 
-Regimes are assigned from measured quantities, never by eye, by the rules of
-\path{notes/diagnostics.md} (code: \path{ttn/diagnostics.py}; per-experiment details:
-\cref{app:experiments}).
+The terms below are used from \cref{sec:intro} on; \cref{sec:s2s} states the results and
+\cref{app:saddles,app:saddle-order} derive them.
 
-\paragraph{Raw quantities} (\cref{tab:raw-diagnostics}) are recorded at the log times of
-\cref{sec:setup-dynamics}. The tangent kernel uses
-a fixed probe set of $\nprobe=128$ inputs $x_p\sim\Normal(0,\Sig)$ and the Jacobian
-$\Jac_t=\partial\big(f_\params(x_1),\dots,f_\params(x_{\nprobe})\big)/\partial\params$ at
-$\params(t)$. The gauge directions at $\params$ are the tangent vectors
-$(M\Gm{v}{e},-M\T\Gm{p}{e})$ of the orbits \eqref{eq:gauge}, for all bonds $e$ and
-$M\in\R^{\bd{v}\times\bd{v}}$.
-With learning-rate multipliers or a mask the kernel is $\Jac_t\Pre\Jac_t\T$, the operator that drives the
-function-space dynamics of \eqref{eq:gf}. The relative kernel change $\dTK$ is computed, wherever the dense
-Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$, which covers the binary tree with $\Ns=4$ at every bond
-dimension used), from the tensor-space kernel $\Jac\Pre\Jac\T$ on $\R^{d^\Ns}$, $\Jac=\partial\W/\partial\params$,
-whose constants the theory of \cref{app:boundaries} gives; for whitened inputs the probe kernel is
-$\Feat(x_p)\T(\Jac\Pre\Jac\T)\Feat(x_{p'})$. Where the probe kernel was used instead it is named
-($\dTK^{\rm probe}$), as in the regime labels of \cref{sec:regime-map}; near the lazy boundary $\dTK^{\rm probe}$ is
-$0.54$--$1.11$ times $\dTK$ (median $0.78$).
+\paragraph{Learned saddles and routes.}
+From small initialization gradient flow rests, between escapes, near a \emph{learned saddle}
+$\params_S$: a critical point that represents a partial fit $\W_S$ (for orthonormal teachers the sum
+of the learned components, \eqref{eq:partial-fit}; in general a best approximation of $\Wt$ with the
+current bond ranks). Each bond uses only its first $\rank\mat{(\W_S)}{e}$ (\emph{learned}) channels;
+the others are zero. A new channel opened in one core meets zeros in its neighbours and leaves $\W$
+unchanged: new channels move $\W$ only when every core of a connected set $C$ opens one together, and
+then by a product of $\abs{C}$ small entries, a small TTN on $C$ attached to the learned network
+(\cref{lem:A-routes}). Such a set is a \emph{route}. It lowers the loss at order $\abs{C}$ in the new
+entries, while the quadratic (Gauss--Newton) term $\frac12\normS{\Delta\W}^2$ is of order $2\abs{C}$,
+so near the saddle it behaves like a fresh $\abs{C}$-core TTN started near zero
+(\cref{prop:A-escape-degree}). The \emph{ends} of a route are its leaves as a subtree; the
+\emph{slice} of an end is that core's part on the route's new channel (for a leaf core, one column).
+The learned channels can also rotate; when such moves descend faster than the cheapest route is
+decided in \cref{app:saddle-order}.
 
-\begin{table}[t]
+\paragraph{Route size $k$ and $k^*$.}
+For an orthonormal pattern teacher with one learned component, the route that adds component $r$ is
+the Steiner subtree $\mathrm{St}(V_D)$ of the cores that carry the sites $D$ where $r$ differs from the
+learned component, and the bonds whose rank must grow are exactly its edges
+(\cref{prop:teacher-spectra,prop:A-steiner}) \proven. Its size $k=\abs{\mathrm{St}(V_D)}$ is the number of
+cores that must move together, and $k^*$ is the smallest $k$ among the components not yet learned (in
+general, the smallest route with a nonzero local residual, \cref{prop:A-escape-degree}). If $D$ lies on
+one core ($k=1$), that core fits the component through its learned channel and the flow does not stop.
+Otherwise, when the saddle order is $k^*$ (below), the next plateau follows the first-escape law
+with $\Kc$ replaced by $k^*$: it lasts $\propto\ln(1/\isc)$ for $k^*=2$ and $\propto\isc^{-(k^*-2)}$ for
+$k^*\ge3$ \derived{} (\cref{sec:s2s-locality}). Example: $0000$ and $0110$ differ on sites $1$ and $2$; on MPS4 these sit
+on adjacent cores ($k=2$), on binary4 on the two bottom cores, joined through the root ($k=3$).
+
+\paragraph{Saddle order.}
+The \emph{order} of a saddle is the power of the distance at which the loss first decreases: the
+largest exponent $\operatorname{ord}$ with
+$\Loss(\params)-\Loss_S\ge-C\norm{\params-\params_S}^{\operatorname{ord}}$ near $\params_S$
+(\cref{app:saddle-order}). A \emph{strict} saddle has order $2$ (a negative Hessian eigenvalue); at a
+\emph{higher-order} saddle (order at least $3$) every descent direction is flat to second order. A
+route of $k^*$ cores descends at order $k^*$, so the order is at most $k^*$ \proven{}
+(\cref{prop:A-steiner}); when it equals $k^*$ is stated in \cref{sec:s2s} and proven in
+\cref{app:saddle-order}.
+
+\begin{table}[p]
   \centering
-  \caption{Raw diagnostics recorded along every run.}
-  \label{tab:raw-diagnostics}
-  \begin{tabularx}{\textwidth}{@{}lX@{}}
+  \caption{Notation and where it is defined (\S: section; (n): equation). Sites and cores are
+    numbered from $0$, teacher components from $1$. Abbreviations: GF gradient flow; GD, SGD
+    (stochastic) gradient descent; S2S saddle-to-saddle; LO leading order; odeco orthogonally
+    decomposable; MPS matrix product state; HT hierarchical Tucker; SP, NTK, $\mu$P
+    parameterizations (\cref{sec:other-large-chi}); ALS, DMRG sweep methods
+    (\cref{sec:other-optimizers}).}
+  \label{tab:notation}\label{tab:raw-diagnostics}
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm}X
+      >{\raggedright\arraybackslash}p{2.1cm}@{}}
     \toprule
-    symbol & definition \\
+    symbol & meaning & defined in \\
     \midrule
-    $\Loss(t)$, $\lossn(t)$ & exact population loss \eqref{eq:loss}, and $\lossn=\Loss(t)/\Loss(0)$ \\
-    $\bs{e}{k}(t)$, $\bst{e}{k}$ & bond spectra of $\W(t)$ and of $\Wt$ across edge $e$
-      (function-space ones when $\Sig\ne\Id$); $\bst{e}{k}=\tw{k}$ for odeco teachers
-      (\cref{prop:teacher-spectra}) \\
-    $\ov{r}(t)$ & overlap \eqref{eq:overlap} (CP teachers; of $\W-\W(\params_0)$ in the centred model) \\
-    $\dth(t)$ & $\norm{\params(t)-\params(0)}/\norm{\params(0)}$, also per core \\
-    $\TK_t$ & tangent kernel $\Jac_t\Jac_t\T$ on the probe set; for small $\Ns$ also the
-      tensor-space operator $\sum_v(\partial\W/\partial\G{v})(\partial\W/\partial\G{v})\T$ \\
-    $\dTK(t)$ & relative kernel change $\normF{\TK_t-\TK_0}/\normF{\TK_0}$ \\
-    $\mathrm{drift}(t)$ & conservation drift \eqref{eq:drift} \\
-    $\Hess(t)$, $\Hperp(t)$ & Hessian of $\Loss$ and its gauge projection (see the saddle type) \\
+    $\Ns$, $i$; $\pd[i]$, $d$ & number of sites, site index $i=0,\dots,\Ns-1$; local feature dimension
+      (default $d$) & \S\labelcref{sec:setup-model} \\
+    $\feat{i}$, $\Feat$; $\Sigi{i}$, $\Sig$ & site features, their tensor product; site and product
+      input covariance & \S\labelcref{sec:setup-model} \\
+    $\tree$, $\nodes$, $\Kc$; $\pa{v}$, $\ch{v}$ & rooted tree, its cores, their number; parent and
+      children of core $v$ & \S\labelcref{sec:setup-model} \\
+    $\sites{v}$, $\below{v}$; $\edge{v}$, $\bd{v}$, $\chi$ & sites of core $v$, sites below $v$; bond
+      to the parent, its dimension; nominal value & \S\labelcref{sec:setup-model}, \eqref{eq:bond-cap} \\
+    $\G{v}$, $\fanin{v}$, $\params$ & core of $v$, its fan-in; all parameters & \S\labelcref{sec:setup-model} \\
+    $\W$, $\Wt$, $\Wz$ & tensor of the student, of the teacher, at initialization
+      & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-loss} \\
+    $\mat{\W}{e}$, $01|23$ & matricization across $e$; a bipartition written by its site sets
+      & \S\labelcref{sec:setup-model} \\
+    $\bs{e}{j}$, $\bst{e}{j}$; $\rk{e}$ & $j$-th singular value across $e$ of $\W$, of $\Wt$ (their
+      nonzero count: the bond rank); effective bond rank
+      & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-diagnostics} \\
+    cut dimension, full & largest rank across $\edge{v}$; a bond is full when $\bd{v}$ reaches it
+      & \S\labelcref{sec:setup-trees} \\
+    binary$N$, MPS$N$, HT$N$ & trees with $N$ sites; also star3, midroot6 & \cref{tab:trees} \\
+    \midrule
+    $\ncomp$, $\tw{r}$ & number of teacher components; weights $\tw1\ge\dots\ge\tw{\ncomp}$
+      & \eqref{eq:cp-teacher} \\
+    $\fac{r}{i}$, $\U{r}$ & unit factor of component $r$ at site $i$; unit rank-one term
+      & \eqref{eq:cp-teacher} \\
+    $\pi_r$ & pattern of component $r$, a digit string, site $0$ first ($0110$, $0^31^20^3$)
+      & \S\labelcref{sec:setup-loss} \\
+    $\ov{r}$ & overlap with component $r$ ($0$ at $\W=0$, $1$ at $\W=\Wt$) & \eqref{eq:overlap} \\
+    $D$; $V_D$, $m$ & sites where a component differs from the learned one; cores carrying them,
+      $m=\abs{V_D}$ & \S\labelcref{sec:setup-loss} \\
+    $\mathrm{St}(\cdot)$ & Steiner subtree: the smallest subtree that contains a set of cores
+      & \S\labelcref{sec:setup-loss} \\
+    $\Loss$, $\lossn$; $\W_S$, $\Loss_S$ & population loss, $\Loss/\Loss(0)$; partial fit of the
+      components in $S$, its loss & \eqref{eq:loss}, \eqref{eq:partial-fit} \\
+    $\nsamp$, $\Lemp$; $\batch$ & training-set size, empirical loss; minibatch size
+      & \S\labelcref{sec:setup-loss}, \S\labelcref{sec:setup-dynamics} \\
+    $c$; $\Lambda_r$ & cross-site input correlation; aligned covariance: per-component product of
+      eigenvalues & \S\labelcref{app:covariance}; \S\labelcref{sec:cov-aligned} \\
+    \midrule
+    $\isc$, $\iscv{v}$, $\fsc$ & initialization scale; per-core scale; function-space scale
+      $\prod_v\iscv{v}$ & \eqref{eq:init}, \S\labelcref{sec:setup-init} \\
+    $\amp{v}{r}$, $\prodamp{r}$ & aligned-initialization amplitudes; their product & Prop.~\labelcref{prop:aligned} \\
+    $Z$; $\varepsilon$ & initialization direction, $\params_0=\isc Z$; perturbation of a saddle start
+      & \S\labelcref{sec:s2s-escape}; \S\labelcref{app:exp-common} \\
+    $t$, $\tmax$; $T$ & gradient-flow time, time budget; end time of a run
+      & \S\labelcref{sec:setup-dynamics}; \cref{tab:regimes} \\
+    $\lr$; $\lrm{v}$, $\boldsymbol{\lr}$ & learning rate (step size); per-core multiplier, the
+      diagonal preconditioner & \eqref{eq:gf} \\
+    $\lr_c$ & $2/(\Kc\tw1^{2-2/\Kc})$, the step size up to which GD keeps the saddle sequence
+      & \eqref{eq:optim-etac} \\
+    $\Q{e}$ & conserved quantity of bond $e$ & \eqref{eq:conserved} \\
+    \midrule
+    $\TK$, $\Jac$ & tangent kernel $\Jac\,\diag(\boldsymbol{\lr})\Jac\T$; $\Jac=\partial\W/\partial\params$
+      & \S\labelcref{sec:setup-diagnostics} \\
+    $\dTK$, $\dTK^{\rm probe}$; $\nprobe$ & relative kernel change (tensor, probe kernel); probe-set
+      size & \S\labelcref{sec:setup-diagnostics} \\
+    $\dth$; drift & relative parameter change; conservation drift
+      & \S\labelcref{sec:setup-diagnostics}, \eqref{eq:drift} \\
+    $\Hess$, $\Hperp$, $\lambda_{\min}$ & Hessian, its gauge projection, its smallest eigenvalue
+      & \S\labelcref{sec:setup-diagnostics} \\
+    $\tev{r}$, $\wev{r}$ & time and width of event $r$ & \S\labelcref{sec:setup-diagnostics} \\
+    $\sep{i}$, $\tmid{i}$ & separation ratio of consecutive events; plateau midpoint
+      & \eqref{eq:separation} \\
+    \midrule
+    $\params_S$; $\mathcal R$ & learned saddle; residual $\Wt-\W_S$
+      & \S\labelcref{sec:setup-routes}; \S\labelcref{app:saddles} \\
+    route, end, slice & cores that open a channel together; its leaves; an end's part on the channel
+      & \S\labelcref{sec:setup-routes} \\
+    $k$, $k^*$ & route size $\abs{\mathrm{St}(V_D)}$; smallest route with a nonzero residual
+      & \S\labelcref{sec:setup-routes} \\
+    saddle order & power of the distance at which the loss first decreases ($2$: strict)
+      & \S\labelcref{sec:setup-routes}; \S\labelcref{app:saddle-order} \\
+    $\Delta t_2$, $\lambda_2$ & time between the first two events; $k=2$ escape rate
+      $\tw2\tw1^{(\Kc-2)/\Kc}$ & \eqref{eq:locality-rule} \\
+    head start & factor $1-\tw2/\tw1$: the route grew during the previous plateau
+      & \S\labelcref{sec:s2s-locality} \\
+    $c_r$; $T(Z)$ & coupling of the route of component $r$; first-escape prefactor of $Z$
+      & \eqref{eq:A-coupling}; \S\labelcref{sec:s2s-escape} \\
+    $\Gamma$ & piggyback graph; the saddle is strict if $\lambda_{\max}(\Gamma)>\tw j$
+      & Prop.~\labelcref{prop:A-piggyback-graph} \\
+    $Q_{\nu\nu}$ & conserved quantity on the new channel $\nu$ of a route end & Prop.~\labelcref{prop:A-trap} \\
+    $w$; $\gamma$ & weight ratio $\tw2/\tw1$; exponent in $P(\text{smaller first})\propto\isc^{\gamma}$
+      & \S\labelcref{sec:s2s-order} \\
+    \midrule
+    $\isc_c$, $\isc_{\rm lazy}$; $\lambda$ & S2S and lazy boundaries in $\isc$; root scale at fixed
+      $\fsc$ & \S\labelcref{sec:regime-map}, \S\labelcref{sec:regime-imbalance} \\
+    $r_S$; $r(\cdot)$ & Spearman correlation; spectral radius
+      & \S\labelcref{sec:real-data}; \S\labelcref{app:saddle-order} \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
+% ===========================================================================================
+\subsection{Regime diagnostics}\label{sec:setup-diagnostics}
+
+Regimes are assigned from measured quantities, never by eye; \cref{app:experiments} gives the
+settings of each experiment.
+
+\paragraph{Recorded quantities.}
+Along every run we record the loss, the bond spectra of $\W$, the overlaps, the relative parameter
+change $\dth=\norm{\params(t)-\params(0)}/\norm{\params(0)}$ (also per core), the relative kernel change
+$\dTK$ and the conservation drift \eqref{eq:drift}, and at plateaus the Hessian $\Hess$ and its gauge
+projection $\Hperp$ (\cref{tab:notation}). The \emph{effective bond rank} $\rk{e}$ counts the
+$\bs{e}{j}$ above $0.1$ times the smallest nonzero teacher singular value on $e$ (threshold-free: the
+entropy rank $\rkH{e}=\exp(-\sum_j\hat s_j^2\ln\hat s_j^2)$, $\hat s_j=\bs{e}{j}/\normF{\W}$). The
+tangent kernel $\TK=\Jac\,\diag(\boldsymbol{\lr})\,\Jac\T$, $\Jac=\partial\W/\partial\params$, is the
+operator on $\R^{d^\Ns}$ that drives the function-space dynamics of \eqref{eq:gf}, and
+$\dTK=\normF{\TK_t-\TK_0}/\normF{\TK_0}$; it is computed where $d^\Ns\dim\params\le2\cdot10^7$
+(binary4 at every bond dimension used), and \cref{app:boundaries} derives its constants. The
+\emph{probe kernel} restricts $\TK$ to $\nprobe=128$ fixed inputs $x_p\sim\Normal(0,\Sig)$ (for
+whitened inputs, $\Feat(x_p)\T\TK\,\Feat(x_{p'})$); where it is used instead, as in the regime labels
+of \cref{sec:regime-map}, the change is written $\dTK^{\rm probe}$.
+
 \paragraph{Learning events.}
-For CP teachers with orthogonal components (in the metric $\Sig$), event $r$ is dated at the last
-upward crossing $\tev{r}$ of $\ov{r}=\frac12$ before $\ov{r}$ first reaches $0.9$: the first crossing
-unless a transient (while another component is learned) crossed and fell back, and unchanged if the
-learned component later dips below $\frac12$. Its width $\wev{r}$ is the final rise, from the last
-upward crossing of $0.1$ before $\ov{r}$ first reaches $0.9$ to that time. This rule is recommended and is
-the one of the saddle-to-saddle (s2s-core) and regime-map experiments. The library (\path{runner.summary})
-and the locality, optimizer and optim-samples experiments take instead the last upward crossing after
-which $\ov{r}$ stays at least $\frac12$ until the end of the run, and the order, data-teacher (aligned
-covariance) and H2-pilot experiments the first crossing (code per experiment: \path{notes/diagnostics.md}).
-The first alternative
-differs only when a learned component later dips below $\frac12$ (star teachers, SGD noise, rotations to a
-better component, a few deep-tree runs): it then dates the relearning, or gives no event. The second differs
-only when a transient crosses $\frac12$ before the final rise. For
-other teachers one escape can raise several overlaps, so events $(e,k)$ come from the bond spectra,
-by one of three rules (\cref{app:experiments} gives each experiment's): (a)~the onset, the first time
-$\bs{e}{k}$ reaches $f\bst{e}{k}$ with $f=0.05$ (sensitivity $f\in[0.03,0.1]$), without widths
-(locality bond events, data-teacher v2 analyses); (b)~half the teacher's value (first crossing for
-the optimizers, last upward crossing under correlated inputs), with final-rise widths from $0.1$ to
-$0.9$ of it; (c)~the library default (\path{spectral_events}, used by \path{runner.summary}), the last
-upward crossing of half the run's final value, with final-rise widths from $0.1$ to $0.9$ of it;
-consecutive events whose gap is at most the larger width are then merged into one, with their mean
-time and largest width. Rule (a) is recommended: a half-value rule can skip intermediate saddles whose
-spectra stay below the final ones (\cref{cor:A-second-escape}). Crossings are interpolated on the
-merged log and fine rows (or found by root finding on dense output); an event narrower than three
-sample intervals is unresolved, and separation ratios involving it are lower bounds. The
-\emph{effective bond rank} is $\rk{e}(t)=\#\{k:\bs{e}{k}(t)>0.1\,\bst{e}{\min}\}$, with
-$\bst{e}{\min}$ the smallest nonzero teacher Schmidt value on $e$; the threshold-free alternative is
-the entropy rank $\rkH{e}=\exp(-\sum_kp_k\log p_k)$, $p_k=(\bs{e}{k})^2/\sum_j(\bs{e}{j})^2$.
+For CP teachers with orthogonal components (in the metric $\Sig$), \emph{event} $r$ is the time
+$\tev{r}$ at which the overlap $\ov{r}$ rises through $\frac12$, and its \emph{width} $\wev{r}$ is the
+duration of that final rise, from $\ov{r}=0.1$ to $0.9$. Experiments date the crossing by slightly
+different rules: the last upward crossing before $\ov{r}$ first reaches $0.9$ (recommended), the last
+upward crossing after which $\ov{r}$ stays above $\frac12$, or the first crossing. The rules agree
+unless a learned component later dips below $\frac12$ (star teachers, gradient noise, rotations to a
+better component; the second rule then dates the relearning, or gives none) or a transient crosses $\frac12$ while
+another component is learned (the third rule then dates the transient). For other teachers one escape
+can raise several overlaps, and events are read from the bond spectra instead (for example the onset,
+when $\bs{e}{j}$ first reaches $0.05$ times the teacher's value); on real data from the loss rate.
+\Cref{tab:exp-common} gives each experiment's rule. Crossings are interpolated on the recorded rows or
+found by root finding on the integrator's dense output; an event narrower than three sample intervals
+is \emph{unresolved}, and separation ratios involving it are lower bounds.
 
 \paragraph{Plateaus and the saddle-to-saddle signature.}
 Number the events in time order, $\tev{1}<\tev{2}<\cdots$, with widths $\wev{i}$; the
@@ -525,7 +633,8 @@ Each run, trained up to time $T$, receives one label (\cref{tab:regimes}).
     saddle-to-saddle & $\dTK(T)\ge0.1$ and the S2S signature (i)--(iii) \\
     rich, non-incremental & $\dTK(T)\ge0.1$ and the loss converges, but some $\sep{i}\le3$
       (overlapping transitions) \\
-    stalled & $\Loss(T)\ge10^{-3}\Loss(0)$ within the time budget \\
+    stalled & $\Loss(T)\ge10^{-3}\Loss(0)$ when the budget ends; subclasses dead route, slow and
+      floor (see the text) \\
     diverged & $\Loss$ non-finite or above $10^{6}\Loss(0)$ (GD and SGD; for gradient flow, an
       integrator failure) \\
     \bottomrule
@@ -534,49 +643,55 @@ Each run, trained up to time $T$, receives one label (\cref{tab:regimes}).
 
 \begin{remark}[Reading of the rules]\label{rem:regime-rules}
   ``Converges'' means $\Loss(T)<10^{-3}\Loss(0)$; labels are checked in the order diverged,
-  stalled, then the converged regimes. Condition (iii) belongs to a sweep: a run is
-  labelled S2S on (i)--(ii), and a region of a phase diagram is S2S only if (iii) holds there. A
-  converged run with $\dTK(T)\ge0.1$ and a single (merged) event is rich, non-incremental. The code
-  (\path{classify_regime}) adds two labels: \emph{lazy (projected fit)}, checked before stalled, for
-  $\dTK(T)<0.1$ and a final loss within $10\%$ of that of the linearized fit (positive when a bond is
-  deficient), and \emph{undetermined} when every $\sep{i}\le3$ involves an unresolved event. The
-  regime map measures convergence against $\frac12\normS{\Wt}^2$, which equals $\Loss(0)$ when the
-  fitted tensor vanishes at $t=0$ (centred and two-copy models) and differs only for the plain model
-  at large $\isc$.
+  stalled, then the converged regimes. Condition (iii) belongs to a sweep: a run is labelled S2S on
+  (i)--(ii), a region of a phase diagram only if (iii) holds there. A converged run with
+  $\dTK(T)\ge0.1$ and a single (merged) event is rich, non-incremental. The regime map measures
+  convergence against $\frac12\normS{\Wt}^2$, which equals $\Loss(0)$ when the fitted tensor vanishes
+  at $t=0$ (centred and two-copy models).
 \end{remark}
 
+\paragraph{Stalled runs.}
+\emph{Stalled} is an umbrella label (\cref{tab:regimes}); its four causes fall into three
+subclasses. \emph{Dead route} (trap): an end of the route that the next component needs has its slice
+at roundoff. The route's drive is a product over its cores, so it cannot escape, and the run stays at
+a partial fit. The proposed mechanism is the conservation-law trap (\cref{prop:A-trap}, \derived{} in
+a reduced model): on a long plateau the conservation laws can make an end's slice decay at a rate
+$\propto\isc^2$ (tests and open conflicts: \cref{sec:s2s-failure}). \emph{Slow}: every route is live,
+but the budget ends first, on a plateau longer than the time budget (a route of $k$ cores needs a time
+$\propto\isc^{-(k-2)}$) or at the step limit (unfinished lazy fits at full bonds, some deep-tree runs).
+\emph{Floor}: in the centred model with a bond below its cut dimension, the target $\Wt+\W(\params_0)$
+is not representable and the loss stops at the best fit with the available bond ranks, above the
+threshold at large $\isc$ (\cref{sec:other-lazy}); only this cause is specific to the centred model.
+Experiments test the subclass in their own ways (a route-end slice or a bond singular value at
+roundoff, a gradient below a threshold, a continued run; \cref{app:experiments}); runs whose subclass
+is not determined are reported as stalled.
+
 \paragraph{Saddle type at a plateau.}
-At the plateau midpoint we compute $\Hess$ and its restriction $\Hperp$ to the orthogonal complement
-of the well-conditioned gauge directions: the left singular vectors of the unnormalized generator
-matrix with singular values above $10^{-3}$ times the largest (\path{project_out_gauge}).
-Normalizing the tiny generators of nearly unused bond indices, as an earlier cutoff of $10^{-10}$
-did, removes part of the escape direction and biases $\lambda_{\min}$ near rank-deficient saddles
-(\cref{app:exp-locality}); the raw $\lambda_{\min}(\Hess)$ is always reported too. The type is read
-across a sweep from how $\lambda_{\min}(\Hperp)$ at the midpoint scales with $\isc$
-(\cref{prop:A-signatures}): it tends to a negative constant at a \emph{strict saddle} and vanishes
-like $\isc^{k-2}$ at a \emph{higher-order saddle} of order $k\ge3$ (a route through $k$ cores, or the
-origin with $k=\Kc$). A fixed threshold confuses the two: the single-$\isc$ fallback, strict if
-$\lambda_{\min}(\Hperp)<-10^{-3}\max_j\abs{\lambda_j(\Hperp)}$, calls $k=3$ plateaus strict for
-$\isc\gtrsim0.01$--$0.04$.
+At the plateau midpoint we compute the Hessian $\Hess$ and its restriction $\Hperp$ to the
+orthogonal complement of the well-conditioned gauge directions, which are the tangent vectors
+$(M\Gm{v}{e},-M\T\Gm{p}{e})$ of the orbits \eqref{eq:gauge} (cutoff: \cref{app:exp-common}); the raw
+$\lambda_{\min}(\Hess)$ is reported too. The type is read across a sweep from how $\lambda_{\min}(\Hperp)$ at the midpoint scales with
+$\isc$ (\cref{prop:A-signatures}): it tends to a negative constant at a strict saddle and vanishes like
+$\isc^{k-2}$ at a higher-order saddle reached through a route of $k\ge3$ cores (the origin: $k=\Kc$).
+A fixed threshold at one $\isc$, strict if $\lambda_{\min}(\Hperp)<-10^{-3}\max_j\abs{\lambda_j(\Hperp)}$,
+cannot separate the two: it calls $k=3$ plateaus strict for $\isc\gtrsim0.01$--$0.04$.
 
 \paragraph{Reporting rules.}
-Every scaling claim uses at least five initialization scales over at least one decade and five seeds
-per point, and reports mean $\pm$ standard error, a fitted exponent with its standard error, and the
-theoretical prediction. Every regime boundary comes with the threshold sensitivity check of
-\cref{tab:regimes}, and every number states the dynamics that produced it (integrator tolerances,
-step size, batch size).
+Scaling fits use at least five initialization scales over at least one decade and at least five
+seeds per point, and report mean $\pm$ standard error, a fitted exponent with its standard error,
+and the theoretical prediction. Fits that fall short of this rule are reported but marked
+\emph{limited range}, with their range of $\isc$ and their seed count. Every regime boundary comes
+with the threshold sensitivity check of \cref{tab:regimes}, and every number states the dynamics that
+produced it (integrator tolerances, step size, batch size).
 
 % ===========================================================================================
 \subsection{What the results may depend on}\label{sec:setup-scope}
 
-\begin{itemize}
-  \item \emph{Population loss.} Plateaus and saddle sequences are properties of population gradient
-    flow; implicit bias and generalization need finite samples.
-  \item \emph{Multilinear features, product input measure.} There is no pointwise nonlinearity, and
-    the population loss is a tree contraction, which cross-site correlations break.
-  \item \emph{Placement of physical legs.} Binary trees and HT differ in $\Kc$ and in how many cores
-    must change to learn a component, which sets plateau-time exponents (\cref{sec:s2s-locality}).
-  \item \emph{Fan-in initialization.} It fixes the relative scales of the cores; exponents should not
-    depend on it, but prefactors and the learning order might, so imbalanced, balanced ($\Q{e}=0$)
-    and aligned initializations are also studied.
-\end{itemize}
+Plateaus and saddle sequences are properties of population gradient flow; implicit bias and
+generalization need finite samples. The features are multilinear, with no pointwise nonlinearity, and
+the population loss is a tree contraction only for a product input measure, which cross-site
+correlations break. Binary trees and HT differ in $\Kc$ and in how many cores must change to learn a
+component, which sets plateau-time exponents (\cref{sec:s2s-locality}). Fan-in initialization fixes
+the relative scales of the cores; exponents should not depend on it, but prefactors and the learning
+order might, so imbalanced, balanced ($\Q{e}=0$) and aligned initializations are also studied.
+
