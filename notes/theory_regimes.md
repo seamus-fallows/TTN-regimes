@@ -22,6 +22,28 @@ the verifier's runs are marked), with trees given as explicit parent arrays (§1
   formula needs consistent bond dimensions (R2); "small root ⇒ lazy" needs full bonds (R13); the
   arithmetic of the $K=7$ estimate.
 
+**Corrections after experiments (2026-10-10).** The regime-map fix round 1 (`notes/regime_map.md` §3)
+and its verification (`notes/reviews/regime_map_round2_verification.md`) measured $\delta_K$ with the
+tensor-space kernel of §1, as this note defines it (the regime labels use a 128-probe kernel). The text
+below is not rewritten; dated markers in §0, §3.2, §7 and §8 carry the numbers.
+- **§7.** Near the lazy boundary ($\chi\ge32$) the 128-probe $\delta_K$ is 0.54–1.11 times the
+  tensor-space value (median 0.78), not 0.7–1.3, so probe-kernel lazy boundaries come out about 5% low.
+- **§8.** P5, P6, P7, P16 and P20 are **confirmed** with the tensor kernel (binary $N=4$, $d=3$, 6
+  seeds; empirical), with caveats on P16 (SP $\delta_\theta$ and leaf-core exponents steeper than
+  predicted at $\sigma=1.5$) and P20 (saturation at the lower edge of 0.6–0.7).
+- **R9 ($\kappa_K\to1$) and P15 remain conjectures.** The $K\ge8$ values of the regime-map $K$ sweep
+  were brackets from floor-stalled runs at deficient bonds, not S2S → rich crossings, and on current
+  data $\sigma_c^K=$ const (law A: $\kappa_K\to1$, $\sigma_c\to1$) and $\sigma_c^K/\sqrt D=$ const (law B:
+  $K$-independent $c_K$, $\sigma_c\to\sqrt d$) cannot be distinguished (§8 P15).
+- **Running: regime-map round 2** (remote, branch `agent/regime-map`; pre-registered in that branch's
+  `notes/regime_map.md` §4): `binary_tree(N)`, $N=4$–16 ($K=3$–15), teacher $(3,2)$ at $d=2$ and 3 with
+  the same $\chi$ (only $D$ changes), plain model with spare channels $\chi=4=2R$ (primary) and centred
+  model with full bonds (small $K$): a pre-registered test of law A against law B, plus the heuristic
+  that the plain model shrinks $W_0$ on the first plateau. Not merged or reviewed yet.
+- **From another experiment (pointer).** Stalls at $\chi=R$ occur already at $K=4$ (order agent, MPS4,
+  $R=\chi=4$, $\sigma=0.1$: 289/400 runs do not learn all four components by $t=10^9$; `notes/order.md`
+  §7.6), so R10's "$K\ge5$" is not a sharp bound.
+
 Status tags: **proven**; **derived** (under the stated assumptions); **heuristic**; **conjecture**;
 **empirical** (§6; exact population gradient flow (GF) unless stated otherwise).
 
@@ -37,11 +59,14 @@ Status tags: **proven**; **derived** (under the stated assumptions); **heuristic
 | R6 | Lazy boundary ($N=4$, SP): $\sigma_{\rm lazy}=(\Vert T\Vert^2c_2/\delta_*)^{1/6}\propto\chi^{-1/2}$ once $c_2x_c\gg c_1$; two-copy $\times2^{-1/3}$ | derived; empirical |
 | R7 | Deficient bond: the centred model has a floor, $(1-\dim\mathcal M_\chi/D)\,\sigma^{2K}/\Vert W^\star\Vert^2$ at small $\sigma$; the two-copy model has a lazy plateau and then escapes after $t_{\rm esc}=2\theta\sigma^2/\Vert T\Vert^2$, i.e. $\tau_{\rm esc}\propto\sigma^{2K}$ | derived; empirical |
 | R8 | Aligned odeco dynamics: exact separation ratios for the project's criterion; $a_{0c}(K)\to1$; $u_{0c}(K)\to$ a finite limit ($1.306\times10^{-2}$ for weights $(3,2,1)$) | proven given the aligned reduction; ODE and boundary structure known |
-| R9 | Random fan-in init: $t_1\propto\sigma^{-(K-2)}$; gaps and $\rho_i\propto\sigma^{-(K-2)}$ per seed **for teachers whose escape routes span the whole tree (odeco); in general later gaps scale as $\sigma^{-(k-2)}$ with $k$ the route degree (`theory_saddles.md`)** (lead's restriction, 2026-10-09); transients decay like $\sigma^{2(1-q)}$; the boundary is a seed distribution: median $\sigma_c=0.29$ ($K=3$) and $0.71$ ($K=7$, full bonds); effective per-core amplitude $\kappa_K$ grows with $K$ | derived ($t_1$); heuristic; empirical; conjecture ($\kappa_K\to1$) |
+| R9 | Random fan-in init: $t_1\propto\sigma^{-(K-2)}$; gaps and $\rho_i\propto\sigma^{-(K-2)}$ per seed **for teachers whose escape routes span the whole tree (odeco); in general later gaps scale as $\sigma^{-(k-2)}$ with $k$ the route degree (`theory_saddles.md`)** (lead's restriction, 2026-10-09); transients decay like $\sigma^{2(1-q)}$; the boundary is a seed distribution: median $\sigma_c=0.29$ ($K=3$) and $0.71$ ($K=7$, full bonds); effective per-core amplitude $\kappa_K$ grows with $K$ | derived ($t_1$); heuristic; empirical; conjecture ($\kappa_K\to1$; still open after the regime-map $K$ sweep, 2026-10-10) |
 | R10 | $K\ge5$ with $\chi$ = teacher rank $R$: the last component needs all $K$ cores and its plateau is very long; fan-in init can freeze it for good; balanced init does not fix $K=7$, spare channels ($\chi\ge2R$) do in the runs so far | empirical; heuristic mechanism |
 | R11 | muP for TTNs: the spectral condition must use the injective norm; fan-in init except the root, scaled by $(\sum\text{child dims})^{-1/2}$; $\eta_v=\chi_v/F_v$ | derived; empirical |
 | R12 | $\chi\to\infty$ at fixed $x$ ($N=4$): $\delta_K\propto\chi^{-3}$ (SP), $\chi^{-1}$ (NTK), $\chi^0$ (muP-TTN), at first and second order | derived; empirical |
 | R13 | Root imbalance at fixed $\alpha$: a small root is lazy ($\delta_K\propto\lambda^2$) only with full bonds; a large root is not lazy | derived (aligned); empirical |
+
+*2026-10-10:* the tests of R4–R6, R12 and R13 in §8 (P5, P6, P7, P16, P20) are confirmed with the
+tensor-space kernel; R9's conjecture and P15 remain open (Corrections after experiments, above).
 
 ## 1. Notation
 
@@ -357,7 +382,9 @@ $a_{0c}=0.066,0.324,0.480,0.647,0.733,0.865,1$ for $K=3,5,7,11,15,31,\infty$ ($\
   $\sigma_c(K)\to a_{0c}(K)\to1$ (H4 for random init). For `bin8` with $d=3$, $\chi=3$ and weights $(3,2,1)$
   ($a_{0c}=0.480$) this would put the boundary at $\sigma_c\approx0.6$–$0.75$, but there it is masked by
   stalls (§3.3). v1's $0.86$–$1.0$ used an arithmetic slip ($\sqrt D\,u_{0c}=81\times5.85\times10^{-3}=0.474$,
-  not 0.54) and an untested calibration.
+  not 0.54) and an untested calibration. *2026-10-10: still a conjecture;* the regime-map $K$ sweep
+  could not decide between $\kappa_K\to1$ and a $K$-independent $c_K$ (§8 P15; regime-map round 2 is
+  running).
 
 ### 3.3 $K\ge5$ with $\chi$ = teacher rank: very long last plateaus and stalls (R10)
 
@@ -651,7 +678,12 @@ numpy checks of v1 (same library, same seeds) agree wherever both exist and are 
 - **Kernel diagnostics.** Report $\delta_K$ for the $\eta$-weighted kernel; mask the two-copy Jacobian.
   Report per-core changes (Frobenius and spectral) next to $\delta_K$: the root can move by more than
   100% at $\delta_K<0.1$. For $N\le8$, $d\le3$, compute the tensor-space $\Theta$ directly (`jacrev` of
-  `to_dense`); the 64–128-probe $\delta_K$ is 0.7–1.3 times the tensor-space value.
+  `to_dense`); the 64–128-probe $\delta_K$ is 0.7–1.3 times the tensor-space value. *Corrected
+  2026-10-10:* measured 0.54–1.11 times (median 0.78) near the lazy boundary at $\chi\ge32$ (regime-map
+  fix round 1; single runs of the large-$\chi$ sweep: 0.50–1.05), so probe-kernel lazy boundaries are
+  about 5% low. The library computes the tensor-space kernel with `ttn.diagnostics.tensor_tangent_kernel`
+  (memory-light reverse-mode version since 2026-10-10), and the lead's decision is to use it for labels
+  and $\delta_K$ wherever feasible ($N\le8$; `notes/decisions.md`).
 - **Time.** Use kernel time $\tau=\bar\lambda t$ for the lazy phase, but the deficient-bond escape needs
   $\tau\propto\sigma^{2K}$: in GF time it is $t\approx2\theta\sigma^2/\Vert T\Vert^2$ with $\theta\approx0.5$.
 
@@ -679,13 +711,25 @@ convergence $L<10^{-3}L_0$, final-rise widths, exact population GF. "Seed s.e." 
    Lazy boundary $x_c\in[2.2,2.8]$ ($\sigma_{\rm lazy}\in[1.10,1.19]$) at $\chi=32$; $[6.7,7.3]$ ($[0.81,0.83]$) at
    $\chi=64$; $[19.4,20.1]$ ($0.57$–$0.58$) at $\chi=128$; asymptotically $\sigma_{\rm lazy}=6.50\,\chi^{-1/2}$
    (not $\chi^{-1}$). At $\chi=16$ the isotropic constants fail; measured $x_c=0.44$–$0.65$.
+   *Confirmed (2026-10-10, tensor kernel; regime-map fix round 1, 6 seeds):* per-seed median
+   $\sigma_{\rm lazy}=1.131,0.937,0.821,0.661,0.571$ at $\chi=32,48,64,96,128$, inside the bracket at
+   $\chi=24$–96 and 0.06% below its lower edge at $\chi=128$; $\sigma_{\rm lazy}\sqrt\chi=6.40$–$6.56$
+   ($\chi\ge32$) against 6.50; slope $-0.504\pm0.011$ ($\chi=32$–128); 1.5–6.3% above the bracket at
+   $\chi=9$–16. The R4 form of $\delta_K$ holds near the boundary: measured/formula median 0.96
+   (0.69–1.82, 43 runs).
 6. **Two-copy** (same setting). $\delta_K=(c_2/4)x^2$ for $x\lesssim2$ (0.0041 at $\chi=32$,
    $5.1\times10^{-4}$ at $\chi=64$; measured 5–30% higher); $x_c^{(2)}=2(\delta_*/c_2)^{1/2}=4.9$, 14.0, 39.5
    and $\sigma^{(2)}_{\rm lazy}=5.16\,\chi^{-1/2}=0.91,0.65,0.46$ at $\chi=32,64,128$; the ratio
    $\sigma^{(2)}_{\rm lazy}/\sigma_{\rm lazy}\to2^{-1/3}=0.79$. $\delta_\theta^{(2)}/\delta_\theta^{(c)}=0.50$ for $x\lesssim1$.
+   *Confirmed (2026-10-10, tensor kernel):* two-copy $\sigma^{(2)}_{\rm lazy}=0.895,0.651,0.453$ at
+   $\chi=32,64,128$; ratio to the centred boundary 0.791, 0.794, 0.794; two-copy slope $-0.499\pm0.014$
+   ($\chi=32$–128).
 7. **Threshold sensitivity.** Local slope $d\ln\delta_K/d\ln x=1.5$–$1.8$ at $\delta_K=0.1$ for both
    models at $\chi\ge32$, so $\delta_*=0.05/0.2$ moves $\sigma_{\rm lazy}$ by $\times1.13$–$1.17$ / $\times0.86$–$0.89$
    ($N=4$); at $\chi=16$ (centred slope $\approx1$) by $\times1.26/0.79$.
+   *Confirmed (2026-10-10, tensor and probe kernels):* $\delta_*=0.05\to0.2$ moves the lazy boundary by
+   a factor 1.30–1.35 at $\chi\ge32$ (the slopes 1.5–1.8 above give $4^{1/(3s)}=1.29$–1.36), and by 1.97
+   at $\chi=9$.
 8. **Deficient bond, two-copy, large $\sigma$** (`bin4`, $d=3$, $\chi=3$). Plateau at
    $L/L_0=\Vert P_\perp T\Vert^2/\Vert T\Vert^2$ (computable at init; 0.558 for seed 0), then an escape that
    follows the reduced flow of R7 to within a few percent; $L$ falls linearly in $t$ at first.
@@ -725,6 +769,13 @@ convergence $L<10^{-3}L_0$, final-rise widths, exact population GF. "Seed s.e." 
     (`binary_tree(16)`, $d=2$, weights $(3,2)$, $\chi\ge16$, plain): the conjecture gives
     $\sigma_c=a_{0c}(15)/\kappa_{15}\in[0.74,0.93]$ for $\kappa_{15}\in[0.8,1]$ ($a_{0c}(15)=0.744$). Map $K=7$ in the
     plain model or with full bonds: the centred model at `bin8`, $d=3$, $\chi=3$ is floored above $\sigma=0.74$.
+    *Still a conjecture (2026-10-10).* The regime-map $K$ sweep (centred, $d=2$, $\chi=4$) resolved label
+    boundaries only up to $K=7$ (0.17, 0.49, 0.61, 0.68, 0.75 at $K=3$–7). Its $K\ge8$ values were
+    brackets from floor-stalled runs at deficient bonds ($K=8$: 1.01, 5/6 seeds; no S2S → rich crossing
+    at $K=12$, 2/6 at $K=10$). $\sigma_c^K=$ const (law A, this conjecture) and $\sigma_c^K/\sqrt D=$ const
+    (law B, $\sigma_c\to\sqrt d$) are indistinguishable: $\chi^2=0.8$ vs 0.6 on $K=4$–7 (3 dof), 7.7 vs
+    6.9 on $K=4$–10 with crossing-terminated brackets (5 dof). Regime-map round 2 (running) tests the two
+    laws in realizable problems at $d=2$ and 3 ($K\le15$; pre-registered).
 
 **Large bond dimension**
 
@@ -733,6 +784,15 @@ convergence $L<10^{-3}L_0$, final-rise widths, exact population GF. "Seed s.e." 
     $\delta_K\approx\sqrt{(c_1x)^2+(c_2x^2)^2}$, $c_1=6.32/\chi$, $c_2=11.06/\chi$ (0.240 at $\chi=64$, $x=1.11$), and
     bottom cores $xd/(3\sqrt\chi)$; muP-TTN $\delta_K\to6.2$–$6.3$, $\delta_\theta\to0.57$–$0.59$, root Frobenius change
     $\propto\chi^{-1/2}$ (0.24 at $\chi=128$) with an $O(1)$ spectral change.
+    *Confirmed for $\delta_K$ (2026-10-10, tensor kernel; centred, $\sigma=1.5$, $\chi=16$–128, 24 runs
+    per fit):* SP slope $-3.02\pm0.06$; NTK local slope $-1.01$ between $\chi=64$ and 128 with levels
+    0.250 and 0.124 (R4: 0.240, 0.120; the $\chi=16$–128 fit, $-0.79\pm0.04$, is pulled by the
+    pre-asymptotic $\chi=16$–32); muP-TTN levels 5.1, 5.7, 6.1, 6.2 at $\chi=16,32,64,128$. Root
+    exponents close to the prediction (SP $-1.02\pm0.03$, NTK $-0.93\pm0.02$, muP-TTN $-0.50\pm0.01$).
+    Caveats: under SP, $\delta_\theta$ ($-1.63\pm0.04$, 3.3 SE from $-3/2$) and the leaf cores
+    ($-2.96\pm0.07$ vs $-5/2$) are steeper than predicted at $\sigma=1.5$; at $\sigma=1$ ($x=3.74$) the
+    $\delta_K$ slopes are shallower (SP $-2.58$, NTK $-0.62$): the exponents are asymptotic in $x\to0$.
+    Binary $N=4$ only.
 17. **Matrix rule vs muP-TTN** (`bin8`, $d=2$): init kernel $\to3/(\chi^2D)$ vs $4/D$; time to halve the loss
     grows about linearly in $\chi$ under the matrix rule (geometric means 4.1, 13.3, 20.4 at $\chi=4,8,16$) and stays
     at 1.8–2.6 under muP-TTN.
@@ -750,3 +810,7 @@ convergence $L<10^{-3}L_0$, final-rise widths, exact population GF. "Seed s.e." 
     plateau at $L/L_0=\Vert T-P_ATP_C\Vert^2/\Vert T\Vert^2$, mean $1-(\chi/d^2)^2$ (0.89 at $\chi=3$; 0.918
     measured and predicted for seed 0), then the bottom cores move (rich) on a kernel time $\propto\lambda^{-2}$
     (fall to $L/L_0=0.6$ at $\tau\approx250$ and $2000$ for $\lambda=0.03$ and $0.01$), ending at the centred floor.
+    *Confirmed for $\delta_K$ (2026-10-10, tensor kernel; $\chi=16$, $\alpha=3.375$, 6 seeds):* per-seed
+    local slopes $1.97\pm0.01$ ($\lambda=0.01$–0.03) and $1.85\pm0.06$ (0.03–0.1); saturation for
+    $\lambda\ge10$ at medians 0.615, 0.598, 0.595 ($\lambda=10,30,100$; seeds 0.51–0.75), at the lower edge
+    of 0.6–0.7. The $\operatorname{tr}Q$ sign change and the deficient-bond plateau were not retested.
