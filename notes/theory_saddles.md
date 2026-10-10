@@ -757,7 +757,8 @@ one new direction the end dies iff $C_u<0$, at rate $\gamma_u=A^2\lvert C_u\rver
 $C_u=Q_{\nu\nu}+\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+(y_\parallel^2-x_\parallel^2)$, and the last term is
 $O(\sigma^3)$ after a small-init escape. The v2 quantity kept only the route entry of the partner's
 non-visible entries $Y_{\rm nv}$, which is why it over-predicts death: per run (fan-in, $k\ge4$) 36% of its
-predicted-dead runs stall, against 89% with $C_u$.
+predicted-dead runs stall, against 93% with $C_u$ (408/437, `theory_trap.md` v1.2; 89% with the v1
+$k=4$ route model, which depended on a choice of basis).
   - The route drive on a dying end is proportional to the product of the *other* route amplitudes.
     While another end stays alive, it pins the end at $x_*\approx$ drive/decay rate $\propto\sigma^{k-3}$.
   - Two dying ends: the dead state is linearly stable if $\gamma_1\gamma_2>\kappa^2$ (mutual drive
