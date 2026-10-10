@@ -18,3 +18,7 @@ Collected from agents' hand-backs; each item names where it came from. Tick off 
 8. Sec. 1, 4.4, App. A.4 placeholders for the dynamics of the saddle-order theorem: fill from saddle-dyn.
 9. Sec. 4.6: integrate the trap criterion / probability results (trap-theory agent) if they hold up.
 10. Check that no withdrawn claim is restated anywhere (abstract, intro, summary tables, captions).
+11. Sec. 2 and tab:notation: event widths w_r -> omega_r and T(Z) -> \mathcal{T}(Z) (spec additions after the Sec. 2
+    edit); add the other editors' renamed symbols to tab:notation; settle remaining clashes.
+12. Sec. 2 cuts X5, X6, X7, X9 (readability cut list) were not done because their labels are cited from 04, A, B:
+    move them once the other files are final (~1 page).
