@@ -621,6 +621,8 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   grid trim): `configs/main_extra.yaml` now lists them. `tables.sibling_pair` checks the common parent.
   `data.py` reads `REAL_DATA_DIR`. README lists chi8b.yaml, tol_check.yaml and the Fashion / chi = 8 / 8x8
   commands.
+  Phase 1 stops at the first accepted DP5 step below the 1% loss floor, so tau = 0 lies ~0.9 time units after
+  the exact crossing (MPS, sigma = 0.1; review); t1 and all gaps are differences on one clock and unaffected.
 
 ### 8.11 Unchanged (judged solid by the review, re-checked here)
 Binary first route = sibling bottom pair (k = 3) **[empirical]**; largest sibling amplitude goes first (8.3)

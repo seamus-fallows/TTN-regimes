@@ -21,6 +21,10 @@ Sections (one key each in <out_prefix>.json; markdown tables in <out_prefix>.md)
   regime        lazy floors per seed, convergence of the lazy runs, threshold sensitivity
   chi8          two-point slopes of the rank-clock gap, wall-limited runs
   clock         first-escape times t_a per seed (absolute clock), sigma = 0.1
+  repro         fix1 reruns vs committed values (quadtree t_a, final loss; MPS first-rise timing)
+  mps_reruns    35 MPS reruns (tau <= 1000): first rise at tau = 0 or resolved, per-edge power vs log fits
+  creep         loss decrease between drops relative to the next drop (binary reruns; needs --local-runs)
+  two_point_*   chi = 8 and Fashion: two-point slopes of the rank-clock gap, first rises at tau = 0
 """
 
 from __future__ import annotations
