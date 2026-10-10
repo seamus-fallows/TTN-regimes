@@ -74,7 +74,7 @@ With a log-normal tau, P_g = Phi(ln(1/rho)/(sqrt 2 sd ln tau)). The same race ap
 `notes/theory_escape.md` 5.1. For binary8 the internal cores are shared; the race built from
 single-component blow-up times is then an approximation.
 
-## 5. m = 2 at finite sigma: wrong order with probability ~ sigma^(n(1-rho)/rho)  [derived, heuristic]
+## 5. m = 2 at finite sigma: wrong order with probability ~ sigma^(n(1-rho)/rho)  [heuristic derivation; n = 1 for non-adjacent pairs, n = chi_e for adjacent pairs is a conjecture]
 
 Near B the distance from B's stable manifold grows like exp(lambda_u tau) while ln R grows at rate
 K g(B); lambda_u / (K g(B)) = (s_1 - s_2)/s_2 = (1 - rho)/rho. A trajectory entering at distance delta_0
@@ -84,18 +84,32 @@ P(wrong) ~ C sigma^(n (1-rho)/rho). Corollary: conditioned on a wrong order, the
 delta_1 = delta_0 sigma^(-(1-rho)/rho) is O(1)-distributed (roughly uniform), so the subsequent correction
 takes O(1/|lambda|), not ln(1/sigma) (section 6).
 
-## 6. H1b: correction of a wrong order through a strict saddle  [derived; Hessian checked]
+## 6. H1b: what happens after a wrong first escape  [derived; Hessians checked]
 
-At B (component 2 learned, amplitude q = s_2^(1/K) per core), adding x e_1 and y e_1 to the two
-component-specific slices in the learned bond index gives
-L - L_B = 1/2 q^(2(K-1)) (x^2 + y^2) - s_1 q^(K-2) x y + O(4), Hessian q^(K-2) [[s_2, -s_1], [-s_1, s_2]],
-lambda_min = -(s_1 - s_2) s_2^((K-2)/K) (binary4: -(1-rho) rho^(1/3)). Exact gauge-projected Hessian at
-B (library `ttn.diagnostics`): binary4, s = (0.8, 1): -0.18566 (prediction -0.18566); s = (0.5, 1):
--0.39685 (-0.39685); MPS4 odeco (m = 4): no negative eigenvalue (`notes/theory_saddles.md` 4.1 has the
-same block). Predicted sequence for m = 2: L_0 -> s_1^2/2 (wrong plateau) -> rotation of the learned bond
-index to component 1 after ln(1/delta_1)/|lambda_min| -> plateau s_2^2/2 with a_2 ~ 0 (the smaller
-component is forgotten) -> relearning of component 2 by a k-core route (binary4: k = 3, time ~ sigma^-1)
--> 0. For m >= 3 no rotation: the larger component is added in a new bond index.
+Revised after review (`notes/reviews/order_round1.md`, item 1). The answer depends on the pair, through
+m (cores carrying differing sites) and k (cores in the Steiner subtree of those sites; for m = 2, k = 2
+iff the two cores are adjacent) (`notes/theory_saddles.md` 4.3-4.4):
+
+- **m = 2, k >= 3 (non-adjacent pair; binary4, MPS cores 0,2, MPS ends): rotation.** At B (component 2
+  learned, amplitude q = s_2^(1/K) per core), adding x e_1 and y e_1 to the two component-specific slices
+  in the learned bond index gives L - L_B = 1/2 q^(2(K-1)) (x^2 + y^2) - s_1 q^(K-2) x y + O(4), so the
+  piggyback block has lambda_min = -(s_1 - s_2) s_2^((K-2)/K) (binary4: -(1-rho) rho^(1/3)). B is a strict
+  saddle; the learned bond index rotates to component 1 after ln(1/delta_1)/|lambda_min|, component 2 is
+  forgotten (a_2 -> 0), the loss sits at s_2^2/2, and component 2 is relearned by a k-core route after
+  ~sigma^-(k-2).
+- **m = 2, k = 2 (adjacent pair sharing a bond of dimension chi_e > 1): adding.** The 2-core route that
+  puts component 1 on a spare index of the shared bond has lambda = -s_1 s_2^((K-2)/K), multiplicity
+  chi_e - 1, more negative than the piggyback value (which is still present, as the chi_e-th eigenvalue).
+  Gradient flow adds component 1 on the spare index after ln(1/sigma)/(s_1 s_2^((K-2)/K)); nothing rotates
+  and nothing is forgotten (a_2 stays 1). This branch was missed in round 1 (the reviewers found it).
+- **m >= 3: no strict saddle** toward the larger component (gain O(eps^m)); the larger component is added
+  in a new bond index by a k-core route after ~sigma^-(k-2); the wrong order is kept.
+
+Checks of the eigenvalues at the exact wrong saddle (library gauge projection, fixed cut 6c42d85; raw
+values identical here): binary4 s = (0.8, 1): -0.18566, (0.5, 1): -0.39685 (both = prediction); MPS4
+cores 1,2 (k = 2), rho = 0.8: -0.89443 three times (= -s_2^(1/2), multiplicity chi_e - 1 = 3), fourth
+-0.17889 (piggyback); MPS4 cores 0,2: -0.17889 (rotation value); MPS4 odeco (m = 4): no negative
+eigenvalue.
 
 ## 7. Results
 
@@ -122,10 +136,16 @@ P(larger first), rho = 0.5 / 0.8 / 0.9 (binomial SE <= 0.025):
   approximation Phi(ln(1/rho)/(sqrt 2 sd log tau)) is within the binomial error of the race curve.
 - sd(log tau) (`main_settings.csv`): MPS d = 2, chi = 2: 0.59 / 0.93 / 1.20 for K = 4 / 6 / 8; MPS8 d = 4:
   1.19 / 0.76 / 0.66 for chi = 2 / 4 / 8 (agrees with `notes/theory_escape.md` table 2 within ~0.03).
-- d: pairs of settings with identical bonds and d = 2 vs 4 agree (chi^2 = 9.2 / 0.6 / 1.3, 6 dof, MPS4 /
-  6 / 8; binary8 3.8, 12 dof) [empirical; derived for MPS: d rescales every slice equally]. The largest
-  deviation (MPS4 d = 4, chi = 2 at rho = 0.5, 2.9 SE) was a seed-sample fluctuation: on 1500 fresh seeds
-  the race gives 0.81 and mean log(tau_1/tau_2) = -0.03 +- 0.02 (`configs/symmetry_check.yaml`).
+- d: on an MPS, d only rescales every component slice by the same factor, so it matters only through
+  the bond caps [derived]. The round-1 "chi^2 with 6 dof" comparison of d = 2 vs d = 4 settings was
+  invalid (the 6 rho rows reuse the same seeds, and d = 2 and d = 4 inits share the first core's random
+  draws; review item 6) and is withdrawn; an independent-seed test is in 7.1b.
+- Common seeds: GF P(larger first) sits 0.018 +- 0.019 below the pooled race curve on average over the
+  102 MPS (setting, rho) cells (76% negative), although the per-seed race agreement is 100%: the 400
+  seeds' realized pairs fluctuate around the all-pairs curve, and the same seeds (and shared first-core
+  draws) are reused across settings (`results/main_race_offset.csv`). On 1500 fresh seeds (MPS4, d = 4,
+  chi = 2) the offset has the opposite sign (0.81 realized vs 0.79 curve). Ranges over the m >= 3
+  settings: GF 0.60-0.88 (rho = 0.5), 0.51-0.65 (0.8); race curve 0.66-0.89 and 0.55-0.66.
 - Selection rule (O5): see section 8.
 
 ### 7.2 sigma dependence: m = 2 versus m >= 3 (complete)
@@ -139,24 +159,29 @@ Full GF (RK45 with event location, rtol 1e-9, atol 1e-14), d = 2. Commands `swee
   0.185 / 0.395 / 0.490 at rho = 0.5 / 0.8 / 0.95 for every sigma in 0.003-0.1; binary8: 0.240 / 0.4075 /
   0.4875 for every sigma in 0.01-0.1. Per seed the winner is the same at all sigma <= 0.1 for 99.0-100% of
   seeds (the few changes are at sigma = 0.3). Fitted gamma = 0.000 +- 0.004.
-- **m = 2 (binary4): P(smaller first) = C sigma^gamma** [empirical; exponent derived in section 5].
-  Fits over sigma = 1e-4..1e-2 (binomial ML, SE from a bootstrap over seeds, because the same seeds are
-  used at every sigma):
+- **m = 2 (binary4): P(smaller first) is consistent with C sigma^gamma, gamma = (1-rho)/rho**
+  [empirical; exponent from the heuristic of section 5, n = 1]. One fit range for every m = 2 set: the
+  full measured sigma range (here 1e-4..0.1; binomial ML, SE from a bootstrap over seeds because the same
+  seeds are used at every sigma); the fit over sigma <= 0.01 is given as a sensitivity check:
 
-  | rho | (1-rho)/rho | gamma, chi = 2 | gamma, chi = 4 |
+  | rho | (1-rho)/rho | gamma, chi = 2 (full; sigma <= 0.01) | gamma, chi = 4 (full; sigma <= 0.01) |
   |---|---|---|---|
-  | 0.7 | 0.429 | 0.35 +- 0.05 | 0.45 +- 0.09 |
-  | 0.8 | 0.250 | 0.232 +- 0.027 | 0.232 +- 0.028 |
-  | 0.9 | 0.111 | 0.110 +- 0.010 | 0.105 +- 0.010 |
-  | 0.95 | 0.053 | 0.045 +- 0.005 | 0.041 +- 0.005 |
+  | 0.7 | 0.429 | 0.370 +- 0.034; 0.35 +- 0.06 | 0.42 +- 0.05; 0.45 +- 0.08 |
+  | 0.8 | 0.250 | 0.237 +- 0.018; 0.232 +- 0.025 | 0.248 +- 0.018; 0.232 +- 0.028 |
+  | 0.9 | 0.111 | 0.103 +- 0.008; 0.110 +- 0.010 | 0.102 +- 0.008; 0.105 +- 0.010 |
+  | 0.95 | 0.053 | 0.042 +- 0.004; 0.045 +- 0.005 | 0.040 +- 0.004; 0.041 +- 0.005 |
 
-  Agreement within 1.5 SE for rho = 0.7-0.9; rho = 0.95 is 1.6-2.4 SE low (P(smaller first) >= 0.33 at
-  all sigma, i.e. far from the small-P regime the derivation assumes). rho = 0.5: wrong order only at
-  sigma >= 3e-3 (P = 0.033 / 0.021 at sigma = 0.1 for chi 2 / 4; 0 of 1000 at sigma <= 1e-3).
-  Wrong-order seeds at small sigma are (nearly) a subset of those at large sigma, as the threshold
-  picture (delta_0 < sigma^gamma) predicts. Values agree with the independent GF table of
-  `notes/theory_escape.md` 5.5 (rho = 0.7, d = chi = 2: 0.137 / 0.054 / 0.026 here vs their estimate
-  0.155 / 0.064 / 0.024 at sigma = 0.1 / 0.01 / 0.001).
+  Within 1.8 SE for rho = 0.7-0.9; rho = 0.95 is 2.6-3.2 SE low (P(smaller first) >= 0.33 at all sigma,
+  far from the small-P regime of the derivation). Local slopes between consecutive sigma (seed bootstrap
+  SE in `results/sigma_fits.csv`) scatter around the prediction without a trend, e.g. rho = 0.8, chi = 2:
+  0.28, 0.22, 0.22, 0.23, 0.23, 0.25 (+-0.04-0.07). The binomial deviance of the power-law fit is far
+  below its degrees of freedom (p = 0.86-1.0) because the seeds are shared across sigma, so it is only an
+  indication of an adequate fit. rho = 0.5: wrong order only at sigma >= 3e-3 (P = 0.033 / 0.021 at sigma =
+  0.1 for chi 2 / 4; 0 of 1000 at sigma <= 1e-3). The wrong-order seeds are exactly nested: every seed
+  that comes out in the wrong order at a smaller sigma does so at all larger sigma (100% in all 8 (chi,
+  rho) sets; column `nested_frac_min`), as the threshold picture delta_0 < sigma^gamma predicts. Values
+  agree with the independent GF table of `notes/theory_escape.md` 5.5 (rho = 0.7, d = chi = 2: 0.137 /
+  0.054 / 0.026 here vs their estimate 0.155 / 0.064 / 0.024 at sigma = 0.1 / 0.01 / 0.001).
 
 ### 7.3 H1b (complete)
 
@@ -221,33 +246,37 @@ P(smaller first) at sigma = 0.01 (Wilson 95% CI half-width <= 0.05):
 | 0, 1, 2, 3 | 4 | 0.33 | 0.41 | 0.47 | identical at every sigma (100% of seeds) |
 | all six (odeco, main sweep) | 6 | 0.40 | 0.46 | 0.49 | sigma-independent (section 7.2) |
 
-- **The control behaves as predicted** [empirical, derived]: the non-adjacent m = 2 pair follows
-  sigma^((1-rho)/rho) (0.429 / 0.25 / 0.111 predicted) in full GF on a K = 6 tree, i.e. it is greedy as
-  sigma -> 0; m >= 3 pairs are random and sigma-independent.
+- **The control is consistent with the prediction** [empirical; exponent heuristic]: the non-adjacent
+  m = 2 pair (n = 1) gives gamma = 0.46 +- 0.06 / 0.249 +- 0.029 / 0.101 +- 0.014 against (1-rho)/rho =
+  0.429 / 0.25 / 0.111 (full measured range 0.003-0.1, as for all m = 2 sets; local slopes in
+  `results/sigma_fits.csv`), i.e. it becomes greedy as sigma -> 0; m >= 3 pairs are random and
+  sigma-independent.
 - **P(smaller first) increases monotonically with m** at fixed tree, sigma and rho [empirical]: the more
   cores the components differ on, the more random the order (m = 3 already far from greedy).
-- **Adjacent m = 2 pairs are more greedy than non-adjacent ones**: their measured exponents (0.67, 0.22)
-  are 2.7x and 2.0x the non-adjacent ones, below the asymptotic prediction n (1-rho)/rho with n = chi_e
-  = 4 (1.0, 0.44) of `notes/theory_escape.md` 5.3 over this sigma range (their LO emulation shows the
-  same slow approach: local slope 0.24 at sigma ~ 10^-1.5 rising to ~0.45 at 1e-4 for n = 4, rho = 0.9).
-  A full-GF test down to sigma = 1e-5 on MPS4 is in 7.4b.
+- **Adjacent m = 2 pairs are steeper than non-adjacent ones**: gamma = 0.67 +- 0.09 / 0.22 +- 0.03 (rho =
+  0.8 / 0.9), 2.7x and 2.2x the non-adjacent ones, but below n (1-rho)/rho with n = chi_e = 4 (1.0 /
+  0.444), the conjectured asymptotic multiplicity of `notes/theory_escape.md` 5.3. Local slopes at
+  rho = 0.9: 0.28, 0.18, 0.20 (+-0.05) over sigma 0.1 -> 0.003, i.e. no approach to 0.444 is visible here.
 
-### 7.4b Multiplicity of the unstable directions (complete)
+### 7.4b Adjacent versus separated m = 2 pairs on MPS4, down to sigma = 1e-5 (complete)
 
 MPS4, d = 2, chi = 4 (bonds 2-4-2), full GF, 1000 seeds, sigma 1e-5..0.1 (`pat_mps4_adj.yaml`: components
-differ on the adjacent cores 1, 2, which share a bond of dimension chi_e = 4, predicted n = 4;
-`pat_mps4_sep.yaml`: cores 0, 2, n = 1). P(smaller first):
+differ on the adjacent cores 1, 2, which share a bond of dimension chi_e = 4; `pat_mps4_sep.yaml`: cores 0,
+2). P(smaller first), and gamma over the full range (seed bootstrap SE):
 
-| pair | rho | sigma = 1e-1 | 1e-2 | 1e-3 | 1e-4 | 1e-5 | gamma (seed bootstrap) | n (1-rho)/rho |
-|---|---|---|---|---|---|---|---|---|
-| separated | 0.8 | 0.263 | 0.150 | 0.085 | 0.051 | 0.029 | 0.240 +- 0.017 | 0.25 |
-| separated | 0.9 | 0.382 | 0.317 | 0.261 | 0.205 | 0.153 | 0.095 +- 0.006 (0.103 +- 0.007 at sigma <= 0.01) | 0.111 |
-| adjacent | 0.8 | 0.182 | 0.031 | 0.004 | 0 | 0 | 0.82 +- 0.06 | 1.0 |
-| adjacent | 0.9 | 0.336 | 0.189 | 0.093 | 0.035 | 0.016 | 0.31 +- 0.02 (0.35 +- 0.03 at sigma <= 0.01) | 0.444 |
+| pair | rho | sigma = 1e-1 | 1e-2 | 1e-3 | 1e-4 | 1e-5 | gamma | local slopes (decade by decade) | n (1-rho)/rho |
+|---|---|---|---|---|---|---|---|---|---|
+| separated (n = 1) | 0.8 | 0.263 | 0.150 | 0.085 | 0.051 | 0.029 | 0.240 +- 0.017 | 0.244, 0.247, 0.222, 0.245 (+-0.02-0.06) | 0.25 |
+| separated (n = 1) | 0.9 | 0.382 | 0.317 | 0.261 | 0.205 | 0.153 | 0.095 +- 0.006 | 0.081, 0.084, 0.105, 0.127 (+-0.01-0.02) | 0.111 |
+| adjacent (n = chi_e = 4?) | 0.8 | 0.182 | 0.031 | 0.004 | 0 | 0 | 0.82 +- 0.06 | 0.77, 0.89 (+-0.07, 0.23) | 1.0 |
+| adjacent (n = chi_e = 4?) | 0.9 | 0.336 | 0.189 | 0.093 | 0.035 | 0.016 | 0.31 +- 0.02 | 0.25, 0.31, 0.42, 0.34 (+-0.02, 0.03, 0.06, 0.09) | 0.444 |
 
-[empirical] The separated pair follows (1-rho)/rho; the adjacent pair's exponent is 3.2-3.4 times
-larger and still steepening (local slope 0.42 between sigma = 1e-3 and 1e-4 at rho = 0.9), consistent with
-n = chi_e = 4 as sigma -> 0 (`notes/theory_escape.md` 5.3), with a slow pre-asymptotic approach.
+[empirical] The separated pair is consistent with (1-rho)/rho (rho = 0.9: 2.5 SE low over the full range;
+its local slopes rise from 0.08 to 0.13 across the range). The adjacent pair's exponent is 3.2-3.4x the
+separated one, but it does not reach n (1-rho)/rho with n = chi_e by sigma = 1e-5, and the local slopes
+at rho = 0.9 (0.25, 0.31, 0.42, 0.34) do not show a steady approach (round 1 wrote "still steepening":
+withdrawn). **n = chi_e is a conjecture**, supported qualitatively (adjacent pairs are 2-3.4x steeper on
+MPS4 and MPS6) and by the LO emulation of `notes/theory_escape.md` 5.6, not quantitatively by GF here.
 
 ### 7.5 Over-parameterized bonds restore greedy order, slowly (complete)
 
@@ -256,13 +285,17 @@ uncapped bond dimension chi = 1..32 on every edge (`cap: false`: the end bonds e
 carry), 500 seeds per point (`sweep.py configs/chi_scan.yaml`, `analyze_chi.py`, `results/chi_scan.csv`,
 `results/chi_scan_joint_fit.csv`, `results/chi_scan.png`); GF check at chi = 16, 32 in `chi_gf.yaml`.
 
-- sd(log tau) falls like chi^-1/2 on every tree: per-tree exponents 0.48-0.54 (chi >= 4). Joint fit over
-  all trees and chi >= 2: **sd(log tau) = 0.57 (K-2)^(0.61 +- 0.03) chi^-(0.53 +- 0.01)** (rms residual 5%
-  in log) [empirical]. (`notes/theory_escape.md` 5.1 reports ~sqrt(K-2) at capped bonds.)
+- sd(log tau) falls like chi^-1/2 on every tree: per-tree exponents 0.48-0.54 (chi >= 4) [empirical].
+  The dependence on K does not separate from chi: on the MPS trees the K-exponent (fit of log sd against
+  log(K-2) at fixed chi) falls from 0.66 (chi = 1, 2) to 0.59 / 0.58 (chi = 4, 8) and 0.52 / 0.53
+  (chi = 16, 32) (`results/chi_scan_K_exponent.csv`), and binary8 sits 6% above the MPS values. So
+  **sd(log tau) ~ sqrt(K-2) / sqrt(chi) at large chi** (as `notes/theory_escape.md` 5.1 finds at capped
+  bonds); a single power law 0.57 (K-2)^0.61 chi^-0.53 fits all points to 5% rms but its +-0.03 on the
+  K-exponent comes from structured residuals and is not a real uncertainty.
 - Race P(larger first) at chi = 32: 1.00 / 0.86 / 0.70 (MPS4), 0.99 / 0.78 / 0.64 (MPS6), 0.97 / 0.73 / 0.61
   (MPS8) at rho = 0.5 / 0.8 / 0.9. With a log-normal tau, P = Phi(ln(1/rho)/(sqrt 2 sd)), so P >= 0.9 needs
-  sd <= ln(1/rho)/1.81, i.e. chi >= [1.03 (K-2)^0.61 / ln(1/rho)]^1.89 by the fit: for rho = 0.9,
-  chi ~ 160 (K = 4) and ~570 (K = 8) [extrapolation of the empirical fit].
+  sd <= ln(1/rho)/1.81, i.e. chi >= [1.03 (K-2)^0.61 / ln(1/rho)]^1.89 by the joint fit: for rho = 0.9,
+  chi ~ 160 (K = 4) and ~570 (K = 8) [rough extrapolation of the empirical fit].
 - **GF check** (sigma = 0.01, 400 seeds, `chi_gf.yaml`, `results/chi_gf.csv`): MPS4 chi = 32: P = 0.84 /
   0.68 / 0.58 at rho = 0.8 / 0.9 / 0.95 (race curve 0.86 / 0.70 / 0.60), per-seed race agreement 100%;
   binary8 chi = 32: 0.745 / 0.62 / 0.565 (race 0.72 / 0.61 / 0.55), agreement 99.5%; chi = 16 likewise.

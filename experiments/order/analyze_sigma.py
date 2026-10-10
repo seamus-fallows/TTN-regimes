@@ -119,6 +119,13 @@ def main():
                             bs.append(np.log(pa / pb) / np.log(sig[a] / sig[b]))
                     loc.append(f"{sig[a]:g}->{sig[b]:g}: {sl:.3f}+-{np.std(bs, ddof=1):.3f}")
             rec["local_slopes"] = "; ".join(loc)
+            # nesting: wrong-order seeds at a smaller sigma that are also wrong at the next larger one
+            nest = []
+            for a, b in zip(order[:-1], order[1:]):
+                small, big = wide.values[:, b] == 1, wide.values[:, a] == 1
+                if small.any():
+                    nest.append(np.mean(big[small]))
+            rec["nested_frac_min"] = min(nest) if nest else np.nan
             # asymptotic regime only (sigma <= 0.01), where P(wrong) is further from saturation
             small = wide.columns.values <= 0.01
             if wide.values[:, small].sum() >= 5 and small.sum() >= 3:
