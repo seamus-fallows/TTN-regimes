@@ -131,7 +131,10 @@ factors 4 (K = 3) to ~5000 (K = 8, chi = 6) in pilots (section 2.1).
 
 ## 2. Experiments and findings
 
-### 2.1 Pilots (throwaway scipy code, before the library landed; to be redone with the library)
+### 2.1 Pilots (throwaway scipy code, before the library landed; superseded by 2.2b, 2.2c)
+
+Kept for the record; every conclusion here was redone with the library sweeps (sections 2.2b-2.2c,
+same conclusions). Bullets after the table used the pre-fix teacher stream ([old lib]).
 
 **Library fix 57d5262** (teacher and student shared random streams) changed every teacher draw. My
 pilots before it used teacher seed 100 and init seeds 0..39, so they were never correlated with the
@@ -155,20 +158,20 @@ typical prefactor over a factor-1500 range within a factor 0.94-2.1 (the excess 
 All gradient flow with scipy DOP853 / LSODA, rtol 1e-9, atol 1e-14 sigma; correlation flow
 DOP853 rtol 1e-10. d = 4, odeco teacher seed 100.
 
-- **(P1) confirmed per seed** (empirical): t_1 sigma^{K-2} at sigma = 0.3..0.003 (binary N=4,
+- [old lib] **(P1) confirmed per seed** (empirical): t_1 sigma^{K-2} at sigma = 0.3..0.003 (binary N=4,
   K=3), 0.3..0.01 (binary N=8, MPS N=8) converges to the correlation-flow blow-up time T(theta_hat)
   to 4-5 digits (binary 4 seed 0: 0.76962 at sigma = 3e-3 vs T = 0.77021; the remaining offset
   t_1 - sigma^{-1} T = -0.198 matches c_3(3) = -0.196). The first component learned is the one whose
   correlation flow blows up first (also when it is the smallest, MPS 8 seed 1).
-- **Race model** (MPS: proven by decoupling; others: empirical): the blow-up time with only
+- [old lib] **Race model** (MPS: proven by decoupling; others: empirical): the blow-up time with only
   component r in the teacher, T_r, gives T = min_r T_r exactly for MPS (rel. diff 1e-12) and within
   1-3% for binary/HT, with the correct first component in 93-100% of 40 seeds.
-- **Typical prefactor (P3)**: median T_r / T_rms(s_r) = 1.0-1.2 (binary 4, MPS 4), 1.3-1.75 (binary 8,
+- [old lib] **Typical prefactor (P3)**: median T_r / T_rms(s_r) = 1.0-1.2 (binary 4, MPS 4), 1.3-1.75 (binary 8,
   MPS 8, HT 4), chi = 3, 40 seeds. The aligned-at-start bound (B1, full norm) is 3.5-5600x too small.
-- **chi dependence** is weak: median T for chi = 6 vs chi = 3 is lower by factors 1.2 (binary 4,
+- [old lib] **chi dependence** is weak: median T for chi = 6 vs chi = 3 is lower by factors 1.2 (binary 4,
   MPS 4) to 1.6-1.9 (binary 8, MPS 8, HT 4), much less than the (sum chi)^{-(K-2)/2} ~ 1/8 implied
   by the rho_0 picture for K = 8.
-- Seed-to-seed spread of T: coefficient of variation 0.2 (K = 3) to 0.8 (HT 4, MPS 8).
+- [old lib] Seed-to-seed spread of T: coefficient of variation 0.2 (K = 3) to 0.8 (HT 4, MPS 8).
 
 ### 2.2 Step 1: aligned init reproduces the exact mode solutions (derived; known for DLNs)
 
@@ -286,10 +289,14 @@ all K cores, theory_saddles R2):
 | mps4 | 4 | 6 | separated | 10 | 2.000 +- 0.000 | 2.001 +- 0.001 | 1.998 +- 0.001 |
 | mps4 | 4 | 3 | close | 7 | 2.000 +- 0.000 | 2.000 +- 0.001 | 2.004 +- 0.002 |
 | mps4 | 4 | 6 | close | 10 | 2.000 +- 0.000 | 2.001 +- 0.001 | 2.001 +- 0.001 |
+| binary8 | 7 | 6 | separated | 10 | 4.999 +- 0.000 | 5.020 +- 0.009 | 4.969 +- 0.022 |
+| ht4 | 7 | 6 | separated | 9 | 4.999 +- 0.001 | 5.11 +- 0.09 | 4.75 +- 0.14 |
 
 The residual deviations of the raw t_1 exponent from K - 2 (e.g. 1.005) are the predicted O(1) offset
 c_K (section 1.1): with it removed the exponent is 0.9996 +- 0.0001 (2.5). The close-teacher binary4
-gaps scatter more because transitions overlap at sigma >= 0.03. K = 7, 8: section 2.6 (pending).
+gaps scatter more because transitions overlap at sigma >= 0.03. K = 7 rows: sweep `large` (sigma 0.07-0.3,
+0.6 decade; rtol 1e-6, atol 1e-9 sigma); at chi = 3 too few K = 7, 8 runs complete (dormant suppression,
+2.7) and mps8 completes no run at either chi within budget, so no gap exponent is measured there.
 
 ### 2.5 Saddle type at plateau midpoints (empirical; theory_saddles R10)
 
@@ -300,9 +307,12 @@ second plateau, binary4 chi = 3, separated), 1.08 / 1.04 (chi = 6); mps4 2.01 / 
 teachers (no strict direction: m >= 3, or m = 2 on binary4 with the larger components learned first).
 Magnitude: ratio of lambda_min to the route formula -(K-1) s_r (s_r |a_r|)^{(K-2)/K} (theory_saddles R10,
 balanced route, A = 1 for k = K) evaluated with the measured dormant overlap: median 0.88-1.15 per cell.
-Caveat: the library's gauge projection was found to bias projected eigenvalues by up to ~20% near
-rank-deficient saddles (fix pending); slopes are unaffected; values will be recomputed, raw values are
-reported next to them (`recompute_hessians.py`).
+All values were recomputed from the saved midpoint parameters after the library's gauge-projection
+fix (6c42d85; `recompute_hessians.py`, `results/hess_*.csv`): projected and raw lambda_min agree to a
+median ratio 0.99-1.00 and give the same slopes to 0.01. K = 7 (sweep `large`, chi = 6): slopes
+5.10 +- 0.01 / 5.07 +- 0.02 (binary8), 5.14 +- 0.09 / 4.88 +- 0.11 (ht4), predicted 5; the magnitude
+ratio to the route formula is 1.4-1.7 (binary8) and 1.4-2.9 (ht4): the route is not yet balanced at
+these sigma (the balanced estimate is then too small).
 
 ### 2.7 Dormant-component suppression (lead's question; empirical unless tagged)
 
