@@ -267,6 +267,53 @@ carry), 500 seeds per point (`sweep.py configs/chi_scan.yaml`, `analyze_chi.py`,
 - So the answer to "does larger chi restore greedy order?" is yes in the limit, as for over-parameterized
   CP (Ge et al. 2021), but slowly: the spread of log escape times shrinks only like chi^-1/2.
 
+### 7.6 Step 4: three and four components (complete)
+
+Odeco teachers with weights (1, rho, rho^2[, rho^3]), rho = 0.8, 0.9, d = 4, chi = 4 (standard caps:
+every bond has dimension 4), 200 seeds; sigma = 0.05 (binary4), 0.1 (MPS4), 0.2 (MPS6), 0.25 (binary8)
+because at smaller sigma the dormant components of K >= 5 trees fall below the float64 floor. GF with
+LSODA + exact Hessian (rtol 1e-9, atol 1e-14), exact event location for every first crossing a_r = 1/2,
+stopped at L < 1e-8 L(0), at t = 1e9, or when some overlap decays below 1e-25 ("stalled": its route has
+died; any later escape would be seeded by roundoff). Per seed also the LO blow-up time tau_r of every
+component. `multi.py configs/multi.yaml` (raw: multi2), `analyze_multi.py multi2`,
+`results/multi2_summary.csv`, `results/multi2_perms.csv`, `results/multi2_orders.png`. Runs with a
+stalled component or a dormant overlap below 1e-14 before its event are excluded from the order
+statistics and counted. Model = "iid race": each component's blow-up time an independent draw from the
+pooled tau's, order = ranking of tau_r / s_r (a Thurstone-type random-utility model).
+
+**R = 3** (n used / 200; P(greedy order) GF vs iid race model; mean Kendall tau with the greedy order GF
+vs model; per-seed agreement of the full GF order with the seed's own race order):
+
+| tree (m) | rho | n used | P(greedy order) | Kendall tau | race = GF order | P(first = 1 / 2 / 3) |
+|---|---|---|---|---|---|---|
+| binary4 (2) | 0.8 | 200 | 0.70 vs 0.52 | 0.80 +- 0.02 vs 0.60 | 0.64 | 0.87 / 0.13 / 0.00 |
+| binary4 (2) | 0.9 | 200 | 0.49 vs 0.32 | 0.58 +- 0.03 vs 0.33 | 0.53 | 0.71 / 0.20 / 0.09 |
+| mps4 (4) | 0.8 | 195 | 0.35 vs 0.35 | 0.36 +- 0.04 vs 0.39 | 0.86 | 0.51 / 0.33 / 0.15 |
+| mps4 (4) | 0.9 | 195 | 0.23 vs 0.25 | 0.14 +- 0.05 vs 0.19 | 0.89 | 0.42 / 0.37 / 0.21 |
+| mps6 (6) | 0.8 | 85 | 0.25 vs 0.29 | 0.25 +- 0.06 vs 0.27 | 0.82 | 0.45 / 0.41 / 0.14 |
+| mps6 (6) | 0.9 | 88 | 0.20 vs 0.22 | 0.16 +- 0.06 vs 0.13 | 0.77 | 0.41 / 0.39 / 0.20 |
+| binary8 (4) | 0.8 | 180 | 0.23 vs 0.28 | 0.19 +- 0.05 vs 0.25 | 0.72 | 0.44 / 0.34 / 0.22 |
+| binary8 (4) | 0.9 | 177 | 0.19 vs 0.22 | 0.05 +- 0.05 vs 0.12 | 0.70 | 0.38 / 0.33 / 0.29 |
+
+- **m >= 3: the full order is a random permutation favouring large components, close to the iid race
+  (Thurstone) model** [empirical]: P(greedy order) and Kendall tau with the greedy order are within ~1-2
+  SE of the model on MPS4, MPS6 and binary8; the seed's own LO race predicts the complete order in
+  70-89% of runs (the first event in ~100% on MPS). The deviations go in the direction expected from the
+  coupling after the first escape (later components are delayed by different amounts; on MPS4 the
+  second and third escapes come 10% and up to 2x later than their LO blow-up times).
+- **binary4 (m = 2)**: much more greedy than the race model (P(greedy order) 0.71 vs 0.52 at rho = 0.8),
+  consistent with the m = 2 picture; P(first = largest) = 0.87 / 0.71 at rho = 0.8 / 0.9 (sigma = 0.05).
+
+**R = 4 with chi = R = 4 (every bond must reach full rank): gradient flow mostly stalls** [empirical].
+Stalled runs: MPS4 145/200 (rho 0.8: 149, 0.9: 140), MPS6 ~195/200, binary8 ~170/185; binary4 0/200 (a
+DLN). In stalled runs one component's overlap decays exponentially after the others are learned (the
+conservation-law trap of `notes/theory_saddles.md` section 8); the same runs integrated with the library
+integrator to t = 1e9 without a stop (abandoned `multi` run) never learn that component either (stall
+classification identical on all 1679 overlapping runs). With R = 3 < chi stalls are rare on MPS4 (2.5%)
+and binary8 (1-1.5%) but frequent on MPS6 at sigma = 0.2 (~45%). This is outside Q4 (it concerns whether
+later components are learned at all) and is passed on to `s2s-core` / `locality`: a gauge-balanced init,
+which theory_saddles reports removes the trap on HT4, was not tested here.
+
 ## 8. Status of H1 and H1b
 
 **H1 ("the first escape direction is decided by the basin of the init, so the order is random; P(largest
