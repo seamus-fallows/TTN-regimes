@@ -635,13 +635,14 @@ set, and the trapped endpoints here are reached because the conserved imbalance,
 dormant entries.
 
 \subsubsection{Provenance and corrections after review}\label{app:supp-s2s-provenance}
+{\sloppy
 The numbers of \cref{sec:s2s} come from the committed result tables of the experiments \path{s2s_core},
 \path{locality}, \path{order} and \path{regime_map} (\cref{app:reproducibility}), checked against them in two
-verification reviews per experiment and a final review of the claims. The tables of this appendix are
-\path{s2s_core/results/main_exponents.csv} (\cref{tab:s2s-gaps}), \path{order/results/sigma_fits.csv}
-(\cref{tab:order-gamma}), \path{locality/results/stall_capped_ends.csv} and \path{run_classes_by_sweep.csv}
-(\cref{tab:locality-stalls}) and \path{regime_map/results/report/stall_test_summary.csv} (\cref{tab:stall-test}),
-all under \path{experiments/}. Three numbers of \cref{sec:s2s-order} exist only in
+verification reviews per experiment and a final review of the claims. The tables of this appendix are, under
+\path{experiments/}: \path{s2s_core/results/main_exponents.csv} (\cref{tab:s2s-gaps});
+\path{order/results/sigma_fits.csv} (\cref{tab:order-gamma}); \path{locality/results/stall_capped_ends.csv} and
+\path{run_classes_by_sweep.csv} (\cref{tab:locality-stalls}); and
+\path{regime_map/results/report/stall_test_summary.csv} (\cref{tab:stall-test}). Three numbers of \cref{sec:s2s-order} exist only in
 the independent recomputation of the order experiment (scripts in \path{notes/reviews/scripts/verify_order/}): the fits
 over the three smallest values of $\isc$ (\path{v_sigma.py}, \path{v_sigma2.py}, \path{v_sigma3.py}), the paired McNemar
 comparison of each run's order with its own LO race (\path{v_multi.py}), and the margin of the stall rule of the
@@ -653,6 +654,4 @@ $\tev1\propto\norm{\params_0}^{-(\Kc-2)}$, the first guess of the research plan,
 (\cref{sec:s2s-escape}); the binary4 sequence, its $\isc^{-1}$ plateaus and its strict wrong-order saddle are known for
 deep linear networks and are reported as checks; the single-route consistency of the bond spectra is a check of the
 Steiner edges, not a prediction success rate; the law $\isc^{-(2k-6)}$ for steep MPS routes was the pilot's conjecture;
-the claims withdrawn in the reviews are not restated.
-
-
+the claims withdrawn in the reviews are not restated.\par}

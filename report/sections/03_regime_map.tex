@@ -25,7 +25,7 @@
 Which regime of \cref{tab:regimes} does a run fall into, and which parameters decide it? This section maps the
 regimes of gradient flow on the centred model over the per-core initialization scale $\isc$, the bond dimension
 $\chi$, the number of cores $\Kc$ and the imbalance between the root and the other cores (\cref{fig:regime-map});
-\cref{tab:regime-summary} at its end lists which parameter moves which boundary. On the binary tree with $\Ns=4$,
+\cref{tab:regime-summary} lists which parameter moves which boundary. On the binary tree with $\Ns=4$,
 training is saddle-to-saddle below $\isc_c\approx0.3/\sqrt\chi$, rich in a window of about 20 in $\isc$, and lazy
 above $\isc_{\rm lazy}\approx6.5/\sqrt\chi$ (values reached at $\chi\ge32$), but lazy only when every bond reaches
 its cut dimension; below it the runs end on a floor. With more cores the saddle-to-saddle boundary rises (in the
@@ -178,6 +178,43 @@ $\isc$, then turns saddle-to-saddle. Such stalls are dead routes or slow plateau
 record the spectra that tell the two apart), the failure modes of \cref{sec:s2s-failure}, which also covers
 the more frequent stalls with $\chi$ equal to the teacher rank.
 
+\begin{table}[tbp]
+  \centering
+  \caption{Which parameter moves which boundary. Gradient flow, centred model, fan-in initialization, odeco
+    teachers, six seeds per point; binary4: binary tree with $\Ns=4$, $d=3$, teacher $(3,2,1)$. Lazy boundaries
+    with the tensor kernel; predictions (in brackets) from \cref{app:boundaries}. Scope: trees with at most 16
+    sites; the $\chi$ scalings rest on one tree and less than one decade.}
+  \label{tab:regime-summary}
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}
+      >{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.65cm}@{}}
+    \toprule
+    parameter & effect & measured (predicted) & status \\
+    \midrule
+    scale $\isc$ & saddle-to-saddle, rich, then lazy or a floor & binary4: $\isc_c=0.24$ to $0.023$
+      ($\chi=3$--$128$), $\isc_{\rm lazy}=3.0$ to $0.57$ ($\chi=9$--$128$) & \empirical \\
+    bond dimension $\chi$, full bonds & both boundaries $\propto\chi^{-1/2}$ & slopes $-0.53\pm0.05$ and
+      $-0.504\pm0.011$ ($-\frac12$ for the lazy one); $\isc_{\rm lazy}\sqrt\chi=6.40$--$6.56$ ($6.50$); rich window
+      $19$--$24$ & \empirical; \derived{} (lazy constants) \\
+    $\chi$ below the cut dimension & no lazy regime, a floor & all seeds stalled from $\isc=1.0$, $1.0$, $1.6$ at
+      $\chi=3$, $4$, $6$ & \derived{} \empirical \\
+    cores $\Kc$ ($d=2$, $\chi=4$) & $\isc_c$ rises; stalls below it & $\isc_c=0.17$, $0.49$, $0.61$, $0.68$, $0.75$ for
+      $\Kc=3$--$7$; brackets near 1 for $\Kc=8$--$15$; realizable, plain model ($d=2$, $3$): no crossing in 85 of 96
+      seeds at $\Kc\ge8$, lower bounds $1.07$--$2.03$ & \empirical; \conjecture{} (limit $\sqrt d$) \\
+    root imbalance $\lambda$ at fixed $\fsc$ & light root: lazy at a $100\times$ smaller $\fsc$ &
+      $\dTK\propto\lambda^2$ (slope $1.85\pm0.06$; $1.8$--$1.9$), saturation $0.59$--$0.61$ ($0.6$--$0.7$) &
+      \empirical{} \derived \\
+    parameter\-ization, large $\chi$ & lazy (SP, NTK) or not ($\mu$P-TTN) & $\dTK\propto\chi^{-3.02\pm0.06}$ ($-3$);
+      NTK: local slope $-1.01$ between $\chi=64$ and $128$ ($-1$; full-range fit $-0.79\pm0.04$); $\mu$P-TTN: $\dTK\to6.2$
+      ($6.2$--$6.3$); \cref{sec:other-large-chi} & \empirical{} \derived \\
+    thresholds $\delta_*$, $\sep{}$ & boundaries move, labels robust & $\times1.30$--$1.35$ for $\delta_*$:
+      $0.05\to0.2$ ($1.27$--$1.36$); $\times2.14$--$2.34$ for $\sep{}$: $2\to5$ ($2.5$); at most $7.7\%$ of labels
+      change, each to a neighbouring regime; \cref{app:D-regimes} & \empirical \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
 % ===========================================================================================
 \subsection{Imbalance between cores}\label{sec:regime-imbalance}
 
@@ -207,40 +244,3 @@ moves, so the model is linear in it, while a large root freezes and leaves a deg
 Two-layer linear networks share the first effect, a lazy phase that turns rich when the features are
 incomplete, but there a large output weight also gives lazy training
 \knownresult[\citealp{kunin2024get,domine2025lazy}]; for $\Kc\ge3$ the model left by a frozen root is not linear.
-
-\begin{table}[tbp]
-  \centering
-  \caption{Which parameter moves which boundary. Gradient flow, centred model, fan-in initialization, odeco
-    teachers, six seeds per point; binary4: binary tree with $\Ns=4$, $d=3$, teacher $(3,2,1)$. Lazy boundaries
-    with the tensor kernel; predictions (in brackets) from \cref{app:boundaries}. Scope: trees with at most 16
-    sites; the $\chi$ scalings rest on one tree and less than one decade.}
-  \label{tab:regime-summary}
-  \footnotesize
-  \setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}
-      >{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.65cm}@{}}
-    \toprule
-    parameter & effect & measured (predicted) & status \\
-    \midrule
-    scale $\isc$ & saddle-to-saddle, rich, then lazy or a floor & binary4: $\isc_c=0.24$ to $0.023$
-      ($\chi=3$--$128$), $\isc_{\rm lazy}=3.0$ to $0.57$ ($\chi=9$--$128$) & \empirical \\
-    bond dimension $\chi$, full bonds & both boundaries $\propto\chi^{-1/2}$ & slopes $-0.53\pm0.05$ and
-      $-0.504\pm0.011$ ($-\frac12$ for the lazy one); $\isc_{\rm lazy}\sqrt\chi=6.40$--$6.56$ ($6.50$); rich window
-      $19$--$24$ & \empirical; \derived{} (lazy constants) \\
-    $\chi$ below the cut dimension & no lazy regime, a floor & all seeds stalled from $\isc=1.0$, $1.0$, $1.6$ at
-      $\chi=3$, $4$, $6$ & \derived{} \empirical \\
-    cores $\Kc$ ($d=2$, $\chi=4$) & $\isc_c$ rises; stalls below it & $\isc_c=0.17$, $0.49$, $0.61$, $0.68$, $0.75$ for
-      $\Kc=3$--$7$; brackets near 1 for $\Kc=8$--$15$; realizable, plain model ($d=2$, $3$): no crossing in 85 of 96
-      seeds at $\Kc\ge8$, lower bounds $1.07$--$2.03$ & \empirical; \conjecture{} (limit $\sqrt d$) \\
-    root imbalance $\lambda$ at fixed $\fsc$ & light root: lazy at a $100\times$ smaller $\fsc$ &
-      $\dTK\propto\lambda^2$ (slope $1.85\pm0.06$; $1.8$--$1.9$), saturation $0.59$--$0.61$ ($0.6$--$0.7$) &
-      \empirical{} \derived \\
-    parameterization, large $\chi$ & lazy (SP, NTK) or not ($\mu$P-TTN) & $\dTK\propto\chi^{-3.02\pm0.06}$ ($-3$);
-      NTK: local slope $-1.01$ between $\chi=64$ and $128$ ($-1$; full-range fit $-0.79\pm0.04$); $\mu$P-TTN: $\dTK\to6.2$
-      ($6.2$--$6.3$); \cref{sec:other-large-chi} & \empirical{} \derived \\
-    thresholds $\delta_*$, $\sep{}$ & boundaries move, labels robust & $\times1.30$--$1.35$ for $\delta_*$:
-      $0.05\to0.2$ ($1.27$--$1.36$); $\times2.14$--$2.34$ for $\sep{}$: $2\to5$ ($2.5$); at most $7.7\%$ of labels
-      change, each to a neighbouring regime; \cref{app:D-regimes} & \empirical \\
-    \bottomrule
-  \end{tabularx}
-\end{table}

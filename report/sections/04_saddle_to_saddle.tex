@@ -41,7 +41,8 @@ and the provenance of the numbers are in \cref{app:supp-s2s}.
   s2sbox/diff/.style={font=\footnotesize\bfseries, inner sep=1pt, text=BrickRed},
   s2sbox/label/.style={font=\scriptsize, align=center, text width=30mm},
 }
-\begin{center}
+\begin{figure}[!htb]
+\centering
 \setlength{\fboxsep}{7pt}%
 \fcolorbox{MidnightBlue!55}{MidnightBlue!3}{%
 \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
@@ -113,7 +114,7 @@ $0110$, in all 48 runs (\cref{sec:s2s-several}).
 Routes of teacher B4 after its first component ($0000$): pattern of the next component under the sites (in
 red where it differs from $0000$); orange: the cores and bonds of the Steiner subtree.
 \end{minipage}}
-\end{center}
+\end{figure}
 
 \subsection{Phenomenology}\label{sec:s2s-phenomenology}
 % Sources: notes/s2s_core.md (sections 1, 2.3-2.5, after fix round 1); s2s-core round-2 verification
@@ -708,7 +709,7 @@ $w=0.8$, from $0.86$ on MPS4 to $0.72$ on binary8, confirmed by gradient flow); 
 of tensor PCA: ``the winner is $\arg\max_r\tw rX_r^{\Kc-2}$'', $X_r$ the projection of the initialization onto the
 orbit of component $r$'s balanced rank-one configuration, names $76$--$92\%$ of the winners on the tensor-like
 settings, also out of sample (\cref{app:supp-s2s-order}). \newresult
-\knownresult[the (weight)$\times$(overlap)$^{p-2}$ rule of multi-spike tensor PCA, \citealp{benarous2025stochastic},
+\knownresult[the (weight)$\times$(overlap)$^{\Kc-2}$ rule of multi-spike tensor PCA of order $\Kc$, \citealp{benarous2025stochastic},
 Thm~1.5, and for gradient flow \citealp{benarous2025permutation}, Thm~1.3; the tensor power method,
 \citealp{anandkumar2014tensor}, Lemma~5.1; over-parameterized orthogonal tensor decomposition learns the largest
 component first, \citealp{ge2021understanding}]
@@ -827,8 +828,8 @@ end ($d=\chi=2$; \proven{} in this Gaussian model). With balanced initialization
 die at leading order, and spare bond dimension protects an end only when it reaches that end's own route edge,
 which reconciles the MPS8 stalls at $\chi=2\ncomp$ with the binary trees. \empirical{} Without any gradient flow the
 criterion separates the 3,492 fan-in locality runs with $k\ge4$ ($89\%$ of the predicted-dead runs stall, against
-$1.8\%$ of the predicted-alive ones; reproduced and recomputed independently); in the pilot, by its own collapse
-detector, 56 of 63 predicted-dead runs collapse and none of 150 predicted-alive ones; on MPS4 at $\chi=2$ all 150
+$1.8\%$ of the predicted-alive ones); in a pilot sweep with separate code (\cref{app:supp-s2s-locality}), by
+its own collapse detector, 56 of 63 predicted-dead runs collapse and none of 150 predicted-alive ones; on MPS4 at $\chi=2$ all 150
 predicted-dead runs stall or die, and none of the other 344. For the odeco teachers the trap is predicted from the
 state after the second escape (19 of 20 MPS4 runs, the twentieth stalling with a barely live end; 8 of 10 HT4
 runs), not from the initialization. Known failures: $k=4$ with spare inner channels, where the reduced route model

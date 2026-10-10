@@ -549,9 +549,9 @@ Each run, trained up to time $T$, receives one label (\cref{tab:regimes}).
 \emph{Stalled} is an umbrella label (\cref{tab:regimes}); its four causes fall into three
 subclasses. \emph{Dead route} (trap): an end of the route that the next component needs has its slice
 at roundoff. The route's drive is a product over its cores, so it cannot escape, and the run stays at
-a partial fit. The proposed mechanism is the conservation-law trap (\cref{prop:A-trap}, \derived{} in
-a reduced model): on a long plateau the conservation laws can make an end's slice decay at a rate
-$\propto\isc^2$ (tests and open conflicts: \cref{sec:s2s-failure}). \emph{Slow}: every route is live,
+a partial fit. The mechanism is the conservation-law trap (\cref{prop:A-trap}; \derived{} in a reduced
+model): on a long plateau a conserved quantity of each route end decides whether its slice decays, at a
+rate $\propto\isc^2$ ($\propto\isc^4$ at HT and binary leaves; tests and known gaps: \cref{sec:s2s-failure}). \emph{Slow}: every route is live,
 but the budget ends first, on a plateau longer than the time budget (a route of $k$ cores needs a time
 $\propto\isc^{-(k-2)}$) or at the step limit (unfinished lazy fits at full bonds, some deep-tree runs).
 \emph{Floor}: in the centred model with a bond below its cut dimension, the target $\Wt+\W(\params_0)$
