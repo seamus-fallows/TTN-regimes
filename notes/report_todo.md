@@ -45,3 +45,10 @@ Collected from agents' hand-backs; each item names where it came from. Tick off 
 28. Trap: Sec. 4 failure-modes paragraph and Sec. 1 finding 7 from notes/reviews/trap_verification.md (safe to cite);
     apply its errata to notes/theory_trap.md too.
 29. saddle-dyn: fill the placeholders in Sec. 1, Sec. 4 (k* subsection) and App. A.4 when it reports and is verified.
+30. Trap k = 4 fix (notes/theory_trap.md v1.2, Prop. 3; verification notes/reviews/trap_k4_verification.md pending).
+    If verified: Sec. 4 89% -> 93%, drop "k = 4 with spare inner channels" from the known failures; D_s2s 408/457 ->
+    408/437, alive 38/2,101 -> 38/2,121, k = 4 203/232 -> 203/212 and 5/796 -> 5/816, stall diagnosis 30/6/2 -> 30/4/2
+    and 2/56/0 -> 2/58/0, "56 false alarms" -> 36, delete "MPS4 at chi = 4: 20 of 46", "30 of 38 ... 7 of 126" ->
+    "30 of 36 ... 7 of 128"; prop:A-trap (iv) wording (one new direction on each END edge; spare inner directions enter
+    only through <beta1,beta2> and |beta1|^2+|beta2|^2); MC MPS4 {0,3} chi = 4 P(dead) 0.09/0.08 -> 0.05/0.05.
+31. notes/theory_saddles.md lines ~46, 815, 1071-72, 1084-85 still carry the old k = 4 restriction or 408/457.
