@@ -23,3 +23,7 @@ Checkpoint 2026-10-10 ~10:05 UTC: about **$30** spent (estimate: ~$29 at 08:52 U
 recorded here at each stop or delete. Sessions that ended: locality $2.19 (6.25 h), regime-map $6.45 (6.23 h),
 real-data $1.69 (3.25 h); all three stopped themselves and cannot restart yet (stopped disks ~$1.6/day together).
 Running fix rounds: s2s-core ($0.74/h), order ($0.84/h), data-teacher ($0.47/h).
+
+Sessions ended 2026-10-10 midday: s2s-core fix round $0.43 (0.58 h; DELETED after verified copy), real-data restart
+$0.16 (0.32 h; DELETED after verified copy). regime-map restarted (queued start succeeded) at $1.04/h for the raw copy.
+Running: order ($0.84/h, fix round), data-teacher ($0.47/h, errata pass). Estimated total so far: about $32.

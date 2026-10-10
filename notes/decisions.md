@@ -93,3 +93,23 @@ here too.
 - **Report writing in parallel worktrees.** Separate local agents for Sec. 5.5 (optim-samples), Sec. 2 polish,
   Appendix A trim, and a citation / prior-work audit, each editing disjoint files on its own branch; the lead
   merges. Sections 3, 4.1, 4.3, 5.1-5.4 and 6 wait for the corresponding fix rounds.
+
+## 2026-10-10 (midday) — Event rules, prior work, new theory tasks
+
+- **Spectral-event rules are documented as implemented** (Sec. 2, notes/diagnostics.md): (a) onset f = 0.05 of the
+  teacher value (recommended; locality bond events, data-teacher v2), (b) half the teacher value (optimizers,
+  data-teacher correlated inputs), (c) last half-crossing of the final value (library default `spectral_events`).
+  Appendix B states the rule per experiment. The library is not changed (it would silently change old summaries).
+- **Prior-work audit** (notes/reviews/citation_check.md): five results tagged new have prior or concurrent work (Adam
+  eps law, EoS two-cycle amplitude, KKT balance, per-init blow-up identity, k >= 3 head start). They are re-tagged as
+  known (or "TTN form / closed form new"); Appendix A tags are aligned with the verified theory notes (heuristic ->
+  conjecture or empirical-with-heuristic-mechanism). The report must not overclaim novelty.
+- **Real data:** the review's optional extra-order test is run locally (light: <= 8 processes, ~1.5 h) and
+  PRE-REGISTERED in notes/real_data.md: does the k <= 5 route-amplitude share predict the final loss across >= 20 random
+  and 6 structured pixel orders (seeds averaged per order; Spearman with bootstrap CIs over orders)?
+- **New theory tasks (local):** (1) prove the lower bound saddle order = k* (open in theory_saddles section 11) or find
+  a counterexample, numerics first; (2) a "saddle hopper" that predicts the whole saddle sequence from the theory and is
+  scored against the committed runs of locality, s2s-core, data-teacher and order without tuning.
+- **Machines:** s2s-core and real-data deleted after byte-verified copies (real-data's 45 remote symlinks are listed in
+  data/real_data/SYMLINKS_on_remote.txt; all targets were copied). regime-map restarted on its own (queued start):
+  copy its raw outputs for the local fix round, then delete.
