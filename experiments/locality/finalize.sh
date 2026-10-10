@@ -3,6 +3,8 @@
 # configs/) into a given directory, without touching the committed results unless that directory is given.
 # Order: (1) run.py for each config (README), (2) predict_sequences.py, (3) this script.
 # usage: finalize.sh <output_dir> [workers]       raw records: $LOCALITY_OUT (default /root/outputs/locality)
+# Trajectories: the path stored in each record, else $LOCALITY_OUT/traj/<file> (analysis.load_records), so a
+# local copy needs only LOCALITY_OUT. The script stops at the first failing step.
 set -euo pipefail
 [ $# -ge 1 ] || { echo "usage: $0 <output_dir> [workers]"; exit 1; }
 R=$(realpath -m "$1")
@@ -12,7 +14,10 @@ cd "$(dirname "$0")/../.."
 O=${LOCALITY_OUT:-/root/outputs/locality}
 C=experiments/locality/configs
 X=experiments/locality
-py() { uv run python "$@" 2>&1 | grep -v -i "warn" || true; }
+# Python warnings are silenced (also in worker processes); errors stay on the terminal and stop the script
+py() {
+  PYTHONWARNINGS=ignore uv run python "$@" || { echo "finalize.sh: step failed: python $*" >&2; exit 1; }
+}
 
 # Hessians at every plateau midpoint: raw and fixed gauge projection (needed by the tables)
 py $X/hess_recompute.py $O/twocomp $O/twocomp_balanced $O/twocomp_chi4 $O/robust $O/k5ext $O/khigh $O/lambda2K \

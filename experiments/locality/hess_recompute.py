@@ -89,14 +89,15 @@ def main():
     args = ap.parse_args()
     recs = [r for r in load_records(args.inputs) if r.get("traj") and r.get("plateaus")
             and r.get("status") not in ("timeout", "error", "stalled")]
-    old = pd.read_csv(args.out) if Path(args.out).exists() else None
-    done = set(zip(old["_key"], old["j"])) if old is not None else set()
-    recs = [r for r in recs if (r["_key"], 0) not in done]
+    # no resume: an existing output file is overwritten (resumed rows kept Hessians of superseded runs)
+    if not recs:
+        sys.exit(f"no run records with plateaus in {args.inputs} (set LOCALITY_OUT)")
+    missing = [r["traj"] for r in recs if not Path(r["traj"]).exists()]
+    if missing:
+        sys.exit(f"{len(missing)} of {len(recs)} trajectories not found, e.g. {missing[0]} (set LOCALITY_OUT)")
     with Pool(args.workers) as pool:
         rows = [x for xs in pool.imap_unordered(measure, recs, chunksize=8) for x in xs]
-    df = pd.DataFrame(rows)
-    if old is not None:
-        df = pd.concat([old, df], ignore_index=True)
+    df = pd.DataFrame(rows).sort_values(["_key", "j"])
     df.to_csv(args.out, index=False)
     print(len(df), "plateau Hessians")
 

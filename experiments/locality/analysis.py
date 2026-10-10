@@ -14,6 +14,7 @@ config (`config=`), so every table is regenerable from the configs.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -84,7 +85,9 @@ def config_keys(config_paths):
 def load_records(paths, config=None):
     """Records from .jsonl files or from runner prefixes (<prefix>.part<pid> files). A run retried after
     an error / timeout appears more than once: its last record is kept. With `config` (list of YAML
-    paths) only runs of those configs are kept (provenance: tables regenerable from committed configs)."""
+    paths) only runs of those configs are kept (provenance: tables regenerable from committed configs).
+    Records store the trajectory path of the machine that ran them (/root/outputs/locality/traj/...);
+    where that file does not exist, `traj` points to $LOCALITY_OUT/traj/<file> (a copy of the raw outputs)."""
     import glob
     recs = []
     for path in paths:
@@ -95,6 +98,10 @@ def load_records(paths, config=None):
     for i, r in enumerate(recs):
         last[r.get("_key", i)] = r
     recs = list(last.values())
+    traj_dir = Path(os.environ.get("LOCALITY_OUT", "/root/outputs/locality")) / "traj"
+    for r in recs:
+        if r.get("traj") and not Path(r["traj"]).exists() and (traj_dir / Path(r["traj"]).name).exists():
+            r["traj"] = str(traj_dir / Path(r["traj"]).name)
     if config:
         keys = config_keys(config)
         recs = [r for r in recs if r.get("_key") in keys]
