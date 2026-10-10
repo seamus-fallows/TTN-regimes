@@ -264,6 +264,22 @@ slow, the grid is cut from the small end and the range reached is reported; wind
    ~1e-5 with the escape resolved). The steps are now log-spaced in both t and t_esc - t.
    For one code version, H-B is rerun as well (its second attempt is in
    `/root/outputs/saddle_dyn_HB_try2_quadrature/`). Final sweeps started 16:21.
+7. **Runs without outcome rerun with an in-solver reference switch (18:04; numerics only).** In the
+   final sweeps 88 runs (H-A, H-B and checks) ended at the 3600 s wall cap or with a solver failure.
+   Two causes: the machine was oversubscribed (each worker inherited a 64-thread BLAS pool; load
+   ~250 on 192 cores), and, more importantly, a stall: the fresh LSODA started on the plateau after the
+   re-reference of item 6 can stay in nonstiff (Adams) mode with its step pinned at the stability
+   limit of the learned directions (PS08 seed 7, eps = 1e-4: h = 0.093 constant, t = 1.4e3 after
+   15000 steps), because nothing on the plateau triggers its stiffness switch. Fix: no new solver at
+   the plateau. H-A: one solver from theta_S + eps xi; at t = 200 the reference becomes the rank-one
+   old part of the current state (index-0 entries; no re-gauge is needed, the O(eps) gauge shift sits
+   in new entries). H-B: the orthogonal re-gauge is applied at t_v (fast dynamics), and the reference
+   switches to the old part of the converged state 50 units later, in the same solver. The 88 runs
+   (moved to `/root/outputs/saddle_dyn_unfinished_try3/`) are rerun with this driver, same tolerances
+   and cap, BLAS pinned to one thread; the ~2700 runs that had finished keep their results (a stall
+   costs time, not accuracy; the rerun of previously stalled runs reproduces finished values: PS08 seed
+   0, eps = 1e-2, t_esc to 3e-10; H-B PS08 seed 7, dt = 211.8845). Files record `driver = "switch"`.
+   Not outcome-selective: every run without an outcome was rerun, and nothing else.
 
 # Part II: results
 

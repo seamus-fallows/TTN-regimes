@@ -31,3 +31,4 @@ Pending.
 - 15:55 LSODA time-resolution failures at t ~ 1e13+ fixed by local-clock restarts; sweeps resumed
 - 16:21 H-A re-reference after relaxation, small first step on restarts, floor-index quadrature fixed; earlier attempts set aside; final H-A and H-B sweeps started
 - 17:06 H-B done except 10 long runs; PS08 from small init: 14 seeds fitted, gamma = 2.0017 +- 0.0008 (SUPPORTED); PS06 control: 7/12 seeds learn the residual pair first (the verifier's q-first test misclassifies these); H-A at 831/1836; checks running
+- 18:04 stall found (fresh LSODA on a plateau stays nonstiff); in-solver reference switch; 88 runs without outcome rerun (deviation 7)
