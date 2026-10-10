@@ -800,3 +800,148 @@ binary8 Adam runs recorded only every 10 steps, and the first finite-sample swee
 (\texttt{implicit\_bias\_b4}, 288 runs, one data draw per initialization). The pilots
 (\texttt{pilot\_calib}, \texttt{pilot\_trap}) support no claim. Raw trajectories (one file per run,
 2.2\,GB) are not in the repository; \cref{app:reproducibility} says how to regenerate them.
+
+\subsection{Real data}\label{app:exp-real-data}
+Settings of \cref{sec:real-data}. Experiment folder \path{experiments/real_data/} (README with every command
+in order; YAML configurations in \path{configs/}); findings in \path{notes/real_data.md}, whose section 8
+(fix round) supersedes its sections 4--7 and whose section 9 holds the pre-registered order test; review
+in \path{notes/reviews/real_data_round1.md}.
+
+\paragraph{Data and model.}
+MNIST (torchvision mirror) and Fashion-MNIST, fetched and downsampled by \path{download.py}: images cropped
+to the central $24\times24$ pixels and block-averaged to $4\times4$ ($6\times6$ blocks) or $8\times8$ ($3\times3$ blocks),
+intensities in $[0,1]$. Tasks: MNIST 3 ($y=+1$) against 5 ($y=-1$); Fashion-MNIST sneaker (7) against ankle
+boot (9), chosen before any run for a visible shape difference at $4\times4$. Balanced subsamples of 4000
+training and 1600 test images, data seed 0. Site features $\feat{}(x)=(\cos\frac{\pi x}2,\sin\frac{\pi x}2)$
+(\emph{raw}), or per site $A_i\feat{}$ with $A_i\E[\feat{}\feat{}\T]A_i\T=\Id$ (\emph{white}; uncentred second moment,
+eigenvalues floored at $10^{-3}$ of the largest), which keeps the function class. Model
+$f(x)=\ip{\W}{\bigotimes_i\feat{}(x_i)}$ and loss $\frac1{2\nsamp}\sum_j(f(x_j)-y_j)^2$; in the regime sweep the
+centred model trains $f-f_0$. Trees from \path{data.make_tree}: binary16 ($\Kc=15$) and MPS16 ($\Kc=16$),
+binary64 ($\Kc=63$) and MPS64 ($\Kc=64$) for $8\times8$ images; $\chi=4$ ($8$ in one sweep, where the bottom bonds
+are capped at 4 by their two-pixel cut). Pixel orders (\path{data.pixel_order}; site $s$ carries pixel
+$\mathrm{order}[s]$, pixels numbered row by row): quadtree (Morton key, column bit lowest), snake
+(boustrophedon rows), scrambled$k$ (random permutation from \path{numpy.random.default_rng}$(k+12345)$),
+and for the order test quadtreeT (Morton order of the transposed image), rowmajor, colmajor, hilbert
+(Hilbert curve) and mortonrev (site $s$ carries the pixel whose Morton key is $s$ with its bits
+reversed). Fan-in initialization \eqref{eq:init} at per-core scale $\isc$ with initialization seeds
+0--4, independent of the data seed. Double precision, one thread per process.
+
+\paragraph{Dynamics} (\path{run.py}).
+Phase 1: Dormand--Prince 5(4) with relative and absolute tolerances $10^{-8}$ and $10^{-14}$, the clock
+re-anchored ($t\to0$, offset kept) whenever an accepted step is shorter than $10^{-9}t$, so that escapes at
+$t\sim10^{15}$--$10^{20}$ are resolved; it stops at the first accepted step at which the loss has fallen
+by $1\%$ of $\Loss(0)$ (time $t_a$). Phase 2: LSODA with the same tolerances on the clock $\tau=t-t_a$, with the
+Gauss--Newton part of the Hessian (closed-form per-sample Jacobians) as Newton matrix, up to
+$\tau=10^4$ ($3000$ for $8\times8$ images; $\min(3000,10^4$ kernel units$)$ in the regime sweep, a kernel unit
+being $128/\tr\TK$ at $t_a$). Records: 30 logarithmic times per decade, 1000 linear times (600 for $8\times8$)
+and the library's fine rows, merged for every event time. Conservation drift (cumulative, relative to
+the largest squared core norm) at most $4.6\cdot10^{-8}$, median $1.8\cdot10^{-9}$ over the 234 main runs.
+Two cases rerun with tolerances $10^{-10}$ and $10^{-16}$ (\texttt{tol\_check}) agree in $t_a$ to 7 digits, in
+the final loss to 6, and in later drop times to $0.1\%$; the first drop ($\tau\approx10$--$15$) moves by
+$0.2$--$0.8$ time units, below every gap reported.
+
+\paragraph{Events and analyses.}
+\begin{itemize}
+  \item \emph{Loss drops} (\path{analysis.py}): peaks of $-\dd\Loss/\dd t$ that stand out by a factor 3
+    against the minima separating them from higher peaks and lower the loss by at least $1\%$ of
+    $\Loss(0)$; time: the peak; width: its full width at half maximum. Widths by progress (from $10\%$ to
+    $90\%$ of a drop) are not used, since the loss creeps between drops and such widths measure the
+    creep. Separation ratios and the S2S signature as in \cref{sec:setup-diagnostics}, with these drops.
+  \item \emph{Data-weighted bond spectra} (\path{data.function_spectra}): across edge $e$ the network
+    computes $f(x)=\sum_au_a(x)v_a(x)$, with messages $u_a$ from below the edge and $v_a$ from above it; the
+    Schmidt values are the square roots of the eigenvalues of $G_u^{1/2}G_vG_u^{1/2}$, where $G_u$ and $G_v$
+    are the Gram matrices of the two messages on the training set. They are gauge invariant and equal
+    the Frobenius spectra under a product law with identity second moments (checked to
+    $2\cdot10^{-12}$). Frobenius spectra are not used: after the escape $\normF{\W}$ grows to
+    $10^6$--$10^7$ along directions the data barely see.
+  \item \emph{Rank events}: $\bs ek/\bs e1$ crossing $0.05$ (log-interpolated); an edge belongs to a drop if
+    it crosses inside the drop's half-maximum window widened by one width on each side. Crossings already
+    met at $\tau=0$ are flagged as unresolved.
+  \item \emph{First-route gaps} (\path{scaling.py}): gap $=$ drop 1 $-$ drop 0 on the $\tau$ clock; a route's
+    drop is the one whose widened window contains its rank crossing, and points where it rose between
+    drops, merged with drop 0, or where another route rose first are excluded with their reason. Clean
+    series: one (order, seed) whose first route, one sibling pair, rises inside drop 1 at every $\isc$, with at
+    least four $\isc$ over at least half a decade (11 series); full sweep: 91 of the 124 binary points
+    kept (16 between drops, 2 merged, 15 another route first), 10 seed series. Fits per seed: power law
+    by least squares in $\ln g$, log law and $A/\isc+B$ by weighted least squares with weights $1/g$; all
+    compared by the relative rms residual.
+  \item \emph{MPS edges}: time of each edge's first rise after the first drop, per seed over the seven
+    $\isc$, both laws fitted with relative residuals (\path{scaling.py}, \texttt{edge\_scaling}).
+  \item \emph{Route amplitudes} (\path{route_amplitudes.py}). A binary TTN of bond rank one computes
+    $f=c\prod_vq_v$, $q_v=g_v\cdot\Feat_v$, over its bottom cores $v$, $\Feat_v$ the features of the two pixels
+    of $v$. For a pair $(u,w)$ of bottom cores, with the residual $r_j=f(x_j)-y_j$ and $h_{uw}=c\prod_{v\ne u,w}q_v$,
+    \begin{equation}\label{eq:real-route-amplitude}
+      \mu_{uw}=\norm{P_uM_{uw}P_w}_2,\qquad
+      M_{uw}=\frac1\nsamp\sum_jr_j\,h_{uw}(x_j)\,\Feat_u(x_j)\Feat_w(x_j)\T,
+    \end{equation}
+    with $P_u=\Id-g_ug_u\T/\norm{g_u}^2$; $k_{uw}$ is the number of cores of the tree path from $u$ to $w$.
+    Evaluated for all 28 pairs at the plateau midpoint (minimum of $\norm{\dot\params}$ between the first
+    two drops, reached by re-integrating from the end of phase 1). States farther than $0.05$ (relative) from a rank-one product are
+    dropped (28 of 124). Units (\path{analysis.route_units}): rank-one states of the same (order, seed)
+    whose normalized patterns $\mu_{uw}^2/\sum\mu^2$ differ by less than $0.2$ in total variation and whose
+    plateau losses differ by less than $0.01$; 96 states form 26 units in the 20 (order, seed) pairs.
+  \item \emph{Hessians} (\path{plateau_hessians.py}): exact Hessian (dense residual tensor) at the
+    plateau midpoint (minimum $\norm{\dot\params}$ between the first two drops), raw and gauge-projected
+    (\cref{sec:setup-diagnostics}); exponents per seed over the runs at the common plateau level
+    ($\Loss\in[0.265,0.275]$ binary, $[0.225,0.235]$ MPS; $[0.31,0.345]$ on Fashion-MNIST, pooled).
+  \item \emph{Regime sweep} (\path{regime_analysis.py}): kernel on the first 128 test images; labels by
+    \cref{tab:regimes} without the convergence rule, which no $\chi=4$ network meets on 4000 labels (lazy if
+    $\dTK(T)<0.1$; S2S if at least two drops, all $\sep{}>3$; rich otherwise); the linearized model at
+    $\params(t_a)$ in closed form, with its floor $\Loss_{\rm lin}(\infty)$.
+  \item \emph{Order test} (\path{order_predictor.py}, \path{order_test.py}; registered analysis): the
+    best rank-one fit $f=\prod_vg_v\cdot\Feat_v$ of the labels from 32 starts (start $i$: unit $g_v$ from
+    \path{default_rng}$(1000+i)$, 50 steps of higher-order power iteration on $\frac1\nsamp\sum_jy_j\bigotimes_v\Feat_v(x_j)$,
+    rescaling to the least-squares amplitude, then alternating least squares until the relative loss
+    change is below $10^{-12}$ or 2000 sweeps), the lowest-loss fit balanced, $S$ from
+    \eqref{eq:real-route-amplitude} at that state; outcomes O1 (mean over seeds of $\Loss(10^4)$) and O2
+    (mean of $\log_{10}\tau(\Loss\le0.25)$ on the running minimum, censored at $10^4$); Spearman $\rho$ over
+    orders, percentile bootstrap intervals (10,000 resamples of orders) and two-sided permutation
+    $p$-values (10,000 permutations of $S$).
+\end{itemize}
+
+\paragraph{Sweeps and run counts.}
+\Cref{tab:exp-real-data}; 507 runs of the experiment's own configurations, plus the round-1 reviewers'
+runs with the same code (among them 11 binary runs in nine orders and three MPS chains in other orders,
+$\isc=0.1$, seeds 0 and 1; local copy \path{data/review_real_data/}), which enter only where the text says
+``review runs''. The main, regime, Fashion-MNIST, $\chi=8$ and $8\times8$ sweeps ran on one 64-core machine
+(about 60 processes, as the runs are bound by memory bandwidth); the fix-round reruns and the order test
+ran locally (the order test: 8 processes, 70 minutes).
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the experiment of \cref{sec:real-data}: configuration files in the folder
+    \texttt{configs/} of the experiment. Raw features and $\chi=4$ unless stated; scrambled orders are
+    random pixel orders on binary16.}
+  \label{tab:exp-real-data}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm}X
+      >{\raggedright\arraybackslash}p{3.7cm}r@{}}
+    \toprule
+    configuration & problem & $\isc$, seeds & runs \\
+    \midrule
+    \texttt{main} (+\texttt{main\_extra}) & MNIST 3/5, $4\times4$: quadtree, snake MPS, scrambled0, scrambled1,
+      scrambled2 (raw); quadtree, MPS, scrambled0 (white) & 7 values $0.05$--$0.5$ (scrambled1: 4, and 3 more
+      in \texttt{main\_extra}; scrambled2: 4; white: 5); 0--4 & 220 + 14 \\
+    \texttt{regime} & centred model, quadtree & $0.5$, $0.7$, $1$, $1.4$, $2$, $2.8$, $4$; 0--4 & 35 \\
+    \texttt{fashion} & Fashion-MNIST 7/9: quadtree, snake MPS, scrambled0 & $0.05$, $0.14$, $0.5$; 0--4 & 45 \\
+    \texttt{chi8}, \texttt{chi8b} & $\chi=8$: quadtree, snake MPS, scrambled0 (one sweep, two runners) &
+      $0.05$, $0.14$, $0.5$; 0--4 & 45 \\
+    \texttt{img8} & $8\times8$ images ($\Ns=64$): quadtree, snake MPS, scrambled0; $\tau\le3000$ & $0.1$, $0.3$; 0, 1 & 12 \\
+    \texttt{tol\_check} & tolerances $10^{-10}$, $10^{-16}$: quadtree, MPS & $0.1$; 0 & 2 \\
+    \texttt{fix1\_local} & reruns: four binary orders to $\tau=10^4$; MPS phase 1 & $0.1$; 0--4 & 25 \\
+    \texttt{fix1\_mps} & reruns: snake MPS, $\tau\le1000$ & as \texttt{main}; 0--4 & 35 \\
+    \texttt{extra\_orders} & order test: 27 orders on binary16 (7 runs reused) & $0.1$; 0--2 & 74 (+7) \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Checks and exclusions.}
+The fix-round reruns reproduce the committed main-sweep values: $t_a$ to $7\cdot10^{-15}$ (relative) and the
+final loss to 5 digits for the quadtree at $\isc=0.1$, and the timing of the first MPS rise within $0.07$ time
+units (median $0.01$). The round-1 review reproduced the first-plateau times to about $10^{-15}$, the gaps
+within $1.3\%$ and the Hessians and route amplitudes within $4\%$, and an independent reimplementation
+agreed. Excluded: the first-route points of other routes (above) and the 28 route-amplitude states that
+are not near rank one. The round-0 claims superseded by the fix round are listed in
+\path{notes/real_data.md}, section 8.13. Raw outputs (about 0.8\,GB, plus 0.2\,GB of local reruns; local
+copies \path{data/real_data/} and \path{data/real_data_local/}) are not in the repository; the JSON
+summaries in \path{results/} suffice to redraw the figures of \cref{sec:real-data}.

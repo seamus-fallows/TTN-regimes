@@ -106,6 +106,17 @@
       \texttt{r2\_corr\_fits.csv} (\texttt{analyze\_r2\_corr.py}), \texttt{float\_floor\_check.csv}
       (\texttt{check\_float\_floor.py})
       & \texttt{e4a\_sigma}, \texttt{e2\_sigma}, \texttt{r2\_corr.py} \\
+    \ref{fig:real-gaps} & \texttt{uv run python experiments/real\_data/\allowbreak make\_figures.py -{}-json
+      experiments/real\_data/results experiments/real\_data/results} draws this figure
+      (\texttt{first\_route\_gaps}) and the next from committed JSON only, here \texttt{fix1\_analysis.json}
+      (\texttt{fix1\_analysis.py}, from \texttt{events\_table.json} and the run summaries of
+      \texttt{summarize.py}; order of all steps in the experiment's README)
+      & \texttt{main}, \texttt{fix1\_local}, \texttt{fix1\_mps} (\cref{tab:exp-real-data}), review runs;
+      local copies \texttt{data/real\_data/}, \texttt{data/real\_data\_local/} \\
+    \ref{fig:real-order} & as above; table \texttt{order\_test.json} (\texttt{order\_test.py}, with the
+      predictor \texttt{extra\_orders\_predictor.json} written by \texttt{order\_predictor.py} before the
+      runs)
+      & \texttt{extra\_orders}; \texttt{main} for the secondary analysis \\
     \bottomrule
   \end{tabularx}
 \end{table}
