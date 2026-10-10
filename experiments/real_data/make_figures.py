@@ -693,7 +693,7 @@ def fig_order_test(order_json, out):
     names = {
         "new_random": "new random orders",
         "structured": "structured orders",
-        "old_random": "round-0 random (secondary)",
+        "old_random": "main-sweep scrambled (secondary)",
     }
     fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.4 * TEXT_WIDTH), sharex=True)
     for ax, key in ((axes[0], "O1"), (axes[1], "O2")):
@@ -738,7 +738,7 @@ def fig_order_test(order_json, out):
         r = res["primary"]["all"][key]
         lo, hi = r["ci95"]
         ax.set_title(
-            rf"all 27 orders: Spearman $\rho={r['rho']:.2f}$ $[{lo:.2f}, {hi:.2f}]$",
+            rf"all 27 orders: Spearman $r_S={r['rho']:.2f}$ $[{lo:.2f}, {hi:.2f}]$",
             fontsize=8,
         )
         ax.set_xlabel(r"predictor $S$ (share on $k\leq5$ routes, best rank-1 fit)")
