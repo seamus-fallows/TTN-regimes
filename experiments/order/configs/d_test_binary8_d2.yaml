@@ -1,0 +1,12 @@
+# d test with independent seeds (review item 6): binary:8, d = 2, chi = 4 (the same bond dimensions for
+# d = 2 and d = 4), seeds 200000+ (disjoint from every other run, so no shared random draws).
+name: d_test_binary8_d2
+trees: ["binary:8"]
+d: [2]
+chi: [4]
+rho: [0.5, 0.8]
+sigma: [0.01]
+seeds: 1000
+seed0: 200000
+proxies: false
+lo_race: false

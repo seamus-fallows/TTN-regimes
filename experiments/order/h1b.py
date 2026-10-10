@@ -33,6 +33,7 @@ from scipy.optimize import brentq, minimize_scalar
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (  # noqa: E402
+    default_procs,
     single_thread,
     RAW as OUT,
     RES,
@@ -83,7 +84,7 @@ def event_crossings(spec, teacher, sol, r):
     return out, a
 
 
-def analyse(spec, teacher, sol, rho):
+def analyse(spec, teacher, sol, rho, pred_kind="rotation"):
     loss, _ = loss_grad_fn(spec, teacher)
     t_end = sol.t[-1]
     a1x, a1_steps = event_crossings(spec, teacher, sol, 0)
@@ -136,13 +137,20 @@ def analyse(spec, teacher, sol, rho):
             tm = res.x
             ev, gauge_rank, raw = projected_hessian(spec, teacher, sol.sol(tm))
             q = rho ** (1.0 / spec.n_cores)
+            lam_rot = -(1 - rho) * q ** (spec.n_cores - 2)  # piggyback rotation (m = 2, k >= 3)
+            lam_add = -q ** (spec.n_cores - 2)  # adding the larger component on a spare bond index
+            # (k = 2 route: adjacent pair; multiplicity chi_e - 1), notes/theory_saddles.md 4.3
+            pred = {"rotation": lam_rot, "add": lam_add, "none": 0.0}[pred_kind]
             rec["eigs"] = ev.tolist()
             rec.update(t_mid=tm, loss_mid=loss(torch.from_numpy(sol.sol(tm))).item(),
                        a_mid=overlaps(spec, teacher, sol.sol(tm)).tolist(),
                        grad_mid=res.fun, lam_min=ev[0], lam_2=ev[1], lam_max=ev[-1],
                        lam_min_raw=raw[0], lam_2_raw=raw[1], lam_max_raw=raw[-1],
                        n_neg=int((ev < -1e-3 * ev[-1]).sum()), gauge_rank=gauge_rank,
-                       lam_pred=-(1 - rho) * q ** (spec.n_cores - 2))
+                       lam_pred=pred, lam_pred_rot=lam_rot, lam_pred_add=lam_add,
+                       n_near_add=int(np.sum(np.abs(ev - lam_add) < 0.02 * abs(lam_add))),
+                       n_near_rot=int(np.sum(np.abs(ev - lam_rot) < 0.02 * abs(lam_rot))),
+                       lam_3=ev[2], lam_4=ev[3])
             # loss on the plateau after the rotation (if any): minimum speed between t1 and re-up
             if np.isfinite(rec["a2_reup"]):
                 res2 = minimize_scalar(speed, bounds=(t1, rec["a2_reup"]), method="bounded")
@@ -161,7 +169,7 @@ def job(args):
     else:
         y0 = saddle_init(spec, teacher, rho, sigma, seed)
     sol = gf_trajectory(spec, teacher, y0, t_max=cfg.get("t_max", 1e9))
-    rec, traj = analyse(spec, teacher, sol, rho)
+    rec, traj = analyse(spec, teacher, sol, rho, cfg.get("prediction", "rotation"))
     rec.update(kind=cfg["kind"], n=cfg["n"], d=cfg["d"], chi=cfg["chi"], rho=rho, sigma=sigma,
                seed=seed, mode=cfg["mode"], status=sol.status, wall=time.time() - t0)
     out = OUT / cfg["name"]
@@ -173,7 +181,7 @@ def job(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
-    ap.add_argument("--procs", type=int, default=int(os.environ.get("PROCS", 90)))
+    ap.add_argument("--procs", type=int, default=default_procs())
     args = ap.parse_args()
     cfg = yaml.safe_load(open(args.config))
     (OUT / cfg["name"]).mkdir(parents=True, exist_ok=True)

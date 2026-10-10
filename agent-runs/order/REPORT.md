@@ -1,6 +1,6 @@
 # order: which teacher component a TTN learns first, and how random the order is (Q4, H1, H1b)
 
-Status: done - Branch: agent/order - Updated: 2026-10-10 02:56 UTC
+Status: working - Branch: agent/order - Updated: 2026-10-10 02:56 UTC
 
 ## Summary
 Asked: is incremental learning in TTNs greedy (largest component first) or decided by the init, on
@@ -180,3 +180,4 @@ numbers. Needed to redraw figures: everything except `pilots/`, `multi/` and `ma
 - 00:12 Step 4 restarted as multi2: own LSODA + exact Hessian with exact event location for every crossing and a stall stop (some overlap < 1e-25), instead of the library integrator, because stalled runs (frequent at chi = R = 4) otherwise integrate to t_max through denormals for hours. The partial log-grid run (multi, 1678 jobs) is abandoned (kept in /root/outputs/order/multi).
 - 01:13 Integrator check (tol_check.py, 4 trees x 100 seeds, rho 0.8, sigma 0.01): rtol 1e-9 vs 1e-11 give the same winner in 400/400, |dt1|/t1 < 8e-10, conservation drift at the event < 4e-11 (default) / 4e-13 (tight). Multiplicity test done (adjacent m=2 pair exponent 3.2-3.4x the separated one, steepening toward n = chi_e = 4).
 - 02:56 Final: all sweeps done except 17 slow multi2 runs (still integrating; not in the tables). Report, notes (notes/order.md) and README complete.
+- 10:00 FIX ROUND (review notes/reviews/order_round1.md) started. Code: slice-norm stall criterion (gf_trajectory, gf_events), --raw/--res propagated to spawned workers, default worker count = cgroup CPUs, run_queue.sh passes --raw/--res. Launched: H1b on MPS4 adjacent/separated pairs (saddle + natural), m >= 3 saddle starts on MPS6 and binary8, multi3 (R = 3 rerun with slice criterion), multi_nostop (R = 4, MPS6/binary8, no stall stop).

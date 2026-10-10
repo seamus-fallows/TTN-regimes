@@ -1,0 +1,12 @@
+# R = 4 = chi without any stall stop (review item 4): MPS6 and binary8, 12 seeds, integrated to
+# t = 1e9; records which components are learned by then.
+name: multi_nostop
+trees: ["mps:6", "binary:8"]
+d: [4]
+chi: [4]
+R: [4]
+rho: [0.8]
+sigma: {"mps:6": 0.2, "binary:8": 0.25}
+t_max: 1.0e+9
+stall_stop: false
+seeds: 12

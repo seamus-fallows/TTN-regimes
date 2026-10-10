@@ -1,0 +1,15 @@
+# H1b scope: natural wrong-order runs (random init) of the MPS4 pattern pair, non-adjacent cores 0, 2 (m = 2, k = 3): predicted rotation, lambda_min = -(s1-s2) s2^((K-2)/K), smaller component forgotten and relearned.
+# Seeds whose first event was the smaller component in the pat_mps4_sep sweep.
+name: h1b_natural_mps4_sep
+mode: natural
+from_sweep: pat_mps4_sep
+kind: mps
+n: 4
+d: 2
+chi: 4
+pattern: [[0, 0, 0, 0], [1, 0, 1, 0]]
+prediction: rotation
+rho: [0.8, 0.9]
+sigma: [0.01, 0.001, 0.0001]
+max_seeds: 40
+t_max: 1.0e+9
