@@ -1,6 +1,6 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-Status: working - Branch: agent/regime-map - Updated: 2026-10-09 23:47 UTC
+Status: working - Branch: agent/regime-map - Updated: 2026-10-10 00:53 UTC
 
 ## Summary
 Task: phase diagrams of saddle-to-saddle (S2S) / rich / lazy dynamics over init scale sigma, bond
@@ -164,3 +164,5 @@ Other interim findings (N = 4):
 - 22:38 N = 8 runs 10-30+ min each and N = 4 studies queued behind them: restarted as two pools (N = 4: 140 procs; heavy: 215 procs) with trimmed N = 8 grids (sigma >= 0.3 at K = 7, chi = 12 dropped at d = 3, MPS 10 dropped from the full-bond set)
 - 23:25 heavy pool was spending its slots on K >= 10 stall runs; restarted it with the N = 8 maps and K <= 8 first (220 procs); K >= 10 slices (step cap 1e4) chained to start when the N = 4 pool ends
 - 23:45 plain-model K sweep: at large sigma the run first collapses W_0 (loss / (1/2||W*||^2) from 187 to ~1 by t ~ 0.1 at K = 15, sigma = 1.36) and then learns saddle-to-saddle from the small residual scale, so the plain-model S2S region extends beyond sigma = 1 (binary 16, chi = 4: S2S 5/6 at sigma = 1.36) - not a test of H4; added a centred K sweep at d = 2 (sigma_K_centred_d2), chained after the N = 4 pool
+- 00:35 chi_b4 (N = 4, chi = 9..128, partial): lazy boundary 0.903 / 0.769 / 0.627 / 0.535 at chi = 48 / 64 / 96 / 128 vs theory P5 6.50 chi^-1/2 = 0.938 / 0.812 / 0.663 / 0.575 (two-copy 0.87 / 0.61 / 0.42 vs 0.91 / 0.65 / 0.46); threshold ratio 1.30-1.33 (P7); S2S boundary also ~chi^-1/2 at large chi: both collapse in sigma sqrt(chi) (S2S ~0.28, lazy ~6.1)
+- 00:45 large_chi_b4 (partial): exponents of delta_K vs chi: SP -2.95 +- 0.16 (theory -3), NTK -0.76 +- 0.11 (-1), muP-TTN +0.15 +- 0.16 (0)
