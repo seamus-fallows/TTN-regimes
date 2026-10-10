@@ -39,6 +39,7 @@ features unless stated; sigma = 0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5; seeds 0-4.
 | regimes S2S -> rich -> lazy | S2S <= 0.3, mixed 0.5-1, rich 1.4, lazy >= 2; lazy L(T) = linearized L_lin(T) (0.151); kernel rank 304 = R2 formula | yes |
 | (Fashion-MNIST sneaker vs boot) same structure | t1 exact; first two rising edges siblings 15/15, 14/15; a rank-1 strict saddle (lambda_min ∝ sigma^0.03±0.09) left by a rank-preserving rotation; no locality advantage (task ~solved at rank 1) | yes / locality: no |
 | (chi = 8) same structure | t1 exact; sibling first route 14/15 (both binary orders), MPS single edge 15/15; k = 3 gap exponent 1.17 ± 0.06 (quadtree, sigma 0.05-0.14); locality as at chi = 4 | yes |
+| (8x8 images, N = 64) same structure | t1 exponents 61.0000 / 62.0000 (K - 2); sibling first route 4/4, 4/4; MPS single edge 4/4; quadtree > scrambled, MPS best | yes |
 | integrator accuracy | drift <= 4.6e-8 (234 runs); 100x tighter tolerances: drop times within 0.1-0.9 units, L(T) to 6 digits | ok |
 
 Figures (`experiments/real_data/results/`): `loss_curves_raw` (train/test per tree and sigma),
@@ -57,7 +58,8 @@ Figures (`experiments/real_data/results/`): `loss_curves_raw` (train/test per tr
 5. Analyses: per-run summaries, classified scaling fits, route amplitudes (124 runs), plateau Hessians (67 runs),
    tables and figures (commits after bb33029).
 6. Regime sweep: 35 centred runs (`configs/regime.yaml`) + 30 plain runs; linearized reference.
-7. Robustness: chi = 8 (45 runs), Fashion-MNIST sneaker vs ankle boot (45 runs), 8x8 images (12 runs): running.
+7. Robustness: Fashion-MNIST sneaker vs ankle boot (45 runs), chi = 8 (45 runs, two runners), 8x8 images (12 runs),
+   tolerance check (2 runs at 100x tighter tolerances), Fashion plateau Hessians (30 runs).
 
 ## Decisions
 - **Task: MNIST 3 vs 5 (+-1), n_train = 4000, n_test = 1600, 4x4** (central 24x24 crop, 6x6 block means).
@@ -118,7 +120,7 @@ All under `/root/outputs/real_data/` (~0.6 GB; none in git):
 | `data/` | 65 MB | raw IDX files + 4x4 / 8x8 npz (`download.py`) | yes (or re-download) |
 | `main/` | 367 MB | 234 trajectories of the main sweep (npz: phase-1/2 rows, spectra, theta at phase ends) + `runs.jsonl` | yes for every main-sweep number |
 | `regime/` | 68 MB | 35 centred-model trajectories | yes for the regime map |
-| `chi8/`, `fashion/`, `img8/`, `tol_check/` | (running) | robustness sweeps | for section 7 of the notes |
+| `fashion/` (45), `chi8/` + `chi8b/` (24 + 21; `chi8_runs/` = symlinks to both), `img8/` (12), `tol_check/` (2) | ~250 MB | robustness sweeps | for section 7 of the notes |
 | `analysis/` | 2 MB | summaries, route amplitudes, Hessians, regime analysis (JSON; copies of the small ones in `experiments/real_data/results/`) | regenerable from the runs |
 | `pilot/`, `smoke*/` | 38 MB | development runs (pre-final settings) | no |
 | `main_placeholders.txt`, `old/` | - | list of trimmed cases; logs of the killed launches | no |

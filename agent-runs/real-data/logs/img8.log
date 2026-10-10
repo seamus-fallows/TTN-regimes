@@ -9,3 +9,5 @@
 {"name": "mnist8_3v5_n4000_raw_mps_snake_chi4_s0.1_seed1", "status": "completed", "wall": 10135.1}
 {"name": "mnist8_3v5_n4000_raw_binary_quadtree_chi4_s0.1_seed1", "status": "completed", "wall": 10142.7}
 {"name": "mnist8_3v5_n4000_raw_mps_snake_chi4_s0.1_seed0", "status": "completed", "wall": 10143.2}
+{"name": "mnist8_3v5_n4000_raw_binary_quadtree_chi4_s0.3_seed0", "status": "completed", "wall": 10271.6}
+{"name": "mnist8_3v5_n4000_raw_binary_scrambled0_chi4_s0.3_seed1", "status": "completed", "wall": 10276.6}

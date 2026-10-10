@@ -276,7 +276,8 @@ pixels and moves the small-init asymptote to smaller sigma.
 | regimes: S2S -> rich -> lazy with sigma (H4) | S2S (sigma <= 0.3), mixed (0.5-1), rich (1.4), lazy (>= 2), lazy = linearized fit exactly; kernel rank = R2 formula | yes | `regime_sweep`, `regime_analysis.json` |
 
 ## 6. Caveats and open points
-- One dataset pair (MNIST 3 vs 5) at 4x4 for the main claims; chi = 8, Fashion-MNIST and 8x8 checks: section 7.
+- One dataset pair (MNIST 3 vs 5) at 4x4 for the scaling claims; chi = 8, Fashion-MNIST (sneaker vs boot) and
+  8x8 checks in section 7 support the structural results but have too few sigma values for exponent fits.
 - Events are judged from loss-rate peaks and threshold crossings of data-weighted spectra (s_k/s_1 = 0.05), not
   from teacher overlaps; later events can merge and their routes are only partly identified.
 - The horizon tau = 1e4 cuts the later escapes at sigma < 0.1 (k >= 5 routes need ~1e4-1e5), which lowers the
@@ -316,3 +317,9 @@ pixels and moves the small-init asymptote to smaller sigma.
   0.05-0.5: 0.79 ± 0.28). Locality as at chi = 4: quadtree vs scrambled L(tau_end) = 0.158 vs 0.220
   (sigma = 0.05), 0.096 vs 0.176 (0.14). At sigma = 0.5 scrambled fits the training set better (0.055 vs
   0.079) but generalizes worse (test loss 0.111 vs 0.088). The MPS is fastest at small sigma (0.088 / 0.080).
+- **8x8 images (N = 64; binary64 K = 63, mps64 K = 64)** [empirical; 12 runs: 3 trees x sigma in {0.1, 0.3} x
+  seeds {0, 1}, tau <= 3000; `results/img8_tables.md`]. t1 exponents 61.0000 (binary, 4 seed-tree pairs) and
+  62.0000 (MPS), with t1 up to 1e73 (re-anchored clock). The first two rising edges are siblings in 4/4
+  quadtree and 4/4 scrambled runs; the MPS starts on a single edge (edge 20) in 4/4. Locality at tau = 3000:
+  quadtree L = 0.16-0.25 (test acc 0.84-0.91) vs scrambled 0.25-0.27 (0.83-0.86); the MPS is again best
+  (0.08-0.12, acc 0.95-0.98). Too few runs for scaling fits; the structure is unchanged at N = 64.
