@@ -762,38 +762,43 @@ independent test. Its accumulated-utility slopes (\cref{prop:A-agf-race}) for te
 saddle match five plateaus within $3.5\%$ \empirical.
 
 \begin{proposition}[Conservation-law trap]\label{prop:A-trap}
-  \derived{} (mechanism, in a reduced model) \newresult[the route-end condition; in the landscape, a point
-  that is not of minimum norm, with dead leaf columns and live core entries, can be a spurious local
-  minimum: \citealp{furman2026benign}, Thm~G.1; related: dormant weights shrink outside the stable set of a
-  KKT point, \citealp{kumar2025early}, Lemma~2; a conserved quantity decides which side of a unit can vanish,
-  \citealp{kunin2025alternating}, Lemma~B.1; in deep linear networks balanced initialization keeps the
-  leading-order flow from converging to a saddle, \citealp{jacot2022saddletosaddle}, App.~C.1]
-  Let a route end at a leaf core, on the bond $e$ (child $v$, parent $p$); let $\nu$ be the new channel used by
-  the route, $Q_{\nu\nu}=\nu\T\Q{e}\nu$, $x$ the leaf's new column, and split the parent's slice along $\nu$ into
-  its route entry $y_{\rm route}$ and the \emph{visible} entries $y_{\rm vis}$, which connect through the other side
-  to learned structure. Conservation gives $\norm{x}^2-\norm{y_{\rm vis}}^2-\norm{y_{\rm route}}^2=Q_{\nu\nu}$. On the
-  plateau the Gauss--Newton term makes $x$ and $y_{\rm vis}$ decay together, at a rate of order
-  $\abs{Q_{\nu\nu}}=O(\isc^2)$, so the leaf column decays to zero iff the end is \emph{unfavourable},
-  $Q_{\nu\nu}+\norm{y_{\rm route}}^2<0$. The route's drive on $x$ is proportional to the product of the other route amplitudes, so while another
-  end is favourable it pins $x$ at a positive value and the route escapes, slowly. In the reduced model a
-  permanent stall ($x\to0$ down to roundoff) therefore requires every end of the route to be unfavourable.
+  \proven{} (the normal blocks; (i) within the reduced flow; the identity in (ii)) \derived{} (the reduced flow,
+  the remainder in (ii), (iii), (iv)) \newresult[the normal-visible blocks, the identity for $C_u$, the rule
+  $k\ge2j$ and the two-end criterion; that a conserved quantity decides which side of a unit can vanish is
+  \citealp{kunin2025alternating}, Lemma~B.1, and (i) is that statement for a route end; related: dormant weights
+  shrink outside the stable set of a KKT point, \citealp{kumar2025early}, Lemma~2; in deep linear networks
+  balanced initialization keeps the leading-order flow from converging to a saddle,
+  \citealp{jacot2022saddletosaddle}, App.~C.1; a non-min-norm point can be a spurious local minimum,
+  \citealp{furman2026benign}, Thm~G.1]
+  One learned component (rank-one plateau). Let a route end at core $u$, with route neighbour (partner) $w$
+  on the bond $e$, and let $X_u^\perp$, $X_w^\perp$ be their new-index blocks whose physical index is normal to the
+  learned pattern; only these pay a Gauss--Newton cost on the plateau. (i) In the reduced flow that keeps
+  them, $C_u=X_u^{\perp\top}X_u^\perp-X_w^{\perp\top}X_w^\perp$ is conserved and $X_u^{\perp\top}X_u^\perp\to[C_u]_+$: the end's route
+  entry survives iff $C_u$ has a positive eigenvalue (one new direction on $e$: iff $C_u>0$). (ii) After a
+  small-initialization escape $C_u=Q_{\nu\nu}+\norm{Y_{\rm nv}}^2-\norm{X_{\rm nv}}^2+O(\isc^3)$, with $Q_{\nu\nu}=\nu\T\Q e\nu$ on
+  the route's new direction $\nu$ and $X_{\rm nv}$, $Y_{\rm nv}$ the new entries of $u$ and $w$ that pair with nothing
+  at second order. (iii) An end with visible degree $j$ ($j=2$ if the partner carries sites, $3$ at an HT or
+  binary leaf of a rank-one saddle) decays at a rate $\propto\isc^{2(j-1)}$, so it can kill its route only if
+  $k\ge2j$; routes with $k\le3$ never trap (0 stalls in 5,744 runs \empirical). (iv) For $2j<k\le5$, as $\isc\to0$, a
+  route with at least two dying ends is dead, and a single dying end is pinned at an amplitude $\propto\isc^{k-3}$;
+  at $k=2j$ ($k=4$, $j=2$) decay and drive are of the same order, and a $\isc$-free reduced model of the route
+  decides (where every route edge has one new direction).
 \end{proposition}
-With two unfavourable ends, the dead state is linearly stable if the product $\mu_1\mu_2$ of their decay
-rates, $\mu_i\sim\abs{Q_i}\sim\isc^2$, exceeds the square of their mutual drive, of order $\isc^{k-2}$ (\conjecture,
-heuristic): stable as $\isc\to0$ for $k\ge5$, never for $k=3$. On HT leaf bonds
-($\bd v=d=2$ below a parent bond of dimension $3$) fan-in initialization gives $Q_{\nu\nu}=\isc^2(X_2/2-X_6/4)$ ($X_n$
-independent chi-squared, $n$ degrees of freedom; $\nu$ independent of the initialization), so
-$\E Q_{\nu\nu}=-\isc^2/2$; then $P(Q_{\nu\nu}>0)\approx0.30$ and about half of the two-ended routes have both ends
-unfavourable (\conjecture, heuristic). Data \empirical{} (HT $\Ns=4$, teacher B4, $\isc=0.2$, nine fan-in
-initializations): all 6 runs with all ends unfavourable stalled with dead leaves, the 2 with one
-favourable end had the other end pinned; balanced initialization ($\Q{e}=0$, same $\Wz$) kept the routes
-alive (3 of 3, before the random streams were separated). \conjecture: balanced initialization always
-avoids the trap (a property of unbalanced initialization, not of the landscape; in another model, four-layer
-matrix factorization of a target with equal singular values, exactly balanced initialization fails to
-converge with probability at least $\frac12$, \citealp{luo2025global}, Thm~2), and for $k\ge5$ the
-stalled fraction tends to $P(\text{all ends unfavourable})$ as $\isc\to0$. The locality experiments contradict
-parts of this picture (dead runs with a live route end, no stall in 144 fan-in HT4 runs with $k=5$;
-\cref{sec:s2s-failure}).
+(i) holds in full gradient flow too (checked); the identity in (ii) is exact up to its remainder. Gap: from
+$k=6$ on, three-core clusters of inner route cores decay at a rate $\propto\isc^4$ and are a further death
+channel, which (iv) does not cover; the escape of a pinned route after $\propto\isc^{-(2k-6)}$ is a \conjecture,
+untested, and unsupported for $k\ge6$ (a full gradient-flow run with $k=6$ decays instead). The plateau-start
+state is $\isc$ times a function of the initialization direction, so whether a run traps depends on its
+direction, not on $\isc$ \derived. With one new direction on the end edge and fan-in noise at a saddle start,
+an end dies with probability $I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$ ($I$ the regularized incomplete beta function, $F$
+the fan-ins, $n$ the numbers of physical directions normal to the learned pattern): $0.392$ at an MPS end that
+is a tree leaf and $0.5$ at the root end for $d=\chi=2$ \proven{} (exact in this Gaussian model; checked). At an
+end bond capped at $d\ge3$ the edge has $d-1$ new directions and death needs $C_u\le0$ on all of them: about
+$0.023$ ($d=3$) and $1.5\cdot10^{-4}$ ($d=4$) \empirical{} (Monte Carlo). With balanced initialization ends that are
+tree leaves cannot die at leading order \derived{} (no balanced odeco run traps, 0 of 150, though 69 of 150
+stall \empirical); ends with extra legs still can, and in four-layer matrix factorization exactly balanced
+initialization can fail \citep[Thm~2]{luo2025global}. Tests and failures: \cref{sec:s2s-failure,app:supp-s2s-trap};
+statements and proofs: \path{notes/theory_trap.md}, verified in \path{notes/reviews/trap_verification.md}.
 
 % ===========================================================================================
 \subsection{Saddle order: lower bound and sharpness}\label{app:saddle-order}
@@ -939,9 +944,10 @@ multi-core node; with several, e.g.\ HT with $\Ns=4$ and $D$ all sites, a couple
 must align in sign, not checked), so the escape takes a time $\propto\isc^{-(2\ell-2)}$ instead of $\isc^{-(k^*-2)}$
 once it beats the route. On the
 counterexample, gradient flow from $\params_S$ plus a perturbation of size $\isc$ escapes in $\propto\isc^{-2}$ along
-$110000$ (local exponents $1.98$ to $2.04$ at the smallest $\isc$, 5 seeds). From small initialization only some
-seeds visit $\params_S$; in those the $\isc^{-2}$ law sets in at a seed-dependent $\isc$, and gradient flow then
-forgets $j$, learns the pair $r_1$, $r_2$ (loss $\frac12\tw j^2$) and relearns $j$ \empirical. In the matched control
+$110000$ (local exponents $1.98$ to $2.04$ at the smallest $\isc$, 5 seeds; these runs timed only the escape).
+From small initialization only some seeds visit $\params_S$; in those the $\isc^{-2}$ law sets in at a
+seed-dependent $\isc$, and gradient flow then forgets $j$, learns the pair $r_1$, $r_2$ (loss $\frac12\tw j^2$) and
+relearns $j$ \empirical{} (seen from small initialization only). In the matched control
 (weights $0.6$, order $5$) the small-initialization exponents are about $3$ in some seeds and about $4$ in others
 (unexplained; compare the steep MPS routes of \cref{sec:s2s-failure}), and 2 of 12 seeds end with dead routes
 \empirical.
@@ -1082,8 +1088,8 @@ routes join two sibling bottom cores through their parent ($k=3$): escapes from 
 polynomial even for generic teachers, and the root bipartition grows only after both halves (bottom-up
 order); two-core routes can open later on bottom edges, never for the root bipartition. (iii) Odeco and
 pattern teachers suppress two-core routes by orthogonality, so power-law later plateaus need components
-orthogonal on the relevant site blocks; for nearly orthogonal ones (overlaps below a crossover
-$c_\times=O(\isc)$ up to logarithms) they persist at accessible $\isc$ (\conjecture, heuristic). Checked on one
+orthogonal on the relevant site blocks; for nearly orthogonal ones (overlaps $\cos\phi$ below a crossover
+of order $\isc$, up to logarithms) they persist at accessible $\isc$ (\conjecture, heuristic). Checked on one
 random CP teacher: strict saddles with logarithmic gaps on MPS $\Ns=4$, $\lambda_{\min}\propto\isc$ and gaps
 $\propto\isc^{-1}$ on the binary tree.
 
@@ -1207,11 +1213,11 @@ and then realign to $\U r$ without an extra plateau (the TTN form of the early a
 reverse the order. It also opens routes of degree below $k^*$ \derived, with couplings of order $\epsilon^{n_{\rm out}}$ at
 per-site misalignment $\epsilon$ ($n_{\rm out}$ sites outside the route).
 
-\paragraph{Cross-site correlations.} In the one-factor model $x^{(i)}=\sqrt{1-c}\,z_i+\sqrt c\,z_0$, with
-independent $z_0,\dots,z_\Ns\sim\Normal(0,\Id_d)$, every marginal is standard and two sites have covariance $c\Id$.
-(i) \proven{} \newresult[the model is the standard one-factor Gaussian model; new: its tree
-contraction] Given $z_0$ the sites are independent with second moments $M_i(z_0)=(1-c)\Id+cz_0z_0\T$, so
-$\Loss=\E_{z_0}[\frac12\norm{\W-\Wt}^2_{\otimes_iM_i(z_0)}]$, a polynomial of degree $2\Ns$ in $z_0$, is exact by
+\paragraph{Cross-site correlations.} In the one-factor model $x^{(i)}=\sqrt{1-c}\,z_i+\sqrt c\,z$, with
+independent $z,z_0,\dots,z_{\Ns-1}\sim\Normal(0,\Id_d)$ (common factor $z$), every marginal is standard and two
+sites have covariance $c\Id$. (i) \proven{} \newresult[the model is the standard one-factor Gaussian model; new:
+its tree contraction] Given $z$ the sites are independent with second moments $M_i(z)=(1-c)\Id+czz\T$, so
+$\Loss=\E_{z}[\frac12\norm{\W-\Wt}^2_{\otimes_iM_i(z)}]$, a polynomial of degree $2\Ns$ in $z$, is exact by
 Gauss--Hermite quadrature with $(\Ns+1)^d$ product-metric tree contractions; a site-aligned component has
 the weight $\Lambda_{\rm eff}(c,\Ns)=\sum_{n=0}^{\Ns}\binom{\Ns}{n}(1-c)^{\Ns-n}c^n(2n-1)!!$. (ii) \derived{} The first plateau survives
 for every $c<1$ (the origin is a degree-$\Kc$ critical point for any input law; rank-constrained critical

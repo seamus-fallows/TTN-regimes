@@ -69,9 +69,9 @@ Teacher and initialization draw from independent random streams: the teacher's g
 that a teacher and an initialization with equal seeds share no Gaussian draws. Before this separation
 (library commit 57d5262), equal seeds made a random TTN teacher proportional to the student's
 initialization and tied an odeco teacher's first site basis to the first core; experiment runs from
-that time support no claim and were discarded or rerun (each subsection lists its exclusions), and two
-numerical checks of the theory that predate the separation are marked as such in
-\cref{rem:A-wrong-order,prop:A-trap}. Initialization seeds are consecutive integers, the same at every
+that time support no claim and were discarded or rerun (each subsection lists its exclusions), and a
+numerical check of the theory that predates the separation is marked as such in \cref{rem:A-wrong-order}.
+Initialization seeds are consecutive integers, the same at every
 $\isc$ of a sweep, so that a seed fixes the initialization direction while $\isc$ varies.
 
 \paragraph{Initializations.}
@@ -1246,7 +1246,7 @@ There are no teacher components; events are loss drops and rank events (\cref{ta
     series: one (order, seed) whose first route, one sibling pair, rises inside drop 1 at every $\isc$, with at
     least four $\isc$ over at least half a decade (11 series); full sweep: 91 of the 124 binary points
     kept (16 between drops, 2 merged, 15 another route first), 10 seed series. Fits per seed: power law
-    by least squares in $\ln g$, log law and $A/\isc+B$ by weighted least squares with weights $1/g$; all
+    by least squares in $\ln g$, log law and $A/\isc+t_0$ by weighted least squares with weights $1/g$; all
     compared by the relative rms residual.
   \item \emph{MPS edges}: time of each edge's first rise after the first drop, per seed over the seven
     $\isc$, both laws fitted with relative residuals (\path{scaling.py}, \texttt{edge\_scaling}).
@@ -1274,20 +1274,20 @@ There are no teacher components; events are loss drops and rank events (\cref{ta
     $\params(t_a)$ in closed form, with its floor $\Loss_{\rm lin}(\infty)$.
   \item \emph{Order test} (\path{order_predictor.py}, \path{order_test.py}; registered analysis): the
     best rank-one fit $f=\prod_vg_v\cdot\Feat_v$ of the labels from 32 starts (start $i$: unit $g_v$ from
-    \path{default_rng}$(1000+i)$, 50 steps of higher-order power iteration on $\frac1\nsamp\sum_jy_j\bigotimes_v\Feat_v(x_j)$,
-    rescaling to the least-squares amplitude, then alternating least squares until the relative loss
-    change is below $10^{-12}$ or 2000 sweeps), the lowest-loss fit balanced, $S$ from
-    \eqref{eq:real-route-amplitude} at that state; outcomes O1 (mean over seeds of $\Loss(10^4)$) and O2
-    (mean of $\log_{10}\tau(\Loss\le0.25)$ on the running minimum, censored at $10^4$); Spearman correlation $r_S$
-    over orders, percentile bootstrap intervals (10,000 resamples of orders) and two-sided permutation
-    p-values (10,000 permutations of $S$).
+    \path{default_rng}$(1000+i)$, 50 steps of higher-order power iteration on the label tensor
+    $Y=\frac1\nsamp\sum_jy_j\bigotimes_v\Feat_v(x_j)$, rescaling to the least-squares amplitude, then alternating least
+    squares until the relative loss change is below $10^{-12}$ or 2000 sweeps), the lowest-loss fit balanced, the
+    share $\mathcal S$ of $\sum_{uw}\mu_{uw}^2$ \eqref{eq:real-route-amplitude} on routes with $k_{uw}\le5$ at that state; outcomes O1 (mean over seeds of
+    $\Loss(10^4)$) and O2 (mean of $\log_{10}\tau(\Loss\le0.25)$ on the running minimum, censored at $10^4$); Spearman
+    correlation $r_S$ over orders, percentile bootstrap intervals (10,000 resamples of orders) and two-sided
+    permutation p-values (10,000 permutations of $\mathcal S$).
 \end{itemize}
 
 \paragraph{Sweeps and run counts.}
 \Cref{tab:exp-real-data}; 507 runs of the experiment's own configurations, plus the round-1 reviewers'
 runs with the same code (among them 11 binary runs in nine orders and three MPS chains in other orders,
 $\isc=0.1$, seeds 0 and 1; local copy \path{data/review_real_data/}), which enter only where the text says
-``review runs''. The main, regime, Fashion-MNIST, $\chi=8$ and $8\times8$ sweeps ran on one 64-core machine
+``independent runs''. The main, regime, Fashion-MNIST, $\chi=8$ and $8\times8$ sweeps ran on one 64-core machine
 (about 60 processes, as the runs are bound by memory bandwidth); the fix-round reruns and the order test
 ran locally (the order test: 8 processes, 70 minutes).
 
