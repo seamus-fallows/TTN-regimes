@@ -18,7 +18,7 @@ fan-in init, gradient flow; centred model (target W* + W_0) unless stated; 6 see
 | bond dimension chi (binary N = 4, full bonds, chi = 16-128) | ~ chi^(-0.52 +- 0.05); sigma_c sqrt(chi) ~ 0.29 (**empirical**; not derived) | ~ chi^(-0.52 +- 0.02); sigma_lazy sqrt(chi) = 6.1-6.3 vs theory P5 6.50 chi^-1/2 (**empirical**, confirms **derived** P5) | the map collapses in sigma sqrt(chi) (per-bond Gram scale); sigma^K and sigma^K chi^(K-1) rejected (2.1b) |
 | chi below the cut dimension | moves down with chi (0.24 at chi = 3 -> 0.14 at chi = 9, N = 4) | **no lazy regime**: centred runs stall at the Eckart-Young floor of W_0 + W* (**derived** R7, **empirical** 44/44 runs) | the stall onset follows the floor; plain model converges instead (2.1) |
 | chi = teacher rank, K >= 7 | masked by stalls (dead routes, fan-in) | - | balanced init removes dead routes, not the stall (2.2) |
-| number of cores K (centred, d = 2, chi = 4) | 0.17, 0.49, 0.61, 0.80, 0.75, 1.0, 0.90, 0.92, [0.63, 1.36] for K = 3..15; per-component amplitude sigma_c^K / sqrt(D) ~ 0.01 for K >= 4 -> sigma_c -> sqrt(d), not 1 (**empirical** + **derived** from R9) | not mapped beyond K = 7 (K = 7: lazy only with 2x-overparameterized full bonds, kernel boundary 1.45) | stalls (long/dead routes) take over the S2S side for MPS at K >= 8 and the floor masks the boundary at K >= 12 (2.3) |
+| number of cores K (centred, d = 2, chi = 4) | 0.17, 0.49, 0.61, 0.80, 0.75, 1.01, 0.90, 0.92, [0.63, 1.36] for K = 3, 4, 5, 6, 7, 8, 10, 12, 15; per-component amplitude sigma_c^K / sqrt(D) ~ 0.01 for K >= 4 -> sigma_c -> sqrt(d), not 1 (**empirical** + **derived** from R9) | not mapped beyond K = 7 (K = 7: lazy only with 2x-overparameterized full bonds, kernel boundary 1.45) | stalls (long/dead routes) take over the S2S side for MPS at K >= 8 and the floor masks the boundary at K >= 12 (2.3) |
 | root imbalance lambda at fixed alpha (N = 4, chi = 16-24) | S2S region largest near lambda = sqrt(chi) (balance), shrinks for strong imbalance either way | light root (lambda << sqrt(chi)) moves the lazy boundary down by ~100x in alpha; heavy root keeps delta_K ~ 0.5 (not lazy) | delta_K ~ lambda^2 (local slope 1.86 vs theory 1.8-1.9) (2.4) |
 | parameterization at large chi (N = 4) | - | SP: delta_K ~ chi^-3.09; NTK: chi^-0.84 (-> -1); muP-TTN: chi^+0.03 (feature learning kept) | matches theory P16 (2.5) |
 | construction (two-copy vs centred) | two-copy: events 1-2 merge at large chi (not comparable) | two-copy lower: 5.16 vs 6.50 chi^-1/2 (P6 confirmed, measured 4.8-5.0) | two-copy escapes from the lazy residual at deficient bonds (2.x) |
@@ -286,23 +286,27 @@ teacher rank on every tree, plus full bonds for MPS 6 / binary 8 / MPS 8), plain
 6, 8, 10, 12 (K = 3..15); LSODA; per-seed boundaries (`seed_s2s_boundary`). Figures
 `phase_sigma_K_*.png`, `sigma_c_vs_K.png`, `stalls_vs_K.png`; table `sigma_c_vs_K.csv`.
 
-- **Centred model, chi = 4 (per-seed medians; numbers of resolved seeds in the csv).** S2S boundary
-  sigma_c = 0.17, 0.41, 0.61, 0.68, 0.75, 0.77, 0.90, 1.02 for K = 3, 4, 5, 6, 7, 8, 10, 15
-  (MPS 12: no seed resolved, see stalls below; K = 15: 2 of 6 seeds resolved). The boundary rises toward
-  and past 1 (H4's direction), but in the function-space scale alpha = sigma^K it is not stable
-  (alpha_c = 0.005 -> 1.3).
+- **Centred model, chi = 4** (per-seed rule `seed_s2s_boundary`: the first block of S2S runs, skipping
+  runs that stalled below it; boundary = geometric mean of the block's last sigma and the next one;
+  'unresolved' when that next run stalled). Medians over seeds, bracket [last S2S, next]:
+  K = 3: 0.17 [0.14, 0.20]; 4: 0.49 [0.41, 0.59]; 5: 0.61 [0.52, 0.73]; 6: 0.80 [0.69, 0.94];
+  7: 0.75 [0.65, 0.87]; 8: 1.01 [0.88, 1.16]; 10: 0.90 [0.80, 1.00]; 12: 0.92 [0.83, 1.03] (all
+  unresolved: the next run is floor-stalled); 15: [0.63, 1.36] (unresolved; the points 0.76-0.92 were not
+  finished at the cut-off). The boundary rises toward and past 1, but in alpha = sigma^K it is not
+  stable (alpha_c = 0.005 at K = 3 to ~1 at K = 15).
 - **The K-stable variable is the per-component amplitude u_0 = sigma^K / sqrt(D)** (the RMS overlap of
-  W_0 with a unit rank-one tensor, D = d^N; theory_regimes R9): at the boundary u_0c = sigma_c^K / sqrt(D)
-  = 0.016, 0.013, 0.0085, 0.0078, 0.010, 0.005 for K = 5, 6, 7, 8, 10, 15 (0.0013 and 0.0068 at K = 3, 4),
-  against the aligned-init limit s q (1 - q) / 39.85 = 0.017 for this teacher. **Empirical.**
-- **Consequence for H4 (derived from the effective-amplitude law, assumptions: u_0c and c_K = O(1)
-  as K grows; N = K or K + 1).** sigma_c(K) = (u_0c d^{N/2} / c_K)^{1/K} -> sqrt(d) as K -> infinity,
-  not 1: the effective per-core amplitude is kappa_K = a_0c(K) / sigma_c -> 1/sqrt(d). Measured kappa_K
-  (centred, chi = 4): 0.33, 0.42, 0.53, 0.61, 0.65, 0.71, 0.70, 0.70 for K = 3..15, i.e. it levels off at
-  1/sqrt(2) = 0.707 from K ~ 8 on. With u_0c = 0.01 the formula gives sigma_c = 0.77, 0.89, 1.07 at K = 7, 10,
-  15 (measured 0.75, 0.90, 1.02). So H4's "sigma_c -> 1" holds only in the normalization where the
-  per-site features have unit total variance (sigma -> sigma sqrt(d)); in the project's convention
-  (x_i ~ N(0, I_d)) the limit is sqrt(d). **Derived + empirical** (8 trees, d = 2 only).
+  W_0 with a unit rank-one tensor, D = d^N; theory_regimes R9): the law sigma_c = (u_0c d^{N/2})^{1/K}
+  with a constant u_0c = 0.01 gives 0.45, 0.56, 0.66, 0.77, 0.80, 0.89, 0.96, 1.07 for K = 4, 5, 6, 7, 8,
+  10, 12, 15, against the measured 0.49, 0.61, 0.80, 0.75, 1.01, 0.90, 0.92, [0.63, 1.36]: within
+  ~20% for K >= 4 (K = 6 and 8 high by 20-25%); K = 3 is lower (u_0c = 0.0013 there, as the aligned
+  boundary u_0c(K) itself grows with K toward s q (1 - q) / 39.85 = 0.017). **Empirical.**
+- **Consequence for H4 (derived from the effective-amplitude law; assumptions: u_0c and c_K = O(1) as
+  K grows, N = K or K + 1).** sigma_c(K) -> sqrt(d), not 1: the effective per-core amplitude kappa_K =
+  a_0c(K) / sigma_c tends to 1/sqrt(d). Measured kappa_K (centred, chi = 4) rises from 0.39 (K = 3) to
+  ~0.6-0.7 for K >= 6 (1/sqrt(2) = 0.707). So H4's "sigma_c -> 1" holds in the normalization where the
+  per-site features have unit total variance; with x_i ~ N(0, I_d) the limit is sqrt(d). The data
+  reach only K = 15, where the measured bracket [0.63, 1.36] contains both 1 and the predicted 1.07;
+  **conjecture** beyond the measured range.
 - **Stalls take over at large K.** Even with spare channels, MPS trees stall on the S2S side (MPS 8:
   5/6 seeds stall at the smallest sigma; MPS 12: no seed reaches a resolved S2S boundary; centred floor
   above sigma ~ 1). Binary trees stall less (binary 16: S2S up to sigma = 0.63-1.0). See
