@@ -78,8 +78,8 @@ can be compared with experiment number by number. The main focus is the saddle-t
     floor.
   \item Gradient descent (GD) with steps below a sharp stability limit, $2/(\Kc\tw1^{2-2/\Kc})$ with $\tw1$
     the largest teacher weight, keeps the saddle sequence on a shifted clock; gradient noise (SGD) does
-    not shorten the first plateau, lengthens later ones on average and can trap; Adam keeps the first component but leaves the
-    origin in a number of steps that does not depend on $\isc$; ALS, DMRG and Riemannian gradient descent
+    not shorten the first plateau on average, lengthens later ones and can trap; Adam keeps the first
+    component but leaves the origin in a number of steps that does not depend on $\isc$; ALS, DMRG and Riemannian gradient descent
     remove the plateaus. What decides is invariance: steps proportional to the gradient vanish near the
     origin, steps invariant under rescaling the gradient do not, and methods equivariant under the gauge
     group of the network see the initialization only through its frames. In short, the tree, the teacher

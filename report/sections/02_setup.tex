@@ -641,10 +641,11 @@ table says where.
     parent, its dimension; nominal bond dimension & \S\labelcref{sec:setup-model}, \eqref{eq:bond-cap} \\
   $\G{v}$, $\Gm{v}{e}$; $\fanin{v}$; $\params$ & core of $v$, matricized with its $e$-leg as rows; its
     fan-in; all parameters & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-conservation} \\
-  $h_v$; $\Sub{v}$, $C_v$ & message of core $v$; contraction of the subtree below $v$ and of the rest,
-    $\mat{\W}{\edge v}=\Sub vC_v\T$ & \eqref{eq:messages}, \S\labelcref{sec:setup-model} \\
-  $\W$, $\Wt$, $\Wz$ & tensor of the student, of the teacher, at initialization
-    & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-loss} \\
+  $h_v$; $\Sub{v}$, $C_v$; $C$ & message of core $v$; contraction of the subtree below $v$ and of the rest,
+    $\mat{\W}{\edge v}=\Sub vC_v\T$; alone, a positive constant (bounds, fits such as $C\isc^\gamma$)
+    & \eqref{eq:messages}, \S\labelcref{sec:setup-model} \\
+  $\W$, $\Wt$, $\Wz$; $f_\params$, $f^*$ & tensor of the student, of the teacher, at initialization; model and
+    teacher functions & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-loss} \\
   $\mat{\W}{e}$; $01|23$ & matricization across $e$; a bipartition written by its site sets (ranges:
     $0$--$3|4$--$7$) & \S\labelcref{sec:setup-model} \\
   $\bs{e}{j}$, $\bst{e}{j}$; $\rk{e}$, $\rkH{e}$ & $j$-th singular value across $e$ of $\W$, of $\Wt$
@@ -664,14 +665,16 @@ table says where.
     $0^31^20^3$) & \S\labelcref{sec:setup-loss} \\
   $\ov{r}$ & overlap with component $r$ ($0$ at $\W=0$, $1$ at $\W=\Wt$) & \eqref{eq:overlap} \\
   $D$; $V_D$, $m$; $\mathrm{St}(\cdot)$ & sites where a component differs from the learned one; the cores
-    that carry them, $m=\abs{V_D}$; Steiner subtree, the smallest subtree that contains a set of cores
+    that carry them, $m=\abs{V_D}$ ($D_{jr}$, $V_{jr}$, $m_{jr}$ for components $j$, $r$ in
+    \cref{app:derivations}); Steiner subtree, the smallest subtree that contains a set of cores
     & \S\labelcref{sec:setup-loss} \\
   $\Loss$, $\lossn$, $\Loss_0$; $\W_S$, $\Loss_S$ & population loss, $\Loss/\Loss(0)$, $\Loss(0)$; partial fit
     of the components in $S$, its loss & \eqref{eq:loss}, \eqref{eq:partial-fit} \\
-  $\nsamp$, $\Lemp$; $\batch$; $\varsigma$ & training-set size, empirical loss; minibatch size; label-noise
-    standard deviation & \S\labelcref{sec:setup-loss}, \S\labelcref{sec:setup-dynamics} \\
-  $\beta$; $\Lambda_r$ & exponent of the power-law site spectra (for heavy ball, the momentum; below);
-    product of the covariance eigenvalues of component $r$ (aligned covariance)
+  $\nsamp$, $(x_j,y_j)$, $\Lemp$; $\batch$; $\varsigma$ & training-set size, samples, empirical loss; minibatch
+    size; label-noise standard deviation & \S\labelcref{sec:setup-loss}, \S\labelcref{sec:setup-dynamics} \\
+  $\beta$; $\Lambda_r$ & exponent of the power-law site spectra (also: the heavy-ball momentum, below, and
+    the local slope $\dd\ln\dTK/\dd\ln\xi$ at the lazy boundary, \cref{app:boundaries}); product of the
+    covariance eigenvalues of component $r$ (aligned covariance)
     & \S\labelcref{sec:setup-loss}; \S\labelcref{sec:cov-aligned} \\
   $c$; $z$, $z_i$ & cross-site input correlation; the common and the site Gaussian factors of correlated
     inputs & \S\labelcref{app:covariance}, \S\labelcref{sec:cov-correlated} \\
@@ -698,14 +701,16 @@ table says where.
     \eqref{eq:gauge} \\
   \midrule
   \multicolumn{3}{@{}l}{\itshape Diagnostics and regimes} \\
-  $\TK$, $\Jac$ & tangent kernel $\Jac\,\diag(\boldsymbol{\lr})\Jac\T$; $\Jac=\partial\W/\partial\params$
-    & \S\labelcref{sec:setup-diagnostics} \\
+  $\TK$, $\Jac$; $P_\perp$ & tangent kernel $\Jac\,\diag(\boldsymbol{\lr})\Jac\T$; $\Jac=\partial\W/\partial\params$;
+    projector onto the complement of the range of $\TK$ & \S\labelcref{sec:setup-diagnostics};
+    \S\labelcref{sec:other-lazy} \\
   $\dTK$, $\dTK^{\rm probe}$; $\delta_*$; $\dth$ & relative kernel change (tensor, probe kernel); its
     threshold; relative parameter change & \S\labelcref{sec:setup-diagnostics}, \cref{tab:regimes} \\
   $\Hess$, $\Hperp$; $\lambda_{\min}$, $\lambda_{\max}$ & Hessian, its gauge projection; their smallest and
     largest eigenvalues & \S\labelcref{sec:setup-diagnostics} \\
-  $\tev{r}$, $\wev{r}$; $\sep{i}$, $\tmid{i}$ & time and width of event $r$; separation ratio of
-    consecutive events, plateau midpoint & \S\labelcref{sec:setup-diagnostics}, \eqref{eq:separation} \\
+  $\tev{r}$, $\wev{r}$; $\sep{i}$, $\tmid{i}$; $\omega_\Kc$ & time and width of event $r$; separation ratio of
+    consecutive events, plateau midpoint; width of an aligned event at unit weight
+    & \S\labelcref{sec:setup-diagnostics}, \eqref{eq:separation}; \cref{prop:A-s2s-aligned} \\
   drift & conservation drift & \eqref{eq:drift} \\
   $\isc_c$, $\isc_{\rm lazy}$; $a_{0c}$ & saddle-to-saddle and lazy boundaries in $\isc$;
     saddle-to-saddle boundary of aligned initialization (per-core amplitude)
@@ -721,10 +726,10 @@ table says where.
     channel & \S\labelcref{sec:setup-routes} \\
   $k$, $k^*$ & route size $\abs{\mathrm{St}(V_D)}$; smallest route with a nonzero residual
     & \S\labelcref{sec:setup-routes} \\
-  saddle order & power of the distance at which the loss first decreases ($2$: strict)
+  saddle order, $\mathrm{ord}(\params_S)$ & power of the distance at which the loss first decreases ($2$: strict)
     & \S\labelcref{sec:setup-routes}; \S\labelcref{app:saddle-order} \\
-  $g$; $\mathcal{T}(Z)$, $r_1$ & correlation $\ip{\W}{\Wt}$; first-escape prefactor computed from $Z$, and the
-    component learned first & \S\labelcref{sec:s2s-escape} \\
+  $g$, $G$; $\mathcal{T}(Z)$, $r_1$ & correlation $\ip{\W}{\Wt}$, its integral along the spherical flow;
+    first-escape prefactor computed from $Z$, and the component learned first & \S\labelcref{sec:s2s-escape} \\
   $\tau$ & time of the spherical flow, $\dd\tau=\norm{\params}^{\Kc-2}\dd t$; on real data, the clock $t-t_a$
     (below) & \S\labelcref{sec:s2s-escape}; \S\labelcref{sec:real-data} \\
   $\delta_\Kc$; $t_{\rm KH}$; $P_3$ & offset of the first event; norm-based (Kumar--Haupt) escape time;
@@ -748,9 +753,9 @@ table says where.
     of a route end & \S\labelcref{sec:s2s-failure} \\
   \midrule
   \multicolumn{3}{@{}l}{\itshape Order of learning} \\
-  $w$; $\gamma$; $n$ & weight ratio $\tw2/\tw1$ (smaller over larger); exponent in
+  $w$; $\gamma$; $n$; $P$ & weight ratio $\tw2/\tw1$ (smaller over larger); exponent in
     $P(\text{smaller first})\propto\isc^{\gamma}$, $\gamma=n(1-w)/w$; number of unstable directions there
-    ($n_{jr}$ in \cref{app:derivations}; elsewhere $n$ is the training-set size)
+    ($n_{jr}$ in \cref{app:derivations}; elsewhere $n$ is the training-set size); probability
     & \S\labelcref{sec:s2s-order} \\
   $\hat t_{1,r}$; $X_r$ & leading-order blow-up time of component $r$ alone; projection of the
     initialization onto the orbit of its rank-one configuration & \S\labelcref{sec:s2s-order} \\
@@ -761,7 +766,8 @@ table says where.
     gradient flow reaches & \eqref{eq:optim-etac}; \S\labelcref{sec:other-optim} \\
   $c_e$; $h$ & shift of event $e$ per unit step under GD; step of the balanced scalar map,
     $\lr\tw1^{2-2/\Kc}$ & \S\labelcref{sec:other-optim}; \cref{fig:optim-gd} \\
-  $\lr^*_{\rm ms}$ & mean-square stability limit of SGD & \eqref{eq:A-ms-threshold} \\
+  $\lr^*_{\rm ms}$; $\kappa_{\rm n}$ & mean-square stability limit of SGD; noise factor of the first escape
+    under SGD & \eqref{eq:A-ms-threshold}; \eqref{eq:A-sgd-first} \\
   $c_{\rm col}$, $x$; $T_{\rm GF}$, $T_{\rm SGD}$ & collapse constant and $x=c_{\rm col}(\lr/\batch)T_{\rm GF}$ (the only
     use of $x$ other than an input); length of a plateau under gradient flow, under SGD
     & \eqref{eq:optim-collapse} \\
@@ -775,13 +781,15 @@ table says where.
   \multicolumn{3}{@{}l}{\itshape Covariance, teacher structure and real data} \\
   $\W_1$, $\bar s$; $M_e$ & bond-rank-one critical point, its value; the $d\times d$ matrix that $\Wt$
     leaves on the two cores of edge $e$ & \S\labelcref{sec:teacher-generic} \\
-  $\lambda_e$; $h_e$; $e^*$ & escape rate of edge $e$, $\bar s^{(\Ns-2)/\Ns}s_2(M_e)$; slope in $\ln(1/\isc)$,
-    $(1-s_2(M_e)/\bar s)/\lambda_e$ ($s_2(M_e)/\bar s$: the head start); the edge with the largest
-    $s_2(M_e)$ & \S\labelcref{sec:teacher-generic}, \S\labelcref{sec:teacher-ttn} \\
+  $\lambda_e$; $h_e$; $e^*$; $\kappa_{\rm c}$ & escape rate of edge $e$, $\bar s^{(\Ns-2)/\Ns}s_2(M_e)$; slope in
+    $\ln(1/\isc)$, $(1-s_2(M_e)/\bar s)/\lambda_e$ ($s_2(M_e)/\bar s$: the head start); the edge with the largest
+    $s_2(M_e)$; head start under correlated inputs & \S\labelcref{sec:teacher-generic},
+    \S\labelcref{sec:teacher-ttn}; \cref{app:covariance} \\
   $\params_q$, $\lambda_q$ & star teacher: saddle with component $q$ learned, its rate
     $-\lambda_{\min}$ & \S\labelcref{sec:teacher-star} \\
-  $Y$; $t_a$, $t_0$ & label tensor $\E[y\Feat]$; end of the first plateau on real data, offset of the
-    gap law $A/\isc+t_0$ & \S\labelcref{sec:real-data} \\
+  $t_{\rm esc}$ & escape time from a saddle start & \S\labelcref{sec:covariance-teacher} \\
+  $y$, $Y$; $t_a$, $t_0$ & label ($\pm1$) and label tensor $\E[y\Feat]$; end of the first plateau on real data,
+    offset of the gap law $A/\isc+t_0$ & \S\labelcref{sec:real-data} \\
   $\mu_{uw}$, $k_{uw}$; $\mathcal S$; $r_S$ & route coupling of bottom cores $u$, $w$, and the size of their
     route; share of $\sum\mu_{uw}^2$ on routes with $k_{uw}\le5$; Spearman correlation
     & \S\labelcref{sec:real-data} \\

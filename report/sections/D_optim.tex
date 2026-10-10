@@ -40,8 +40,8 @@ diverges, since the balanced minimum is already the flattest; from $\isc=1$ on G
 to $2\cdot10^5\Loss_0$ at $\isc=8$) and then reaches gradient flow's final loss (86 of 90 runs below $10^{-6}\Loss_0$)
 at a flatter minimum, of sharpness $0.58$--$1.00$ times $2/\lr$ (per run), for steps up to $1.5$ ($\isc=1$) and $3$
 ($\isc=2$--$8$) times $2/\lambda_{\rm GF}$; at $4$ times all runs diverge. For $\isc\ge2$ the window thus ends between
-$6/\lambda_{\rm GF}$ and $8/\lambda_{\rm GF}$, $1.5$--$2$ times the $4/\lambda_0$ of the two-layer model of
-\citet{lewkowycz2020large}. Imbalanced small initializations ($\isc=0.1$ with the root core at scale 2, 4 or 6)
+$6/\lambda_{\rm GF}$ and $8/\lambda_{\rm GF}$, $1.5$--$2$ times the end of the catapult window of the two-layer model
+of \citet{lewkowycz2020large} (four times the inverse curvature, $4/\lambda_{\rm GF}$ here). Imbalanced small initializations ($\isc=0.1$ with the root core at scale 2, 4 or 6)
 reproduce the known selection: the 104 of 150 runs that converge end $0.05$--$3\%$ below
 $\min(\lambda_{\rm GF},2/\lr)$.
 
