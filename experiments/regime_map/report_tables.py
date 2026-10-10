@@ -89,6 +89,8 @@ def sigma_chi_b4() -> pd.DataFrame:
             n_events=df.n_events,
             dK=df.dK,
             dK_tensor=df.dK_tensor,
+            dK_probe=df.dK_probe if "dK_probe" in df else df.dK,
+            kernel=an.LABEL_KERNEL,  # kernel of dK and of the labels (REGIME_MAP_LABEL_KERNEL)
             l_end=df.l_end,
             l_best=df.l_best,
             transient=[n_up_max(v) > 1 for v in df.n_up],

@@ -31,8 +31,9 @@ moved by 1% of its norm or log L by 0.01 since the last kept row (impl. `ttn.dyn
 | drift(t) | max_e \|Q_e(t) - Q_e(0)\|_max / (max_e \|Q_e(0)\|_max + max_u \|\|G_u\|\|_F^2 / eta_u), Q_e the gauge conserved quantities; integrator check, must stay < 1e-6 under gradient flow | `ttn.network.conserved_quantities`, `Recorder` (conservation_drift) |
 | H(t), H_perp(t) | Hessian of L at theta(t), and its restriction to the complement of the well-conditioned gauge directions (see saddle type) | `ttn.diagnostics.hessian`, `project_out_gauge`; `RunRecorder` (hessian_times), `ttn.runner.plateau_hessians` |
 
-Open: the regime-map review (`notes/reviews/regime_map_round1.md`, B item 3) found delta_K computed from
-the probe kernel while the theory constants refer to the tensor-space kernel; fix pending.
+Kernel used for delta_K: the tensor-space kernel J D J^T wherever the dense Jacobian fits (the theory
+constants refer to it); the regime labels of the regime map still use the 128-probe kernel, named
+delta_K^probe in the report (`notes/regime_map.md` section 3.1).
 
 ## Learning events
 
