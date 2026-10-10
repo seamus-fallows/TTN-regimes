@@ -48,6 +48,7 @@ escapes and plateaus (which would turn long plateaus into stalls)?
 | stalled runs continued from their final state | `continue_stalled.py` | - | - | `continued_*.csv` |
 | tolerance check of run classes | `tolcheck.py` | - | `k78_tight/` | `tolcheck_k78.csv` |
 | figures b, c, d, f, g | `plot_run.py`, `plot_scaling.py`, `plot_dormant.py` | - | - | `fig_*` |
+| report figures and derived numbers (Sec. 4 of the report) | `plot_report.py`, `report_numbers.py` | - | - | `report_runs.*`, `report_prefactor.*`, `report_numbers.csv` |
 
 ## How to run
 
@@ -87,6 +88,9 @@ uv run python $D/plot_run.py binary8_chi6_w3-2-1_fanin_s0.1_seed0 --raw $R/large
 uv run python $D/plot_scaling.py --results $O --out $O
 uv run python $D/plot_dormant.py --results $O --out $O
 uv run python $D/plot_lo.py --results $O --out $O
+# report (Sec. 4): compact figures and the derived numbers quoted in the text (from the tables above)
+uv run python $D/plot_report.py --raw-main $R/main --raw-large $R/large --results $O --out $O
+uv run python $D/report_numbers.py --results $O --out $O
 ```
 
 `run.py` and `first_escape.py` are resumable (finished runs are skipped). `analyze_main.py --hess`

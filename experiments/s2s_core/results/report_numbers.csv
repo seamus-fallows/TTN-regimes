@@ -1,0 +1,121 @@
+key,value,detail
+first.n_runs,1848,gradient-flow first-escape runs (231 jobs x 8 sigmas)
+first.r1_agree,1847,first component = correlation-flow r1
+first.r1_exception,binary4 chi=3 close balanced seed=6 sigma=0.1,learned component 2 (0-based) instead of 0
+first.r1_agree_smallest_sigma,231/231,
+first.largest_first.binary4,639/640,
+first.race_agree.binary4,537/640,first component = argmin_r of the single-component blow-up times (race)
+first.largest_first.binary8,264/328,
+first.race_agree.binary8,328/328,first component = argmin_r of the single-component blow-up times (race)
+first.largest_first.ht4,104/160,
+first.race_agree.ht4,152/160,first component = argmin_r of the single-component blow-up times (race)
+first.largest_first.mps4,400/640,
+first.race_agree.mps4,640/640,first component = argmin_r of the single-component blow-up times (race)
+first.largest_first.mps8,64/80,
+first.race_agree.mps8,80/80,first component = argmin_r of the single-component blow-up times (race)
+first.balanced_over_fanin_T.range,0.880-1.918,94 seeds
+first.balanced_over_fanin_T.cell_medians,0.993-1.178,10 cells
+first.balanced_keeps_r1,88/94,
+lo_d.binary4.d2.T_median,"1.544 [1.468, 1.594]","chi=4, n=200"
+lo_d.binary4.d2.sd_lnT,0.218 +- 0.010,
+lo_d.binary4.d2.tKH_median,0.5761,
+lo_d.binary4.d3.T_median,"1.569 [1.525, 1.615]","chi=9, n=200"
+lo_d.binary4.d3.sd_lnT,0.157 +- 0.009,
+lo_d.binary4.d3.tKH_median,0.3958,
+lo_d.binary4.d4.T_median,"1.563 [1.525, 1.587]","chi=16, n=200"
+lo_d.binary4.d4.sd_lnT,0.135 +- 0.006,
+lo_d.binary4.d4.tKH_median,0.3012,
+lo_d.mps4.d2.T_median,"1.392 [1.269, 1.577]","chi=4, n=200"
+lo_d.mps4.d2.sd_lnT,0.537 +- 0.027,
+lo_d.mps4.d2.tKH_median,0.2311,
+lo_d.mps4.d3.T_median,"1.409 [1.297, 1.523]","chi=9, n=200"
+lo_d.mps4.d3.sd_lnT,0.446 +- 0.023,
+lo_d.mps4.d3.tKH_median,0.1264,
+lo_d.mps4.d4.T_median,"1.498 [1.425, 1.598]","chi=16, n=200"
+lo_d.mps4.d4.sd_lnT,0.365 +- 0.017,
+lo_d.mps4.d4.tKH_median,0.0801,
+lo_d.binary4.tKH_fall_d2_to_d4,1.91,
+lo_d.mps4.tKH_fall_d2_to_d4,2.88,
+lo_d.core_fraction_dev_max,1.34e-02,max over inits of |K x (core squared-norm fraction) - 1| at the end of the correlation flow
+lo_chi.binary4.slope_T,-0.335 +- 0.028,"chi=4-16, single component s=1, 100 inits per chi"
+lo_chi.binary4.slope_tKH,-0.47,chi=4-16
+lo_chi.binary8.slope_T,-0.758 +- 0.075,"chi=2-12, single component s=1, 100 inits per chi"
+lo_chi.binary8.slope_tKH,-2.41,chi=2-12
+lo_chi.ht4.slope_T,-0.687 +- 0.077,"chi=2-16, single component s=1, 100 inits per chi"
+lo_chi.ht4.slope_tKH,-1.50,chi=2-16
+lo_chi.mps4.slope_T,-0.264 +- 0.038,"chi=4-16, single component s=1, 100 inits per chi"
+lo_chi.mps4.slope_tKH,-0.47,chi=4-16
+lo_chi.mps8.slope_T,-0.724 +- 0.057,"chi=2-16, single component s=1, 100 inits per chi"
+lo_chi.mps8.slope_tKH,-2.52,chi=2-16
+lo_chi.mps8.T_chi2_over_chi8,4.02,
+lo_chi.mps8.tKH_chi2_over_chi8,33.4,
+lo_K.n_trees,17,K=3-15
+lo_K.T_median.range,0.424-814,
+lo_K.T_over_P3.range,0.87-2.13,
+lo_K.T_over_tKH.range,3.08-2.91e+07,
+main.s2s_among_complete.binary4.close,97/160,every rho_i > 3
+main.s2s_among_complete.binary4.separated,218/220,every rho_i > 3
+main.s2s_among_complete.binary8.close,19/19,every rho_i > 3
+main.s2s_among_complete.binary8.separated,64/64,every rho_i > 3
+main.s2s_among_complete.ht4.close,3/3,every rho_i > 3
+main.s2s_among_complete.ht4.separated,71/71,every rho_i > 3
+main.s2s_among_complete.mps4.close,138/138,every rho_i > 3
+main.s2s_among_complete.mps4.separated,188/188,every rho_i > 3
+main.s2s_among_complete.binary4.close.sigma0.003,20/20,
+main.s2s_among_complete.binary4.close.sigma0.005,18/20,
+main.s2s_among_complete.binary4.close.sigma0.01,17/20,
+main.s2s_among_complete.binary4.close.sigma0.02,15/20,
+main.s2s_among_complete.binary4.close.sigma0.03,10/20,
+main.s2s_among_complete.binary4.close.sigma0.05,6/20,
+main.s2s_among_complete.binary4.close.sigma0.07,6/20,
+main.s2s_among_complete.binary4.close.sigma0.1,5/20,
+main.s2s_among_complete.binary4.fanin,255/320,
+main.s2s_among_complete.mps4.fanin,266/266,
+main.plateau_spectrum_err_max.binary4.close,7.69e-03,"max relative deviation of the top |S| singular values of every edge from the learned weights, runs with the S2S signature"
+main.plateau_next_sv_over_smin_max.binary4.close,0.008,
+main.plateau_spectrum_err_max.binary4.separated,8.95e-04,"max relative deviation of the top |S| singular values of every edge from the learned weights, runs with the S2S signature"
+main.plateau_next_sv_over_smin_max.binary4.separated,0.012,
+main.plateau_spectrum_err_max.binary8.close,4.62e-06,"max relative deviation of the top |S| singular values of every edge from the learned weights, runs with the S2S signature"
+main.plateau_next_sv_over_smin_max.binary8.close,0.004,
+main.plateau_spectrum_err_max.binary8.separated,4.42e-06,"max relative deviation of the top |S| singular values of every edge from the learned weights, runs with the S2S signature"
+main.plateau_next_sv_over_smin_max.binary8.separated,0.004,
+main.plateau_spectrum_err_max.ht4.close,5.29e-05,"max relative deviation of the top |S| singular values of every edge from the learned weights, runs with the S2S signature"
+main.plateau_next_sv_over_smin_max.ht4.close,0.010,
+main.plateau_spectrum_err_max.ht4.separated,2.75e-05,"max relative deviation of the top |S| singular values of every edge from the learned weights, runs with the S2S signature"
+main.plateau_next_sv_over_smin_max.ht4.separated,0.011,
+main.plateau_spectrum_err_max.mps4.close,1.89e-04,"max relative deviation of the top |S| singular values of every edge from the learned weights, runs with the S2S signature"
+main.plateau_next_sv_over_smin_max.mps4.close,0.028,
+main.plateau_spectrum_err_max.mps4.separated,3.49e-04,"max relative deviation of the top |S| singular values of every edge from the learned weights, runs with the S2S signature"
+main.plateau_next_sv_over_smin_max.mps4.separated,0.069,
+main.plateau_spectrum_err_max.binary4.separated.sigma0.003,1.71e-09,
+main.plateau_spectrum_err_max.binary4.separated.sigma0.1,6.99e-04,
+main.edge_rank_one_step,497/531,complete runs with event-window spectra in which every event raises the rank by one on every edge
+main.edge_rank_exceptions.binary4.close,28,
+main.edge_rank_exceptions.ht4.close,2,
+main.edge_rank_exceptions.ht4.separated,4,
+main.mps8.learned,1: 152; 2: 132,284 runs; components learned
+main.K7_chi3_fanin_complete.binary8,14/180,sweeps main and k78
+main.K7_chi3_fanin_complete.ht4,12/150,sweeps main and k78
+plateau_level_err.binary4.separated,8.45e-03,max over 438 plateaus; at binary4 chi=6 separated fanin sigma=0.1 seed=8 plateau 2 (rho=3.62)
+plateau_level_err.binary4.close,1.98e-02,max over 237 plateaus; at binary4 chi=6 close fanin sigma=0.003 seed=4 plateau 2 (rho=5.14)
+plateau_level_err.mps4.fanin,2.78e-03,max over 586 plateaus; at mps4 chi=3 close fanin sigma=0.1 seed=2 plateau 2 (rho=11.25)
+plateau_level_err.mps4.balanced,8.10e-03,max over 120 plateaus; at mps4 chi=6 separated balanced sigma=0.03 seed=4 plateau 1 (rho=19.75)
+plateau_level_err.K7_8.chi6,2.13e-05,max over 302 plateaus; at ht4 chi=6 separated fanin sigma=0.3 seed=7 plateau 1 (rho=351.90)
+plateau_level_err.K7_8.chi3,1.45e-04,max over 504 plateaus; at ht4 chi=3 close fanin sigma=0.4 seed=1 plateau 1 (rho=24.25)
+plateau_level_err.sigma0.003.not_binary4_close,7.42e-07,max over 193 plateaus; at mps4 chi=6 separated balanced sigma=0.003 seed=4 plateau 1 (rho=2013.30)
+wrong_order.seed8.gap2_exponent,-0.08,t3 - t2 ~ sigma^-p over sigma=0.005-0.1 (7 runs)
+wrong_order.seed8.order_at_sigma0.003,1-2-3,
+wrong_order.rho_next.range,0.76-1.25,"binary4 chi=3 close, plateaus with components 1 and 3 learned"
+slices.k78.binary8.chi3.balanced,median 0.0113; decaying 1/27,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.k78.binary8.chi3.fanin,median 0.0356; decaying 0/19,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.k78.ht4.chi3.balanced,median 0.0851; decaying 6/13,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.k78.ht4.chi3.fanin,median 0.0243; decaying 0/3,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.k78.mps8.chi3.balanced,median 0.0285; decaying 4/30,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.k78.mps8.chi3.fanin,median 1.74e-05; decaying 3/16,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.large.mps8.chi6.fanin,median 8.84e-07; decaying 14/43,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.main.binary8.chi3.fanin,median 0.0357; decaying 30/90,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.main.binary8.chi6.fanin,median 0.287; decaying 12/26,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.main.ht4.chi3.fanin,median 1.48e-06; decaying 7/17,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.main.mps4.chi3.fanin,median 0.000608; decaying 0/8,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.main.mps8.chi3.fanin,median 8.42e-05; decaying 62/101,smallest dormant slice / sigma at the end of stalled and unresolved runs
+slices.main.mps8.chi6.fanin,median 0.0127; decaying 29/32,smallest dormant slice / sigma at the end of stalled and unresolved runs
