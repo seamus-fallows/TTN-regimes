@@ -191,17 +191,21 @@ chi = 3, 6, both teachers, 10 seeds (K = 7, 8: separated teacher, fan-in; `resul
 figure c).
 - **Exponent** (per seed, then mean +- SE): binary4 (sigma 0.1 .. 0.002) 1.0045 +- 0.0002 raw,
   0.9996 +- 0.0001 with the predicted O(1) offset c_K removed; mps4 (same sigmas) 2.0002 / 2.0000;
-  binary8 (sigma 0.4 .. 0.01, 1.6 decades) 4.9984 +- 0.0003 (K - 2 = 1, 2, 5). [ht4, mps8 pending]
+  (sigma 0.4 .. 0.01, 1.6 decades, offset removed, 10 seeds each) binary8 4.9983 +- 0.0003 (chi 3),
+  4.9990 +- 0.0002 (chi 6); ht4 4.9994 +- 0.0001 (chi 3), 4.9987 +- 0.0007 (chi 6); mps8 5.9995 +- 0.0002
+  (chi 3) (K - 2 = 1, 2, 5, 6). mps8 at chi = 6 was not completed (jobs stopped at the end; first
+  escapes at sigma = 0.01 are at t ~ 1e13).
 - **Prefactor, no free parameter**: |t_1 / (sigma^-(K-2) T(theta_hat) + c_K) - 1| at the smallest
-  sigma <= 2e-3 (binary4), 6e-5 (mps4), 2e-8 (binary8, sigma = 0.01). At larger sigma the residual
+  sigma <= 2e-3 (binary4), 6e-5 (mps4), <= 2e-7 (binary8, ht4, mps8 at sigma = 0.01). At larger sigma the residual
   is the O(1) offset (K = 3, 4: the predicted c_K accounts for it to within ~25% (binary4) and ~10%
   (mps4)) or, at K = 7, ~37x the c_K term at sigma = 0.3 (2% at sigma = 0.4), as theory_escape 2.4
   anticipates (the escape direction has not converged at moderate sigma).
-- **First component** = the one dominating the correlation flow at its blow-up: 100% of runs on mps4
-  and binary8; 80-90% on binary4 with the close teacher (matrix-like pair: the wrong order at finite
+- **First component** = the one dominating the correlation flow at its blow-up: 100% of runs on mps4,
+  binary8, ht4 and mps8; 80-90% on binary4 with the close teacher (matrix-like pair: the wrong order at finite
   sigma, theory_escape E9).
 - **Kumar-Haupt is a lower bound, far off**: median T / t_KH = 3.1-4.8 (binary4), 7.9-13.7 (mps4),
-  184-489 (binary8), inside the ranges theory_escape 9.2 predicts (2.5-5.2, 5.2-18, 94-4463).
+  95-210 (ht4), 184-2650 (binary8), 1460 (mps8), inside the ranges theory_escape 9.2 predicts (2.5-5.2,
+  5.2-18, 35-270, 94-4463, 182-12378).
 - **Fan-in imbalance and the prefactor**: gauge-balancing the same init (same W_0, Q_e = 0) changes
   T per seed by a factor 0.88-1.92 (median 0.99-1.18 per cell; usually slower), keeps the first
   component in 80-100% of seeds, and leaves the exponent unchanged.

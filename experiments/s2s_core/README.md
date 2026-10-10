@@ -86,8 +86,8 @@ Full statements with status tags and numbers: `notes/s2s_core.md` section 2; sum
 `agent-runs/s2s-core/REPORT.md`. In short (odeco teachers, d = 4, gradient flow):
 - Aligned init reproduces the exact mode solutions on all five trees (max |a_GF - a_theory| <= 3e-9).
 - First escape: t_1 = sigma^-(K-2) T(theta_hat) + c_K per seed with no free parameter (exponent
-  0.9996, 2.0000, 4.998 for K = 3, 4, 7; prefactor to <= 2e-3 at the smallest sigma); the Kumar-Haupt
-  rho_0 law is a lower bound off by 3-500x (K = 3-7) and up to 3e7 at K = 15; at full bond the binary4
+  0.9996, 2.0000, 4.999, 5.9995 for K = 3, 4, 7, 8; prefactor to <= 2e-3 at the smallest sigma); the Kumar-Haupt
+  rho_0 law is a lower bound off by 3-2700x (K = 3-8) and up to 3e7 at K = 15; at full bond the binary4
   prefactor is pi/2 independent of d; the RMS-overlap heuristic P3 tracks the K dependence within 2x.
 - Random init: S2S with plateaus at the partial-fit levels, one rank step per event on every edge at
   once, every gap ~ sigma^-(K-2) per seed (1.00, 2.00, 5.0 for K = 3, 4, 7), plateaus are higher-order
