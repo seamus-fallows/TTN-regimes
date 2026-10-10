@@ -1,5 +1,8 @@
 # Experiment `regime_map`: map of training regimes (Q5, H4)
 
+> **2026-10-10, verification of round 2:** round-2 and relabel statements below are corrected by errata
+> E1-E19 of `notes/reviews/regime_map_round3_verification.md` (list in `notes/regime_map.md` section 4.9).
+
 ## Question
 Where do saddle-to-saddle (S2S), rich non-incremental and lazy dynamics occur as functions of the
 per-core init scale sigma, the bond dimension chi, the number of cores K and the root/rest
@@ -81,7 +84,7 @@ Raw outputs are not in git; rerunning step 1 regenerates them (seeded; ~2-4 h on
 the remote outputs is in `data/regime_map/` of the main checkout (2026-10-10, read-only); fix-round
 reruns and the tensor-kernel cache in `data/regime_map_local/` (both gitignored).
 
-## Round 2: sigma_c(K) in realizable problems (pre-registered: `notes/regime_map.md` section 4)
+## Round 2: sigma_c(K) in realizable problems (pre-registered: `notes/regime_map.md` section 4, f57a28c, 12:26 UTC)
 Question: does the S2S/rich boundary sigma_c(K) tend to a constant (1 or sqrt(d)) as K grows? Laws
 compared: sigma_c^K = const (H_A) vs sigma_c^K / sqrt(D) = const (H_B), through
 y = ln(sigma_c^K / u_0c(K)) = -gamma + beta ln sqrt(D) (beta = 0: H_A, beta = 1: H_B).
@@ -143,14 +146,19 @@ the notes):
   boundaries (verification erratum E1). sigma^K and sigma^K / sqrt(D) are indistinguishable on these
   data. sigma_c -> sqrt(d) is a conjecture, and stalls take over at large K;
 - round 2 (realizable, d = 2 and 3, `results/round2/`, notes 4.7-4.8):
-  - Plain model with spare channels: at K >= 8 most seeds stay S2S up to the event rule's domain
-    limit (the sigma where W_0's overlap with a teacher component reaches 0.1, which tends to sqrt(d)),
-    with lower bounds 1.2-2.0. So sigma_c does not tend to 1.
-  - Mechanism: the plain model shrinks its cores (unlearns W_0) on the plateau once
-    sigma^K sqrt(D) / (s d) > ~1.
+  - Plain model with spare channels: at K >= 8, 85 of 96 seeds are censored from above. 76 stay
+    S2S-like at every sampled sigma up to the event rule's domain limit (the sigma where W_0's overlap
+    with a teacher component reaches 0.1), and 9 were still open when the budget ended. The other 11
+    cross, all below sqrt(d) (0.86-1.37 at d = 2; one seed of 48 at d = 3, at 1.08). The domain
+    limit's median is about sqrt(d) at K = 8-15; it tends to about 1.15 sqrt(d), not sqrt(d). Lower
+    bounds 1.07-2.03 at K >= 8, all above 1 and above both extrapolated laws. So sigma_c does not tend
+    to 1 (K <= 15; E1, E2, E4, E5, E12).
+  - The plain model shrinks its cores (unlearns W_0) on the plateau once sigma^K sqrt(D) / (s d) > ~1
+    (empirical; an exact norm identity requires it). That this lifts the boundary (H_W) is consistent
+    with the data but untested: conjecture (E3).
   - Centred model with full bonds (K <= 8 at d = 2, K <= 4 at d = 3): sigma^K and sigma^K / sqrt(D)
     are not resolved (beta = -0.07 +- 0.51).
-  - Run time: median 800-1,600 s per run at K = 13-15 (plain, chi = 4); about 1 h at full bonds with P = 2349;
+  - Run time: median 700-1,650 s per run at K = 13-15 (plain, chi = 4); about 1 h at full bonds with P = 2349;
 - large chi (tensor kernel): delta_K ~ chi^-3.02 (SP), NTK chi^-1 at chi >= 64, muP-TTN delta_K -> 6.2
   (theory P16);
 - imbalance: light root -> lazy (delta_K ~ lambda^2, saturating at 0.6, the lower edge of P20's
@@ -158,7 +166,8 @@ the notes):
   from alpha = 1;
 - the N = 4 maps (sigma_chi_b4, chi_b4, imbalance_b4) and the report tables / figures built from them
   are labelled with the tensor-space kernel since round 2 (`relabel_tensor.py`,
-  `REGIME_MAP_LABEL_KERNEL=tensor`; 65 of 5,298 labels change, lazy boundaries +4-9%; notes section 5).
+  `REGIME_MAP_LABEL_KERNEL=tensor`; 65 of 5,298 labels change, lazy boundaries +1-9% (centred 4-9%;
+  14-15% at chi = 6-9; E18); notes section 5).
 
 Figures and tables in `results/` were regenerated in fix round 1 by
 `make_figures.py --raw data/regime_map --force` (the copied remote outputs, relabelled with the
