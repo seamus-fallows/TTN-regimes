@@ -31,7 +31,7 @@
 This appendix derives the theoretical statements of the main text not proved in \cref{sec:setup}.
 
 \paragraph{Conventions.}
-Notation is that of \cref{sec:setup}. Unless stated otherwise inputs are whitened ($\Sig=\Id$),
+Notation is that of \cref{sec:setup} (\cref{tab:notation}). Unless stated otherwise inputs are whitened ($\Sig=\Id$),
 gradient flow has unit multipliers ($\lrm{v}=1$), so that $\Loss=\tfrac12\normF{\W-\Wt}^2$, and the
 teacher is a CP teacher \eqref{eq:cp-teacher}. Sites are numbered from 0, and a pattern is the string of
 its site values, site 0 first ($0110$). For two components $j,r$ of a pattern teacher,
@@ -158,8 +158,9 @@ limit (\cref{prop:A-kkt}).
   \begin{equation}\label{eq:A-blowup}
     t^*=\norm{\params_0}^{-(\Kc-2)}\int_0^\infty e^{-(\Kc-2)\Kc G(\tau)}\,\dd\tau .
   \end{equation}
-  For $\params_0=\isc Z$, $t^*=\isc^{-(\Kc-2)}\,\hat t_1(Z)/\tw{1}$, where $\hat t_1(Z):=\tw{1}\,t^*|_{\isc=1}$ depends on the
-  initialization direction and on $\Wt/\tw{1}$ but not on $\isc$; the exponent $\Kc-2$ counts every core.
+  For $\params_0=\isc Z$, $t^*=\isc^{-(\Kc-2)}\mathcal T(Z)$ with $\mathcal T(Z)=\hat t_1(Z)/\tw{1}$, where
+  $\hat t_1(Z):=\tw{1}\,t^*|_{\isc=1}$ depends on the initialization direction and on $\Wt/\tw{1}$ but not on $\isc$; the
+  exponent $\Kc-2$ counts every core.
 \end{corollary}
 \begin{proof}
   By \eqref{eq:A-spherical}, $\norm{\params(\tau)}=\norm{\params_0}e^{\Kc G(\tau)}$ and
@@ -192,11 +193,11 @@ $\isc^{\Kc-2}\le10^{-3}$.
 
 \begin{remark}[Per-initialization prediction]\label{rem:A-recipe}
   \proven{} at LO for $t^*$; \derived{} for $\tev1$ (\cref{prop:A-first-event}) and for the first component.
-  Integrate in $\tau$ the state $(u,\ell,T)$ from $u(0)=\params_0/\norm{\params_0}$,
-  $\ell(0)=T(0)=0$: $\dd u/\dd\tau=\nabla g(u)-\Kc g(u)u$ (renormalizing $u$), $\dd\ell/\dd\tau=\Kc g(u)$,
-  $\dd T/\dd\tau=e^{-(\Kc-2)\ell}$, up to $\ell=40/(\Kc-2)+5$, and add the tail
-  $e^{-(\Kc-2)\ell}/((\Kc-2)\Kc g(u))$. Then $t^*=\norm{\params_0}^{-(\Kc-2)}T$ for the actual teacher (any
-  number of components), and the dominant component of the final $u$ is the first one learned as
+  Integrate in $\tau$ the state $(u,\ell,\tilde t)$ from $u(0)=\params_0/\norm{\params_0}$,
+  $\ell(0)=\tilde t(0)=0$: $\dd u/\dd\tau=\nabla g(u)-\Kc g(u)u$ (renormalizing $u$), $\dd\ell/\dd\tau=\Kc g(u)$,
+  $\dd\tilde t/\dd\tau=e^{-(\Kc-2)\ell}$, up to $\ell=40/(\Kc-2)+5$, and add the tail
+  $e^{-(\Kc-2)\ell}/((\Kc-2)\Kc g(u))$. Then $t^*=\norm{\params_0}^{-(\Kc-2)}\tilde t$ (so $\mathcal T(Z)=\norm{Z}^{-(\Kc-2)}\tilde t$)
+  for the actual teacher (any number of components), and the dominant component of the final $u$ is the first one learned as
   $\isc\to0$, provided the KKT point reached is a component configuration (\cref{prop:A-component-hessian};
   not for stars, \cref{rem:A-sequence}): a parameter-free prediction of $\tev{1}$ (tested in
   \cref{sec:s2s-escape}).
@@ -855,10 +856,10 @@ $\Pi_B\mathcal R=\sum_{r:V_{jr}=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\empty
   is at most $2\ell<k^*$.
 \end{theorem}
 \begin{proof}[Proof sketch of \cref{thm:A-order-lower}]
-  (Full proof: \path{notes/theory_saddle_order.md}, sections 3.1-3.5.) Let $\omega=\ip{\U j}{\W}$ ($=\tw j$ at
-  $\params_S$) and $\mu_B=\Pi_B\W/\omega\in\mathcal H_B$. Sector orthogonality gives the exact identity
+  (Full proof: \path{notes/theory_saddle_order.md}, sections 3.1-3.5.) Let $y=\ip{\U j}{\W}$ ($=\tw j$ at
+  $\params_S$) and $\mu_B=\Pi_B\W/y\in\mathcal H_B$. Sector orthogonality gives the exact identity
   \begin{equation}\label{eq:A-sector-identity}
-    \Loss-\Loss_S=\tfrac12(\omega-\tw j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{\omega^2}2\norm{\mu_B}^2-\omega\ip{\Pi_B\mathcal R}{\mu_B}\Big].
+    \Loss-\Loss_S=\tfrac12(y-\tw j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{y^2}2\norm{\mu_B}^2-y\ip{\Pi_B\mathcal R}{\mu_B}\Big].
   \end{equation}
   Families $(f_B)_{B\subseteq\nodes}$, $f_B\in\mathcal H_B$, form a commutative algebra under
   $(f*g)_B=\sum_{B_1\sqcup B_2=B}f_{B_1}\otimes g_{B_2}$; the cumulants $\psi=\log\mu$ are given by the
@@ -874,7 +875,7 @@ $\Pi_B\mathcal R=\sum_{r:V_{jr}=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\empty
   term contains a single cumulant on a set of degree at least $k^*$ ($O(\varepsilon^{k^*})$), or two high
   cumulants ($O(\varepsilon^{2\ell})$, after Young's inequality for one low and one high), or is
   $\varepsilon$ times the quadratic form. So
-  $\Loss-\Loss_S\ge\tfrac{\omega}2(\tw j-\lambda_{\ell-1}-O(\varepsilon))\norm{\psi_{\rm low}}^2-O(\varepsilon^{\min(k^*,2\ell)})$,
+  $\Loss-\Loss_S\ge\tfrac{y}2(\tw j-\lambda_{\ell-1}-O(\varepsilon))\norm{\psi_{\rm low}}^2-O(\varepsilon^{\min(k^*,2\ell)})$,
   which gives (b); (a) is $\ell=\lceil k^*/2\rceil$. Balance, pattern structure, bond dimensions and the
   gauge are not used.
 \end{proof}
@@ -885,7 +886,7 @@ $\Pi_B\mathcal R=\sum_{r:V_{jr}=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\empty
   $q_j(\varepsilon x_{B,\pi})^{1/\abs{\mathrm{St}(B)}}$ on the cores of $\mathrm{St}(B)$, with the pattern $\pi$ on $B$, the
   pattern of $j$ elsewhere, and a spare index on the bonds of $\mathrm{St}(B)$ that no other node of $X$
   uses there (the index condition). A nonzero contraction term then uses whole polymers with disjoint
-  Steiner subtrees, so $\omega=\tw j$ exactly, the Gauss--Newton term at order $\varepsilon^2$ is
+  Steiner subtrees, so $y=\tw j$ exactly, the Gauss--Newton term at order $\varepsilon^2$ is
   $\tfrac{\tw j^2}{2}\norm x^2$, and the gain at order $\varepsilon^2$ comes exactly from the edges of the graph,
   $\tfrac{\tw j}2x\T A_Xx=\tfrac{\tw j}2r(A_X)$. Hence
   $\Loss-\Loss_S=-\tfrac{\tw j}2(r(A_X)-\tw j)\varepsilon^2+O(\varepsilon^3)$ while
@@ -1379,7 +1380,7 @@ $0.7$--$1.2\,\lr^*_{\rm ms}$ components were repeatedly erased and relearned, or
 
 Here $\pd[i]=d$, and $\TK=\sum_v\lrm vJ_vJ_v\T$ on $\R^{d^\Ns}$, $J_v=\partial\W/\partial\G v$, is the tensor-space
 tangent kernel that drives the function-space dynamics of \eqref{eq:gf} (for whitened inputs the probe-set
-kernel of \cref{tab:raw-diagnostics} is $\Feat(x_p)\T\TK\Feat(x_{p'})$). Recall $\mat{\W}{\edge v}=\Sub vC_v\T$
+kernel of \cref{sec:setup-diagnostics} is $\Feat(x_p)\T\TK\Feat(x_{p'})$). Recall $\mat{\W}{\edge v}=\Sub vC_v\T$
 (\cref{sec:setup-model}); the initialization is \eqref{eq:init} with scales $\iscv v$, $\fsc=\prod_v\iscv v$. A bond
 $e$ is \emph{full} if $\bd e$ reaches its cut dimension $\min(d^{n_e},d^{\Ns-n_e})$ ($n_e$ sites below $e$).
 

@@ -20,7 +20,24 @@ Every experiment trains the model of \cref{sec:setup-model} on the exact populat
 finite-sample sweeps (empirical loss), the correlated-input runs (dense second-moment matrix) and the
 real-data runs (empirical loss on a fixed training set). Inputs are whitened Gaussians ($\Sigi i=\Id$)
 unless stated, so the loss is half the squared Frobenius distance to the teacher, and only the second
-moments of the features enter.
+moments of the features enter. The three terms of \eqref{eq:loss-expanded} are exact contractions
+(\path{ttn.losses.population_loss}, with \path{ttn.network.inner} and \path{ttn.general.inner_general}): for two TTNs $\W,\W'$ on the
+same tree (bond dimensions may differ), $\ipS{\W}{\W'}=E_{\vroot}$, with environments
+$E_v\in\R^{\bd{v}\times\bd{v}'}$ computed from the leaves to the root at a cost linear in $\Kc$,
+\begin{equation}\label{eq:environment}
+  (E_v)_{aa'}=\sum\G{v}\big[(j_i),(b_u),a\big]\,\G{v}'\big[(j'_i),(b'_u),a'\big]
+  \prod_{i\in\sites{v}}(\Sigi{i})_{j_ij'_i}\prod_{u\in\ch{v}}(E_u)_{b_ub'_u};
+\end{equation}
+for a CP teacher, $\ipS{\W}{\U{r}}$ is the student evaluated at the site vectors $\Sigi{i}\fac{r}{i}$, so on any
+tree
+\begin{equation}\label{eq:cp-inner}
+  \ipS{\W}{\Wt}=\sum_r\tw{r}\,f_\params\big(\Sigi{1}\fac{r}{1},\dots,\Sigi{\Ns}\fac{r}{\Ns}\big),
+  \qquad
+  \ipS{\Wt}{\Wt}=\sum_{r,r'}\tw{r}\tw{r'}\prod_i\fac{r}{i}{}\T\Sigi{i}\fac{r'}{i},
+\end{equation}
+where $f_\params(z_1,\dots,z_\Ns)$ is \eqref{eq:messages} with $\feat{i}(x)$ replaced by $z_i$; a TTN teacher on
+another tree is glued to the student along the physical legs, and the loopy network is contracted exactly
+along an optimized path. The reference model and the reasons for it are in \path{notes/model.md}.
 
 \paragraph{Precision and processes.}
 All computations are in double precision: with $\isc=10^{-2}$ and $\Kc=7$ the initial tensor has norm
@@ -77,14 +94,18 @@ difference of terms of size $\normF{\Wz}^2$, with a cancellation error of about 
 that is harmless at small $\fsc$ but ruins large ones. The library therefore writes $\W(\params)-\Wz$ as
 one TTN on doubled bonds, in half-sums and half-differences of the two networks, so that nothing cancels
 (\path{ttn.dynamics.Problem}); the regime map uses the direct form only for $\fsc<10^{-2}$
-(\cref{app:exp-regimes}). The two-copy model $\W(\params^+)-\W(\params^-)$ is one TTN with doubled bonds
-and block-diagonal cores (\path{ttn.network.antisymmetric_double}), trained with the gradient mask of
-\cref{rem:two-copy-mask} and contracted in the same half-sum and half-difference form
-(\path{ttn.network.sum_difference_cores}).
+(\cref{app:exp-regimes}). The two-copy model $\W(\params^+)-\W(\params^-)$ is stored as one TTN with doubled bonds
+$2\bd{v}$ and block-diagonal cores (\path{ttn.network.antisymmetric_double}): $\G{v}^\pm$ on the block where all bond
+indices of $v$ are in the ``$\pm$'' half, and the root holds $\G{\vroot}^+$ and $-\G{\vroot}^-$. It is trained with the
+gradient mask of \cref{rem:two-copy-mask} and contracted in the same half-sum and half-difference form
+(\path{ttn.network.sum_difference_cores}). Why the centred model is the main construction and the two-copy
+model a cross-check: \path{notes/model.md} and \path{notes/decisions.md}.
 
 \paragraph{Recording, kernels and Hessians.}
-Diagnostics are recorded on a logarithmic time grid (200 times by default; other grids where a subsection
-says so) plus the fine rows of \cref{sec:setup-dynamics}, and merged for events
+Diagnostics are recorded at $t=0$ and on a logarithmic time grid, by default 200 times from
+$10^{-3}\min(\tau_0,\tau_\Loss,\tmax)$ to $\tmax$, where $\tau_0=\norm{\params}/\norm{\dot\params}$ and
+$\tau_\Loss=\Loss/\abs{\dot\Loss}$ at $t=0$ (other grids where a subsection says so), plus the fine rows of
+\cref{sec:setup-dynamics} (\path{Recorder} in \path{ttn/dynamics.py}), and merged for events
 (\path{ttn.dynamics.merged_rows}). Hessians are computed by automatic differentiation at plateau midpoints
 (minimum parameter speed between two events), raw and with the gauge directions projected out
 (\path{ttn.diagnostics.project_out_gauge}): the projection keeps the left singular vectors of the
@@ -96,8 +117,8 @@ read from how $\lambda_{\min}$ scales with $\isc$; the single-$\isc$ fallback (s
 $\lambda_{\min}(\Hperp)<-10^{-3}\max_j\abs{\lambda_j(\Hperp)}$) calls $k=3$ plateaus strict for $\isc\gtrsim0.01$--$0.04$
 and is not used for claims. The relative kernel change uses the probe kernel (in the regime map, 128
 Gaussian inputs from generator seed 12345; on real data, the first 128 test images) and, where the dense
-Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$), the tensor-space kernel
-$\Jac\,\diag(\boldsymbol\lr)\,\Jac\T$, with $\boldsymbol\lr$ the per-parameter multipliers times the gradient mask.
+Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$), the tensor-space kernel $\Jac\Pre\Jac\T$, with
+$\boldsymbol\lr$ the per-parameter multipliers, set to zero where a gradient mask applies.
 
 \paragraph{Event rules.}
 \Cref{tab:exp-common} gives the rule of every experiment. For CP teachers whose components are orthogonal
@@ -161,8 +182,12 @@ rows or found by root finding on dense output; an event narrower than three samp
   \end{tabularx}
 \end{table}
 
-\paragraph{Run classes.}
-A run is \emph{stalled} (\cref{tab:regimes}) when its loss is still above $10^{-3}\Loss(0)$ when the budget ends,
+\paragraph{Regime labels and run classes.}
+The labels of \cref{tab:regimes} follow \path{notes/diagnostics.md} and are computed by
+\path{classify_regime} in \path{ttn/diagnostics.py}, which adds two labels: \emph{lazy (projected fit)}, checked
+before stalled, for $\dTK(T)<0.1$ and a final loss within $10\%$ of that of the linearized fit (positive when a
+bond is deficient), and \emph{undetermined} when every $\sep{i}\le3$ involves an unresolved event.
+A run is \emph{stalled} when its loss is still above $10^{-3}\Loss(0)$ when the budget ends,
 and the subclass names the cause: \emph{dead route} (an end of the route the next component needs is at
 roundoff, the conservation-law trap of \cref{prop:A-trap} being the proposed mechanism), \emph{slow} (every
 route is live, but the plateau outlasts the budget) or \emph{floor} (a centred target that the bond ranks
@@ -261,15 +286,15 @@ complete runs of \texttt{main}, in the event windows. The conservation drift (pe
 $3.3\cdot10^{-6}$; ten MPS8 runs and one binary8 run).
 
 \paragraph{Leading-order flow.}
-$T(Z)$ and $r_1$ (\cref{rem:A-recipe}) come from \path{s2s.correlation_flow_blowup}: the flow
+$\mathcal T(Z)$ and $r_1$ (\cref{cor:A-blowup,rem:A-recipe}) come from \path{s2s.correlation_flow_blowup}: the flow
 $\dot\params=\nabla g$ from the initialization at $\isc=1$, by DOP853 with relative tolerance $10^{-10}$,
 integrated in segments until the second-largest component amplitude $\abs{\ip{\W}{\U r}}$ is below $10^{-6}$
 of the largest and no longer growing relative to it, with a cap at amplitude $10^{30}$; the remaining time
 of a balanced mode from the stop is added. The 40 binary4 close-teacher jobs and 2 separated binary4 jobs
-at $\chi=6$ stopped at the cap with the direction still converging; $T$ is converged regardless (the time
+at $\chi=6$ stopped at the cap with the direction still converging; $\mathcal T$ is converged regardless (the time
 left beyond amplitude $A$ is $\propto A^{-(\Kc-2)/\Kc}$), and an independent integration of the spherical
 flow agrees to $1.5\cdot10^{-11}$ (binary4) and $1.7\cdot10^{-10}$ (MPS4) relative on all 160 binary4 and
-MPS4 jobs (verification review). Round-1 values of $T$, from a stop at amplitude $10^6$, were biased by up to
+MPS4 jobs (verification review). Round-1 values of $\mathcal T$, from a stop at amplitude $10^6$, were biased by up to
 $2.2\cdot10^{-3}$ relative (binary4, close teacher) and are superseded.
 
 \paragraph{Sweeps and run counts.} \Cref{tab:exp-s2s}.
@@ -351,7 +376,7 @@ different set (verification review, E13); its results are reported as measured.
 
 \paragraph{Excluded and superseded runs.}
 The scipy pilots made before the library existed, part of them before the teacher and initialization streams
-were separated, support no claim. Superseded after review round 1: $T$ from the amplitude-$10^6$ stop (kept as
+were separated, support no claim. Superseded after review round 1: $\mathcal T$ from the amplitude-$10^6$ stop (kept as
 \texttt{T\_v1} in the raw records), gap fits on pooled run sets, Hessians with the earlier gauge projection, and
 decay rates fitted into the floating-point floor (now fitted above $10^{-9}$ absolute). No run was dropped:
 runs that do not complete are reported in their class. The raw records (3,417 files, about 220\,MB; local copy
