@@ -355,6 +355,35 @@ runs each; error from the residual scatter). sigma = 1.5 is the theory's check p
   change the scaling (literature correction 1).
 - K = 7 (binary N = 8, d = 2, plain, sigma = 1, chi = 4..32; `large_chi_b8`): incomplete (see report).
 
+### 2.6 sigma x chi at K = 7 (binary N = 8)
+
+Two maps (6 seeds; figures `phase_sigma_chi_b8.png`, `phase_sigma_chi_b8_d2.png`; per-seed tables
+`boundaries_per_seed_sigma_chi_b8*.csv`). 13 of 240 and 15 of 390 runs were not finished at the cut-off
+(listed in the report); the statements below use the finished ones.
+
+**d = 3, teacher [3, 2, 1], deficient bonds (cut dimension of the top bonds 81), chi = 3, 6, 24:**
+- No lazy regime: every centred run above sigma ~ 0.9-1.3 stalls at the floor of the unrealizable
+  centred target (theory P4: sigma_floor ~ 0.75), and the plain model at chi = 24 stays rich up to
+  sigma = 1.5. **Empirical.**
+- S2S boundary (per-seed median, bracket = [last S2S, next sigma]): centred chi = 24: 0.54 [0.45,
+  0.65], rich at 0.65-0.93; plain chi = 24: 0.52; plain chi = 6: 0.93 [0.79, 1.09]; centred chi = 6:
+  S2S up to 0.43, then (missing points) floor-stalled from 0.91.
+- chi = 3 (= teacher rank): stalls dominate already at sigma = 0.3 (centred 4/6, plain 4/6 stalled),
+  as in the stall test (2.2).
+
+**d = 2, teacher [3, 2] (cut dimensions 4 and 16), centred, chi = 2, 4, 8, 16 (full, square) and
+8/32 (full, 2x):**
+- S2S boundary 0.83 [0.72, 0.97] for chi = 4, 8, 16 and 0.53 [0.46, 0.61] for the 2x-overparameterized
+  full bonds (more channels move the boundary down, as at N = 4). Theory P15 (plain model, chi = 16,
+  12 seeds, first-run widths unknown) gives a median 0.71.
+- **Lazy regime at K = 7 exists only with overparameterized full bonds:** 8/32: lazy from sigma ~ 1.4
+  (2/5 seeds at 1.42, majority from 2.5), kernel boundary (delta_K = 0.1 crossing) 1.45 (median of
+  seeds); the remaining large-sigma runs are "stalled" because the lazy fit had not finished within the
+  step budget (delta_K < 0.01, loss still falling). Square full bonds (chi = 16): every run above
+  sigma = 1.7 stops at the step budget with delta_K = 1e-6..0.17 and l = 0.05-0.3 still decreasing - the
+  ill-conditioned lazy fit of theory P9 (lambda_min / lambda_bar ~ 1e-4 at square cores), not a
+  floor. Deficient bonds (chi = 2, 4, 8): floor-stalled from sigma ~ 1.07. **Empirical.**
+
 ### 2.x Two-copy cross-check (binary N = 4)
 
 *Interim data (scipy RK45), 6 seeds x 8 chi x 19 sigma.*

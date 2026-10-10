@@ -204,21 +204,31 @@ def aligned_sigma_c(rows: pd.DataFrame, K: int, weights=(3.0, 2.0, 1.0), rho_thr
 
 
 def seed_s2s_boundary(rows: pd.DataFrame, label_col: str = "label"):
-    """One seed's S2S boundary: geometric mean of the largest sigma below which every run is S2S
-    and the next sigma (first non-S2S run). Returns (sigma_c, status): status 'ok', 'never_s2s'
-    (deepest run not S2S), 'all_s2s' (no exit within the grid), or 'unresolved' (first non-S2S run
-    did not finish: stalled at the budget, so the label may be a budget artefact)."""
+    """One seed's S2S boundary from its labels along sigma.
+
+    Uses the first contiguous block of S2S runs (runs below it that stalled -- plateaus longer than the
+    budget or dead routes at small sigma -- are skipped and flagged): sigma_c = geometric mean of the
+    block's largest sigma and the next sigma. Returns (sigma_c, status, lo, hi): status 'ok' (the next
+    run is rich or lazy), 'unresolved' (the next run stalled, so the S2S block may end anywhere in
+    [lo, hi]), 'never_s2s', 'all_s2s'; a suffix '+stall_below' marks stalled runs below the block."""
     r = rows.sort_values("sigma")
-    lab = r[label_col].values
-    sig = r.sigma.values
-    if lab[0] != "s2s":
-        return np.nan, "never_s2s"
-    non = np.flatnonzero(lab != "s2s")
-    if non.size == 0:
-        return np.nan, "all_s2s"
-    i = non[0]
-    status = "unresolved" if lab[i] == "stalled" else "ok"
-    return float(np.sqrt(sig[i - 1] * sig[i])), status
+    lab, sig = r[label_col].values, r.sigma.values
+    s2s = np.flatnonzero(lab == "s2s")
+    if s2s.size == 0:
+        return np.nan, "never_s2s", np.nan, np.nan
+    start = s2s[0]
+    below = "+stall_below" if (lab[:start] == "stalled").any() else ""
+    if (lab[:start] != "stalled").any():  # a rich/lazy run below the first S2S run: not a clean block
+        start_status = "mixed_below"
+        below = "+" + start_status
+    end = start
+    while end + 1 < len(lab) and lab[end + 1] == "s2s":
+        end += 1
+    if end == len(lab) - 1:
+        return np.nan, "all_s2s" + below, sig[end], np.nan
+    lo, hi = sig[end], sig[end + 1]
+    status = ("unresolved" if lab[end + 1] == "stalled" else "ok") + below
+    return float(np.sqrt(lo * hi)), status, float(lo), float(hi)
 
 
 def seed_kernel_boundary(rows: pd.DataFrame, thr: float = 0.1, converged_only: bool = True):
@@ -261,13 +271,14 @@ def per_seed_table(df: pd.DataFrame, by: list[str], K: int | None = None) -> pd.
     out = []
     for key, g in df.groupby(by + ["seed"]):
         k = K or int(g.K.iloc[0])
-        sc, status = seed_s2s_boundary(g)
+        sc, status, lo, hi = seed_s2s_boundary(g)
         w = g.weights.iloc[0] if "weights" in g.columns and isinstance(g.weights.iloc[0], list) else (3.0, 2.0, 1.0)
         pred, _ = aligned_sigma_c(g, k, weights=tuple(w))
         s2s = g[g.label == "s2s"]
         slope, _ = seed_power_fit(s2s.sigma, s2s.min_rho) if len(s2s) >= 3 else (np.nan, np.nan)
         row = dict(zip(by + ["seed"], key if isinstance(key, tuple) else (key,)))
-        row.update(K=k, sigma_c=sc, s2s_status=status, sigma_c_pred=pred, sigma_K01=seed_kernel_boundary(g),
+        row.update(K=k, sigma_c=sc, s2s_status=status, s2s_lo=lo, s2s_hi=hi, sigma_c_pred=pred,
+                   sigma_K01=seed_kernel_boundary(g),
                    rho_slope=slope, n_s2s=len(s2s))
         out.append(row)
     return pd.DataFrame(out)

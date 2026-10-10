@@ -440,7 +440,8 @@ def fig_sigma_K(exp="sigma_K", chi=6):
                        "u0": r"per-component amplitude $\sigma^K/\sqrt{D}$"}[xcol])
     axes[0].legend(handles=legend_handles(False) + axes[0].get_legend_handles_labels()[0], fontsize=6.5,
                    loc="upper left", bbox_to_anchor=(0, -0.15), ncol=2, frameon=False)
-    axes[0].set_title(f"{exp}: plain model, chi = {chi}, d = {d}, teacher {weights}", fontsize=9, loc="left")
+    axes[0].set_title(f"{exp}: {df.model.iloc[0]} model, chi = {chi}, d = {d}, teacher {weights}", fontsize=9,
+                      loc="left")
     fig.tight_layout()
     save_fig(fig, f"phase_{exp}_chi{chi}.png")
     return tab
@@ -686,3 +687,69 @@ def fig_sigma_c_vs_K(specs, name="sigma_c_vs_K"):
     out = pd.DataFrame(rows)
     save_csv(out, f"{name}.csv")
     return out
+
+
+def fig_summary(name="summary"):
+    """Summary: (left) binary N = 4 centred map at chi >= 9 against the collapse variable sigma sqrt(chi)
+    (fraction of seeds per regime, majority colour), with the S2S and lazy boundaries; (right) S2S
+    boundary vs K (centred, d = 2, chi = 4) with the per-component-amplitude law
+    sigma_c = (u0c d^(N/2))^(1/K), u0c = 0.01, and its sqrt(d) limit."""
+    from analysis import load, per_seed_table
+
+    df = pd.concat([load("chi_b4"), load("sigma_chi_b4")])
+    df = df[(df.model == "centred") & (df.chi >= 9)].copy()
+    df["x"] = df.sigma * np.sqrt(df.chi)
+    fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.0))
+    ax = axes[0]
+    chis = sorted(df.chi.unique())
+    for j, c in enumerate(chis):
+        sub = df[df.chi == c]
+        for x, g in sub.groupby("x"):
+            lab = g.label.value_counts().index[0]
+            ax.scatter(x, j, s=30, color=COLORS[lab], marker="s", lw=0)
+    ax.axvline(0.29, color=INK, ls="--", lw=1)
+    ax.axvline(6.2, color=INK, ls=":", lw=1.2)
+    ax.text(0.29, -0.9, r" S2S $\approx0.29$", fontsize=7)
+    ax.text(6.2, -0.9, r" lazy $\approx6.2$ (theory 6.5)", fontsize=7)
+    ax.set_xscale("log")
+    ax.set_yticks(range(len(chis)), [str(c) for c in chis])
+    ax.set_ylabel(r"bond dimension $\chi$")
+    ax.set_xlabel(r"collapse variable $\sigma\sqrt{\chi}$ (per-bond Gram scale)")
+    ax.set_title("binary N = 4 (K = 3), centred, full bonds: majority regime", fontsize=9, loc="left")
+    ax.set_ylim(-1.3, len(chis) - 0.5)
+    ax.legend(handles=legend_handles(False)[:3], fontsize=7, frameon=False, loc="upper left", bbox_to_anchor=(0, -0.13),
+              ncol=3)
+    ax = axes[1]
+    k = load("sigma_K_centred_d2")
+    k = k[k.chi == 4]
+    tab = per_seed_table(k, ["kind", "n"])
+    save_csv(tab, f"{name}_sigma_c_per_seed.csv")
+    for (kind, n), g in tab.groupby(["kind", "n"]):
+        sc = g.sigma_c.dropna()
+        if len(sc) == 0:
+            continue
+        K = int(g.K.iloc[0])
+        lo, hi = g.s2s_lo.median(), g.s2s_hi.median()
+        unresolved = (g.s2s_status.str.startswith("unresolved")).mean() > 0.5
+        c = "#2a78d6" if kind == "binary" else "#eb6834"
+        ax.errorbar(K, sc.median(), yerr=[[sc.median() - lo], [hi - sc.median()]], fmt="o" if kind == "binary" else "s",
+                    color=c, mfc="white" if unresolved else c, ms=5, capsize=2)
+        ax.annotate(f"{len(sc)}/{len(g)}", (K, sc.median()), textcoords="offset points", xytext=(5, -10), fontsize=6,
+                    color=MUTED)
+    Ks = np.arange(3, 31)
+    for kind, nf, c in (("binary", lambda K: K + 1, "#2a78d6"), ("mps", lambda K: K, "#eb6834")):
+        ax.plot(Ks, [(0.01 * 2.0 ** (nf(K) / 2)) ** (1 / K) for K in Ks], "-", color=c, lw=1, alpha=0.7,
+                label=rf"$(u_{{0c}}\,d^{{N/2}})^{{1/K}}$, $u_{{0c}}=0.01$ ({kind})")
+    ax.axhline(np.sqrt(2), color=MUTED, ls=":", lw=1)
+    ax.axhline(1.0, color=MUTED, ls="--", lw=0.8)
+    ax.text(28, np.sqrt(2) + 0.02, r"$\sqrt{d}$", fontsize=8, color=MUTED)
+    ax.text(28, 1.02, "1 (H4)", fontsize=7, color=MUTED)
+    ax.plot([], [], "o", color="#2a78d6", label="binary trees: median over seeds; bar = [last S2S, next] sigma")
+    ax.plot([], [], "s", color="#eb6834", label="MPS")
+    ax.plot([], [], "s", color="#eb6834", mfc="white", label="open: next run stalled (boundary in the bracket)")
+    ax.set_xlabel("number of cores K")
+    ax.set_ylabel(r"S2S boundary $\sigma_c$")
+    ax.set_title("S2S boundary vs K: centred, d = 2, chi = 4 (resolved seeds / seeds)", fontsize=9, loc="left")
+    ax.legend(fontsize=6.5, frameon=False, loc="lower right")
+    fig.tight_layout()
+    save_fig(fig, f"{name}.png")
