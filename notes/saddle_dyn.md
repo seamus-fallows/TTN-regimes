@@ -302,7 +302,7 @@ whose window lies below the crossover: PS08 (order 4: gamma = 2.001 ± 0.001, 12
 k* = 6: 2.001 ± 0.001), HT4W (order 6: 3.996 ± 0.003), HT4L (3.997 ± 0.003) and binary8 at rho = 0.5
 (B8W05: 3.998 ± 0.007): all **SUPPORTED** (every seed within 0.05 of p - 2; the route law is worse by an
 RSS factor of 1e3-2e5). Two test cells do not show the reduced law in their window: **HT4S is REFUTED by
-the registered rule** (gamma = 4.72 ± 0.14 over 11 complete seeds: 3 at 4.0, 8 at 5.0; one incomplete seed at 6) and **B8W (rho = 0.8)
+the registered rule** (gamma = 4.72 ± 0.14 over 11 complete seeds: 3 at 4.0, 8 at 5.0, one incomplete seed at 6; the route law fits better, RSS 29 against 75) and **B8W (rho = 0.8)
 is INCONCLUSIVE** (4.48 ± 0.15; 7 seeds at 4.0-4.2, 5 at 5.0-5.2). The registered rule cannot tell the
 reason; the per-seed data (9.2-9.4) say that in both cells the window is not below the crossover for
 every seed (the route law, or the reduced law shifted by one power, competes there), not that the order
@@ -314,7 +314,7 @@ C3: 6.0) or plus two (C1: ~6), never a smaller exponent.
 
 **H-B (small init).** Pair-star: **SUPPORTED** (16 of 40 seeds visit theta_S; all 16 complete,
 gamma = 2.002 ± 0.001, route law sigma^-3 worse by RSS 148 vs 0.0027). Binary8 wrong order (rho = 0.8):
-**INCONCLUSIVE** (13 visiting seeds of 30, gamma = 4.31 ± 0.12; 10 seeds converge to 4.00-4.16, 3 stay at
+**INCONCLUSIVE** (13 visiting seeds of 30, gamma = 4.31 ± 0.12; 9 seeds converge to 4.00-4.16, seed 1 is at 4.55 and falling, 3 stay at
 5.0); its registered side test "route law above the crossover" is **SUPPORTED** (local exponent 4.87 for
 sigma >= 0.1). PS06 control: **INCONCLUSIVE** (only 5 of 12 seeds visit theta_S; 7 learn the residual pair
 first, which corrects the verifier's "12/12 q-first", see 9.6).
@@ -326,7 +326,7 @@ of p - 2. The route law k* - 2 is the exponent at larger eps (binary8, sigma >= 
 seeds, down to the smallest eps reached in two cells (HT4S, binary8 at rho = 0.8): the crossover is seed-
 and teacher-dependent, and the leading-order estimate b does not locate it (HT4S: b = 0.12, but
 the route law persists to eps = 1e-4). On the controls the route law holds where the route survives, and
-the seed-to-seed spread is not scatter but integer shifts (k* - 1, k* - 2 + 2) and traps.
+the seed-to-seed spread is not scatter but integer shifts of the exponent (+1, in C1 +2) and traps.
 
 ## 9.1 H-A decision table
 
@@ -345,7 +345,8 @@ the seed-to-seed spread is not scatter but integer shifts (k* - 1, k* - 2 + 2) a
 | C3 | 7, 7 | 5 (4) | 1 | 6.000 | 6.000 [6.00, 6.00] | 0.00 | 9.28 / 37.1 | 6.645 ± 0.645, 6.000 | INCONCLUSIVE (fails: mean, seeds within 0.3, RSS vs alternative, >=10 seeds) |
 
 Run inventory (every run; "trapped" = deviation 1; "failed" = LSODA failure after 5 retries, all at
-t > 1e17 in effectively dead states):
+t > 1e17 in effectively dead states; runs missing from a cell's grid total (156 or 204 per cell, 132 for
+binary8) were still unfinished when the compute budget ended, see 9.7):
 
 | cell | runs | escaped | trapped | failed | wall | floor-flagged | window runs: escaped / trapped / failed | window escapes: split / mixed / route | q forgotten after escape |
 |---|---|---|---|---|---|---|---|---|---|
@@ -382,11 +383,12 @@ of the window.
 ## 9.3 HT4S: REFUTED by the rule, above the crossover in fact
 
 HT4S (the s2s_core "close" odeco teacher: s_q = 0.85, residuals 1111 (1.0) and 2222 (0.7), ht4, d = 4,
-chi = 3) has the smallest gap s_r - s_q = 0.15 of all cells. Per seed (complete fits): seeds 3, 8, 10 at
-3.97-4.04 (order-6 law, split escapes), seeds 1, 2, 11 at 5.00 with route-type escapes (the route law of
-1111), seeds 0, 4, 5, 7, 9 at 4.95-5.02 with split-type escapes, seed 6 at 6.0 (split). The local
-exponents of each seed are flat over the window (2.5 decades), so no seed is in transit; the two-mechanism
-fit puts the crossover at eps_c ~ 1e-9 (median), far below the grid. So in this teacher the order-6 law
+chi = 3) has the smallest gap s_r - s_q = 0.15 of all cells. Per seed (complete fits): seeds 3, 8 at
+3.97-3.98 (order-6 law, split escapes); seed 10 at 4.04, crossing from 5 to 4 inside the window (route-type
+escapes at eps >= 10^-3, split-type below); seeds 1, 2, 11 at 5.00 with route-type escapes (the route law of
+1111); seeds 0, 4, 5, 7, 9 at 4.95-5.02 with split-type escapes; seed 6 (incomplete) at 6.0 (split). The
+local exponents of the other seeds are flat over the window (1.5 decades); the two-mechanism fit puts the
+crossover at eps_c ~ 1e-9 (median), far below the grid. So in this teacher the order-6 law
 is seen in 3 of 12 seeds at eps <= 3e-3; the others follow the route law or the split mechanism shifted by
 one power (as in 9.5). The registered verdict stands (REFUTED: |4.72 - 4| > 0.5, SE 0.14, 11 seeds); its
 reading is that the prediction is asymptotic and the asymptotic range of this teacher is not reached at
@@ -465,8 +467,8 @@ wrong saddle); "wall" = 3600 s cap (the machine was oversubscribed, see 9.7).
   seed-dependent xi', i.e. an H-A start along a special direction; see 9.5 for the same integer shift
   in saddle starts.
 - **B8W (binary8 wrong order, rho = 0.8).** 13 of 30 seeds learn the smaller component first (43 %;
-  the `order` agent: 41 %). Of the 13 complete seeds, 10 converge to 4.00-4.16 (seed 1: 4.55, still falling; local exponents
-  fall from ~5 at sigma = 0.3 to 4.00-4.02 at sigma = 0.003: the predicted crossover from the route law
+  the `order` agent: 41 %). Of the 13 complete seeds, 9 converge to 4.00-4.16 and seed 1 is at 4.55 (still falling; local
+  exponents fall from ~5 at sigma = 0.3 to 4.00-4.02 at sigma = 0.003: the predicted crossover from the route law
   to the order-6 law), and 3 (seeds 6, 24, 28) stay at 5.00 although their escapes at small sigma are
   split-type (polymer direction, W[p]/W[r] = 12.6, the same ratio as in the other seeds). The
   registered rule gives INCONCLUSIVE (mean 4.31 ± 0.12, 9 of 13 seeds within 0.3).
@@ -505,7 +507,7 @@ wrong saddle); "wall" = 3600 s cap (the machine was oversubscribed, see 9.7).
 | D1 | From theta_S + eps xi (12 Gaussian directions per cell, eps <= 1e-3 resp. 3e-3), the escape time scales as eps^-(p-2) with p the theorem's order < k*: PS08 (p = 4, k* = 5: gamma = 2.001 ± 0.001), W6 (4 vs 6: 2.001 ± 0.001), HT4W (6 vs 7: 3.996 ± 0.003), HT4L (3.997 ± 0.003), binary8 rho = 0.5 (3.998 ± 0.007); every seed within 0.05 | empirical |
 | D2 | In those cells every window escape is along the split (generalized-piggyback) direction, and q is then forgotten in all PS08/W6 runs and most HT4W/HT4L runs (not in binary8) | empirical |
 | D3 | From small init, the pair-star seeds that visit theta_S (16/40; whether a seed visits is independent of sigma) have plateaus dt ∝ sigma^-(2.002 ± 0.001) for sigma = 3e-4 ... 1e-2 (16 seeds) | empirical |
-| D4 | binary8 wrong order (rho = 0.8): the local escape exponent falls from the route law (5.10 ± 0.05 at sigma >= 0.1, saddle starts; 4.87 from small init) towards the order-6 law; at the smallest sigma 7/12 saddle-start seeds and 10/13 visiting small-init seeds are at 4.0-4.2, the others at 5.0 | empirical |
+| D4 | binary8 wrong order (rho = 0.8): the local escape exponent falls from the route law (5.10 ± 0.05 at sigma >= 0.1, saddle starts; 4.87 from small init) towards the order-6 law; at the smallest sigma 7/12 saddle-start seeds and 9/13 visiting small-init seeds are at 4.0-4.2 (one more at 4.55, falling), the others at 5.0 | empirical |
 | D5 | HT4S (gap s_r - s_q = 0.15): only 3 of 11 complete seeds show the order-6 law at eps in [1e-4, 3e-3]; the others follow 5 (route law, or the split law shifted by one power); the leading-order crossover estimate b = 4 kappa / (5 s_r) does not predict where seeds cross | empirical |
 | D6 | Controls (p = k*): seeds escape with exactly the route law k* - 2, or with k* - 1 (or k*), or are trapped (dead routes); never with a smaller exponent; the shift is a property of the direction | empirical |
 | D7 | The shift comes from route entries slaved at O(eps^2) by the faster two-core cluster dynamics (one more factor eps in the route product); traps when they are slaved to zero | conjecture |

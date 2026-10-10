@@ -67,7 +67,7 @@ Registered decisions (H-A = saddle start, H-B = small init; gamma = escape expon
 | HT4W HT4 1111 (1.5) | 6 (7) | 3.996 ± 0.003 (12) | SUPPORTED | - |
 | HT4L locality HT4 | 6 (7) | 3.997 ± 0.003 (12) | SUPPORTED | - |
 | B8W05 binary8 rho 0.5 | 6 (7) | 3.998 ± 0.007 (12) | SUPPORTED | - |
-| B8W binary8 rho 0.8 | 6 (7) | 4.48 ± 0.15 (12; 7 at 4, 5 at 5) | INCONCLUSIVE | 4.31 ± 0.12 (13; 10 at 4.0-4.2, 3 at 5): INCONCLUSIVE; route law above sigma = 0.1: SUPPORTED |
+| B8W binary8 rho 0.8 | 6 (7) | 4.48 ± 0.15 (12; 7 at 4, 5 at 5) | INCONCLUSIVE | 4.31 ± 0.12 (13; 9 at 4.0-4.2, 1 at 4.55, 3 at 5): INCONCLUSIVE; route law above sigma = 0.1: SUPPORTED |
 | HT4S s2s_core close teacher | 6 (7) | 4.72 ± 0.14 (11; 3 at 4, 8 at 5) | REFUTED (window above the crossover) | - |
 | controls PS06, C1, C2, C3 | = k* | route law exactly in the seeds whose route survives; others shifted by +1 (+2) or trapped | INCONCLUSIVE (< 10 complete seeds) | PS06: INCONCLUSIVE (5 of 12 seeds visit) |
 

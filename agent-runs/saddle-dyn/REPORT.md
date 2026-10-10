@@ -27,7 +27,7 @@ Evidence: `experiments/saddle_dyn/results/*.csv` (from `analyze.py`), tables by 
 | HT4W HT4 1111 (1.5) | 6 (7) | 3.996 ± 0.003 (12) | SUPPORTED | - |
 | HT4L locality HT4 (s_q 0.5) | 6 (7) | 3.997 ± 0.003 (12) | SUPPORTED | - |
 | B8W05 binary8 rho 0.5 | 6 (7) | 3.998 ± 0.007 (12) | SUPPORTED | - |
-| B8W binary8 rho 0.8 | 6 (7) | 4.48 ± 0.15 (7 seeds at 4, 5 at 5) | INCONCLUSIVE; route law at sigma >= 0.1: SUPPORTED (5.10) | 4.31 ± 0.12 (13: 10 at 4.0-4.2, 3 at 5): INCONCLUSIVE; route law above 0.1: SUPPORTED (4.87) |
+| B8W binary8 rho 0.8 | 6 (7) | 4.48 ± 0.15 (7 seeds at 4, 5 at 5) | INCONCLUSIVE; route law at sigma >= 0.1: SUPPORTED (5.10) | 4.31 ± 0.12 (13: 9 at 4.0-4.2, 1 at 4.55, 3 at 5): INCONCLUSIVE; route law above 0.1: SUPPORTED (4.87) |
 | HT4S s2s_core close teacher | 6 (7) | 4.72 ± 0.14 (3 at 4, 8 at 5) | REFUTED (window above crossover) | - |
 | PS06 control (0.6) | 5 | 3.000 (4 complete seeds) | INCONCLUSIVE (traps) | 5 of 12 seeds visit; INCONCLUSIVE |
 | C1 MPS6 110001 (0.7) | 6 | 3.97 ± 0.04 (3) | INCONCLUSIVE | - |
@@ -78,7 +78,7 @@ Figures: experiments/saddle_dyn/results/ha_escape.png, ha_local.png, hb_dt.png, 
 - Did not edit CLAUDE.md or the theory notes (lead's files); suggested changes are below.
 
 ## Files left on the machine
-- /root/outputs/saddle_dyn/ (HA, HB: one JSON per run, ~SIZE_OUT): needed to rerun analyze.py.
+- /root/outputs/saddle_dyn/ (HA, HB: one JSON per run, 47 MB): needed to rerun analyze.py.
 - /root/outputs/saddle_dyn_try1_badevents/, saddle_dyn_HA_try2_thetaref/, saddle_dyn_HB_try2_quadrature/,
   saddle_dyn_unfinished_try3/: discarded attempts and the unfinished runs that were rerun (not needed).
 
