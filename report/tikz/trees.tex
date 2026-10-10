@@ -11,9 +11,9 @@
 }
 \begin{figure}[t]
   \centering
-  \begin{subfigure}[b]{0.235\textwidth}
+  \begin{subfigure}[b]{0.21\textwidth}
     \centering
-    \begin{tikzpicture}[x=4.4mm, y=7mm]
+    \begin{tikzpicture}[x=4.2mm, y=7mm]
       \foreach \j in {0,...,3} \node[ttn/core] (b\j) at ({2*\j+1}, 0) {};
       \node[ttn/core] (m0) at (2, 1) {};
       \node[ttn/core] (m1) at (6, 1) {};
@@ -30,9 +30,9 @@
     \label{fig:trees-binary}
   \end{subfigure}%
   \hfill
-  \begin{subfigure}[b]{0.235\textwidth}
+  \begin{subfigure}[b]{0.21\textwidth}
     \centering
-    \begin{tikzpicture}[x=4.4mm, y=7mm]
+    \begin{tikzpicture}[x=4.2mm, y=7mm]
       \foreach \k in {0,...,6} \node[ttn/core] (c\k) at (\k, 0) {};
       \node[ttn/root] (c7) at (7, 0) {};
       \foreach \k [evaluate=\k as \kn using int(\k+1)] in {0,...,6}
@@ -45,7 +45,7 @@
     \label{fig:trees-mps}
   \end{subfigure}%
   \hfill
-  \begin{subfigure}[b]{0.15\textwidth}
+  \begin{subfigure}[b]{0.16\textwidth}
     \centering
     \begin{tikzpicture}[x=5mm, y=7mm]
       \foreach \i in {0,...,3} \node[ttn/core] (l\i) at (\i, 0) {};
@@ -60,9 +60,9 @@
     \label{fig:trees-ht}
   \end{subfigure}%
   \hfill
-  \begin{subfigure}[b]{0.16\textwidth}
+  \begin{subfigure}[b]{0.17\textwidth}
     \centering
-    \begin{tikzpicture}[x=4.4mm, y=7mm]
+    \begin{tikzpicture}[x=4.2mm, y=7mm]
       \foreach \j in {0,...,2} \node[ttn/core] (s\j) at ({2*\j+1}, 0) {};
       \node[ttn/root] (r) at (3, 1) {};
       \draw[ttn/bond] (s0) -- (r) -- (s1)  (r) -- (s2);
@@ -77,9 +77,9 @@
     \label{fig:trees-star3}
   \end{subfigure}%
   \hfill
-  \begin{subfigure}[b]{0.18\textwidth}
+  \begin{subfigure}[b]{0.2\textwidth}
     \centering
-    \begin{tikzpicture}[x=4.4mm, y=7mm]
+    \begin{tikzpicture}[x=4.2mm, y=7mm]
       \foreach \k in {0,1,2,4,5} \node[ttn/core] (c\k) at (\k, 0) {};
       \node[ttn/root] (c3) at (3, 0) {};
       \foreach \k [evaluate=\k as \kn using int(\k+1)] in {0,...,4}
