@@ -18,3 +18,10 @@
 # Section 5, optimizers used in practice (experiment optimizers; make_figures.py)
 experiments/optimizers/results/figures/scaling_b4_side_sigma0.008_seed0.pdf   optimizers/side_by_side_binary4.pdf
 experiments/optimizers/results/figures/adam_escape.pdf                        optimizers/adam_escape.pdf
+
+# Section 4.2, saddle sequence and locality (experiment locality; make_figures.py, plot_trees.py,
+# plot_bonds.py, all run by experiments/locality/finalize.sh)
+experiments/locality/results/twocomp_exponents.png   locality/twocomp_exponents.png
+experiments/locality/results/twocomp_hessian.png     locality/twocomp_hessian.png
+experiments/locality/results/trees_TA.png            locality/trees_TA.png
+experiments/locality/results/bond_spectra.png        locality/bond_spectra.png

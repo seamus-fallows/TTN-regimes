@@ -15,9 +15,143 @@ event detection; Hessian and kernel computations.}
 % probe set seed; machines used (vCPU type), wall times, total cost from notes/spend.md.
 
 \subsection{Saddle-to-saddle experiments}\label{app:exp-s2s}
-\placeholder{Settings of the experiments of \cref{sec:s2s} (s2s-core, locality, order).}
+\placeholder{Settings of the experiments of \cref{sec:s2s} (s2s-core, order; the locality
+experiment is in \cref{app:exp-locality}).}
 % TODO: table per experiment: trees, N, d, chi, teacher (type, weights), sigma grid, seeds, t_max,
 % loss floor, number of runs, cost.
+
+\subsection{Locality of later escapes}\label{app:exp-locality}
+Settings of \cref{sec:s2s-locality,sec:s2s-failure}. Experiment folder \path{experiments/locality/}
+(README; one YAML configuration per sweep in \path{configs/}, written by \path{make_configs.py});
+findings, and the changes made after two review rounds, in \path{notes/locality.md}, sections 7--10;
+reviews in \path{notes/reviews/locality_round1.md} and
+\path{notes/reviews/locality_round2_verification.md}.
+
+\paragraph{Problems.}
+Whitened Gaussian inputs, exact population loss, double precision, the library model
+(\path{ttn.dynamics.Problem}). Pattern teachers (\path{ttn.teachers.pattern_teacher}) with $d=2$ and
+random orthonormal site bases, teacher seed 1000, from a stream independent of the initialization
+seeds. Two-component teachers have patterns $0^\Ns$ and the indicator of $D$, weights $(1,0.5)$, also
+$(1,0.25)$, $(1,0.75)$ and $(2,1)$, on 60 (tree, $D$) pairs. Multi-component teachers (patterns as
+site values, weights in brackets): TA $0000$ ($1$), $1100$ ($0.6$), $1110$ ($0.35$); TB as TA plus
+$1111$ ($0.2$); N4 $0000$ ($1$), $1100$ ($0.6$), $1111$ ($0.4$); B4 $0000$ ($1$), $0110$ ($0.3$), $1001$
+($0.6$); E8 $0^8$ ($1$), $0^31^20^3$ ($0.4$), $010^41\,0$ ($0.7$); TC $0^8$ ($1$), $1^20^6$ ($0.6$),
+$1^40^4$ ($0.35$), $1^8$ ($0.2$); TD $0^8$ ($1$), $0^31^20^3$ ($0.6$), $1^20^6$ ($0.35$). Bond dimension
+$\chi=2$, except $\chi=3$ for B4, N4 and E8, and $\chi\in\{4,8\}$, $d=4$ in the robustness sweep. Trees:
+MPS4, MPS6, MPS8 ($\Kc=4,6,8$), binary4, binary8 ($\Kc=3,7$), HT4, HT8 ($\Kc=7,15$), star3 ($\Kc=4$: a
+root without sites and three children carrying sites $\{0,1\}$, $\{2,3\}$, $\{4,5\}$) and midroot6
+($\Kc=6$: the MPS6 chain rooted at the core of site 3).
+
+\paragraph{Protocols and dynamics.}
+\emph{Small}: fan-in initialization \eqref{eq:init}. \emph{Saddle}: the exact balanced saddle $\tw1\U1$
+(\path{ttn.network.aligned_init}) plus a fan-in perturbation of per-core scale $\isc$.
+\emph{Balanced}: the fan-in $\Wz$ re-gauged so that $\Q e=0$ on every bond. Gradient flow by SciPy's
+LSODA (\path{solve_ivp}) with the exact Hessian as Jacobian, relative and absolute tolerances $10^{-9}$
+and $10^{-14}$, instead of the default integrator of \cref{sec:setup-dynamics}; Radau as fallback
+(fewer than $1\%$ of runs). Event times are located by root finding on the dense output; event $r$ is
+the last upward crossing of $\ov r=\frac12$, and a run with an overlap that crosses $\frac12$ more than
+once is a \emph{rotation}. Budgets: $t_{\max}=10^{14}$ and a wall-clock limit of $1500$\,s per run
+($900$\,s for the $k\ge6$ rows of the main sweep, $2400$\,s in the $k\ge6$ extension and the stall
+diagnosis). A run is \emph{stalled} when, after an overlap has passed $\frac12$, every gradient entry stays
+below $10^{-12}$ for more than 5,000 consecutive evaluations (300,000 in the stall diagnosis, which
+also keeps the trajectory). The Hessian is computed by automatic differentiation at the plateau
+midpoint (minimum gradient norm between consecutive events), raw and with the gauge directions
+projected out (\path{ttn.diagnostics.project_out_gauge}, relative cutoff $10^{-3}$). An earlier cutoff,
+$10^{-10}$, kept the generators of nearly unused bond channels, whose normalized direction overlaps the
+escape route, and biased the $k=2$ values to $-0.44$ to $-0.46$ instead of $-0.5000$; all Hessians were
+recomputed (\path{hess_recompute.py}). The fixed projection is still biased on the short
+small-initialization $k=2$ plateaus at $\isc\ge10^{-3}$ ($-0.411$ and $-0.502$ against raw $-0.437$ and
+$-0.581$), so raw values are quoted there; raw and projected $\isc$-exponents of $\lambda_{\min}$ differ by
+up to $0.11$.
+
+\paragraph{Sweeps.} \Cref{tab:exp-locality}; initialization seeds $0$--$7$ ($0$--$4$ for the $k\ge6$ rows
+of the main sweep).
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the locality experiment (\cref{sec:s2s-locality,sec:s2s-failure}), one
+    configuration file each in \texttt{experiments/locality/configs/}; tables and fits use only the
+    runs of these configurations.}
+  \label{tab:exp-locality}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm}X r@{}}
+    \toprule
+    sweep & content & runs \\
+    \midrule
+    \texttt{twocomp} & 60 (tree, $D$) pairs, small and saddle (HT8 saddle only), weights $(1,0.5)$;
+      7 values of $\isc$ in $[10^{-4},0.1]$ for $k\le3$ (lower end $10^{-4}$ to $8\cdot10^{-3}$), 6 values
+      in $[0.01,0.2]$, $[0.03,0.3]$, $[0.08,0.5]$, $[0.15,0.6]$, $[0.2,0.6]$ for $k=4,5,6,7,8$ & 5,682 \\
+    \texttt{twocomp\_balanced} & the 24 cases with $k\ge4$ (small), balanced initialization & 1,008 \\
+    \texttt{twocomp\_chi4} & the same 24 cases, fan-in, $\chi=4$ & 1,005 \\
+    \texttt{robust} & MPS4, binary4, HT4 (6 cases with $k\le4$): $(\chi,d)\in\{(4,2),(2,4),(4,4),(8,4)\}$,
+      weights $(1,0.25)$, $(1,0.75)$; MPS4 $\{1,2\}$ also from the saddle & 1,840 \\
+    \texttt{k5\_extension} & MPS6 $\{1,3,5\}$, MPS8 $\{1,5\}$, saddle and balanced,
+      $\isc\in\{0.012,0.019,0.03\}$ & 96 \\
+    \texttt{khigh\_extension} & binary8 $\{0,2,4\}$, HT4 $\{0,1,2\}$, HT4 all sites, MPS8 $\{1,6\}$;
+      balanced, 8 values of $\isc$ over one decade & 256 \\
+    \texttt{lambda2\_K} & MPS4, MPS6, MPS8 with $k=2$, weights $(2,1)$, saddle, 7 values of $\isc$ in
+      $[10^{-4},0.1]$ & 168 \\
+    \texttt{multicomp} & TA, TB, N4, B4 on MPS4, binary4, HT4 (HT4 also balanced); E8 and TC on MPS8 and
+      binary8; TD on MPS8; small, 6 values of $\isc$ & 1,008 \\
+    \texttt{multicomp\_wide} & B4, N4, TA, TB on MPS4 (7--9 values of $\isc$ down to $10^{-5}$); TC, TD on
+      MPS8 from the saddle (7 values in $[10^{-4},0.1]$) & 384 \\
+    \texttt{stall\_diagnosis} & 22 (case, $\isc$) pairs with stalls and escaping controls, longer patience
+      & 170 \\
+    \midrule
+    total & & 11,617 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Analysis.}
+Run classes: greedy, other order, rotation, stalled, timeout, incomplete, error. Fits as in
+\cref{sec:s2s-locality} (per seed, at least three $\isc$; rotations excluded; the log law is fitted on
+the residuals of $\ln\Delta t_2$, like the power law). Several components: plateaus detected by
+\path{ttn.diagnostics.find_plateaus} on $\Loss(t)$ (linear time, separation ratio above $3$), matched to
+a predicted level within $5\%$; laws of levels too short to detect from the time spent within $2\%$ of
+the level. Bond events: effective ranks just after the event ($\ov2=0.9$) against the plateau midpoint,
+threshold $0.05$ times the teacher's singular value ($0.03$, $0.1$ as sensitivity); rank profiles of
+several components in the middle of the time spent within $2\%$ of each predicted level. Growth
+exponent: least squares of $\ln\dot{\ov2}$ against $\ln\ov2$ over $\ov2\in[10^{-4},10^{-2}]$.
+
+\paragraph{Accuracy.}
+The conservation drift $\max_e\normmax{\Q e(T)-\Q e(0)}$ is at most $10^{-6}$ in every run ($99.9\%$
+below $3.5\cdot10^{-8}$, median $1.2\cdot10^{-9}$), against Gram entries of order one after learning.
+Relative to the initial imbalance $\abs{\Q e(0)}\sim\isc^2$ it is at most $1.6\cdot10^{-4}$ in every run
+with $k\ge4$, where the imbalance matters (\cref{sec:s2s-failure}), but up to $0.5$ for $k\le3$ at
+$\isc\le10^{-3}$, where $\isc^2$ is below the absolute tolerance; those runs never stall, and their gaps
+agree with an independent integration to $10^{-7}$--$10^{-9}$. LSODA (tolerances $10^{-9}$ and
+$10^{-10}$), Radau and RK45 agree on a $k=6$ gap to $3\cdot10^{-8}$. A reviewer's independent code (dense
+contraction, automatic differentiation, Radau at relative tolerance $10^{-10}$) reproduced the gaps of
+11 rows to $10^{-7}$--$10^{-9}$, the gauge-projected $\lambda_{\min}$ to $7\cdot10^{-11}$ and the Steiner
+counts of all 60 (tree, $D$) pairs.
+
+\paragraph{Excluded runs.}
+One \texttt{lambda2\_K} run (MPS8, seed 7, $\isc=10^{-4}$) was lost to the runner's start-up check,
+which compared two implementations of the velocity at the exact saddle without an absolute floor.
+Six slow runs did not finish within their time limit; they belong to rows reported as not measured
+($k=8$) or as spanning $0.6$ decades (HT8, $k=7$). Round-1 tables (rows on $\isc$ grids outside the
+committed configurations, rotation runs pooled, Hessians with the biased projection, a bond-rank
+statistic taken at the end of the run) are superseded. The raw run records and trajectories (every
+accepted integration step of every run, 8\,GB) are not in the repository; \cref{app:reproducibility}
+says how to regenerate them.
+
+\paragraph{Local pilot.}
+The pilot in \path{experiments/pilot_h2_locality/} (README; code \path{h2sim.py},
+\path{run_sweep.py} and \path{analyze.py}) is an independent implementation of the same model, used as
+a cross-check in \cref{sec:s2s-locality}. $d=\chi=2$; MPS4, binary4, MPS6, binary8; teacher seed 1000, weights $(1,0.5)$;
+$D=\{0,1\}$, $\{0,\Ns-1\}$, all sites, $\{0,2\}$, $\{0,3\}$, $\{0,4\}$; fan-in initialization with seeds
+$0$--$7$ ($\Ns=4$; $\isc\in[10^{-3},0.1]$ on MPS4, $[2\cdot10^{-4},0.05]$ on binary4) and $0$--$5$ (MPS6,
+$\isc\in[0.05,0.3]$; binary8, $[0.07,0.3]$): 784 runs, 19 of them rerun with a 100 times longer horizon,
+plus 340 runs from the saddle (seeds $0$--$3$, five $\isc$). Gradient flow by LSODA with the exact
+Hessian (relative tolerance $10^{-10}$, absolute $10^{-13}\isc$); events are first crossings of
+$\ov r=\frac12$, located by root finding; $t_1$ and $t_2$ agree with LSODA at $10^{-12}$, Radau, BDF,
+DOP853 and RK45 to $1.8\cdot10^{-7}$ relative (47 comparisons). A run \emph{collapses} when, at
+$t\ge30\,t_1$, the largest second bond singular value is below $10^{-9}$ of its value after the first
+escape and still falling, or at roundoff; horizons $10^5\isc^{-(\Kc-2)}$ ($\Ns=4$) and
+$10^4\isc^{-(\Kc-2)}$. Fits per seed, mean $\pm$ s.d.\ over seeds; gap fits for $k\ge3$ use runs with a
+distinct intermediate plateau. A first sweep, made before the teacher and initialization streams
+were separated, was discarded.
 
 \subsection{Regime-map experiments}\label{app:exp-regimes}
 \placeholder{Grids, seeds and time budgets of the phase diagrams of \cref{sec:regime-map}.}
