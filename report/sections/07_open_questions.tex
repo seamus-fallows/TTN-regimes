@@ -47,7 +47,8 @@ settle it; the sections and notes named give the details.
     \cref{prop:A-product-mode} is good to a factor $1.2$--$1.6$ there, \path{notes/theory_escape.md},
     section 7). Later prefactors are set by the route amplitudes at the start of each plateau, which vary
     between seeds by factors above $20$ at $k\ge4$; for generic teachers, offsets of up to about $50$ time
-    units decide the order of near-tied escapes at accessible $\isc$ (\cref{prop:A-agf-race}).
+    units would decide the order of near-tied escapes at accessible $\isc$ \conjecture{} (heuristic,
+    \cref{prop:A-agf-race}).
     \emph{What would settle it:} a law for how route amplitudes are carried through each escape, tested
     against the per-seed prefactors already measured (\cref{sec:s2s-escape,sec:s2s-locality}); the
     distribution of the offsets over initializations would give the probability of each order at finite
@@ -74,8 +75,9 @@ settle it; the sections and notes named give the details.
     decade on MPS8 ($k=6$, $8$) and HT8 ($k=7$) with more seeds, and plateau Hessians for $k\ge5$ whose
     negative directions are identified as route or new-index pairs.
   \item \textbf{The learning order in closed form.} The race of independent components is exact only on
-    MPS; where cores without sites couple the components (binary, HT) it still names the first component
-    in $94$--$100\%$ of runs but has no closed form. For matrix-like pairs the prefactor of
+    MPS; where cores without sites couple the components it still names the first component in
+    $95$--$100\%$ of the runs on binary8 and HT4 but in only 537 of 640 on binary4, and it has no closed
+    form there. For matrix-like pairs the prefactor of
     $P(\text{smaller first})$ is not derived, the exponent $n(1-\varrho)/\varrho$ with $n=\bd e$ for adjacent
     cores is a \conjecture{} supported only at the smallest $\isc$, and whether gradient flow has the
     leading-order exponent is open. The conjectures that $P(\text{larger first})\to\frac12$ as $\Kc\to\infty$
@@ -137,8 +139,8 @@ settle it; the sections and notes named give the details.
     seven cores is a \conjecture, and the data-only rank-one search is a noisy proxy for the state that
     gradient flow reaches (\cref{sec:real-data}; \path{notes/real_data.md}, sections 8.4 and 9.6). On the
     MPS, tree shape and pixel order are confounded (snake order only) and two edges rise like power laws
-    where rank-one counting predicts logarithmic routes; on binary16 the curvature exponent at the first
-    plateau ($0.87$--$0.89$ on three seeds) lies below the $1$ of $k=3$. \emph{What would settle it:}
+    where rank-one counting predicts logarithmic routes; on binary16 the curvature exponent at the rank-one
+    plateau after the first escape ($0.87$--$0.89$ on three seeds) lies below the $1$ of $k=3$. \emph{What would settle it:}
     timing the rank crossing of every later route on binary16 and checking that pixel orders differ in
     when their routes with $k=5$ escape; longer horizons or larger $\isc$, at which routes with $k=7$
     escape too and the effect should fade; MPS chains in several pixel orders; larger images.
@@ -153,8 +155,10 @@ settle it; the sections and notes named give the details.
     (Morse--Bott) version would make the escape path rigorous. Whether the per-bond conservation laws are
     all the conservation laws (the algorithm of \citealp{marcotte2023abide}, run on small trees) and the
     explicit metric $(\Jac\Jac\T)^{-1}$ of balanced TTNs are open. Beyond the model: input laws that are
-    not products (beyond the one-factor model), classification and several outputs, nonlinear local
-    features, and what all of this implies for the choice of initialization and of tree in practice.
+    not products (beyond the one-factor model), classification and several outputs, pointwise
+    nonlinearities inside the network (with independent sites, local feature maps enter only through
+    their second moments, \cref{sec:setup-loss}), and what all of this implies for the choice of initialization and of tree in
+    practice.
     \emph{What would settle it:} the quotient version of those theorems, first for chains; the
     completeness algorithm run on trees with three or four cores; and, for the scope, the route rule tested
     with a label leg on one core, as in MPS classifiers \citep{stoudenmire2016supervised}, and with

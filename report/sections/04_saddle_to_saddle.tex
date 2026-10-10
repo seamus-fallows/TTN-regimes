@@ -17,7 +17,8 @@ stated otherwise, inputs are whitened, the loss is the exact population loss, th
 fan-in (\cref{sec:setup-init}), and events are dated by the final rise of the overlaps
 (\cref{sec:setup-diagnostics}).
 
-\Cref{sec:s2s-phenomenology} shows complete sequences for odeco teachers on five trees: plateaus at
+\Cref{sec:s2s-phenomenology} shows complete sequences for odeco teachers on four trees (and the first two
+components on a fifth): plateaus at
 the partial fits with fixed bond ranks, one rank step per event, durations $\propto\isc^{-(\Kc-2)}$ at
 higher-order saddles. \Cref{sec:s2s-aligned} solves the aligned case exactly and uses it to check the
 integrators. \Cref{sec:s2s-escape} predicts the first escape of each run from its initialization.
@@ -1174,8 +1175,8 @@ saddles are visited and in which order), to the plateau durations, and to the re
       $\isc_c$ rises with $\Kc$ ($0.17$ to $0.75$ for $\Kc=3$--$7$); the rich window narrows; stalls and
       dead routes grow with $\Kc$ \empirical; the limit $\Kc\to\infty$ is open \conjecture \\
     bond dimension $\chi$\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-order}, \ref{sec:s2s-failure},
-      \ref{sec:regime-sigma-chi}, \ref{sec:other-large-chi}) & Levels and routes do not depend on spare channels (zero-padded critical
-      points stay critical, \cref{lem:A-unused}) \proven; at $\chi=\ncomp$ the last component needs a
+      \ref{sec:regime-sigma-chi}, \ref{sec:other-large-chi}) & Plateau levels and route degrees do not change with extra channels, as
+      zero-padded critical points stay critical (\cref{lem:A-unused}) \proven; at $\chi=\ncomp$ the last component needs a
       route through all cores, which can die \empirical; larger uncapped $\chi$ makes the order slowly
       greedier \empirical &
       First-escape prefactor falls slowly with $\chi$ (log-log slopes $-0.26$ to $-0.76$) \empirical; route
@@ -1224,7 +1225,9 @@ saddles are visited and in which order), to the plateau durations, and to the re
       later plateaus lengthened or trapped \empirical; Adam: first escape independent of $\isc$ until
       $\epsilon$ restores $\isc^{-(\Kc-2)}$ \derived{} \empirical; ALS, DMRG: iterates independent of
       $\isc$ \proven &
-      $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$ at small $\isc$ \proven; $2/\lambda_{\rm GF}\propto\isc^{-3.97}$ on the
+      $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$ at small $\isc$, from the sharpness of the balanced minimum
+      \proven{} (no stable global minimum above it: \derived{} for $\chi=\ncomp$);
+      $2/\lambda_{\rm GF}\propto\isc^{-3.97}$ on the
       lazy side, catapults beyond it \empirical; at fixed $\lr/\batch$ SGD stalls where gradient flow is
       only slow \derived{} (from the heuristic law of \cref{prop:A-sgd-collapse}) \\
     balanced or fan-in initialization\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-locality},
@@ -1245,8 +1248,9 @@ at which levels, and of which type. These are the tree, the teacher and the cova
 bond caps, $\chi$ and $d$. Others change only the clock, the time spent near each saddle: above all
 $\isc$, which at leading order changes neither the direction of the first escape nor the order on
 tensor-like trees, and the step size below its stability limit. Optimizers can change both: Adam keeps
-the saddles but removes the $\isc$-dependence of the first escape, while ALS, DMRG and Riemannian gradient
-descent, which are equivariant under the whole gauge group, remove the plateaus
-(\cref{sec:other-optimizers}). The balance of the initialization changes neither at leading order, but
-decides whether a route survives its plateau. Where an entry rests on one tree, one teacher or a single
-$\isc$, the sections cited give its scope.
+the saddles but removes the $\isc$-dependence of the first escape (until its $\epsilon$ restores it at
+small $\isc$), while ALS, DMRG and Riemannian gradient descent, which are equivariant under the whole
+gauge group, remove the plateaus (\cref{sec:other-optimizers}). The balance of the initialization leaves
+the landscape and the exponents unchanged, shifts the prefactors and occasionally the first component,
+and decides whether a route survives its plateau. Where an entry rests on one tree, one teacher or a
+single $\isc$, the sections cited give its scope.

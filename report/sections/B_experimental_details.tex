@@ -38,9 +38,10 @@ escape the flow is stiff: learned directions have Hessian eigenvalues of order o
 $\propto\isc^{-(k-2)}$, so an explicit method needs a number of steps that grows with the plateau. Most
 experiments therefore integrate with SciPy's LSODA and the exact Hessian (by automatic differentiation)
 as its Jacobian; short runs and references use Dormand--Prince or DOP853; Radau is a fallback.
-\Cref{tab:exp-common} gives each experiment's choice. Event times are refined by root finding on the
-integrator's dense output or by re-integrating the event window on a fine linear grid, so no duration is
-read off the logarithmic output grid. Accuracy is checked by the conservation drift \eqref{eq:drift},
+\Cref{tab:exp-common} gives each experiment's choice. Event times come from root finding on the
+integrator's dense output, from re-integrating the event window on a fine linear grid, or from dense
+merged records (log-spaced and linear output times plus the fine rows of \cref{sec:setup-dynamics});
+each subsection says which. Accuracy is checked by the conservation drift \eqref{eq:drift},
 below $10^{-6}$ (exceptions are reported per experiment), by the exact aligned solutions
 (\cref{sec:s2s-aligned}), by reruns at tighter tolerances, and by independent implementations in the
 reviews.
@@ -50,11 +51,11 @@ Teacher and initialization draw from independent random streams: the teacher's g
 \path{ttn.teachers.teacher_generator}$(s)$, which mixes the teacher seed $s$ through a seed sequence, so
 that a teacher and an initialization with equal seeds share no Gaussian draws. Before this separation
 (library commit 57d5262), equal seeds made a random TTN teacher proportional to the student's
-initialization and tied an odeco teacher's first site basis to the first core; runs from that time
-support no claim and were discarded or rerun (each subsection lists its exclusions). Initialization
-seeds are consecutive integers, the same at every $\isc$ of a sweep, so that a seed fixes the
-initialization direction while $\isc$ varies. The probe set of the tangent kernel (128 Gaussian inputs)
-uses generator seed 12345.
+initialization and tied an odeco teacher's first site basis to the first core; experiment runs from
+that time support no claim and were discarded or rerun (each subsection lists its exclusions), and two
+numerical checks of the theory that predate the separation are marked as such in
+\cref{rem:A-wrong-order,prop:A-trap}. Initialization seeds are consecutive integers, the same at every
+$\isc$ of a sweep, so that a seed fixes the initialization direction while $\isc$ varies.
 
 \paragraph{Initializations.}
 \emph{Fan-in}: \eqref{eq:init} with one scale $\isc$ for all cores, or per-core scales where stated.
@@ -62,8 +63,8 @@ uses generator seed 12345.
 $M=\Gm{v}{e}\Gm{v}{e}\T$ and $N=\Gm{p}{e}\Gm{p}{e}\T$, the symmetric positive definite $P$ with $PMP=N$
 gives the gauge transformation $P^{1/2}$ that makes the two Gram matrices equal; since balancing one bond
 changes its neighbours, sweeps over the bonds repeat until $\max_e\normmax{\Q e}<10^{-13}\max_v\normF{\G v}^2$
-(\path{gauge_balance} in \path{experiments/s2s_core/s2s.py}; the locality experiment has its own
-implementation). A gauge transformation leaves $\W$ unchanged, so a balanced run and its fan-in twin start
+(\path{gauge_balance} in \path{experiments/s2s_core/s2s.py}; the locality, regime-map and optimizer
+experiments have their own implementations). A gauge transformation leaves $\W$ unchanged, so a balanced run and its fan-in twin start
 from the same function and differ only in the conserved quantities. \emph{Aligned}: cores diagonal in
 the teacher's basis (\cref{prop:aligned}; \path{ttn.network.aligned_init}). \emph{Saddle starts}: an exact
 balanced saddle, aligned for pattern teachers or found by L-BFGS on the rank-constrained problem for
@@ -82,20 +83,24 @@ and block-diagonal cores (\path{ttn.network.antisymmetric_double}), trained with
 (\path{ttn.network.sum_difference_cores}).
 
 \paragraph{Recording, events and Hessians.}
-Diagnostics are recorded at 200 log-spaced times plus the fine rows of \cref{sec:setup-dynamics}, and
-merged for events (\path{ttn.dynamics.merged_rows}). Events and widths follow
+Diagnostics are recorded on a logarithmic time grid (200 times by default; other grids where a subsection
+says so) plus the fine rows of \cref{sec:setup-dynamics}, and merged for events
+(\path{ttn.dynamics.merged_rows}). Events and widths follow
 \cref{sec:setup-diagnostics}; which of its crossing rules an experiment uses is given in
 \cref{tab:exp-common}. Hessians are computed by automatic differentiation at plateau midpoints (minimum
 parameter speed between two events), raw and with the gauge directions projected out
 (\path{ttn.diagnostics.project_out_gauge}, relative cutoff $10^{-3}$), and the saddle type is read from
-how $\lambda_{\min}$ scales with $\isc$. The relative kernel change uses the probe kernel and, where the
-dense Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$), the tensor-space kernel $\Jac\Pre\Jac\T$.
+how $\lambda_{\min}$ scales with $\isc$. The relative kernel change uses the probe kernel (in the regime
+map, 128 Gaussian inputs from generator seed 12345; on real data, the first 128 test images) and, where
+the dense Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$), the tensor-space kernel
+$\Jac\Pre\Jac\T$.
 
 \paragraph{Compute.}
 Each remote experiment ran on one rented CPU machine with 32 to 384 virtual cores, as many
-single-threaded processes in parallel (machines, hours and costs in \path{notes/spend.md}); pilots, fix
-rounds, reviews and the pre-registered order test of \cref{sec:real-data} ran on a local workstation. No
-GPU was used.
+single-threaded processes in parallel; some fix rounds ran on the same machines (machines, hours and
+costs in \path{notes/spend.md}). Pilots, reviews, the fix rounds of the regime-map and real-data
+experiments, and the pre-registered order test of \cref{sec:real-data} ran on a local workstation. No GPU
+was used.
 
 \begin{table}[ht]
   \centering

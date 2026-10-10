@@ -141,14 +141,14 @@
   gradient flow is saddle-to-saddle: plateaus sit at critical points of the problem with fixed bond ranks,
   and each escape raises the bond ranks along a route, a set of cores that must move together. The first
   plateau lasts $\propto\sigma^{-(K-2)}$, as in other homogeneous models, with a prefactor computed per
-  initialization. Later plateaus are set by the tree: the smallest route, of $k^*$ cores, gives no
-  plateau ($k^*=1$), a logarithmic one ($k^*=2$) or one $\propto\sigma^{-(k^*-2)}$ (derived; confirmed
-  for $k^*\le5$ on nine trees). We prove that $k^*$ is the saddle order under a spectral condition, which every two-component
-  teacher learned in weight order satisfies, and that the order can be lower from $k^*=5$ on. With
-  non-orthogonal teachers, the saddle after the first escape is strict on matrix product states, not on
-  binary trees. The learning order is a race set by the initialization unless competing components
-  differ on only two cores. Larger $\sigma$ leads through a rich regime to a lazy one, which requires
-  full-rank bonds.
+  initialization. Later, the tree decides: the smallest route, of $k^*$ cores, gives no plateau
+  ($k^*=1$), a logarithmic one ($k^*=2$) or one $\propto\sigma^{-(k^*-2)}$ (derived; confirmed up to
+  $k^*=5$). We prove that $k^*$ is the saddle order under a spectral condition, which every
+  two-component teacher learned in weight order satisfies, and that the order can be lower from $k^*=5$
+  on. With non-orthogonal teachers, the saddle after the first escape is strict on matrix product states,
+  not on binary trees. The learning order is a race set by the initialization unless competing components
+  differ on only two cores. Larger $\sigma$ leads through a rich regime to a lazy one, which needs every
+  bond at its cut dimension.
 \end{abstract}
 
 \tableofcontents
