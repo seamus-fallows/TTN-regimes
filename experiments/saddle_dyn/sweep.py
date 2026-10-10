@@ -9,8 +9,13 @@ Outputs: /root/outputs/saddle_dyn/{HA,HB}/<cell>/s<seed>_x<eps>[_tag].json
 
 from __future__ import annotations
 
-import argparse
-import sys
+import os
+
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):  # one thread per process (BLAS too)
+    os.environ.setdefault(_v, "1")
+
+import argparse  # noqa: E402
+import sys  # noqa: E402
 import time
 import traceback
 from multiprocessing import Pool

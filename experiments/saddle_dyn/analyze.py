@@ -199,13 +199,20 @@ def summarize_ha(raw, out):
             res[f"loc{j}_x_lo"] = p
             res[f"loc{j}_mean"] = float(v.mean())
             res[f"loc{j}_se"] = float(v.std(ddof=1) / math.sqrt(len(v))) if len(v) > 1 else float("nan")
+        if cell in ("B8W", "B8W05"):  # route law above the crossover (section 5.4): pairs with both sigma >= 0.1
+            v = loc[loc.x_lo >= -1.0 - 1e-9].gamma_loc
+            res["above_mean"] = float(v.mean()) if len(v) else float("nan")
+            res["above_se"] = float(v.std(ddof=1) / math.sqrt(len(v))) if len(v) > 1 else float("nan")
+            res["above_n"] = int(len(v))
         cr = crossover(d, cell, "lx", "t_esc", "ok") if cell in TEST else None
         if cr is not None and len(cr):
             cross_all.append(cr)
             res["log10_eps_c_median"] = float(cr.log10_eps_c.median())
             res["log10_eps_c_mean"] = float(cr.log10_eps_c.mean())
         wd = d[d.lx.between(min(win) - 1e-9, max(win) + 1e-9)]
-        res.update(n_runs=len(d), n_window_runs=len(wd), n_escaped=int(d.escaped.sum()),
+        res.update(n_window_escaped=int(wd.escaped.sum()), n_window_trapped=int((wd.status == "trapped").sum()),
+                   n_window_failed=int(wd.status.astype(str).str.startswith("failed").sum()),
+                   n_runs=len(d), n_window_runs=len(wd), n_escaped=int(d.escaped.sum()),
                    n_trapped=int((d.status == "trapped").sum()), n_wall=int((d.status == "wall").sum()),
                    n_flagged=int(d.flagged.sum()), n_window_flagged=int(wd.flagged.sum()),
                    n_split=int((wd.esc_type == "split").sum()), n_mixed=int((wd.esc_type == "mixed").sum()),
@@ -308,7 +315,7 @@ if __name__ == "__main__":
     pd.set_option("display.max_columns", 40)
     df, dec, fits, chk = summarize_ha(raw, out)
     cols = ["cell", "decision", "n_fitted", "gamma_mean", "gamma_se", "pred", "frac_within_0p3", "rss_ord", "rss_route",
-            "loc0_mean", "loc1_mean", "log10_eps_c_median", "n_runs", "n_escaped", "n_trapped", "n_wall", "n_flagged",
+            "loc0_mean", "loc1_mean", "log10_eps_c_median", "above_mean", "n_runs", "n_escaped", "n_trapped", "n_wall", "n_flagged",
             "n_split", "n_mixed", "n_route", "frac_q_forgotten"]
     print(dec[[c for c in cols if c in dec]].to_string(index=False))
     if len(chk):
