@@ -20,11 +20,11 @@ imbalance, large chi) are running.
 **Interim, binary N = 4 (K = 3), d = 3, teacher [3, 2, 1], 6 seeds per point, 8 chi x 19 sigma,
 centred model.** Dynamics: gradient flow, scipy RK45 rtol 1e-9 / atol 1e-14 (interim driver
 `experiments/regime_map/pilots/interim.py`; conservation drift <= 4e-11); raw runs in
-`/root/outputs/regime_map/b4_sigma_chi/`. Figure: `experiments/regime_map/results/phase_b4_sigma_chi_centred.png`
-(also `_plain`, `_twocopy`, and `sensitivity_b4_sigma_chi_centred.png`). Produced by
+`/root/outputs/regime_map/b4_sigma_chi/`. Figure: `experiments/regime_map/results/interim/phase_b4_sigma_chi_centred.png`
+(in `results/interim/`). Produced by
 `uv run python experiments/regime_map/plots.py sigma_chi b4_sigma_chi centred experiments/regime_map/results/lazy_pred_b4.csv`.
 
-![interim N=4 map](../../experiments/regime_map/results/phase_b4_sigma_chi_centred.png)
+![interim N=4 map](../../experiments/regime_map/results/interim/phase_b4_sigma_chi_centred.png)
 
 | chi | S2S boundary sigma_c (S2S fraction = 1/2) | predicted (aligned extrapolation from deepest run, median of seeds) | lazy boundary sigma_lazy (lazy fraction = 1/2) | predicted, first order (kappa/0.1)^(1/3) |
 |---|---|---|---|---|
