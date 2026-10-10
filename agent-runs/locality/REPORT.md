@@ -14,7 +14,7 @@ stalled). For k = 6-7 the exponent equals k - 2 on binary8 and ht4 **with gauge-
 decade (fan-in k = 6 rows: 3.68, 4.23; MPS: 4.51); k = 8 is not measured. The k = 2 log slope carries a head start
 ((1 - s2/s1)/λ2 from small init, 1/λ2 from the saddle), and λ2 = s2 s1^((K-2)/K) holds including its
 K-dependence. **H3 holds for greedy-order saddles**: λ_min = -λ2 exactly for k = 2; for k >= 3 λ_min ∝ σ^x -> 0
-with x ≈ k - 2 (within 0.2 for k = 3-5). **With several learned components the literal H2 fails and the route
+with x ≈ k - 2 (within 0.2 in 126 of 135 k = 3-5 rows). **With several learned components the literal H2 fails and the route
 rule at rank-constrained optima holds where tested** (TD and TC separate it from the alternatives). Dead routes
 are frequent for k >= 4 under fan-in init (never for k <= 3); balanced init reduces them 10x; χ = 4 removes them
 on routes with an uncapped end but not on routes with both ends capped (106 / 1,005 stalls vs 169 / 1,008 at χ = 2).
@@ -51,7 +51,10 @@ raw; -0.2500 / -0.7500 for s2 = 0.25 / 0.75), σ-independent, one negative eigen
 (raw): -0.498 to -0.499 at σ <= 1e-3, -0.437 / -0.581 on short plateaus at σ >= 1e-3, where the projection is still
 biased (-0.411 / -0.502), so raw is quoted. k >= 3: λ_min ∝ σ^x, full ranges: k = 3 0.81-1.06, k = 4 1.64-2.16,
 k = 5 2.82-3.76, k = 6 4.00 / 4.04 (balanced binary8 / ht4) and 4.27 (mps8 {1,6}), k = 7 5.01 (balanced) up to 6.5
-(round-1 rows, 0.6 decades). Raw and projected exponents differ by up to 0.11.
+(round-1 rows, 0.6 decades). x is within 0.2 of k - 2 in 126 of 135 k = 3-5 rows (the others deviate like their
+duration exponents: midroot6 {0,3} saddle, MPS k = 5) and equals each row's duration exponent within 0.2 in 95%
+of 169 k >= 3 rows. Raw and projected exponents differ by up to 0.11. Midpoint Hessians of balanced mps8 {2,5},
+{1,5} (pinned or sign-correction states) are left out of the ranges.
 
 ### 3. Same teacher, different trees (step 3; `results/trees_TA.png`, `trees_B4*.png`, `trees_E8.png`, `levels_summary.csv`)
 Every predicted k* >= 3 plateau is detected (`find_plateaus`, 88-100% of runs) with exponent within 0.2 of

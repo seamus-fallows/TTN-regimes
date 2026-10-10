@@ -271,12 +271,16 @@ single-sigma fallback only.
 - k >= 3: λ_min ∝ sigma^x, full ranges over all rows (raw where it differs): k = 3: 0.81-1.06 (raw 0.92-1.06);
   k = 4: 1.64-2.16; k = 5: 2.82-3.76; k = 6: 4.00, 4.04 (balanced, binary8 / ht4, one decade), 4.27 (mps8 {1,6},
   balanced), 3.19-5.23 (round-1 rows over 0.8 decades); k = 7: 5.01 (balanced ht4) up to 6.5 (round-1 rows over
-  0.6 decades). So x grows with k and λ_min -> 0: no sigma-independent negative curvature; x ≈ k - 2 within
-  0.2 for k = 3-5 and the balanced one-decade k = 6-7 rows. Raw and projected exponents differ by up to 0.11
-  (mps6 {2,3,4} small init: 0.81 projected, 0.92 raw). Exception: balanced-init mps8 {2,5} and
-  {1,5}, whose midpoint λ_min is ~1e-13-1e-10 (exponents 6-9): there the minimum-speed point falls where the
-  route amplitudes are tiny (a sign-correction phase, theory_saddles.md 8), so the midpoint Hessian is not
-  representative.
+  0.6 decades). So x grows with k and λ_min -> 0: no sigma-independent negative curvature. x is within 0.2 of
+  k - 2 in 60 of 60 k = 3 rows, 36 of 38 k = 4 rows and 30 of 37 k = 5 rows (and the balanced one-decade k = 6-7
+  rows); the k = 4-5 exceptions are rows whose duration exponent deviates the same way (midroot6 {0,3} saddle:
+  x = 1.64, p = 1.48; MPS k = 5 rows: x = 3.24-3.76, p = 3.19-3.76) plus the artefacts below. Row by row, the
+  raw x equals the row's duration exponent p within 0.2 in 95% of 169 k >= 3 rows (median |x - p| = 0.02).
+  Raw and projected exponents differ by up to 0.11 (mps6 {2,3,4} small init: 0.81 projected, 0.92 raw).
+  Artefacts: balanced-init mps8 {2,5} and {1,5}, whose midpoint λ_min is ~1e-13-1e-10 (x = 8.9 and 6.2): there
+  the minimum-speed point falls where the route amplitudes are tiny (a sign-correction phase, theory_saddles.md 8),
+  and in the k = 5 extension balanced mps8 {1,5} (x = -5.4) the midpoint states are pinned states at t = 1e9 to
+  5e12; these midpoint Hessians are not representative and are left out of the ranges.
 
 ### 7.3 Dormant amplitudes and single-run k — **empirical**
 
@@ -550,7 +554,8 @@ multi-component runs the rank profile matches in 94% of (run, level) pairs (99-1
 of λ_min, raw quoted where the projection is biased): k = 2: λ_min = -λ2 exactly (-0.5000; -0.2500 / -0.7500
 for s2 = 0.25 / 0.75), sigma-independent; k >= 3: λ_min ∝ sigma^x -> 0 with x growing with k (full ranges:
 k = 3 0.81-1.06, k = 4 1.64-2.16, k = 5 2.82-3.76, k = 6 4.00-4.27 over one decade, k = 7 5.01 to 6.5); x is
-within 0.2 of k - 2 for k = 3-5 and the balanced one-decade k = 6-7 rows. Not tested: wrong-order and star
+within 0.2 of k - 2 in 126 of 135 k = 3-5 rows and in the balanced one-decade k = 6-7 rows, and it tracks each
+row's duration exponent (within 0.2 in 95% of rows). Not tested: wrong-order and star
 saddles, which theory_saddles.md shows can be strict at k* >= 3.
 
 **Dead routes** (empirical; 7.5, 7.10): with fan-in init at chi = 2, 398 of 5,682 two-component runs stall, all

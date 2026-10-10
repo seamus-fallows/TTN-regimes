@@ -80,7 +80,7 @@ $X/finalize.sh /tmp/locality_results 8     # every table and figure, into a fres
   return to k - 2 at small sigma, except mps8 {1,5} from the saddle start (3.67 ± 0.20, 4 seeds, 0.4 decades);
   k = 6-7 = k - 2 on binary8 and ht4 with balanced init only, over one decade; k = 8 not measured. `results/twocomp_table.md`, `extensions_table.md`, `twocomp_exponents.png`.
 - Hessian at plateau midpoints (fixed gauge projection and raw): λ_min = -λ2 = -s2 s1^((K-2)/K) for k = 2,
-  ∝ sigma^x -> 0 for k >= 3 (x within 0.2 of k - 2 for k = 3-5; raw quoted where the projection is biased).
+  ∝ sigma^x -> 0 for k >= 3 (x within 0.2 of k - 2 in 126 of 135 k = 3-5 rows; raw quoted where the projection is biased).
   `results/twocomp_hessian.png`, `hessians.csv`.
 - Several components: the route rule at rank-constrained optima predicts every k* >= 3 plateau (detected
   plateaus, exponents within 0.2; one exception, B4 on ht4 with fan-in init) and the rank profiles at the
