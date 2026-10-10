@@ -82,6 +82,7 @@ def summarize(path) -> dict:
         row["first_rank2_edges"] = [int(e) for e in np.flatnonzero(ev[:, 0] <= first_k2 + tol)]
         row["first_rank2_levels"] = [int(lv[e]) for e in row["first_rank2_edges"]]
     row["edge_levels"] = lv.tolist()
+    row["edges"], row["parent"] = m["edges"], m["parent"]
     row["edge_sites"] = edge_sites(m)
     for lvl in LOSS_LEVELS:
         row[f"t_loss_{lvl}"] = time_to_loss(t, loss, lvl)

@@ -81,3 +81,10 @@
 {"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.05_seed1", "status": "completed", "wall": 2171.2}
 {"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.14_seed2", "status": "completed", "wall": 1931.4}
 {"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.07_seed4", "status": "completed", "wall": 2071.2}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.07_seed1", "status": "completed", "wall": 2113.3}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.2_seed2", "status": "completed", "wall": 1852.6}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.14_seed3", "status": "completed", "wall": 1966.8}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.1_seed3", "status": "completed", "wall": 2038.8}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.14_seed0", "status": "completed", "wall": 2063.1}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled1_chi4_s0.3_seed4", "status": "exists"}
+{"name": "mnist4_3v5_n4000_raw_binary_scrambled0_chi4_s0.1_seed0", "status": "completed", "wall": 2124.0}

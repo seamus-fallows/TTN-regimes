@@ -76,6 +76,11 @@ Figures (interim, `experiments/real_data/results/`): `loss_curves_raw`, `bond_sp
   The per-sample Jacobian is now a closed form from per-sample messages (0.4 s vs 27 s for vmap under load;
   equal to 4e-18). The first two launches of the sweeps were killed (no valid run lost: all finished ones
   had failed in phase 1).
+- **Reduced grids for robustness variants** (decided mid-sweep, ~1 h saved): scrambled1/2 at
+  sigma in {0.05, 0.1, 0.2, 0.5}, whitened features at {0.05, 0.07, 0.1, 0.2, 0.5}; the full 7-value grid is
+  kept for raw quadtree / MPS / scrambled0 (the scaling claims). Implemented by placing empty placeholder
+  files for the dropped cases (the runner skips existing outputs; list in
+  /root/outputs/real_data/main_placeholders.txt; removed after the sweep).
 - **Merged main (34c76ad) at the lead's request**; event times use `merged_rows` (log + fine rows; fine rows
   also carry the data-weighted spectra).
 
