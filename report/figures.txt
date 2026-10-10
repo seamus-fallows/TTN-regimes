@@ -45,3 +45,8 @@ experiments/optim_samples/results/report_samples.pdf   optim/samples.pdf
 # committed summary CSVs)
 experiments/data_teacher/results/report_contrast.pdf   data_teacher/contrast.pdf
 experiments/data_teacher/results/report_mps_laws.pdf   data_teacher/mps_laws.pdf
+
+# Section 6, real data (experiment real_data; make_figures.py --json, from the committed JSON files
+# fix1_analysis.json and order_test.json)
+experiments/real_data/results/first_route_gaps.pdf   real_data/first_route_gaps.pdf
+experiments/real_data/results/order_test.pdf         real_data/order_test.pdf
