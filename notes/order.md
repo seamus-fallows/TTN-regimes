@@ -206,7 +206,24 @@ P(smaller first) at sigma = 0.01 (Wilson 95% CI half-width <= 0.05):
   same slow approach: local slope 0.24 at sigma ~ 10^-1.5 rising to ~0.45 at 1e-4 for n = 4, rho = 0.9).
   A full-GF test down to sigma = 1e-5 on MPS4 is in 7.4b.
 
-### 7.4b-7.5 (MPS4 multiplicity test, chi scan, R >= 3): pending
+### 7.4b MPS4 multiplicity test (pending)
+
+### 7.5 Over-parameterized bonds restore greedy order, slowly (complete for the LO race)
+
+Leading-order race (per-component blow-up times; exact for odeco on MPS, 96-99% for binary8), d = 2,
+uncapped bond dimension chi = 1..32 on every edge (`cap: false`: the end bonds exceed the rank they can
+carry), 500 seeds per point (`sweep.py configs/chi_scan.yaml`, `analyze_chi.py`, `results/chi_scan.csv`,
+`results/chi_scan_joint_fit.csv`, `results/chi_scan.png`); GF check at chi = 16, 32 in `chi_gf.yaml`.
+
+- sd(log tau) falls like chi^-1/2 on every tree: per-tree exponents 0.48-0.54 (chi >= 4). Joint fit over
+  all trees and chi >= 2: **sd(log tau) = 0.57 (K-2)^(0.61 +- 0.03) chi^-(0.53 +- 0.01)** (rms residual 5%
+  in log) [empirical]. (`notes/theory_escape.md` 5.1 reports ~sqrt(K-2) at capped bonds.)
+- Race P(larger first) at chi = 32: 1.00 / 0.86 / 0.70 (MPS4), 0.99 / 0.78 / 0.64 (MPS6), 0.97 / 0.73 / 0.61
+  (MPS8) at rho = 0.5 / 0.8 / 0.9. With a log-normal tau, P = Phi(ln(1/rho)/(sqrt 2 sd)), so P >= 0.9 needs
+  sd <= ln(1/rho)/1.81, i.e. chi >= [1.03 (K-2)^0.61 / ln(1/rho)]^1.89 by the fit: for rho = 0.9,
+  chi ~ 160 (K = 4) and ~570 (K = 8) [extrapolation of the empirical fit].
+- So the answer to "does larger chi restore greedy order?" is yes in the limit, as for over-parameterized
+  CP (Ge et al. 2021), but slowly: the spread of log escape times shrinks only like chi^-1/2.
 
 ## 8. Status of H1 and H1b
 

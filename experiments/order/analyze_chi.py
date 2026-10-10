@@ -36,7 +36,7 @@ def main():
     df = pd.DataFrame(rows)
     gf_path = RAW / "chi_gf" / "runs.jsonl"
     gf = None
-    if gf_path.exists():
+    if gf_path.exists() and gf_path.stat().st_size > 0:
         gseeds, gruns = load("chi_gf")
         gf = gruns.groupby(["tree", "chi", "rho"]).winner.agg(
             k=lambda w: int((w == 0).sum()), n="count").reset_index()
@@ -54,6 +54,16 @@ def main():
             slope, icpt = np.polyfit(np.log(big.chi), np.log(big.sd_log_tau), 1)
             fits.append(dict(tree=tree, alpha=-slope))
     df = df.merge(pd.DataFrame(fits), on="tree", how="left")
+    # joint scaling law sd(log tau) = c (K-2)^a chi^-b over chi >= 2 (least squares in log space)
+    j = df[df.chi >= 2]
+    X = np.column_stack([np.ones(len(j)), np.log(j.K - 2), np.log(j.chi)])
+    coef, res, *_ = np.linalg.lstsq(X, np.log(j.sd_log_tau.values), rcond=None)
+    resid = np.log(j.sd_log_tau.values) - X @ coef
+    cov = np.linalg.inv(X.T @ X) * (resid @ resid) / (len(j) - 3)
+    joint = dict(c=np.exp(coef[0]), a=coef[1], a_se=np.sqrt(cov[1, 1]), b=-coef[2],
+                 b_se=np.sqrt(cov[2, 2]), rms_log_resid=np.sqrt(np.mean(resid**2)))
+    pd.DataFrame([joint]).to_csv(RES / "chi_scan_joint_fit.csv", index=False, float_format="%.4g")
+    print("joint fit sd(log tau) = c (K-2)^a chi^-b:", {k: round(v, 3) for k, v in joint.items()})
     df.to_csv(RES / "chi_scan.csv", index=False, float_format="%.4g")
     print(df.to_string(index=False))
 
