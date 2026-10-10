@@ -10,7 +10,7 @@ Budget: $300 total (set by the user, 2026-10-09). Target: <= $200 for two rounds
 | 2026-10-09 18:25 UTC (start) | order | 96 vCPU (Nevada) | 0.84 | running | | |
 | 2026-10-09 18:25 UTC (start) | regime-map | 384 vCPU (British Columbia) | 1.04 | running | | |
 | 2026-10-09 18:25 UTC (start) | data-teacher | 32 vCPU (Quebec) | 0.47 | running | | |
-| 2026-10-09 18:25 UTC (start) | optim-samples | 32 vCPU (Netherlands) | 0.37 | running | | |
+| 2026-10-09 18:25 UTC (start) | optim-samples | 32 vCPU (Netherlands) | 0.37 | DELETED 2026-10-10 (raw outputs in data/optim_samples, verified) | | $2.32 |
 | 2026-10-09 19:10 UTC (start) | optimizers | 96 vCPU Zen 4 (US) | 1.40 | DELETED 2026-10-10 (raw outputs in data/optimizers, verified) | | $3.68 |
 | 2026-10-09 21:45 UTC (start) | real-data | 128 vCPU EPYC (British Columbia) | 0.52 | running | | |
 
