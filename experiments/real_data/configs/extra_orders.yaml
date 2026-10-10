@@ -1,0 +1,33 @@
+# Pre-registered order test (notes/real_data.md section 9): binary16 with 27 pixel orders x init seeds 0-2 at
+# sigma = 0.1, every other setting as in main.yaml. Cases run in this order (mortonrev last). Reused identical
+# cases, copied into the output directory before the run so that the runner skips them: quadtree seeds 0-2
+# (main sweep), quadtreeT and rowmajor seeds 0-1 (round-1 review runs, same code and settings).
+defaults: {t2: 1.0e+4, n_per_decade: 30, n_linear: 1000, wall_limit: 5400, chi: 4, tree: binary, features: raw, sigmas: [0.1], seeds: [0, 1, 2]}
+cases:
+  - {ordering: scrambled100}
+  - {ordering: scrambled101}
+  - {ordering: scrambled102}
+  - {ordering: scrambled103}
+  - {ordering: scrambled104}
+  - {ordering: scrambled105}
+  - {ordering: scrambled106}
+  - {ordering: scrambled107}
+  - {ordering: scrambled108}
+  - {ordering: scrambled109}
+  - {ordering: scrambled110}
+  - {ordering: scrambled111}
+  - {ordering: scrambled112}
+  - {ordering: scrambled113}
+  - {ordering: scrambled114}
+  - {ordering: scrambled115}
+  - {ordering: scrambled116}
+  - {ordering: scrambled117}
+  - {ordering: scrambled118}
+  - {ordering: scrambled119}
+  - {ordering: colmajor}
+  - {ordering: snake}
+  - {ordering: hilbert}
+  - {ordering: quadtreeT}
+  - {ordering: rowmajor}
+  - {ordering: quadtree}
+  - {ordering: mortonrev}

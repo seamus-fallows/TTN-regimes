@@ -4,7 +4,8 @@ Usage: uv run python experiments/real_data/make_figures.py <summary.json> <runs_
            [routes.json hessians.json regime_analysis.json]
        uv run python experiments/real_data/make_figures.py --json <results_dir> <out_dir>
        (only the figures made from committed JSON files: route_amplitudes, plateau_hessians,
-        regime_sweep, and from fix1_analysis.json first_route_gaps, locality_orders)
+        regime_sweep; from fix1_analysis.json first_route_gaps, locality_orders, scaling_fix1; from
+        order_test.json the pre-registered order test, order_test)
 
 Figures (features = raw by default):
   loss_curves      train loss vs tau per tree, one curve per sigma (seed 0); linear-time inset view
@@ -584,6 +585,65 @@ def fig_scaling_fix1(fix1_json, regime_json, out):
     fig.tight_layout()
     savefig(fig, Path(out) / "scaling_fix1")
     plt.close(fig)
+def fig_order_test(order_json, out):
+    """Pre-registered order test (order_test.json): per order, the final loss (left) and log10 of the time to
+    L <= 0.25 (right, censored at the horizon) against the data-only predictor S; points = mean over seeds 0-2,
+    bars = range over seeds; structured orders labelled; primary Spearman results in the titles."""
+    res = json.load(open(order_json))
+    t, groups = res["table"], res["orders"]
+    cols = {"new_random": palette(4)[1], "structured": palette(4)[0], "old_random": MUTED}
+    names = {
+        "new_random": "new random orders",
+        "structured": "structured orders",
+        "old_random": "round-0 random (secondary)",
+    }
+    fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.4 * TEXT_WIDTH), sharex=True)
+    for ax, key in ((axes[0], "O1"), (axes[1], "O2")):
+        for g, os_ in groups.items():
+            for i, o in enumerate(os_):
+                v = t[o]
+                if key == "O1":
+                    ys = [x["loss_end"] for x in v["per_seed"]]
+                else:
+                    ys = [
+                        np.log10(x["tau_025"])
+                        if x["tau_025"] is not None and np.isfinite(x["tau_025"])
+                        else 4.0
+                        for x in v["per_seed"]
+                    ]
+                ax.errorbar(
+                    v["S"],
+                    v[key],
+                    yerr=[[v[key] - min(ys)], [max(ys) - v[key]]],
+                    fmt="o",
+                    ms=3.5,
+                    color=cols[g],
+                    lw=0.6,
+                    capsize=0,
+                    label=names[g] if i == 0 else None,
+                    zorder=3,
+                )
+                if g == "structured":
+                    ax.annotate(
+                        o,
+                        (v["S"], v[key]),
+                        fontsize=5.5,
+                        xytext=(3, 2),
+                        textcoords="offset points",
+                        color=MUTED,
+                    )
+        r = res["primary"]["all"][key]
+        ax.set_title(
+            f"all orders: Spearman {r['rho']:+.2f} [{r['ci95'][0]:+.2f}, {r['ci95'][1]:+.2f}]",
+            fontsize=8,
+        )
+        ax.set_xlabel(r"predictor $S$ (share on $k\leq5$ routes, best rank-1 fit)")
+    axes[0].set_ylabel(r"train loss at $\tau=10^4$ (mean of 3 seeds)")
+    axes[1].set_ylabel(r"$\log_{10}\tau(L\leq0.25)$ (mean; censored at 4)")
+    axes[0].legend(fontsize=6, frameon=False)
+    fig.tight_layout()
+    savefig(fig, Path(out) / "order_test")
+    plt.close(fig)
 def json_figures(results_dir, out_dir):
     """Figures that need only committed JSON files (no raw trajectories)."""
     from analysis import ERR_MAX
@@ -597,6 +657,8 @@ def json_figures(results_dir, out_dir):
         fig_first_route_clean(R / "fix1_analysis.json", out_dir)
         fig_locality_orders(R / "fix1_analysis.json", out_dir)
         fig_scaling_fix1(R / "fix1_analysis.json", R / "regime_analysis.json", out_dir)
+    if (R / "order_test.json").exists():
+        fig_order_test(R / "order_test.json", out_dir)
 def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None, hess_json=None,
          regime_json=None):
     set_style()

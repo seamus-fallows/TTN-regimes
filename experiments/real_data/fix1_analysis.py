@@ -25,6 +25,8 @@ Sections (one key each in <out_prefix>.json; markdown tables in <out_prefix>.md)
   mps_reruns    35 MPS reruns (tau <= 1000): first rise at tau = 0 or resolved, per-edge power vs log fits
   creep         loss decrease between drops relative to the next drop (binary reruns; needs --local-runs)
   two_point_*   chi = 8 and Fashion: two-point slopes of the rank-clock gap, first rises at tau = 0
+  with --main (full main-sweep summary): first_route_full (window-checked fits over all binary runs, from
+                scaling.json), locality_all_sigma (per-seed final losses), mps_full (per-edge laws, full horizon)
 """
 
 from __future__ import annotations
@@ -605,7 +607,7 @@ def creep(local_rows, runs_dir):
     }
 
 
-def mps_reruns(local_rows, tag="_t1000"):
+def mps_reruns(local_rows, tag="_t1000", features="raw"):
     """The 35 snake-MPS reruns (configs/fix1_mps.yaml, tau <= 1000): per run the first-escape time t_a, the
     first drop's rate peak, each edge's first s_2/s_1 >= 0.05 time (tau clock; equal to tau = 0 when the
     ratio is already above threshold at the start of phase 2) and the first rising edges; then per edge
@@ -615,7 +617,8 @@ def mps_reruns(local_rows, tag="_t1000"):
 
     runs = []
     for r in local_rows:
-        if r.get("tree") != "mps" or not r["name"].endswith(tag) or not r.get("drops"):
+        if (r.get("tree") != "mps" or not r["name"].endswith(tag) or not r.get("drops")
+                or r.get("features") != features or r["name"].endswith("_short")):
             continue
         ev = np.array(r["rank_events"], float)[:, 0]
         runs.append(
@@ -717,6 +720,70 @@ def mps_repro(scaling, mr):
     }
 
 
+def first_route_full(scaling):
+    """Window-checked first-route fits over all binary runs of the main sweep (scaling.json first_route,
+    regenerated from the raw outputs): per seed power exponent, A / sigma + B and log-law rms."""
+    out, allp = {}, []
+    for tree, d in sorted(scaling["first_route"].items()):
+        if not tree.endswith("/raw"):
+            continue
+        ps = d.get("per_seed", [])
+        allp += [p["power_p"] for p in ps]
+        out[tree] = {
+            "n_seeds": len(ps),
+            "per_seed": ps,
+            "power_p": mean_se([p["power_p"] for p in ps]),
+            "B_negative": sum(p["k3_B"] < 0 for p in ps),
+            "max_rms": {k: max([p[k] for p in ps], default=None) for k in ("power_rms", "k3_rms")},
+            "log_rms_range": [
+                min([p["log_rms"] for p in ps], default=None),
+                max([p["log_rms"] for p in ps], default=None),
+            ],
+            "excluded": d["excluded"],
+        }
+    out["all"] = {"power_p": mean_se(allp), "range": [min(allp), max(allp)] if allp else None}
+    return out
+
+
+def locality_all_sigma(main_rows):
+    """Per sigma and seed, the final train loss of the four round-0 binary orders and of the MPS (main sweep):
+    how often each order ends below the quadtree of the same seed (orders share the init cores of a seed)."""
+    out = {}
+    for s in sorted({r["sigma"] for r in main_rows}):
+        rows = [
+            r
+            for r in main_rows
+            if abs(r["sigma"] - s) < 1e-9 and "loss_end" in r and r["features"] == "raw"
+        ]
+        per_seed = {}
+        for seed in sorted({r["seed"] for r in rows}):
+            byo = {
+                (r["tree"] if r["tree"] == "mps" else r["ordering"]): r["loss_end"]
+                for r in rows
+                if r["seed"] == seed
+            }
+            if "quadtree" in byo:
+                per_seed[seed] = byo
+        binary = [
+            (seed, o, v)
+            for seed, byo in per_seed.items()
+            for o, v in byo.items()
+            if o.startswith("scrambled")
+        ]
+        out[f"{s:g}"] = {
+            "per_seed": per_seed,
+            "scrambled_below_quadtree": [
+                sum(v < per_seed[seed]["quadtree"] for seed, _, v in binary),
+                len(binary),
+            ],
+            "mps_below_quadtree": [
+                sum(byo.get("mps", 9) < byo["quadtree"] for byo in per_seed.values()),
+                sum("mps" in byo for byo in per_seed.values()),
+            ],
+        }
+    return out
+
+
 def load_json(p):
     return json.load(open(p))
 
@@ -729,6 +796,7 @@ def main():
     ap.add_argument("--audit", nargs="*", default=[])
     ap.add_argument("--logs", default=None)
     ap.add_argument("--local-runs", default=None)
+    ap.add_argument("--main", default=None, help="summarize.py output of the full main sweep")
     a = ap.parse_args()
     R = Path(a.results_dir)
     events, routes = load_json(R / "events_table.json"), load_json(R / "routes_raw.json")
@@ -769,6 +837,11 @@ def main():
         },
     }
     res["mps_repro"] = mps_repro(scaling, res["mps_reruns"])
+    if a.main:
+        main_rows = [r for r in load_json(a.main) if "error" not in r and not r.get("centred")]
+        res["first_route_full"] = first_route_full(scaling)
+        res["locality_all_sigma"] = locality_all_sigma(main_rows)
+        res["mps_full"] = mps_reruns(main_rows, tag="")
     out = Path(a.out_prefix)
     out.parent.mkdir(parents=True, exist_ok=True)
     json.dump(res, open(out.with_suffix(".json"), "w"), indent=1, default=float)
@@ -1101,10 +1174,70 @@ def _md_mps_reruns(res):
     return md
 
 
+def _md_full(res):
+    md = []
+    fr = res.get("first_route_full")
+    if fr:
+        md += [
+            "",
+            "## First route over all binary runs (window-checked attribution, full main sweep)",
+            "",
+            "| tree | seeds fitted | power p (mean ± SE) | max rms power / A/sigma+B | log rms range | B < 0 |",
+            "|---|---|---|---|---|---|",
+        ]
+        for t, v in fr.items():
+            if t == "all":
+                continue
+            lr = v["log_rms_range"]
+            md.append(
+                f"| {t} | {v['n_seeds']} | {_ms(v['power_p'])} | {_f(v['max_rms']['power_rms'], '.3f')} / "
+                f"{_f(v['max_rms']['k3_rms'], '.3f')} | {_f(lr[0], '.2f')}-{_f(lr[1], '.2f')} | {v['B_negative']}/{v['n_seeds']} |"
+            )
+        md.append(
+            f"\nAll fitted seeds: power p {_ms(fr['all']['power_p'])}, range {fr['all']['range'][0]:.2f}-{fr['all']['range'][1]:.2f}."
+        )
+        md += [
+            "",
+            "Excluded (seed, sigma, reason): "
+            + "; ".join(f"{t}: {v['excluded']}" for t, v in fr.items() if t != "all"),
+        ]
+    la = res.get("locality_all_sigma")
+    if la:
+        md += [
+            "",
+            "## Final train loss per seed, main sweep (round-0 orders and the MPS)",
+            "",
+            "| sigma | scrambled runs ending below the quadtree of the same seed | MPS below quadtree |",
+            "|---|---|---|",
+        ]
+        for s, v in la.items():
+            md.append(
+                f"| {s} | {v['scrambled_below_quadtree'][0]}/{v['scrambled_below_quadtree'][1]} | "
+                f"{v['mps_below_quadtree'][0]}/{v['mps_below_quadtree'][1]} |"
+            )
+    mf = res.get("mps_full")
+    if mf:
+        md += [
+            "",
+            "## MPS per-edge laws over the full horizon (main sweep, relative residuals for both laws)",
+            "",
+            f"First rise at tau = 0: {mf['first_at_start']}/{mf['n']}; resolved: single edge {mf['first_single_edge_resolved']}/"
+            f"{mf['n_resolved']} (edges {mf['first_edges_resolved']}), before the first drop's peak {mf['resolved_before_drop0_peak']}.",
+            "",
+            "| edge | seeds | power p (mean ± SE) | power rms | log slope | log rms | seeds preferring log |",
+            "|---|---|---|---|---|---|---|",
+        ]
+        for e in mf["edge_fits"]:
+            md.append(
+                f"| {e['edge']} | {e['n_seeds']} | {_ms(e['power_p'], '.2f')} | {e['power_rms'][0]:.3f} "
+                f"| {e['log_slope'][0]:.3g} ± {e['log_slope'][1]:.2g} | {e['log_rms'][0]:.3f} | {e['log_preferred']}/{e['n_seeds']} |"
+            )
+    return md
 def markdown(res):
-    md = ["# Real data, fix round 1: re-analysis from committed outputs (`fix1_analysis.py`)", ""]
+    md = ["# Real data, fix round 1: re-analysis (`fix1_analysis.py`; committed outputs, local reruns, full raw sweep)", ""]
     md += (
         _md_first_route(res)
+        + _md_full(res)
         + _md_routes(res)
         + _md_locality(res)
         + _md_rest(res)

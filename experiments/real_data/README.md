@@ -86,12 +86,23 @@ uv run python experiments/real_data/make_figures.py --json $R $R      # figures 
 ```
 `<review>` = `data/review_real_data` (the round-1 reviewers' runs with this code: 6 more random orders, row-major
 and transposed-quadtree binary trees, MPS with other pixel orders; seed 0 and 1, sigma = 0.1).
-**Pending (needs the remote raw outputs):** rerun `summarize.py`, `scaling.py`, `tables.py`, `events_table.py`
-and `make_figures.py` on the full sweeps with the fixed code (first-route attribution, fair fits, unresolved
-rank events, parent check, per-unit route counts), which regenerates `scaling.json`, `tables.*`,
+**Round 2 (raw outputs local in `data/real_data`, read only):** `summarize.py` on main, fashion, chi8 + chi8b (the
+remote `chi8_runs/` links point to these two; map in `data/real_data/SYMLINKS_on_remote.txt`) and img8 into
+`$L/full/`, then `scaling.py`, `tables.py`, `events_table.py`, `make_figures.py` and `fix1_analysis.py --main
+$L/full/main_summary.json` as in "How to run". This regenerated `scaling.json`, `tables.*`,
 `scaling_raw.*` (removed in fix round 1: its middle panel plotted misattributed gaps; `first_route_gaps` and
-`scaling_fix1` replace it) and the `chi8_*`/`fashion_*`/`img8_*` tables; until then those files are round-0 outputs and
-`notes/real_data.md` section 8 lists which of their numbers are superseded.
+`scaling_fix1` replace it), `events_table.*` and the `chi8_*`/`fashion_*`/`img8_*` tables and scaling files from the
+raw outputs with the fixed code; nothing from the review's list is pending (`notes/real_data.md` 8.12).
+
+### Pre-registered order test (notes/real_data.md section 9)
+```
+uv run python experiments/real_data/order_predictor.py $R/extra_orders_predictor.json 4 <orders...>   # data-only predictor S
+uv run python experiments/real_data/run.py experiments/real_data/configs/extra_orders.yaml $L/extra_orders 8  # 27 orders x 3 seeds
+uv run python experiments/real_data/summarize.py $L/extra_orders $L/extra_orders_summary 8
+uv run python experiments/real_data/order_test.py $R/extra_orders_predictor.json $L/extra_orders_summary.json $R/order_test     --main $L/full/main_summary.json --routes $R/routes_raw.json [--plateau $L/routes_extra.json]
+```
+Reused identical cases are copied into `$L/extra_orders` before the run (quadtree seeds 0-2 from the main sweep,
+quadtreeT and rowmajor seeds 0-1 from the review runs), so the runner skips them.
 
 ## Files
 | file | role |
@@ -115,11 +126,13 @@ rank events, parent check, per-unit route counts), which regenerates `scaling.js
 - First plateau t1 ∝ sigma^-(K-2) (13.000 binary16, 14.000 mps16): an identity of small-init flow [proven],
   an integrator check rather than evidence.
 - First route after the escape on binary trees: a sibling pair of bottom cores (k = 3) in all 20 (order, seed)
-  pairs; its gap follows A/sigma + B (all 11 clean series, B < 0; free exponent 1.22 ± 0.03, not robust); the
+  pairs; its gap follows A/sigma + B (all 11 clean series and all 10 window-checked seed series of the full sweep,
+  B < 0; free exponent 1.22 ± 0.03 / 1.20 ± 0.03, not robust); the
   log law is rejected with the same relative-residual weighting (`first_route_gaps`). The round-0 "1.01 ± 0.14"
   came from an attribution bug.
 - MPS: the first rank increase (edge 5) is merged with the escape (10/35 runs already above threshold at
-  tau = 0); later MPS routes (edges 4, 3) rise in log time; the plateau after the escape is a strict saddle,
+  tau = 0); with relative-residual fits over the full horizon, 6 of 9 later edges (3, 4, 6-9) rise in log time,
+  edges 1, 2 do not; the plateau after the escape is a strict saddle,
   the binary rank-1 plateau a higher-order one (lambda_min ∝ sigma^0.95 ± 0.07) (`scaling_fix1`, `plateau_hessians`).
 - Route amplitudes at the rank-1 plateau predict the first sibling pair in 22 of 26 (order, seed, critical
   point) units (2 mixed, 2 miss; chance 1/4) and 11/11 review runs (`route_amplitudes`).

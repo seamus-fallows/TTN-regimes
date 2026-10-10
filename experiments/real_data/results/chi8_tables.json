@@ -51,18 +51,33 @@
    "MPS snake": {
     "sibling": 0.0,
     "single": 1.0,
+    "at_start": 4,
+    "single_resolved": [
+     11,
+     11
+    ],
     "kendall": "0.248 \u00b1 0.058",
     "n": 15
    },
    "binary quadtree": {
     "sibling": 0.9333333333333333,
     "single": 0.0,
+    "at_start": 0,
+    "single_resolved": [
+     0,
+     15
+    ],
     "kendall": "0.262 \u00b1 0.075",
     "n": 15
    },
    "binary scrambled": {
     "sibling": 0.9333333333333333,
     "single": 0.0,
+    "at_start": 0,
+    "single_resolved": [
+     0,
+     15
+    ],
     "kendall": "0.06 \u00b1 0.044",
     "n": 15
    }

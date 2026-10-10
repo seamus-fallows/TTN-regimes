@@ -1,4 +1,4 @@
-# Real data, fix round 1: re-analysis from committed outputs (`fix1_analysis.py`)
+# Real data, fix round 1: re-analysis (`fix1_analysis.py`; committed outputs, local reruns, full raw sweep)
 
 ## First route (k = 3): clean series
 
@@ -66,6 +66,47 @@ Series = one seed whose first route (one sibling pair) rises inside drop 1 at ev
 | binary:scrambled2 | raw | 3 | [1] | [[3, 2], [4, 2]] | 3 | 0.05-0.5 (4) | 1.13 (0.012) | 43.4 (0.263; 0.78) | power |
 | mps:snake | raw | 0 | [3, 4, 5, 6] | [[6, 3], [7, 2], [8, 2], [9, 2]] | 5 | 0.05-0.2 (5) | 0.18 (0.263) | 305 (0.244; 0.28) | log |
 | mps:snake | raw | 4 | [1] | [[4, 2]] | 2 | 0.05-0.2 (5) | 0.27 (0.004) | 12.1 (0.005; 0.01) | power |
+
+## First route over all binary runs (window-checked attribution, full main sweep)
+
+| tree | seeds fitted | power p (mean ± SE) | max rms power / A/sigma+B | log rms range | B < 0 |
+|---|---|---|---|---|---|
+| binary_quadtree/raw | 3 | 1.105 ± 0.066 (n = 3) | 0.029 / 0.033 | 0.12-0.24 | 3/3 |
+| binary_scrambled0/raw | 2 | 1.229 ± 0.074 (n = 2) | 0.055 / 0.046 | 0.16-0.30 | 2/2 |
+| binary_scrambled1/raw | 4 | 1.268 ± 0.022 (n = 4) | 0.058 / 0.060 | 0.19-0.30 | 4/4 |
+| binary_scrambled2/raw | 1 | 1.133 (n = 1) | 0.012 / 0.033 | 0.26-0.26 | 1/1 |
+
+All fitted seeds: power p 1.198 ± 0.032 (n = 10), range 1.02-1.32.
+
+Excluded (seed, sigma, reason): binary_quadtree/raw: [[1, 0.05, 'between drops'], [1, 0.07, 'between drops'], [1, 0.5, 'merged'], [2, 0.5, 'other route'], [3, 0.3, 'between drops'], [3, 0.5, 'merged'], [4, 0.2, 'other route'], [4, 0.3, 'other route'], [4, 0.5, 'other route']]; binary_scrambled0/raw: [[1, 0.05, 'between drops'], [1, 0.07, 'between drops'], [1, 0.1, 'between drops'], [1, 0.14, 'between drops'], [1, 0.3, 'between drops'], [1, 0.5, 'between drops'], [2, 0.2, 'between drops'], [2, 0.3, 'between drops'], [2, 0.5, 'other route'], [3, 0.14, 'other route'], [3, 0.2, 'other route'], [3, 0.3, 'other route'], [3, 0.5, 'other route'], [4, 0.5, 'between drops']]; binary_scrambled1/raw: [[2, 0.5, 'other route'], [4, 0.14, 'between drops'], [4, 0.2, 'other route'], [4, 0.5, 'other route']]; binary_scrambled2/raw: [[0, 0.5, 'between drops'], [1, 0.2, 'between drops'], [1, 0.5, 'other route'], [2, 0.2, 'other route'], [2, 0.5, 'other route'], [4, 0.5, 'between drops']]
+
+## Final train loss per seed, main sweep (round-0 orders and the MPS)
+
+| sigma | scrambled runs ending below the quadtree of the same seed | MPS below quadtree |
+|---|---|---|
+| 0.05 | 1/15 | 5/5 |
+| 0.07 | 0/10 | 5/5 |
+| 0.1 | 0/15 | 5/5 |
+| 0.14 | 0/10 | 5/5 |
+| 0.2 | 3/15 | 5/5 |
+| 0.3 | 4/9 | 5/5 |
+| 0.5 | 14/15 | 3/5 |
+
+## MPS per-edge laws over the full horizon (main sweep, relative residuals for both laws)
+
+First rise at tau = 0: 10/35; resolved: single edge 25/25 (edges [(5,)]), before the first drop's peak 24.
+
+| edge | seeds | power p (mean ± SE) | power rms | log slope | log rms | seeds preferring log |
+|---|---|---|---|---|---|---|
+| 0 | 5 | 0.94 ± 0.05 (n = 5) | 0.101 | 1.13e+03 ± 1.8e+02 | 0.125 | 2/5 |
+| 1 | 5 | 1.27 ± 0.08 (n = 5) | 0.105 | 156 ± 15 | 0.276 | 0/5 |
+| 2 | 5 | 1.00 ± 0.08 (n = 5) | 0.131 | 94.2 ± 7.6 | 0.141 | 1/5 |
+| 3 | 5 | 0.83 ± 0.19 (n = 5) | 0.252 | 30.3 ± 0.77 | 0.029 | 5/5 |
+| 4 | 5 | 0.90 ± 0.23 (n = 5) | 0.347 | 14.7 ± 1.5 | 0.028 | 4/5 |
+| 6 | 4 | 0.90 ± 0.09 (n = 4) | 0.166 | 411 ± 24 | 0.067 | 4/4 |
+| 7 | 5 | 1.21 ± 0.15 (n = 5) | 0.362 | 1.89e+03 ± 1e+02 | 0.108 | 5/5 |
+| 8 | 5 | 1.14 ± 0.12 (n = 5) | 0.296 | 1.92e+03 ± 1.1e+02 | 0.102 | 5/5 |
+| 9 | 5 | 1.12 ± 0.11 (n = 5) | 0.271 | 1.91e+03 ± 1.1e+02 | 0.104 | 5/5 |
 
 ## Route-amplitude rule, rank-1 states, critical-point units
 

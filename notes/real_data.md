@@ -295,7 +295,7 @@ per critical-point unit, not per run.
 | binary trees at rank 1: next route = two sibling bottom cores, k = 3 (R2) | all 20 (order, seed) pairs; siblings cross together in 96/96 rank-1 states | yes | `fix1_analysis.md`, 8.3 |
 | MPS: next route on one edge, k = 2 | edge 5 alone in 25/25 resolved runs, but before the first drop's peak (merged with the escape); 10/35 recorded "increases" are the threshold at tau = 0 | partly | `fix1_analysis.md`, 8.6 |
 | k = 3 gap ∝ sigma^-1 (H2) | A/sigma + B fits all 11 clean series (rms <= 0.06, B < 0); free exponent 1.22 ± 0.03 (offset-dominated); log law rms 0.11-0.30 | yes, as A/sigma + B | `first_route_gaps`, 8.1 |
-| k = 2 gap ∝ log(1/sigma) | later MPS edges, relative-residual fits: edge 4 slope 14.7 ± 1.5 (log rms 0.027 vs power 0.36; 4/5 seeds), edge 3 30.3 ± 0.8 (0.029 vs 0.25; 5/5); edge 2 ambiguous, edge 1 power-like; edges 0, 6-9 pending | yes for edges 4, 3 (later routes) | `scaling_fix1`, 8.6 |
+| k = 2 gap ∝ log(1/sigma) | later MPS edges, relative-residual fits over the full horizon: log law preferred for edges 3, 4, 6, 7, 8, 9 (27/29 seed fits; edge 4 slope 14.7 ± 1.5, edge 3 30.3 ± 0.8 per unit ln(1/sigma)), power law for edges 1, 2, mixed for edge 0 | yes for 6 of 9 edges (later routes) | `scaling.json`, `scaling_fix1`, 8.6 |
 | k >= 4 later routes: sigma^-(k-2) | route identification of late binary events not clean | not established | 8.10 |
 | strict saddle iff k = 2 (H3), via lambda_min scaling | MPS (after the first route): exponent 0.047 ± 0.016 (strict); binary rank-1 plateau 0.95 ± 0.07 (higher order, predicted 1) | yes | `plateau_hessians`, 8.7 |
 | next route = lowest degree, then largest amplitude (R8) | 22/26 units hit in all states, 2 mixed, 2 miss (chance 1/4); 11/11 review runs; larger-amplitude k = 5, 7 routes escape later | yes | `route_amplitudes`, 8.3 |
@@ -313,8 +313,8 @@ per critical-point unit, not per run.
   small-sigma test accuracy in the locality and regime tables: those numbers are at fixed training time.
 - The binary first-plateau lambda_min exponent (0.88) is below the k = 3 value (1); the MPS far-edge rises scale
   like power laws (exponent ~1) where rank-1 counting predicts k = 2; both are open. [fix 1: with seed 4 the
-  binary exponent is 0.95 ± 0.07 (consistent with 1); with fair fits MPS edge 2 is a tie and edge 1 still
-  power-like, edges 0, 6-9 pending (8.6, 8.7)]
+  binary exponent is 0.95 ± 0.07 (consistent with 1); with fair fits over the full horizon edges 3, 4, 6-9
+  rise in log time, edges 1, 2 remain power-like (8.6, 8.7)]
 - [fix 1] Pixel order and tree shape are confounded for the MPS (snake only), and the locality comparison
   rests on four committed orders plus review runs at one sigma (8.4, 8.5).
 - Gradient flow only (no GD/SGD); empirical loss on 4000 fixed samples.
@@ -376,7 +376,10 @@ logs); (ii) two light subsets of `main.yaml` were rerun locally with the committ
 escape at sigma = 0.1; `configs/fix1_mps.yaml`: the 35 MPS cases with tau <= 1000); (iii) the round-1
 reviewers' runs with this code (`data/review_real_data/audit`: six more random binary orders, row-major and
 transposed-quadtree binary trees, MPS chains in other pixel orders; sigma = 0.1, seeds 0-1) enter where
-stated, as "review runs". The reruns reproduce the committed values (section 8.9). Code fixes: first-route
+stated, as "review runs". The reruns reproduce the committed values (section 8.9). **Round 2 (same day):** the
+raw outputs became available locally (`data/real_data`, a verified copy of the remote folder), and `summarize.py`,
+`scaling.py`, `tables.py`, `events_table.py` and `make_figures.py` were rerun with the fixed code on the full
+main, Fashion, chi = 8 and 8x8 sweeps; the numbers below are the full-sweep values where they exist (8.12). Code fixes: first-route
 attribution (`scaling.first_route_points`), relative-residual fits for all three laws (`scaling.fit_seed`,
 `events_table.fit`), rank events already met at tau = 0 flagged (`summarize.py`), sibling parent check,
 route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.py`), `REAL_DATA_DIR`.
@@ -413,6 +416,13 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   main.yaml generates (0.05, 0.1, 0.2, 0.5) the exponents are 1.34, 1.28, 1.22, 1.23, so the 14 runs main.yaml
   does not generate (sigma = 0.07, 0.14, 0.3, kept from before the grid trim) do not drive the value; they are
   now reproducible with `configs/main_extra.yaml`. **[empirical]**
+- **Full sweep (round 2).** The window-checked attribution on all 124 binary runs (`results/scaling.json`
+  `first_route`, regenerated) keeps 91 (seed, sigma) points and excludes 33 (16 rose between drops, 2 merged with
+  drop 0, 15 had another route first). Ten seed series are fitted (>= 4 sigma over >= 0.5 decade): free exponent
+  1.20 ± 0.03 (range 1.02-1.32; quadtree 1.11 ± 0.07 over 3 seeds, scrambled0 1.23 ± 0.07 (2), scrambled1 1.27 ±
+  0.02 (4), scrambled2 1.13 (1)); A/sigma + B fits every series (rms <= 0.060, B < 0 in 10/10), the log law does
+  not (rms 0.12-0.30). Quadtree seed 0 over sigma = 0.05-0.5 gives 1.02 with B ≈ -1, over 0.05-0.3 (clean series)
+  1.06: the free exponent depends on the sigma range, A/sigma + B does not need to. **[empirical]**
 - Section 4.4's other gap statements: the per-series refit with fair weights is in `results/events_table.md`
   (all 36 series) and `results/fix1_analysis.md`. Two corrections: the third singular value on the first
   sibling pair ((3,3),(4,3), drop 2, quadtree) is better fitted by the log law in seeds 2, 3 (rms 0.019, 0.037
@@ -424,9 +434,9 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   power law in log space, log law unweighted in linear space, both scored by relative residuals).
 - **New:** all laws are fitted with relative residuals (power law: least squares in log g; log law and
   A/sigma + B: weighted least squares, weights 1/g). Log-law rms on the clean k = 3 series 0.11-0.30 (not
-  0.56-0.91); the verdicts (power / A/sigma + B over log) hold. The MPS per-edge fits are redone in 8.6 for the
-  edges reached within tau = 1000; the rest of `scaling.json` (edge_scaling, g2, grank) is still the round-0
-  fit (pending, 8.12). **[fix of method]**
+  0.56-0.91); the verdicts (power / A/sigma + B over log) hold. `scaling.json` (all sections), `events_table.*`,
+  `fashion_scaling.json` and `chi8_scaling.json` are regenerated from the raw outputs with these fits (round 2;
+  the regenerated events table equals the refit of the committed series exactly). **[fix of method]**
 
 ### 8.3 First route and route-amplitude rule, de-duplicated (sections 4.2, 4.3) [fix: pseudo-replication]
 - **Old:** "first two rising edges are siblings in 35/35 quadtree and 89/89 scrambled runs; cross together in
@@ -449,9 +459,10 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
 - **First route = sibling pair.** The first two rising edges are siblings in all 124 runs, i.e. in all 20
   (order, seed) pairs; in the 96 rank-1 states the two sibling edges cross 0.05 together (within 5%) in 96/96.
   The 3 runs where they do not are at sigma >= 0.3 with a non-rank-1 plateau state (the route merged with the
-  escape). The parent check added to `tables.sibling_pair` cannot change these MNIST counts (all first pairs
-  are siblings); for Fashion and chi = 8 it can lower the "rise together" counts by at most one run per tree
-  (pending recount). **[empirical]**
+  escape). The parent check added to `tables.sibling_pair` does not change these MNIST counts (all first pairs
+  are siblings; recount on the full sweep: 35/35 and 86/89 as before). Recount on Fashion: "rise together" 3/15
+  (quadtree, unchanged) and 2/15 (scrambled, was 3/15: one first pair was two non-sibling bottom edges); chi = 8:
+  14/15 and 14/15, unchanged (`results/fashion_tables.md`, `chi8_tables.md`). **[empirical]**
 
 ### 8.4 Locality (section 4.7) [narrowed: an order/orientation effect measured by route amplitudes]
 - **Old:** "Quadtree vs scrambled (the clean locality test, same tree shape): the local tree learns much
@@ -475,7 +486,10 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   0.098 ± 0.001 (5 seeds; 0.096-0.103) against 0.188 ± 0.006, 0.207 ± 0.021 and 0.226 ± 0.004 for the
   committed random orders (5 seeds each), 0.119-0.224 for six more random orders (seed 0), 0.136 / 0.099 for
   row-major and 0.226 / 0.194 for the transposed quadtree (seeds 0 / 1). No other order ends below the quadtree
-  of the same seed (0 of 25 runs). **[empirical]**
+  of the same seed (0 of 25 runs). Over the whole main sweep (round 2, per seed, the three round-0 random orders
+  vs the quadtree): random orders end below the quadtree of the same seed in 1/15, 0/10, 0/15, 0/10 runs at sigma =
+  0.05, 0.07, 0.1, 0.14, in 3/15 and 4/9 at sigma = 0.2, 0.3, and in 14/15 at sigma = 0.5; the snake MPS ends below
+  the quadtree at every seed for sigma <= 0.3 (5/5 each) and in 3/5 at 0.5. **[empirical]**
   (2) The share of sum lambda^2 on k <= 5 routes at the first plateau predicts the final loss across orders:
   Spearman rho = -0.72 (p = 8e-6, n = 30); without the quadtree -0.56 (p = 0.003, n = 25); within random orders
   -0.44 (p = 0.045, n = 21); within the three committed random orders alone -0.30 (p = 0.28, n = 15). Units of
@@ -511,8 +525,10 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   seed 0) with other chain orders: row-major ends at 0.083; scrambled0 at 0.084 but reaches L <= 0.25 only at
   tau = 299 (quadtree 156), with a 3-core first route and staircase-like plateaus (rho = 8.5-30); scrambled3 ends
   at 0.128, above the quadtree's 0.096. **[empirical, one seed]**
-  (5) The mechanism "every MPS route is a 2-core strict saddle (log time)" is not established: the first MPS
-  route is merged with the escape and the log law holds for some later edges only (8.6). **[conjecture]**
+  (5) The mechanism "every MPS route is a 2-core strict saddle (log time)": the first MPS route is merged with
+  the escape, and with relative-residual fits over the full horizon 6 of the 9 fitted edges rise in log time
+  (8.6) **[empirical]**; that these log-time routes are why the MPS is fast on the tau clock is a **[conjecture]**
+  (shape and order are confounded, (4)).
   Withdrawn: "the MPS reaches every loss level first at every sigma" (clock-dependent), "route degree (tree
   shape) beats locality", and the REPORT's "fails on every task and size". The brief's prediction "MPS between
   quadtree and scrambled" is undetermined (shape and order confounded), not refuted.
@@ -533,10 +549,13 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
   edge 4 rises at 14.7 ± 1.5 per unit ln(1/sigma) after the first drop (log rms 0.027 vs power 0.355; 4/5
   seeds prefer the log law, the fifth has power exponent 0.35 over one decade, nearly logarithmic) and edge 3
   at 30.3 ± 0.8 (0.029 vs 0.254; 5/5); edge 2 is ambiguous (0.141 vs 0.131; 1/5 prefer log) and edge 1
-  power-like (p = 1.25 ± 0.10; 0.113 vs 0.272; 0/4). **[empirical]** Edges 0 and 6-9 rise mostly after
-  tau = 1000 and are not refitted (pending, 8.12; with the round-0 unweighted fits only edge 6 favoured the
-  log law). The review's "only 2 of 9 MPS edges prefer the log law" therefore stands for the refitted edges
-  (3, 4 yes; 2 tie; 1 no). (4) The strict Hessian of 4.5 is measured on the plateau after edge 5 has risen
+  power-like (p = 1.25 ± 0.10; 0.113 vs 0.272; 0/4). **[empirical]** **Full horizon (round 2, main sweep,
+  relative residuals for both laws; `results/scaling.json` edge_scaling, `fix1_analysis.md`):** the seeds prefer
+  the log law for edges 3 (5/5), 4 (4/5), 6 (4/4), 7, 8, 9 (5/5 each), i.e. 27 of 29 seed fits on these six
+  edges (log rms 0.03-0.11 vs power 0.17-0.36); edges 1 (0/5; power p 1.27 ± 0.08) and 2 (1/5; p 1.00 ± 0.08)
+  prefer a power law, edge 0 is mixed (2/5). The review's "only 2 of 9 MPS edges prefer the log law" was an
+  artifact of the unweighted log fit; with fair fits 6 of 9 do. Edges 1 and 2 (next to the chain's start)
+  remain unexplained by rank-1 counting, which predicts k = 2 everywhere on the MPS. **[empirical]** (4) The strict Hessian of 4.5 is measured on the plateau after edge 5 has risen
   (8.7), so it belongs to the later routes. Verdict: **partly** (a single-edge first increase, but merged with
   the escape; log time holds for edges 4, 3).
 
@@ -573,8 +592,9 @@ route-amplitude units (`analysis.route_units`), honest horizon labels (`tables.p
 
 ### 8.9 Robustness checks (section 7) [narrowed]
 - **Fashion-MNIST.** The first two edges to gain rank are siblings in 15/15 (quadtree) and 14/15 (scrambled)
-  runs, but under the MNIST criterion (the two siblings cross together) only 3/15 and 3/15: in 12/15 runs per
-  tree a single bottom edge rises first and its sibling later. The "sigma^-0.92 ... -0.97 (k = 3)" per-seed
+  runs, but under the MNIST criterion (the two siblings cross together) only 3/15 and 2/15 (round-2 recount with
+  the parent check; round 0 said 3/15 for both): in 12/15 runs per tree a single bottom edge rises first and its
+  sibling later. The "sigma^-0.92 ... -0.97 (k = 3)" per-seed
   slopes are in no committed output and are withdrawn; the committed rank-clock gaps give two-point slopes
   (sigma = 0.05 -> 0.14) of 0.95 ± 0.01 (quadtree) and 0.88 ± 0.01 (scrambled0; `results/fix1_analysis.md`), but
   the first-rising edges are not the same at all three sigma values in any seed, so they are not k = 3 route times. Kept: the rank-1
@@ -635,17 +655,16 @@ creep (stronger than stated: between drops the loss falls by a median 0.76 of th
 56 intervals in the 20 binary reruns) **[empirical]**; Fashion: no locality advantage and a strict saddle
 between two rank-1 states **[empirical]**; the pipeline is reproducible (8.9) **[empirical]**.
 
-### 8.12 Pending (needs the remote raw outputs, `/root/outputs/real_data`)
-Rerun with the fixed code, unchanged, once the raw folder is back (README "Fix round 1"): `summarize.py` on
-main / regime / fashion / chi8 / img8 (rank events at tau = 0 flagged), then `scaling.py` (window-checked
-first-route attribution on all 124 binary runs, including the sigma values the clean series leave out, and
-relative-residual fits for `edge_scaling`, i.e. the MPS far edges 0 and 6-9 and the binary per-edge exponents),
-`tables.py` (parent check, unresolved first rises, L(tau_end) labels, per-unit route table), `events_table.py`
-and `make_figures.py` (regenerates `scaling_raw.*` with the fixed attribution; the round-0 file was removed
-because its middle panel plotted the misattributed gaps, and `first_route_gaps` and `scaling_fix1` replace it;
-`bond_spectra`, `growth_order`,
-`loss_curves`, `locality_raw_*` are unaffected by the fixes). Until then `scaling.json`, `tables.*`,
-`chi8_*`, `fashion_*` and `img8_*` are round-0 outputs, superseded where this section says so.
+### 8.12 Pending items: done in round 2
+The raw outputs became available locally and the pending reruns were done with the fixed code, unchanged:
+`summarize.py` on main / Fashion / chi = 8 (both runner directories; the remote `chi8_runs` links resolve to them)
+/ 8x8 (rank events at tau = 0 flagged), then `scaling.py` (window-checked first-route attribution on all 124 binary
+runs, 8.1; relative-residual fits for `edge_scaling`, i.e. all MPS edges over the full horizon, 8.6),
+`tables.py` (parent check, unresolved first rises, L(tau_end) labels, per-unit route table; 8.3, 8.9),
+`events_table.py` (identical to the refit) and `make_figures.py` (`scaling_raw`, `loss_curves`, `bond_spectra`,
+`growth_order`, `locality_raw_*`; regenerated with the fixed attribution, MNIST and Fashion). Nothing from the
+review's list remains pending; route amplitudes, plateau Hessians and the regime analysis were not affected by the
+fixes and keep their committed outputs.
 
 ### 8.13 Summary of changed claims
 | claim (section) | old | new | status |
@@ -655,6 +674,7 @@ because its middle panel plotted the misattributed gaps, and `first_route_gaps` 
 | log-law rejection (4.4) | rms 0.56-0.91 | rms 0.11-0.30 with the same weighting; still rejected | empirical |
 | scrambled1 / scrambled2 exponents (4.4) | 1.27 ± 0.02 "yes"; 0.91 ± 0.23 | offset effect (B/A ~ -1); scrambled2 one clean series, 1.13 | empirical |
 | MPS first route (4.2) | single edge, k = 2 strict, 34/35: yes | merged with the escape, 10/35 at tau = 0: partly | empirical |
+| MPS later edges (4.4) | log law for edges 4, 3; far edges power-like | fair fits, full horizon: log for edges 3, 4, 6-9 (27/29 seed fits), power for 1, 2, mixed for 0 | empirical |
 | route-amplitude rule (4.3) | 34/35, 78/89 runs | 22/26 units hit, 2 mixed, 2 miss (chance 1/4); 11/11 out of sample | empirical |
 | locality (4.7) | quadtree >> scrambled, 88% vs 21%, gone at sigma = 0.5 | pixel-order effect: quadtree lowest final loss at every seed, share predicts loss (rho -0.72, n = 30), not faster early, transposed quadtree among the worst | empirical; mechanism conjecture |
 | MPS fastest (4.7, 5, REPORT) | every loss level first at every sigma; fails on every task | tau clock, MNIST, snake only; slower on the absolute clock (4/5 seeds at 0.1), slowest on Fashion; shape/order confounded | empirical; mechanism conjecture |
