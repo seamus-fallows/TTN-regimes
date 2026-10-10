@@ -21,3 +21,7 @@ blocks:
   # small-init threshold ~ (1 + 2/d)^N = 21 x const, lazy needs d^N = 729 at full chi.)
   - {name: d3_small, N: 6, d: 3, sigmas: [0.5], seeds: [0, 1, 2, 3, 4], lazy: true,
      n_train: [32, 48, 64, 96, 128, 192, 256, 384]}
+  # Fix round 1: the sigma = 1.5, 2 centred runs above stop at 3-10% of the initial train loss; train
+  # 5x longer to separate fit quality from implicit bias.
+  - {name: chi4_centred_long, centred: true, sigmas: [1.5, 2.0], seeds: [0, 1, 2, 3, 4],
+     n_train: [256, 512], max_steps: 300000}

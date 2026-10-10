@@ -9,12 +9,15 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
+import sys
 from pathlib import Path
 
 import numpy as np
 import torch
 from scipy.integrate import solve_ivp
 
+from ttn.diagnostics import crossing_times, rise_times
 from ttn.losses import centred_population_loss, population_loss
 from ttn.network import (
     TTNSpec,
@@ -38,9 +41,14 @@ def _path_option(flag: str, default: Path) -> Path:
 # Every script takes --raw-dir (raw per-run outputs) and --out-dir (summary tables and figures). The
 # default output directory is outside git, so re-running never overwrites the committed results; pass
 # --out-dir experiments/optim_samples/results to regenerate them.
-RAW = _path_option("--raw-dir", Path("/root/outputs/optim_samples"))
-RESULTS = _path_option("--out-dir", Path("/root/outputs/optim_samples/results"))
+# Defaults can also be set with the environment variables OPTIM_SAMPLES_RAW / OPTIM_SAMPLES_OUT.
+RAW = _path_option("--raw-dir", Path(os.environ.get("OPTIM_SAMPLES_RAW", "/root/outputs/optim_samples")))
+RESULTS = _path_option("--out-dir", Path(os.environ.get("OPTIM_SAMPLES_OUT", str(RAW / "results"))))
 RESULTS.mkdir(parents=True, exist_ok=True)
+try:  # Greek letters in printed tables must not crash non-UTF-8 consoles
+    sys.stdout.reconfigure(errors="replace")
+except (AttributeError, ValueError):
+    pass
 
 
 TEACHER_SEED = 101  # independent of init seeds (0-4) and data seeds
@@ -120,25 +128,29 @@ class Problem:
         return [int(sum(x > thr for x in s)) for _, s in sorted(self.spectra(p).items())]
 
 
-def crossing_times(ts: np.ndarray, a: np.ndarray, level: float = 0.5) -> list[float]:
-    """First upward crossing of `level` per column (linear interpolation); nan if none."""
-    out = []
-    for r in range(a.shape[1]):
-        above = np.nonzero(a[:, r] > level)[0]
-        if len(above) == 0:
-            out.append(float("nan"))
-            continue
-        i = above[0]
-        if i == 0:
-            out.append(float(ts[0]))
-            continue
-        frac = (level - a[i - 1, r]) / (a[i, r] - a[i - 1, r])
-        out.append(float(ts[i - 1] + frac * (ts[i] - ts[i - 1])))
-    return out
+def record_events(ts: np.ndarray, a: np.ndarray) -> dict:
+    """Events of gridded overlap records a (n_t, R) following notes/diagnostics.md.
+
+    t50: the event, i.e. the last upward crossing of 1/2 after which a_r stays >= 1/2 until the end
+    of the record (robust to transient excursions; NaN if a_r ends below 1/2); t50_first: the first
+    crossing (kept for comparison); n_cross: number of upward crossings of 1/2; t10, t90: the final
+    rise (t90 = first time a_r >= 0.9, t10 = last upward crossing of 0.1 before it). Interpolation:
+    `ttn.diagnostics.crossing_times`.
+    """
+    ts, a = np.asarray(ts, float), np.asarray(a, float)
+    t10, t90 = rise_times(ts, a, 0.1, 0.9)
+    n_cross = [int(np.sum((a[1:, r] >= 0.5) & ~(a[:-1, r] >= 0.5))) + int(a[0, r] >= 0.5)
+               for r in range(a.shape[1])]
+    return dict(t50=crossing_times(ts, a, 0.5, last=True).tolist(),
+                t50_first=crossing_times(ts, a, 0.5).tolist(), n_cross=n_cross,
+                t10=t10.tolist(), t90=t90.tolist())
 
 
-def gradient_flow(prob: Problem, theta0, t_end, rtol=1e-10, atol=1e-14, n_rec=2000):
-    """Reference GF (DOP853), with precise event times a_r = 1/2 and 1/10, 9/10 for widths."""
+def gradient_flow(prob: Problem, theta0, t_end, rtol=1e-10, atol=1e-14, n_rec=2000,
+                  loss_floor=None):
+    """Reference GF (DOP853) with exact event location: every upward crossing of a_r = 1/2, 1/10 and
+    9/10 is found by the integrator; the event is the last crossing of 1/2 (a_r >= 1/2 at t_end),
+    the width the final rise (first 9/10 crossing minus the last 1/10 crossing before it)."""
     r = prob.teacher.n_components
 
     def rhs(t, y):
@@ -152,12 +164,29 @@ def gradient_flow(prob: Problem, theta0, t_end, rtol=1e-10, atol=1e-14, n_rec=20
         return ev
 
     events = [make_event(rr, lv) for lv in (0.5, 0.1, 0.9) for rr in range(r)]
+    if loss_floor is not None:  # stop once converged (terminal event on the loss)
+        def converged(t, y):
+            return prob.loss(torch.from_numpy(y)).item() - loss_floor
+
+        converged.terminal, converged.direction = True, -1
+        events.append(converged)
     t_rec = np.unique(np.concatenate([[0.0], np.geomspace(1e-3, t_end, n_rec // 2),
                                       np.linspace(0, t_end, n_rec // 2)]))
     sol = solve_ivp(rhs, (0, t_end), theta0.numpy(), method="DOP853", rtol=rtol, atol=atol,
                     t_eval=t_rec, events=events)
-    ev = [float(e[0]) if len(e) else float("nan") for e in sol.t_events]
-    return sol, dict(t50=ev[:r], t10=ev[r:2 * r], t90=ev[2 * r:], nfev=int(sol.nfev))
+    a_end = prob.overlaps(torch.from_numpy(sol.y[:, -1]))
+    out = dict(t50=[], t50_first=[], n_cross=[], t10=[], t90=[], nfev=int(sol.nfev),
+               t_end=float(sol.t[-1]))
+    for rr in range(r):
+        up50, up10, up90 = (np.asarray(sol.t_events[k * r + rr]) for k in range(3))
+        out["n_cross"].append(int(len(up50)))
+        out["t50_first"].append(float(up50[0]) if len(up50) else float("nan"))
+        out["t50"].append(float(up50[-1]) if len(up50) and a_end[rr] >= 0.5 else float("nan"))
+        t90 = float(up90[0]) if len(up90) else float("nan")
+        before = up10[up10 <= t90] if np.isfinite(t90) else np.array([])
+        out["t90"].append(t90)
+        out["t10"].append(float(before[-1]) if len(before) else float("nan"))
+    return sol, out
 
 
 def save_json(path: Path, obj):

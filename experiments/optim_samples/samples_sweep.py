@@ -226,7 +226,7 @@ def tasks_from_config(cfg):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
-    ap.add_argument("--workers", type=int, default=30)
+    ap.add_argument("--workers", type=int, default=min(30, os.cpu_count() or 1))
     args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
     cfg = yaml.safe_load(Path(args.config).read_text())
     OUT.mkdir(parents=True, exist_ok=True)
