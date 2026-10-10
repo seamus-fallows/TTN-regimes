@@ -18,7 +18,7 @@ section 11.
 | O4 | P(greedy) falls toward 1/2 with K and rises slowly with chi; on an MPS d enters only through the bond caps | empirical (K, chi); derived (d, MPS); empirical at one chi (d, binary8) | `main_settings.csv`; independent-seed d test (7.1b) |
 | O5 | Selection rule: argmax_r s_r X_r^q, X_r = projection of the init on component r's KKT orbit; q = (0.99-1.25)(K-2) (bootstrap SE 1-9%); predicts 76-92% of winners out of sample on m >= 3 trees, the same with q fixed to K-2 | empirical | `results/main_rules.csv` (columns q_se, order_accuracy_oos, order_accuracy_q_Km2) |
 | O6 | m = 2 (binary4 = depth-3 DLN; matrix-like pattern pairs): greedy as sigma -> 0; P(smaller first) consistent with sigma^(n(1-rho)/rho), n = 1 for non-adjacent pairs; adjacent pairs (shared bond chi_e) are 2-3.4x steeper, n = chi_e is a conjecture not reached by sigma = 1e-5 | heuristic derivation; empirical | 7.2, 7.4, 7.4b |
-| O7 | H1b, after a wrong first escape: m = 2, k >= 3 (non-adjacent pair): strict saddle lambda_min = -(s_1-s_2) s_2^((K-2)/K), rotation to the larger component in ln(1/sigma)/|lambda_min| from the saddle (O(1/|lambda_min|) in natural runs), smaller one forgotten and relearned; m = 2, k = 2 (adjacent pair): strict saddle lambda = -s_1 s_2^((K-2)/K) (multiplicity chi_e - 1), the larger component is added, nothing forgotten; m >= 3: no strict saddle, wrong order kept | derived; Hessians and dynamics checked on binary4 and MPS4 (m = 2); MPS4 and MPS6 (m >= 3) | 7.3 |
+| O7 | H1b, after a wrong first escape: m = 2, k >= 3 (non-adjacent pair): strict saddle lambda_min = -(s_1-s_2) s_2^((K-2)/K), rotation to the larger component in ln(1/sigma)/|lambda_min| from the saddle (O(1/|lambda_min|) in natural runs), smaller one forgotten and relearned; m = 2, k = 2 (adjacent pair): strict saddle lambda = -s_1 s_2^((K-2)/K) (multiplicity chi_e - 1), the larger component is added, nothing forgotten; m >= 3: no strict saddle, wrong order kept | derived; Hessians and dynamics checked on binary4 and MPS4 (m = 2); MPS4, MPS6 and binary8 (m >= 3) | 7.3 |
 | O8 | Over-parameterized (uncapped) bonds: sd(log tau) ~ sqrt(K-2)/sqrt(chi) at large chi; greedy order restored only slowly | empirical | 7.5 |
 | O9 | R = 3 (d = chi = 4, one sigma per tree): the full order is a random permutation favouring large components, within 1.7 SE of an iid race model per case but less greedy in 6/6 m >= 3 cases (combined z = -1.9); R = 4 = chi: most runs do not learn all four components by t = 1e9 (MPS6 often only 2 of 4) | empirical | 7.6 |
 
@@ -238,7 +238,10 @@ norm. d = 2, chi = 4. `h1b.py configs/h1b_*.yaml`, `analyze_h1b.py`; `results/h1
   sigma^4.22 +- 0.09 (MPS6, rho 0.8; 5 seeds x 5 sigma 0.05-0.2): higher-order saddles, |lambda_min| ->
   0 like sigma^(k-2) (MPS6 slightly steeper than 4 over this range). t1 ~ sigma^-1.97 +- 0.03 (MPS4)
   and sigma^-4.26 +- 0.13 (MPS6). One MPS6 seed of six stalls at every sigma (its route dies).
-  BINARY8_SADDLE The fixed 1e-3 threshold would call some MPS4 midpoints at sigma = 0.05-0.1 strict
+  binary8 (m = 4 leaf cores, k = 7; 6 seeds x 5 sigma 0.15-0.35, a factor 2.3 only; the CSV was rebuilt
+  from the stored trajectories because one run, sigma = 0.3 seed 0, had not finished after 80 min and was
+  stopped: `rebuild_h1b_csv.py`): no rotation (a_2 >= 0.995), |lambda_min| ~ sigma^5.2 +- 0.3, t1 ~
+  sigma^-5.3 +- 0.3 (k - 2 = 5). The fixed 1e-3 threshold would call some MPS4 midpoints at sigma = 0.05-0.1 strict
   (n_neg up to 1.6 on average); the scaling rule does not.
 
 **Natural wrong-order runs** (random init; seeds whose first event was component 2 in the sigma or
@@ -443,12 +446,14 @@ first) increases with s_1/s_2, decreases with K, may concentrate as chi grows")*
   rare as sigma -> 0 and, when it happens, the escape route is O(1) on arrival, so the correction takes
   O(1/|lambda|) (k >= 3: |lambda| (t1 - t2) = 1.0-1.4 flat in sigma 1e-4..1e-2 on binary4 and MPS4;
   k = 2: 0.2-0.3) and no wrong plateau is resolved.
-- **Fails for m >= 3** [derived; checked on two trees, MPS4 (k = 4: 8 seeds x 5 sigma over one decade, plus
-  40 natural runs) and MPS6 (k = 6: 5 seeds x 5 sigma 0.05-0.2)]: the wrong-order state is a higher-order
+- **Fails for m >= 3** [derived; checked on three trees: MPS4 (k = 4: 8 seeds x 5 sigma over one decade,
+  plus 40 natural runs), MPS6 (k = 6: 5 seeds x 5 sigma 0.05-0.2) and binary8 (k = 7: 6 seeds x 5 sigma
+  0.15-0.35)]: the wrong-order state is a higher-order
   saddle (|lambda_min| ~ sigma^2.00 on MPS4, ~ sigma^4.2 on MPS6), no rotation happens, the larger
   component is added in a new bond index after ~sigma^-(k-2); the wrong order stays. Sometimes the larger
   component's route dies and GF stalls at the wrong saddle (1/40 natural MPS4 runs; 1/6 MPS6 seeds).
-  BINARY8_STATUS
+  binary8 (k = 7) behaves the same over a narrow sigma range (|lambda_min| ~ sigma^5.2 +- 0.3, no
+  rotation).
 
 ## 9. Relation to the literature; what is new
 
@@ -498,8 +503,8 @@ correction), which are the cases of `notes/theory_saddles.md` 4.4.
 4. **R = 4 (O9)**: "mostly stalls before the last component" -> most runs do not learn all four by t =
    1e9 (no-stop check on MPS6 and binary8 added); MPS6 often learns only 2 of 4; scope (one sigma per
    tree, d = chi = 4, fan-in) stated; cross-reference to theory_regimes R10 (MPS4, K = 4, also stalls).
-5. **m >= 3, no strict saddle**: scope stated; second tree added (MPS6 saddle starts, |lambda_min| ~
-   sigma^4.2).
+5. **m >= 3, no strict saddle**: scope stated; two trees added (MPS6 saddle starts, |lambda_min| ~
+   sigma^4.2; binary8, ~sigma^5.2 over sigma 0.15-0.35).
 6. **d (O4)**: the invalid chi^2 d-pairs test withdrawn; independent-seed test added (no effect at the
    0.04 level on binary8 and MPS4).
 7. **Unresolved midpoint Hessians**: the 43 natural binary4 runs without one are now resolved (fine record
