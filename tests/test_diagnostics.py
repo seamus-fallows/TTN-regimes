@@ -2,6 +2,8 @@ import numpy as np
 import pytest
 import torch
 from scipy.special import expit
+from torch.utils._python_dispatch import TorchDispatchMode
+from torch.utils._pytree import tree_leaves
 
 from ttn.diagnostics import (
     Plateau,
@@ -42,9 +44,16 @@ from ttn.diagnostics import (
     upward_crossings,
 )
 from ttn.losses import population_loss, power_law_cov, sample_inputs
-from ttn.network import TTNSpec, aligned_init, forward, to_dense
+from ttn.network import (
+    TTNSpec,
+    aligned_init,
+    antisymmetric_double,
+    forward,
+    to_dense,
+    two_copy_cores,
+)
 from ttn.teachers import odeco_teacher, pattern_teacher, random_cp_teacher
-from ttn.tree import make_tree
+from ttn.tree import Tree, make_tree
 
 # ---- ranks -----------------------------------------------------------------------------------
 
@@ -336,6 +345,123 @@ def test_tensor_tangent_kernel_consistent_with_probe_kernel(kind):
     mask[spec.core_slices()[spec.tree.root]] = 1.0  # only the root trains
     expected = tangent_kernel(spec, theta, x, mask)
     assert torch.allclose(phi @ tensor_tangent_kernel(spec, theta, mask) @ phi.T, expected)
+
+
+def _unit_tensor_jacobian(spec, theta):
+    """Reference: the previous `tensor_jacobian`, one dense contraction per unit core tensor. It
+    allocates eye(core size), so small cores only."""
+    cores = spec.unflatten(theta)
+    cols = []
+    for v, shape in enumerate(spec.shapes):
+        for unit in torch.eye(spec.sizes[v], dtype=theta.dtype):
+            cols.append(to_dense(spec, cores[:v] + [unit.view(shape)] + cores[v + 1 :]).reshape(-1))
+    return torch.stack(cols, dim=1)
+
+
+def _rel_err(a, b):
+    return ((a - b).norm() / b.norm()).item()
+
+
+def _per_core(spec, values):
+    """Flat vector equal to values[v] on core v (per-core learning-rate multipliers)."""
+    out = torch.empty(spec.n_params, dtype=torch.float64)
+    for block, value in zip(spec.core_slices(), values):
+        out[block] = value
+    return out
+
+
+_TREES = {
+    **{f"{kind}{n}": make_tree(kind, n) for kind in ("binary", "mps", "ht") for n in (4, 5)},
+    # a root with its own site and three children (one with two sites); a single core
+    "star": Tree((3, 3, 3, -1), ((0,), (2,), (1, 4), (3,))),
+    "one-core": Tree((-1,), ((0, 1, 2),)),
+}
+
+
+@pytest.mark.parametrize("name", list(_TREES))
+@pytest.mark.parametrize("d,chi", [(2, 3), (3, 2)])
+def test_tensor_kernel_matches_unit_tensor_construction(name, d, chi):
+    spec = TTNSpec.uniform(_TREES[name], d, chi)
+    theta = spec.flatten(spec.init(1.0, seed=5))
+    jac = _unit_tensor_jacobian(spec, theta)
+    assert _rel_err(tensor_jacobian(spec, theta), jac) < 1e-13
+    g = torch.Generator().manual_seed(6)
+    masks = {
+        "none": None,
+        "lr": _per_core(spec, [1.0 / f for f in spec.fan_in]),  # constant on each core
+        "random": 0.1 + torch.rand(spec.n_params, generator=g, dtype=torch.float64),
+        "0/1": (torch.rand(spec.n_params, generator=g) > 0.4).double(),
+    }
+    if spec.n_cores > 1:
+        masks["frozen root"] = _per_core(spec, [v != spec.tree.root for v in range(spec.n_cores)])
+    for key, m in masks.items():
+        expected = jac @ jac.T if m is None else (jac * m) @ jac.T
+        assert _rel_err(tensor_tangent_kernel(spec, theta, m), expected) < 1e-13, key
+    m = masks["random"]
+    k = tensor_tangent_kernel(spec, theta, m)
+    assert _rel_err(tensor_tangent_kernel(spec, spec.unflatten(theta), m.numpy()), k) < 1e-14
+    with pytest.raises(ValueError):
+        tensor_tangent_kernel(spec, theta, torch.ones(spec.n_params + 1, dtype=torch.float64))
+
+
+@pytest.mark.parametrize("name", [n for n in _TREES if n != "one-core"])
+def test_tensor_kernel_two_copy_and_centred_match_unit_tensor_construction(name):
+    spec = TTNSpec.uniform(_TREES[name], 2, 2)
+    cores, cores0 = spec.init(1.0, seed=7), spec.init(1.0, seed=8)
+    # Two-copy model: the gradient mask of antisymmetric_double, alone and times learning rates
+    # (a problem's precond).
+    spec2, cores2, mask = antisymmetric_double(spec, cores)
+    theta2 = spec2.flatten(cores2)
+    jac2 = _unit_tensor_jacobian(spec2, theta2)
+    assert _rel_err(tensor_jacobian(spec2, theta2), jac2) < 1e-13
+    for w in (mask, mask * _per_core(spec2, [1.0 / f for f in spec.fan_in])):
+        assert _rel_err(tensor_tangent_kernel(spec2, theta2, w), (jac2 * w) @ jac2.T) < 1e-13
+    # Centred model W(theta) - W(theta0) on doubled bonds (two_copy_cores, as in Problem.effective)
+    # with theta0 fixed: only the "+" blocks train, and the kernel is the plain one at theta.
+    spec_c, cores_c = two_copy_cores(spec, cores, cores0)
+    theta_c = spec_c.flatten(cores_c)
+    ones, zeros = [torch.ones_like(c) for c in cores], [torch.zeros_like(c) for c in cores]
+    plus = spec_c.flatten(two_copy_cores(spec, ones, zeros)[1])
+    jac_c = _unit_tensor_jacobian(spec_c, theta_c)
+    k_c = tensor_tangent_kernel(spec_c, theta_c, plus)
+    assert _rel_err(k_c, (jac_c * plus) @ jac_c.T) < 1e-13
+    assert _rel_err(k_c, tensor_tangent_kernel(spec, spec.flatten(cores))) < 1e-13
+
+
+class _LargestAllocation(TorchDispatchMode):
+    """Largest storage (bytes) produced by any aten op inside the context (tracemalloc does not see
+    torch's CPU allocator)."""
+
+    def __init__(self):
+        super().__init__()
+        self.nbytes = 0
+
+    def __torch_dispatch__(self, func, types, args=(), kwargs=None):
+        out = func(*args, **(kwargs or {}))
+        for t in tree_leaves(out):
+            if isinstance(t, torch.Tensor):
+                self.nbytes = max(self.nbytes, t.untyped_storage().nbytes())
+        return out
+
+
+def test_tensor_kernel_and_jacobian_need_no_quadratic_memory():
+    # Regime-map chi_b4 point: two-copy binary4, d = 3, uncapped chi = 128 (doubled bonds 256). The
+    # unit-tensor construction allocated eye(core size) for the 256 x 256 root: 34 GB.
+    spec = TTNSpec.uniform(make_tree("binary", 4), 3, 128, cap=False)
+    spec2, cores2, mask = antisymmetric_double(spec, spec.init(1.0, seed=0))
+    theta = spec2.flatten(cores2)
+    w = mask * _per_core(spec2, [1.0 / f for f in spec.fan_in])
+    assert 8 * max(spec2.sizes) ** 2 > 3e10
+    with _LargestAllocation() as alloc_k:
+        k = tensor_tangent_kernel(spec2, theta, w)
+    with _LargestAllocation() as alloc_j:
+        jac = tensor_jacobian(spec2, theta)
+    assert alloc_k.nbytes <= 8 * max(spec2.n_params, k.numel())  # nothing larger than theta or K
+    assert alloc_j.nbytes <= 8 * jac.numel()  # nothing larger than J itself
+    assert _rel_err(k, (jac * w) @ jac.T) < 1e-13
+    x = sample_inputs(12, 4, 3, torch.Generator().manual_seed(1))
+    phi = product_features(x)
+    assert _rel_err(phi @ k @ phi.T, tangent_kernel(spec2, theta, x, w)) < 1e-12
 
 
 @pytest.mark.parametrize("metrics", [False, True], ids=["whitened", "power-law"])

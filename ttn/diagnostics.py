@@ -10,6 +10,8 @@ Conventions
   last axis, so they work on one spectrum or on a whole trajectory at once.
 - theta is the flat parameter vector `spec.flatten(cores)` (functions that also take `spec` accept a
   list of cores too).
+- Tensor-space objects (`tensor_jacobian`, `tensor_tangent_kernel`) are contracted from core
+  environments: memory ~ output + one environment, never (core size)^2.
 - Loss functions are callables loss_fn(theta_flat) -> scalar tensor, so this module does not depend on
   ttn.dynamics. Build one as
       loss_fn = lambda th: population_loss(spec, spec.unflatten(th), teacher)
@@ -18,6 +20,8 @@ Conventions
 
 from __future__ import annotations
 
+import math
+import string
 from collections.abc import Callable
 from itertools import pairwise
 from typing import NamedTuple
@@ -28,7 +32,7 @@ from scipy.signal import find_peaks
 from scipy.sparse.linalg import LinearOperator, eigsh
 from threadpoolctl import threadpool_limits
 
-from ttn.network import TTNSpec, _sqrt_psd, apply_on_leg, forward, site_vectors, to_dense
+from ttn.network import TTNSpec, _einsum, _sqrt_psd, apply_on_leg, forward, site_vectors
 
 LossFn = Callable[[torch.Tensor], torch.Tensor]
 
@@ -571,26 +575,134 @@ def tangent_kernel(spec: TTNSpec, theta, probe_x, mask=None) -> torch.Tensor:
     return _gram(jac, mask)
 
 
+def _labelled_einsum(operands: list[tuple[torch.Tensor, list]], out: list) -> torch.Tensor:
+    """einsum with hashable leg labels: operands = [(tensor, labels of its axes)], out = labels."""
+    letters: dict = {}
+
+    def term(labels) -> str:
+        for lab in labels:
+            if lab not in letters:
+                if len(letters) == len(string.ascii_letters):
+                    raise ValueError("more than 52 distinct legs in one contraction")
+                letters[lab] = string.ascii_letters[len(letters)]
+        return "".join(letters[lab] for lab in labels)
+
+    eq = ",".join(term(labels) for _, labels in operands) + "->" + term(out)
+    return _einsum(eq, *(t for t, _ in operands))
+
+
+def _environments(spec: TTNSpec, cores) -> tuple[list, list, list]:
+    """Pieces of every core's environment (the network with that core removed).
+
+    below[c]: subtree of c contracted, axes subtree_sites[c] + (edge c). above[v]: everything outside
+    subtree v contracted, axes outside[v] (sorted sites not below v) + (edge v); the root's is ones(1).
+    W is linear in G_v, so d W / d G_v[p, b] = above[v] (x) below[children] (x) delta(x_sites(v), p).
+    Each piece has at most D * chi entries; nothing of size (core size)^2 is formed.
+    """
+    t = spec.tree
+
+    def x(sites):
+        return [("x", s) for s in sites]
+
+    def core_legs(v):
+        return x(t.sites[v]) + [("b", c) for c in t.children[v]] + [("b", v)]
+
+    below: list = [None] * t.n_nodes
+    for v in t.postorder:
+        if v != t.root:
+            ops = [(cores[v], core_legs(v))]
+            ops += [(below[c], x(t.subtree_sites[c]) + [("b", c)]) for c in t.children[v]]
+            below[v] = _labelled_einsum(ops, x(t.subtree_sites[v]) + [("b", v)])
+    above: list = [None] * t.n_nodes
+    outside: list = [()] * t.n_nodes
+    above[t.root] = cores[t.root].new_ones(1)
+    for p in t.preorder:
+        for c in t.children[p]:
+            inside = set(t.subtree_sites[c])
+            outside[c] = tuple(s for s in range(t.n_sites) if s not in inside)
+            ops = [(cores[p], core_legs(p)), (above[p], x(outside[p]) + [("b", p)])]
+            ops += [(below[k], x(t.subtree_sites[k]) + [("b", k)]) for k in t.children[p] if k != c]
+            above[c] = _labelled_einsum(ops, x(outside[c]) + [("b", c)])
+    return below, above, outside
+
+
+def _environment_operands(spec: TTNSpec, v: int, below, above, outside, prime: str) -> list:
+    """above[v] and below[children of v] with their site axes labelled (prime, site)."""
+    t = spec.tree
+    ops = [(above[v], [(prime, s) for s in outside[v]] + [("b", v)])]
+    ops += [
+        (below[c], [(prime, s) for s in t.subtree_sites[c]] + [("b", c)]) for c in t.children[v]
+    ]
+    return ops
+
+
+def _site_identities(spec: TTNSpec, v: int, like: torch.Tensor, a: str, b: str) -> list:
+    """delta(a_s, b_s) for the sites s of core v, as einsum operands."""
+    return [
+        (torch.eye(spec.phys_dims[s], dtype=like.dtype, device=like.device), [(a, s), (b, s)])
+        for s in spec.tree.sites[v]
+    ]
+
+
 def tensor_jacobian(spec: TTNSpec, theta) -> torch.Tensor:
     """J = d vec(W) / d theta, shape (D, n_params), D = prod d_i; vec(W) row-major in site order
-    (site 0 slowest), matching `product_features`. Small N only."""
+    (site 0 slowest), matching `product_features`. Small N only (J is dense)."""
     cores = spec.unflatten(_flat(spec, theta))
-    # W is linear in each core, so d vec(W) / d G_v[i] is vec(W) with G_v replaced by the unit
-    # tensor e_i: exact, n_params contractions, cost independent of D (unlike reverse mode).
-    cols = []
-    for v, shape in enumerate(spec.shapes):
-        for unit in torch.eye(spec.sizes[v], dtype=cores[v].dtype):
-            cols.append(to_dense(spec, cores[:v] + [unit.view(shape)] + cores[v + 1 :]).reshape(-1))
-    return torch.stack(cols, dim=1)
+    t = spec.tree
+    # Block v is the environment of core v times identities on v's own sites (W is linear in G_v):
+    # exact, memory = J plus one block. Unit-tensor columns needed eye(core size): 34 GB for the
+    # two-copy root at chi = 128.
+    below, above, outside = _environments(spec, cores)
+    rows = [("x", s) for s in range(t.n_sites)]
+    jac = cores[0].new_empty(math.prod(spec.phys_dims), spec.n_params)
+    for v, block in enumerate(spec.core_slices()):
+        ops = _environment_operands(spec, v, below, above, outside, "x")
+        ops += _site_identities(spec, v, cores[v], "x", "p")
+        legs = [("p", s) for s in t.sites[v]] + [("b", c) for c in t.children[v]] + [("b", v)]
+        jac[:, block] = _labelled_einsum(ops, rows + legs).reshape(jac.shape[0], -1)
+    return jac
 
 
 def tensor_tangent_kernel(spec: TTNSpec, theta, mask=None) -> torch.Tensor:
     """Tensor-space kernel J diag(mask) J^T with J = `tensor_jacobian`, shape (D, D), D = prod d_i.
 
     vec(W) is row-major in site order (site 0 slowest), matching `product_features`, so the probe
-    kernel is Phi K_tensor Phi^T with Phi = product_features(probe_x). Small N only.
+    kernel is Phi K_tensor Phi^T with Phi = product_features(probe_x). mask: optional flat
+    (n_params,) weights, as in `tangent_kernel` (e.g. a problem's precond: two-copy mask times
+    learning rates). Small N only (K is D x D).
+
+    J is never formed: core v adds sum_b w_v[p, b] E_v[x, b] E_v[y, b] delta(x_v = y_v = p), E_v its
+    environment (`_environments`), in one contraction; for a constant w_v this is a Kronecker product
+    of per-leg Gram matrices, and frozen cores are skipped. Intermediates are about core size x
+    (dimension behind one leg) or D^2: nothing of size (core size)^2 or D x n_params.
     """
-    return _gram(tensor_jacobian(spec, theta), mask)
+    cores = spec.unflatten(_flat(spec, theta))
+    t, dtype = spec.tree, cores[0].dtype
+    weights = None
+    if mask is not None:
+        flat = torch.as_tensor(mask, dtype=dtype, device=cores[0].device).reshape(-1)
+        if flat.numel() != spec.n_params:
+            raise ValueError(f"mask has {flat.numel()} entries, the TTN {spec.n_params} parameters")
+        weights = spec.unflatten(flat)
+    below, above, outside = _environments(spec, cores)
+    out = [("x", s) for s in range(t.n_sites)] + [("y", s) for s in range(t.n_sites)]
+    dim = math.prod(spec.phys_dims)
+    kernel = cores[0].new_zeros(dim, dim)
+    for v in range(t.n_nodes):
+        w, scale = None if weights is None else weights[v], 1.0
+        if w is not None and bool((w == w.reshape(-1)[0]).all()):
+            w, scale = None, float(w.reshape(-1)[0])
+        if scale == 0.0:
+            continue
+        ops = _environment_operands(spec, v, below, above, outside, "x")
+        ops += _environment_operands(spec, v, below, above, outside, "y")
+        ops += _site_identities(spec, v, cores[v], "x", "y")
+        if w is not None:
+            legs = [("x", s) for s in t.sites[v]] + [("b", c) for c in t.children[v]] + [("b", v)]
+            ops.append((w, legs))
+        k_v = _labelled_einsum(ops, out).reshape(dim, dim)
+        kernel += k_v if scale == 1.0 else scale * k_v
+    return kernel
 
 
 def projected_fit_loss(
