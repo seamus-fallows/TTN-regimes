@@ -37,6 +37,8 @@ features unless stated; sigma = 0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5; seeds 0-4.
 | locality: quadtree faster than scrambled | sigma = 0.1: L(1e4) 0.098 vs 0.207, acc 0.954 vs 0.872; 88% vs 21% of residual interaction on k <= 5 routes; not at sigma = 0.5 | yes (small init) |
 | MPS between the two | MPS fastest at every sigma (L(1e4) 0.089, acc 0.957) | no |
 | regimes S2S -> rich -> lazy | S2S <= 0.3, mixed 0.5-1, rich 1.4, lazy >= 2; lazy L(T) = linearized L_lin(T) (0.151); kernel rank 304 = R2 formula | yes |
+| (Fashion-MNIST sneaker vs boot) same structure | t1 exact; first two rising edges siblings 15/15, 14/15; a rank-1 strict saddle (lambda_min ∝ sigma^0.03±0.09) left by a rank-preserving rotation; no locality advantage (task ~solved at rank 1) | yes / locality: no |
+| integrator accuracy | drift <= 4.6e-8 (234 runs); 100x tighter tolerances: drop times within 0.1-0.9 units, L(T) to 6 digits | ok |
 
 Figures (`experiments/real_data/results/`): `loss_curves_raw` (train/test per tree and sigma),
 `bond_spectra_raw_s{0.05,0.1,0.5}`, `growth_order_raw_s*`, `scaling_raw` (t1, k = 3 gaps, MPS log law),
@@ -99,6 +101,12 @@ Figures (`experiments/real_data/results/`): `loss_curves_raw` (train/test per tr
   kept for raw quadtree / MPS / scrambled0 (the scaling claims). Implemented by placing empty placeholder
   files for the dropped cases (the runner skips existing outputs; list in
   /root/outputs/real_data/main_placeholders.txt; removed after the sweep).
+- **Second dataset: Fashion-MNIST sneaker (7) vs ankle boot (9)**, chosen a priori for a visible shape
+  difference at 4x4 (T-shirt vs shirt looked near-indistinguishable at that resolution). Not screened for
+  locality.
+- **chi = 8 sweep split across two runners** (`chi8.yaml` cases 1-24, `chi8b.yaml` cases 25-45 into
+  /root/outputs/real_data/chi8b, placeholders in chi8/ removed afterwards) to use the cores freed by the
+  Fashion sweep; same cases, same code.
 - **Merged main (34c76ad) at the lead's request**; event times use `merged_rows` (log + fine rows; fine rows
   also carry the data-weighted spectra).
 
@@ -125,3 +133,4 @@ All under `/root/outputs/real_data/` (~0.6 GB; none in git):
 - 00:02 interim report: 80/280 main runs; t1 exponents exact; k = 3 sigma^-1 and k = 2 log gaps; route amplitudes 34/35; regime sweep relaunched at sigma >= 0.5
 - 00:45 main sweep 124/220 runs; regime sweep 9/35 (sigma 0.5-1: not lazy, kernel scale 1e-13..3e-5 at init: raw features are small-init in function space up to sigma ~ 1); plateau Hessians and route amplitudes running; chi8 + fashion queued after main
 - 01:39 main sweep (234 runs) and regime sweep (65 runs) analysed; notes section 5 table; final figures; chi8 / fashion / 8x8 running
+- 02:24 Fashion (45 runs) + tolerance check analysed; Fashion rank-1 rotation through a strict saddle; chi8 split to a second runner; chi8 / 8x8 running

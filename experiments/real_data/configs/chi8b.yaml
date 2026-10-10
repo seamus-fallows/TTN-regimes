@@ -1,0 +1,25 @@
+# Second half of chi8.yaml (cases 25-45 in expand order), run in parallel into a separate directory
+# while the first runner works on cases 1-24 (placeholders in its directory make it skip these).
+defaults: {chi: 8, n_linear: 1000, n_per_decade: 30, t2: 10000.0, wall_limit: 7200}
+cases:
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.14], seeds: [4]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.5], seeds: [0]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.5], seeds: [1]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.5], seeds: [2]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.5], seeds: [3]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.5], seeds: [4]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.05], seeds: [0]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.05], seeds: [1]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.05], seeds: [2]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.05], seeds: [3]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.05], seeds: [4]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.14], seeds: [0]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.14], seeds: [1]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.14], seeds: [2]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.14], seeds: [3]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.14], seeds: [4]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.5], seeds: [0]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.5], seeds: [1]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.5], seeds: [2]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.5], seeds: [3]}
+  - {tree: binary, ordering: scrambled0, features: raw, sigmas: [0.5], seeds: [4]}
