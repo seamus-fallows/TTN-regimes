@@ -1,6 +1,6 @@
 # optim-samples: learning rate, SGD noise and finite samples (Q8) - fix round 1
 
-Status: working - Branch: agent/optim-samples - Updated: 2026-10-10 00:00 UTC
+Status: done - Branch: agent/optim-samples - Updated: 2026-10-10 00:23 UTC
 
 ## Summary
 Asked: how discrete-step GD, SGD noise and a finite training set change the gradient-flow (GF)
@@ -132,7 +132,7 @@ Fix round 1:
 ## Files left on the machine
 All under `/root/outputs/optim_samples/` (~420 MB). None is needed to regenerate the figures (the
 summary CSVs in git suffice); they are needed only to recompute summaries from scratch:
-- `gd/` (236 MB): npz + json of the 1703 GF/GD runs of the fix round (step 1, order seeds,
+- `gd/` (236 MB): npz + json of the 1705 GF/GD runs of the fix round (step 1, order seeds,
   chi = 9 sweep).
 - `gd_round1/` (173 MB): the round-1 GD runs (first-crossing events; incl. the withdrawn chi = 3
   centred runs).
@@ -194,3 +194,5 @@ summary CSVs in git suffice); they are needed only to recompute summaries from s
 - 23:17 SGD sweep rerun past the second GF event (1780 runs); P7 with escape time and s.e. across inits; forgetting classified.
 - 23:25 k = 2 Hessian sweep recomputed with the fixed projection (raw lambda_min primary); 300k-step centred samples runs done.
 - 23:58 chi = 9 centred sweep (373/375 runs): lambda_GF ~ sigma^3.97, catapult window; notes 3.3/3.5/7, README; merged main.
+- 00:05 Fix-round REPORT with claims-changed table; README run instructions checked in a scratch dir.
+- 00:23 chi = 9 sweep complete (375/375; last runs GF-like as expected); tables and figures regenerated; fix round done.
