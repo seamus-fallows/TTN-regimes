@@ -15,6 +15,16 @@
 # Example (not active):
 #   experiments/s2s_core/results/escape_vs_sigma.pdf   s2s/escape_vs_sigma.pdf
 
+# Sections 4.1-4.3 and 4.6, saddle-to-saddle phenomenology, aligned initialization, first escape and
+# failure modes of the odeco runs (experiment s2s_core; plot_report.py, plot_scaling.py,
+# plot_aligned.py, plot_dormant.py; commands in the experiment README and Appendix C)
+experiments/s2s_core/results/report_runs.pdf                     s2s/runs.pdf
+experiments/s2s_core/results/fig_d_gaps_chi6_separated.pdf       s2s/gaps.pdf
+experiments/s2s_core/results/fig_a_aligned.pdf                   s2s/aligned.pdf
+experiments/s2s_core/results/fig_c_first_escape_chi3_fanin.pdf   s2s/first_escape.pdf
+experiments/s2s_core/results/report_prefactor.pdf                s2s/prefactor.pdf
+experiments/s2s_core/results/fig_g_dormant.pdf                   s2s/dormant.pdf
+
 # Section 5, optimizers used in practice (experiment optimizers; make_figures.py)
 experiments/optimizers/results/figures/scaling_b4_side_sigma0.008_seed0.pdf   optimizers/side_by_side_binary4.pdf
 experiments/optimizers/results/figures/adam_escape.pdf                        optimizers/adam_escape.pdf
