@@ -296,10 +296,14 @@ class Result:
 
 
 def advance(fun, jac, t0, y0, t1, rtol, atol):
-    """Integrate exactly from t0 to t1 with a fresh LSODA (lands on t1: scipy passes it as tcrit)."""
-    if t1 <= t0:
+    """Integrate exactly from t0 to t1 with a fresh LSODA (lands on t1: scipy passes it as tcrit).
+    The ODE is autonomous, so the clock is re-zeroed (t0 -> 0) to keep full time resolution."""
+    h = t1 - t0
+    if h <= 0:
         return np.array(y0, copy=True)
-    s = LSODA(fun, t0, y0, t1, rtol=rtol, atol=atol, jac=jac)
+    if h <= 1e-12 * max(abs(t0), 1.0):  # below any meaningful resolution: one Euler step
+        return np.asarray(y0) + h * fun(0.0, y0)
+    s = LSODA(fun, 0.0, y0, h, rtol=rtol, atol=atol, jac=jac)
     while s.status == "running":
         s.step()
     if s.status != "finished":
@@ -356,6 +360,10 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
     res.t.append(0.0)
     res.y.append(y0.copy())
     g_old = [ev.g(0.0, y0) for ev in evs]
+    # The ODE is autonomous: the solver runs on a local clock (absolute t = off + local t) that is
+    # re-zeroed when its step falls below 1e-7 of the local time, so that fast transitions at late
+    # absolute times (escapes at t ~ 1e13-1e20, where float64 spacing in t is O(0.01-1e4)) stay resolved.
+    off, t_loc_old, n_restart = 0.0, 0.0, 0
     solver = LSODA(rhs, 0.0, y0, t_max, rtol=rtol, atol=atol, jac=jac)
     nxt, count = 1e6, 0
     while True:
@@ -366,13 +374,14 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
         if solver.status == "failed":
             res.status = "failed: " + str(msg)
             break
-        t, y = solver.t, np.array(solver.y, copy=True)
+        t_loc, y = solver.t, np.array(solver.y, copy=True)
+        t = off + t_loc
         g_new = [ev.g(t, y) for ev in evs]
         hits = []
         for k, ev in enumerate(evs):
             if ev.crossed(g_old[k], g_new[k]):
-                tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol)
-                hits.append((tr, k, yr))
+                tr, yr = refine(ev, rhs, jac, t_loc_old, res.y[-1], g_old[k], t_loc, g_new[k], rtol, atol)
+                hits.append((off + tr, k, yr))
         hits.sort(key=lambda h: h[0])
         stop = None
         for tr, k, yr in hits:
@@ -388,9 +397,15 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
         res.t.append(t)
         res.y.append(y)
         g_old = g_new
+        t_loc_old = t_loc
         if solver.status == "finished":
             res.status = "t_max"
             break
+        if t_loc > 0 and solver.step_size < 1e-7 * t_loc:
+            off += t_loc
+            t_loc_old = 0.0
+            n_restart += 1
+            solver = LSODA(rhs, 0.0, y, t_max - off, rtol=rtol, atol=atol, jac=jac)
         if trap and t >= nxt:
             nxt = t * 10**0.1
             dL = evalf(y)[1]
@@ -404,4 +419,5 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
                 break
     res.t = np.array(res.t)
     res.y = np.array(res.y).T
-    return res, dict(status=res.status, nfev=nfev[0], n_steps=len(res.t) - 1, secs=time.time() - t_wall)
+    return res, dict(status=res.status, nfev=nfev[0], n_steps=len(res.t) - 1, n_restart=n_restart,
+                     secs=time.time() - t_wall)
