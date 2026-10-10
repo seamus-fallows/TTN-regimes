@@ -282,3 +282,23 @@ pixels and moves the small-init asymptote to smaller sigma.
 - The binary first-plateau lambda_min exponent (0.88) is below the k = 3 value (1); the MPS far-edge rises scale
   like power laws (exponent ~1) where rank-1 counting predicts k = 2; both are open.
 - Gradient flow only (no GD/SGD); empirical loss on 4000 fixed samples.
+
+## 7. Robustness checks
+
+- **Integrator accuracy** [empirical]. Gauge conservation drift (cumulative, relative to max core norm^2):
+  max 4.6e-8, median 1.8e-9 over the 234 main runs. Two cases rerun at rtol 1e-10, atol 1e-16 (quadtree and
+  MPS, sigma = 0.1, seed 0): t1 agrees to 7 digits, the final train loss to 6 digits, later drop times to
+  < 0.1% (2157.79 vs 2157.85, 4743.3 vs 4740.8); the first drop (tau ~ 10-15) moves by 0.2-0.8 time units,
+  well below every gap reported (`/root/outputs/real_data/tol_check`).
+- **Second dataset: Fashion-MNIST sneaker (7) vs ankle boot (9), 4x4** [empirical; 45 runs: 3 trees x
+  sigma in {0.05, 0.14, 0.5} x 5 seeds; `results/fashion_tables.md`]. Structure as on MNIST: t1 exponents
+  13.000 / 13.000 / 14.000 ± 0.000; the first two edges to gain rank are siblings in 15/15 quadtree and 14/15
+  scrambled runs; the time of that first rank increase scales per seed as sigma^-0.92 ... -0.97 between
+  sigma = 0.05 and 0.14 (k = 3; only two sigma values share the route, so this is not a scaling claim). New: at
+  small sigma the loss drops twice before any rank grows (0.50 -> 0.33 -> 0.12, both drops at bond rank 1).
+  The flow moves between two rank-1 critical points, the analogue of a wrong first escape corrected at rank 1
+  (theory_saddles.md 4.4, conjecture here: no Hessian taken). Locality: **no advantage** for the quadtree;
+  the task is almost solved by a rank-1 (product) function (L = 0.12, acc 0.92). Scrambled is as fast or
+  faster (sigma = 0.05: L(1e4) 0.120 vs 0.123), and the MPS is slower at first but reaches the lowest loss
+  (0.089, acc 0.945). Locality matters only as much as the label depends on pixel interactions that the
+  pixel order can place on short routes.

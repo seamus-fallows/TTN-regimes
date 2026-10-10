@@ -1,0 +1,71 @@
+{
+ "raw": {
+  "s2s": {
+   "MPS snake|0.05": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 4.4
+   },
+   "MPS snake|0.14": {
+    "runs": 5,
+    "s2s_fraction": 0.6,
+    "drops_mean": 4.2
+   },
+   "MPS snake|0.5": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 3.0
+   },
+   "binary quadtree|0.05": {
+    "runs": 5,
+    "s2s_fraction": 1.0,
+    "drops_mean": 2.0
+   },
+   "binary quadtree|0.14": {
+    "runs": 5,
+    "s2s_fraction": 1.0,
+    "drops_mean": 2.4
+   },
+   "binary quadtree|0.5": {
+    "runs": 5,
+    "s2s_fraction": 0.6,
+    "drops_mean": 4.0
+   },
+   "binary scrambled|0.05": {
+    "runs": 5,
+    "s2s_fraction": 0.6,
+    "drops_mean": 2.0
+   },
+   "binary scrambled|0.14": {
+    "runs": 5,
+    "s2s_fraction": 0.8,
+    "drops_mean": 2.4
+   },
+   "binary scrambled|0.5": {
+    "runs": 5,
+    "s2s_fraction": 0.6,
+    "drops_mean": 4.2
+   }
+  },
+  "first": {
+   "MPS snake": {
+    "sibling": 0.0,
+    "single": 0.8,
+    "kendall": "-0.242 \u00b1 0.051",
+    "n": 15
+   },
+   "binary quadtree": {
+    "sibling": 0.2,
+    "single": 0.8,
+    "kendall": "0.303 \u00b1 0.11",
+    "n": 15
+   },
+   "binary scrambled": {
+    "sibling": 0.2,
+    "single": 0.8,
+    "kendall": "0.451 \u00b1 0.1",
+    "n": 15
+   }
+  }
+ }
+}
