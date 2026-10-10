@@ -14,3 +14,7 @@
 #
 # Example (not active):
 #   experiments/s2s_core/results/escape_vs_sigma.pdf   s2s/escape_vs_sigma.pdf
+
+# Section 5, optimizers used in practice (experiment optimizers; make_figures.py)
+experiments/optimizers/results/figures/scaling_b4_side_sigma0.008_seed0.pdf   optimizers/side_by_side_binary4.pdf
+experiments/optimizers/results/figures/adam_escape.pdf                        optimizers/adam_escape.pdf

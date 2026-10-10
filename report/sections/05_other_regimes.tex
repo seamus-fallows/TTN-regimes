@@ -40,3 +40,208 @@ SGD noise and plateau durations; sample complexity of the saddle-to-saddle and l
 % lewkowycz2020large, even2023sgd); does a large step or SGD noise shorten plateaus at small sigma
 % (plateau time vs batch size B and eta)? Finite n: test error vs n for small vs large init; low
 % hierarchical rank bias of S2S vs min-norm tangent-space solution of lazy (razin2022implicit).
+
+% ===========================================================================================
+\subsection{Optimizers used in practice}\label{sec:other-optimizers}
+% Sources: notes/optimizers.md v2 (its section 5 lists the claims withdrawn after review round 1),
+% agent-runs/optimizers/REPORT.md, notes/reviews/optimizers_round1.md; settings in
+% app:exp-optimizers. Withdrawn, do not reintroduce: Gram preconditioning is sigma-free; orders of
+% ALS/DMRG/Riemannian GD "unrelated to the weights"; Adam's later plateaus at "half GF's rate" or set
+% by the adaptive edge of stability; Adam generalizes worse than gradient flow.
+
+Tensor-network models are mostly trained with Adam \citep{kingma2015adam}, with ALS and DMRG sweeps
+\citep{white1992density,holtz2012alternating,stoudenmire2016supervised} or with Riemannian methods
+\citep{uschmajew2013geometry,novikov2018exponential}. Which features of the gradient-flow picture of
+\cref{sec:s2s} survive them? \Cref{tab:optimizers} collects the answers, \cref{fig:optimizers-side}
+shows them from one initial point, and the evidence follows.
+
+\paragraph{Setup} (details in \cref{app:exp-optimizers}).
+Exact population loss, whitened inputs, double precision. Binary tree, $\Ns=4$ ($\Kc=3$), $d=3$,
+$\chi=4$, odeco teacher $(3,2,1)$: all methods start from the same 42 fan-in initializations (seven
+$\isc\in[0.002,0.128]$, six seeds). Deep trees, $\Ns=8$: binary ($\Kc=7$) and MPS ($\Kc=8$), with the
+same teacher and with a pattern teacher E8 whose weaker components need $k=6$ and $k=2$ cores on the
+MPS (\cref{prop:teacher-spectra}); $\isc\in\{0.3,0.8\}$, plus seven $\isc\in[0.25,0.8]$ (binary) and
+eight $\isc\in[0.01,0.3]$ (MPS); six seeds; gauge-balanced initializations, and fan-in ones for the
+gauge-dependent methods (fan-in gradient flow stalls on the odeco MPS, \cref{prop:A-trap}). Methods as
+listed in \cref{tab:optimizers}, with GD and heavy ball ($\beta=0.9$) at effective steps
+$\lr/(1-\beta)\le0.27\lr_c$ (\cref{app:optimizer}) and Adam's $\epsilon=10^{-8}$ unless stated. Clocks: $t$ for gradient flow (LSODA, events by root finding), $\lr n$ for GD,
+$\lr n/(1-\beta)$ for heavy ball, steps for the other gradient methods, sweeps for ALS and DMRG;
+exponents $p$ ($T\propto\isc^{-p}$) are per-seed fits, mean $\pm$ s.e.
+
+\paragraph{GD and heavy ball reproduce gradient flow.}
+\empirical{} \newresult[for TTNs] GD with $\lr=0.13\lr_c$ on binary $\Ns=4$ has gradient flow's
+exponents to within $0.003$ and its order from all 42 initial points; its first-escape delay grows by
+$0.0199\pm0.0000$ per e-fold of $1/\isc$, the asymptotic slope $\lr(\Kc-1)/2=0.020$ that follows from
+\cref{prop:A-gd-shift}. Heavy ball's delay grows $19.0=(1+\beta)/(1-\beta)$ times faster
+(\conjecture: the momentum analogue), hence $p=0.970\pm0.002$. On the deep trees ($\isc=0.8$) GD and
+heavy ball escape after $1.001$--$1.006$ and $1.01$--$1.11$ times gradient flow's time.
+
+\paragraph{Adam: same order, but the first escape forgets $\isc$.}
+\derived{} \newresult[for TTNs] With $\epsilon=0$ Adam's step $-\lr\hat m_n/\sqrt{\hat v_n}$ is
+invariant under a common rescaling of past gradients \knownresult[\citealp{kingma2015adam}], and near
+the origin $\nabla\Loss$ is homogeneous of degree $\Kc-1$; so the iterates from $c\params_0$ with step
+$c\lr$ are $c$ times those from $\params_0$ with step $\lr$, Adam sees $\isc$ only through $\isc/\lr$,
+and the number $n_1$ of steps to the first escape stays bounded as $\isc\to0$ (in the sign-flow limit
+$\lr\to0$ \knownresult[\citealp{balles2018dissecting}], $\lr n_1$ tends to a constant). Measured
+\empirical: $p=0.009$--$0.013$ on binary $\Ns=4$ for four learning rates, RMSProp alike
+(\cref{fig:optimizers-adam-escape}); $p=0.049\pm0.022$ and $0.145\pm0.033$ ($\lr=10^{-3}$, $10^{-2}$;
+small but not zero) on binary $\Ns=8$, where gradient flow has $5.00\pm0.02$ ($\isc\le0.4$, prediction
+5; fit computed from the committed runs in the review of this experiment). The selection survives \empirical: Adam and RMSProp pick gradient flow's first component in
+94--100\% of the resolved deep-tree runs and keep E8's locality order on the MPS (the weaker $k=2$
+component before the stronger $k=6$ one, in 4--5 of 6 seeds, as gradient flow). On binary $\Ns=4$ the
+first escape is as wide as its own time, so 79--100\% of the runs fail $\sep i>3$ and are rich,
+non-incremental by \cref{tab:regimes}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{optimizers/side_by_side_binary4.pdf}
+  \caption{Five optimizers from one initial point: binary tree, $\Ns=4$ ($\Kc=3$), $d=3$, $\chi=4$,
+    odeco teacher $(3,2,1)$, fan-in initialization, $\isc=0.008$, seed 0. Columns: gradient flow, Adam
+    ($\lr=10^{-3}$), GD re-gauged at every step ($\lr=0.02$), Riemannian GD ($\lr=0.1$), one-site ALS,
+    each on its own clock. Rows: normalized loss, overlaps $\ov r$, bond singular values of the cut
+    $\{1,2\}|\{3,4\}$. Gradient flow and Adam learn one component at a time in the same order, with
+    plateaus at the partial-fit levels $\Lpart1/\Lpart0=0.36$ and $\Lpart2/\Lpart0=0.07$; the other
+    three have none. This is the only one of the 60 ALS and DMRG runs in which no two components cross
+    $\ov r=\frac12$ in the same micro-step.}
+  \label{fig:optimizers-side}
+\end{figure}
+
+\paragraph{Adam's $\epsilon$ brings the gradient-flow law back.}
+\derived{} \newresult{} Where $\abs{\partial_j\Loss}\ll\epsilon$ Adam is gradient flow with
+$t=\lr n/\epsilon$: from a small $\isc$ it crawls along the gradient-flow path until the gradient
+reaches $\epsilon$, then escapes as in the sign regime,
+\begin{equation}\label{eq:adam-eps}
+  n_1\simeq\frac{\epsilon}{\lr}\,T_{\rm GF}(\isc)+n_{\rm sign}(\lr),
+\end{equation}
+so the law $T_{\rm GF}\propto\isc^{-(\Kc-2)}$ returns, with prefactor $\epsilon/\lr$, below the
+crossover $\isc_\times$ where $\epsilon T_{\rm GF}=\lr n_{\rm sign}$. Test \empirical{} on the odeco MPS
+with $\Ns=8$ (eight $\isc\in[0.01,0.3]$, six seeds, $\lr=10^{-3}$, $10^{-2}$): per seed, from that
+seed's exact gradient-flow escape at $\isc=0.3$ times $(0.3/\isc)^6$ and its own escape with
+$\epsilon=10^{-30}$, with no fitted parameter, measured/predicted is $0.9989$--$1.0003$ ($\lr=10^{-3}$,
+$\isc=0.02$--$0.03$) and $1.0009$--$1.0062$ ($\lr=10^{-2}$, $\isc=0.015$--$0.02$) for every run that
+escaped within $2\cdot10^5$ steps, and \eqref{eq:adam-eps} predicts which runs do in all 60 cases with
+$\isc\le0.05$; near $\isc_\times\approx0.05$--$0.1$ the deviations are systematic ($-5\%$ to $+17\%$).
+The crossover depends on $\lr$ and on the tree: on binary $\Ns=4$, \eqref{eq:adam-eps} puts it near
+$10^{-8}$ (\derived, not tested), far below the $2\cdot10^{-4}$ at which the initial gradient falls
+under $\epsilon$. Only $\Kc=8$ was tested.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{optimizers/adam_escape.pdf}
+  \caption{Adam's first escape. Left: binary tree, $\Ns=4$ ($\Kc=3$), $d=3$, $\chi=4$, odeco teacher
+    $(3,2,1)$, fan-in initialization; medians over six seeds of gradient flow's first-escape time $t_1$
+    and of Adam's $\lr n_1$ ($\epsilon=10^{-8}$). Gradient flow follows $\isc^{-1}$; Adam does not
+    depend on $\isc$, and $\lr n_1\to0.17$ as $\lr\to0$ ($0.30$, $0.18$, $0.16$, $0.17$ for
+    $\lr=10^{-2}$ to $10^{-4}$). Right: MPS, $\Ns=8$ ($\Kc=8$), same teacher, balanced initialization;
+    median steps to the first escape over the runs that escaped within $2\cdot10^5$ steps, for
+    $\epsilon=10^{-8}$ (solid) and $10^{-30}$ (dotted); triangles, drawn at the budget, mark $\isc$ with
+    runs that did not escape; dashed: \eqref{eq:adam-eps} with median inputs. Without $\epsilon$ the
+    escape takes 121--139 ($\lr=10^{-3}$) and 23.5--29.3 steps ($\lr=10^{-2}$) at every $\isc$; with
+    $\epsilon=10^{-8}$ the law $\isc^{-6}$ returns below $\isc\approx0.05$--$0.1$.}
+  \label{fig:optimizers-adam-escape}
+\end{figure}
+
+\begin{table}[t]
+  \centering
+  \caption{What survives which optimizer (\cref{sec:other-optimizers}). Binary $\Ns=4$ ($\Kc=3$):
+    seven $\isc$ over 1.8 decades; binary $\Ns=8$ ($\Kc=7$) and MPS $\Ns=8$ ($\Kc=8$): two to eight
+    $\isc$ over at most half a decade (1.5 decades for Adam's $\epsilon$); six seeds each. ``Gauge'':
+    the group \eqref{eq:gauge}. $p$: exponent of the first-escape time, $T\propto\isc^{-p}$. Order:
+    agreement with gradient flow from the same initial point, or counts over independent seeds for
+    methods that give one trajectory per seed. Cost: median steps (sweeps, micro-steps) to
+    $\Loss<10^{-3}\Loss_0$, binary $\Ns=4$ at $\isc=0.008$, deep trees at $\isc=0.3$.}
+  \label{tab:optimizers}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.7cm}
+      *{5}{>{\raggedright\arraybackslash}X}@{}}
+    \toprule
+    method & update equivariant under & plateaus & first escape vs.\ $\isc$ & learning order & cost \\
+    \midrule
+    gradient flow & orthogonal maps of $\params$; conserves $\Q e$ & saddle-to-saddle (S2S) &
+      $p=1.007$ ($\Kc=3$), $5.00$ ($\Kc=7$, $\isc\le0.4$); predicted $\Kc-2$ & reference &
+      $3.6\cdot10^3$--$1.1\cdot10^4$ evaluations \\
+    GD, heavy ball (steps $\le0.27\lr_c$) & as gradient flow; $\Q e$ drifts & as gradient flow &
+      $p=1.005$, $0.970$ ($\Kc=3$); delay $\propto\ln(1/\isc)$ & as gradient flow (100\%) &
+      $T_{\rm GF}/\lr$ ($1.7\cdot10^4$, $\Kc=3$) \\
+    Adam, RMSProp & coordinate permutations, sign flips; gradient rescaling ($\epsilon=0$) &
+      sequential; rich ($\Kc=3$), S2S ($\Kc=7$, $\isc\le0.4$) & $\isc$-free, $p=0.00$--$0.15$; below
+      $\isc_\times$: \eqref{eq:adam-eps} & first component as gradient flow: 94--100\%; full order
+      87--98\% ($\Kc=3$) & $1.7\cdot10^2$--$2.1\cdot10^5$ \\
+    re-gauged GD & gauge (cores reset to the root-centred canonical form) & none ($\Kc=3$);
+      $\isc$-free ($\Kc=7$, 8) & $\isc$-free, $p=0.00$ & largest first: 6/6 ($\Kc=3$), 2/6 and 5/6
+      ($\Kc=7$) & $2\cdot10^2$--$2\cdot10^4$; odeco MPS: budget \\
+    Riemannian GD ($\lr=1$) & gauge (acts on $\W$) & none & $\isc$-free (exact) &
+      one step ($\Kc=3$); weakest last: 5/6 ($\Kc=7$) & 2--7, each a dense Jacobian \\
+    Gram-precond.\ GD & gauge, up to damping (per-core Gauss--Newton blocks) & overshoot, then return & not
+      $\isc$-free: $p=0.65$ ($\lr=0.01$); deep: 147--632 vs.\ 26--35 steps & mostly unresolved &
+      $1.5\cdot10^2$--$4.3\cdot10^3$; odeco MPS: 9/24 converge \\
+    ALS, DMRG & gauge; invariant under per-core rescaling & none & $\isc$-free (exact, \proven) &
+      none resolved (59/60 ties) & $\le1$ sweep (3--11 micro-steps) \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Later plateaus and minima under Adam.}
+\empirical{} Later gaps depend weakly on $\isc$ on binary $\Ns=4$ ($p=0.0$--$0.4$). On binary $\Ns=8$
+they grow as $\isc$ decreases, up to $8\cdot10^4$ steps at $\isc=0.25$, but per-seed local slopes range
+from $-0.4$ to $5.5$, so over half a decade no law is established (gradient flow: $4.72$ and $4.85$,
+prediction 5); with $\isc\le0.4$, 83--100\% of these runs are S2S. Adam and RMSProp break the
+conservation of $\Q e$ and end at imbalanced minima (balance index
+$\normF{\Q e}/(\normF{\Gm{v}{e}\Gm{v}{e}\T}+\normF{\Gm{p}{e}\Gm{p}{e}\T})=0.21$--$0.96$),
+$1.01$--$6.1$ times sharper than the balanced value \eqref{eq:A-sharpness}, the more so the larger the
+step; gradient flow, GD and heavy ball end within $0.2\%$ of it.
+
+\paragraph{No plateaus: sweeps and Riemannian GD.}
+\proven{} \newresult[elementary] In the canonical form centred at core $v$ the environment of $v$ is an
+isometry, so the least-squares core is $\nabla_{\G v}\ip{\W}{\Wt}$, a function of the other cores'
+frames, which are $Q$ factors of QR decompositions and do not change when a core is multiplied by a
+positive number: every ALS and DMRG iterate is independent of $\isc$. Riemannian GD,
+$\W\leftarrow\mathrm{HSVD}_\chi(\W-\lr P_{T(\W)}(\W-\Wt))$ with $P_{T(\W)}$ the projector onto the
+tangent space of the fixed-rank manifold, maps $\W_0$ at $\lr=1$ to
+$\mathrm{HSVD}_\chi(P_{T(\W_0)}\Wt)$, and that tangent space is the same at $c\W_0$: it is exactly
+$\isc$-free too. Measured \empirical: ALS and DMRG fit the teacher within one sweep, with two
+components crossing $\ov r=\frac12$ in the same micro-step in 59 of 60 runs: no resolved order.
+Riemannian GD needs 2--7 steps; it fits all components in one step on binary $\Ns=4$ but stages them on
+binary $\Ns=8$, the weakest strictly last in 5 of 6 seeds for both teachers (3 and 2 of 6 on the MPS).
+
+\paragraph{Re-gauged and Gram-preconditioned GD.}
+Re-gauging moves all of $\normF{\W}\sim\isc^\Kc$ into the root, whose environment becomes an isometry,
+so the root fits the teacher's projection onto the current frames in a time $O(1)$ for any $\isc$
+\derived; on deep trees random frames keep only a fraction $\prod_e\chi/d^{n_e}$ of each component
+over the root's edges ($2.4\cdot10^{-3}$ on binary $\Ns=8$, $0.2$ on $\Ns=4$), so they must rotate and
+learning is sequential again, with $\isc$-free event times (\empirical, $\abs{p}\le0.02$). Gram
+preconditioning moves each core towards its own least-squares solution, $\sim\isc^{-(\Kc-1)}$ times
+larger than the core, so its first step overshoots the loss by $\sim\isc^{-2\Kc(\Kc-1)}$ (\derived; up
+to $4\cdot10^{34}$); it has no flat plateau, but its time depends on $\isc$ (\empirical,
+\cref{tab:optimizers}).
+
+\paragraph{Finite samples.}
+\empirical{} With $\nsamp=45$ and $60$ samples on binary $\Ns=4$ (four data draws, six
+initializations, $\isc\in\{0.01,0.1\}$, paired comparisons), gradient flow and Adam reach the same
+population loss: at $\nsamp=60$ every run that met the training tolerance recovered the teacher; at
+$\nsamp=45$ none did, and Adam was better in 8--13 of 21--23 pairs per setting. Only a threshold count
+differs (a fourth bond singular value above $0.1\,\bst{e}{\min}$: Adam with $\lr=10^{-2}$ in 35 of 44
+runs, gradient flow in 5); the entropy rank does not.
+
+\paragraph{Interpretation: which invariance removes which feature.}
+Two properties of an update decide what survives (\cref{tab:optimizers}, second column). The first is
+how its step scales with the gradient, which near the origin is $O(\isc^{\Kc-1})$ while the parameters
+must move by their own size: a step proportional to the gradient needs a time $\isc^{-(\Kc-2)}$, a
+step invariant under its rescaling (Adam) does not, and an absolute scale in the preconditioner, such
+as Adam's $\epsilon$, brings the law back \derived; Adam still follows the gradient's sign, which one
+component dominates, so learning stays sequential and ordered (\conjecture). The second is the
+metric. Under gradient flow $\W$ moves through $\Jac\Jac\T$ ($\Jac=\partial\W/\partial\params$), which
+vanishes like $\isc^{2(\Kc-1)}$ at the origin, whereas Riemannian GD (in continuous time the
+Gauss--Newton flow $\dot\params=\Jac^+(\Wt-\W)$) and the exact block minimizations of ALS and DMRG
+move $\W$ at a rate of order one. These methods are equivariant under the whole gauge group
+\eqref{eq:gauge}, including the rescaling of a core against its neighbour, and see $\W_0$ only through
+its frames, so they keep neither plateaus (\derived) nor $\isc$ (\proven); plateaus at singular points
+of a parametrization, and the better behaviour of the natural gradient there, are known for multilayer
+perceptrons \knownresult[\citealp{amari2006singularities}]. Equivariance alone is not enough: Gram
+preconditioning is gauge-equivariant up to damping \derived{} but moves all cores at once from their
+current values. Balance and the flattest minimum (\cref{prop:A-pattern-rule}) rest on the conserved
+$\Q e$, the charges of the gauge symmetry under Euclidean gradient flow (\cref{prop:conservation});
+their measured relative drift is $10^{-11}$, $10^{-5}$ and $3\cdot10^{-4}$ under gradient flow, GD and
+heavy ball (momentum flows lose most conservation laws, \citealp{marcotte2024keep}), while Adam,
+equivariant only under coordinate permutations and sign flips, breaks them at order one \empirical. A
+law for Adam's later plateaus is open (\cref{sec:open}).
