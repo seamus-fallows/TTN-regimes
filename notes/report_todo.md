@@ -45,7 +45,7 @@ Collected from agents' hand-backs; each item names where it came from. Tick off 
 28. Trap: Sec. 4 failure-modes paragraph and Sec. 1 finding 7 from notes/reviews/trap_verification.md (safe to cite);
     apply its errata to notes/theory_trap.md too.
 29. saddle-dyn: fill the placeholders in Sec. 1, Sec. 4 (k* subsection) and App. A.4 when it reports and is verified.
-30. Trap k = 4 fix (notes/theory_trap.md v1.2, Prop. 3; verification notes/reviews/trap_k4_verification.md pending).
+30. Trap k = 4 fix (notes/theory_trap.md v1.2, Prop. 3) VERIFIED (notes/reviews/trap_k4_verification.md: use ITS full list of safe report changes and its errata: sigma-independence only as sigma -> 0 away from the boundary; stall_diagnosis CSV unfiltered).
     If verified: Sec. 4 89% -> 93%, drop "k = 4 with spare inner channels" from the known failures; D_s2s 408/457 ->
     408/437, alive 38/2,101 -> 38/2,121, k = 4 203/232 -> 203/212 and 5/796 -> 5/816, stall diagnosis 30/6/2 -> 30/4/2
     and 2/56/0 -> 2/58/0, "56 false alarms" -> 36, delete "MPS4 at chi = 4: 20 of 46", "30 of 38 ... 7 of 126" ->
