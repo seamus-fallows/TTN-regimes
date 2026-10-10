@@ -307,8 +307,8 @@ vs model; per-seed agreement of the full GF order with the seed's own race order
   consistent with the m = 2 picture; P(first = largest) = 0.87 / 0.71 at rho = 0.8 / 0.9 (sigma = 0.05).
 
 **R = 4 with chi = R = 4 (every bond must reach full rank): gradient flow mostly stalls** [empirical].
-Stalled runs: MPS4 145/200 (rho 0.8: 149, 0.9: 140), MPS6 ~195/200, binary8 ~170/185; binary4 0/200 (a
-DLN). In stalled runs one component's overlap decays exponentially after the others are learned (the
+Runs that do not learn all four components (stalled, or unfinished at t = 1e9): MPS4 289/400, MPS6
+396/399, binary8 389/393; binary4 0/400 (a DLN). In stalled runs one component's overlap decays exponentially after the others are learned (the
 conservation-law trap of `notes/theory_saddles.md` section 8); the same runs integrated with the library
 integrator to t = 1e9 without a stop (abandoned `multi` run) never learn that component either (stall
 classification identical on all 1679 overlapping runs). With R = 3 < chi stalls are rare on MPS4 (2.5%)

@@ -98,13 +98,15 @@ sigma 0.05-0.25 by tree, LSODA + exact Hessian with exact event location and a s
 - Excluded runs are counted: in "stalled" runs some component's overlap decays below 1e-25 (its route
   dies). With R = 3 this happens in 2.5% (MPS4), 1% (binary8) and 44% (MPS6, sigma 0.2; another 9% had
   not finished by t = 1e9) of runs.
-  With **R = 4 = chi** most runs stall: MPS4 145/200, MPS6 ~195/200, binary8 ~170/185, binary4 0/200.
+  With **R = 4 = chi** most runs do not learn all four components (stalled, or unfinished at t = 1e9):
+  MPS4 289/400, MPS6 396/399, binary8 389/393; binary4 0/400.
   The abandoned library-integrator run (integrated to t = 1e9 with no stop) gives the same stall
   classification on all 1679 overlapping runs, so this is GF behaviour, not a stopping artefact. It
   looks like the conservation-law trap of theory_saddles section 8; it is outside Q4 and is passed on
   to s2s-core/locality.
-- 17 slow runs (15 binary8 R = 4, 1 MPS6 R = 3, 1 binary8 R = 3) were still integrating when this report
-  was written. They are not in the tables, but they cannot change the R = 3 conclusions (2 of 1600 runs).
+- 10 slow runs (7 binary8 R = 4, 1 MPS6 R = 4, 1 MPS6 R = 3, 1 binary8 R = 3) were stopped unfinished
+  after ~3 h to free the machine (`multi.py` resumes them if re-run). They are not in the tables and cannot
+  change the conclusions (2 of 1600 R = 3 runs).
 
 ## What was done
 1. Read brief, repo, notes; merged origin/main repeatedly (literature, core fixes, theory notes v1/v2,
