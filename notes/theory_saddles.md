@@ -1,7 +1,9 @@
 # Theory: saddles after the first escape, and locality (Q3; H2, H3, H1b)
 
-Status: **v2, 2026-10-09** (theorist for Q3), revised after an independent adversarial verification
-(round 2; issues and resolutions in section 10). Scratch scripts (outside the repo; only `ttn.tree`,
+Status: **v3, 2026-10-10**: R2, F2, Prop. 1, 3.3, 3.4, 4.1, 4.3, 4.4, 5.1, 9, 11 and P9 updated for the
+saddle-order results of `notes/theory_saddle_order.md` v2 (lower bound proven under a spectral
+condition, counterexamples from $k^*=5$; both verified). **v2, 2026-10-09** (theorist for Q3), revised
+after an independent adversarial verification (round 2; issues and resolutions in section 10). Scratch scripts (outside the repo; only `ttn.tree`,
 `ttn.network`, `ttn.teachers`, `ttn.losses`, scipy `solve_ivp`, torch autograd, float64):
 v1 checks in `.../scratchpad/theory/saddles/`, the verifier's and the v2 re-checks (`r1_*`-`r6_*`) in
 `.../scratchpad/theory/saddles_verify2/` (prefix
@@ -25,13 +27,13 @@ matter.
 
 | # | result | status |
 |---|---|---|
-| R1 | Around a learned saddle the new parameters enter $L$ through *routes*: connected core sets $C$ whose new entries combine into a term $\propto$ the residual, with no Gauss-Newton cost at that order. The escape is, to leading order, the first-escape problem of the $k^*$-core sub-TTN with target $R_C$, $k^*=\min\lvert C\rvert$ (the TTN instance of Kumar & Haupt 2025c, Thm 8, and of AGF; section 9). | derived |
-| R2 | One learned component $q$ (balanced), new component $r$: $\min\{\lvert C\rvert: C\text{ connected}, R_C\ne0\}=\lvert\mathrm{Steiner}(N(D))\rvert$, where $N(D)$ are the cores carrying the sites where $r$ differs from $q$; the edges whose rank must grow are exactly the Steiner edges. The route gives a descent curve of order $k^*$ (upper bound on the saddle order). That no curve descends faster is shown only up to order 3 (R3/R6) and is otherwise open. | proven (identity, upper bound); derived (order $=k^*$) |
+| R1 | Around a learned saddle the new parameters enter $L$ through *routes*: connected core sets $C$ whose new entries combine into a term $\propto$ the residual, with no Gauss-Newton cost at that order. The escape is, to leading order, the first-escape problem of the $k^*$-core sub-TTN with target $R_C$, $k^*=\min\lvert C\rvert$ (the TTN instance of Kumar & Haupt 2025c, Thm 8, and of AGF; section 9), **provided** the old block is a local minimum and the generalized piggyback operator has $\lambda_{\max}(\mathcal S)<s_q$ (`theory_saddle_order.md`); otherwise a cluster of $\ell<k^*/2$ cores plus old rotations can escape first. | derived |
+| R2 | One learned component $q$ (balanced), new component $r$: $\min\{\lvert C\rvert: C\text{ connected}, R_C\ne0\}=\lvert\mathrm{Steiner}(N(D))\rvert$, where $N(D)$ are the cores carrying the sites where $r$ differs from $q$; the edges whose rank must grow are exactly the Steiner edges. The route gives a descent curve of order $k^*$ (upper bound on the saddle order). **Lower bound** (`theory_saddle_order.md` v2): order $\ge k^*$ whenever $\lambda_{\max}(\mathcal S)<s_q$, so order $=k^*$ always for $k^*=2$, for $k^*\in\{3,4\}$ with a positive-definite old block, and for two-component teachers in the correct order on every tree. **False in general from $k^*=5$ on:** a wrong-order residual with two terminals in a set of degree $<k^*/2$ has order $2\ell^*<k^*$ (MPS6 $110001$: 4 vs 6; HT4 $1111$: 6 vs 7), and with several residuals also the correct order can fail (MPS6 pair-star: 4 vs 5, PSD Hessian). | proven (identity, upper bound; lower bound under $\lambda_{\max}(\mathcal S)<s_q$; exact orders $2\ell^*$ for pattern teachers with a spare bond index) |
 | R3 | At a balanced learned saddle $\theta_S$ the Hessian is block diagonal (old entries / new entries). $\theta_S$ is a **strict** saddle iff the old (fixed-rank) block has a negative eigenvalue or a $k^*=2$ route exists. $k^*=1$: not critical (no plateau). $k^*=2$: $\lambda=s_r\,s_q^{(K-2)/K}$ exactly (one learned component). $k^*\ge3$ and old block PSD: no negative curvature (higher-order saddle). | proven (at $\theta_S$), checked |
-| R4 | Escape times (aligned init): $k^*=2$: $\Delta t\simeq(1-s_r/s_q)\log(1/\sigma)/\lambda$; $k^*\ge3$: $\Delta t\simeq\sigma^{-(k-2)}(1-s_r/s_q)/[(k-2)\,s_r\,s_q^{(K-k)/K}]$. The factor $(1-s_r/s_q)$ is a head start accumulated since initialization (for $k\ge3$ mostly during the first plateau). | derived, checked to $10^{-4}$ (aligned) |
+| R4 | Escape times (aligned init): $k^*=2$: $\Delta t\simeq(1-s_r/s_q)\log(1/\sigma)/\lambda$; $k^*\ge3$: $\Delta t\simeq\sigma^{-(k-2)}(1-s_r/s_q)/[(k-2)\,s_r\,s_q^{(K-k)/K}]$. The factor $(1-s_r/s_q)$ is a head start accumulated since initialization (for $k\ge3$ mostly during the first plateau). These route laws need $\lambda_{\max}(\mathcal S)<s_q$ (R2); otherwise a generalized piggyback cluster escapes in $\propto\sigma^{-(2\ell^*-2)}$ once it beats the route (`theory_saddle_order.md` section 6). | derived, checked to $10^{-4}$ (aligned) |
 | R5 | Exponent $k-2$ per seed. Growth exponent on a balanced route $\gamma=d\log\dot a_r/d\log a_r=2-2/k-a_r/(1-a_r)$: read $k$ from $a_r\in[10^{-4},10^{-2}]$. The $k$-scalar route ODE started from measured route amplitudes predicted the rest of the plateau to 1-3% (v1, not re-checked). | derived, checked |
 | R6 | One learned component: the old block is a PSD radial part plus the piggyback block $a^{K-2}(s_qI-S)$, $a=s_q^{1/K}$, where $S$ is the weighted adjacency matrix of the *piggyback graph* (nodes: (terminal core, rotated site pattern); one edge of weight $s_r$ per residual with $m_r=2$ terminals). Strict iff $\rho(S)>s_q$ or a $k^*=2$ route exists. Two-component teachers: $m=2$ gives $a^{K-2}(s_q\mp s_r)$, $m\ge3$ gives a PD block. Binary $N=4$ is exactly a depth-3 deep linear network (Achour et al. 2024, Thm 7 applies). | proven, checked |
-| R7 | Wrong order, two-component teachers: strict iff $m=2$ or $k^*=2$; three plateau sequences. With $\ge3$ components use R6: a **star** (residuals sharing a rotated site vector at one terminal core) gives $\lambda_{\min}=a^{K-2}(s_q-(\sum s_r^2)^{1/2})$, so even the largest component can be a strict saddle. Gradient flow then passes near $q$, forgets it and relearns it (MPS4: 5/5 seeds). | proven (Hessian), derived (sequences), checked |
+| R7 | Wrong order, two-component teachers: strict iff $m=2$ or $k^*=2$; three plateau sequences (the third, "$m\ge3$: $r$ added by its route, $q$ kept", holds only without a low split; with one, e.g. HT4 $D$ = all sites, the order is $2\ell^*<k^*$ and $q$ is forgotten and relearned, 4.4). With $\ge3$ components use R6: a **star** (residuals sharing a rotated site vector at one terminal core) gives $\lambda_{\min}=a^{K-2}(s_q-(\sum s_r^2)^{1/2})$, so even the largest component can be a strict saddle. Gradient flow then passes near $q$, forgets it and relearns it (MPS4: 5/5 seeds). | proven (Hessian), derived (sequences), checked |
 | R8 | Same teacher, different trees: the next escape is the route with the smallest $k^*$, not the largest weight (locality beats weight); ties in $k^*$ are broken by random route amplitudes. Worked examples for $N=4,8$ (section 5). | derived, checked ($N=4,8$; v1, pre-fix RNG; tables re-derived by the verifier) |
 | R9 | With several learned components the escape degree can be smaller than the number of cores needed to fit the component exactly ("partial learning"): an extra plateau at the best fit of a lower rank profile appears. | derived, checked (v1; levels re-derived by the verifier) |
 | R10 | Hessian: gauge orbit at $\theta_S$ has dimension $\sum_e[\chi_e^2-(\chi_e-r_e)^2]$; null space $\sum_e r_e^2+P_{\rm new}-2\sum_{k=2}c_e$. At a plateau point each route contributes one negative direction, $-\lambda$ ($k=2$) or $\approx-(k-1)s_rA\,b^{k-2}=O(\sigma^{k-2})$ ($k\ge3$). Visible new-index pairs add $O(\sigma^2)$ indefinite terms, so "one negative eigenvalue per route" holds for $k\le3$ only (at $k=4$ a second one of the same order appears). | proven (counts at $\theta_S$), derived (plateau), checked |
@@ -91,7 +93,14 @@ order as the gain. For one learned component and two blocks with amplitudes $x,y
 $L-L_S=\tfrac12a^{2(K-\lvert J_1\rvert)}x^2+\tfrac12a^{2(K-\lvert J_2\rvert)}y^2-s_ra^{K-\lvert J\rvert}xy$,
 PSD iff $s_q\ge s_r$, the $m=2$ piggyback condition of section 4 (derived; checked on the example:
 along $x=y=t^2$, $L-L_S=a(s_q-s_r)t^4$ to 5 digits for $(s_q,s_r)=(1,0.5)$ and $(0.5,1)$, script `r1`).
-That disconnected $J$ never descend before the single-core piggyback block is shown only for this case.
+**v3:** the general case is settled in `theory_saddle_order.md` (one learned component, proven):
+in the cumulant expansion of the sector amplitudes, a cumulant on a core set $B$ needs new entries on
+every core of $\mathrm{Steiner}(B)$ (its Lemma 2), and disconnected blocks are products of lower
+cumulants. Whether they are Gauss-Newton dominated is exactly the condition
+$\lambda_{\max}(\mathcal S)<s_q$ on the *generalized piggyback operator* $\mathcal S$, which couples the
+sector amplitudes of core sets of degree $<k^*/2$ (single cores and, for $k^*\ge5$, sets such as two
+adjacent cores). It can fail although every residual is smaller than $s_q$ and the Hessian is PSD
+(MPS6 pair-star, order 4 $<k^*=5$).
 
 **Definition (local residual).** For a connected core set $C$,
 $R_C=\langle R,\bigotimes_{f\in\partial C}T_f\rangle$, a tensor with one mode per core of $C$ (its
@@ -109,10 +118,16 @@ Gradient Flows (Kunin et al. 2025, arXiv:2506.06489): a dormant $\kappa$-homogen
 when $\int\kappa\,\mathcal U\,dt$ reaches $(\lVert\theta_0\rVert^{2-\kappa}-1)/(\kappa-2)$
 ($\log(1/\lVert\theta_0\rVert)$ for $\kappa=2$; their time normalization), where $\mathcal U$ is the
 unit's correlation with the residual, accumulated over *all* earlier phases. What the TTN adds is
-which entries are dormant and the degree $\kappa=k^*$, which is set by the tree. **Caveat:** Thm 8
+which entries are dormant and the degree $\kappa=k^*$, which is set by the tree. **Caveats:** Thm 8
 assumes that the active (old) weights sit at a local minimum of the fixed-rank problem. That fails
 exactly at the strict saddles of section 4 (wrong order, stars), where the old block escapes first
-and Proposition 1 does not describe the next event.
+and Proposition 1 does not describe the next event. **v3:** Proposition 1 also needs
+$\lambda_{\max}(\mathcal S)<s_q$ (`theory_saddle_order.md`, Theorem 1). When this fails at a level
+$\ell<k^*/2$, the old block can be positive definite and still the escape is a *joint* problem: a
+cluster of $\ell$ cores with new entries, pointing at a **non-residual** partial pattern, together
+with old rotations toward the residuals; saddle order $2\ell$ (proven for pattern teachers with a
+spare bond index), escape $\propto\sigma^{-(2\ell-2)}$ (derived; checked on one teacher, where gradient
+flow then forgets $q$ and relearns it).
 
 **Proposition 2 (Steiner identity; proven for one learned component).** If $S=\{q\}$, the hanging
 contractions are $T_f=a^{n_f}U_q|_{H_f}$ ($n_f$ cores), so
@@ -127,11 +142,22 @@ $k=\lvert E_+\rvert+1$; $k=1$ iff $D_r$ sits on one core.
 of order $k^*$ (route entries $\propto t$: $L-L_S=-c_rt^{k^*}+O(t^{2k^*})$). This is Furman et al.
 2026, Lemma D.8, applied to the Steiner subtree instead of the whole connected component of
 rank-deficient edges; at a rank-one saddle with $\chi\ge2$ their component is the whole tree
-($N=K$), while $k^*$ can be as small as 2. Not proven: a matching lower bound (no curve descends
-faster than $t^{k^*}$). We have it only at order 3: for $k^*\ge3$ the Hessian is PSD when the old
-block is (section 4), so the order is $\ge3$. That the order equals $k^*$ is **derived** at leading
-order (Proposition 1). Lower bounds on saddle orders are open in general (literature.md section 5,
-item 3).
+($N=K$), while $k^*$ can be as small as 2. **Lower bound (v3; `theory_saddle_order.md` v2, both
+verifications passed).** Proven: if $\lambda_{\max}(\mathcal S)<s_q$ then
+$L-L_S\ge-C\lVert\theta-\theta_S\rVert^{k^*}$ near $\theta_S$ (its Theorem 1; any tree, any $\chi$, any
+residual with $R_{\{v\}}=0$, balanced or not), so with the route the order is exactly $k^*$. This
+covers $k^*=2$ (always), $k^*\in\{3,4\}$ whenever the old block is positive definite modulo gauge
+($\mathcal S$ is then the classical piggyback operator of 4.1; $k^*=3$ also at $\rho(S)=s_q$), and every
+two-component teacher in the correct order on every tree. A level version (Theorem 1') gives order
+$\ge\min(k^*,2\ell)$ when $\mathcal S$ restricted to sets of degree $\le\ell-1$ stays below $s_q$, and
+for pattern teachers with a spare bond index the order is exactly $2\ell^*$ when level $\ell^*<k^*/2$
+exceeds $s_q$ (Theorem 2). So "order $=k^*$" is **false in general** from $k^*=5$ on: single
+wrong-order residuals with two terminals in a set of degree $<k^*/2$ (MPS6 $110001$, order 4 vs
+$k^*=6$; HT4 $1111$, order 6 vs 7), and, with several residuals, even the correct order with a PSD
+Hessian (MPS6 $110001$, $110010$ at 0.8 each: order 4 vs $k^*=5$). Before v3 only the upper bound and
+order $\ge3$ (PSD Hessian) were known here. Lower bounds on saddle orders were listed as open in
+literature.md (section 5, item 3); the only one there is Furman et al. 2026, Prop. 5.3 (one parity
+saddle).
 
 **Lemma 3 (general $S$; proven).** Let $E_+$ = edges where
 $\mathrm{rank}_e(W_S+U_r)>\mathrm{rank}_e(W_S)$ (i.e. both restrictions of $U_r$ lie outside the
@@ -185,12 +211,16 @@ $(1.5,0.6)$ slope 0.78408 vs 0.78405, 1.307 without head start; random init MPS4
 separation $O(\sigma^{1-s_{r+1}/s_1})$ for units linear in their own weights); here it is the
 $k=2$ case of a TTN route.
 
-### 3.3 $k^*\ge3$: higher-order saddle (Hessian PSD at $\theta_S$ proven when the old block is PSD; order $k^*$ derived)
+### 3.3 $k^*\ge3$: higher-order saddle (Hessian PSD at $\theta_S$ proven when the old block is PSD; order $k^*$ proven when $\lambda_{\max}(\mathcal S)<s_q$, v3)
 No pair of route entries couples at second order, so the Hessian vanishes on the route (and, with
 F1, on all new entries except $k=2$ routes). If the old block is PSD (always for two-component
 teachers in the correct order; in general iff $\rho(S)\le s_q$, section 4.1) the saddle is therefore
 non-strict. Along the route $L$ decreases at order $k$, $L-L_S\approx-c\prod_{v\in C}b_v$; that no
-other curve decreases faster is derived, not proven (section 2, after Proposition 2). Balanced
+other curve decreases faster is **proven** when $\lambda_{\max}(\mathcal S)<s_q$ (section 2, after
+Proposition 2; always for $k^*\in\{3,4\}$ with a PD old block and for two-component teachers in the
+correct order) and **false** otherwise: then the order is $2\ell^*<k^*$ and the plateau law below is
+replaced by $\sigma^{-(2\ell^*-2)}$ at small enough $\sigma$ (derived; `theory_saddle_order.md` sections
+6-7). All plateau laws of this section assume $\lambda_{\max}(\mathcal S)<s_q$. Balanced
 reduced dynamics $\dot b=c\,b^{k-1}$, saturating at $b_*=(s_r/A)^{1/k}$:
 $$\Delta t=\frac{b_{\rm eff}^{-(k-2)}}{(k-2)\,c}+O\!\Big(\frac1c\Big(\frac{A}{s_r}\Big)^{\frac{k-2}{k}}\Big);\qquad\text{unbalanced }(\textstyle\prod b>0):\ \Delta t=\int_0^\infty\frac{d\beta}{2c\prod_{v\in C}(b_v^2+\beta)^{1/2}} .$$
 (v1 had the ratio in the correction inverted; $b_*^{-(k-2)}=(A/s_r)^{(k-2)/k}$.)
@@ -227,7 +257,8 @@ this predicted the remaining plateau to 1-3% in the v1 checks (pre-fix RNG; not 
 
 ### 3.4 Which escape comes next (derived)
 At small $\sigma$ the next event is the route with the smallest $k^*$ (log beats power, and smaller
-powers beat larger ones). Ties in $k^*$ are decided by $c\,b_{\rm eff}^{k-2}$, i.e. by the coupling
+powers beat larger ones), provided $\lambda_{\max}(\mathcal S)<s_q$; otherwise compare $k^*$ with
+$2\ell^*$ (v3, rule 5.1). Ties in $k^*$ are decided by $c\,b_{\rm eff}^{k-2}$, i.e. by the coupling
 *and* the random route amplitudes; for $k^*\ge3$ the latter usually dominate, so tied components come
 in a seed-dependent order (HT4 example B4, balanced init: $q_A$ (0.3) before $q_B$ (0.6), both $k=5$).
 Routes of higher
@@ -258,7 +289,11 @@ $$a^{K-2}(s_q-s_r),\qquad a^{K-2}(s_q+s_r),\qquad a=s_q^{1/K}.$$
 For $K=3$ this is the hand derivation in PLAN.md (H1b): $q(s_1-s_2)$, $q=s_q^{1/3}$. Negative iff
 $s_r>s_q$.
 - $m\ge3$: no second-order coupling; the block is $a^{2(K-1)}I\succ0$; the coupling to $U_r$ is of
-order $m$ and is confined by the positive quadratic term, so piggyback is not an escape route.
+order $m$ and is confined by the positive quadratic term, so single-core piggyback is not an escape
+route. (v3: a *generalized* piggyback can be. If two terminals lie in a set $C_1$ of degree
+$\lvert\mathrm{Steiner}(C_1)\rvert<k^*/2$ and the rest in $C_2$ of degree $<k^*/2$, a new-entry cluster on
+$\mathrm{Steiner}(C_1)$ plays the role of a rotation, and for $s_r>s_q$ the order is
+$2\max(\deg C_1,\deg C_2)<k^*$; `theory_saddle_order.md` Cor. 2c.)
 - $m=1$ is the $k=1$ case (gradient nonzero).
 
 Checked exactly for 18 (tree, $D$) cases in both orders (e.g. binary4, $s_q=0.5$, $s_r=1$:
@@ -293,6 +328,20 @@ to 6 digits:
 On binary4 the star is just the DLN statement that $q$ is not the top singular mode:
 $M^*=W^*_{(01)|(23)}$ has singular values $1.6\sqrt2=2.263$ ($r+r'$) and 2 ($q$).
 
+**The generalized piggyback graph (v3; `theory_saddle_order.md`).** The piggyback graph is level
+$\ell=1$ of a hierarchy. At level $\ell$ the nodes are pairs $(C,w)$ of a core set $C$ of degree
+$\lvert\mathrm{Steiner}(C)\rvert\le\ell$ and a pattern $w$ on $C$ that differs from $q$ on every core of
+$C$; a residual $r$ joins $(C_1,r|_{C_1})$ and $(C_2,r|_{C_2})$, with weight $s_r$, for every split
+$N(D_r)=C_1\sqcup C_2$ into sets of degree $\le\ell$. A multi-core node is reached by new entries on
+$\mathrm{Steiner}(C)$ (a cluster toward the non-residual pattern "$w$ on $C$, $q$ elsewhere"), a
+singleton node by an old rotation. Proven for one learned component: the saddle order is $k^*$ if
+the graph on the levels below $k^*/2$ has $\rho<s_q$ (with the route), and $2\ell^*<k^*$ if level
+$\ell^*<k^*/2$ is the first with $\rho>s_q$ (for the upper bound: pattern teacher, $s_r>0$, a spare
+bond index per cluster). Example: MPS6, $q=0^6$ (1), $r_1=110001$, $r_2=110010$ (0.8 each): no
+residual has two terminals, so the level-1 graph is empty and the Hessian is PSD, but the level-2 node
+$(\{0,1\},11)$ is the centre of a star with leaves $(\{5\},1)$, $(\{4\},1)$, $\rho=0.8\sqrt2>1$: order 4,
+$k^*=5$.
+
 ### 4.2 Binary $N=4$ is a depth-3 deep linear network (proven)
 For the binary tree with $N=4$ (cores $A$: sites 0,1; $B$: sites 2,3; root $R$), with
 $\tilde A=[\mathrm{vec}A_{:,:,\alpha}]_\alpha\in\mathbb R^{d^2\times\chi}$ and likewise $\tilde B$,
@@ -319,7 +368,14 @@ $\rho(S)>s_q$ (4.1), which can make the correct-order rows below strict.
 | $k=1$ | not critical | not critical |
 | $k=2$ (then $m=2$) | strict, $\lambda_{\min}=-s_ra^{K-2}$ | strict, $\lambda_{\min}=-s_ra^{K-2}$ (piggyback $-(s_r-s_q)a^{K-2}$ is less negative) |
 | $k\ge3$, $m=2$ | non-strict (order-$k$ saddle) | **strict via piggyback**, $\lambda_{\min}=-(s_r-s_q)\,s_q^{(K-2)/K}$ |
-| $k\ge3$, $m\ge3$ | non-strict | non-strict |
+| $k\ge3$, $m\ge3$ | non-strict (order $k$, v3: proven) | non-strict; order $k$ without a low split, $2\ell^*<k$ with one (v3) |
+
+(v3) Saddle orders, proven in `theory_saddle_order.md`: correct order: $k$ on every tree (Cor. 2a);
+wrong order with $m\ge3$: $\min(k,2\ell^*)$, $\ell^*=\min$ over splits of $N(D)$ into two parts of
+$\max(\deg C_1,\deg C_2)$, a low split being one with both degrees $<k/2$ (Cor. 2b-c; index
+condition: $\chi_e\ge2$ on both Steiner trees). Low splits need $k\ge5$. Examples: MPS6, $D=\{0,1,5\}$:
+order 4, not 6; HT4 and binary8 with $D$ = all sites (two leaf pairs of degree 3): order 6, not 7.
+Three-site $D$ on HT4 ($k=6$) have no low split ($\{l_0,l_1\}$ has degree $3=k/2$): order 6.
 
 General principle (proven at balanced $\theta_S$, any learned set): the Hessian is block diagonal
 between a *fixed-rank block* (old entries: GN plus the piggyback couplings) and a *rank-increasing
@@ -347,6 +403,15 @@ $\log(1/\varepsilon)/\lambda_{\rm pb}<b^{-(k-2)}/((k-2)s_rA)$, which always hold
 log-time, $q$ kept.
 3. **$m\ge3$:** no rotation; $r$ added through its order-$k$ route:
 $L_0\to\frac12s_r^2\to0$ after $\Delta t\approx b^{-(k-2)}/((k-2)s_rs_q^{(K-k)/K})$; $a_q$ stays 1.
+**v3: only without a low split (4.3).** With one, at small enough amplitudes a cluster on each part
+escapes first, in $\propto b^{-(2\ell^*-2)}$, toward the non-residual patterns "$r$ on one part, $q$
+elsewhere"; then $q$ is forgotten ($L\to\tfrac12s_q^2$) and relearned (derived;
+`theory_saddle_order.md` sections 6-7). Locality data, HT4, $D$ = all sites, weights $(1,0.5)$,
+fan-in init, $\chi=2$: 6 of the 7 runs that learn the smaller component first ($\sigma\ge0.40$) forget it
+when the larger one is learned (overlap $<0.1$, plateau at $L\approx0.125$) and relearn it. The
+`order` agent's binary8 odeco runs from the wrong saddle ($\sigma\ge0.15$) keep it and follow the
+route law ($t_1\propto\sigma^{-5.25\pm0.27}$), as expected at or above the estimated crossover
+$b\approx0.155$ between the two mechanisms.
 
 Checks (section 7, C5): binary4 odeco ($s_q=0.5$, $s_r=1$, $K=3$, $\lambda_{\rm pb}=0.3969$): rotation
 times 23.17, 34.84, 47.44 for $\varepsilon=10^{-4},10^{-6},10^{-8}$ (spacing 11.67 and 12.60 vs
@@ -368,7 +433,8 @@ grows like $\rho^{(s_r-s_q)/s_q}$ while the radius grows from $\rho_0$ to $O(1)$
 $P(\text{smaller first})\propto\sigma^{n(s_r-s_q)/s_q}$ as $\sigma\to0$ (slow for close weights:
 $\sigma^{0.11}$ at $s_q/s_r=0.9$), and when it happens case 1 of 4.4 applies. Tensor-like pairs:
 $\sigma$-independent probability (H1), but then the wrong saddle is non-strict (case 3), no correction
-happens, and the final state is still $W^*$. **So, for two-component teachers, the H1b correction
+happens (v3: unless $N(D)$ has a low split, e.g. HT4 or binary8 with $D$ = all sites, where a
+higher-order correction forgets and relearns $q$, 4.4), and the final state is still $W^*$. **So, for two-component teachers, the H1b correction
 through a strict saddle exists only for matrix-like pairs ($m=2$, $k\ge3$), exactly where the wrong
 order becomes rare as $\sigma\to0$.**
 
@@ -428,7 +494,12 @@ structure, or a $k^*=2$ route if that is more unstable. Proposition 1 does not a
 Otherwise compute, for each candidate route $C$, the local residual $R_C$; escape
 degree $k^*=\min\lvert C\rvert$. The next event is the smallest-$k^*$ route (ties: larger coupling,
 larger head start). Its plateau lasts $\propto\log(1/\sigma)$ ($k^*=2$) or $\propto\sigma^{-(k^*-2)}$;
-$k^*=1$ routes fire without a plateau.
+$k^*=1$ routes fire without a plateau. **v3:** with one learned component also compute the
+generalized piggyback graph (4.1) on the levels $\ell<k^*/2$; if a level exceeds $s_q$, let $\ell^*$ be
+the first. Compare $k^*$ with $2\ell^*$: the next event is the mechanism with the smaller order
+(plateau $\propto\sigma^{-(2\ell^*-2)}$ for the cluster), and after a cluster escape the next saddle is
+again given by step 3 (pair-star: $q$ is forgotten). This comparison is **derived** (a leading-order
+race; at finite $\sigma$ the prefactors decide, e.g. the crossover $b\approx0.155$ in 4.4), not proven.
 3. The escape raises the bond rank by one on the internal edges of $C$; the next saddle is the best
 approximation of $W^*$ in the new rank profile (for pattern teachers without superpositions: the
 partial sum of the learned components; in general, e.g. nested teachers, a rank-constrained optimum
@@ -731,7 +802,8 @@ and "not found" means not found in the papers that file covers.
 | result here | overlapping known result | what is new here |
 |---|---|---|
 | Prop 1 / R1: escape from a saddle = first-escape problem of the route sub-TTN | Kumar & Haupt 2025c (Neuron Pursuit) Thm 8: dormant weights of lowest homogeneity $L$ stay $O(\delta)$ for $\sim\delta^{-(L-2)}$ and align with a KKT point of the residual's correlation, *if the active weights sit at a local minimum*; AGF accumulated utility (Kunin et al. 2025) | $L=k^*=\lvert\mathrm{Steiner}\rvert$ for TTN routes; the cases where the local-minimum hypothesis fails (wrong order, stars) and what happens then (sections 4.4, 4.6) |
-| R2: descent of order $k^*$ along a route | Furman et al. 2026, Lemmas D.7-D.8, Remark D.10: descent $t^N\langle R,U\rangle$ along $U$ supported on a connected component of rank-deficient edges with $N$ nodes | minimizing over connected sub-routes: $k^*=\lvert\mathrm{Steiner}(N(D))\rvert\le N$, often much smaller ($N=K$ at a rank-one saddle with $\chi\ge2$) |
+| R2: descent of order $k^*$ along a route | Furman et al. 2026, Lemmas D.7-D.8, Remark D.10: descent $t^N\langle R,U\rangle$ along $U$ supported on a connected component of rank-deficient edges with $N$ nodes (an upper bound on the order) | minimizing over connected sub-routes: $k^*=\lvert\mathrm{Steiner}(N(D))\rvert\le N$, often much smaller ($N=K$ at a rank-one saddle with $\chi\ge2$) |
+| R2 (v3): lower bound $k^*$ under $\lambda_{\max}(\mathcal S)<s_q$, level version, sharpness ($2\ell^*$), counterexamples from $k^*=5$ (`theory_saddle_order.md`) | Lower bounds on saddle orders: literature.md (section 5, item 3) lists the question as open; known special cases are the DLN strict/non-strict classification (Achour et al. 2024, Thm 7: order 2 versus $>2$), one parity saddle with $L-L_0\ge-C\lVert\theta-\theta_0\rVert^{n/2+1}$ (Furman et al. 2026, Prop. 5.3), and exhibited (not bounded) Tucker descents of order 2-4 (Frandsen & Ge 2022, proof of Lemma 7). Tools: set-partition moment-cumulant formulas and the factorization of cumulants of independent blocks (classical) | the lower bound at a learned rank-one saddle of any TTN, the generalized piggyback operator, the level version, the counterexamples with PSD Hessian (not found in literature.md or the citation audit, part b) |
 | R3: $k^*=2$ is strict | Furman 2026, Lemma D.9 ($N=2$ gives $t^2\langle R,U\rangle$) | exact $\lambda=s_rs_q^{(K-2)/K}$ with multiplicity $c_e$; block-diagonal Hessian; strictness criterion including the fixed-rank block |
 | R3/R4: no plateau / $\log(1/\sigma)$ / $\sigma^{-(k-2)}$ for $k=1,2,\ge3$ | Rawal & DeWeese 2026, Thm 4.2 ($r$ small layers); leap exponents (Abbe et al. 2023) | which cores are "small" at a TTN saddle (the route); coupling $c=s_rs_q^{(K-k)/K}$; same teacher, different exponents on different trees |
 | R4: $k=2$ head start $\sigma^{1-s_r/s_q}$ | Zhang, Saxe & Latham 2026, Thm 4 (separation $O(\sigma^{1-s_{r+1}/s_1})$); AGF; cumulative clocks (Pesme & Flammarion 2023) | the $k\ge3$ version $\sigma_{\rm eff}=\sigma(1-s_r/s_q)^{-1/(k-2)}$ (elementary; not found) |
@@ -749,7 +821,7 @@ at $\theta_S$, R11, and the trap mechanism in trapped runs. Issues raised and wh
 | # | issue (verifier) | verdict | resolution in v2 |
 |---|---|---|---|
 | I1 (major) | With $\ge3$ components the pairwise classification fails: residuals sharing a terminal core and site vector couple through one piggyback direction (star: $\lambda_{\min}=-0.3716$; gradient flow forgets $q$, 4/4 seeds) | agree | Piggyback-graph criterion $\rho(S)>s_q$ (4.1, proven), re-checked on 5 strict cases including a triangle, plus 3 controls (C11). R3, R6, R7, 4.3-4.5 and rule 5.1 restricted or rewritten; new 4.6 with one more super-critical seed and 3 sub-critical control seeds (C12). B4, E8 and N4 have $\rho(S)<s_q$ at their first saddle (disjoint differing sets, or $m\ge3$; checked: the old block at $\theta_{q_0}$ is PSD to $10^{-15}$ on mps4, binary4, ht4, mps8 and binary8, script `r6`) and one residual afterwards, so their predictions stand. |
-| I2 (major) | "proven" overstates the saddle order; F2 false for disconnected $J$ | agree | R2 retagged: identity and upper bound proven, order $=k^*$ derived, lower bound only at order 3 (Prop 2 and 3.3). F2 corrected, and the verifier's MPS5 example reproduced exactly (C13). CLAUDE.md's Q3 status line should read "Steiner identity proven; saddle order $=k^*$ derived (upper bound proven, lower bound open beyond order 3)". The theorist does not edit CLAUDE.md; the lead should. |
+| I2 (major) | "proven" overstates the saddle order; F2 false for disconnected $J$ | agree | R2 retagged: identity and upper bound proven, order $=k^*$ derived, lower bound only at order 3 (Prop 2 and 3.3). F2 corrected, and the verifier's MPS5 example reproduced exactly (C13). CLAUDE.md's Q3 status line should read "Steiner identity proven; saddle order $=k^*$ derived (upper bound proven, lower bound open beyond order 3)". The theorist does not edit CLAUDE.md; the lead should. (v3: superseded; the lower bound is now proven under $\lambda_{\max}(\mathcal S)<s_q$, see R2, section 11 and `theory_saddle_order.md` section 7, item 9.) |
 | I3 (major) | Overlap with Kumar & Haupt 2025c, Rawal & DeWeese 2026, Furman 2026 D.8-D.9 and ZhangSL2026 not acknowledged | agree | Section 9 added; Prop 1, 3.2, 3.3 and 3.4 cite them; novelty narrowed to the Steiner identification, the coupling, the $k\ge3$ head start, the piggyback graph and the trap mechanism. |
 | I4 | Trap needs all route ends unfavourable; 2/3 with another basis; $\sigma\to0$ untested; not specific to the fan-in mean | agree | Joint condition stated and tested on 6 more seeds, 3-8 (C14; section 8 table): dead in every run with all ends unfavourable, pinned otherwise. Prediction phrased as a fraction; $\sigma\to0$ and $k$-dependence tagged conjecture; "any $Q_e\ne0$" stated. |
 | I5 (minor) | A second negative eigenvalue at $k=4$ | agree | Diagnosed (C15): the route contributes one; visible new-index pairs add $O(\sigma^2)$ terms. The count is a route counter for $k\le3$ only (6.2, prediction P6). |
@@ -766,10 +838,16 @@ Partial rebuttals (both minor):
 
 ## 11. Open issues
 
-- **Saddle order = $k^*$ (lower bound).** Only the upper bound (route curve) and order $\ge3$ (PSD
-  Hessian) are proven. A proof needs every monomial of degree $<k^*$ in the expansion of section 2 to be
-  GN-dominated. That holds for routes (F2) and for disconnected $J$ with two blocks; general
-  disconnected $J$ ("generalized piggyback" blocks) remain open.
+- **Saddle order (closed for one learned component in v3; `theory_saddle_order.md`).** Order $\ge k^*$
+  is proven under $\lambda_{\max}(\mathcal S)<s_q$, the level version gives $\ge\min(k^*,2\ell)$, and the
+  order is exactly $2\ell^*$ for pattern teachers with a spare bond index when the condition fails.
+  Still open: the borderline $\lambda_{\max}=s_q$ for $k^*\ge4$; the upper bound without the index
+  condition, with signed weights, or for general (non-pattern) residuals (three random cases agree
+  numerically); **several learned components** ($W_S$ not rank one across the core partition: the
+  sectors must be built from the learned column/row spaces, and the factorization behind the locality
+  of cumulants fails), which covers every saddle after the second event of the three- and
+  four-component teachers; the dynamics after a cluster escape (forgetting of $q$, length of the next
+  plateau) and the exponent about 4 seen in half of the control seeds of the pair-star check.
 - **Fixed-rank block with several learned components.** The strictness criterion (old block negative
   or $k^*=2$) is proven, but $\rho(S)$ is explicit only for one learned component. With several learned
   components the analogue of $S$ (couplings through learned superpositions) is not worked out. The
@@ -892,7 +970,10 @@ an MPS). If the smaller component $q$ is learned first, that plateau has
 $\lambda_{\min}=-(s_r-s_q)s_q^{(K-2)/K}$ and lasts $\approx\ln(1/\varepsilon)/\lvert\lambda_{\min}\rvert$.
 It is followed by a plateau at $L=\tfrac12s_q^2$ with $a_q\approx0$, and $q$ is relearned after
 $\propto\sigma^{-(k-2)}$. (b) Tensor-like pair ($m\ge3$; odeco on mps4): no negative eigenvalue,
-$a_q$ stays 1, and $L:\tfrac12s_r^2\to0$ in one step. (c) $k=2$: $r$ is added directly. (d) Heuristic:
+$a_q$ stays 1, and $L:\tfrac12s_r^2\to0$ in one step. (v3: only without a low split, 4.3. With one,
+e.g. HT4 or binary8 with $D$ = all sites, the order is $2\ell^*=6<k=7$, and below the crossover of 4.4
+the plateau scales as $\sigma^{-4}$ and $q$ is forgotten and relearned; derived, untested below the
+crossover.) (c) $k=2$: $r$ is added directly. (d) Heuristic:
 $P(\text{smaller first})\propto\sigma^{n(s_r-s_q)/s_q}$ for matrix-like pairs; for tensor-like pairs it
 does not decay with $\sigma$.
 
