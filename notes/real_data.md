@@ -171,8 +171,10 @@ Plateaus are not flat: between events the loss keeps decreasing slowly (fitting 
 profile). With rate-peak drops (section 3), quadtree runs are S2S (>= 2 drops, every rho > 3) in 100% of
 runs at sigma <= 0.07 and 40% at sigma = 0.5. The median smallest rho grows from 2.8 (sigma = 0.5) to 24
 (sigma = 0.05), so plateaus grow without bound as sigma -> 0 (condition iii). Scrambled trees behave the
-same way (median min rho 37 at sigma = 0.05). The MPS is mostly not S2S (fraction 0-0.4, median min rho
-1.9-3.2). Its escapes are strict saddles with short log-time gaps, and drops overlap.
+same way (median min rho 37 at sigma = 0.05). Threshold sensitivity: with rho > 5 the quadtree S2S fraction rises
+monotonically from 0.0 (sigma = 0.5) to 1.0 (sigma = 0.05); scrambled from 0.27 to 0.93; with rho > 2 all
+binary fractions are 0.7-1.0. The MPS is mostly not S2S (fraction 0-0.4 at rho > 3, 0-0.2 at rho > 5, median
+min rho 1.9-3.2). Its escapes are strict saddles with short log-time gaps, and drops overlap.
 
 ### 4.7 Locality: quadtree vs scrambled vs MPS [empirical]
 Same data, chi = 4, raw features, 5 seeds (scrambled: 3 orders x 5 seeds at sigma in {0.05, 0.1, 0.2, 0.5},
