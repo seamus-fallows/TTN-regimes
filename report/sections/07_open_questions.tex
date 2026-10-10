@@ -1,166 +1,319 @@
-% sections/07_open_questions.tex -- Open questions.
-% Collected from Sections 3-6 and Appendix A, the open-issue sections of notes/theory_*.md and
-% notes/theory_saddle_order.md (section 8), the reviews' pending items, notes/real_data.md (sections 6,
-% 8.4, 9.6) and notes/regime_map.md (section 3.3). Duplicates merged; ranked by importance to the main
-% question (saddle-to-saddle dynamics of TTNs). Update items 2 and 7 when saddle-dyn and regime-map
-% round 2 report (placeholders in Sec. 1.2).
-\section{Open questions}\label{sec:open}
+% sections/07_open_questions.tex -- Summary by parameter (7.1, the parameter table moved from Sec. 4 with
+% its label, and the "landscape and clock" synthesis, moved in substance from Secs. 4.7 and 5.6) and open
+% questions (7.2). Every table entry keeps the tag of the section it comes from; numbers only where that
+% section quotes them. Open questions: collected from Secs. 3-6 and App. A, the open-issue sections of the
+% theory notes, the reviews' pending items; ranked by importance to the main question. Update item 2 when
+% saddle-dyn reports (placeholder in Sec. 1.2). Item 6 follows the verified regime-map round 2
+% (notes/reviews/regime_map_round3_verification.md); item 1 the audited saddle hopper
+% (notes/reviews/saddle_hopper_verification.md, sections 6 and 8).
+\section{Summary by parameter and open questions}\label{sec:summary}
 
-The questions below are ranked by their importance to the main question, the saddle-to-saddle dynamics
-of TTNs, and then by how directly they can be settled. For each we say what is known and what would
-settle it; the sections and notes named give the details.
+% Guard for the merge of the final edit (remove once merged): the table and subsection below come from
+% Sec. 4 with their labels. While sections/04_saddle_to_saddle.tex still holds the old copy, the labels
+% here would be defined twice, so they are set only when that file no longer defines the table label.
+\makeatletter
+\newif\ifsummarylabels \summarylabelstrue
+\begingroup
+  \newread\summaryscan
+  \edef\summarykey{\detokenize{label{tab:s2s-parameters}}}
+  \openin\summaryscan=sections/04_saddle_to_saddle.tex
+  \loop\unless\ifeof\summaryscan
+    \readline\summaryscan to\summaryline
+    \edef\summarytest{\noexpand\in@{\summarykey}{\summaryline}}\summarytest
+    \ifin@\global\summarylabelsfalse\fi
+  \repeat
+  \closein\summaryscan
+\endgroup
+\makeatother
+
+\subsection{How each parameter acts}\label{sec:summary-parameters}%
+\ifsummarylabels\label{sec:s2s-parameters}\fi
+
+\Cref{tab:s2s-parameters} collects, for each parameter, what it does to the saddle sequence (which
+saddles are visited and in which order), to the plateau durations, and to the regime boundaries of
+\cref{sec:regime-map}, with the sections that give the evidence and its scope.
+
+% A multi-page table (xltabular, as in Appendix C): it breaks between rows and repeats its header.
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.12}
+\setlength{\LTcapwidth}{\textwidth}
+\begin{xltabular}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.8cm}
+    *{3}{>{\raggedright\arraybackslash}X}@{}}
+    \caption{How each parameter acts on gradient flow from small initialization, and on the regime
+      boundaries; sections under each parameter, tags as there. $\isc$: initialization scale ($\fsc$: the
+      function-space scale, the product of the core scales); $\Kc$: number of cores; $\chi$: bond
+      dimension; $d$: local dimension; $\ncomp$: number of teacher components; $k^*$: cores of the cheapest
+      route; $\tw1$: largest teacher weight; $\tw j$, $\tw r$: weights of a learned and a residual
+      component; $T(Z)$: first-escape time computed from the initialization direction $Z$; $\isc_c$,
+      $\isc_{\rm lazy}$: saddle-to-saddle and lazy boundaries; $\Lambda_r$: input variance along component
+      $r$ (aligned covariance $\Sig$); $\lr$: step size; $\batch$: batch size; $\lambda$: scale of the root
+      core relative to the others; $\dTK$: relative change of the tangent kernel; binary4: binary tree with
+      $\Ns=4$; full bonds: every bond at its cut dimension; two-core pairs: two components whose differing
+      sites are carried by two cores.}
+    \ifsummarylabels\label{tab:s2s-parameters}\fi \\
+    \toprule
+    parameter (sections) & saddle sequence & plateau durations & regime boundaries \\
+    \midrule
+    \endfirsthead
+    \caption[]{How each parameter acts (continued).} \\
+    \toprule
+    parameter (sections) & saddle sequence & plateau durations & regime boundaries \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{4}{@{}r@{}}{\itshape continued on the next page} \\
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    initialization scale $\isc$\newline(\ref{sec:s2s-escape}--\ref{sec:s2s-order},
+      \ref{sec:regime-sigma-chi}) & At leading order none: the first escape direction, hence the first
+      component and, for pairs differing on three or more cores, the order, depend on the initialization
+      direction only \derived{} \empirical; two-core pairs become greedy as $\isc\to0$, and close weights
+      separate only at small $\isc$ \empirical &
+      First plateau $\isc^{-(\Kc-2)}T(Z)$ \proven; later ones none, $\ln(1/\isc)$ or $\isc^{-(k^*-2)}$ for
+      $k^*=1$, $2$, $\ge3$ \derived{} \empirical, with prefactors set by the route amplitudes when each
+      plateau starts &
+      The main knob: saddle-to-saddle, rich, then lazy with full bonds or a floor below them; binary4:
+      $\isc_c\approx0.3/\sqrt\chi$ \empirical, $\isc_{\rm lazy}\approx6.5/\sqrt\chi$ at $\chi\ge32$ \derived{}
+      \empirical \\
+    cores $\Kc$, tree shape\newline(\ref{sec:s2s-escape}--\ref{sec:s2s-failure}, \ref{sec:regime-K},
+      \ref{sec:teacher-generic}, \ref{sec:teacher-mismatch}) & The tree sets $k^*$ of every route, hence
+      the next component (\emph{locality beats weight}) and the saddle type; the number of cores carrying
+      differing sites sets race versus greedy order; generic teachers: strict escapes on MPS, higher-order
+      on binary and HT trees; binary8 students grow bottom-up \derived{} \empirical &
+      First plateau: exponent $\Kc-2$, whatever the depth \proven; median prefactor from $0.42$ (HT3,
+      $\Kc=5$) to $814$ (binary16, $\Kc=15$), growing with $\Kc$ within each family \empirical; later
+      plateaus: exponent $k^*-2$ (one teacher: logarithmic on MPS8, $\isc^{-3}$ on binary8, about $\isc^{-5}$
+      on HT8) \empirical &
+      $\isc_c$ rises with $\Kc$ ($0.17$ to $0.75$ for $\Kc=3$--$7$); the rich window narrows; stalls and
+      dead routes grow with $\Kc$; with the initial function kept and spare channels $\isc_c$ does not tend
+      to $1$ (lower bounds up to $\Kc=15$) \empirical; the centred limit is open \conjecture \\
+    bond dimension $\chi$\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-order}, \ref{sec:s2s-failure},
+      \ref{sec:regime-sigma-chi}, \ref{sec:other-large-chi}) & Plateau levels and route degrees do not
+      change with extra channels, as zero-padded critical points stay critical (\cref{lem:A-unused})
+      \proven; at $\chi=\ncomp$ the last component needs a route through all cores, which can die
+      \empirical; larger uncapped $\chi$ makes the order slowly greedier \empirical &
+      First-escape prefactor falls slowly with $\chi$ (log-log slopes $-0.26$ to $-0.76$) \empirical; route
+      exponents unchanged at $\chi=4$; spare channels remove stalls only on routes with an uncapped end
+      \empirical &
+      Both boundaries $\propto\chi^{-1/2}$ on binary4 \empirical; lazy only with full bonds \derived{}
+      \empirical; large $\chi$: standard and NTK parameterizations lazy, the $\mu$P-type one not \derived{}
+      \empirical \\
+    local dimension $d$\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-order}, \ref{sec:s2s-failure},
+      \ref{sec:regime-K}) & On an MPS it enters the order only through the bond caps \eqref{eq:bond-cap}
+      \derived; at equal bonds no effect on the order ($\abs{\Delta P}\le0.021$) \empirical; a larger $\chi$
+      gives no spare channel to route ends on bonds capped at $d$ (MPS chain ends, HT leaves), where the
+      remaining stalls sit \empirical &
+      Binary4 with full bonds ($\chi=d^2$): median first-escape prefactor $\approx\pi/2$ for $d=2,3,4$,
+      independent of $d$ \derived{} \empirical, while the norm-based time falls by a factor $1.9$; MPS4:
+      $1.39$--$1.50$ \empirical &
+      Sets the cut dimensions, hence where a lazy regime exists \derived; whether $\isc_c(\Kc)$ tends to
+      $\sqrt d$ is open \conjecture \\
+    teacher weights and structure\newline(\ref{sec:s2s-phenomenology}, \ref{sec:s2s-locality},
+      \ref{sec:s2s-order}, \ref{sec:teacher-generic}--\ref{sec:teacher-star}) & Weights decide the order
+      only through the race (prefactor over weight) or, for two-core pairs, as $\isc\to0$ \derived{}
+      \empirical; the sites where components differ decide the routes \proven; a star (smaller components
+      sharing a core) whose piggyback coupling exceeds $\tw j$ makes the learned saddle strict \proven, and,
+      started there, the flow forgets the larger learned component \empirical{} (from random
+      initialization it never sits there); non-orthogonal teachers give blended rank-one plateaus and
+      ranks that grow bond by bond \empirical &
+      First plateau $\propto1/\tw1$ at fixed weight ratios \proven; $k=2$: rate $\tw r\tw j^{(\Kc-2)/\Kc}$ and
+      head start $1-\tw r/\tw j$; $k\ge3$: coupling $\tw r\tw j^{(\Kc-k)/\Kc}$ \derived; generic teachers:
+      slopes set by the second singular value of the teacher restricted to the two cores of a bond
+      \derived{} \empirical; close
+      weights overlap unless $\isc$ is small \empirical &
+      Aligned initialization: the boundary depends on the weight ratios (\cref{prop:A-s2s-aligned})
+      \proven; lazy boundary through $\normF{\Wt}/\fsc$; centred floor $\propto\isc^{2\Kc}/\normF{\Wt}^2$
+      \derived \\
+    input covariance\newline(\ref{sec:cov-aligned}, \ref{sec:cov-misaligned},
+      \ref{sec:cov-correlated}) & Aligned: race with weights $\Lambda_r\tw r$, landscape with
+      $\Lambda_r^{1/2}\tw r$, which can reverse the order and, on binary4, swap a learned component \derived{}
+      \empirical; otherwise plateaus at critical points of the $\Sig$-weighted loss \proven{} \empirical &
+      Aligned: exact clocks $\Lambda_rt$, exponents unchanged \proven{} \empirical; non-orthogonal in the
+      $\Sig$-metric: the MPS escape from the rank-one saddle becomes logarithmic, binary4 stays at
+      $\isc^{-1}$ \empirical &
+      Not mapped \\
+    step size and optimizer\newline(\ref{sec:other-optim}, \ref{sec:other-optimizers}) & GD below
+      $\lr_c$ keeps gradient flow's sequence and order \derived{} \empirical; above it component~1
+      oscillates, then divergence or a return to the origin \empirical; SGD near its mean-square limit
+      erases learned components \empirical; Adam keeps gradient flow's first component and mostly its
+      order; ALS, DMRG and Riemannian GD have no plateaus \derived{} \empirical &
+      GD: each event shifted by a computable $O(\lr)$ \derived{} \empirical; SGD: first-plateau law
+      unchanged \derived, later plateaus lengthened on average, or trapped \empirical; Adam: first escape
+      independent of $\isc$ until $\epsilon$ restores $\isc^{-(\Kc-2)}$ \derived{} \empirical; ALS, DMRG:
+      iterates independent of $\isc$ \proven &
+      $\lr_c=2/(\Kc\tw1^{2-2/\Kc})$ at small $\isc$, from the sharpness of the balanced minimum \proven{} (no
+      stable global minimum above it: \derived{} for $\chi=\ncomp$); on the lazy side the limit set by the
+      minimum gradient flow reaches falls like $\isc^{-3.97}$ (binary4), catapults beyond it \empirical; at
+      fixed $\lr/\batch$ SGD traps where gradient flow is only slow \empirical{} (law: \conjecture,
+      \cref{prop:A-sgd-collapse}) \\
+    balanced or fan-in initialization\newline(\ref{sec:s2s-escape}, \ref{sec:s2s-locality},
+      \ref{sec:s2s-failure}, \ref{sec:regime-imbalance}) & Balanced re-gauging keeps the first component in
+      88 of 94 seeds \empirical; the escape direction is balanced either way \proven; balanced
+      initialization removes the dead routes in the runs checked, but not all stalls \empirical &
+      First-escape prefactor changes per seed by a factor $0.88$--$1.92$, exponents unchanged \empirical;
+      the $k=6,7$ exponents are measured with balanced initialization only; some balanced routes escape
+      $10^5$ times later than usual \empirical &
+      Root at scale $\lambda\isc$, fixed $\fsc$: a light root is lazy at up to $100$ times smaller $\fsc$, with
+      $\dTK\propto\lambda^2$ \derived{} \empirical; a heavy root acts as balance does \empirical; the fan-in
+      default is root-light \\
+\end{xltabular}
+\endgroup
+
+\paragraph{Landscape and clock.}
+Two kinds of effect run through the table. Some parameters change the landscape: which saddles exist,
+at which levels, and of which type. These are the tree, the teacher and the covariance and, through the
+bond caps, $\chi$ and $d$. Others change only the clock, the time spent near each saddle: above all
+$\isc$, which at leading order changes neither the direction of the first escape nor the order of pairs
+that differ on three or more cores, and the step size below its stability limit. The balance of the
+initialization leaves the landscape and the exponents unchanged, shifts the prefactors and occasionally
+the first component, and decides whether a route survives its plateau. Optimizers can change both, and
+two properties of an update decide what survives (\cref{tab:optimizers}). The first is how its step
+scales with the gradient, which near the origin is $O(\isc^{\Kc-1})$ while the parameters must move by
+their own size: a step proportional to the gradient needs a time $\isc^{-(\Kc-2)}$, a step invariant
+under its rescaling (Adam) does not, and an absolute scale in the preconditioner, such as Adam's
+$\epsilon$, brings the law back \derived; Adam still follows the sign of the gradient, which one
+component dominates, so learning stays sequential (\conjecture). The second is the metric. Under
+gradient flow $\W$ moves through $\Jac\Jac\T$ ($\Jac=\partial\W/\partial\params$), which vanishes like
+$\isc^{2(\Kc-1)}$ at the origin, whereas Riemannian gradient descent (in continuous time the
+Gauss--Newton flow $\dot\params=\Jac^+(\Wt-\W)$) and the exact block minimizations of ALS and DMRG move
+$\W$ at a rate of order one. These methods are equivariant under the whole gauge group
+\eqref{eq:gauge}, including the rescaling of a core against its neighbour, and see $\Wz$ only through
+its frames, so they keep neither plateaus \derived{} nor $\isc$ \proven; plateaus at singular points of
+a parametrization, and the better behaviour of the natural gradient there, are known for multilayer
+perceptrons \knownresult[\citealp{amari2006singularities}]. Equivariance alone is not enough: Gram
+preconditioning is gauge-equivariant up to damping \derived{} but moves all cores at once from their
+current values. Balance and the flattest minimum (\cref{prop:A-pattern-rule}) rest on the conserved
+$\Q e$, the charges of the gauge symmetry under Euclidean gradient flow (\cref{prop:conservation}); their
+measured relative drift is $10^{-11}$, $10^{-5}$ and $3\cdot10^{-4}$ under gradient flow, GD and heavy
+ball (momentum flows conserve fewer quantities, with time- and velocity-dependent laws,
+\citealp{marcotte2024keep}), while Adam, equivariant only under coordinate permutations and sign flips,
+breaks them at order one \empirical. Where an entry of the table rests on one tree, one teacher or a
+single $\isc$, the sections cited give its scope.
+
+\subsection{Open questions}\label{sec:open}
+
+The questions are ranked by their importance to the main question, the saddle-to-saddle dynamics of
+TTNs, and then by how directly they can be settled. For each we say what is known and, in one sentence,
+what would settle it.
 
 \begin{enumerate}[label=\arabic*.,leftmargin=*,itemsep=4pt]
   \item \textbf{The whole saddle sequence.} Is the sequence of saddles fixed by an algorithm on the
     teacher and the tree, as conjectured for deep linear networks \citep{jacot2022saddletosaddle} and
-    proven for diagonal networks \citep{pesme2023saddletosaddle}? The route rule (\cref{rem:A-sequence})
-    is derived at leading order for each step and predicts the plateau levels and laws measured with three
-    and four components, with few exceptions (\cref{sec:s2s-locality}), but as an algorithm it is a
-    \conjecture: the saddle-order theorem covers one learned component only; with several, the
-    fixed-rank block (couplings through learned superpositions) is not worked out; ties between routes are
-    decided by random route amplitudes; and cheaper routes can insert intermediate plateaus by learning
-    part of a component. \emph{What would settle it:} a version of \cref{thm:A-order-lower} at saddles of
-    higher bond rank, with sectors built from the learned column and row spaces of every bond (its proof
-    needs the learned part to be a product across a core); and an implementation of the rule that hops
-    from saddle to saddle (at each plateau, compute the fixed-rank block and the local residuals of all
-    small connected sets of cores, follow the most unstable direction, re-optimize at the new rank
-    profile), compared run by run with gradient flow on the teachers of
-    \cref{sec:s2s-locality,sec:teacher-ttn}.
-  \item \textbf{Dynamics when the saddle order is below the route's.} Where the order is $2\ell<k^*$
+    proven for diagonal networks \citep{pesme2023saddletosaddle}? The route rule (\cref{rem:A-sequence}) is
+    derived at leading order for each step and predicts the plateau levels measured with three and four
+    components and, where they are long enough to measure, their laws, with one exception
+    (\cref{sec:s2s-locality}); as an algorithm it is a \conjecture: the saddle-order theorem covers one
+    learned component only; with several, the fixed-rank block (couplings through learned superpositions)
+    is not worked out; ties between routes are decided by random route amplitudes; and cheaper routes can
+    insert intermediate plateaus by learning part of a component. What exists is bookkeeping: an
+    implementation of the known rules that hops from saddle to saddle (\cref{sec:s2s-locality}) agrees
+    with the measured sequences, but its prediction differs from the weight order without rotations in
+    only 107 runs, and on the informative runs it scores $97.0\%$ against that baseline's $95.8\%$
+    \empirical. What is missing is a predictive version. \emph{What would settle it:} a rule that runs the
+    per-initialization race (\cref{rem:A-recipe}) at every saddle and includes the lower orders of
+    \cref{thm:A-order-sharp}, compared run by run with gradient flow, together with a version of
+    \cref{thm:A-order-lower} at saddles of higher bond rank (its proof needs the learned part to be a
+    product across a core).
+  \item \textbf{Saddle orders below the route's, and long routes.} Where the order is $2\ell<k^*$
     (\cref{thm:A-order-sharp}), the escape should take a time $\propto\isc^{-(2\ell-2)}$ instead of
-    $\isc^{-(k^*-2)}$ \derived, and the learned component is then forgotten and relearned \empirical; both
-    were checked on one teacher, from the saddle and on the few seeds that visit it from small
-    initialization.
-    Also open: the borderline case in which the largest eigenvalue of the generalized piggyback operator
-    equals $\tw j$ ($k^*\ge4$); \cref{thm:A-order-sharp} without its
-    index condition, or for signed and non-pattern residuals; the length of the plateau after the
-    forgetting; and an exponent near $4$ in half of the control seeds of the same check, where the route
-    predicts $3$ (\path{notes/theory_saddle_order.md}, section 6). \emph{What would settle it:}
-    pre-registered fits, per seed and over at least $1.5$ decades, of the escape time from the saddle plus
-    a perturbation of size $\varepsilon$ (predicted $\propto\varepsilon^{-(\text{order}-2)}$) on every case
-    with order below $k^*$ (MPS6 with two residuals or with one wrong-order residual; HT4 and binary8 with
-    $D$ all sites) and on controls of order $k^*$; and, from small initialization, the fraction of runs that
-    visit the saddle and the $\isc$ below which the reduced exponent holds.
+    $\isc^{-(k^*-2)}$ \derived, and the learned component is then forgotten and relearned \empirical; on one
+    teacher only, the escape law was checked from the saddle and from small initialization, the forgetting
+    from small initialization. Also open: the borderline case in which the largest eigenvalue of the
+    generalized piggyback operator equals $\tw j$ ($k^*\ge4$); \cref{thm:A-order-sharp} without its index
+    condition, or for signed and non-pattern residuals; the length of the plateau after the forgetting; and
+    an exponent near $4$ in half of the control seeds of the same check, where the route predicts $3$.
+    Long routes are only partly measured: $k=6,7$ over one decade, with balanced initialization only, on
+    binary8 and HT4; MPS8 with $k=6$ gives $4.51\pm0.19$ against $4$; $k=8$ was not measured; and at $k=4$
+    a second negative Hessian eigenvalue of the route's order appears on the plateau, so for $k\ge5$ such
+    directions might change how $\lambda_{\min}$ scales with $\isc$ (\cref{prop:A-signatures}).
+    \emph{What would settle it:} pre-registered per-seed fits of the escape time from the saddle plus a
+    perturbation of size $\varepsilon$ (predicted $\propto\varepsilon^{-(\text{order}-2)}$) on every case
+    with order below $k^*$ and on controls, and balanced runs over more than a decade for $k\ge6$, with
+    plateau Hessians.
   \item \textbf{Prefactors from random initialization.} The exponents are predicted, the prefactors are
     not, except that of the first escape, which is exact at leading order but has no closed form on trees
     with internal path amplitudes (binary8, HT, MPS with $\Ns\ge6$; the path-amplitude mode of
-    \cref{prop:A-product-mode} is good to a factor $1.2$--$1.6$ there, \path{notes/theory_escape.md},
-    section 7). Later prefactors are set by the route amplitudes at the start of each plateau, which vary
-    between seeds by factors above $20$ at $k\ge4$; for generic teachers, offsets of up to about $50$ time
-    units would decide the order of near-tied escapes at accessible $\isc$ \conjecture{} (heuristic,
-    \cref{prop:A-agf-race}).
-    \emph{What would settle it:} a law for how route amplitudes are carried through each escape, tested
-    against the per-seed prefactors already measured (\cref{sec:s2s-escape,sec:s2s-locality}); the
-    distribution of the offsets over initializations would give the probability of each order at finite
-    $\isc$.
+    \cref{prop:A-product-mode} is good to a factor $1.2$--$1.6$ there). Later prefactors are set by the
+    route amplitudes at the start of each plateau, which vary between seeds by factors above $20$ at
+    $k\ge4$; for generic teachers, offsets of up to about $50$ time units would decide the order of
+    near-tied escapes at accessible $\isc$ \conjecture{} (heuristic, \cref{prop:A-agf-race}). \emph{What
+    would settle it:} a law for how route amplitudes are carried through each escape, tested against the
+    per-seed prefactors already measured (\cref{sec:s2s-escape,sec:s2s-locality}).
   \item \textbf{Why routes die, and how often.} The reduced model of \cref{prop:A-trap} explains the decay
     of route ends at a rate $\propto\isc^2$ and the role of balance, but its criterion, evaluated at the
     start of the plateau, is neither sufficient nor necessary (seven dead runs had a live end); balanced
     initialization removes dead routes yet delays some escapes by $10^5$ or more; HT routes stall far less
-    often than the heuristic predicts; spare channels raise the stalls on routes whose ends are capped, for
-    no known reason; and whether most stalled odeco runs at $\Kc=7,8$ are long plateaus or dead is a
-    \conjecture{} (\cref{sec:s2s-failure}). One route (MPS8, $D=\{1,5\}$, from the saddle) is steeper than
-    predicted ($p=3.67\pm0.20$ against $3$), with no mechanism. \emph{What would settle it:} following
-    $Q_{\nu\nu}+\norm{y_{\rm route}}^2$ through the whole plateau, not only at its start, in the runs of the
-    stall diagnosis; a reduced model with capped end bonds; continuing every stalled run to a fixed
-    multiple of its estimated plateau; and the trapped fraction against $\isc$ at $k\ge5$ for fan-in and
-    balanced initialization (predicted to tend to the probability that all route ends are unfavourable,
-    \conjecture).
-  \item \textbf{Long routes.} Exponents for $k=6,7$ were measured over one decade, with balanced
-    initialization only, on binary8 and HT4; MPS8 with $k=6$ gives $4.51\pm0.19$ against $4$; $k=8$ was
-    not measured, and the growth exponent of a single run cannot separate $k=7$ from $8$
-    (\cref{sec:s2s-locality}). At $k=4$ a second negative Hessian eigenvalue of the same order as the
-    route's appears on the plateau, and for $k\ge5$ such directions might change how $\lambda_{\min}$ scales
-    with $\isc$ (\cref{prop:A-signatures}). \emph{What would settle it:} balanced runs over more than a
-    decade on MPS8 ($k=6$, $8$) and HT8 ($k=7$) with more seeds, and plateau Hessians for $k\ge5$ whose
-    negative directions are identified as route or new-index pairs.
+    often than the heuristic predicts; spare channels raise the stalls on routes whose ends are capped,
+    for no known reason; and whether the odeco runs at $\Kc=7,8$ that end with live route ends face long
+    plateaus or slowly dying routes is a \conjecture{} (from fan-in initialization most stalls of the regime
+    map are dead routes; \cref{sec:s2s-failure}). One route (MPS8, $D=\{1,5\}$, from the saddle) is steeper
+    than predicted ($3.67\pm0.20$ against $3$), with no mechanism. \emph{What would settle it:} following the
+    criterion of \cref{prop:A-trap} through the whole plateau, a reduced model with capped end bonds, and
+    the dead fraction against $\isc$ at $k\ge5$ for fan-in and balanced initialization (predicted to tend
+    to the probability that all route ends are unfavourable, \conjecture).
   \item \textbf{The learning order in closed form.} The race of independent components is exact only on
     MPS; where cores without sites couple the components it still names the first component in
     $95$--$100\%$ of the runs on binary8 and HT4 but in only 537 of 640 on binary4, and it has no closed
-    form there. For matrix-like pairs the prefactor of
-    $P(\text{smaller first})$ is not derived, the exponent $n(1-\varrho)/\varrho$ with $n=\bd e$ for adjacent
-    cores is a \conjecture{} supported only at the smallest $\isc$, and whether gradient flow has the
-    leading-order exponent is open. The conjectures that $P(\text{larger first})\to\frac12$ as $\Kc\to\infty$
-    and that $P\to1$ needs both $d$ and $\chi$ to grow are untested (\cref{sec:s2s-order},
+    form there. For pairs whose differing sites sit on two cores, the prefactor of $P(\text{smaller
+    first})$ is not derived, the exponent $n(1-w)/w$ (weight ratio $w$) with $n=\bd e$ for adjacent cores
+    is a \conjecture{} supported only at the smallest $\isc$, and whether gradient flow has the
+    leading-order exponent is open. That $P(\text{larger first})\to\frac12$ as $\Kc\to\infty$, and that
+    $P\to1$ needs both $d$ and $\chi$ to grow, are untested conjectures (\cref{sec:s2s-order},
     \cref{prop:A-race}). \emph{What would settle it:} a leading-order emulation of the coupled race on
-    binary8 and HT trees; $\isc$ scans down to $10^{-6}$ for adjacent pairs on MPS4 and MPS6 with
-    $1{,}000$ seeds; race statistics on MPS with $\Kc$ up to $16$, and on uncapped bonds with growing $d$.
-  \item \textbf{The regime boundary at large $\Kc$, and in $\chi$.} Beyond seven cores the
-    saddle-to-saddle boundary is only bracketed, on a target that is unrealizable at the bond dimensions
-    used, and all large-$\Kc$ runs have $d=2$; so whether $\isc_c(\Kc)$ tends to $1$, the limit of aligned
-    initialization, or to $\sqrt d$, a fixed amplitude per component, is a \conjecture{}
-    (\cref{sec:regime-K}). Its $\chi^{-1/2}$ scaling is measured on one tree over less than a decade and is
-    not derived, and the claim that the rich window shrinks to a band of width $O(1/\Kc)$ in $\ln\isc$ if
-    both boundaries have finite limits in $\fsc$ is a \conjecture{}
-    (\cref{sec:regime-sigma-chi,sec:other-rich}). \emph{What would settle it:} a realizable $\Kc$ sweep
-    (spare channels or full bonds) at $d=2$ and $d=3$, with budgets long enough at $\Kc\ge8$ and a
-    pre-registered comparison of $\isc_c^{\Kc}=\text{const}$ with $\isc_c^{\Kc}/\sqrt{d^\Ns}=\text{const}$;
-    a derivation of the effective escape amplitude $\propto\isc\sqrt\chi$; maps on a second tree over more
-    than a decade of $\chi$.
-  \item \textbf{Large bond dimension.} Under the $\mu$P-type parameterization the kernel keeps moving as
-    $\chi$ grows on binary4, but the limit itself is not derived (a two-population mean field with a
-    pairwise coupling through the root is a \conjecture), the runs on the binary tree with $\Ns=8$ are
-    incomplete, and whether saddle-to-saddle dynamics survives $\chi\to\infty$ in this parameterization is
-    unknown (\cref{sec:other-large-chi}). \emph{What would settle it:} the limiting dynamics on binary4,
-    compared with the runs at $\chi=16$--$128$; complete runs on deeper trees; the transfer of learning
-    rates across $\chi$.
-  \item \textbf{Adam's later plateaus.} Adam keeps the order and makes the first escape independent of
-    $\isc$, but no law is established for its later plateaus (per-seed local slopes from $-0.4$ to $5.5$ on
-    the binary tree with $\Ns=8$, over half a decade), its $\epsilon$ law was tested only at $\Kc=8$, and
-    that it stays sequential because one component dominates the sign of the gradient is a
-    \conjecture, as is the $(1+\beta)/(1-\beta)$ delay of heavy ball (\cref{sec:other-optimizers}).
-    \emph{What would settle it:} a sign-flow analysis of the route equations with and without $\epsilon$;
-    later plateaus over at least a decade of $\isc$ with every step recorded; the $\epsilon$ test on trees
-    with $\Kc=3$--$7$.
-  \item \textbf{Gradient noise on later plateaus.} The law $T_{\rm SGD}/T_{\rm GF}=-\ln(1-x)/x$ is
-    heuristic and holds to about $10\%$ only for $T_{\rm SGD}/T_{\rm GF}\lesssim1.5$; its coefficient
-    $c_\gamma$ is fitted ($32.6$, against $26$ from a commuting-pair estimate) and grows near the trap.
-    The rate at which noise erases learned components near the stability limit, a formula for the
-    almost-sure stability threshold, and whether noise can revive a dead route are open
-    (\cref{sec:other-optim}; \path{notes/theory_optimizer.md}, section 6). \emph{What would settle it:} the
-    top Lyapunov exponent of the linearized route block (route entries, mixed learned entries,
-    noise-driven couplings) for general trees and route degrees; SGD runs started from the stalled states
-    of \cref{sec:s2s-failure}.
-  \item \textbf{Covariance and teachers beyond the tested range.} Under a misaligned covariance the slope
-    of the escape from random initialization is only bounded, since the head start under the
-    preconditioned flow is not derived (\cref{sec:cov-misaligned}). Correlated inputs were run neither on
-    HT trees (predicted crossover $c^*\sim\isc^2$, heuristic) nor on MPS with $\Ns>4$, where a theory check
-    on MPS6 found a slow second stage that is not a single strict saddle
-    (\path{notes/theory_covariance.md}, section 9). Later saddles of generic teachers on binary and HT
-    students were not timed (\cref{sec:teacher-generic}), and that the local maxima of $g$ have bond rank
-    one, and that random initialization reaches one, are conjectures (\cref{app:teachers}). A natural case
-    is untried: correlations that decay with distance on the tree, the question of whether the data
-    should match the tree. \emph{What would settle it:} the preconditioned head start; $\isc$ sweeps with
-    onset events on HT4 and MPS6 under correlated inputs; the timing of later rank increases on binary8
-    and HT8 with generic teachers; a search for local maxima of $g$ of higher bond rank on small trees.
-  \item \textbf{Real data: why the pixel order matters.} A share of route amplitude computed from the data
-    before training ranks pixel orders by their final loss in a pre-registered test, but not by their
-    early speed; that it acts through which label-relevant interactions lie on routes of five rather than
-    seven cores is a \conjecture, and the data-only rank-one search is a noisy proxy for the state that
-    gradient flow reaches (\cref{sec:real-data}; \path{notes/real_data.md}, sections 8.4 and 9.6). On the
-    MPS, tree shape and pixel order are confounded (snake order only) and two edges rise like power laws
-    where rank-one counting predicts logarithmic routes; on binary16 the curvature exponent at the rank-one
-    plateau after the first escape ($0.87$--$0.89$ on three seeds) lies below the $1$ of $k=3$. \emph{What would settle it:}
-    timing the rank crossing of every later route on binary16 and checking that pixel orders differ in
-    when their routes with $k=5$ escape; longer horizons or larger $\isc$, at which routes with $k=7$
-    escape too and the effect should fade; MPS chains in several pixel orders; larger images.
-  \item \textbf{Finite samples.} Small initialization recovers the teacher with its bond ranks from about
-    $200$--$250$ samples, $5$--$9$ times the dimension of the teacher manifold, in both settings tested; this
-    threshold is unexplained, and it rests on one teacher per setting, noise-free labels and gradient
-    descent with capped steps (\cref{sec:other-optim}). \emph{What would settle it:} sample-size sweeps
-    over teachers and trees with manifolds of different dimension, with label noise, compared with
-    dimension counts.
+    binary and HT trees, and $\isc$ scans down to $10^{-6}$ with $1{,}000$ seeds for adjacent pairs.
+  \item \textbf{Regime boundaries at large $\Kc$ and large $\chi$.} With the initial function kept and
+    spare channels, the saddle-to-saddle boundary does not tend to $1$, the limit of aligned
+    initialization: at $\Kc=8$--$15$ ($d=2$, $3$) all 97 per-seed lower bounds exceed both candidate laws,
+    $\isc_c^{\Kc}=\text{const}$ and $\isc_c^{\Kc}/\sqrt{d^\Ns}=\text{const}$, and 76 of 96 seeds stay
+    saddle-to-saddle up to where the initial function overlaps the teacher, about $1.15\sqrt d$
+    \empirical{} (this setup only). The proposed mechanism, the model unlearning its initial function on
+    the plateau, is consistent with the data but not confirmed (\conjecture). With the initial function
+    removed and full bonds the two laws are not resolved, so whether $\isc_c(\Kc)$ tends to $\sqrt d$, a
+    fixed amplitude per component, remains a \conjecture{} (\cref{sec:regime-K}). Its $\chi^{-1/2}$ scaling is measured on one tree over less than a decade and is
+    not derived, and that the rich window shrinks to a band of width $O(1/\Kc)$ in $\ln\isc$ is a
+    \conjecture{} (\cref{sec:regime-sigma-chi,sec:other-rich}). Under the $\mu$P-type parameterization the
+    kernel keeps moving as $\chi$ grows on binary4, but the limit is not derived (a two-population mean
+    field coupled through the root is a \conjecture), the runs on binary8 are incomplete, and whether
+    saddle-to-saddle dynamics survives $\chi\to\infty$ there is unknown (\cref{sec:other-large-chi}).
+    \emph{What would settle it:} the large-$\Kc$ limit of the centred, realizable problem, with budgets
+    long enough at $\Kc\ge8$, a causal test of the unlearning mechanism, and the limiting $\mu$P dynamics on
+    binary4 compared with the runs at $\chi=16$--$128$.
+  \item \textbf{Adam and gradient noise on later plateaus.} Adam keeps gradient flow's first component,
+    and mostly its order, and makes the first escape independent of $\isc$, but no law is established for
+    its later plateaus (per-seed local slopes from $-0.4$ to $5.5$ on binary8, over half a decade), its
+    $\epsilon$ law was tested only at $\Kc=8$, and that it stays sequential because one component dominates
+    the sign of the gradient is a \conjecture, as is the $(1+\beta)/(1-\beta)$ delay of heavy ball
+    (\cref{sec:other-optimizers}). For SGD the law $T_{\rm SGD}/T_{\rm GF}=-\ln(1-x)/x$ is heuristic, holds
+    to about $10\%$ only for $T_{\rm SGD}/T_{\rm GF}\lesssim1.5$, and its one coefficient is fitted ($32.6$,
+    against $26$ from a commuting-pair estimate); the rate at which noise erases learned components near
+    the stability limit, and whether noise can revive a dead route, are open (\cref{sec:other-optim}).
+    \emph{What would settle it:} a sign-flow analysis of the route equations with and without $\epsilon$,
+    and the top Lyapunov exponent of the linearized route block under noise, tested on SGD runs started
+    from stalled states.
+  \item \textbf{Covariance, teachers, real data and samples beyond the tested range.} Under a misaligned
+    covariance the slope of the escape from random initialization is only bounded
+    (\cref{sec:cov-misaligned}); correlated inputs were run neither on HT trees nor on MPS with $\Ns>4$,
+    where a theory check on MPS6 found a slow second stage that is not a single strict saddle; later
+    saddles of generic teachers on binary and HT students were not timed (\cref{sec:teacher-generic}); and
+    that the local maxima of $g$ have bond rank one is a conjecture (\cref{app:teachers}). On MNIST, the
+    share of the data's route couplings on short routes correlates with the final loss across pixel orders
+    in a pre-registered test (Spearman correlation $r_S=-0.60$ over 27 orders), but not with the early
+    speed; that it acts through which label-relevant interactions lie on routes of five rather than seven
+    cores is a \conjecture, and on the MPS tree shape and pixel order are confounded (\cref{sec:real-data}).
+    Small initialization recovers the teacher with its bond ranks from about $200$--$250$ samples, $5$--$9$
+    times the dimension of the teacher manifold, an unexplained threshold resting on one teacher per
+    setting (\cref{sec:other-optim}). \emph{What would settle it:} $\isc$ sweeps on HT4 and MPS6 under
+    correlated inputs, timing every later route on binary16 in several pixel orders, and sample-size sweeps
+    over teachers with manifolds of different dimension.
   \item \textbf{Exact theory and scope.} The theorems of \citet{kumar2025towards} on the dynamics after an
     escape need non-degenerate critical points, which the gauge orbits exclude for $\chi\ge2$; a quotient
     (Morse--Bott) version would make the escape path rigorous. Whether the per-bond conservation laws are
     all the conservation laws (the algorithm of \citealp{marcotte2023abide}, run on small trees) and the
-    explicit metric $(\Jac\Jac\T)^{-1}$ of balanced TTNs are open. Beyond the model: input laws that are
-    not products (beyond the one-factor model), classification and several outputs, pointwise
-    nonlinearities inside the network (with independent sites, local feature maps enter only through
-    their second moments, \cref{sec:setup-loss}), and what all of this implies for the choice of initialization and of tree in
-    practice.
-    \emph{What would settle it:} the quotient version of those theorems, first for chains; the
-    completeness algorithm run on trees with three or four cores; and, for the scope, the route rule tested
-    with a label leg on one core, as in MPS classifiers \citep{stoudenmire2016supervised}, and with
-    correlated, non-Gaussian features beyond \cref{sec:real-data}.
+    explicit metric $(\Jac\Jac\T)^{-1}$ of balanced TTNs are open. Beyond the model: input laws that are not
+    products, classification and several outputs, pointwise nonlinearities inside the network, and what all
+    of this implies for the choice of initialization and of tree in practice. \emph{What would settle it:}
+    the quotient version of those theorems, first for chains, and the route rule tested with a label leg on
+    one core, as in MPS classifiers \citep{stoudenmire2016supervised}.
 \end{enumerate}
