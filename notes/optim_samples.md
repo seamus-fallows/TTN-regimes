@@ -572,3 +572,5 @@ N=8 d=2 with [3, 2]; N=6 d=3), noise-free labels, GD with capped steps.
 - No monotone dependence on init scale is claimed (it is not monotone within small init).
 - The saddle-to-saddle regime is the sample-efficient one here, but its threshold (5-9x the teacher
   manifold dimension) is not explained.
+
+> **Lead (2026-10-10):** read `notes/reviews/optim_samples_round2_verification.md` before citing this note; its errata 1-7 apply.

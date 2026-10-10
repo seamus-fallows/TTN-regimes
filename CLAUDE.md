@@ -114,10 +114,13 @@ Recorder keeps "fine rows" (log + integrator steps where theta or log L moved by
   same teacher S = {3,4}, N = 8: MPS log, binary sigma^-3, HT sigma^-5.7; rising edges = Steiner edges in 98.7% of 5132
   events; k readable from one run via the growth exponent; for >= 3 components the route rule at rank-constrained optima
   (not literal H2) predicts 7/7 teachers; dead routes only k >= 4 with fan-in init, removed by balanced init or spare chi.
-- **Optimization (agent `optim-samples`, under review):** eta_max = 2/(K s_1^(2-2/K)) exact at small init; GD = GF + O(eta)
-  shift predicted to 3 digits; above eta_max a 1D-map 2-cycle (loss to 3-4 digits), then divergence / return to the origin;
-  SGD never shortens plateaus, lengthens/traps later ones (depends on eta/B only); finite samples: small init recovers W*
-  with its bond ranks from n ~ 250, lazy limit never at finite chi; generalization degrades monotonically with init scale.
+- **Optimization (agent `optim-samples`, reviewed + verified):** eta_max = 2/(K s_1^(2-2/K)) exact at small init; below it
+  GD keeps GF's persistent saddle sequence (765/765 runs) with an O(eta) event shift (c_e exact as eta -> 0; per-event
+  accuracy 66/90/97% within 0.3/1/5% at eta <= 0.1 eta_max); above it a 1D-map 2-cycle, then divergence / return to the
+  origin; across init scales (chi = 9) the limit 2/lambda_GF ~ sigma^-3.96 with a catapult window above it; SGD never
+  shortens the first plateau and lengthens/traps later ones (P9 law shape confirmed with independent seeds); finite
+  samples: small init recovers W* with bond rank 2 from n ~ 256, the lazy limit cannot at finite chi (dimension count).
+  Errata for citing: notes/reviews/optim_samples_round2_verification.md.
 - Local H2 pilot (experiments/pilot_h2_locality, d = chi = 2): H2 exponents hold wherever the second component is learned
   (k = 3, 4, 5, 7 on MPS4/6, binary4/8); first escape sigma^-(K-2) to +-0.003. COLLAPSE: with chi = 2, 95/332 runs with
   k >= 4 never learn the second component (route ends die to 1e-12..1e-16; failing seeds fixed across sigma); MPS6 k = 5-6
