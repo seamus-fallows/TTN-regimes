@@ -33,10 +33,11 @@ from ttn import plotting as tp  # noqa: E402
 
 HERE = Path(__file__).parent
 # (run name, raw folder option, edge whose spectrum is shown: the middle / root edge, as named by
-# tp.edge_label with sites counted from 0, and as printed with sites counted from 1 as in the report)
+# tp.edge_label with sites counted from 0, and as printed in the report: sites from 0, bipartitions as
+# 01|23 or 0-3|4-7, notes/report_style.md)
 RUNS = [
-    ("mps4_chi3_w3-2-1_fanin_s0.01_seed0", "main", "{0,1} | {2,3}", r"$\{1,2\}|\{3,4\}$"),
-    ("binary8_chi6_w3-2-1_fanin_s0.1_seed0", "large", "{0–3} | {4–7}", r"$\{1$–$4\}|\{5$–$8\}$"),
+    ("mps4_chi3_w3-2-1_fanin_s0.01_seed0", "main", "{0,1} | {2,3}", r"$01|23$"),
+    ("binary8_chi6_w3-2-1_fanin_s0.1_seed0", "large", "{0–3} | {4–7}", r"$0$–$3|4$–$7$"),
 ]
 TREE_NAMES = {"mps": "MPS", "binary": "binary", "ht": "HT"}
 
@@ -118,7 +119,7 @@ def fig_runs(raws: dict[str, Path], out: Path):
         for k, x in enumerate((3, 2, 1))
     ]
     handles += [
-        plt.Line2D([], [], color=tp.MUTED, lw=0.9, label="other $s^e_k$"),
+        plt.Line2D([], [], color=tp.MUTED, lw=0.9, label="other $s^e_j$"),
         plt.Line2D([], [], color=tp.MUTED, lw=0.9, ls="--", label="teacher values / events"),
         plt.Line2D([], [], color=tp.MUTED, lw=0.7, ls=":", label="partial-fit levels $L_S$"),
     ]

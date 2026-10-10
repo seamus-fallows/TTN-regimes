@@ -98,7 +98,7 @@ def panel_vs_rho(ax, res: Path) -> None:
     ax.axhline(0.5, color=tp.MUTED, lw=0.6)
     ax.set_xlim(0.47, 1.01)
     ax.set_ylim(0.44, 1.02)
-    ax.set_xlabel(r"weight ratio $\varrho=s_2/s_1$")
+    ax.set_xlabel(r"weight ratio $w=s_2/s_1$")
     ax.set_ylabel("P(larger component first)")
     ax.set_title(r"(a) $\sigma=0.01$, $d=2$, $\chi=4$")
 
@@ -137,7 +137,7 @@ def panel_vs_sigma(ax, res: Path) -> None:
     ax.set_ylim(2e-3, 0.7)
     ax.set_xlabel(r"initialization scale $\sigma$")
     ax.set_ylabel("P(smaller component first)")
-    ax.set_title(r"(b) $\varrho=0.8$, $d=2$, $\chi=4$")
+    ax.set_title(r"(b) $w=0.8$, $d=2$, $\chi=4$")
 
 
 def panel_vs_chi(ax, res: Path) -> None:
@@ -160,7 +160,7 @@ def panel_vs_chi(ax, res: Path) -> None:
     ax.set_ylim(0.44, 1.02)
     ax.set_xlabel(r"bond dimension $\chi$ (uncapped)")
     ax.set_ylabel("P(larger component first)")
-    ax.set_title(r"(c) $\varrho=0.8$, $d=2$, uncapped bonds")
+    ax.set_title(r"(c) $w=0.8$, $d=2$, uncapped bonds")
 
 
 def figure_first(res: Path) -> None:
