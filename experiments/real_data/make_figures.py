@@ -69,12 +69,14 @@ def fig_loss_curves(rows, runs_dir, out, feats, seed=0):
             axes[0, j].semilogx(lg["t"], lg["loss"], color=colors[r["sigma"]], lw=1.0,
                                 label=f"{r['sigma']:g}")
             axes[1, j].plot(lg["t"], lg["loss"], color=colors[r["sigma"]], lw=1.0)
+            lt = run["p2_log"]
+            axes[1, j].plot(lt["t"], lt["test"][:, 0], color=colors[r["sigma"]], lw=0.8, ls="--")
         axes[0, j].set_title(label, fontsize=9)
         axes[0, j].set_xlim(1, None)
         axes[1, j].set_xlim(0, 600)
         axes[1, j].set_xlabel(r"$\tau = t - t_a$")
     axes[0, 0].set_ylabel("train loss")
-    axes[1, 0].set_ylabel("train loss (linear time)")
+    axes[1, 0].set_ylabel("train (solid) / test (dashed)")
     axes[0, 2].legend(title=r"$\sigma$", fontsize=7, title_fontsize=7, frameon=False, ncol=2)
     fig.tight_layout()
     savefig(fig, Path(out) / f"loss_curves_{feats}")
@@ -82,8 +84,14 @@ def fig_loss_curves(rows, runs_dir, out, feats, seed=0):
 
 
 def fig_bond_spectra(rows, runs_dir, out, feats, sigma=0.1, seed=0):
-    fig, axes = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 0.36 * TEXT_WIDTH), sharey=True)
+    from matplotlib.colors import Normalize
+    from matplotlib.lines import Line2D
+
+    from ttn.plotting import sequential_cmap
+
+    fig, axes = plt.subplots(1, 3, figsize=(TEXT_WIDTH, 0.38 * TEXT_WIDTH), sharey=True)
     styles = ["-", "--", ":"]
+    cmap = sequential_cmap()
     for j, (_, _, label) in enumerate(TREES):
         cand = [r for r in rows if tree_key(r) == label and r["seed"] == seed and r["features"] == feats
                 and abs(r["sigma"] - sigma) < 1e-9 and r["ordering"] in ("quadtree", "snake", "scrambled0")]
@@ -94,21 +102,24 @@ def fig_bond_spectra(rows, runs_dir, out, feats, sigma=0.1, seed=0):
         p2 = run["p2"]
         fs = p2["fspectra"]
         lv = np.array(r["edge_levels"])
-        cols = ordinal_colors(int(lv.max()))
+        norm = Normalize(0.5, lv.max() + 0.5)
         for e in range(fs.shape[1]):
             for k in range(1, fs.shape[2]):
-                axes[j].loglog(p2["t"], fs[:, e, k] / fs[:, e, 0], color=cols[lv[e] - 1],
+                axes[j].loglog(p2["t"], fs[:, e, k] / fs[:, e, 0], color=cmap(0.25 + 0.75 * norm(lv[e])),
                                ls=styles[k - 1], lw=0.7)
         axes[j].set_title(label, fontsize=9)
         axes[j].set_xlim(1, p2["t"][-1])
         axes[j].set_ylim(1e-5, 2)
         axes[j].axhline(0.05, color=MUTED, lw=0.6)
         axes[j].set_xlabel(r"$\tau$")
+        axes[j].text(0.03, 0.03, f"levels 1-{lv.max()}", transform=axes[j].transAxes, fontsize=6,
+                     color=MUTED)
     axes[0].set_ylabel(r"$s_k^e/s_1^e$ (data-weighted)")
-    from matplotlib.lines import Line2D
-    handles = [Line2D([], [], color="k", ls=s, lw=0.8, label=f"k = {k + 2}") for k, s in enumerate(styles)]
-    axes[2].legend(handles=handles, fontsize=7, frameon=False, loc="lower right")
-    fig.text(0.5, -0.02, "colour: edge level (light = bottom, dark = root)", ha="center", fontsize=7)
+    handles = [Line2D([], [], color="k", ls=s_, lw=0.8, label=f"$k = {k + 2}$") for k, s_ in enumerate(styles)]
+    fig.legend(handles=handles, fontsize=7, frameon=False, loc="upper center", ncol=3,
+               bbox_to_anchor=(0.5, 1.06))
+    fig.text(0.5, -0.03, r"colour: edge level, light = bottom edges, dark = next to the root; grey line: 0.05",
+             ha="center", fontsize=7)
     fig.tight_layout()
     savefig(fig, Path(out) / f"bond_spectra_{feats}_s{sigma:g}")
     plt.close(fig)
@@ -218,17 +229,50 @@ def fig_locality(rows, runs_dir, out, feats, sigma=0.1, t_max=1e4):
     plt.close(fig)
 
 
-def main(summary_json, runs_dir, out_dir, feats="raw"):
+def fig_routes(routes_json, out):
+    """Route amplitudes at the rank-1 plateau: lambda_uw against the route degree k, quadtree vs
+    scrambled; filled marker = the sibling pair that actually gained rank first."""
+    res = [r for r in json.load(open(routes_json)) if "pairs" in r and r["features"] == "raw"]
+    fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.38 * TEXT_WIDTH), sharey=True)
+    rng = np.random.default_rng(1)
+    for ax, key, label in ((axes[0], "quadtree", "binary, quadtree"), (axes[1], "scrambled", "binary, scrambled")):
+        col = TREE_COLOR[label]
+        n = 0
+        for r in res:
+            if not r["ordering"].startswith(key):
+                continue
+            n += 1
+            edges = r["edges"]
+            obs = sorted(r.get("first_rank2_edges") or [])
+            for p_ in r["pairs"]:
+                first = sorted([edges.index(p_["u"]), edges.index(p_["w"])]) == obs
+                x = p_["k"] + rng.uniform(-0.35, 0.35)
+                ax.scatter(x, p_["lam"], s=10 if first else 4, color=col if first else "none",
+                           edgecolors=col, lw=0.5, alpha=1.0 if first else 0.5, zorder=3 if first else 2)
+        ax.set_yscale("log")
+        ax.set_xticks([3, 5, 7])
+        ax.set_xlabel(r"route degree $k$ (cores between the two bottom cores)")
+        ax.set_title(f"{label} ({n} runs)", fontsize=9)
+    axes[0].set_ylabel(r"route amplitude $\lambda_{uw}$")
+    fig.text(0.5, -0.03, "filled: the pair whose edges gained rank first", ha="center", fontsize=7)
+    fig.tight_layout()
+    savefig(fig, Path(out) / "route_amplitudes")
+    plt.close(fig)
+
+
+def main(summary_json, runs_dir, out_dir, feats="raw", routes_json=None):
     set_style()
     rows = [r for r in json.load(open(summary_json)) if "error" not in r and not r.get("centred")]
     fig_loss_curves(rows, runs_dir, out_dir, feats)
     for s in sorted({r["sigma"] for r in rows}):
-        if abs(s - 0.1) < 1e-9 or len({r["sigma"] for r in rows}) < 4:
+        if any(abs(s - x) < 1e-9 for x in (0.05, 0.1, 0.5)) or len({r["sigma"] for r in rows}) < 4:
             fig_bond_spectra(rows, runs_dir, out_dir, feats, sigma=s)
             fig_growth_order(rows, out_dir, feats, sigma=s)
             fig_locality(rows, runs_dir, out_dir, feats, sigma=s)
     stats = fig_scaling(rows, out_dir, feats)
     print(json.dumps(stats))
+    if routes_json:
+        fig_routes(routes_json, out_dir)
 
 
 if __name__ == "__main__":

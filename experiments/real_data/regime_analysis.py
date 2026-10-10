@@ -1,6 +1,7 @@
 """Regime sweep (centred model) analysis: one row per run plus the linearized (lazy) reference.
 
 Usage: uv run python experiments/real_data/regime_analysis.py <summary.json> <runs_dir> <out.json> [workers]
+       [<plain_summary.json> <plain_runs_dir> [plain_max_sigma]]
 
 For the centred model f_theta - f_theta0 starts at 0 and its linearization at theta_0 follows
 df/dt = -(1/n) J J^T (f - y), J = per-sample d f / d theta at theta_0 (n x P). With J = U S V^T,
@@ -36,6 +37,8 @@ from analysis import load  # noqa: E402
 from data import Task, build  # noqa: E402
 from run import TASK_KEYS  # noqa: E402
 
+from ttn.diagnostics import kernel_change, tangent_kernel  # noqa: E402
+
 
 def linearized_curve(row, runs_dir):
     run = load(Path(runs_dir) / f"{row['name']}.npz")
@@ -56,8 +59,16 @@ def linearized_curve(row, runs_dir):
         return 0.5 * np.sum(np.exp(-2 * s**2 * t / n) * proj**2) / n + floor
 
     t_total = run["meta"]["t_a"] + float(run["p2_log"]["t"][-1])
-    return {"name": row["name"], "L_lin_floor": float(floor), "L_lin_T": float(l_lin(t_total)),
-            "rank_J": int(keep.sum()), "t_total": t_total}
+    out = {"name": row["name"], "L_lin_floor": float(floor), "L_lin_T": float(l_lin(t_total)),
+           "rank_J": int(keep.sum()), "t_total": t_total}
+    if row.get("delta_K_end") is None:
+        # plain-model run: kernel change on the same 128 probe images, computed post hoc
+        probe = rp.x_test[:128]
+        k0 = tangent_kernel(rp.problem.spec, theta0, probe)
+        k1 = tangent_kernel(rp.problem.spec, torch.as_tensor(run["p2_log"]["theta_end"]), probe)
+        out.update(delta_K_end=float(kernel_change(k1, k0)), kernel_scale_0=float(k0.trace() / 128),
+                   kernel_scale_end=float(k1.trace() / 128), delta_K_posthoc=True)
+    return out
 
 
 def label(row, dk_thr=0.1, sep=3.0):
@@ -78,16 +89,28 @@ def _safe(args):
         return {"name": args[0]["name"], "error": repr(exc)}
 
 
-def main(summary_json, runs_dir, out_json, workers=8):
+def main(summary_json, runs_dir, out_json, workers=8, plain_summary=None, plain_dir=None,
+         plain_max_sigma=0.5):
+    """Centred runs from summary_json / runs_dir; optionally the plain-model binary quadtree raw runs
+    with sigma <= plain_max_sigma from plain_summary / plain_dir (small-sigma end of the map)."""
     rows = [r for r in json.load(open(summary_json)) if r.get("centred") and "error" not in r]
+    jobs = [(r, runs_dir) for r in rows]
+    if plain_summary:
+        plain = [r for r in json.load(open(plain_summary)) if "error" not in r and not r.get("centred")
+                 and r["tree"] == "binary" and r["ordering"] == "quadtree" and r["features"] == "raw"
+                 and r["sigma"] <= float(plain_max_sigma) + 1e-9 and "drops" in r]
+        rows += plain
+        jobs += [(r, plain_dir) for r in plain]
     with Pool(int(workers)) as pool:
-        lin = {d["name"]: d for d in pool.map(_safe, [(r, runs_dir) for r in rows])}
+        lin = {d["name"]: d for d in pool.map(_safe, jobs)}
     out = []
     for r in rows:
+        r = {**r, **{k: v for k, v in lin.get(r["name"], {}).items() if k.startswith(("delta_K", "kernel_scale"))}}
         d = {k: r.get(k) for k in ("name", "sigma", "seed", "delta_K_end", "kernel_scale_0",
                                     "kernel_scale_end", "loss_end", "test_loss_end", "test_acc_end",
                                     "train_acc_end", "n_drops", "rho", "t2_unit", "stop", "t_a", "t2")}
         d.update(lin.get(r["name"], {}))
+        d["model"] = "centred" if r.get("centred") else "plain"
         d["labels"] = {f"dK{th}_rho{sp}": label(r, th, sp) for th in (0.05, 0.1, 0.2)
                        for sp in (2.0, 3.0, 5.0)}
         d["label"] = label(r)

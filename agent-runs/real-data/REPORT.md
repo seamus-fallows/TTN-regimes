@@ -1,22 +1,37 @@
 # real-data: do the teacher-student TTN phenomena survive on real images? (B5)
 
-Status: working - Branch: agent/real-data - Updated: 2026-10-09 21:19 UTC
+Status: working (interim) - Branch: agent/real-data - Updated: 2026-10-10 00:02 UTC
 
 ## Summary
-In progress. Task: train TTNs (quadtree binary, snake MPS, scrambled binary) by gradient flow on
-downsampled MNIST with cos/sin site features, and test plateaus, stepwise bond growth, the locality
-rule and the regime map.
+**Interim report (steps 1-3 on 4x4 data; 2026-10-10 00:02 UTC).** Gradient flow on MNIST 3-vs-5 (4x4 pixels, cos/sin
+features, n_train 4000) with chi = 4 TTNs. The teacher-student picture survives where it follows from
+the tree structure. The first plateau scales as sigma^-(K-2) exactly. Bond ranks grow in discrete events.
+The second event's plateau scales as predicted by the route degree: a sibling pair of bottom cores on
+binary trees (k = 3: gap ∝ sigma^-1.0) and a single edge on the MPS (k = 2: gap ∝ log(1/sigma)). Route
+amplitudes computed at the rank-1 plateau predict which sibling pair goes first in 34/35 runs. What
+does not carry over: loss plateaus are not flat, and the MPS beats the local binary tree at small sigma.
 
 ## Results
-Interim (pilot, seed 0 only; main sweep relaunched):
-- Quadtree binary, raw features, sigma = 0.2: loss drops at tau = 15, 84, 225, 369 (rho = 7, 15, 16):
-  saddle-to-saddle staircase; first rank growth on the sibling bottom edges (3, 4) (a k = 3 route) in all
-  three sigma; gap to the 2nd drop 29, 45, 69 for sigma = 0.5, 0.3, 0.2 (~ A/sigma + B, k = 3).
-- Scrambled binary: same mechanism (first rank growth on sibling edges 10, 11), but after it the loss
-  stalls at ~0.29-0.33 for thousands of time units (test acc 0.81 vs 0.95 for the quadtree at sigma = 0.2).
-- MPS (snake): one edge (5) gains rank during the first escape itself; later decrease smooth (rho <= 3.5).
-- Route amplitudes predict the first sibling pair to grow in 6/6 binary pilot runs; the largest amplitudes
-  belong to longer routes (k = 5, 7), which escape later: degree beats amplitude on real data.
+Interim: main sweep 80/280 runs (raw features: quadtree 35, MPS 35, scrambled partial), plus the pilot.
+Gradient flow (DP5 then LSODA, rtol 1e-8, atol 1e-14), sigma in {0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5},
+seeds 0-4, tau = t - t_a up to 1e4. Numbers from `summarize.py` / `scaling.py` / `tables.py` on
+`/root/outputs/real_data/main` (interim summary copied to `/root/outputs/real_data/analysis/main_summary_interim.json`).
+
+| prediction (teacher-student) | real data (interim) | verdict |
+|---|---|---|
+| first plateau t1 ∝ sigma^-(K-2) (any input law; theory_covariance C4) | per-seed exponent 13.000 ± 0.000 (binary16, 5 seeds), 14.000 ± 0.000 (mps16, 5 seeds); t1 from 1e6 to 1e20 | yes (exact: homogeneity) |
+| bond ranks grow stepwise, one route at a time | discrete s_k/s_1 escapes from 1e-5 to O(1) on route edges (figure bond_spectra) | yes |
+| binary at rank 1: next route = sibling bottom pair (k = 3) | first rank increase on exactly two sibling bottom edges in 35/35 quadtree runs | yes |
+| MPS: next route = one edge (k = 2) | single edge (edge 5) in 35/35 MPS runs, during/just after the first escape | yes |
+| k = 3 gap ∝ sigma^-1 | quadtree 2nd drop - 1st drop: seed 0: 298, 209, 143, 100, 69, 45, 29 (sigma 0.05...0.5), exponent 1.01; mean over seeds 1.11 ± 0.13 (n = 5, two seeds switch sibling pair at large sigma); power law rms 0.15 vs log law 0.87 | yes |
+| k = 2 gap ∝ log(1/sigma) | MPS 2nd drop: seed 0: 51.0, 44.5, 38.5, 32.2, 25.9, 19.2 (sigma 0.05...0.3): increments 16-19 per unit of ln(1/sigma) | yes (preliminary) |
+| later routes k >= 4 give sigma^-(k-2) | quadtree seed 0, 4th drop gap: 5637, 1818, 626, 144, 44 (sigma 0.07...0.3), exponent 3.3 (k = 5 would give 3) | partly (one seed; systematic table in progress) |
+| route with smallest k first, ties by amplitude | largest sibling amplitude predicts the first sibling pair in 34/35 quadtree runs; the largest amplitudes overall sit on k = 5, 7 routes, which escape later | yes |
+| flat plateaus at partial fits (S2S signature) | plateaus creep (loss keeps decreasing slowly); with rate-peak drops: quadtree S2S fraction 1.0 at sigma <= 0.07 (min rho median 22 at sigma = 0.05); MPS mostly overlapping drops | partly |
+| locality: quadtree faster than scrambled, MPS in between | scrambled stalls on long plateaus (pilot: L ≈ 0.29 to tau = 3000 at sigma = 0.2 vs 0.10 quadtree); but the MPS is FASTEST at small sigma (log-time routes) and the quadtree slows as sigma^-1, sigma^-3 (at tau = 1e4, sigma = 0.05: quadtree L = 0.18, acc 0.89; MPS L = 0.090, acc 0.956) | partly: quadtree beats scrambled; MPS vs binary is set by route degree, not locality |
+
+Figures (interim, `experiments/real_data/results/`): `loss_curves_raw`, `bond_spectra_raw_s{0.05,0.1,0.5}`,
+`growth_order_raw_s*`, `locality_raw_s*`, `scaling_raw`, `route_amplitudes`.
 
 ## What was done
 1. Reverted the launch commit b622158 (in-progress library edits), `uv sync`, pushed (98042d5).
@@ -75,3 +90,4 @@ Interim (pilot, seed 0 only; main sweep relaunched):
 - 21:37 cost probes: post-escape stiffness (lambda_max ~ 57); LSODA + Gauss-Newton Jacobian chosen; function-space spectra added; merged main; pilot (18 runs) launched
 - 22:08 pilot analysed (staircases on quadtree binary, route amplitudes predict first route); main sweep failed at sigma <= 0.1 (clock underflow) -> chunked phase 1; merged main 6c42d85 (gauge fix; no lambda_min reported yet)
 - 22:59 phase-1 clock re-anchoring (escape at t ~ 1e18-1e20 now resolved); closed-form Jacobian; sweeps relaunched with 48 + 12 workers (machine memory-bound)
+- 00:02 interim report: 80/280 main runs; t1 exponents exact; k = 3 sigma^-1 and k = 2 log gaps; route amplitudes 34/35; regime sweep relaunched at sigma >= 0.5
