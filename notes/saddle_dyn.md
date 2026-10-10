@@ -209,10 +209,33 @@ slow, the grid is cut from the small end and the range reached is reported; wind
    such times is below the float64 floor (library rule: signal < 1e-15 |W|); before an escape
    L - L_S passes through (0, 1e-30) in one step, not for a decade. Trapped runs are counted and
    reported with their final residual amplitudes, never fitted. Not applied in H-B phase 1.
+   *Extended (15:55, same reason):* a run is also stopped as trapped when every residual amplitude
+   |Delta[r]| = |W[r] - W_S[r]| stays below 1e-45 at those 10 checks (routes dead by 30+ orders of
+   magnitude; observed: 1e-49 ... 1e-304); such an escape could only be seeded by roundoff.
 2. **Event root finding.** One H-B run crashed in scipy's event solver (brentq got equal signs at
    the bracket ends because LSODA's dense output does not exactly reproduce the step values). The
    solver now falls back to the first sign change on a 200-point grid of the step (refined by
-   brentq). No result changes; the 5 H-B runs written before the fix are kept (resumable sweep).
+   brentq). *Superseded by item 3.*
+3. **Integrator driver replaced; first sweep discarded (15:40-15:55).** The crash in item 2 had a
+   deeper cause: scipy's LSODA dense output (used by `solve_ivp` for event location and by my state
+   sampling) is not reliable here: at step times it differed from the actual step values by 2-4 %
+   (PS06 H-B, seed 1, during the first escape), and it can miss a crossing that the step values
+   show. The first sweep (15:21-15:38, ~200 H-A and ~350 H-B runs) used it for event times, escape
+   amplitudes and the H-B hand-off state, so it was stopped and set aside (not deleted:
+   `/root/outputs/saddle_dyn_try1_badevents/`, logs in `agent-runs/saddle-dyn/logs/try1/`). The new
+   driver steps scipy's `LSODA` class directly, detects events on the step values, and refines each
+   crossing by bisection with exact re-integrations from the last step (time resolved to 1e-9
+   relative); every state used (escape amplitudes, trajectories, the H-B hand-off) is an integration
+   state, never interpolated. Check: PS08 seed 0, eps = 1e-2: t_esc = 37086.4189 (rtol 1e-12 rerun:
+   37086.4189, relative difference 8e-10); H-B PS08 seed 7, sigma = 0.01: dt = 211.885 (verifier
+   211.9). Same integrator settings (LSODA, rtol 1e-10, atol 1e-15, exact Hessian as Jacobian).
+4. **H-B re-gauge after relaxation (15:55).** The registration re-gauges at the visit time t_v
+   (L = L_S + 1e-4). There the learned amplitude is not yet converged (W[q] = 0.989 in a test run),
+   so the reference S was 1 % off the saddle, leaving a constant ~6e-5 in L - L_S and an absolute
+   roundoff 2^-66 = 1.4e-20 in it (the cancellation the reference is meant to remove). Now the run
+   continues with the plain loss for 50 time units after t_v (old directions relax at O(1) rates),
+   and the re-gauge and the reference are taken there; escapes inside those 50 units are recorded
+   (they are unresolved plateaus, dt < 60).
 
 # Part II: results
 

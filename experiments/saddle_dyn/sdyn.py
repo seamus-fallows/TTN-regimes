@@ -22,48 +22,19 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from scipy.integrate import solve_ivp
+from scipy.integrate import LSODA
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "theory_checks" / "saddle_order_verify"))
 from vttn import Net  # noqa: E402
 
-import scipy.integrate._ivp.ivp as _ivp  # noqa: E402
-
 torch.set_num_threads(1)
 DT = torch.float64
-_brent_event = _ivp.solve_event_equation
-
-
-def _robust_event(event, sol, t_old, t):
-    """scipy's brentq on the dense output, or, when LSODA's interpolant does not reproduce the step
-    values at the bracket ends (same signs; seen once), the first sign change on a 200-point grid,
-    refined by brentq; the step end if there is none."""
-    try:
-        return _brent_event(event, sol, t_old, t)
-    except ValueError:
-        ts = np.linspace(t_old, t, 201)
-        g = np.array([event(x, sol(x)) for x in ts])
-        idx = np.flatnonzero(np.sign(g[:-1]) != np.sign(g[1:]))
-        if len(idx) == 0:
-            return t
-        i = idx[0]
-        return _brent_event(event, sol, ts[i], ts[i + 1])
-
-
-_ivp.solve_event_equation = _robust_event
 U = 2.0**-53
 OUT = Path("/root/outputs/saddle_dyn")
 
 
-class WallTime(Exception):
-    pass
-
-
-class Trapped(Exception):
-    pass
-
-
-TRAP_DL = 1e-30  # trap rule: 0 < L - L_S < TRAP_DL at 10 log-spaced checks spanning a decade, t > 1e6
+TRAP_DL = 1e-30  # trap rule: at 10 log-spaced checks spanning a decade with t > 1e6, either
+TRAP_R = 1e-45  # 0 < L - L_S < TRAP_DL, or every residual amplitude |Delta[r]| < TRAP_R (dead routes)
 
 
 def pattern(s):
@@ -297,57 +268,140 @@ def escape_type(model, amps):
 THRESH = (1e-4, 1e-3, 1e-2)
 
 
-def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, t_eval=None, stop_after=None, trap=True):
-    """LSODA with exact Hessian. Escape events at L - L_S = -thr. Returns (sol, info)."""
+class Event:
+    """g(t, y) = 0 crossing on the step values; direction +1 (up), -1 (down), 0 (both)."""
+
+    def __init__(self, name, g, direction=0, terminal=False):
+        self.name, self.g, self.direction, self.terminal = name, g, direction, terminal
+
+    def crossed(self, ga, gb):
+        up = ga < 0 <= gb
+        down = ga > 0 >= gb
+        return up if self.direction > 0 else (down if self.direction < 0 else (up or down))
+
+
+class Result:
+    def __init__(self):
+        self.t, self.y = [], []
+        self.events = {}  # name -> list of (t, y)
+        self.status = "running"
+
+    def event_t(self, name):
+        ev = self.events.get(name, [])
+        return ev[0][0] if ev else None
+
+    def event_y(self, name):
+        ev = self.events.get(name, [])
+        return ev[0][1] if ev else None
+
+
+def advance(fun, jac, t0, y0, t1, rtol, atol):
+    """Integrate exactly from t0 to t1 with a fresh LSODA (lands on t1: scipy passes it as tcrit)."""
+    if t1 <= t0:
+        return np.array(y0, copy=True)
+    s = LSODA(fun, t0, y0, t1, rtol=rtol, atol=atol, jac=jac)
+    while s.status == "running":
+        s.step()
+    if s.status != "finished":
+        raise RuntimeError("LSODA failed in advance")
+    return np.array(s.y, copy=True)
+
+
+def refine(ev, fun, jac, ta, ya, ga, tb, gb, rtol, atol, rel=1e-9, max_iter=40):
+    """Root of ev.g in (ta, tb] by bisection on exact re-integrations from (ta, ya); the root time is
+    resolved to rel * tb and the state is integrated to it (never interpolated)."""
+    for _ in range(max_iter):
+        if tb - ta <= rel * abs(tb):
+            break
+        tm = 0.5 * (ta + tb)
+        ym = advance(fun, jac, ta, ya, tm, rtol, atol)
+        gm = ev.g(tm, ym)
+        if ev.crossed(ga, gm):
+            tb, gb = tm, gm
+        else:
+            ta, ya, ga = tm, ym, gm
+    tr = ta + (tb - ta) * (ga / (ga - gb)) if ga != gb else tb
+    return tr, advance(fun, jac, ta, ya, tr, rtol, atol)
+
+
+def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_after=None, trap=True):
+    """LSODA (exact Hessian as Jacobian) driven step by step; events on the step values (scipy's LSODA
+    dense output is not reliable here), refined by re-integration. Escape events "esc_<thr>" at
+    L - L_S = -thr. Stops at t_max, a terminal event, the wall clock, or the trap rule."""
     t_wall = time.time()
     cache = {}
 
     def evalf(y):
         key = y.tobytes()
         if key not in cache:
-            if len(cache) > 8:
+            if len(cache) > 16:
                 cache.clear()
-            th = torch.from_numpy(y)
-            g, dL, E = model.grad(th)
+            g, dL, _ = model.grad(torch.from_numpy(y))
             cache[key] = (g.numpy(), dL)
         return cache[key]
 
     nfev = [0]
-    last = {"t": 0.0, "y": y0, "next": 1e6, "count": 0}
 
     def rhs(t, y):
         nfev[0] += 1
-        if time.time() - t_wall > wall:
-            raise WallTime()
-        g, dL = evalf(y)
-        last["t"], last["y"] = t, y
-        if trap and t >= last["next"]:
-            last["next"] = t * 10**0.1
-            last["count"] = last["count"] + 1 if 0 < dL < TRAP_DL else 0
-            if last["count"] >= 10:
-                raise Trapped()
-        return -g
+        return -evalf(y)[0]
 
     def jac(t, y):
         return -model.hessian(torch.from_numpy(y)).numpy()
 
-    evs = []
-    for thr in THRESH:
-        def ev(t, y, thr=thr):
-            return evalf(y)[1] + thr
-        ev.terminal = (thr == stop_after)
-        ev.direction = -1
-        evs.append(ev)
+    evs = [Event(f"esc_{thr:g}", (lambda t, y, thr=thr: evalf(y)[1] + thr), -1, thr == stop_after) for thr in THRESH]
     evs += list(events_extra)
-    try:
-        sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac,
-                        events=evs, dense_output=True, t_eval=t_eval)
-        status = "ok" if sol.status >= 0 else "failed"
-    except WallTime:
-        sol, status = None, "wall"
-    except Trapped:
-        sol, status = None, "trapped"
-    info = dict(status=status, nfev=nfev[0], secs=time.time() - t_wall)
-    if sol is None:
-        info["t_last"], info["y_last"] = float(last["t"]), np.asarray(last["y"]).copy()
-    return sol, info
+    res = Result()
+    y0 = np.array(y0, dtype=np.float64)
+    res.t.append(0.0)
+    res.y.append(y0.copy())
+    g_old = [ev.g(0.0, y0) for ev in evs]
+    solver = LSODA(rhs, 0.0, y0, t_max, rtol=rtol, atol=atol, jac=jac)
+    nxt, count = 1e6, 0
+    while True:
+        if time.time() - t_wall > wall:
+            res.status = "wall"
+            break
+        msg = solver.step()
+        if solver.status == "failed":
+            res.status = "failed: " + str(msg)
+            break
+        t, y = solver.t, np.array(solver.y, copy=True)
+        g_new = [ev.g(t, y) for ev in evs]
+        hits = []
+        for k, ev in enumerate(evs):
+            if ev.crossed(g_old[k], g_new[k]):
+                tr, yr = refine(ev, rhs, jac, res.t[-1], res.y[-1], g_old[k], t, g_new[k], rtol, atol)
+                hits.append((tr, k, yr))
+        hits.sort(key=lambda h: h[0])
+        stop = None
+        for tr, k, yr in hits:
+            res.events.setdefault(evs[k].name, []).append((tr, yr))
+            if evs[k].terminal:
+                stop = (tr, yr)
+                break
+        if stop is not None:
+            res.t.append(stop[0])
+            res.y.append(stop[1])
+            res.status = "event"
+            break
+        res.t.append(t)
+        res.y.append(y)
+        g_old = g_new
+        if solver.status == "finished":
+            res.status = "t_max"
+            break
+        if trap and t >= nxt:
+            nxt = t * 10**0.1
+            dL = evalf(y)[1]
+            dead = False
+            if model.ref is not None:
+                D = model.delta(torch.from_numpy(y))
+                dead = max(abs(float(D[p])) for p, _ in model.residuals) < TRAP_R
+            count = count + 1 if (0 < dL < TRAP_DL or dead) else 0
+            if count >= 10:
+                res.status = "trapped"
+                break
+    res.t = np.array(res.t)
+    res.y = np.array(res.y).T
+    return res, dict(status=res.status, nfev=nfev[0], n_steps=len(res.t) - 1, secs=time.time() - t_wall)
