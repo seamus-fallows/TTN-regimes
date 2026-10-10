@@ -1,7 +1,8 @@
 # Real data: do the teacher-student TTN phenomena survive on images? (B5)
 
 Agent `real-data`, branch `agent/real-data`. Experiments in `experiments/real_data/`. Status tags:
-**proven**, **derived** (under stated assumptions), **empirical**, **conjecture**.
+**proven**, **derived** (under stated assumptions), **empirical**, **conjecture**. Status: complete
+(2026-10-10); prediction table in section 5, robustness in section 7.
 
 ## 1. Setting
 

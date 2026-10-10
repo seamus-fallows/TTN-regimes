@@ -1,11 +1,12 @@
 # real-data: do the teacher-student TTN phenomena survive on real images? (B5)
 
-Status: working (main + regime done; robustness runs pending) - Branch: agent/real-data - Updated: 2026-10-10 01:39 UTC
+Status: done - Branch: agent/real-data - Updated: 2026-10-10 04:25 UTC
 
 ## Summary
 Task: train TTNs by gradient flow on real images (MNIST 3 vs 5, 4x4 pixels, cos/sin features, chi = 4) and
-test the teacher-student predictions. Main sweep complete: 234 runs; quadtree binary, snake MPS and 3
-scrambled binary trees; raw and whitened features; sigma 0.05-0.5; 5 seeds. Plus a 65-run regime sweep.
+test the teacher-student predictions. Main sweep: 234 runs; quadtree binary, snake MPS and 3 scrambled
+binary trees; raw and whitened features; sigma 0.05-0.5; 5 seeds. Plus a 65-run regime sweep and checks
+on Fashion-MNIST, chi = 8 and 8x8 images (102 runs). Findings: `notes/real_data.md` (section 5 = table).
 
 Most predictions survive, and they survive where they follow from the tree structure. The first plateau
 scales as sigma^-(K-2) exactly. Ranks grow in discrete route escapes. The first route after the escape is a
@@ -120,13 +121,33 @@ All under `/root/outputs/real_data/` (~0.6 GB; none in git):
 | `data/` | 65 MB | raw IDX files + 4x4 / 8x8 npz (`download.py`) | yes (or re-download) |
 | `main/` | 367 MB | 234 trajectories of the main sweep (npz: phase-1/2 rows, spectra, theta at phase ends) + `runs.jsonl` | yes for every main-sweep number |
 | `regime/` | 68 MB | 35 centred-model trajectories | yes for the regime map |
-| `fashion/` (45), `chi8/` + `chi8b/` (24 + 21; `chi8_runs/` = symlinks to both), `img8/` (12), `tol_check/` (2) | ~250 MB | robustness sweeps | for section 7 of the notes |
+| `fashion/` (45), `chi8/` + `chi8b/` (24 + 21; `chi8_runs/` = symlinks to both), `img8/` (12), `tol_check/` (2) | ~230 MB | robustness sweeps | for section 7 of the notes |
 | `analysis/` | 2 MB | summaries, route amplitudes, Hessians, regime analysis (JSON; copies of the small ones in `experiments/real_data/results/`) | regenerable from the runs |
 | `pilot/`, `smoke*/` | 38 MB | development runs (pre-final settings) | no |
 | `main_placeholders.txt`, `old/` | - | list of trimmed cases; logs of the killed launches | no |
 
 ## Caveats and next steps
-(pending)
+- **Scope.** Exponent fits come from one task (MNIST 3 vs 5, 4x4, chi = 4, raw features). Fashion-MNIST, chi = 8 and
+  8x8 runs confirm the structure (t1, first routes, locality direction on MNIST) but have 2-3 sigma values only.
+- **Locality is task dependent.** It is strong on MNIST 3 vs 5 at small sigma and absent on Fashion sneaker vs
+  boot, which a rank-1 (product) function almost solves. The mechanism (residual interaction on short vs long
+  routes) is measured by route amplitudes. The brief's "MPS in between" fails on every task and size: MPS
+  routes are all 2-core (log-time), so the MPS is fastest.
+- **Adapted diagnostics.** No teacher: events are loss-rate peaks and s_k/s_1 = 0.05 crossings of data-weighted
+  spectra. Plateaus creep, so the notes' progress-based widths were replaced by rate-peak FWHM (documented in
+  `notes/real_data.md` section 3). Later events can merge; routes of later events are only partly identified.
+- **Horizon.** tau = 1e4 cuts late (k >= 5) escapes at sigma < 0.1, which lowers the small-sigma losses and
+  accuracies at fixed time. 23/45 chi = 8 runs stopped at the 2 h wall limit (tau >= 4700).
+- **Open.** (i) The binary first-plateau lambda_min scales as sigma^0.88, not sigma^1. (ii) MPS edges far from the
+  first route rise with power-law-like sigma dependence (exponent ~1) where counting predicts k = 2. (iii) Whitened
+  features give weaker, noisier scaling (the small-init asymptote moves to smaller sigma).
+- **Next steps (suggested).** Route amplitudes at higher-rank MPS states to explain (ii); longer horizons at
+  sigma <= 0.07 to measure the k = 5 escapes (sigma^-3) systematically; tasks with more interaction structure
+  (one-vs-rest, 10-class one-hot targets) to map when locality matters; compare with sweep (DMRG) training.
+- **Library.** No library changes; experiment code only (`experiments/real_data/`). Merged main 34c76ad and
+  6c42d85 (gauge fix; all lambda_min here use the fixed projection, raw values reported alongside).
+- **Process note.** Twice I killed my own processes by pattern (`pkill -f`/`pgrep -f`), which also hit my own
+  shell; only processes I had started were affected, but from then on I killed by explicit PID only.
 
 ## Log
 - 21:19 reverted launch commit, read brief/notes/library, downloaded data, launched cost pilot
@@ -138,3 +159,4 @@ All under `/root/outputs/real_data/` (~0.6 GB; none in git):
 - 01:39 main sweep (234 runs) and regime sweep (65 runs) analysed; notes section 5 table; final figures; chi8 / fashion / 8x8 running
 - 02:24 Fashion (45 runs) + tolerance check analysed; Fashion rank-1 rotation through a strict saddle; chi8 split to a second runner; chi8 / 8x8 running
 - 04:24 chi = 8 (45 runs) analysed: same structure; 8x8 runs still running
+- 04:25 all sweeps analysed (main, regime, Fashion, chi = 8, 8x8, tolerance check); report complete

@@ -74,3 +74,5 @@ arguments.
 - Locality: quadtree >> scrambled at small sigma (88% vs 21% of the residual interaction on k <= 5 routes);
   the MPS is fastest at every sigma (2-core routes everywhere); no locality advantage at sigma = 0.5.
 - Regimes (centred): S2S (sigma <= 0.3) -> rich (1.4) -> lazy (>= 2), lazy = linearized model exactly.
+- Robustness: Fashion-MNIST sneaker vs ankle boot (structure yes, locality advantage none: rank-1 solvable task),
+  chi = 8 and 8x8 images (N = 64, t1 exponent 61.0000 / 62.0000): same structure; tolerance check passed.
