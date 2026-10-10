@@ -1,0 +1,6 @@
+ht4 seed 0 sigma 0.2 t2=1.863e+04 learned=[0, 1] C'={0: 0.0949, 1: 0.3715, 3: -0.0021, 4: -0.0141} dying=2 pred=dead
+ht4 seed 1 sigma 0.2 t2=6602 learned=[0, 2] C'={0: -0.3475, 1: 0.7433, 3: -0.4412, 4: 1.1189} dying=2 pred=dead
+ht4 seed 2 sigma 0.2 t2=3.016e+04 learned=[0, 1] C'={0: -0.0304, 1: 0.1939, 3: 0.3335, 4: -0.249} dying=2 pred=dead
+ht4 seed 3 sigma 0.2 t2=6945 learned=[0, 1] C'={0: -0.5568, 1: -0.136, 3: 0.3, 4: 1.0795} dying=2 pred=dead
+ht4 seed 4 sigma 0.2 t2=2.09e+04 learned=[0, 2] C'={0: 0.4186, 1: 0.1198, 3: 0.1187, 4: 0.6357} dying=0 pred=alive
+ht4 seed 5 sigma 0.2 t2=2.632e+04 learned=[0, 2] C'={0: 0.0346, 1: -0.425, 3: -0.3034, 4: 0.2552} dying=2 pred=dead
