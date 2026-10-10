@@ -116,7 +116,8 @@ def one(args):
 
 def main(summary_json, runs_dir, out_json, workers, flt=""):
     rows = [r for r in json.load(open(summary_json))
-            if r.get("tree") == "binary" and flt in r.get("name", "") and "error" not in r]
+            if r.get("tree") == "binary" and any(f in r.get("name", "") for f in flt.split(","))
+            and "error" not in r]
     with Pool(int(workers)) as pool:
         res = pool.map(one, [(r, runs_dir) for r in rows])
     Path(out_json).parent.mkdir(parents=True, exist_ok=True)

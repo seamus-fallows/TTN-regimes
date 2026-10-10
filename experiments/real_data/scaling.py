@@ -47,6 +47,71 @@ def mean_se(v):
     return (float(v.mean()), float(v.std(ddof=1) / np.sqrt(len(v))) if len(v) > 1 else np.nan, len(v))
 
 
+def edge_scaling(rows, min_sigmas=5):
+    """Per edge: T_e = tau of the edge's first s_2/s_1 >= 0.05 minus tau of the first loss drop,
+    per seed against sigma (seeds with T_e > 0 at >= min_sigmas sigma values spanning a decade).
+    Fits as in fit_seed; mean +- SE over seeds of the power exponent and log slope, and mean rms."""
+    groups = defaultdict(lambda: defaultdict(list))
+    for r in rows:
+        if not r.get("drops"):
+            continue
+        tree = f"{r['tree']}_{r['ordering']}/{r['features']}"
+        ev = np.array(r["rank_events"], float)[:, 0] - r["drops"][0]["t"]
+        for e, t in enumerate(ev):
+            groups[(tree, e, r["edge_levels"][e])][r["seed"]].append((r["sigma"], t))
+    out = []
+    for (tree, e, lv), seeds in sorted(groups.items()):
+        fits = []
+        for seed, pts in seeds.items():
+            pts = sorted((s, t) for s, t in pts if np.isfinite(t) and t > 0)
+            if len(pts) >= min_sigmas and pts[-1][0] / pts[0][0] >= 9.9:
+                fits.append(fit_seed(np.array([p[0] for p in pts]), np.array([p[1] for p in pts])))
+        if fits:
+            out.append({"tree": tree, "edge": e, "level": lv, "n_seeds": len(fits),
+                        **{k: mean_se([f[k] for f in fits]) for k in ("power_p", "power_rms",
+                                                                         "log_slope", "log_rms")}})
+    return out
+
+
+def first_route(rows, min_sigmas=4):
+    """Classified first-route gap (binary trees): per seed, the route R* = edges that gain rank first at
+    the smallest sigma; the gap at each sigma = (loss drop carrying R*'s rise) - (first loss drop), kept
+    only at sigma values whose first route is also R* (others are listed as excluded). Fitted per seed
+    over >= min_sigmas values spanning >= 0.5 decade."""
+    groups = defaultdict(list)
+    for r in rows:
+        if r.get("drops") and r["tree"] == "binary":
+            groups[(f"binary_{r['ordering']}/{r['features']}", r["seed"])].append(r)
+    by_tree = defaultdict(lambda: {"fits": [], "excluded": [], "routes": []})
+    for (tree, seed), rs in groups.items():
+        rs.sort(key=lambda r: r["sigma"])
+        ref = rs[0].get("first_rank2_edges")
+        if not ref:
+            continue
+        keep, excl = [], []
+        for r in rs:
+            same = r.get("first_rank2_edges") == ref
+            # the loss drop that carries the route's rise: first drop after the first one whose
+            # window ends after the rank crossing (event-to-event gap, as a_r = 1/2 crossings)
+            later = [d for d in r["drops"][1:] if d["t_hi"] + d["width"] >= r["t_first_rank2"]]
+            gap = later[0]["t"] - r["drops"][0]["t"] if later else np.nan
+            (keep if same and np.isfinite(gap) and gap > 0 else excl).append((r["sigma"], gap))
+        by_tree[tree]["excluded"] += [(seed, s) for s, _ in excl]
+        by_tree[tree]["routes"].append((seed, ref))
+        if len(keep) >= min_sigmas and keep[-1][0] / keep[0][0] >= 10 ** 0.5:
+            f = fit_seed(np.array([k[0] for k in keep]), np.array([k[1] for k in keep]))
+            f["sigma_range"] = (keep[0][0], keep[-1][0], len(keep))
+            by_tree[tree]["fits"].append(f)
+    out = {}
+    for tree, d in by_tree.items():
+        out[tree] = {"n_seeds": len(d["fits"]), "excluded": d["excluded"], "routes": d["routes"],
+                     "ranges": [f["sigma_range"] for f in d["fits"]],
+                     **{k: mean_se([f[k] for f in d["fits"]]) for k in ("power_p", "power_rms",
+                                                                          "log_slope", "log_rms",
+                                                                          "k3_rms")}}
+    return out
+
+
 def main(*args):
     *paths, out_path = args
     rows = [r for p in paths for r in json.load(open(p)) if "error" not in r and not r.get("centred")]
@@ -86,8 +151,12 @@ def main(*args):
             res[f"g2_{k}"] = mean_se([f[k] for f in g2_fits])
             res[f"grank_{k}"] = mean_se([f[k] for f in gr_fits])
         result[f"{tree}/{feats}"] = res
+    result["edge_scaling"] = edge_scaling(rows)
+    result["first_route"] = first_route(rows)
     json.dump(result, open(out_path, "w"), indent=1)
     for k, v in result.items():
+        if k in ("edge_scaling", "first_route"):
+            continue
         print(k, "t1 exp %.3f +- %.3f (n=%d)" % v["t1_exponent"],
               "| g2 power p %.2f +- %.2f (n=%d)" % v["g2_power_p"],
               "rms: power %.3f log %.3f k3 %.3f" % (v["g2_power_rms"][0], v["g2_log_rms"][0], v["g2_k3_rms"][0]),
@@ -95,6 +164,16 @@ def main(*args):
               "| rank gap p %.2f +- %.2f (n=%d)" % v["grank_power_p"],
               "rms: power %.3f log %.3f k3 %.3f" % (v["grank_power_rms"][0], v["grank_log_rms"][0], v["grank_k3_rms"][0]),
               "mixed", len(v["grank_mixed"]))
+    print("classified first route (binary): gap to the first rank increase on the seed's route")
+    for tree, d in sorted(result["first_route"].items()):
+        print(f"  {tree:28s} seeds {d['n_seeds']} power p {d['power_p'][0]:.2f} +- {d['power_p'][1]:.2f}"
+              f" rms power {d['power_rms'][0]:.3f} log {d['log_rms'][0]:.3f} k3 {d['k3_rms'][0]:.3f}"
+              f" | excluded (seed, sigma) {d['excluded']} | ranges {d['ranges']}")
+    print("per-edge first rank increase (tau after the first drop):")
+    for d in result["edge_scaling"]:
+        print(f"  {d['tree']:28s} edge {d['edge']:2d} level {d['level']:2d} seeds {d['n_seeds']}"
+              f"  power p {d['power_p'][0]:.2f} +- {d['power_p'][1]:.2f} (rms {d['power_rms'][0]:.3f})"
+              f"  log slope {d['log_slope'][0]:.3g} +- {d['log_slope'][1]:.2g} (rms {d['log_rms'][0]:.3f})")
 
 
 if __name__ == "__main__":

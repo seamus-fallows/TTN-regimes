@@ -54,7 +54,8 @@ def one(args):
         rp = build(task, c["tree"], c["ordering"], c["chi"], c["features"])
         prob = DenseHessianProblem(rp.problem.spec, rp.problem.teacher, dataset=rp.problem.dataset)
         theta_a = torch.as_tensor(run["p1_log"]["theta_end"])
-        tr = integrate_gf(prob, theta_a, tau_mid, log_times=[tau_mid], rtol=c["rtol"], atol=c["atol"],
+        # re-integrate with the cheap Gauss-Newton Newton matrix (rp.problem); exact Hessian only at the end
+        tr = integrate_gf(rp.problem, theta_a, tau_mid, log_times=[tau_mid], rtol=c["rtol"], atol=c["atol"],
                           method="lsoda", recorder=Recorder(spectra=False, conservation=False,
                                                             fine=False, overlaps=False))
         theta = torch.as_tensor(tr["theta_end"])
@@ -76,7 +77,7 @@ def one(args):
 
 def main(summary_json, runs_dir, out_json, workers, flt=""):
     rows = [r for r in json.load(open(summary_json)) if "error" not in r and "drops" in r
-            and flt in r["name"] and not r.get("centred")]
+            and any(f in r["name"] for f in flt.split(",")) and not r.get("centred")]
     with Pool(int(workers)) as pool:
         res = pool.map(one, [(r, runs_dir) for r in rows])
     Path(out_json).parent.mkdir(parents=True, exist_ok=True)
