@@ -1,42 +1,60 @@
 # real-data: do the teacher-student TTN phenomena survive on real images? (B5)
 
-Status: working (interim) - Branch: agent/real-data - Updated: 2026-10-10 00:02 UTC
+Status: working (main + regime done; robustness runs pending) - Branch: agent/real-data - Updated: 2026-10-10 01:39 UTC
 
 ## Summary
-**Interim report (steps 1-3 on 4x4 data; 2026-10-10 00:02 UTC).** Gradient flow on MNIST 3-vs-5 (4x4 pixels, cos/sin
-features, n_train 4000) with chi = 4 TTNs. The teacher-student picture survives where it follows from
-the tree structure. The first plateau scales as sigma^-(K-2) exactly. Bond ranks grow in discrete events.
-The second event's plateau scales as predicted by the route degree: a sibling pair of bottom cores on
-binary trees (k = 3: gap ∝ sigma^-1.0) and a single edge on the MPS (k = 2: gap ∝ log(1/sigma)). Route
-amplitudes computed at the rank-1 plateau predict which sibling pair goes first in 34/35 runs. What
-does not carry over: loss plateaus are not flat, and the MPS beats the local binary tree at small sigma.
+Task: train TTNs by gradient flow on real images (MNIST 3 vs 5, 4x4 pixels, cos/sin features, chi = 4) and
+test the teacher-student predictions. Main sweep complete: 234 runs; quadtree binary, snake MPS and 3
+scrambled binary trees; raw and whitened features; sigma 0.05-0.5; 5 seeds. Plus a 65-run regime sweep.
+
+Most predictions survive, and they survive where they follow from the tree structure. The first plateau
+scales as sigma^-(K-2) exactly. Ranks grow in discrete route escapes. The first route after the escape is a
+sibling pair of bottom cores on binary trees (k = 3; gap ∝ sigma^-1.0) and a single edge on the MPS (k = 2;
+gap linear in log(1/sigma); strict saddle by the Hessian). Route amplitudes predict which route goes first.
+The regime map S2S -> rich -> lazy appears, and the lazy regime is exactly the linearized model.
+
+Locality: on the same tree shape the quadtree learns far faster than scrambled orders at small init,
+because it puts 88% of the residual label interaction on short routes (scrambled: 21%). The effect vanishes
+at sigma = 0.5. Contrary to the brief's expectation, the MPS is the fastest tree at every sigma: route
+degree (tree shape) beats locality. Loss plateaus are not flat on real data (they creep).
 
 ## Results
-Interim: main sweep 80/280 runs (raw features: quadtree 35, MPS 35, scrambled partial), plus the pilot.
-Gradient flow (DP5 then LSODA, rtol 1e-8, atol 1e-14), sigma in {0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5},
-seeds 0-4, tau = t - t_a up to 1e4. Numbers from `summarize.py` / `scaling.py` / `tables.py` on
-`/root/outputs/real_data/main` (interim summary copied to `/root/outputs/real_data/analysis/main_summary_interim.json`).
+Full table of predictions vs observations: `notes/real_data.md` section 5 (short version below). Gradient
+flow (DP5 to the escape, then LSODA, rtol 1e-8, atol 1e-14), MNIST 3 vs 5 4x4, n_train 4000, chi = 4, raw
+features unless stated; sigma = 0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5; seeds 0-4. Produced by
+`summarize.py` -> `scaling.py`, `tables.py`, `events_table.py`, `route_amplitudes.py`, `plateau_hessians.py`,
+`regime_analysis.py`, `make_figures.py` (README "How to run"); outputs in `experiments/real_data/results/`.
 
-| prediction (teacher-student) | real data (interim) | verdict |
+| prediction | observed | verdict |
 |---|---|---|
-| first plateau t1 ∝ sigma^-(K-2) (any input law; theory_covariance C4) | per-seed exponent 13.000 ± 0.000 (binary16, 5 seeds), 14.000 ± 0.000 (mps16, 5 seeds); t1 from 1e6 to 1e20 | yes (exact: homogeneity) |
-| bond ranks grow stepwise, one route at a time | discrete s_k/s_1 escapes from 1e-5 to O(1) on route edges (figure bond_spectra) | yes |
-| binary at rank 1: next route = sibling bottom pair (k = 3) | first rank increase on exactly two sibling bottom edges in 35/35 quadtree runs | yes |
-| MPS: next route = one edge (k = 2) | single edge (edge 5) in 35/35 MPS runs, during/just after the first escape | yes |
-| k = 3 gap ∝ sigma^-1 | quadtree 2nd drop - 1st drop: seed 0: 298, 209, 143, 100, 69, 45, 29 (sigma 0.05...0.5), exponent 1.01; mean over seeds 1.11 ± 0.13 (n = 5, two seeds switch sibling pair at large sigma); power law rms 0.15 vs log law 0.87 | yes |
-| k = 2 gap ∝ log(1/sigma) | MPS 2nd drop: seed 0: 51.0, 44.5, 38.5, 32.2, 25.9, 19.2 (sigma 0.05...0.3): increments 16-19 per unit of ln(1/sigma) | yes (preliminary) |
-| later routes k >= 4 give sigma^-(k-2) | quadtree seed 0, 4th drop gap: 5637, 1818, 626, 144, 44 (sigma 0.07...0.3), exponent 3.3 (k = 5 would give 3) | partly (one seed; systematic table in progress) |
-| route with smallest k first, ties by amplitude | largest sibling amplitude predicts the first sibling pair in 34/35 quadtree runs; the largest amplitudes overall sit on k = 5, 7 routes, which escape later | yes |
-| flat plateaus at partial fits (S2S signature) | plateaus creep (loss keeps decreasing slowly); with rate-peak drops: quadtree S2S fraction 1.0 at sigma <= 0.07 (min rho median 22 at sigma = 0.05); MPS mostly overlapping drops | partly |
-| locality: quadtree faster than scrambled, MPS in between | scrambled stalls on long plateaus (pilot: L ≈ 0.29 to tau = 3000 at sigma = 0.2 vs 0.10 quadtree); but the MPS is FASTEST at small sigma (log-time routes) and the quadtree slows as sigma^-1, sigma^-3 (at tau = 1e4, sigma = 0.05: quadtree L = 0.18, acc 0.89; MPS L = 0.090, acc 0.956) | partly: quadtree beats scrambled; MPS vs binary is set by route degree, not locality |
+| t1 ∝ sigma^-(K-2) | 13.000 / 13.000 / 14.000 ± 0.000 per seed (quadtree, scrambled, MPS) | yes |
+| first route: sibling pair (binary, k = 3), one edge (MPS, k = 2) | 35/35 quadtree, 86/89 scrambled; 34/35 MPS | yes |
+| k = 3 gap ∝ sigma^-1 | 1.01 ± 0.14 (quadtree, 4 seeds), 0.97 ± 0.11 / 1.27 ± 0.02 / 0.91 ± 0.23 (scrambled orders); log law rms 0.56-0.91 vs 0.03-0.14 | yes |
+| k = 2 gap ∝ log(1/sigma) | MPS edges 4 / 3: log rms 0.09 / 0.14 vs power 0.35 / 0.25 (5 seeds) | yes |
+| strict iff k = 2 (lambda_min vs sigma) | MPS sigma^0.04±0.03 (strict); binary sigma^0.877±0.005 (higher order, predicted 1) | yes (binary 12% low) |
+| route choice: lowest k, then largest amplitude | 34/35 quadtree, 78/89 scrambled | yes |
+| flat plateaus | plateaus creep; S2S signature holds with rate-peak drops (quadtree 100% at sigma <= 0.07, min rho 24 at 0.05) | partly |
+| locality: quadtree faster than scrambled | sigma = 0.1: L(1e4) 0.098 vs 0.207, acc 0.954 vs 0.872; 88% vs 21% of residual interaction on k <= 5 routes; not at sigma = 0.5 | yes (small init) |
+| MPS between the two | MPS fastest at every sigma (L(1e4) 0.089, acc 0.957) | no |
+| regimes S2S -> rich -> lazy | S2S <= 0.3, mixed 0.5-1, rich 1.4, lazy >= 2; lazy L(T) = linearized L_lin(T) (0.151); kernel rank 304 = R2 formula | yes |
 
-Figures (interim, `experiments/real_data/results/`): `loss_curves_raw`, `bond_spectra_raw_s{0.05,0.1,0.5}`,
-`growth_order_raw_s*`, `locality_raw_s*`, `scaling_raw`, `route_amplitudes`.
+Figures (`experiments/real_data/results/`): `loss_curves_raw` (train/test per tree and sigma),
+`bond_spectra_raw_s{0.05,0.1,0.5}`, `growth_order_raw_s*`, `scaling_raw` (t1, k = 3 gaps, MPS log law),
+`plateau_hessians`, `route_amplitudes`, `locality_raw_s{0.05,0.1,0.5}`, `regime_sweep`. Tables:
+`tables.md`, `events_table.md`, `scaling.json`, `regime_analysis.json`, `routes_raw.json`, `hessians_raw.json`.
 
 ## What was done
-1. Reverted the launch commit b622158 (in-progress library edits), `uv sync`, pushed (98042d5).
-2. Data download + downsampling script `experiments/real_data/download.py` (MNIST, Fashion-MNIST; 4x4 and 8x8).
-3. Problem builder `data.py`, two-phase GF runner `run.py`, analysis module `analysis.py`; merged main (39ca8d7).
+1. Reverted the launch commit b622158, `uv sync`, pushed (98042d5); merged main twice (34c76ad library final,
+   6c42d85 gauge fix).
+2. Data: `download.py` (MNIST / Fashion-MNIST IDX files -> 4x4, 8x8). Problem builder `data.py` (pixel orders,
+   features, trees, fast Jacobians, data-weighted spectra). Runner `run.py` (two-phase GF, re-anchored clock).
+3. Pilot (18 runs) -> design: data-weighted spectra, rate-peak loss drops, horizon 1e4 (commits 0209996-cc66b04).
+4. Main sweep: 234 runs (`configs/main.yaml`); two failed launches before it (clock underflow; memory-bound
+   oversubscription), see Decisions. Interim report bb33029.
+5. Analyses: per-run summaries, classified scaling fits, route amplitudes (124 runs), plateau Hessians (67 runs),
+   tables and figures (commits after bb33029).
+6. Regime sweep: 35 centred runs (`configs/regime.yaml`) + 30 plain runs; linearized reference.
+7. Robustness: chi = 8 (45 runs), Fashion-MNIST sneaker vs ankle boot (45 runs), 8x8 images (12 runs): running.
 
 ## Decisions
 - **Task: MNIST 3 vs 5 (+-1), n_train = 4000, n_test = 1600, 4x4** (central 24x24 crop, 6x6 block means).
@@ -97,3 +115,4 @@ Figures (interim, `experiments/real_data/results/`): `loss_curves_raw`, `bond_sp
 - 22:59 phase-1 clock re-anchoring (escape at t ~ 1e18-1e20 now resolved); closed-form Jacobian; sweeps relaunched with 48 + 12 workers (machine memory-bound)
 - 00:02 interim report: 80/280 main runs; t1 exponents exact; k = 3 sigma^-1 and k = 2 log gaps; route amplitudes 34/35; regime sweep relaunched at sigma >= 0.5
 - 00:45 main sweep 124/220 runs; regime sweep 9/35 (sigma 0.5-1: not lazy, kernel scale 1e-13..3e-5 at init: raw features are small-init in function space up to sigma ~ 1); plateau Hessians and route amplitudes running; chi8 + fashion queued after main
+- 01:39 main sweep (234 runs) and regime sweep (65 runs) analysed; notes section 5 table; final figures; chi8 / fashion / 8x8 running
