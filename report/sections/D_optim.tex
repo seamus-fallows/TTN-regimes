@@ -68,8 +68,9 @@ about 26 for this teacher) yields $\chi^2=379$ for 18 degrees of freedom, agains
 $1+x/2$; but the effective $c_{\rm col}$ grows from 30 at small $x$ to 45 near the trap. $\batch=16$ and $64$ agree
 within $1.8$ combined s.e.\ at eight matched points, although $\batch=64$ is higher at all three escaped points with
 $b_0=0.003$. At $\lr/\batch=1.25\cdot10^{-4}$, $T_{\rm SGD}/T_{\rm GF}=1.13$, $1.37$ and $2.5$--$2.7$ for $b_0=0.01$, $0.005$,
-$0.003$, and all runs are trapped at $0.002$. From random initialization the second-plateau comparison uses the 16
-of 30 runs at $\isc=0.03$, $\batch=1$ that kept component 1.
+$0.003$, and all runs are trapped at $0.002$. From random initialization the second plateau is lengthened by
+$19.8\pm5.1\%$ at $\isc=0.03$, $\batch=1$ (the 16 of 30 runs that kept component 1), against $17.7\%$ from
+\eqref{eq:optim-collapse} with no further fit, but by $10.8\pm0.6\%$ against $4.4\%$ at $\isc=0.1$.
 
 \paragraph{SGD: stability and forgetting.}
 \empirical{} Started $10^{-5}$ from the minimum, SGD converged in 5 of 5 runs up to $1.5\lr^*_{\rm ms}$ and diverged in
@@ -143,7 +144,9 @@ dimension with $\chi=4$ students, is unexplained.
 \empirical{} \Cref{fig:optimizers-adam-escape} shows both regimes. On binary $\Ns=4$, \eqref{eq:adam-eps} puts the
 crossover $\isc_\times$ near $10^{-8}$ (\derived, not tested), far below the $2\cdot10^{-4}$ at which the initial
 gradient falls under $\epsilon$. On the MPS with $\Ns=8$ the prediction for each seed combines that seed's exact
-gradient-flow escape at $\isc=0.3$, scaled by $(0.3/\isc)^6$, with its own escape at $\epsilon=10^{-30}$.
+gradient-flow escape at $\isc=0.3$, scaled by $(0.3/\isc)^6$, with its own escape at $\epsilon=10^{-30}$. Every run that
+escaped within $2\cdot10^5$ steps is counted; at $\lr=10^{-2}$, $\isc=0.03$ measured over predicted is $1.010$--$1.035$,
+and near the crossover $\isc_\times\approx0.05$--$0.1$ the deviations run from $-5\%$ to $+17\%$.
 
 \begin{figure}[tbp]
   \centering

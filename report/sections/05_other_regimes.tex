@@ -186,11 +186,10 @@ $\lr/\batch\to0$, and the population loss is the limit of the empirical loss as 
 with event times shifted by a computable $O(\lr)$; gradient noise does not shorten plateaus on average, but it
 lengthens later ones and can trap the dynamics at a saddle; and from a finite training set small initialization
 recovers the teacher with its bond ranks, while the lazy limit fails as dimension counting predicts. Setup
-(\cref{app:exp-optim}): whitened Gaussian inputs, odeco teacher $(3,2,1)$, $d=\chi=3$, fan-in initialization (five
-seeds); binary trees with $\Ns=4$ ($\Kc=3$) and $\Ns=8$ ($\Kc=7$) and the MPS with $\Ns=8$ ($\Kc=8$); GD and online
-SGD (fresh inputs at every step) run on the clock $t=\lr\times(\text{steps})$ and are compared with gradient flow
-from the same initial point; events are dated at the last upward crossing of $\ov r=\frac12$. Details:
-\cref{app:D-optim}.
+(\cref{app:exp-optim}): odeco teacher $(3,2,1)$, $d=\chi=3$, fan-in initialization (five seeds) on the binary trees
+with $\Ns=4$ ($\Kc=3$) and $\Ns=8$ ($\Kc=7$) and the MPS with $\Ns=8$ ($\Kc=8$); GD and online SGD (fresh inputs at
+every step) run on the clock $t=\lr\times(\text{steps})$ and are compared with gradient flow from the same initial
+point. Details: \cref{app:D-optim}.
 
 \paragraph{The stability limit.}
 \proven{} \knownresult[deep linear networks: \citealp{mulayoff2020unique,ghosh2025learning}]
@@ -279,12 +278,11 @@ $\Ns=4$ from the aligned route (component 1 learned, the route started at an amp
 exact; 144 runs; \cref{fig:optim-sgd}b): every escaped run was slower than gradient flow (114 of 114), none of the
 30 runs at $(\lr/\batch)T_{\rm GF}\gtrsim0.025$ escaped (29 trapped, one diverged), and with one fitted
 $c_{\rm col}=32.6$ the condition $x=1$ separates escaped from trapped settings in 23 of 24 cases; the law holds to
-about $10\%$ for $T_{\rm SGD}/T_{\rm GF}\lesssim1.5$, and within the errors only $\lr/\batch$ matters. In 19 of the 24
-runs at $\lr/\batch=2.5\cdot10^{-4}$ ($0.25$--$0.30\lr^*_{\rm ms}$, below) the learned component also fell
-below $\frac12$, so the clean trap is the longest plateau ($T_{\rm GF}=250$) at $\lr/\batch=1.25\cdot10^{-4}$ (6 of 6
-runs, one dip). From random initialization the second plateau is lengthened by
-$19.8\pm5.1\%$ at $\isc=0.03$, $\batch=1$, against $17.7\%$ from \eqref{eq:optim-collapse} with no further fit, but by
-$10.8\pm0.6\%$ against $4.4\%$ at $\isc=0.1$. Consequence: at fixed $\lr/\batch$ a later plateau grows faster than
+about $10\%$ for $T_{\rm SGD}/T_{\rm GF}\lesssim1.5$, and within the errors only $\lr/\batch$ matters. At the largest
+$\lr/\batch$ the learned component also fell below $\frac12$ in 19 of 24 runs, so the clean trap is the longest
+plateau ($T_{\rm GF}=250$) at half that $\lr/\batch$ (6 of 6 runs, one dip). From random initialization the second
+plateau is lengthened as \eqref{eq:optim-collapse} predicts at $\isc=0.03$ but more than predicted at $\isc=0.1$
+(\cref{app:D-optim}). Consequence: at fixed $\lr/\batch$ a later plateau grows faster than
 $\isc^{-(k-2)}$ and, by the law, becomes infinite at a finite $\isc$ \conjecture; on the aligned route the ratio
 $T_{\rm SGD}/T_{\rm GF}$ rises from $1.13$ to $2.7$ and then every run traps as $T_{\rm GF}$ grows \empirical: SGD stalls
 where gradient flow is only slow. By the same drift model a strict ($k=2$) route still escapes if
@@ -298,11 +296,9 @@ component needs $k=2$, SGD at $\batch=1$ learned it in 5 of 5 runs, on average $
 the noise vanishes, and the exact mean-square limit \eqref{eq:A-ms-threshold} on binary $\Ns=4$ is
 $\lr^*_{\rm ms}=0.00107$, $0.0161$ and $0.112$ for $\batch=1$, $16$, $256$, against $\lr_c=0.154$: per sample,
 small-batch SGD is about 150 times less stable than GD, because Gaussian product features have kurtosis $3^\Ns$ and
-the coupling to the other patterns adds a factor $1.8$.
-Started $10^{-5}$ from the minimum, SGD converged in 5 of 5 runs up to $1.5\lr^*_{\rm ms}$ and diverged in 9 of 10 at
-$2.5\lr^*_{\rm ms}$. Well below this limit, noise on long plateaus erases learned components, which are then
-relearned (in $20$--$66\%$ of the random-initialization runs at $0.47\lr^*_{\rm ms}$): near its limit SGD breaks the
-saddle sequence rather than compressing it (\cref{app:D-optim}).
+the coupling to the other patterns adds a factor $1.8$. Well below this limit, noise on long plateaus erases learned
+components, which are then relearned: near its limit SGD breaks the saddle sequence rather than compressing it
+(\cref{app:D-optim}).
 
 \paragraph{Finite samples: which interpolant?}
 \empirical{} \newresult[for TTN regression] On the binary tree with $\Ns=8$, $d=2$ ($\W\in\R^{256}$) and an odeco
@@ -340,80 +336,14 @@ core instead of an exact local solve, \citealp{stoudenmire2016supervised}) or wi
 \citep{novikov2018exponential,steinlechner2016riemannian}, which use the geometry of fixed-rank tensor manifolds
 \citep{holtz2012manifolds,uschmajew2013geometry}. Which features of the gradient-flow picture of \cref{sec:s2s}
 survive them? \Cref{tab:optimizers} collects the answers, \cref{fig:optimizers-side} shows them from one initial
-point, and the evidence follows. Setup (\cref{app:exp-optimizers}): exact population loss, whitened inputs; binary4
-with $d=3$, $\chi=4$ and the odeco teacher $(3,2,1)$, every method from the same 42 fan-in initializations (seven
-$\isc\in[0.002,0.128]$, six seeds); deep trees with $\Ns=8$, binary ($\Kc=7$) and MPS ($\Kc=8$), with the same teacher
-and with the pattern teacher E8 (patterns $0^8$, $0^31^20^3$ and $010^410$ with weights $1$, $0.4$, $0.7$, whose
-weaker components need $k=2$ and $k=6$ cores on the MPS), $\isc$ between $0.01$ and $0.8$, six seeds,
-gauge-balanced initializations, and fan-in ones for the gauge-dependent methods. GD and heavy ball ($\beta=0.9$) use
-effective steps $\lr/(1-\beta)\le0.27\lr_c$, Adam $\epsilon=10^{-8}$ unless stated; each method runs on its own clock
-($t$ for gradient flow, $\lr n$ for GD, steps or sweeps for the others). Details: \cref{app:D-optim}.
+point, and the evidence follows. Setup (\cref{app:exp-optimizers}): every method starts from the same points, 42 on
+binary4 ($d=3$, $\chi=4$, odeco teacher $(3,2,1)$, seven $\isc\in[0.002,0.128]$, six seeds) and six seeds per $\isc$
+($0.01$--$0.8$) on the deep trees with $\Ns=8$, binary ($\Kc=7$) and MPS ($\Kc=8$), with the same teacher and with the
+pattern teacher E8 (patterns $0^8$, $0^31^20^3$ and $010^410$, weights $1$, $0.4$, $0.7$, whose weaker components need
+$k=2$ and $k=6$ cores on the MPS). GD and heavy ball ($\beta=0.9$) use effective steps $\lr/(1-\beta)\le0.27\lr_c$,
+Adam $\epsilon=10^{-8}$ unless stated; each method runs on its own clock. Details: \cref{app:D-optim}.
 
-\paragraph{GD and heavy ball reproduce gradient flow.}
-\empirical{} \newresult[for TTNs] GD with $\lr=0.13\lr_c$ on binary4 has gradient flow's exponents to within $0.003$
-and its order from all 42 initial points; its first-escape delay grows by $0.0199\pm0.0000$ per e-fold of $1/\isc$,
-the asymptotic slope $\lr(\Kc-1)/2=0.020$ that follows from \cref{prop:A-gd-shift} (asymptotically, \conjecture{} in
-\cref{app:optimizer}; confirmed here). Heavy ball's delay grows $18.9\approx(1+\beta)/(1-\beta)=19$ times faster
-(\conjecture: the momentum analogue). On the deep trees ($\isc=0.8$) GD and heavy ball escape after $1.001$--$1.006$
-and $1.01$--$1.11$ times gradient flow's time.
-
-\paragraph{Adam: same first component, but the first escape forgets $\isc$.}
-\derived{} \newresult[for TTNs; in aligned deep matrix factorization the sign-descent escape time is likewise bounded
-as the initialization vanishes: \citealp{sabanayagam2026optimizer}, Thm~2 and Prop.~6] With $\epsilon=0$ Adam's step
-$-\lr\hat m_n/\sqrt{\hat v_n}$ is invariant under a common rescaling of past gradients
-\knownresult[\citealp{kingma2015adam}], and near the origin $\nabla\Loss$ is homogeneous of degree $\Kc-1$; so the
-iterates from $c\params_0$ with step $c\lr$ are $c$ times those from $\params_0$ with step $\lr$, and Adam sees $\isc$
-only through $\isc/\lr$. Its first step is $-\lr\,\mathrm{sign}\,\nabla\Loss(\params_0)$, after which $\abs{\params}\sim\lr$
-and the initial gradient weighs $\sim(\isc/\lr)^{\Kc-1}$ in the averages, so the trajectory has a limit as
-$\isc/\lr\to0$ and the number $n_1$ of steps to the first escape stays bounded as $\isc\to0$ (in the sign-flow limit
-$\lr\to0$ at fixed $\beta_1,\beta_2$ \knownresult[\citealp{ma2022qualitative}; Adam as sign descent:
-\citealp{balles2018dissecting}], $\lr n_1$ tends to a constant). Measured \empirical: first-escape exponents
-$0.009$--$0.013$ on binary4 for four learning rates of Adam, and $0.012\pm0.004$ and $0.001\pm0.019$ for RMSProp; on
-binary $\Ns=8$, $0.049\pm0.022$ and $0.145\pm0.033$ ($\lr=10^{-3}$, $10^{-2}$; fitted over $\isc\in[0.25,0.8]$, $0.09$ and
-$0.17$ over $\isc\le0.4$: small but not zero), where gradient flow has $4.991\pm0.002$ ($\isc\le0.4$, prediction 5). The
-first component survives \empirical: Adam and RMSProp pick gradient flow's first component in 94--100\% of the
-resolved deep-tree runs (87--98\% on binary4) and keep E8's locality order on the MPS (the weaker $k=2$ component
-before the stronger $k=6$ one, in 4--5 of 6 seeds, as gradient flow); the full order of gradient flow holds in
-87--98\% of the binary4 runs but only 67--83\% of the deep-tree runs. On binary4 the first escape is as wide as its
-own time, so 79--100\% of the runs fail $\sep i>3$ and are rich, non-incremental by \cref{tab:regimes}; on binary
-$\Ns=8$ most are saddle-to-saddle.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{optimizers/side_by_side_binary4.pdf}
-  \caption{Five optimizers from one initial point: binary tree, $\Ns=4$ ($\Kc=3$), $d=3$, $\chi=4$,
-    odeco teacher $(3,2,1)$, fan-in initialization, $\isc=0.008$, seed 0. Columns: gradient flow, Adam
-    ($\lr=10^{-3}$), GD re-gauged at every step ($\lr=0.02$), Riemannian GD ($\lr=0.1$), one-site ALS,
-    each on its own clock. Rows: normalized loss, overlaps $\ov r$, bond singular values of the cut $01|23$
-    (colour: component $r$ and singular-value index $j$). Gradient flow and Adam learn one component at a time in
-    the same order, with plateaus at the partial-fit levels $\Lpart1/\Lpart0=0.36$ and $\Lpart2/\Lpart0=0.07$; the
-    other three have none. This Adam run is saddle-to-saddle ($\sep i=7.1$, $45$), which is atypical: most binary4
-    Adam runs are rich. The ALS run is the only one of the 60 ALS and DMRG runs (problem, method and seed
-    combinations) in which no two components cross $\ov r=\frac12$ in the same micro-step. Takeaway: Adam keeps the
-    sequential learning, the gauge-equivariant methods remove the plateaus. (source: \cref{app:exp-optimizers},
-    \cref{tab:exp-optimizers})}
-  \label{fig:optimizers-side}
-\end{figure}
-
-\paragraph{Adam's $\epsilon$ brings the gradient-flow law back.}
-\derived{} \newresult[for TTNs; concurrently, the same law in aligned deep matrix factorization:
-\citealp{sabanayagam2026optimizer}, Prop.~7] Where $\abs{\partial_j\Loss}\ll\epsilon$ Adam is gradient flow with
-$t=\lr n/\epsilon$: from a small $\isc$ it crawls along the gradient-flow path until the gradient reaches $\epsilon$,
-then escapes as in the sign regime,
-\begin{equation}\label{eq:adam-eps}
-  n_1\simeq\frac{\epsilon}{\lr}\,T_{\rm GF}(\isc)+n_{\rm sign}(\lr),
-\end{equation}
-so the law $T_{\rm GF}\propto\isc^{-(\Kc-2)}$ returns, with prefactor $\epsilon/\lr$, below the crossover $\isc_\times$
-where $\epsilon T_{\rm GF}=\lr n_{\rm sign}$. Test \empirical{} on the odeco MPS with $\Ns=8$ (eight
-$\isc\in[0.01,0.3]$, six seeds, $\lr=10^{-3}$, $10^{-2}$; no fitted parameter): measured over predicted $n_1$ is
-$0.9989$--$1.0003$ at $\lr=10^{-3}$ ($\isc=0.02$--$0.03$) and $1.0009$--$1.0062$ at $\lr=10^{-2}$ ($\isc=0.015$--$0.02$;
-$+1.0\%$ to $+3.5\%$ at $\isc=0.03$) for every run that escaped within $2\cdot10^5$ steps, and \eqref{eq:adam-eps}
-predicts which runs escape in all 60 cases with $\isc\le0.05$; near $\isc_\times\approx0.05$--$0.1$ the deviations are
-systematic ($-5\%$ to $+17\%$; \cref{app:D-optim}). Below the crossover the crawl term is more than $98\%$ of $n_1$,
-so the test checks that Adam is gradient flow on the clock $\lr n/\epsilon$ rather than the additive form. Only
-$\Kc=8$ was tested.
-
-\begin{table}[t]
+\begin{table}[tbp]
   \centering
   \caption{What survives which optimizer. Binary $\Ns=4$ ($\Kc=3$): seven $\isc$ over 1.8 decades; binary $\Ns=8$
     ($\Kc=7$) and MPS $\Ns=8$ ($\Kc=8$): two to eight $\isc$ over at most half a decade (1.5 decades for Adam's
@@ -451,6 +381,70 @@ $\Kc=8$ was tested.
     \bottomrule
   \end{tabularx}
 \end{table}
+
+\paragraph{GD and heavy ball reproduce gradient flow.}
+\empirical{} \newresult[for TTNs] GD with $\lr=0.13\lr_c$ on binary4 has gradient flow's exponents to within $0.003$
+and its order from all 42 initial points; its first-escape delay grows by $0.0199\pm0.0000$ per e-fold of $1/\isc$,
+the asymptotic slope $\lr(\Kc-1)/2=0.020$ that follows from \cref{prop:A-gd-shift} (asymptotically, \conjecture{} in
+\cref{app:optimizer}; confirmed here). Heavy ball's delay grows $18.9\approx(1+\beta)/(1-\beta)=19$ times faster
+(\conjecture: the momentum analogue). On the deep trees ($\isc=0.8$) GD and heavy ball escape after $1.001$--$1.006$
+and $1.01$--$1.11$ times gradient flow's time.
+
+\paragraph{Adam: same first component, but the first escape forgets $\isc$.}
+\derived{} \newresult[for TTNs; in aligned deep matrix factorization the sign-descent escape time is likewise bounded
+as the initialization vanishes: \citealp{sabanayagam2026optimizer}, Thm~2 and Prop.~6] With $\epsilon=0$ Adam's step
+$-\lr\hat m_n/\sqrt{\hat v_n}$ is invariant under a common rescaling of past gradients
+\knownresult[\citealp{kingma2015adam}], and near the origin $\nabla\Loss$ is homogeneous of degree $\Kc-1$; so the
+iterates from $c\params_0$ with step $c\lr$ are $c$ times those from $\params_0$ with step $\lr$, and Adam sees $\isc$
+only through $\isc/\lr$. Its first step is $-\lr\,\mathrm{sign}\,\nabla\Loss(\params_0)$, after which $\abs{\params}\sim\lr$
+and the initial gradient weighs $\sim(\isc/\lr)^{\Kc-1}$ in the averages, so the trajectory has a limit as
+$\isc/\lr\to0$ and the number $n_1$ of steps to the first escape stays bounded as $\isc\to0$ (in the sign-flow limit
+$\lr\to0$ at fixed $\beta_1,\beta_2$ \knownresult[\citealp{ma2022qualitative}; Adam as sign descent:
+\citealp{balles2018dissecting}], $\lr n_1$ tends to a constant). Measured \empirical: first-escape exponents
+$0.009$--$0.013$ on binary4 for four learning rates of Adam, and $0.012\pm0.004$ and $0.001\pm0.019$ for RMSProp; on
+binary $\Ns=8$, $0.049\pm0.022$ and $0.145\pm0.033$ ($\lr=10^{-3}$, $10^{-2}$; fitted over $\isc\in[0.25,0.8]$, $0.09$ and
+$0.17$ over $\isc\le0.4$: small but not zero), where gradient flow has $4.991\pm0.002$ ($\isc\le0.4$, prediction 5). The
+first component survives \empirical: Adam and RMSProp pick gradient flow's first component in 94--100\% of the
+resolved deep-tree runs (87--98\% on binary4) and keep E8's locality order on the MPS (the weaker $k=2$ component
+before the stronger $k=6$ one, in 4--5 of 6 seeds, as gradient flow); the full order of gradient flow holds in
+87--98\% of the binary4 runs but only 67--83\% of the deep-tree runs. On binary4 the first escape is as wide as its
+own time, so 79--100\% of the runs fail $\sep i>3$ and are rich, non-incremental by \cref{tab:regimes}; on binary
+$\Ns=8$ most are saddle-to-saddle.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\textwidth]{optimizers/side_by_side_binary4.pdf}
+  \caption{Five optimizers from one initial point: binary tree, $\Ns=4$ ($\Kc=3$), $d=3$, $\chi=4$,
+    odeco teacher $(3,2,1)$, fan-in initialization, $\isc=0.008$, seed 0. Columns: gradient flow, Adam
+    ($\lr=10^{-3}$), GD re-gauged at every step ($\lr=0.02$), Riemannian GD ($\lr=0.1$), one-site ALS,
+    each on its own clock. Rows: normalized loss, overlaps $\ov r$, bond singular values of the cut $01|23$
+    (colour: component $r$ and singular-value index $j$). Gradient flow and Adam learn one component at a time in
+    the same order, with plateaus at the partial-fit levels $\Lpart1/\Lpart0=0.36$ and $\Lpart2/\Lpart0=0.07$; the
+    other three have none. This Adam run is saddle-to-saddle ($\sep i=7.1$, $45$), which is atypical: most binary4
+    Adam runs are rich. The ALS run is the only one of the 60 ALS and DMRG runs (problem, method and seed
+    combinations) in which no two components cross $\ov r=\frac12$ in the same micro-step. Takeaway: Adam keeps the
+    sequential learning, the gauge-equivariant methods remove the plateaus. (source: \cref{app:exp-optimizers},
+    \cref{tab:exp-optimizers})}
+  \label{fig:optimizers-side}
+\end{figure}
+
+\paragraph{Adam's $\epsilon$ brings the gradient-flow law back.}
+\derived{} \newresult[for TTNs; concurrently, the same law in aligned deep matrix factorization:
+\citealp{sabanayagam2026optimizer}, Prop.~7] Where $\abs{\partial_j\Loss}\ll\epsilon$ Adam is gradient flow with
+$t=\lr n/\epsilon$: from a small $\isc$ it crawls along the gradient-flow path until the gradient reaches $\epsilon$,
+then escapes as in the sign regime,
+\begin{equation}\label{eq:adam-eps}
+  n_1\simeq\frac{\epsilon}{\lr}\,T_{\rm GF}(\isc)+n_{\rm sign}(\lr),
+\end{equation}
+so the law $T_{\rm GF}\propto\isc^{-(\Kc-2)}$ returns, with prefactor $\epsilon/\lr$, below the crossover $\isc_\times$
+where $\epsilon T_{\rm GF}=\lr n_{\rm sign}$. Test \empirical{} on the odeco MPS with $\Ns=8$ (eight
+$\isc\in[0.01,0.3]$, six seeds, $\lr=10^{-3}$, $10^{-2}$; no fitted parameter): below the crossover measured over
+predicted $n_1$ is $0.9989$--$1.0003$ at $\lr=10^{-3}$ ($\isc=0.02$--$0.03$) and $1.0009$--$1.0062$ at $\lr=10^{-2}$
+($\isc=0.015$--$0.02$), and \eqref{eq:adam-eps} predicts which runs escape in all 60 cases with $\isc\le0.05$; near
+$\isc_\times\approx0.05$--$0.1$ the deviations are systematic (\cref{app:D-optim}). There the crawl term is more than
+$98\%$ of $n_1$, so the test checks that Adam is gradient flow on the clock $\lr n/\epsilon$ rather than the additive
+form. Only $\Kc=8$ was tested.
+
 
 \paragraph{No plateaus: sweeps and Riemannian GD.}
 \proven{} \newresult[elementary] In the canonical form centred at core $v$ the environment of $v$ is an isometry, so
