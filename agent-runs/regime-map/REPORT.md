@@ -235,6 +235,39 @@ Commit hashes on `agent/regime-map`:
     was projected at > 5 h; the d = 2 plain, full-bond and centred sweeps cover the K dependence.
 17. **Cost.** The full program is ~9,000 gradient-flow runs; the heavy part (K >= 7 with LSODA or the
     centred loss) dominates: 20-60 min per run under full load. Machine time so far ~8.5 h on 368 vCPUs.
+18. **Round 2: one teacher spectrum (3, 2) and chi = 4 at both d = 2 and d = 3.** Options: (3, 2, 1) at
+    d = 3 as in round 1, or the same rank-2 teacher at both d. Chosen: the same teacher and chi, so
+    that only D = d^N changes between d (the cleanest test of sigma^K vs sigma^K / sqrt(D)).
+19. **Round 2: binary_tree(N), N = 4..16, as the single tree family for K = 3..15.** MPS was dropped:
+    in round 1 MPS trees stalled on the S2S side at K >= 8 even with chi = 4.
+20. **Round 2 primary arm = plain model with spare channels (chi = 2R).** It is realizable and reaches
+    K = 15 at both d. The alternative realizable version, the centred model with full bonds (arm C),
+    costs P ~ d^(N/2) chi and runs only up to K = 9 (d = 2) and K = 5 (d = 3) in the budget; it is
+    kept as a cross-check.
+21. **Round 2: adaptive per-seed sigma walker instead of a fixed grid.** It brackets each seed's
+    crossing within 2^(1/(K-2)) in sigma at a fraction of the cost.
+22. **Round 2: out-of-domain runs.** At large sigma the plain model's W_0 already projects on the
+    teacher components with |a_r(0)| >= 0.1 (up to ~40). Options: redefine events after the overlap
+    first drops below 0.1, or classify such runs as outside the event rule's domain. Chosen: the latter
+    (no change to the merged event rule; seeds S2S-like up to that point are reported as censored
+    from below).
+23. **Round 2: time budget T = max(50 t_esc + 1e4, 1e6) and max_steps 3e4.** The default T was too
+    short after the W_0 collapse.
+24. **Round 2: secondary analyses that were not pre-registered.**
+    - A censored-normal (Tobit) fit over all seeds, because most K >= 7 cells have more than 2 of 6
+      seeds censored and the pre-registered rule excludes them.
+    - A median-based variant, because single outlying seeds (y ~ -10) move cell means.
+    - The pre-escape core-shrinkage diagnostic for H_W.
+    These are labelled as such in the notes.
+25. **Round 2: arm C uses LSODA and only trees with P <= ~3300.** The dopri5 pilots had not finished
+    after 20 min under load. Two larger cells were added at 14:25 on cores left idle by arm P's slow
+    walkers.
+26. **Round 2: crashes and restarts.**
+    - Fork instead of spawn: spawned workers ran out of memory.
+    - The tensor kernel is skipped in arm P and its memory guard is fixed (D x D identity, OOM kills).
+    - The walker restarted after a stall below the domain limit.
+    Every relaunch resumes from the saved rows; in-flight runs were resubmitted.
+27. **Round 2 budget: no new runs after 15:25 UTC** (about 3 h after the first round-2 run).
 
 ## Files left on the machine
 `/root/outputs/regime_map/` (1.2 GB) holds one directory per experiment with `results.jsonl` (one
