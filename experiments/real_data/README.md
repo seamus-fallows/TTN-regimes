@@ -83,7 +83,8 @@ uv run python experiments/real_data/summarize.py $L/fix1_mps $L/fix1_mps_summary
 uv run python experiments/real_data/scaling.py $L/fix1_mps_summary.json $R/fix1_mps_scaling.json   # MPS per-edge fits (fair)
 uv run python experiments/real_data/events_table.py --refit <round-0 events_table.json> $R/events_table  # fair refit
 uv run python experiments/real_data/fix1_analysis.py $R $R/fix1_analysis --local $L/fix1_summary.json $L/fix1_mps_summary.json \
-    --audit <review>/audit/audit_table.json <review>/audit/b2/audit_table.json --logs agent-runs/real-data/logs
+    --audit <review>/audit/audit_table.json <review>/audit/b2/audit_table.json --logs agent-runs/real-data/logs \
+    --local-runs $L/fix1 --main $L/full/main_summary.json   # --main: round 2 (below); without --local-runs "creep" is empty
 uv run python experiments/real_data/make_figures.py --json $R $R      # figures from committed JSON only
 ```
 `<review>` = `data/review_real_data` (the round-1 reviewers' runs with this code: 6 more random orders, row-major
@@ -102,7 +103,8 @@ raw outputs with the fixed code; nothing from the review's list is pending (`not
 uv run python experiments/real_data/order_predictor.py $R/extra_orders_predictor.json 4 <orders...>   # data-only predictor S
 uv run python experiments/real_data/run.py experiments/real_data/configs/extra_orders.yaml $L/extra_orders 8  # 27 orders x 3 seeds
 uv run python experiments/real_data/summarize.py $L/extra_orders $L/extra_orders_summary 8
-uv run python experiments/real_data/order_test.py $R/extra_orders_predictor.json $L/extra_orders_summary.json $R/order_test     --main $L/full/main_summary.json --routes $R/routes_raw.json [--plateau $L/routes_extra.json]
+uv run python experiments/real_data/order_test.py $R/extra_orders_predictor.json $L/extra_orders_summary.json $R/order_test \
+    --main $L/full/main_summary.json --routes $R/routes_raw.json --plateau $L/routes_extra.json   # committed files: with --plateau
 ```
 Committed: `results/extra_orders_predictor.json` (S, before the runs), `extra_orders_summary.csv`, `order_test.{json,md}`,
 `routes_extra_orders.json` (plateau-state amplitudes of the 81 runs, exploratory) and the figure `order_test`.
