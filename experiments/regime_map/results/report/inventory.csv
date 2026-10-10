@@ -1,0 +1,13 @@
+exp,n_runs,models,trees,d,chi,seeds,sigma_min,sigma_max,n_lazy,n_rich,n_s2s,n_stalled,n_transient,n_transient_learned,n_label_changed,integrators,drift_max,drift_median,stop_max_steps
+sigma_chi_b4,2736,centred;plain;twocopy,binary4,3,3;4;6;9;12;18;24;36,6,0.01,40,606,1063,676,391,62,58,8,dopri5,1.0426e-09,1.38187e-11,317
+chi_b4,1428,centred;twocopy,binary4,3,9;12;16;24;32;48;64;96;128,6,0.004,4,372,609,446,1,9,9,3,dopri5,4.35001e-10,6.77187e-12,0
+sigma_chi_b8,227,centred;plain,binary8,3,3;6;24,6,0.3,4,0,37,60,130,0,0,0,dopri5;lsoda,4.14264e-09,2.43887e-11,124
+sigma_chi_b8_d2,375,centred,binary8,2,2;4;8;16;32,6,0.3,10,26,51,92,206,1,1,0,dopri5;lsoda,8.51602e-09,9.6018e-13,277
+sigma_K,302,plain,binary16;binary8;mps10;mps12;mps8,3,3;6,6,0.1,2,0,9,49,244,2,2,0,dopri5;lsoda,3.24994e-07,4.02046e-10,125
+sigma_K_d2,1293,plain,binary16;binary4;binary8;mps10;mps12;mps4;mps5;mps6;mps8,2,2;4,6,0.02,2,0,210,577,506,13,13,1,lsoda,3.45626e-07,1.04998e-09,60
+sigma_K_full_d2,220,plain,binary8;mps6;mps8,2,8;16,6,0.05,2,0,45,130,45,2,2,0,lsoda,2.11976e-08,2.82759e-10,0
+sigma_K_centred_d2,827,centred,binary16;binary4;binary8;mps10;mps12;mps4;mps5;mps6;mps8,2,4;8;16,6,0.02,2,0,142,432,253,1,1,0,lsoda,9.52377e-07,6.97394e-10,63
+imbalance_b4,1134,centred,binary4,3,3;16;24,6,0.00126843,17.9467,150,411,393,180,38,28,3,dopri5,1.24279e-09,2.09815e-11,71
+large_chi_b4,432,centred;plain,binary4,3,4;8;16;32;64;128,6,1,1.5,76,326,0,30,2,2,0,dopri5,1.88918e-10,3.1047e-12,0
+large_chi_b8,71,plain,binary8,2,4;8;16;32,6,1,1,0,59,12,0,0,0,0,dopri5,1.8771e-10,2.86799e-12,17
+stall_test,120,centred;plain,binary8;mps8,3,3,6,0.3,0.6,0,0,25,95,0,0,0,lsoda,3.97101e-09,1.47687e-09,0

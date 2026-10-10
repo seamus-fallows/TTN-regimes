@@ -285,7 +285,114 @@ distinct intermediate plateau. A first sweep, made before the teacher and initia
 were separated, was discarded.
 
 \subsection{Regime-map experiments}\label{app:exp-regimes}
-\placeholder{Grids, seeds and time budgets of the phase diagrams of \cref{sec:regime-map}.}
+Settings of \cref{sec:regime-map} and \cref{sec:other-lazy,sec:other-rich,sec:other-stalled,sec:other-large-chi}.
+Experiment folder \path{experiments/regime_map/} (README with the run order; YAML configurations in
+\path{configs/}); findings in \path{notes/regime_map.md}, whose section 3 (fix round 1) overrides its sections
+0--2; review in \path{notes/reviews/regime_map_round1.md}; theory in \path{notes/theory_regimes.md} and
+\cref{app:boundaries}. Every number of \cref{sec:regime-map} and of \cref{sec:other-lazy,sec:other-rich,%
+sec:other-stalled,sec:other-large-chi} is an entry of the committed tables in \path{results/} (per-seed
+boundaries), \path{results/fix1/} (fix round 1) and \path{results/report/} (written from the raw runs by
+\path{report_tables.py}), or an aggregate of them in \path{results/report/numbers.csv} (\path{report_numbers.py}).
+
+\paragraph{Problems.}
+Whitened Gaussian inputs, exact population loss, double precision, the library model
+(\path{ttn.dynamics.Problem}). Odeco teachers with weights $(3,2,1)$ at $d=3$ or $(3,2)$ at $d=2$, Haar-random
+site bases from teacher seed $1000+s$ for initialization seed $s$ (an independent stream); fan-in initialization
+\eqref{eq:init}. Bond dimensions: binary4 uncapped ($\chi=3$--$128$); the other trees capped by
+\eqref{eq:bond-cap}, except the variant of the binary tree with $\Ns=8$ with bonds $8$ above two sites and $32$
+above four. Models: \emph{centred}, target $\Wt+\Wz$ through the cancellation-free shifted teacher, or, for
+$\fsc<10^{-2}$, through the direct loss $\frac12\normF{\W-\Wt-\Wz}^2$ (cancellation error about
+$10^{-16}\fsc^2$; on two configurations both forms gave identical labels, event times to $10^{-4}$ and kernel
+changes to six digits); \emph{plain}; \emph{two-copy} (\path{antisymmetric_double} with the gradient mask of
+\cref{rem:two-copy-mask}). Imbalance: root scale $\lambda\isc$ at fixed $\fsc=\lambda\isc^3$. Large $\chi$: the
+three parameterizations of \cref{sec:other-large-chi} as initial scales and multipliers $\lrm v$.
+
+\paragraph{Dynamics.}
+Gradient flow (\path{ttn.dynamics.integrate_gf}) by Dormand--Prince 5(4) with tolerances $10^{-8}$ and
+$10^{-12}$, or LSODA with the exact Hessian as Jacobian for long plateaus (the $\isc\times\Kc$ sweeps, the stall test,
+and $\isc<0.7$ in the sweeps of the binary tree with $\Ns=8$). A run stops when $\Loss<10^{-6}\cdot\frac12\normF{\Wt}^2$, at the time budget
+$T=50\,t_{\rm esc}+10^4/\max(\bar\lambda,1)$, with $t_{\rm esc}=(0.3\isc)^{-(\Kc-2)}/((\Kc-2)\tw{\min})$ the
+aligned escape time of the weakest component and $\bar\lambda=\tr\TK(0)/d^\Ns$, or at a step limit ($10^5$
+steps by default; $3\cdot10^4$ or $2\cdot10^4$ in the $\Ns=8$ and $\isc\times\Kc$ sweeps, $10^4$ for $\Kc\ge10$).
+Each final rise is re-integrated from the saved parameters on a 200-point linear grid
+(\path{run_regime.refine_events}); the event time is the last upward crossing of $\ov r=\frac12$ before $\ov r$
+first reaches $0.9$, the width the final rise from $0.1$ to $0.9$. Runs written before this rule are
+relabelled from their recorded log and fine rows (\path{analysis.relabel_last_crossing}). Deep in the
+saddle-to-saddle regime at $\Kc\ge7$ the widths are not resolved; separation ratios there are lower bounds, and
+no label depends on them.
+
+\paragraph{Labels, kernels and boundaries.}
+Labels of \cref{tab:regimes} with convergence measured against $\frac12\normF{\Wt}^2$ (\cref{rem:regime-rules}),
+at the nine threshold pairs $\delta_*\in\{0.05,0.1,0.2\}$, $\sep{}\in\{2,3,5\}$; a run that ends on a floor below
+$10^{-3}$ counts as converged. $\dTK^{\rm probe}$ uses 128 Gaussian probe inputs (generator seed 12345) and the
+weights $\Pre$ (multipliers times mask); $\dTK$ uses the tensor-space kernel $\Jac\Pre\Jac\T$, computed in the run
+when $d^\Ns\dim\params\le2\cdot10^7$, and for earlier runs from their final parameters by \path{fix_round1.py}
+(\texttt{tensor}).
+Per-seed boundaries: \path{analysis.seed_rho_boundary} (log-log interpolation of the crossing of $\min_i\sep i$),
+\path{seed_s2s_boundary} (label brackets; status ``unresolved'' when the next run is stalled) and
+\path{seed_kernel_boundary} (crossing of $\delta_*$ among converged runs); slopes against $\chi$ are pooled
+least-squares fits with standard errors from the scatter, checked by per-seed fits. Stall types come from the
+$\ncomp$-th bond singular value of $\W$ at the end, minimized over edges (\path{analysis.stall_type}); most centred
+runs recorded only the spectra of $\W-\Wz$ and are not typed.
+
+\paragraph{Sweeps and run counts.} \Cref{tab:exp-regimes}; six seeds ($0$--$5$) everywhere.
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the regime-map experiment, one configuration each in
+    \texttt{experiments/regime\_map/configs/} (\texttt{stall\_test} has two); runs after de-duplication, from
+    \texttt{results/report/inventory.csv}.}
+  \label{tab:exp-regimes}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm}X r@{}}
+    \toprule
+    sweep & content & runs \\
+    \midrule
+    \texttt{sigma\_chi\_b4} & binary4, $d=3$; centred, plain, two-copy; $\chi=3,4,6,9,12,18,24,36$; 19 values of
+      $\isc\in[0.01,40]$ & 2,736 \\
+    \texttt{chi\_b4} & binary4; centred, $\chi=9$--$128$ (9 values), 22 values of $\isc\in[0.004,4]$; two-copy,
+      $\chi=16$--$128$, $\isc\in[0.25,4]$ & 1,428 \\
+    \texttt{sigma\_chi\_b8} & binary8, $d=3$, centred and plain, $\chi=3,6,24$, $\isc\in[0.3,4]$ & 227 \\
+    \texttt{sigma\_chi\_b8\_d2} & binary8, $d=2$, centred, $\chi=2,4,8,16$ and bonds $8/32$, $\isc\in[0.3,10]$ & 375 \\
+    \texttt{sigma\_K\_centred\_d2} & $d=2$, centred, $\chi=4$ on binary4, 8, 16 and MPS4, 5, 6, 8, 10, 12; full bonds
+      on MPS6, binary8, MPS8; $\isc$ from $\max(10^{-8/\Kc},0.02)$ to $2$ & 827 \\
+    \texttt{sigma\_K\_d2}, \texttt{sigma\_K\_full\_d2} & the same trees, plain, $\chi=2$ and $4$; full bonds on MPS6,
+      binary8, MPS8 & 1,293, 220 \\
+    \texttt{sigma\_K} & $d=3$, plain, $\chi=3$, $6$, binary8 and 16, MPS8, 10, 12 & 302 \\
+    \texttt{imbalance\_b4} & binary4, centred; $\chi=24$ and $3$: 9 values of $\fsc$ times 10 of $\lambda$;
+      $\chi=16$, $\fsc=3.375$, 9 values of $\lambda$ & 1,134 \\
+    \texttt{large\_chi\_b4} & binary4, centred and plain, $\chi=4$--$128$, SP, NTK, $\mu$P-TTN, $\isc=1$, $1.5$ & 432 \\
+    \texttt{large\_chi\_b8} & binary8, $d=2$, plain, $\chi=4$--$32$, $\isc=1$ (not interpreted) & 71 \\
+    \texttt{stall\_test} & binary8 and MPS8, $d=3$, $\chi=3$, $\isc=0.3$, $0.45$, $0.6$; fan-in and balanced;
+      plain and centred & 120 \\
+    \midrule
+    total & & 9,165 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Checks.}
+1,323 runs regenerated locally with the final driver from the committed configurations (the binary4
+saddle-to-saddle side and lazy windows, large $\chi$ at $\isc=1.5$, $\isc\times\Kc$ runs above the brackets) give the
+labels of the remote runs in every case, with median relative differences of $\min_i\sep i$ at most
+$2.5\cdot10^{-4}$, of $\dTK^{\rm probe}$ at most $2\cdot10^{-4}$ and of $\dTK$ at most $7\cdot10^{-7}$ per sweep
+(\path{results/fix1/validation_local_vs_remote.csv}). The fixed analysis applied with the first-crossing rule
+reproduces the per-seed tables committed before the fix round to $5\cdot10^{-15}$. The conservation drift
+\eqref{eq:drift} has a median of $10^{-12}$--$10^{-9}$ per sweep and a maximum of $9.5\cdot10^{-7}$. Of the 2,736
+runs of \texttt{sigma\_chi\_b4}, 317 stopped at the step limit, all at $\isc\ge4$: 283 are labelled stalled and 34
+had converged.
+
+\paragraph{Excluded and superseded runs.}
+Pilot runs made before the teacher and initialization streams were separated were discarded. A first map of
+binary4 with SciPy's RK45 on a logarithmic output grid (\texttt{b4\_sigma\_chi}) is superseded: its widths, read off
+that grid, were too coarse. Runs unfinished when the remote machine was stopped are missing from the tables
+(13 of 240 in \texttt{sigma\_chi\_b8}, 15 of 390 in \texttt{sigma\_chi\_b8\_d2}, 85 of 912 in
+\texttt{sigma\_K\_centred\_d2}, among them the full-bond binary8 and MPS8 runs at large $\isc$ and binary16 at
+$\isc=0.76$--$0.92$; the $\chi=6$ variants of the stall test); every count above is of finished runs. Compute: one
+remote machine with 384 vCPUs for 6.2 hours (\path{notes/spend.md}). The raw records (one row and one trajectory per run, 1.2\,GB;
+local copy \path{data/regime_map/}, with the fix-round reruns and the tensor-kernel cache in
+\path{data/regime_map_local/}) are not in the repository; \cref{app:reproducibility} says how to regenerate
+them.
 
 \subsection{Covariance and teacher experiments}\label{app:exp-data-teacher}
 Settings of \cref{sec:covariance-teacher}. Experiment folder \path{experiments/data_teacher/} (README with
@@ -693,3 +800,148 @@ binary8 Adam runs recorded only every 10 steps, and the first finite-sample swee
 (\texttt{implicit\_bias\_b4}, 288 runs, one data draw per initialization). The pilots
 (\texttt{pilot\_calib}, \texttt{pilot\_trap}) support no claim. Raw trajectories (one file per run,
 2.2\,GB) are not in the repository; \cref{app:reproducibility} says how to regenerate them.
+
+\subsection{Real data}\label{app:exp-real-data}
+Settings of \cref{sec:real-data}. Experiment folder \path{experiments/real_data/} (README with every command
+in order; YAML configurations in \path{configs/}); findings in \path{notes/real_data.md}, whose section 8
+(fix round) supersedes its sections 4--7 and whose section 9 holds the pre-registered order test; review
+in \path{notes/reviews/real_data_round1.md}.
+
+\paragraph{Data and model.}
+MNIST (torchvision mirror) and Fashion-MNIST, fetched and downsampled by \path{download.py}: images cropped
+to the central $24\times24$ pixels and block-averaged to $4\times4$ ($6\times6$ blocks) or $8\times8$ ($3\times3$ blocks),
+intensities in $[0,1]$. Tasks: MNIST 3 ($y=+1$) against 5 ($y=-1$); Fashion-MNIST sneaker (7) against ankle
+boot (9), chosen before any run for a visible shape difference at $4\times4$. Balanced subsamples of 4000
+training and 1600 test images, data seed 0. Site features $\feat{}(x)=(\cos\frac{\pi x}2,\sin\frac{\pi x}2)$
+(\emph{raw}), or per site $A_i\feat{}$ with $A_i\E[\feat{}\feat{}\T]A_i\T=\Id$ (\emph{white}; uncentred second moment,
+eigenvalues floored at $10^{-3}$ of the largest), which keeps the function class. Model
+$f(x)=\ip{\W}{\bigotimes_i\feat{}(x_i)}$ and loss $\frac1{2\nsamp}\sum_j(f(x_j)-y_j)^2$; in the regime sweep the
+centred model trains $f-f_0$. Trees from \path{data.make_tree}: binary16 ($\Kc=15$) and MPS16 ($\Kc=16$),
+binary64 ($\Kc=63$) and MPS64 ($\Kc=64$) for $8\times8$ images; $\chi=4$ ($8$ in one sweep, where the bottom bonds
+are capped at 4 by their two-pixel cut). Pixel orders (\path{data.pixel_order}; site $s$ carries pixel
+$\mathrm{order}[s]$, pixels numbered row by row): quadtree (Morton key, column bit lowest), snake
+(boustrophedon rows), scrambled$k$ (random permutation from \path{numpy.random.default_rng}$(k+12345)$),
+and for the order test quadtreeT (Morton order of the transposed image), rowmajor, colmajor, hilbert
+(Hilbert curve) and mortonrev (site $s$ carries the pixel whose Morton key is $s$ with its bits
+reversed). Fan-in initialization \eqref{eq:init} at per-core scale $\isc$ with initialization seeds
+0--4, independent of the data seed. Double precision, one thread per process.
+
+\paragraph{Dynamics} (\path{run.py}).
+Phase 1: Dormand--Prince 5(4) with relative and absolute tolerances $10^{-8}$ and $10^{-14}$, the clock
+re-anchored ($t\to0$, offset kept) whenever an accepted step is shorter than $10^{-9}t$, so that escapes at
+$t\sim10^{15}$--$10^{20}$ are resolved; it stops at the first accepted step at which the loss has fallen
+by $1\%$ of $\Loss(0)$ (time $t_a$). Phase 2: LSODA with the same tolerances on the clock $\tau=t-t_a$, with the
+Gauss--Newton part of the Hessian (closed-form per-sample Jacobians) as Newton matrix, up to
+$\tau=10^4$ ($3000$ for $8\times8$ images; $\min(3000,10^4$ kernel units$)$ in the regime sweep, a kernel unit
+being $128/\tr\TK$ at $t_a$). Records: 30 logarithmic times per decade, 1000 linear times (600 for $8\times8$)
+and the library's fine rows, merged for every event time. Conservation drift (cumulative, relative to
+the largest squared core norm) at most $4.6\cdot10^{-8}$, median $1.8\cdot10^{-9}$ over the 234 main runs.
+Two cases rerun with tolerances $10^{-10}$ and $10^{-16}$ (\texttt{tol\_check}) agree in $t_a$ to 7 digits, in
+the final loss to 6, and in later drop times to $0.1\%$; the first drop ($\tau\approx10$--$15$) moves by
+$0.2$--$0.8$ time units, below every gap reported.
+
+\paragraph{Events and analyses.}
+\begin{itemize}
+  \item \emph{Loss drops} (\path{analysis.py}): peaks of $-\dd\Loss/\dd t$ that stand out by a factor 3
+    against the minima separating them from higher peaks and lower the loss by at least $1\%$ of
+    $\Loss(0)$; time: the peak; width: its full width at half maximum. Widths by progress (from $10\%$ to
+    $90\%$ of a drop) are not used, since the loss creeps between drops and such widths measure the
+    creep. Separation ratios and the S2S signature as in \cref{sec:setup-diagnostics}, with these drops.
+  \item \emph{Data-weighted bond spectra} (\path{data.function_spectra}): across edge $e$ the network
+    computes $f(x)=\sum_au_a(x)v_a(x)$, with messages $u_a$ from below the edge and $v_a$ from above it; the
+    Schmidt values are the square roots of the eigenvalues of $G_u^{1/2}G_vG_u^{1/2}$, where $G_u$ and $G_v$
+    are the Gram matrices of the two messages on the training set. They are gauge invariant and equal
+    the Frobenius spectra under a product law with identity second moments (checked to
+    $2\cdot10^{-12}$). Frobenius spectra are not used: after the escape $\normF{\W}$ grows to
+    $10^6$--$10^7$ along directions the data barely see.
+  \item \emph{Rank events}: $\bs ek/\bs e1$ crossing $0.05$ (log-interpolated); an edge belongs to a drop if
+    it crosses inside the drop's half-maximum window widened by one width on each side. Crossings already
+    met at $\tau=0$ are flagged as unresolved.
+  \item \emph{First-route gaps} (\path{scaling.py}): gap $=$ drop 1 $-$ drop 0 on the $\tau$ clock; a route's
+    drop is the one whose widened window contains its rank crossing, and points where it rose between
+    drops, merged with drop 0, or where another route rose first are excluded with their reason. Clean
+    series: one (order, seed) whose first route, one sibling pair, rises inside drop 1 at every $\isc$, with at
+    least four $\isc$ over at least half a decade (11 series); full sweep: 91 of the 124 binary points
+    kept (16 between drops, 2 merged, 15 another route first), 10 seed series. Fits per seed: power law
+    by least squares in $\ln g$, log law and $A/\isc+B$ by weighted least squares with weights $1/g$; all
+    compared by the relative rms residual.
+  \item \emph{MPS edges}: time of each edge's first rise after the first drop, per seed over the seven
+    $\isc$, both laws fitted with relative residuals (\path{scaling.py}, \texttt{edge\_scaling}).
+  \item \emph{Route amplitudes} (\path{route_amplitudes.py}). A binary TTN of bond rank one computes
+    $f=c\prod_vq_v$, $q_v=g_v\cdot\Feat_v$, over its bottom cores $v$, $\Feat_v$ the features of the two pixels
+    of $v$. For a pair $(u,w)$ of bottom cores, with the residual $r_j=f(x_j)-y_j$ and $h_{uw}=c\prod_{v\ne u,w}q_v$,
+    \begin{equation}\label{eq:real-route-amplitude}
+      \mu_{uw}=\norm{P_uM_{uw}P_w}_2,\qquad
+      M_{uw}=\frac1\nsamp\sum_jr_j\,h_{uw}(x_j)\,\Feat_u(x_j)\Feat_w(x_j)\T,
+    \end{equation}
+    with $P_u=\Id-g_ug_u\T/\norm{g_u}^2$; $k_{uw}$ is the number of cores of the tree path from $u$ to $w$.
+    Evaluated for all 28 pairs at the plateau midpoint (minimum of $\norm{\dot\params}$ between the first
+    two drops, reached by re-integrating from the end of phase 1). States farther than $0.05$ (relative) from a rank-one product are
+    dropped (28 of 124). Units (\path{analysis.route_units}): rank-one states of the same (order, seed)
+    whose normalized patterns $\mu_{uw}^2/\sum\mu^2$ differ by less than $0.2$ in total variation and whose
+    plateau losses differ by less than $0.01$; 96 states form 26 units in the 20 (order, seed) pairs.
+  \item \emph{Hessians} (\path{plateau_hessians.py}): exact Hessian (dense residual tensor) at the
+    plateau midpoint (minimum $\norm{\dot\params}$ between the first two drops), raw and gauge-projected
+    (\cref{sec:setup-diagnostics}); exponents per seed over the runs at the common plateau level
+    ($\Loss\in[0.265,0.275]$ binary, $[0.225,0.235]$ MPS; $[0.31,0.345]$ on Fashion-MNIST, pooled).
+  \item \emph{Regime sweep} (\path{regime_analysis.py}): kernel on the first 128 test images; labels by
+    \cref{tab:regimes} without the convergence rule, which no $\chi=4$ network meets on 4000 labels (lazy if
+    $\dTK(T)<0.1$; S2S if at least two drops, all $\sep{}>3$; rich otherwise); the linearized model at
+    $\params(t_a)$ in closed form, with its floor $\Loss_{\rm lin}(\infty)$.
+  \item \emph{Order test} (\path{order_predictor.py}, \path{order_test.py}; registered analysis): the
+    best rank-one fit $f=\prod_vg_v\cdot\Feat_v$ of the labels from 32 starts (start $i$: unit $g_v$ from
+    \path{default_rng}$(1000+i)$, 50 steps of higher-order power iteration on $\frac1\nsamp\sum_jy_j\bigotimes_v\Feat_v(x_j)$,
+    rescaling to the least-squares amplitude, then alternating least squares until the relative loss
+    change is below $10^{-12}$ or 2000 sweeps), the lowest-loss fit balanced, $S$ from
+    \eqref{eq:real-route-amplitude} at that state; outcomes O1 (mean over seeds of $\Loss(10^4)$) and O2
+    (mean of $\log_{10}\tau(\Loss\le0.25)$ on the running minimum, censored at $10^4$); Spearman $\rho$ over
+    orders, percentile bootstrap intervals (10,000 resamples of orders) and two-sided permutation
+    $p$-values (10,000 permutations of $S$).
+\end{itemize}
+
+\paragraph{Sweeps and run counts.}
+\Cref{tab:exp-real-data}; 507 runs of the experiment's own configurations, plus the round-1 reviewers'
+runs with the same code (among them 11 binary runs in nine orders and three MPS chains in other orders,
+$\isc=0.1$, seeds 0 and 1; local copy \path{data/review_real_data/}), which enter only where the text says
+``review runs''. The main, regime, Fashion-MNIST, $\chi=8$ and $8\times8$ sweeps ran on one 64-core machine
+(about 60 processes, as the runs are bound by memory bandwidth); the fix-round reruns and the order test
+ran locally (the order test: 8 processes, 70 minutes).
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the experiment of \cref{sec:real-data}: configuration files in the folder
+    \texttt{configs/} of the experiment. Raw features and $\chi=4$ unless stated; scrambled orders are
+    random pixel orders on binary16.}
+  \label{tab:exp-real-data}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm}X
+      >{\raggedright\arraybackslash}p{3.7cm}r@{}}
+    \toprule
+    configuration & problem & $\isc$, seeds & runs \\
+    \midrule
+    \texttt{main} (+\texttt{main\_extra}) & MNIST 3/5, $4\times4$: quadtree, snake MPS, scrambled0, scrambled1,
+      scrambled2 (raw); quadtree, MPS, scrambled0 (white) & 7 values $0.05$--$0.5$ (scrambled1: 4, and 3 more
+      in \texttt{main\_extra}; scrambled2: 4; white: 5); 0--4 & 220 + 14 \\
+    \texttt{regime} & centred model, quadtree & $0.5$, $0.7$, $1$, $1.4$, $2$, $2.8$, $4$; 0--4 & 35 \\
+    \texttt{fashion} & Fashion-MNIST 7/9: quadtree, snake MPS, scrambled0 & $0.05$, $0.14$, $0.5$; 0--4 & 45 \\
+    \texttt{chi8}, \texttt{chi8b} & $\chi=8$: quadtree, snake MPS, scrambled0 (one sweep, two runners) &
+      $0.05$, $0.14$, $0.5$; 0--4 & 45 \\
+    \texttt{img8} & $8\times8$ images ($\Ns=64$): quadtree, snake MPS, scrambled0; $\tau\le3000$ & $0.1$, $0.3$; 0, 1 & 12 \\
+    \texttt{tol\_check} & tolerances $10^{-10}$, $10^{-16}$: quadtree, MPS & $0.1$; 0 & 2 \\
+    \texttt{fix1\_local} & reruns: four binary orders to $\tau=10^4$; MPS phase 1 & $0.1$; 0--4 & 25 \\
+    \texttt{fix1\_mps} & reruns: snake MPS, $\tau\le1000$ & as \texttt{main}; 0--4 & 35 \\
+    \texttt{extra\_orders} & order test: 27 orders on binary16 (7 runs reused) & $0.1$; 0--2 & 74 (+7) \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Checks and exclusions.}
+The fix-round reruns reproduce the committed main-sweep values: $t_a$ to $7\cdot10^{-15}$ (relative) and the
+final loss to 5 digits for the quadtree at $\isc=0.1$, and the timing of the first MPS rise within $0.07$ time
+units (median $0.01$). The round-1 review reproduced the first-plateau times to about $10^{-15}$, the gaps
+within $1.3\%$ and the Hessians and route amplitudes within $4\%$, and an independent reimplementation
+agreed. Excluded: the first-route points of other routes (above) and the 28 route-amplitude states that
+are not near rank one. The round-0 claims superseded by the fix round are listed in
+\path{notes/real_data.md}, section 8.13. Raw outputs (about 0.8\,GB, plus 0.2\,GB of local reruns; local
+copies \path{data/real_data/} and \path{data/real_data_local/}) are not in the repository; the JSON
+summaries in \path{results/} suffice to redraw the figures of \cref{sec:real-data}.

@@ -433,11 +433,14 @@ $\Jac_t=\partial\big(f_\params(x_1),\dots,f_\params(x_{\nprobe})\big)/\partial\p
 $\params(t)$. The gauge directions at $\params$ are the tangent vectors
 $(M\Gm{v}{e},-M\T\Gm{p}{e})$ of the orbits \eqref{eq:gauge}, for all bonds $e$ and
 $M\in\R^{\bd{v}\times\bd{v}}$.
-% TODO(regime-map): with multipliers or a mask, decide whether the kernel is J J^T or J D J^T
-% (the latter drives the function-space dynamics of eq:gf) and state it here.
-% Context: the regime-map review (notes/reviews/regime_map_round1.md, B item 3) found delta_K computed
-% from the 128-probe kernel, while the theory constants refer to the full tensor kernel; fix pending.
-% The code (ttn.runner, experiments/regime_map) computes J D J^T.
+With learning-rate multipliers or a mask the kernel is $\Jac_t\Pre\Jac_t\T$, the operator that drives the
+function-space dynamics of \eqref{eq:gf}. The relative kernel change $\dTK$ is computed, wherever the dense
+Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$, which covers the binary tree with $\Ns=4$ at every bond
+dimension used), from the tensor-space kernel $\Jac\Pre\Jac\T$ on $\R^{d^\Ns}$, $\Jac=\partial\W/\partial\params$,
+whose constants the theory of \cref{app:boundaries} gives; for whitened inputs the probe kernel is
+$\Feat(x_p)\T(\Jac\Pre\Jac\T)\Feat(x_{p'})$. Where the probe kernel was used instead it is named
+($\dTK^{\rm probe}$), as in the regime labels of \cref{sec:regime-map}; near the lazy boundary $\dTK^{\rm probe}$ is
+$0.54$--$1.11$ times $\dTK$ (median $0.78$).
 
 \begin{table}[t]
   \centering

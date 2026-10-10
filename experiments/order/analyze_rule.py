@@ -39,21 +39,46 @@ def main():
         K = key[1]
         r = runs.merge(s, on=keys + ["seed"])
         logtau = np.log(np.concatenate([s.tau1, s.tau2]))
+        seed_ids = s.seed.values
+        rng = np.random.default_rng(0)
+        half = rng.permutation(len(seed_ids))
+        fold = {sd: i % 2 for i, sd in zip(range(len(seed_ids)), seed_ids[half])}
+
+        def fit_q(sub):
+            xx = np.abs(np.concatenate([sub[f"{px}1"], sub[f"{px}2"]]))
+            lt = np.log(np.concatenate([sub.tau1, sub.tau2]))
+            ok = xx > 0
+            return np.polyfit(-np.log(xx[ok]), lt[ok], 1)[0]
+
+        def accuracy(rr, qq):
+            x1, x2 = np.abs(rr[f"{px}1"].values), np.abs(rr[f"{px}2"].values)
+            with np.errstate(divide="ignore"):
+                pred = np.log(x1) * qq > np.log(rr.rho.values) + np.log(x2) * qq
+            return np.mean(pred == (rr.winner.values == 0))
+
         for px in PROXIES:
             x = np.abs(np.concatenate([s[f"{px}1"], s[f"{px}2"]]))
             ok = x > 0
-            q, c = np.polyfit(-np.log(x[ok]), logtau[ok], 1)
+            q = fit_q(s)
             rho_s = spearmanr(x[ok], -logtau[ok]).statistic
-            x1, x2 = np.abs(r[f"{px}1"].values), np.abs(r[f"{px}2"].values)
-            with np.errstate(divide="ignore"):
-                pred_greedy = np.log(x1) * q > np.log(r.rho.values) + np.log(x2) * q
-            acc = np.mean(pred_greedy == (r.winner.values == 0))
-            rows.append(dict(zip(keys, key), proxy=px, q_fit=q, q_over_Km2=q / max(K - 2, 1),
-                             spearman=rho_s, order_accuracy=acc))
+            # SE of q: bootstrap over seeds (both components of a seed resampled together)
+            boot = [fit_q(s.iloc[rng.integers(0, len(s), len(s))]) for _ in range(200)]
+            # out-of-sample accuracy: q fitted on one half of the seeds, tested on the other
+            oos = []
+            for f in (0, 1):
+                train = s[[fold[sd] == f for sd in s.seed]]
+                test = r[[fold[sd] != f for sd in r.seed]]
+                oos.append(accuracy(test, fit_q(train)) * len(test))
+            rows.append(dict(zip(keys, key), proxy=px, q_fit=q, q_se=np.std(boot, ddof=1),
+                             q_over_Km2=q / max(K - 2, 1), spearman=rho_s,
+                             order_accuracy=accuracy(r, q),
+                             order_accuracy_oos=sum(oos) / len(r),
+                             order_accuracy_q_Km2=accuracy(r, max(K - 2, 1))))
         # exact race (tau) accuracy for reference
         acc = np.mean((r.tau1 < r.tau2 / r.rho).values == (r.winner.values == 0))
         rows.append(dict(zip(keys, key), proxy="tau (LO race)", q_fit=np.nan, q_over_Km2=np.nan,
-                         spearman=1.0, order_accuracy=acc))
+                         spearman=1.0, order_accuracy=acc, order_accuracy_oos=acc,
+                         order_accuracy_q_Km2=acc))
     df = pd.DataFrame(rows)
     df.to_csv(RES / f"{name}_rules.csv", index=False, float_format="%.4g")
     print(df.pivot_table(index=["tree", "d", "chi"], columns="proxy",

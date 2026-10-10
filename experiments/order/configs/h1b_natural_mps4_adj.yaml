@@ -1,0 +1,15 @@
+# H1b scope: natural wrong-order runs (random init) of the MPS4 pattern pair, adjacent cores 1, 2 (k = 2, shared bond chi_e = 4): predicted lambda_min = -s1 s2^((K-2)/K) with multiplicity chi_e - 1 = 3, the larger component is ADDED on a spare bond index (no rotation, nothing forgotten), t1 = ln(1/sigma)/|lambda| + const.
+# Seeds whose first event was the smaller component in the pat_mps4_adj sweep.
+name: h1b_natural_mps4_adj
+mode: natural
+from_sweep: pat_mps4_adj
+kind: mps
+n: 4
+d: 2
+chi: 4
+pattern: [[0, 0, 0, 0], [0, 1, 1, 0]]
+prediction: add
+rho: [0.8, 0.9]
+sigma: [0.01, 0.001, 0.0001]
+max_seeds: 40
+t_max: 1.0e+9

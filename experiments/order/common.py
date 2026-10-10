@@ -42,8 +42,23 @@ def _dir_option(flag: str, env: str, default: Path) -> Path:
         i = sys.argv.index(flag)
         value = sys.argv[i + 1]
         del sys.argv[i : i + 2]
+        os.environ[env] = value  # so that spawned (not forked) worker processes see it too
         return Path(value)
     return Path(os.environ.get(env, default))
+
+
+def default_procs() -> int:
+    """Worker processes: PROCS if set, else the CPUs this container may use (cgroup quota), else
+    os.cpu_count()."""
+    if "PROCS" in os.environ:
+        return int(os.environ["PROCS"])
+    try:
+        quota, period = open("/sys/fs/cgroup/cpu.max").read().split()
+        if quota != "max":
+            return max(1, int(quota) // int(period))
+    except (OSError, ValueError):
+        pass
+    return os.cpu_count() or 1
 
 
 def single_thread():
@@ -249,11 +264,35 @@ def init_proxies(spec: TTNSpec, teacher: CPTeacher, u0: np.ndarray, seed: int = 
 # ---- full trajectories and saddle diagnostics ----------------------------------------------------
 
 
+def slice_norms(spec: TTNSpec, teacher: CPTeacher, y) -> np.ndarray:
+    """(R, number of cores with physical legs): Frobenius norm of each core contracted with
+    component r's site vectors on its physical legs (the component's slice of that core)."""
+    cores = spec.unflatten(torch.as_tensor(np.asarray(y)))
+    t = spec.tree
+    phys = [v for v in range(t.n_nodes) if t.sites[v]]
+    out = np.empty((teacher.n_components, len(phys)))
+    with torch.no_grad():
+        for r in range(teacher.n_components):
+            red = reduced_cores(spec, cores, [teacher.factors[r, i] for i in range(teacher.n_sites)])
+            out[r] = [float(red[v].norm()) for v in phys]
+    return out
+
+
+def slice_floor_margin(spec, teacher, y, floor=1e-14) -> float:
+    """min over components and cores of (slice norm) - floor x (largest core norm). Negative means
+    some component's slice is at float64 roundoff relative to the learned cores: its route is dead,
+    and any later growth would be seeded by roundoff."""
+    cores = spec.unflatten(torch.as_tensor(np.asarray(y)))
+    scale = max(float(c.norm()) for c in cores)
+    return float(slice_norms(spec, teacher, y).min() - floor * scale)
+
+
 def gf_trajectory(spec, teacher, y0, t_max, loss_stop=1e-10, rtol=1e-10, atol=1e-15,
-                  method="LSODA", dead_floor=1e-25):
-    """Full gradient flow with dense output until L < loss_stop * L(0), until some component's
-    overlap |a_r| decays below `dead_floor` (its escape route has died: the run is stalled, since
-    any later escape would be seeded by roundoff), or t_max.
+                  method="LSODA", slice_floor=1e-14):
+    """Full gradient flow with dense output until L < loss_stop * L(0), until some component's slice
+    of some core falls to `slice_floor` x the largest core norm (its route has died: stalled; any
+    later escape would be seeded by roundoff), or t_max. (An overlap-based stop would also fire when
+    a component is forgotten during a rotation, H1b, although its slices stay at the init scale.)
 
     Later plateaus sit near learned saddles with O(1) positive curvature, which makes explicit
     integrators step-size limited over plateaus of length sigma^-(k-2); the default is therefore
@@ -266,7 +305,7 @@ def gf_trajectory(spec, teacher, y0, t_max, loss_stop=1e-10, rtol=1e-10, atol=1e
             return loss(torch.from_numpy(y)).item() - loss_stop * l0
 
     def dead(t, y):
-        return np.abs(overlaps(spec, teacher, y)).min() - dead_floor
+        return slice_floor_margin(spec, teacher, y, slice_floor)
 
     dead.terminal = True
     dead.direction = -1
@@ -306,13 +345,16 @@ def projected_hessian(spec, teacher, y):
     return eigs.numpy(), spec.n_params - gauge_complement(u).shape[1], raw.numpy()
 
 
-def gf_events(spec, teacher, y0, t_max, rtol=1e-9, atol=1e-14, loss_floor=1e-8, dead_floor=1e-25):
+def gf_events(spec, teacher, y0, t_max, rtol=1e-9, atol=1e-14, loss_floor=1e-8, slice_floor=1e-14,
+              stall_stop=True):
     """Gradient flow (LSODA + exact Hessian) with exact event location of the first up-crossing of
-    every a_r = 1/2; stops when L < loss_floor L(0) (converged), when min_r |a_r| < dead_floor (some
-    route has died: stalled, any later escape would be seeded by roundoff), or at t_max.
+    every a_r = 1/2; stops when L < loss_floor L(0) (converged), when some component's slice falls
+    to `slice_floor` x the largest core norm (route dead at float64 roundoff: 'stalled'; only if
+    stall_stop), or at t_max.
 
-    Returns (times (R,), final overlaps, final loss, min |a_r| before its event (R,), status, t_end,
-    number of steps); status 'converged', 'stalled', 't_max' or 'failed'."""
+    Returns a dict: times (R,), final overlaps, final loss, min |a_r| before its event (R,),
+    min slice-norm margin ratio before its event (R,: min_v |slice_rv| / max_v |G_v|), status
+    ('converged', 'stalled', 't_max', 'failed'), t_end, number of steps."""
     loss, rhs = loss_grad_fn(spec, teacher)
     l0 = loss(torch.from_numpy(y0)).item()
     n = teacher.n_components
@@ -328,7 +370,7 @@ def gf_events(spec, teacher, y0, t_max, rtol=1e-9, atol=1e-14, loss_floor=1e-8, 
             return loss(torch.from_numpy(y)).item() - loss_floor * l0
 
     def dead(t, y):
-        return np.abs(overlaps(spec, teacher, y)).min() - dead_floor
+        return slice_floor_margin(spec, teacher, y, slice_floor)
 
     done.terminal = dead.terminal = True
     dead.direction = -1
@@ -336,15 +378,25 @@ def gf_events(spec, teacher, y0, t_max, rtol=1e-9, atol=1e-14, loss_floor=1e-8, 
     def jac(t, y):
         return -torch.autograd.functional.hessian(loss, torch.from_numpy(y), vectorize=True).numpy()
 
+    events = [up(r) for r in range(n)] + [done] + ([dead] if stall_stop else [])
     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac,
-                    events=[up(r) for r in range(n)] + [done, dead])
+                    events=events)
     times = np.array([te[0] if len(te) else np.inf for te in sol.t_events[:n]])
     a_steps = np.array([overlaps(spec, teacher, y) for y in sol.y.T])
-    min_dormant = [float(np.abs(a_steps[sol.t < times[r], r]).min()) if np.any(sol.t < times[r])
-                   else float("nan") for r in range(n)]
+    ratios = []
+    for y in sol.y.T:
+        scale = max(float(c.norm()) for c in spec.unflatten(torch.from_numpy(y)))
+        ratios.append(slice_norms(spec, teacher, y).min(axis=1) / scale)
+    ratios = np.array(ratios)
+    before = [sol.t < times[r] for r in range(n)]
+    min_dormant = [float(np.abs(a_steps[b, r]).min()) if b.any() else float("nan")
+                   for r, b in enumerate(before)]
+    min_slice = [float(ratios[b, r].min()) if b.any() else float("nan")
+                 for r, b in enumerate(before)]
     status = ("failed" if sol.status < 0 else "converged" if len(sol.t_events[n])
-              else "stalled" if len(sol.t_events[n + 1]) else "t_max")
+              else "stalled" if stall_stop and len(sol.t_events[n + 1]) else "t_max")
     with torch.no_grad():
         l_end = loss(torch.from_numpy(sol.y[:, -1])).item()
-    return (times, overlaps(spec, teacher, sol.y[:, -1]), l_end, min_dormant, status,
-            float(sol.t[-1]), len(sol.t))
+    return dict(times=times, final_a=overlaps(spec, teacher, sol.y[:, -1]), final_loss=l_end,
+                min_dormant=min_dormant, min_slice=min_slice, status=status,
+                t_end=float(sol.t[-1]), n_steps=len(sol.t))

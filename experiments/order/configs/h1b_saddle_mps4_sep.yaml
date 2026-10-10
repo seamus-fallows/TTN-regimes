@@ -1,0 +1,14 @@
+# H1b scope (review order_round1, item 1): MPS4 pattern pair on non-adjacent cores 0, 2 (m = 2, k = 3): predicted rotation, lambda_min = -(s1-s2) s2^((K-2)/K), smaller component forgotten and relearned.
+# Start at the balanced wrong saddle (smaller component learned) + fan-in perturbation sigma.
+name: h1b_saddle_mps4_sep
+mode: saddle
+kind: mps
+n: 4
+d: 2
+chi: 4
+pattern: [[0, 0, 0, 0], [1, 0, 1, 0]]
+prediction: rotation
+rho: [0.5, 0.8, 0.9]
+sigma: [1.0e-2, 1.0e-3, 1.0e-4, 1.0e-5, 1.0e-6, 1.0e-7]
+seeds: 8
+t_max: 1.0e+9

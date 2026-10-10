@@ -94,6 +94,38 @@ def main():
                 if k.sum() >= 5:
                     boot.append(fit_power(sig, k, np.full(len(sig), len(w)))[0])
             rec.update(gamma=gam, gamma_se_binomial=se, gamma_se=np.std(boot, ddof=1), C=c)
+            # goodness of fit of the power law over the full range (binomial deviance, df =
+            # points - 2; points with the same seeds are not independent, so the p-value is only
+            # indicative) and local slopes between consecutive sigma with seed-bootstrap SE
+            kk, nn = g["sum"].values, g["count"].values
+            pfit = np.clip(c * g.sigma.values ** gam, 1e-12, 1 - 1e-12)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                dev = 2 * np.nansum(np.where(kk > 0, kk * np.log(kk / (nn * pfit)), 0)
+                                    + np.where(nn - kk > 0, (nn - kk) * np.log((nn - kk) / (nn * (1 - pfit))), 0))
+            from scipy.stats import chi2 as chi2_dist
+            dof = max(len(kk) - 2, 1)
+            rec.update(deviance=dev, deviance_dof=dof, gof_p=1 - chi2_dist.cdf(dev, dof))
+            order = np.argsort(sig)[::-1]
+            pw = wide.values.mean(0)
+            loc = []
+            for a, b in zip(order[:-1], order[1:]):
+                if pw[a] > 0 and pw[b] > 0:
+                    sl = np.log(pw[a] / pw[b]) / np.log(sig[a] / sig[b])
+                    bs = []
+                    for _ in range(200):
+                        w = wide.values[rng.integers(0, len(wide), len(wide))]
+                        pa, pb = w[:, a].mean(), w[:, b].mean()
+                        if pa > 0 and pb > 0:
+                            bs.append(np.log(pa / pb) / np.log(sig[a] / sig[b]))
+                    loc.append(f"{sig[a]:g}->{sig[b]:g}: {sl:.3f}+-{np.std(bs, ddof=1):.3f}")
+            rec["local_slopes"] = "; ".join(loc)
+            # nesting: wrong-order seeds at a smaller sigma that are also wrong at the next larger one
+            nest = []
+            for a, b in zip(order[:-1], order[1:]):
+                small, big = wide.values[:, b] == 1, wide.values[:, a] == 1
+                if small.any():
+                    nest.append(np.mean(big[small]))
+            rec["nested_frac_min"] = min(nest) if nest else np.nan
             # asymptotic regime only (sigma <= 0.01), where P(wrong) is further from saturation
             small = wide.columns.values <= 0.01
             if wide.values[:, small].sum() >= 5 and small.sum() >= 3:

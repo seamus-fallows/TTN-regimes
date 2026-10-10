@@ -1,0 +1,3 @@
+tree,R,rho,sigma,n,n_used,n_converged,n_stalled,n_tmax,n_floor_flag,unresolved_ties,learned_at_stop,p_greedy_order,p_greedy_order_se,p_greedy_order_model,p_greedy_order_model_all,z_vs_model,race_greedy_used,race_greedy_excluded,race_first_excluded,race_first_used,unlearned,kendall_greedy,kendall_greedy_se,kendall_greedy_model,race_exact_order,race_first_agree,race_kendall,p_first_1,p_first_2,p_first_3,p_first_4
+binary8,4,0.8,0.25,11,0,0,0,11,0,0,3:11,,,0.1142,0.1142,,,0,1:3 2:2 3:4 4:2,1:0 2:0 3:0 4:0,1:6 2:1 3:1 4:3,,,0.3149,,,,0,0,0,0
+mps6,4,0.8,0.2,11,0,0,0,11,0,0,2:7 3:4,,,0.1476,0.1476,,,0.09091,1:4 2:4 3:3 4:0,1:0 2:0 3:0 4:0,1:2 2:3 3:6 4:7,,,0.3687,,,,0,0,0,0

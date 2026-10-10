@@ -45,6 +45,9 @@ scipy RK45 integrator on 1937 matched runs (`pilots/interim.py`, labels agree in
 | `lazy_theory.py`, `lazy_predict.py`, `pilots/lazy_pred_b8.py` | lazy-limit predictions at init (residual, kappa) by linear response |
 | `balance.py` | gauge-balanced init (same W_0, every Q_e = 0) |
 | `plots.py`, `make_figures.py` | figure functions and the script that regenerates all figures and tables |
+| `report_tables.py` | report tables in `results/report/` from the raw runs (per-run tables of the N = 4 map, the K sweeps and large chi; floors, imbalance map, stall test, sweep inventory) |
+| `plot_report.py` | the report figures `results/report_map.pdf` (Sec. 3) and `results/report_other.pdf` (Sec. 5.1-5.4), from committed tables only |
+| `report_numbers.py` | the derived numbers quoted in Sec. 3 and 5.1-5.4, from committed tables only (`results/report/numbers.csv`) |
 | `pilots/` | throwaway pilots from before the library landed (kept for the record; `interim.py` is the scipy cross-check driver) |
 | `results/` | figures, per-seed tables (CSV), lazy predictions |
 
@@ -69,6 +72,10 @@ uv run python experiments/regime_map/fix_round1.py tensor  --raw RAW --tensor-ca
 uv run python experiments/regime_map/fix_round1.py analyse --raw RAW --tensor-cache CACHE --local LOCAL --force
 REGIME_MAP_TENSOR_CACHE=CACHE uv run python experiments/regime_map/make_figures.py --raw RAW --force
 # (fix_round1.py run --raw LOCAL --n-proc 12: the local reruns made before the copy arrived)
+# 4. report tables (results/report/, from the raw runs) and report figures (from committed tables only)
+uv run python experiments/regime_map/report_tables.py --raw RAW --tensor-cache CACHE [--force]
+uv run python experiments/regime_map/report_numbers.py
+uv run python experiments/regime_map/plot_report.py
 ```
 Raw outputs are not in git; rerunning step 1 regenerates them (seeded; ~2-4 h on 350 cores). A copy of
 the remote outputs is in `data/regime_map/` of the main checkout (2026-10-10, read-only); fix-round

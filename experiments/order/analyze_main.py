@@ -180,11 +180,17 @@ def main():
     RES.mkdir(exist_ok=True)
     summ.to_csv(RES / f"{name}_summary.csv", index=False, float_format="%.5g")
     per_setting.to_csv(RES / f"{name}_settings.csv", index=False, float_format="%.5g")
+    # d pairs share seeds (and the first core's random draws) between d = 2 and d = 4 and across
+    # rho, so no significance test is made here; see d_test_* configs (independent seeds)
     dp = d_pairs(summ)
     dp.to_csv(RES / f"{name}_d_pairs.csv", index=False, float_format="%.4g")
-    if len(dp):
-        print(dp.groupby("tree").z.agg(["count", "mean", lambda z: np.sum(z**2)]).rename(
-            columns={"<lambda_0>": "chi2"}).to_string())
+    # GF P vs pooled race curve: per-seed agreement is 100% on MPS, so any offset is a property of
+    # the shared seed sample (realized pairs vs all pairs of the pooled blow-up times)
+    off = summ.assign(offset=summ.p_greedy - summ.race_curve)
+    off = off.groupby(off.tree.str.startswith("mps").map({True: "mps", False: "binary"})).offset.agg(
+        ["mean", "std", "count", lambda x: np.mean(x < 0)]).rename(columns={"<lambda_0>": "frac_neg"})
+    off.to_csv(RES / f"{name}_race_offset.csv", float_format="%.4g")
+    print(off.to_string())
     plot_pg_vs_rho(summ, seeds, name)
     plot_spread(per_setting, summ, name)
     with pd.option_context("display.width", 200, "display.max_rows", 500):
