@@ -545,8 +545,9 @@ def fig_first_route_clean(fix1_json, out):
     axes[0].plot(xs, 10 / xs, color=MUTED, lw=0.8, ls="--", label=r"$\propto\sigma^{-1}$")
     axes[0].set_ylabel(r"gap between loss drops 0 and 1 ($\tau$)")
     axes[1].set_ylabel(r"$\sigma\times$ gap")
-    axes[0].set_title(r"lines: fits $A/\sigma + B$", fontsize=8)
-    axes[1].set_title(r"$A/\sigma+B$ is a line of slope $B<0$", fontsize=8)
+    # the offset is written t_0 in the report (B is the minibatch size there)
+    axes[0].set_title(r"lines: fits $A/\sigma + t_0$", fontsize=8)
+    axes[1].set_title(r"$A/\sigma+t_0$ is a line of slope $t_0<0$", fontsize=8)
     for ax in axes:
         ax.set_xlabel(r"$\sigma$")
     _sigma_ticks(axes[0])

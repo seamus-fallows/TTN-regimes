@@ -437,11 +437,11 @@ seeds (over series for the free gap exponent below).
     largest sibling coupling exceeds the second by a median factor $60$ (quadtree) and $5$ (scrambled
     orders). Degree comes before coupling: in 95 of the 96 states (25 of the 26 units) the largest of the 28
     couplings lies on a route with $k=5$ or $7$, yet a sibling pair rises first (\cref{rem:A-sequence}).
-  \item \emph{The $k=3$ gap is $A/\isc+B$, not logarithmic} \empirical{} \newresult{} (\cref{fig:real-gaps}).
+  \item \emph{The $k=3$ gap is $A/\isc+t_0$, not logarithmic} \empirical{} \newresult{} (\cref{fig:real-gaps}).
     Over the 11 series (one per order and seed) whose first route, one sibling pair, rises inside the
     second loss drop at every $\isc$ (at least four values over at least half a decade), the gap between the
-    first two drops fits $A/\isc+B$, the $k=3$ law \eqref{eq:locality-rule} with its $O(1)$ correction
-    (\cref{prop:A-head-start}), with relative rms residual at most $0.060$ and $B<0$ in all 11; the log law of a
+    first two drops fits $A/\isc+t_0$, the $k=3$ law \eqref{eq:locality-rule} with its $O(1)$ correction
+    (\cref{prop:A-head-start}), with relative rms residual at most $0.060$ and $t_0<0$ in all 11; the log law of a
     two-core route leaves $0.11$--$0.30$. A free exponent ($1.22\pm0.03$, range $1.06$--$1.36$) mostly measures
     the offset and depends on the $\isc$ range. All 11 series use raw features; the verdicts also hold over
     all 124 binary runs (\cref{app:supp-cov}).
@@ -471,8 +471,8 @@ seeds (over series for the free gap exponent below).
   \caption{First route after the escape on binary16 (MNIST 3 against 5, $\chi=4$): gap between the
     first two loss drops ($\tau$ clock) against $\isc$, for the 11 series (one per order and seed; colour and
     marker: order) whose first route, one sibling pair, rises inside the second drop at every $\isc$. Left:
-    log--log axes; lines: $A/\isc+B$ fitted with relative residuals; dashed: $\propto\isc^{-1}$. Right:
-    $\isc$ times the gap, in which $A/\isc+B$ is a line of slope $B$. Takeaway: every series follows the $k=3$
+    log--log axes; lines: $A/\isc+t_0$ fitted with relative residuals; dashed: $\propto\isc^{-1}$. Right:
+    $\isc$ times the gap, in which $A/\isc+t_0$ is a line of slope $t_0$. Takeaway: every series follows the $k=3$
     law with a negative $O(1)$ offset; a logarithmic law fails (source: \cref{tab:repro-figures}).}
   \label{fig:real-gaps}
 \end{figure}
@@ -508,7 +508,7 @@ seeds (over series for the free gap exponent below).
     star teachers & started at the larger learned component ($\varepsilon\le10^{-3}$) the flow leaves it iff
       $\lambda_{\max}(\Gamma)>\tw q$; from random initialization it never sits there; log time on MPS4, polynomial
       on HT4 & piggyback graph; rates within $0.21\%$ \\
-    real data (MNIST) & as for a generic teacher: binary first route a sibling pair, gap $A/\isc+B$;
+    real data (MNIST) & as for a generic teacher: binary first route a sibling pair, gap $A/\isc+t_0$;
       MPS later routes logarithmic (6 of 9 edges); plateaus creep; the pixel order sets the final loss at
       small $\isc$ (locality in the image neither necessary nor sufficient) & route counting with
       $Y=\E[y\Feat]$ for $\Wt$; route couplings (first route; ranking of orders, pre-registered) \\
