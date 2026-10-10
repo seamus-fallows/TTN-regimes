@@ -1,5 +1,9 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
+> **2026-10-10, verification of round 2:** errata E1-E19 of `notes/reviews/regime_map_round3_verification.md`
+> are applied below (summary items 4 and 7, items (j) and (k), decisions 22, 24 and 25, caveats, two log
+> lines), marked "(E#)"; the full list is in `notes/regime_map.md` section 4.9.
+
 Status: done - Branch: agent/regime-map - Updated: 2026-10-10 15:36 UTC
 
 > This body was rewritten after round 2 (2026-10-10).
@@ -34,12 +38,18 @@ Status tags as in the notes.
 4. **The S2S boundary rises with K:** 0.17, 0.49, 0.61, 0.68, 0.75 at K = 3-7 (round 1, centred, d = 2,
    chi = 4). Round 1 could not decide its large-K limit.
    - Round 2 (realizable problems, d = 2 and 3, item (j)): in the plain model with spare channels, at
-     K >= 8, 85 of 96 seeds stay S2S up to the sigma where the init function itself overlaps the
-     teacher components. That scale tends to sqrt(d), and the seeds' lower bounds 1.2-2.0 lie above
-     both candidate laws, sigma^K = const and sigma^K / sqrt(D) = const.
-   - So sigma_c does not tend to 1 there (H4 rejected for the plain model, empirical).
-   - The mechanism is the plain model unlearning W_0 on the plateau (H_W, confirmed by core
-     shrinkage).
+     K >= 8, 85 of 96 seeds are censored from above (E2). 76 stay S2S-like at every sampled sigma up
+     to the sigma where the init function itself overlaps a teacher component at 0.1 (the event
+     rule's domain limit), and 9 were still S2S-like when the budget ended. The other 11 cross, all
+     below sqrt(d): 0.86-1.37 at d = 2, and one seed of 48 at d = 3, at 1.08 (E1, E5).
+   - The domain limit has median about sqrt(d) at K = 8-15 but tends to about 1.15 sqrt(d), not
+     sqrt(d) (E4). The lower bounds at K >= 8 (1.07-2.03, E12) lie above 1 and above both candidate
+     laws, sigma^K = const and sigma^K / sqrt(D) = const, extrapolated from the resolved cells.
+   - So sigma_c does not tend to 1 there (H4 rejected for the plain model at K <= 15, empirical; the
+     comparison uses the domain censoring and was not pre-registered).
+   - A candidate mechanism is the plain model unlearning W_0 on the plateau (H_W). It is consistent
+     with the data but not confirmed: the measured core shrinkage is required by an exact norm
+     identity, and the causal step to the boundary is untested (conjecture; E3).
    - In the centred model with full bonds (K <= 8 at d = 2, K <= 4 at d = 3), the two laws are not
      resolved (beta = -0.07 +- 0.51).
    - sigma_c -> sqrt(d) remains a conjecture.
@@ -52,7 +62,8 @@ Status tags as in the notes.
    - delta_K saturates at ~0.6, the lower edge of P20's 0.6-0.7.
    - A heavy root is lazy from alpha = 100 (tensor-kernel labels), as at balance.
 7. **Tensor-kernel labels** (item (k)): relabelling the N = 4 maps with the tensor-space kernel instead
-   of the 128-probe kernel changes few labels and moves the lazy boundaries up by about 5%.
+   of the 128-probe kernel changes few labels and moves the lazy boundaries up by about 5% (1-9%;
+   14-15% at chi = 6-9; E18).
 
 ## Results
 All numbers: whitened inputs, exact population loss, odeco teacher [3, 2, 1] (d = 3) or [3, 2]
@@ -138,7 +149,8 @@ linear grid (last upward 1/2-crossing before the component first reaches 0.9), 6
 - The tensor kernel matches the library to 2e-16 (verified independently).
 
 **(j) Round 2: sigma_c(K) in realizable problems** (pre-registered in notes section 4 before any run,
-amendments 4.6, results 4.7, answer 4.8; tables and figures in `results/round2/`).
+f57a28c at 12:26 UTC (E7); amendments 4.6, results 4.7, answer 4.8, errata 4.9; tables and figures in
+`results/round2/`).
 - **Design.**
   - Arm P: plain model (target W*, realizable), chi = 4 = 2R, teacher (3, 2) at both d = 2 and 3,
     binary_tree(N) with N = 4-16 (K = 3-15), 6 seeds. Adaptive per-seed sigma walker, 1,070 runs.
@@ -150,32 +162,39 @@ amendments 4.6, results 4.7, answer 4.8; tables and figures in `results/round2/`
 | | arm P (plain, chi = 4) | arm C (centred, full bonds) |
 |---|---|---|
 | median sigma_c, d = 2, K = 3 / 5 / 7 / 8 | 0.16 / 0.59 / 0.78 / 1.12 (2 of 6 seeds) | 0.16 / 0.50 / 0.81 / 0.83 |
-| seeds S2S-like up to the event-rule domain limit | 97/156 (85/96 at K >= 8; all at d = 3, K >= 8) | 0 |
+| seeds censored from above (S2S-like at every sampled sigma up to the event-rule domain limit, or open at the end of the budget) | 97/156 (88 domain, 9 open); 85/96 at K >= 8 (76 domain, 9 open); d = 3, K >= 8: 47/48, one seed crosses at 1.08 (E1, E2) | 0 |
 | lower bounds at K >= 11 (median) | 1.45 (d = 2), 1.69 (d = 3) | - |
 | pre-registered beta, rho* = 3 (cells with <= 2 censored seeds) | 1.21 +- 0.22 ("H_B favoured"; 0.61 +- 0.51 without shrinkage cells; 0.72 +- 0.56 at rho* = 2) | -0.07 +- 0.51 (unresolved) |
 | censored (Tobit) beta over all seeds, not pre-registered | 3.15 +- 0.23 (rejects both laws) | -0.17 +- 0.55 |
-| d-ratio sigma_c(3) / sigma_c(2) | 1.27, 1.13, 1.57, 0.89 at K = 3-6 (CIs contain 1 and 1.27) | 0.93, 0.73 at K = 3, 4 (chi differs with d) |
+| d-ratio sigma_c(3) / sigma_c(2) | 1.27, 1.13, 1.57, 0.89 at K = 3-6 (CIs at K = 3-5 contain 1 and H_B's 1.27-1.31; at K = 6 [0.64, 1.22] excludes 1.27, with 3 of 6 d = 3 seeds censored; E15) | 0.93, 0.73 at K = 3, 4 (chi differs with d) |
 
 - **Answer.**
-  - In the plain model sigma_c does not tend to 1. At K >= 8 the S2S region reaches the sigma at which
-    W_0 itself overlaps a teacher component at 0.1, which tends to sqrt(d). Above that the event rule
-    does not apply.
+  - In the plain model sigma_c does not tend to 1. At K >= 8, for 85 of 96 seeds the S2S region
+    reaches the sigma at which W_0 itself overlaps a teacher component at 0.1 (76 seeds) or was still
+    open when the budget ended (9); above that sigma the event rule does not apply. The other 11 seeds
+    cross below sqrt(d) (E1, E2, E5). The domain limit's median is about sqrt(d) at K = 8-15 and tends
+    to about 1.15 sqrt(d) (E4).
   - All 97 censored lower bounds exceed both laws' predictions. H4 (sigma_c -> 1) is rejected for the
-    plain model (empirical).
-  - Mechanism H_W: before the first escape the plain model shrinks its cores (unlearns W_0). The
-    median loss of squared core norm is 0.1% at x_W = sigma^K sqrt(D) / (s_2 d) < 0.01, 10% at x_W ~ 1,
-    52% at 1e2 and 92% above 1e4, and 0 in the centred model. Near the top of the S2S block rho stops
-    falling with sigma.
+    plain model at K <= 15 (empirical). The bounds hold at the sampled sigmas only (E13).
+  - H_W: before the first escape the plain model shrinks its cores (unlearns W_0). The median loss of
+    squared core norm is 0.1% at x_W = sigma^K sqrt(D) / (s_2 d) < 0.01, 10% at x_W ~ 1, 52% at 1e2
+    and 92% above 1e4, and 0 in the centred model. Near the top of the S2S block rho stops falling
+    with sigma. These numbers are empirical. That the shrinkage lifts the boundary is consistent with
+    them but untested; the shrinkage itself follows from an exact norm identity, and H_W's registered
+    signature "arm C near beta = 1" failed. H_W stays a conjecture (E3).
   - Centred, realizable: unresolved up to K = 8. sigma_c -> sqrt(d) stays a conjecture.
 - **Not resolved:**
   - the centred boundary beyond K = 8, because full bonds cost about 1 h per run at P = 2349;
   - the d-dependence at fixed K;
   - the regime above the domain limit.
 - **Run time** (arm P, under about 330 concurrent runs):
-  - median per run 100-250 s at K = 3-5, 300-650 s at K = 6-10 and 800-1,600 s at K = 13-15;
-  - 5-7 sequential walker steps per seed, so at K >= 13 three to six seeds per cell were still open at
-    the cut-off;
-  - the largest K with a resolved cell is K = 12 at d = 2 (4/6 seeds) and K = 7 at d = 3 (1/6).
+  - median per run 100-250 s at K = 3-5, 300-650 s at K = 6-10 and 700-1,650 s at K = 13-15
+    (timing_P.csv);
+  - 5-7 sequential walker steps per seed, so at K >= 13 some walkers had not finished at the cut-off;
+    by the analysis statuses 9 seeds are open (d = 2, K = 15: 2; d = 3, K = 13: 3, K = 14: 1,
+    K = 15: 3), not three to six per cell (E16);
+  - the largest K with a resolved seed is K = 12 at d = 2 (4/6 seeds, also fit-eligible) and K = 10 at
+    d = 3 (1/6); the largest fit-eligible d = 3 cell is K = 5 (6/6) (E17).
 
 **(k) Tensor-kernel relabel of the round-1 N = 4 maps** (notes section 5;
 `results/tensor_relabel/`).
@@ -183,8 +202,9 @@ amendments 4.6, results 4.7, answer 4.8; tables and figures in `results/round2/`
   rules (delta_K < 0.1, rho > 3).
 - 65 of 5,298 labels change (1.2%). Almost all are lazy -> rich at the lazy boundary; the plain model
   also has 3 rich -> lazy and 3 s2s -> lazy.
-- Per-seed lazy boundaries move up by a median of 4-9% (centred chi_b4: 1.04-1.09 at chi = 12-128;
-  1.14 at chi = 9 in sigma_chi_b4).
+- Per-seed lazy boundaries move up by a median of 1-9% (E18; first written as 4-9%, the centred
+  range): centred chi_b4 1.04-1.09 at chi = 12-128, plain 1.04-1.07, two-copy 1.01-1.07 at chi >= 9;
+  14-15% at chi = 6-9 (centred sigma_chi_b4 1.14 at chi = 9, two-copy 1.15 at chi = 6, 2 seeds).
 - The S2S side is unchanged.
 - The imbalance map at chi = 24 changes in 7 of 189 cells: balance and heavy roots are lazy from
   alpha = 100 instead of 10, and a light root (lambda / sqrt(chi) = 0.01) from alpha = 1 instead of
@@ -313,10 +333,10 @@ Commit hashes on `agent/regime-map`:
 21. **Round 2: adaptive per-seed sigma walker instead of a fixed grid.** It brackets each seed's
     crossing within 2^(1/(K-2)) in sigma at a fraction of the cost.
 22. **Round 2: out-of-domain runs.** At large sigma the plain model's W_0 already projects on the
-    teacher components with |a_r(0)| >= 0.1 (up to ~40). Options: redefine events after the overlap
-    first drops below 0.1, or classify such runs as outside the event rule's domain. Chosen: the latter
-    (no change to the merged event rule; seeds S2S-like up to that point are reported as censored
-    from below).
+    teacher components with |a_r(0)| >= 0.1 (up to 50 in arm P; the binary-16 pilot had 8.85, first
+    written as ~40, E8). Options: redefine events after the overlap first drops below 0.1, or classify
+    such runs as outside the event rule's domain. Chosen: the latter (no change to the merged event
+    rule; seeds S2S-like up to that point are reported as censored, i.e. as lower bounds on sigma_c).
 23. **Round 2: time budget T = max(50 t_esc + 1e4, 1e6) and max_steps 3e4.** The default T was too
     short after the W_0 collapse.
 24. **Round 2: secondary analyses that were not pre-registered.**
@@ -324,10 +344,15 @@ Commit hashes on `agent/regime-map`:
       seeds censored and the pre-registered rule excludes them.
     - A median-based variant, because single outlying seeds (y ~ -10) move cell means.
     - The pre-escape core-shrinkage diagnostic for H_W.
+    - Birge scaling of the WLS standard errors (by sqrt(chi^2 / dof) when that exceeds 1). It was not
+      in the pre-registration, and it decides rho* = 5: "H_B favoured" with it, unresolved without
+      (E6, found by the verification).
     These are labelled as such in the notes.
 25. **Round 2: arm C uses LSODA and only trees with P <= ~3300.** The dopri5 pilots had not finished
-    after 20 min under load. Two larger cells were added at 14:25 on cores left idle by arm P's slow
-    walkers.
+    after 20 min under load. Two larger cells, (K, d) = (9, 2) and (5, 3), were added at 14:22
+    (commit 32f24f7) on cores left idle by arm P's slow walkers. (5, 3) ran one sigma per seed
+    (rho 2.7-6.6) and enters the arm-C Tobit fit as 5 lower bounds and 1 upper bound; (9, 2) produced
+    no rows (E11; now amendment 6 in the notes).
 26. **Round 2: crashes and restarts.**
     - Fork instead of spawn: spawned workers ran out of memory.
     - The tensor kernel is skipped in arm P and its memory guard is fixed (D x D identity, OOM kills).
@@ -371,13 +396,18 @@ figures with `make_figures.py`, and all can be regenerated by `sweep.py` (seeded
 - **Round 2.**
   - Arm P's large-K boundary is censored by the event rule's domain (max |a_r(0)| >= 0.1).
     Above it W_0 already contains the teacher components, and S2S vs rich is undefined there.
-  - At K >= 13, 3-6 seeds per cell were still open when the budget ended (15:34 UTC). Their lower
-    bounds are reported.
+  - 9 seeds were still open when the budget ended (15:34 UTC): d = 2, K = 15: 2; d = 3, K = 13: 3,
+    K = 14: 1, K = 15: 3 (E16; first written as 3-6 per cell at K >= 13). Their lower bounds are
+    reported.
+  - Censored bounds hold at the sampled sigmas only (E13): a median of 4 in-domain runs per censored
+    seed at K >= 8, gaps up to a factor 1.86 in sigma, and rho is not monotone in sigma; for the 7 seeds
+    with an S2S-like rho < 6 a rich window in an unsampled gap cannot be excluded.
   - Arm C reached only K = 8 (d = 2) and K = 4 (d = 3). Its d-ratio confounds d with the full-bond chi.
-  - The Tobit fit, the median variant and the shrinkage diagnostic were not pre-registered (decision
-    24).
+  - The Tobit fit, the median variant, the shrinkage diagnostic and the Birge scaling of the WLS
+    SEs were not pre-registered (decision 24; E6, E19).
   - Runs at d = 3 and K >= 12 where the second component never learned by t = 1e6 count as S2S-like
-    (rho lower bound, rule 4.1).
+    (rho lower bound, rule 4.1). These are 14 of the 97 bounds, and a stall would be classified the
+    same way. The rule's (t_end - t_1) / w_1 bounds rho = gap / max(w_1, w_2) only if w_2 <= w_1 (E14).
   - Next: full-bond centred runs at K >= 9 need a cheaper integrator (dopri5 with a Krylov stiff solver,
     or GPU); measure the boundary above the domain limit with a rule based on W - W_0.
 - **Tensor-kernel labels** apply to sigma_chi_b4, chi_b4 and imbalance_b4 (and the report tables built
@@ -449,8 +479,8 @@ figures with `make_figures.py`, and all can be regenerated by `sweep.py` (seeded
 - 06:56 cut-off: stopped the remaining sweeps (deep-S2S points, some K = 7 large-sigma runs); listed unfinished runs per config
 - 06:58 per-seed S2S brackets; summary figure; all figures regenerated from the final data; notes sections 0, 2.3, 2.6 and report finalized
 - 12:22 ROUND 2 started (lead: realizable sigma_c(K) at large K, d = 2 and 3); merged origin/main (fix round 1: last-crossing events, tensor kernel, counters)
-- 12:50 pre-registered hypotheses H_A / H_B / H_W and decision rule in notes section 4 (f57a28c); timing pilots running
-- 12:34 pilots: plain binary 10/16 runs take 25-160 s (LSODA); found that at large sigma W_0 itself projects on the teacher components (a_r(0) up to ~40), outside the event rule's domain -> runs with max|a_r(0)| >= 0.1 classified 'D' (amendment 4.6); longer time budget; forked pool (spawned 330 workers ran out of memory); arm P relaunched (156 walkers = 13 trees x 2 d x 6 seeds)
+- 12:50 pre-registered hypotheses H_A / H_B / H_W and decision rule in notes section 4 (f57a28c); timing pilots running [E7: f57a28c is from 12:26:25 UTC, before any round-2 run; 12:50 is the arm-C launch]
+- 12:34 pilots: plain binary 10/16 runs take 25-160 s (LSODA); found that at large sigma W_0 itself projects on the teacher components (a_r(0) up to ~40 [E8: the pilot had 8.85; arm P runs reach 50]), outside the event rule's domain -> runs with max|a_r(0)| >= 0.1 classified 'D' (amendment 4.6); longer time budget; forked pool (spawned 330 workers ran out of memory); arm P relaunched (156 walkers = 13 trees x 2 d x 6 seeds)
 - 12:48 centred full-bond pilots with dopri5 did not finish in 20 min under load: arm C runs with LSODA on d = 2 K = 3-8 and d = 3 K = 3-4 only (48 workers); arm P at 325 runs: K >= 8 (d = 2) seeds are S2S-like up to the domain limit
 - 12:54 arm P driver died (BrokenProcessPool: a worker was killed, cause unknown; 284 orphaned workers of the killed second launch were still alive, my kill loop had run after their parent died); Claude Code session restarted
 - 13:33 arm C finished (48 walkers, all brackets resolved); killed the 284 orphans (by PID); arm P relaunched from its 390 rows with automatic pool restart, stop at 15:25 UTC
@@ -458,6 +488,6 @@ figures with `make_figures.py`, and all can be regenerated by `sweep.py` (seeded
 - 13:50 second arm P crash traced to run_regime.tensor_kernel (D x D identity, 2-9 GB per run at D >= 2^14): memory guard added, arm P skips the tensor kernel; relaunched
 - 14:08 11 walkers stalled below the domain limit (walker step would leave the domain): fixed, arm P restarted (in-flight runs resubmitted); interim: at K >= 7 most plain-model seeds are S2S-like up to the domain limit (sigma_dom ~ 1.2-1.9 at d = 2, 1.6-2.4 at d = 3), above the H_A and H_B predictions
 - 14:42 lead's extra items arrived: merged main (report scripts, verification); errata E1-E7 applied (notes 3.4, README, report body rewritten)
-- 14:55 tensor kernel computed for all 5,298 N = 4 runs; relabel: 65 labels change (almost all lazy -> rich), lazy boundaries +4-9%, imbalance map at chi = 24: lazy from alpha = 100 at balance / heavy root, 1 for a light root; report tables, numbers and figures regenerated
-- 15:34 round-2 runs stopped at the 3 h budget (arm P 1,070 runs, arm C 360); final analysis: plain model S2S up to the domain limit at K >= 8 (97/156 seeds censored, all above both laws; H_W shrinkage confirmed); centred full bonds unresolved (beta = -0.07 +- 0.51)
+- 14:55 tensor kernel computed for all 5,298 N = 4 runs; relabel: 65 labels change (almost all lazy -> rich), lazy boundaries +4-9% [E18: 1-9%, centred 4-9%; 14-15% at chi = 6-9], imbalance map at chi = 24: lazy from alpha = 100 at balance / heavy root, 1 for a light root; report tables, numbers and figures regenerated
+- 15:34 round-2 runs stopped at the 3 h budget (arm P 1,070 runs, arm C 360); final analysis: plain model S2S up to the domain limit at K >= 8 (97/156 seeds censored, all above both laws; H_W shrinkage confirmed); centred full bonds unresolved (beta = -0.07 +- 0.51) [corrected by the verification: 85/96 censored at K >= 8 (76 domain, 9 open), 11 cross; H_W consistent, not confirmed (E1-E3)]
 - 15:36 notes 4.7-4.8, README, report finalized
