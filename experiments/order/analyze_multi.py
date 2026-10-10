@@ -109,8 +109,11 @@ def main():
 
     plt = style.plt
     style.setup()
-    groups = list(summary.groupby(["R", "rho"]))
-    fig, axes = plt.subplots(len(groups), 1, figsize=(7.5, 2.2 * len(groups)), squeeze=False)
+    # only groups with enough completed runs (R = 4 at chi = 4 mostly stalls, see the summary)
+    groups = [(k, g[g.n_used >= 30]) for k, g in summary.groupby(["R", "rho"])]
+    groups = [(k, g) for k, g in groups if len(g)]
+    fig, axes = plt.subplots(len(groups), 1, figsize=(7.5, 2.4 * len(groups)), squeeze=False,
+                             gridspec_kw=dict(hspace=0.6))
     for ax, ((n_comp, rho), sg) in zip(axes[:, 0], groups):
         trees = list(sg.tree)
         sub = perms[(perms.R == n_comp) & (perms.rho == rho)]
@@ -119,13 +122,14 @@ def main():
         width = 0.8 / len(trees)
         for i, tree in enumerate(trees):
             s = sub[sub.tree == tree].set_index("order").reindex(top)
-            ax.bar(x + i * width, s.gf, width * 0.9, color=style.SERIES[i], label=f"{tree} GF")
+            col = style.SERIES[["binary4", "mps4", "mps6", "binary8"].index(tree)]  # colour = tree
+            ax.bar(x + i * width, s.gf, width * 0.9, color=col, label=f"{tree} GF")
             ax.plot(x + i * width, s.race_model, "_", color=style.INK, ms=8, mew=1.5)
         ax.set_xticks(x + 0.4 - width / 2)
         ax.set_xticklabels(top)
         ax.set_ylabel("frequency")
-        ax.set_title(f"R = {n_comp}, weights rho^(r-1), rho = {rho}  (bars: GF; black ticks: iid race model)",
-                     fontsize=8)
+        ax.set_title(f"R = {n_comp}, weights rho^(r-1), rho = {rho}  (bars: GF; black ticks: iid race "
+                     f"model; groups with >= 30 completed runs)", fontsize=7)
         ax.legend(fontsize=6, ncol=len(trees))
     axes[-1, 0].set_xlabel("learning order (component indices, 1 = largest)")
     fig.savefig(RES / f"{name}_orders.png")

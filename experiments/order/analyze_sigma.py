@@ -113,7 +113,13 @@ def main():
     plt = style.plt
     style.setup()
     groups = [s for s in names if s in set(tab.sweep)]
-    fig, axes = plt.subplots(1, len(groups), figsize=(2.7 * len(groups), 2.8), squeeze=False)
+    ncol = min(3, len(groups))
+    nrow = -(-len(groups) // ncol)
+    fig, ax_grid = plt.subplots(nrow, ncol, figsize=(3.2 * ncol, 2.9 * nrow), squeeze=False,
+                                gridspec_kw=dict(hspace=0.55, wspace=0.3))
+    for extra in ax_grid.flat[len(groups):]:
+        extra.set_visible(False)
+    axes = [list(ax_grid.flat[: len(groups)])]
     rho_list = sorted(tab.rho.unique())
     for ax, name in zip(axes[0], groups):
         sub = tab[tab.sweep == name]
@@ -141,7 +147,8 @@ def main():
     handles = [plt.Line2D([], [], color=style.SERIES[i], marker="o", lw=0, ms=4, label=f"rho={r}")
                for i, r in enumerate(rho_list)]
     axes[0][-1].legend(handles=handles, fontsize=6, loc="lower right")
-    axes[0][0].set_ylabel("P(smaller component first)")
+    for a in ax_grid[:, 0]:
+        a.set_ylabel("P(smaller first)")
     fig.savefig(RES / "sigma_scan.png")
     plt.close(fig)
 
