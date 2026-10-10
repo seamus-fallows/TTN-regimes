@@ -291,8 +291,6 @@ def fig_side_by_side(
         sel = sel[sel[k] == v]
     tp.set_style()
     n = len(methods)
-    import matplotlib.pyplot as plt
-
     fig, axes = plt.subplots(
         3, n, figsize=(tp.TEXT_WIDTH, 4.2), sharex="col", squeeze=False, layout="constrained"
     )
