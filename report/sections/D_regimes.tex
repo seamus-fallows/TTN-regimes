@@ -1,0 +1,82 @@
+% sections/D_regimes.tex -- App. D: supplementary results of Sec. 3 (map of regimes) and Secs. 5.1-5.4
+% (lazy, rich, large chi): per-chi and per-K values, fits, secondary checks and the threshold sensitivity
+% moved out of the main text, then the provenance and corrections after review. Sources as for Sec. 3.
+\subsection{Map of regimes and the lazy and rich regimes}\label{app:D-regimes}
+
+Values behind \cref{sec:regime-map} and \cref{sec:other-lazy,sec:other-rich,sec:other-large-chi}; settings in
+\cref{app:exp-regimes}. Boundaries are geometric means $\times/$ their geometric standard error over six seeds,
+or medians with quartiles or brackets.
+
+\paragraph{Kernels and boundaries.}
+The lazy label uses the probe kernel. Near the lazy boundary $\dTK^{\rm probe}$ is $0.54$--$1.11$ times $\dTK$
+(median $0.78$; 43 runs at $\chi\ge32$), so probe-kernel lazy boundaries lie about $5\%$ lower in $\isc$
+\empirical. Per seed, the saddle-to-saddle boundary is the crossing of $\min_i\sep i=3$, or a bracket from the last
+saddle-to-saddle run to the next run when that run is stalled; the lazy boundary is the crossing of $0.1$ by the
+kernel change among converged runs.
+
+\paragraph{Saddle-to-saddle boundary on binary4.}
+\empirical{} $0.237\times/1.32$ at $\chi=3$, $0.099\times/1.51$ at $\chi=4$, $0.137\times/1.19$ at $\chi=6$,
+$0.136\times/1.11$ at $\chi=9$, $0.075\times/1.33$ at $\chi=12$, $0.072\times/1.07$ at $\chi=18$, $0.067\times/1.12$
+at $\chi=24$ and $0.043\times/1.05$ at $\chi=36$ ($\isc\times\chi$ sweep), falling to $0.023$ at $\chi=128$ ($\chi$
+sweep). At $\chi=3$ it lies within the spread of 30 plain-model seeds (median $0.27$--$0.31$,
+\cref{app:boundaries}). Per seed, $\min_i\sep i$ falls like a power of $\isc$ with fitted exponents $1.015$--$1.048$
+in 96 of the 101 fits (all $\chi$ of both sweeps), against $\Kc-2=1$; the five exceptions ($1.09$--$1.27$) are seeds
+with transients above $\frac12$. Deep in the saddle-to-saddle regime ($\chi=36$, $\isc=0.01$) the widths of the final
+rises are $0.464$--$0.468$, $0.798$--$0.801$ and $2.010$ against the aligned-mode values $0.464$, $0.797$ and
+$2.009$ of \cref{prop:A-s2s-aligned} for $\tw r=3$, $2$, $1$. Extrapolating $\sep{}\propto1/\isc$ from each seed's
+deepest run gives $0.86$--$1.23$ times the measured boundary for 53 of 54 seeds: a consistency check of the
+$\isc^{-1}$ law, not a prediction of the boundary.
+
+\paragraph{Lazy boundary on binary4.}
+\empirical{} With the tensor kernel (medians of six seeds) the lazy boundary is $1.13$, $0.94$, $0.82$, $0.66$
+and $0.571$ at $\chi=32$, $48$, $64$, $96$, $128$, inside the predicted brackets $[1.10,1.20]$, $[0.92,0.96]$,
+$[0.80,0.82]$, $[0.66,0.67]$, and $0.07\%$ below the lower edge of $[0.571,0.577]$. At $\chi=9$, $12$, $16$, $24$,
+$\isc_{\rm lazy}\sqrt\chi=8.96$, $7.99$, $7.43$, $6.75$ ($6.3\%$, $2.9\%$, $1.5\%$ above the bracket at $\chi=9$, $12$,
+$16$).
+
+\paragraph{Slopes against $\chi$.}
+\empirical{} Saddle-to-saddle boundary: $-0.528\pm0.053$ over $\chi=16$--$128$ (42 values, $0.9$ decade; per-seed
+fits $-0.528\pm0.073$) and $-0.552\pm0.049$ over $\chi=9$--$128$. Lazy boundary: $-0.504\pm0.011$ over
+$\chi=32$--$128$ and $-0.553\pm0.013$ over $\chi=16$--$128$, with $\chi=16$, $24$ not yet asymptotic. The slope
+$-\frac13$ of $\isc^3\chi/d^2$ lies $2.7$ and $2.9$ standard errors from the saddle-to-saddle slope in per-seed
+fits over $\chi\ge16$ and $\chi\ge32$ ($3.7$ in the pooled fit over $\chi\ge16$, which treats seeds sharing a
+teacher across $\chi$ as independent). The rich window $\isc_{\rm lazy}/\isc_c$ at $\chi\ge32$ spans $19.5$--$24.2$
+with the tensor kernel and $18.4$--$22.8$ with the probe kernel; the per-bond Gram scale $\chi\isc^2/d^2$ is
+$0.010$ at $\isc\sqrt\chi=0.30$ and $4.69$ at $\isc\sqrt\chi=6.50$.
+
+\paragraph{Number of cores.}
+\empirical{} Centred model, $d=2$, $\chi=4$: medians (quartiles) of the per-seed saddle-to-saddle boundaries are
+$0.17$ ($0.11$--$0.20$) on binary4, $0.49$ ($0.32$--$0.58$) on MPS4, $0.61$ ($0.48$--$0.80$) on MPS5, $0.68$
+($0.68$--$0.74$; four seeds) on MPS6 and $0.75$ ($0.61$--$0.93$) on binary8. Read as aligned initialization with
+per-core amplitude $\kappa_\Kc\isc$, $\kappa_\Kc=a_{0c}/\isc_c$ grows from $0.39$ ($\Kc=3$) to $0.65$ ($\Kc=7$), as in
+the runs of \cref{app:boundaries}. At $\Kc=8$, $10$, $12$, $15$ only 1, 1, 0, 0 of six seeds are resolved; the
+brackets have medians $[0.88,1.16]$, $[0.80,1.00]$, $[0.83,1.03]$, $[0.63,1.36]$. Classified by $\min_i\sep i$ instead
+of the label, the run after the last saddle-to-saddle run is saddle-to-saddle-like ($\sep{}=3.9$--$642$) for 13 of
+the 18 unresolved MPS seeds. At $\Kc=8$ the block then ends at a crossing in 5 of 6 seeds (median $1.01$); at
+$\Kc=10$ and $12$ such runs persist up to $\isc\approx1.0$--$1.3$ and the next runs learn nothing within the budget,
+so a crossing to rich is seen in 2 of 6 seeds at $\Kc=10$ (both at $0.90$) and in none at $\Kc=12$. All these runs
+end on the floor ($\Loss/\Loss(0)=0.001$--$0.074$), and 9 of the 13 learn the smaller component first: they do not
+measure the boundary of a realizable problem. On $\Kc=4$--$7$ both $\isc_c^\Kc=\text{const}$ and
+$\isc_c^\Kc/\sqrt{d^\Ns}=\text{const}$ fit the medians ($\chi^2=0.79$ and $0.59$, three degrees of freedom); adding the
+per-seed values whose bracket ends at a crossing ($\Kc=8$, two seeds at $\Kc=10$) leaves them indistinguishable
+($\chi^2=7.5$ and $7.3$, five degrees of freedom). At the smallest $\isc$, 0, 1, 0, 3, 0, 5, 3 and 6 of six seeds
+stall on binary4, MPS4, MPS5, MPS6, binary8, MPS8, MPS10 and MPS12, and 5 of 5 on binary16, each at a partial fit
+with one component learned ($\Loss/\Loss(0)=4/13$ or $9/13$).
+
+\paragraph{Imbalance.}
+\empirical{} At $\chi=16$, $\fsc=3.375$ the per-seed local slopes of $\dTK$ against $\lambda$ are $1.97\pm0.01$,
+$1.85\pm0.06$, $1.55\pm0.11$ and $1.22\pm0.09$ between $\lambda=0.01$, $0.03$, $0.1$, $0.3$ and $1$; the saturation
+level for $\lambda\ge10$ is $0.59$--$0.61$ in the medians and $0.51$--$0.75$ over seeds.
+
+\paragraph{Threshold sensitivity and the two-copy lazy boundary.}\label{sec:regime-sensitivity}
+\empirical{} (predictions \derived) Raising the separation threshold from $2$ to $5$ moves the saddle-to-saddle
+boundary of binary4 by a factor $2.14$--$2.34$ ($\chi=3$--$36$; means of six seeds, s.e.\ at most $0.08$), against
+$(5/2)^{1/(\Kc-2)}=2.5$: the $O(1)$ part of $\sep{}$ lowers the ratio at finite $\isc$. Raising the kernel threshold
+from $0.05$ to $0.2$ moves the lazy boundary by $1.97\pm0.08$ at $\chi=9$, down to $1.33\pm0.01$ at $\chi=36$ and
+$1.30$--$1.35$ at $\chi=32$--$128$: with $\isc_{\rm lazy}\propto\delta_*^{-1/(\Kc s)}$, the local slope
+$s=\dd\ln\dTK/\dd\ln\xi$ grows from 1 (first order, ratio $1.59$) towards 2 (second order, $1.26$), and the slopes
+$1.5$--$1.8$ at $\chi\ge32$ predict $1.27$--$1.36$. Only the boundaries move: across the nine threshold pairs at most
+65 of the 912 centred binary4 labels change ($7.1\%$), each to a neighbouring regime. The two-copy model has the
+same tangent space as the centred one, but its kernel changes only at second order, so its lazy boundary is
+$2^{-1/3}=0.794$ times lower (\cref{prop:A-lazy}): measured $0.79$ at $\chi=32$, $64$, $128$ (tensor kernel). Its
+saddle-to-saddle side is not comparable (merged first events, \cref{sec:other-rich}).
