@@ -46,7 +46,7 @@ Status tags as in the notes.
 6. **Imbalance.**
    - A light root makes training lazy, with delta_K ~ lambda^2 (local slopes 1.97, 1.85; P20).
    - delta_K saturates at ~0.6, the lower edge of P20's 0.6-0.7.
-   - A heavy root is lazy from alpha = 10, as at balance.
+   - A heavy root is lazy from alpha = 100 (tensor-kernel labels), as at balance.
 7. **Tensor-kernel labels** (item (k)): relabelling the N = 4 maps with the tensor-space kernel instead
    of the 128-probe kernel changes few labels and moves the lazy boundaries up by about 5%.
 
@@ -114,8 +114,8 @@ linear grid (last upward 1/2-crossing before the component first reaches 0.9), 6
 - At chi = 16 and alpha = 3.375, the per-seed local slopes of the tensor-kernel delta_K vs lambda are
   1.97 +- 0.01, 1.85 +- 0.06, 1.55 +- 0.11 and 1.22 +- 0.09.
 - delta_K saturates at 0.60 (seeds 0.51-0.75), the lower edge of P20's 0.6-0.7.
-- At chi = 24 a light root lowers the lazy boundary by up to ~100x in alpha, and a heavy root is lazy
-  from alpha = 10, as at balance.
+- At chi = 24 a light root lowers the lazy boundary by ~100x in alpha. With tensor-kernel labels
+  (item (k)) the boundary is alpha = 1 for a light root and 100 for balance and heavy roots.
 
 **(g) Stalls at chi = teacher rank** (K = 7, 8; notes 2.2): fan-in init leaves dead routes in
 12/18 (binary 8) and 16/18 (MPS 8) runs. Gauge-balanced init removes them, but the route still decays
@@ -136,7 +136,23 @@ linear grid (last upward 1/2-crossing before the component first reaches 0.9), 6
 **(j) Round 2: sigma_c(K) in realizable problems** (pre-registered in notes section 4; results in
 notes 4.7-4.8): ROUND2_PLACEHOLDER
 
-**(k) Tensor-kernel relabel of the round-1 N = 4 maps** (notes section 5): TENSOR_PLACEHOLDER
+**(k) Tensor-kernel relabel of the round-1 N = 4 maps** (notes section 5;
+`results/tensor_relabel/`).
+- The labels of sigma_chi_b4, chi_b4 and imbalance_b4 now use the tensor-space kernel, with the same
+  rules (delta_K < 0.1, rho > 3).
+- 65 of 5,298 labels change (1.2%). Almost all are lazy -> rich at the lazy boundary; the plain model
+  also has 3 rich -> lazy and 3 s2s -> lazy.
+- Per-seed lazy boundaries move up by a median of 4-9% (centred chi_b4: 1.04-1.09 at chi = 12-128;
+  1.14 at chi = 9 in sigma_chi_b4).
+- The S2S side is unchanged.
+- The imbalance map at chi = 24 changes in 7 of 189 cells: balance and heavy roots are lazy from
+  alpha = 100 instead of 10, and a light root (lambda / sqrt(chi) = 0.01) from alpha = 1 instead of
+  0.1.
+- Regenerated with tensor labels:
+  - `results/report/runs_sigma_chi_b4.csv`, `floor_sigma_chi_b4.csv`, `imbalance_map_b4.csv` and
+    `numbers.csv` (3 of 50 numbers change);
+  - `report_map.pdf` and `report_other.pdf`, also copied to `report/figures/regime_map/`;
+  - the phase, sensitivity and boundary figures and CSVs of these sweeps.
 
 ## What was done
 Commit hashes on `agent/regime-map`:

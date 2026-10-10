@@ -97,6 +97,16 @@ uv run python experiments/regime_map/round2.py run --arms P --n-proc 300   # raw
 uv run python experiments/regime_map/round2.py run --arms C --n-proc 48
 uv run python experiments/regime_map/round2_analysis.py --force           # results/round2/
 ```
+Tensor-kernel labels for the N = 4 maps (notes section 5):
+```
+R=/root/outputs/regime_map; C=$R/tensor_kernel
+uv run python experiments/regime_map/relabel_tensor.py compute --raw $R --cache $C   # dK_tensor of every run
+uv run python experiments/regime_map/relabel_tensor.py compare --raw $R --cache $C   # results/tensor_relabel/
+export REGIME_MAP_LABEL_KERNEL=tensor REGIME_MAP_TENSOR_CACHE=$C
+uv run python experiments/regime_map/make_figures.py --raw $R --force --only sigma_chi_b4 chi_b4 imbalance_b4 summary
+uv run python experiments/regime_map/report_tables.py --raw $R --tensor-cache $C --force --only sigma_chi_b4 imbalance
+uv run python experiments/regime_map/report_numbers.py && uv run python experiments/regime_map/plot_report.py
+```
 
 ## Experiments (configs)
 | config | what |
@@ -135,8 +145,12 @@ the notes):
   problems) is in the section above;
 - large chi (tensor kernel): delta_K ~ chi^-3.02 (SP), NTK chi^-1 at chi >= 64, muP-TTN delta_K -> 6.2
   (theory P16);
-- imbalance: light root -> lazy (delta_K ~ lambda^2, saturating at 0.6 as P20 predicts); a heavy root is
-  lazy from alpha = 10, as at balance.
+- imbalance: light root -> lazy (delta_K ~ lambda^2, saturating at 0.6, the lower edge of P20's
+  0.6-0.7); with tensor-kernel labels a heavy root is lazy from alpha = 100, as at balance, a light root
+  from alpha = 1;
+- the N = 4 maps (sigma_chi_b4, chi_b4, imbalance_b4) and the report tables / figures built from them
+  are labelled with the tensor-space kernel since round 2 (`relabel_tensor.py`,
+  `REGIME_MAP_LABEL_KERNEL=tensor`; 65 of 5,298 labels change, lazy boundaries +4-9%; notes section 5).
 
 Figures and tables in `results/` were regenerated in fix round 1 by
 `make_figures.py --raw data/regime_map --force` (the copied remote outputs, relabelled with the
