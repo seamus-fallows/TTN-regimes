@@ -109,7 +109,35 @@ def pixel_order(name: str, size: int) -> np.ndarray:
         return np.random.default_rng(int(name[len("scrambled") :]) + 12345).permutation(n)
     if name == "rowmajor":
         return np.arange(n)
+    # orders added for the pre-registered order test (notes/real_data.md section 9)
+    if name == "quadtreeT":  # Morton order of the transposed image (as in the round-1 review runs)
+        return np.array([(p % size) * size + p // size for p in pixel_order("quadtree", size)])
+    if name == "colmajor":
+        return np.array([(s % size) * size + s // size for s in range(n)])
+    if name == "hilbert":
+        return np.array([y * size + x for x, y in (_hilbert_xy(size, d) for d in range(n))])
+    if name == "mortonrev":  # site s carries the pixel whose Morton key is s with its bits reversed
+        bits = 2 * int(math.log2(size))
+        rev = [int(format(s, f"0{bits}b")[::-1], 2) for s in range(n)]
+        return pixel_order("quadtree", size)[rev]
     raise ValueError(name)
+
+
+def _hilbert_xy(size: int, d: int) -> tuple[int, int]:
+    """(x, y) of the d-th cell of the Hilbert curve on a size x size grid (size a power of 2)."""
+    x = y = 0
+    s, t = 1, d
+    while s < size:
+        rx = 1 & (t // 2)
+        ry = 1 & (t ^ rx)
+        if ry == 0:
+            if rx == 1:
+                x, y = s - 1 - x, s - 1 - y
+            x, y = y, x
+        x, y = x + s * rx, y + s * ry
+        t //= 4
+        s *= 2
+    return x, y
 
 
 def make_tree(kind: str, n_sites: int) -> Tree:
