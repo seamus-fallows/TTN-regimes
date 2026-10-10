@@ -16,7 +16,7 @@ had changed every plotting script and figure: all 22 report figures again regene
 - Branch `wip/repro-check` at `8086366` (main when the check started). The two Sec. 4.5 figures were added
   to main later (`d71da92`); they were checked on an export of main (`git archive`) in a scratch directory.
   Main then merged a figure-quality pass (`d3a6d07`: new plotting code and figures, same data); all figure
-  commands were rerun on an export of main `bd3ca51` (last section of the figures table).
+  commands were rerun on an export of main `bd3ca51` (paragraph after the figures table).
 - Windows 11, Git Bash, the project venv (Python 3.13.5, torch 2.14.1, numpy 2.5.3, scipy 1.18.1,
   matplotlib 3.11.2, pandas 3.0.6) in place of `uv run python`, with `PYTHONPATH=.`, one BLAS thread per
   process, at most 8 processes. Library: commit `3a642ef`, `ttn.runner.code_hash()` = `6d786ce7...`.
