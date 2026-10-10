@@ -1,12 +1,16 @@
-% sections/06_covariance_teacher.tex -- Input covariance and teacher structure (Q6, Q7, H5).
+% sections/06_covariance_teacher.tex -- Input covariance and teacher structure (Q6, Q7), and real data.
 % Sources, in order of authority: notes/reviews/data_teacher_round3_verification.md (its "safe to cite"
 % table and errata E1-E17 override the note), notes/data_teacher.md (rounds 1-2, R2.0-R2.4),
 % agent-runs/data-teacher/REPORT.md, experiments/data_teacher/ (README, results/*.csv); withdrawn claims
 % from notes/reviews/data_teacher_round1.md and data_teacher_round2.md; theory in notes/theory_covariance.md
 % and notes/theory_teachers.md (v2) via Appendix A (app:teachers, app:covariance); known results from
-% notes/literature.md (v1.2) and notes/reviews/citation_check.md (no row of part a1 concerns this file;
-% rows B4, B11-B13 of part b set the new/known markers). Settings: app:exp-data-teacher. Figures and the
-% derived tables report_*.csv: experiments/data_teacher/plot_report.py (from committed CSVs only).
+% notes/literature.md (v1.2) and notes/reviews/citation_check.md (rows B4, B11-B13 of part b set the
+% new/known markers). Settings: app:exp-data-teacher. Figures: experiments/data_teacher/plot_report.py.
+% Detailed tables, secondary checks and the correction history: sections/D_covariance.tex (app:supp-cov).
+% Notation (notes/report_style.md): sites from 0; c = input correlation (as in A.6); cos(phi) = CP factor
+% overlap (as in prop:A-two-components); lambda_e = escape rate of edge e (was gamma_e) and s_j(M_e) the
+% singular values of M_e (was sigma_j); the head start is written s_2(M_e)/sbar (was kappa_e); star
+% weights s_r (was w); fitted exponents in words (not p); "Spearman correlation r_S".
 % WITHDRAWN or narrowed, do not reintroduce: the single-sigma plateau durations of round 1 ("540 -> < 1",
 % "137 -> 0.14", "137 -> 8.2 -> 2.2 -> 1.7"; grid artefacts); "every plateau after the first is a strict
 % saddle with a log(1/sigma) duration" and "MPS later plateaus become log-time" (only the escape from the
@@ -26,78 +30,66 @@
 
 \Cref{sec:s2s,sec:other-regimes} use whitened inputs and orthogonally decomposable or pattern teachers.
 Here one complication is added at a time (covariance, correlations between sites, overlapping
-components, random TTN teachers, components sharing a core), and we ask whether the
-saddle-to-saddle picture changes qualitatively, quantitatively or not at all, and whether the baseline
-theory predicts the change after a substitution. An aligned covariance only reweights the components
-(\cref{sec:cov-aligned}). Anything that makes the components non-orthogonal in the metric of the loss
-changes the law of the escape from the rank-one saddle, and the tree decides how: strict and
-logarithmic in $1/\isc$ on an MPS, of higher order and $\propto\isc^{-1}$ on binary and HT trees
-(\cref{sec:teacher-generic}, the central result). Plateaus sit at critical points of the
-bond-rank-constrained loss, blends rather than partial sums of components
-(\cref{sec:cov-misaligned,sec:cov-correlated,sec:teacher-cp,sec:teacher-ttn}); binary students learn
-bottom-up (\cref{sec:teacher-mismatch}); and two smaller components that share a core can destabilize a
-learned larger one (\cref{sec:teacher-star}).
+components, random TTN teachers, components that share a core, and finally real images), and we ask
+whether the saddle-to-saddle picture changes, and whether the baseline theory predicts the change after
+a substitution. An aligned covariance only reweights the components (\cref{sec:cov-aligned}). Each of
+the four ways we tried of making the components non-orthogonal in the metric of the loss (overlapping CP
+components, a misaligned covariance, random TTN teachers, correlated sites) changes the law of the escape
+from the rank-one saddle ($\Ns=4$, $8$), and the tree decides how: strict and logarithmic on an MPS, of
+higher order on binary and HT trees, with escapes $\propto\varepsilon^{-1}$ from the saddle and, on binary4,
+$\propto\isc^{-1}$ from random initialization; correlated sites were not run on HT. This is the central result
+(\cref{sec:teacher-generic,sec:cov-misaligned}). Rank-one plateaus sit at critical points of the
+bond-rank-constrained loss, blends rather than partial sums of components (on binary4 and MPS4; under
+correlated inputs only on binary4, under misalignment up to $30^\circ$; \cref{sec:cov-misaligned,sec:teacher-ttn});
+binary students learn bottom-up
+(\cref{sec:teacher-mismatch}); two
+smaller components that share a core can destabilize a learned larger one (\cref{sec:teacher-star}); and on
+MNIST the same tree contrast appears with the data in place of the teacher (\cref{sec:real-data}).
+Per-teacher tables and secondary checks are collected in \cref{app:supp-cov}.
 
 \paragraph{Setup} (details in \cref{app:exp-data-teacher}).
-Gradient flow on the exact population loss (LSODA, tolerances $10^{-9}$ and $10^{-14}$), fan-in
-initialization, $\chi=4$ unless stated. The \emph{generic teachers} have $d=2$: (a)~CP teachers with
-$\fac1i=e_1$ and $\fac2i=ce_1+(1-c^2)^{1/2}e_2$ at every site (overlap $c$, weights $(1,0.7)$); (b)~an odeco
-teacher (weights $(1,0.8)$ on $e_1$, $e_2$) under a misaligned covariance $\Sigi i=R(\theta)\diag(\lambda_1,\lambda_2)R(\theta)\T$,
-with the power-law spectrum of \cref{sec:setup-loss} (exponent $\beta$); (c)~random binary-tree and MPS
-teachers with bond ranks 2. Students are MPS, binary and HT trees with $\Ns=4$ and $8$. Protocols:
-random initialization at scale $\isc$, or the saddle start of \cref{sec:s2s-locality} with noise scale
-$\varepsilon$ (the exact balanced bond-rank-one critical point of lowest loss, zero-padded, plus fan-in noise of
-scale $\varepsilon$). An escape is an onset event, the first time some edge has $\bs e2\ge f\,\bst e2$ (the
-teacher's value), $f=0.05$ ($0.03$ and $0.1$ as checks); the edge that fires is the \emph{realized edge}.
-Fits are per seed; \emph{asymptotic} fits use the three smallest $\isc$ or the five smallest $\varepsilon$; log and
-power laws are compared in log space; $\pm$ is the standard error over 5--10 seeds, statistical only, so
-agreements are cited at the $1$--$2\%$ level. The float64-floor scan flags only the odeco baselines at
-$\isc\le3\cdot10^{-3}$ (\cref{fig:dt-mps-laws}).
+Gradient flow on the exact population loss, fan-in initialization, $\chi=4$ unless stated. The
+\emph{generic teachers} have $d=2$: (a)~CP teachers with $\fac1i=e_1$ and $\fac2i=\cos\phi\,e_1+\sin\phi\,e_2$
+at every site (overlap $\cos\phi$, weights $(1,0.7)$); (b)~an odeco teacher (weights $(1,0.8)$ on $e_1$, $e_2$)
+under a misaligned covariance, the power-law spectrum of \cref{sec:setup-loss} rotated by an angle in the
+$(e_1,e_2)$ plane; (c)~random binary-tree and MPS teachers with bond ranks 2. Students are MPS, binary and
+HT trees with $\Ns=4$ and $8$. Two protocols: random initialization at scale $\isc$, or the \emph{saddle
+start} of \cref{sec:s2s-locality}, the exact balanced bond-rank-one critical point of lowest loss,
+zero-padded, plus fan-in noise of scale $\varepsilon$. An escape is dated by an \emph{onset event}, the first
+time the second singular value of some edge reaches $5\%$ of the teacher's; that edge is the
+\emph{realized edge}. Laws are fitted per seed; \emph{asymptotic} fits use the three smallest $\isc$ or the
+five smallest $\varepsilon$; $\pm$ is the standard error over 4--10 seeds, statistical only, so agreements are
+cited at the $1$--$2\%$ level.
 
 % ===========================================================================================
 \subsection{Covariance aligned with the teacher: a reweighting}\label{sec:cov-aligned}
 
 \paragraph{Prediction.}
-Let the teacher be odeco with factors that are covariance eigenvectors, $\Sigi i\fac ri=\lambda_{r,i}\fac ri$,
-and $\Lambda_r=\prod_i\lambda_{r,i}$. Near the origin the flow sees only the escape tensor
-$\Sig\Wt=\sum_r\Lambda_r\tw r\U r$, so the \emph{race} (which component escapes first, and when) is that of the
-whitened problem with weights $\Lambda_r\tw r$; the \emph{landscape} (critical points, plateau levels
-$\frac12\sum_{r\notin S}\Lambda_r\tw r^2$, saddle types) is that of $\Sig^{1/2}\Wt$, with weights $\Lambda_r^{1/2}\tw r$
-\derived{} (\cref{prop:A-escape-cov,prop:A-precond}). From an aligned initialization each component
-follows its whitened trajectory on the clock $\Lambda_rt$ \proven{} \knownresult[Saxe-type modes:
-\citealp{saxe2014exact}; depth two: \citealp{gidel2019implicit}; new: every tree]
-(\cref{prop:A-aligned-cov}). When the two orderings disagree, a learned component $a$ of binary4 is
-unstable toward $b$ (a rotation through a strict saddle) iff $\Lambda_b\tw b^2>\Lambda_a\tw a^2$; on MPS4 the
-rotation needs all four cores \proven{} \newresult{} (\cref{prop:A-piggyback-cov}).
+Let the teacher be odeco with factors that are covariance eigenvectors, and let
+$\Lambda_r=\prod_i{\fac ri}\T\Sigi i\fac ri$ be the product of the covariance eigenvalues of component $r$. Near
+the origin the flow sees only the escape tensor $\Sig\Wt=\sum_r\Lambda_r\tw r\U r$, so the \emph{race} (which
+component escapes first, and when) is that of the whitened problem with weights $\Lambda_r\tw r$; the
+\emph{landscape} (critical points, plateau levels $\frac12\sum_{r\notin S}\Lambda_r\tw r^2$, saddle types) is that
+of $\Sig^{1/2}\Wt$, with weights $\Lambda_r^{1/2}\tw r$ \derived{} (\cref{prop:A-escape-cov,prop:A-precond}). From an
+aligned initialization each component follows its whitened trajectory on the clock $\Lambda_rt$ \proven{}
+\knownresult[Saxe-type modes: \citealp{saxe2014exact}; depth two: \citealp{gidel2019implicit}; new: every
+tree] (\cref{prop:A-aligned-cov}). When the two orderings disagree, a learned component $j$ of binary4 is
+unstable toward $r$ (a rotation through a strict saddle) iff $\Lambda_r\tw r^2>\Lambda_j\tw j^2$; on MPS4 the
+rotation needs all four cores \proven{} \newresult[for TTNs; on binary4, a deep linear network, it follows
+from \citealp{achour2024loss}, Thm~7, with \cref{prop:A-precond}] (\cref{prop:A-piggyback-cov}).
 
 \paragraph{Experiments.}
-\empirical{} $\Ns=4$, $d=\chi=4$, $\beta=0.25$, so the high-variance eigenvector $e_1$ has twice the $\Lambda$ of
-$e_2$. Teachers T1 $(1,0.8)$ and T2 $(1,0.6)$ put the smaller component on $e_1$: $\Lambda\tw{}$ favours it in both,
-$\Lambda\tw{}^2$ only in T1. Forty seeds, binary4 at $\isc=0.02$--$0.1$, MPS4 at $0.05$--$0.2$, four variants
-from the same initialization: $(\Sig,\tw{})$, $(\Id,\Lambda\tw{})$, $(\Id,\Lambda^{1/2}\tw{})$, and the last from the mapped
-initialization (same landscape and starting point as $(\Sig,\tw{})$, whitened flow).
-\begin{itemize}
-  \item \emph{Clocks.} From aligned initialization half-times match the clock $\Lambda_rt$ to $10^{-9}$; the
-    naive substitution $\tw r\to\Lambda_r\tw r$ misses the widths by up to $47\%$.
-  \item \emph{Race.} Paired $(\Sig,\tw{})$ and $(\Id,\Lambda\tw{})$ runs learn the same component first in all
-    MPS4 and $95$--$100\%$ of the binary4 pairs, with first-escape times within $1.3\%$. The covariance
-    reverses the order: in T1 the $0.8$ component comes first in $90$--$98\%$ (binary4) and $78\%$ (MPS4) of
-    the runs. The mapped-initialization control picks a different first component in $10$--$15\%$ (MPS4)
-    and $12$--$53\%$ (binary4) of the seeds and escapes $11$--$23\%$ later: the race is set by the flow
-    metric, not by the landscape.
-  \item \emph{Exponents.} $\tev1\propto\isc^{-1.010\pm0.002}$ (binary4) and $\isc^{-1.999\pm0.001}$ (MPS4);
-    $\tev1\propto(\Lambda\tw{})^p$ with per-seed $p=-1.000$ to $-1.003$ within each eigenvector direction
-    ($\Lambda=0.008$--$33$, ten seeds).
-  \item \emph{Landscape.} On binary4 a learned component is replaced only if the other has the larger
-    $\Lambda\tw{}^2$: no swap after a landscape-correct first component in any of the 24 settings, while
-    $P(\text{swap}\mid0.6\text{ first})=0.33$, $0.68$, $0.94$ at $\isc=0.1$, $0.05$, $0.02$ in T2. The Hessian at the
-    saddle equals the formula to $10^{-15}$ in the 6 strict binary4 cases; MPS4 has no negative eigenvalue
-    (12 of 12) and no swap in 960 runs. Plateau levels are $\frac12\sum_{r\notin S}\Lambda_r\tw r^2$ (median
-    relative error $10^{-8}$--$10^{-3}$).
-\end{itemize}
-The change is quantitative only and is predicted after two different substitutions \newresult[for
-TTNs; in two-layer linear networks the split is implicit in \citealp{gidel2019implicit}, Thm~2, whose
-Corollary~2 states no ordering condition].
+\empirical{} On binary4 and MPS4 ($d=\chi=4$, two teachers with the smaller component on the high-variance
+direction, 40 seeds; \cref{app:supp-cov}) the aligned clocks hold to $10^{-9}$; from random initialization the
+first component and first-escape time are those of the whitened race with weights $\Lambda\tw{}$ ($95$--$100\%$ of
+paired runs, times within $1.3\%$), so the covariance can reverse the order, while a control with the same
+landscape but the whitened flow differs in $10$--$53\%$ of the seeds: the race is set by the flow metric.
+Exponents are unchanged; a learned component is replaced only on binary4 and only if the other has the
+larger $\Lambda\tw{}^2$; plateau levels follow $\frac12\sum_{r\notin S}\Lambda_r\tw r^2$. The change is quantitative only
+and is predicted after two different substitutions \newresult[for TTNs; in
+two-layer linear networks the split is implicit in \citealp{gidel2019implicit}, Thm~2, whose Corollary~2
+states no ordering condition; related: escape along $\Sig\Wt$ with a limited loss decrease,
+\citealp{rawal2026theory}, Thm~4.2 and Prop.~4.5].
 
 % ===========================================================================================
 \subsection{Generic teachers: the tree decides the saddle type}\label{sec:teacher-generic}
@@ -105,19 +97,22 @@ Corollary~2 states no ordering condition].
 % r2_saddle_fits.csv, r2_saddle_*hessian.csv, r2_random_v2_summary.csv, report_first_escape.csv.
 
 \paragraph{Prediction.}
-\derived{} \newresult{} (\cref{app:teachers}, ``Generic teachers'';
-\cref{prop:A-mps-rates,cor:A-second-escape}) After the first escape the flow sits near a bond-rank-one
-critical point $\W_1=\bar s\bigotimes_iw_i$. A bond can gain rank through a two-core route if both of its
-cores have other legs of dimension above its rank. For odeco and pattern teachers the route's
+\derived{} \newresult{} (\cref{app:teachers}, ``Generic teachers''; \cref{prop:A-mps-rates,cor:A-second-escape})
+After the first escape the flow sits near a balanced bond-rank-one critical point $\W_1$, a local best
+rank-one approximation of $\Wt$ with value $\bar s$. A bond can gain rank through a two-core route if both of
+its cores have other legs of dimension above its rank. For odeco and pattern teachers the route's
 residual vanishes by orthogonality, which gives the $\isc^{-(k-2)}$ laws of \cref{sec:s2s-locality}; for a
-generic teacher it does not. On an MPS every core carries a site, so $\W_1$ is a strict saddle, with
-Hessian eigenvalues $-\bar s^{(\Ns-2)/\Ns}\sigma_m(M_e)$, $m\ge2$, each $\bd e-1$ times, that is
-$\sum_e(d-1)(\bd e-1)$ negative ones. It is left in a time $\gamma_e^{-1}\ln(1/\varepsilon)+O(1)$,
-$\gamma_e=\bar s^{(\Ns-2)/\Ns}\sigma_2(M_e)$, and from random initialization with slope
-$h_e=(1-\kappa_e)/\gamma_e$ in $\ln(1/\isc)$, $\kappa_e=\sigma_2(M_e)/\bar s$ (the head start). On binary and HT trees the
-internal cores carry no site, so the cheapest route has $k=3$: no negative eigenvalue and an escape
-$\propto\varepsilon^{-1}$ (or $\isc^{-1}$). The landscape bound of \citet[Lemmas~D.7--D.9]{furman2026benign} allows
-descent of order $\Kc$ at a rank-one point of an MPS; for generic teachers it is $2$.
+generic teacher it does not. On an MPS every core carries a site, so $\W_1$ is a strict saddle. Let $M_e$
+be the $d\times d$ matrix that $\Wt$ leaves on the two sites of the cores of edge $e$ when the other sites
+are contracted with the factors of $\W_1$, with singular values $s_j(M_e)$. Edge $e$ contributes the Hessian
+eigenvalues $-\bar s^{(\Ns-2)/\Ns}s_j(M_e)$, $j\ge2$, each $\bd e-1$ times, in all $\sum_e(d-1)(\bd e-1)$ negative
+ones, and it escapes at the rate $\lambda_e=\bar s^{(\Ns-2)/\Ns}s_2(M_e)$, the analogue of $\lambda_2$ in
+\eqref{eq:locality-rule}: from the saddle start in a time $\lambda_e^{-1}\ln(1/\varepsilon)+O(1)$, and from random
+initialization with the slope $h_e=(1-s_2(M_e)/\bar s)/\lambda_e$ in $\ln(1/\isc)$, where $s_2(M_e)/\bar s$ is the head
+start. On binary and HT trees the internal cores carry no site, so the cheapest route has $k=3$: no
+negative eigenvalue and an escape $\propto\varepsilon^{-1}$ (or $\isc^{-1}$). The landscape bound of
+\citet[Lemmas~D.7--D.9]{furman2026benign} allows descent of order $\Kc$ at a rank-one point of an MPS; for
+generic teachers it is $2$.
 
 \paragraph{Experiments.}
 Thirteen generic teachers (\cref{tab:dt-saddle}), each on the MPS, binary and HT student with the same
@@ -129,231 +124,360 @@ random initialization for the six teachers with $\Ns=4$ on MPS4 ($\isc=3\cdot10^
     (MPS4) and 17 (MPS8) negative eigenvalues, the count above; none of the 26 binary and HT students has
     an eigenvalue below $-10^{-8}$.
   \item \emph{Escape from the saddle.} \empirical{} \newresult{} (\cref{fig:dt-contrast}a,b) On MPS the log
-    law wins in 65 of 65 seeds, and the slope equals $1/\gamma_e$ of the realized edge within $0.4\%$ for all
-    13 teachers (changing $f$ from $0.03$ to $0.1$ moves it by at most $0.4\%$); where the realized edge is
-    not the fastest (two random teachers with $\Ns=8$) the slope follows it, not $1/\abs{\lambda_{\min}}$. Fits
-    over all $\varepsilon$ deviate by up
-    to $11\%$ (pre-asymptotic points; a ``slow crossover'' read into them is withdrawn). On binary and
-    HT, $t_{\rm esc}\propto\varepsilon^{-p}$ with $p=0.9998$--$1.0005$ in 23 of the 24 cases ($1.0036\pm0.0006$ in the
-    last, over a wider window); the log law wins in no seed. (The misaligned teacher with $\Ns=8$,
-    $\theta=20^\circ$, timed as below, gives $1.07$ and $1.05$ over $1.3$ decades, $1.03$ and $1.02$ over its three
-    smallest $\varepsilon$.)
+    law wins in 65 of 65 seeds, and the slope equals $1/\lambda_e$ of the realized edge within $0.4\%$ for all
+    13 teachers. On binary and HT students $t_{\rm esc}\propto\varepsilon^{-1}$, with fitted
+    exponents $0.9998$--$1.0005$ in 23 of the 24 cases ($1.0036\pm0.0006$ in the last, over a wider window),
+    and the log law wins in no seed.
   \item \emph{Random initialization, $\Ns=4$.} \empirical{} \newresult{} (\cref{fig:dt-contrast}c,d) On MPS4
-    the log law holds, with slopes within $1.3\%$ of $h_e$ for the five teachers with a prediction:
-    $33.95\pm0.18$ ($34.14$), $5.674\pm0.059$ ($5.682$), $12.005\pm0.071$ ($12.014$), $1.038\pm0.005$ ($1.051$; $2.78$
-    without the head start), $1.401\pm0.013$ ($1.386$). The misaligned teacher, which has no prediction
-    under the preconditioned flow, gives $52.46\pm0.10$, below the bound $1/\abs{\lambda_{\min}}=52.94$. Binary4
-    gives $\isc^{-p}$, $p=1.001$--$1.005$. The curvature at the plateau is independent of $\isc$ on MPS4 ($-0.1510$
-    against $-0.1509$ at the exact saddle, $c=0.45$) and falls $\propto\isc$ on binary4. The first escape keeps
-    its $\isc^{-(\Kc-2)}$ law: per-seed exponents $1.998$--$2.014$ (MPS4) and $1.002$--$1.017$ (binary4) over
-    all nine $\isc$, $2.0000$ and $1.0003$ over the three smallest.
-  \item \emph{A failure mode of onset events.} \empirical{} \newresult[methodological] The misaligned
-    teacher with $\Ns=8$, $\theta=20^\circ$ escapes at the predicted rate to an intermediate saddle with
-    $\bs e2=3.7$--$3.9\cdot10^{-4}$ on every bond, nine times below the threshold, so the $f$-rule times the next
-    escape (a slope 24 times the prediction). Timed at the intermediate level, the slope is $1979.6\pm1.8$ against
-    $1/\gamma_e=1974.8$. A threshold relative to the teacher's spectrum misses escapes that end below it.
+    the log law holds, with slopes within $1.3\%$ of $h_e$ for the five teachers with a prediction; the head
+    start matters (for one teacher $1.038\pm0.005$ against $h_e=1.051$, and $2.78$ without the head start).
+    Binary4 gives $\isc^{-1}$ (fitted exponents $1.001$--$1.005$). The curvature at the plateau does not depend
+    on $\isc$ on MPS4 and falls $\propto\isc$ on binary4, and the first escape keeps its $\isc^{-(\Kc-2)}$ law
+    (per-teacher values in \cref{app:supp-cov}).
 \end{itemize}
-\emph{Scope:} the escape from the rank-one saddle (the first rank increase), $\Ns=4$ and $8$, $d=2$;
-random initialization for $\Ns=4$ only. Later saddles on binary and HT students were not timed; there
-two-core routes can open on bottom edges at higher ranks, never for the root bipartition
+One teacher (misaligned covariance, $\Ns=8$, $20^\circ$) first escapes to an intermediate saddle whose second
+singular values stay below the onset threshold; timed at that level, its MPS slope matches $1/\lambda_e$ to
+$0.24\%$ (\cref{app:supp-cov}). \emph{Scope:} the escape from the rank-one saddle (the first rank increase),
+$\Ns=4$ and $8$, $d=2$; random initialization for $\Ns=4$ only. Later saddles on binary and HT students were
+not timed; there two-core routes can open on bottom edges at higher ranks, never for the root bipartition
 (\cref{app:teachers}). Correlated inputs were never run on HT (\cref{sec:cov-correlated}).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics{data_teacher/contrast.pdf}
+  \caption{One generic teacher, three trees. (a)~Saddle start, MPS students, 13 teachers: escape time
+    rescaled by the predicted slope, $\lambda_e$ times the time since the smallest $\varepsilon$, plus $\ln(1/\varepsilon_{\min})$
+    (mean over five seeds, $\lambda_e$ of the realized edge), against $\ln(1/\varepsilon)$; dashed: the prediction.
+    (b)~Saddle start, binary (solid) and HT students (dashed), the same teachers except the misaligned one
+    with $\Ns=8$ at $20^\circ$: $\varepsilon\,t_{\rm esc}$ relative to its value at $\varepsilon=10^{-3}$ (per seed, five seeds, then
+    geometric mean); flat means $t_{\rm esc}\propto\varepsilon^{-1}$. (c),~(d)~Random initialization, the six teachers
+    with $\Ns=4$ on MPS4 and binary4 (runs on the major rank-one saddle with a resolved plateau, geometric
+    means over one to five seeds, four or five at the three smallest $\isc$): $-\lambda_{\min}$ of the
+    gauge-projected Hessian at the plateau, and the
+    second escape $\Delta t_2$. Takeaway: the same teachers give a strict saddle with a logarithmic escape at
+    the predicted rate on the MPS, and a higher-order saddle on binary and HT trees (escape $\propto\varepsilon^{-1}$;
+    from random initialization, binary4: $\lambda_{\min}\propto\isc$, escape $\propto\isc^{-1}$; random initialization
+    was not run on HT) (source: \cref{tab:repro-figures}).}
+  \label{fig:dt-contrast}
+\end{figure}
+
+% ===========================================================================================
+\subsection{Non-orthogonal components: a logarithmic second escape on MPS4}\label{sec:cov-misaligned}
+% Merges the former subsections on misaligned covariance, cross-site correlations and non-orthogonal CP
+% teachers; their labels sec:cov-misaligned, sec:cov-correlated and sec:teacher-cp all point here.
+% Sources: verification rows 7, 8, 11, 16; e4a_sigma_v2_*, e2_sigma_v2_*, r2_corr_*; round-1 runs e2, e3, e4a.
+
+Three ways to make the components non-orthogonal in the metric of the loss are compared on MPS4 and
+binary4: overlapping CP components, a misaligned covariance and correlated sites. In each the rank-one
+plateau is a predicted critical point of the rank-constrained loss, a blend rather than a partial fit
+(except on MPS4 under correlated inputs, where it keeps the pure component, and beyond $30^\circ$ of
+misalignment), and each turns the $\isc^{-2}$ second plateau of MPS4 into a logarithmic one
+(\cref{tab:cov-slopes,fig:dt-mps-laws}).
 
 \begin{table}[t]
   \centering
-  \caption{Escape from the exact bond-rank-one saddle, 13 generic teachers ($d=2$, $\chi=4$, five seeds,
-    asymptotic per-seed fits, mean $\pm$ s.e.). MPS: $\lambda_{\min}$ at the saddle, $1/\gamma_e$ of the realized edge,
-    and the slope $A$ of $t_{\rm esc}$ against $\ln(1/\varepsilon)$, $\varepsilon=10^{-8}$--$10^{-4}$ (its deviation from $1/\gamma_e$).
-    Binary, HT: $t_{\rm esc}\propto\varepsilon^{-p}$,
-    $\varepsilon=10^{-5}$--$10^{-3}$. $\dagger$: intermediate-level event, $\varepsilon=10^{-6}$--$2\cdot10^{-3}$ (MPS),
-    $10^{-3}$--$2\cdot10^{-2}$ (binary, HT). $\ddagger$: up to $\varepsilon=2\cdot10^{-2}$. $\S$: two realized edges, $1/\gamma_e=5.47$,
-    $5.27$.}
-  \label{tab:dt-saddle}
+  \caption{Second escape on MPS4 from random initialization when the components are not orthogonal:
+    slope of $\Delta t_2$ against $\ln(1/\isc)$ over the three smallest $\isc$ (mean $\pm$ s.e.\ over seeds), for
+    correlated sites its increment per halving of $\isc$, against the prediction: $h_e$ of
+    \cref{sec:teacher-generic} (CP overlap), the bound $1/\abs{\lambda_{\min}}$ at the plateau (misalignment) and
+    the two-stage law (correlation). ``Log law'': seeds in which it fits better than a power law. The
+    orthogonal baselines (overlap $0$, angle $0$, $c=0$) give $\Delta t_2\propto\isc^{-2.00}$. $^\dagger$\,Not yet
+    asymptotic near the crossover overlap of order $\isc$ (\cref{app:teachers}; \conjecture). Settings as in
+    \cref{fig:dt-mps-laws}.}
+  \label{tab:cov-slopes}
   \footnotesize
-  \begin{tabular}{@{}llrrlll@{}}
+  \begin{tabular}{@{}llccl@{}}
     \toprule
-    $\Ns$ & teacher & $\lambda_{\min}$ & $1/\gamma_e$ & $A$ (MPS) & $p$ (binary) & $p$ (HT) \\
+    non-orthogonality & value & log law & measured & predicted \\
     \midrule
-    4 & CP, $c=0.2$                 & $-0.0285$ & $35.14$  & $35.156\pm0.013$ ($+0.05\%$) & $1.0001\pm0.0001$ & $1.0005\pm0.0003$ \\
-    4 & CP, $c=0.45$                & $-0.151$  & $6.627$  & $6.642\pm0.005$ ($+0.22\%$)  & $1.0001\pm0.0001$ & $1.0005\pm0.0001$ \\
-    4 & misaligned, $20^\circ$      & $-0.0189$ & $52.94$  & $53.04\pm0.06$ ($+0.18\%$)   & $1.0001\pm0.0001$ & $1.0002\pm0.0004$ \\
-    4 & random binary (302)         & $-0.0764$ & $13.09$  & $13.12\pm0.01$ ($+0.18\%$)   & $1.0002\pm0.0001$ & $1.0001\pm0.0002$ \\
-    4 & random binary (303)         & $-0.360$  & $2.779$  & $2.786\pm0.002$ ($+0.27\%$)  & $1.0001\pm0.0001$ & $1.0001\pm0.0001$ \\
-    4 & random MPS (301)            & $-0.376$  & $2.658$  & $2.662\pm0.001$ ($+0.15\%$)  & $1.0000\pm0.0001$ & $1.0002\pm0.0001$ \\
-    8 & CP, $c=0.45$                & $-0.0048$ & $209.70$ & $209.60\pm0.05$ ($-0.05\%$)  & $1.0001\pm0.0001$ & $1.0036\pm0.0006^\ddagger$ \\
-    8 & CP, $c=0.7$                 & $-0.0574$ & $17.41$  & $17.45\pm0.02$ ($+0.24\%$)   & $1.0001\pm0.0001$ & $0.9998\pm0.0001$ \\
-    8 & misaligned, $45^\circ$      & $-0.0174$ & $57.39$  & $57.49\pm0.03$ ($+0.16\%$)   & $1.0003\pm0.00004$ & $0.9999\pm0.0001$ \\
-    8 & misaligned, $20^\circ$      & $-0.00051$ & $1974.8$ & $1979.6\pm1.8$ ($+0.24\%$)$^\dagger$ & $1.071\pm0.004^\dagger$ & $1.048\pm0.012^\dagger$ \\
-    8 & random binary (302)         & $-0.371$  & $2.698$  & $2.708\pm0.002$ ($+0.36\%$)  & $0.9999\pm0.0001$ & $0.9999\pm0.0002$ \\
-    8 & random binary (303)         & $-0.190$  & $5.42^\S$ & $5.43\pm0.04$ ($+0.08\%$)   & $1.0001\pm0.0001$ & $1.0001\pm0.0002$ \\
-    8 & random MPS (303)            & $-0.164$  & $6.181$  & $6.202\pm0.007$ ($+0.34\%$)  & $1.0003\pm0.0001$ & $0.9999\pm0.0001$ \\
+    CP overlap $\cos\phi$ & $0.45$       & 9 of 9   & $5.686\pm0.016$ & $5.682$ \\
+                          & $0.2$        & 8 of 8   & $34.40\pm0.20$  & $34.14$ \\
+                          & $0.05$       & 8 of 8   & $595\pm11$      & $570^\dagger$ \\
+    misalignment angle    & $20^\circ$   & 10 of 10 & $12.14\pm0.03$  & bound $12.31$ \\
+                          & $5^\circ$    & 10 of 10 & $194.9\pm1.2$   & bound $193.2$, approached from above \\
+    correlation $c$ (per halving) & $0.4$ & 4 of 4 & $2.133\pm0.003$ & $2.128$ \\
+                          & $0.3$        & 4 of 4   & $4.616\pm0.010$ & -- \\
+                          & $0.2$        & 4 of 4   & $14.67\pm0.06$  & $14.39$, still falling \\
+                          & $0.1$        & 4 of 4   & $113.9\pm0.7$   & -- \\
     \bottomrule
   \end{tabular}
 \end{table}
 
 \begin{figure}[t]
   \centering
-  \includegraphics{data_teacher/contrast.pdf}
-  \caption{One generic teacher, three trees. (a)~Saddle start, MPS students, 13 teachers: escape time
-    rescaled by the predicted slope (mean over five seeds, $\gamma_e$ of the realized edge) against
-    $\ln(1/\varepsilon)$; dashed: the prediction. (b)~Saddle start, binary (solid) and HT students (dashed), the
-    same teachers except the misaligned one with $\Ns=8$, $\theta=20^\circ$: $\varepsilon\,t_{\rm esc}$ relative to
-    its value at $\varepsilon=10^{-3}$ (per seed, five seeds, then geometric mean); flat means
-    $t_{\rm esc}\propto\varepsilon^{-1}$. (c),~(d)~Random initialization, the six teachers with $\Ns=4$ on MPS4 and
-    binary4 (runs on the major rank-one saddle with a resolved plateau, geometric means over four or five seeds):
-    $-\lambda_{\min}$ of the gauge-projected Hessian at the plateau, and the second escape $\Delta t_2$. Data:
-    experiment \texttt{data\_teacher} (\cref{tab:repro-figures}). Takeaway: the same teachers give a strict
-    saddle with a logarithmic escape at the predicted rate on the MPS, and a higher-order saddle
-    ($\lambda_{\min}\propto\isc$, escape $\propto\varepsilon^{-1}$ or $\isc^{-1}$) on binary and HT trees.}
-  \label{fig:dt-contrast}
-\end{figure}
-
-% ===========================================================================================
-\subsection{Misaligned covariance}\label{sec:cov-misaligned}
-
-The critical points, critical values and saddle types under a product covariance are those of the
-whitened problem with teacher $\Sig^{1/2}\Wt$; escape rates are not, because the flow is preconditioned
-\proven{} \newresult[for TTNs] (\cref{prop:A-precond}). With misaligned factors $\Sig^{1/2}\Wt$ is a
-non-orthogonal CP teacher, with factors $\propto\Sigi i^{1/2}\fac ri$, while the escape is driven by $\Sig\Wt$, with
-factors $\propto\Sigi i\fac ri$: the state must rotate after the escape, and misalignment alone can reverse the
-order \derived{} \newresult{} (\cref{app:covariance}). Experiments \empirical{} ($d=\chi=4$, weights $(1,0.8)$,
-$\beta\in\{0.5,1\}$, $\theta=0$--$45^\circ$, $\isc=0.05$ on binary4 and $0.1$ on MPS4, 20 seeds; an MPS4 sweep with $\beta=1$,
-$\theta\in\{0,5,20\}^\circ$, nine $\isc$ from $3\cdot10^{-4}$ to $0.3$, ten seeds):
-\begin{itemize}
-  \item The first plateau is the predicted rank-one critical point of the $\Sig$-loss: median relative
-    level errors $10^{-6}$--$10^{-3}$, median $\abs{\cos}\ge0.998$ with the critical tensor for $\theta\le30^\circ$, over
-    the resolved plateaus (20--50\% of the MPS4 runs per $\theta$ have none at $\isc=0.1$).
-  \item Early alignment with the race tensor (the best bond-rank-one approximation of $\Sig\Wt$), then
-    realignment to the saddle \knownresult[in linear networks, binary4 being one:
-    \citealp{atanasov2022neural}]: in $75$--$100\%$ of the binary4 runs at $\theta\ge10^\circ$, but on MPS4 only at
-    $45^\circ$.
-  \item Second escape on MPS4 (\cref{fig:dt-mps-laws}b) \newresult: $\isc^{-2.000}$ at $\theta=0$; at $20^\circ$ the log law
-    (10 of 10 seeds) with slope $12.14\pm0.03$, below the bound $1/\abs{\lambda_{\min}}=12.31$ of its
-    $\isc$-independent plateau curvature; at $5^\circ$ the log law (10 of 10) with $194.9\pm1.2$, approaching its
-    bound $193.2$ from above (not yet asymptotic). The slope itself is not predicted: the head start under
-    the preconditioned flow was not derived.
-\end{itemize}
-
-\begin{figure}[tbp]
-  \centering
   \includegraphics{data_teacher/mps_laws.pdf}
   \caption{MPS4 from random initialization: the second escape $\Delta t_2$ (onset events; runs on the major
     rank-one saddle with a resolved plateau; geometric mean over seeds with its standard error) when the
-    components of the teacher are made non-orthogonal in three ways. (a)~CP overlap $c$ ($d=4$, weights
+    components of the teacher are made non-orthogonal in three ways. (a)~CP overlap $\cos\phi$ ($d=4$, weights
     $(1,0.7)$, ten seeds, not all of which qualify at every $\isc$); dashed: $h_e\ln(1/\isc)$ (\cref{cor:A-second-escape}),
-    anchored at the smallest $\isc$ since the intercept is not predicted. (b)~Misaligned covariance at angle
-    $\theta$ ($d=4$, ten seeds); dashed: slope $1/\abs{\lambda_{\min}}$, an upper bound. (c)~Correlated sites
-    ($d=3$, the four of five seeds on the major saddle); dashed: the two-stage law (\cref{app:covariance}; not
-    computed for $\rho=0.1$, $0.3$). Black: the orthogonal baseline, dashed $\propto\isc^{-2}$; open markers: runs
-    flagged by the float64-floor scan (dormant overlap $10^{-21}$--$10^{-12}$); without them the baseline exponents
-    are $2.008\pm0.002$ ($c=0$) and $2.000\pm0.002$ ($\theta=0$). Data: experiment \texttt{data\_teacher}
-    (\cref{tab:repro-figures}). Takeaway: any non-orthogonality in the metric of the loss turns the $\isc^{-2}$
-    second plateau into a logarithmic one, with the predicted slope where there is a prediction.}
+    anchored at the smallest $\isc$ since the intercept is not predicted. (b)~Misaligned covariance, angle in
+    degrees ($d=4$, ten seeds); dashed: slope $1/\abs{\lambda_{\min}}$, an upper bound. (c)~Correlated sites,
+    correlation $c$ ($d=3$, weights $(1,0.6)$, the four of five seeds on the major saddle, events on the
+    singular values across $01|23$); dashed: the two-stage law (\cref{app:covariance}; not computed for
+    $c=0.1$, $0.3$). Black: the orthogonal baseline, dashed $\propto\isc^{-2}$; open markers: runs flagged by the
+    float64-floor scan (dormant overlap $10^{-21}$--$10^{-12}$); without them the baseline exponents are
+    $2.008\pm0.002$ (overlap $0$) and $2.000\pm0.002$ (angle $0$). Takeaway: each of the three non-orthogonalities
+    tested turns the $\isc^{-2}$ second plateau into a logarithmic one, with the predicted slope where there is
+    a prediction (overlap $0.05$: $+4\%$, not yet asymptotic) (source: \cref{tab:repro-figures}).}
   \label{fig:dt-mps-laws}
 \end{figure}
 
-% ===========================================================================================
-\subsection{Cross-site correlations}\label{sec:cov-correlated}
+\paragraph{Overlapping CP components.}\label{sec:teacher-cp}
+The rank-one critical points are those of $g(x)=\ip{\bigotimes_ix_i}{\Wt}$ on unit rank-one tensors \proven. With
+two components of equal weight and overlap $\cos\phi$ at every site, an MPS has two rank-one maxima (one near
+each component) iff $\cos\phi<(\Ns-2)/\Ns$ and one blended maximum above \proven{} (among symmetric points);
+unequal weights move the merger to a fold \derived{} \newresult[elementary] (\cref{prop:A-two-components}); on
+binary4 the rank-one point is the top singular pair of the $01|23$ matricization (\cref{rem:A-binary4-dln}), a
+blend for every $\cos\phi>0$. The plateau is never a component. \empirical{} With $d=\chi=4$ and overlaps up
+to $0.8$, the measured rank-one minima are as predicted (two on MPS4 below the merger, one on binary4), and
+the first plateaus sit at these blends (\cref{app:supp-cov}).
 
-In the one-factor model $x^{(i)}=(1-\rho)^{1/2}z_i+\rho^{1/2}z_0$ (independent standard Gaussians; $\rho$ is the $c$
-of \cref{app:covariance}) every site is whitened and two sites have covariance $\rho\Id$. The second-moment
-matrix is not a product, so no whitening substitution exists; the loss is computed with the dense
-matrix. The residual acquires \emph{pairing} tensors such as $(x^{(0)}\cdot x^{(1)})\,x^{(2)}_rx^{(3)}_r$, of bond
-rank one on binary4 but $d$ on MPS4 \derived. On MPS4 the escape from the product saddle passes through
-binary4's first plateau point, strict on MPS4 but of higher order on binary4, so the second plateau grows
-by $\ln2\,[(1-\kappa_{\rm c})/\lambda_2+1/\lambda'']$ per halving of $\isc$: $2.128$ at $\rho=0.4$, $14.39$ at $\rho=0.2$ ($d=3$,
-weights $(1,0.6)$) \derived{} \newresult{} (\cref{app:covariance}); binary4 stays at $\isc^{-1}$.
-Experiments \empirical:
-\begin{itemize}
-  \item binary4 ($d=\chi=4$, weights $(1,0.7)$, $\isc=0.05$, 20 seeds): the first plateau falls from $0.33\,\Loss(0)$
-    at $\rho=0$ to $0.29$, $0.20$, $0.14$, $0.10\,\Loss(0)$ at $\rho=0.2$--$0.5$, always at the predicted critical value
-    (median relative error $\le5\cdot10^{-4}$): a blend with pairing terms, no longer a partial fit.
-  \item Second escape \newresult{} (\cref{fig:dt-mps-laws}c; $d=3$, six $\isc$ from $0.0016$ to $0.05$, five seeds,
-    events on the singular values across $01|23$): on MPS4 the log law in 4 of 4 seeds at every $\rho>0$ (seed 2 sits on
-    the minor saddle and is excluded); increments per halving over the three smallest $\isc$ $2.133\pm0.003$
-    at $\rho=0.4$ (predicted $2.128$) and $14.67\pm0.06$ at $\rho=0.2$ ($14.39$; $+2\%$, still falling), and
-    $113.9\pm0.7$, $4.616\pm0.010$ at $\rho=0.1$, $0.3$ (no prediction computed); $\isc^{-2.000}$ at $\rho=0$. Binary4:
-    $\isc^{-p}$, $p=1.005$--$1.011$. This repeats the theory's own check with more seeds: a replication, not
-    an independent test.
-  \item The MPS4 plateaus separate only logarithmically: separation ratio $2.6\to11$ at $\rho=0.4$ from
-    $\isc=0.05$ to $0.0016$, against $14$--$19\to139$--$185$ on binary4.
-  \item Online SGD (binary4, $\rho=0.3$, $\batch\ge256$, three seeds) crosses the same loss levels within $4\%$ of
-    gradient flow.
-\end{itemize}
+\paragraph{Misaligned covariance.}
+Under a product covariance the critical points, critical values and saddle types are those of the
+whitened problem with teacher $\Sig^{1/2}\Wt$; escape rates are not, because the flow is preconditioned
+\proven{} \newresult[for TTNs] (\cref{prop:A-precond}). With misaligned factors $\Sig^{1/2}\Wt$ is a
+non-orthogonal CP teacher, with factors $\propto\Sigi i^{1/2}\fac ri$, while the escape is driven by $\Sig\Wt$,
+with factors $\propto\Sigi i\fac ri$: the state must rotate after the escape, and misalignment alone can
+reverse the order \derived{} \newresult{} (\cref{app:covariance}). \empirical{} With $d=\chi=4$ and weights $(1,0.8)$,
+the first plateau is the predicted rank-one critical point of the $\Sig$-loss for angles up to $30^\circ$ (median
+relative level errors $10^{-6}$--$10^{-3}$; at $45^\circ$ most MPS4 runs have no resolved plateau). Binary4 runs
+first align with the best rank-one approximation of $\Sig\Wt$ and then turn to the saddle ($75$--$100\%$ of the
+runs from $10^\circ$ on) \knownresult[in linear networks, binary4 being one: \citealp{atanasov2022neural}]; MPS4
+runs do so only at $45^\circ$.
+
+\paragraph{Correlated sites.}\label{sec:cov-correlated}
+In the one-factor model $\xs i=(1-c)^{1/2}z_i+c^{1/2}z$ (independent standard Gaussians $z$ and $z_i$, as in
+\cref{app:covariance}) every site is whitened and two sites have covariance $c\Id$. The second-moment matrix
+is not a product, so no whitening substitution exists; the loss is computed with the dense matrix. The
+residual acquires \emph{pairing} tensors such as $(\xs0\cdot\xs1)\,\xs2_r\xs3_r$, of bond rank one on binary4 but
+$d$ on MPS4 \derived. On MPS4 the escape from the product saddle passes through binary4's first plateau
+point, which is strict on MPS4 but of higher order on binary4, so the second plateau grows by a fixed
+amount per halving of $\isc$, set by the rates at the two saddles and the head start (the two-stage law of
+\cref{app:covariance}) \derived{} \newresult; binary4 stays at $\isc^{-1}$. \empirical{} On binary4 ($d=\chi=4$,
+weights $(1,0.7)$, $\isc=0.05$) the first plateau falls from $0.33\,\Loss(0)$ at $c=0$ to $0.10\,\Loss(0)$ at $c=0.5$,
+always at the predicted critical value: a blend with pairing terms, no longer a partial fit (the MPS4
+rank-one point keeps the pure component). The MPS4 plateaus separate only logarithmically: at $c=0.4$ the
+separation ratio grows from $2.6$ to $11$ between $\isc=0.05$ and $0.0016$, against $19$ to $185$ on binary4.
 HT students and $\Ns>4$ were not run with correlated inputs.
 
-% ===========================================================================================
-\subsection{Non-orthogonal CP teachers}\label{sec:teacher-cp}
-
-The rank-one critical points are those of $g(x)=\ip{\bigotimes_ix_i}{\Wt}$ on unit rank-one tensors
-\proven. With two components of equal weight and overlap $c$ at every site, an MPS has two rank-one
-maxima (one near each component) iff $c<(\Ns-2)/\Ns$ and one blended maximum above \proven{} (among symmetric
-points); unequal weights move the merger to a fold \derived; on binary4 the rank-one point is the top
-singular pair of the $(01|23)$ matricization, a blend for every $c>0$ \newresult[elementary]
-(\cref{prop:A-two-components}). The plateau is never a component. Experiments \empirical{} ($d=\chi=4$, weights
-$(1,\tw2)$, $\tw2\in\{0.7,1\}$,
-$c=0$--$0.8$, $\isc=0.05$ on binary4 and $0.1$ on MPS4, 20 seeds; an MPS4 sweep with $\tw2=0.7$,
-$c\in\{0,0.05,0.2,0.45\}$, nine $\isc$ from $3\cdot10^{-4}$ to $0.3$, ten seeds):
-\begin{itemize}
-  \item MPS4 has two rank-one minima for $c\le0.45$ and one for $c\ge0.55$ ($\tw2=1$), two for $c\le0.35$ and
-    one for $c\ge0.45$ ($\tw2=0.7$); binary4 one. First plateaus sit at these blends (median relative level
-    errors $5\cdot10^{-5}$--$2\cdot10^{-3}$ on binary4, up to $3\%$ on barely resolved MPS4 plateaus; some binary4 runs
-    with $\tw2=1$ sit at the second singular pair, a strict saddle), with levels falling as $c$ grows.
-  \item Second escape on MPS4 (\cref{fig:dt-mps-laws}a) \newresult: $\isc^{-2.00}$ at $c=0$; for $c>0$ the log law (9 of
-    9, 8 of 8, 8 of 8 seeds at $c=0.45$, $0.2$, $0.05$) with slopes $5.686\pm0.016$ ($h_e=5.682$), $34.40\pm0.20$
-    ($34.14$) and $595\pm11$ ($570$; not yet asymptotic, as expected near the crossover overlap $c_\times=O(\isc)$
-    of \cref{app:teachers}, a \conjecture), and an $\isc$-independent plateau curvature.
-\end{itemize}
-On binary4 the escape $\propto\isc^{-1}$ was measured for $c=0.2$ and $0.45$ only (\cref{sec:teacher-generic}).
+\paragraph{The second escape on MPS4.}
+\empirical{} \newresult[overlap and misalignment; the correlated-site law and its first check are in
+\cref{app:covariance}] With any of the three, the second escape of
+MPS4 from random initialization follows the log law in every seed, with the predicted slope where there is a
+prediction (at overlap $0.05$ $4\%$ above it, not yet asymptotic; \cref{tab:cov-slopes,fig:dt-mps-laws}), and
+the plateau curvature tends to its exact-saddle value as $\isc$ decreases; the orthogonal baselines give
+$\isc^{-2.00}$. Under misalignment the slope is only bounded, by $1/\abs{\lambda_{\min}}$ at the plateau, since
+the head start under the preconditioned flow was not derived. Binary4 keeps $\isc^{-1}$: with
+correlated inputs (fitted exponents $1.005$--$1.011$) and, in \cref{sec:teacher-generic}, for overlaps $0.2$ and
+$0.45$ and a $20^\circ$ misalignment.
 
 % ===========================================================================================
 \subsection{Random TTN teachers: plateaus are rank-constrained critical points}\label{sec:teacher-ttn}
 
 With bond ranks fixed, the critical points are the fixed points of one-site alternating least squares
 \proven{} \knownresult[in substance: \citealp{elden2011perturbation,holtz2012alternating}]
-(\cref{prop:A-critical-points}); the hierarchical SVD is generically not one \proven{}
-(\cref{prop:A-hsvd}). The
-rank-one plateau should approach a local best rank-one approximation as $\isc^\alpha$, $\alpha=\min(\alpha_r,\alpha_a)$
-(\conjecture: a heuristic crossing argument), and an MPS then gains rank bond by bond, first on
-$e^*=\arg\max_e\sigma_2(M_e)$ with slope $h_{e^*}$ \derived. Experiments \empirical{} \newresult{} (MPS4 student,
-$d=3$, $\chi=4$; five random MPS4 teachers with bond ranks $(2,3,2)$ and $\normF{\Wt}=1$; eight $\isc$ from
-$10^{-3}$ to $0.2$; six seeds):
-\begin{itemize}
-  \item The rank-one plateau converges to the bond-rank-one critical point: per seed its distance
-    falls as $\isc^\alpha$, $\alpha=0.72$, $0.83$, $0.41$, $0.93$, $0.80$ ($\pm0.01$--$0.03$), $0.07$--$0.15$ above the heuristic
-    ($0.64$, $0.68$, $0.34$, $0.80$, $0.72$) for every teacher. For three teachers it is separated from every
-    SVD-type truncation (hierarchical SVD, TT-SVD in both directions): at $\isc=10^{-3}$ it lies
-    $10^{-4}$--$2.5\cdot10^{-3}$ from the critical point and $1.5\cdot10^{-3}$--$0.028$ from the nearest truncation
-    (relative to $\normF{\Wt}$). For the other two teachers, and at the higher-rank plateaus, the critical
-    point lies within $0.0032$ of an SVD-type truncation and the plateaus do not discriminate between them.
-    (In CP factorization, small initialization follows a rank-one trajectory, \citealp{razin2021implicit}.)
-  \item Ranks grow one bond at a time, e.g.\ $(1,1,1)\to(2,1,1)\to(2,2,1)\to(2,3,1)\to(2,3,2)$. The first increase
-    after the rank-one plateau follows the log law in 26 of 26 seeds, with single-route slopes within
-    $0.3$--$1.6\%$ of $h_{e^*}$ (e.g.\ $5.188\pm0.008$ against $5.175$), always on $e^*$ at $\isc=10^{-3}$; later increases
-    were not timed. Gradient descent on tensor-train completion shows a plateau followed by abrupt
-    rank growth \citep{milanesi2021implicit}.
-\end{itemize}
+(\cref{prop:A-critical-points}); the hierarchical SVD is generically not one \proven{} (\cref{prop:A-hsvd}). The
+rank-one plateau should approach a local best rank-one approximation as a power of $\isc$ (\conjecture: a
+heuristic crossing argument gives the exponent), and an MPS then gains rank bond by bond, first on the edge
+$e^*$ with the largest $s_2(M_e)$, with slope $h_{e^*}$ \derived. Experiments \empirical{} \newresult{} (MPS4
+student, $d=3$, $\chi=4$; five random MPS4 teachers with bond ranks $(2,3,2)$; eight $\isc$ from $10^{-3}$ to
+$0.2$; six seeds): the rank-one plateau converges to the bond-rank-one critical point as a power of $\isc$
+(exponents $0.07$--$0.15$ above the heuristic; \cref{app:supp-cov}); for three teachers that point is separated
+from every SVD-type truncation, while for the other two, and at the higher-rank plateaus, it lies within
+$0.0032$ of one, so the plateaus do not discriminate. Ranks then grow one bond at a time, e.g.\
+$(1,1,1)\to(2,1,1)\to(2,2,1)\to(2,3,1)\to(2,3,2)$; the first increase follows the log law in 26 of 26 seeds, with
+single-route slopes within $0.3$--$1.6\%$ of $h_{e^*}$, always on $e^*$ at $\isc=10^{-3}$ (later increases were not
+timed). In CP factorization small initialization follows a rank-one trajectory
+\citep{razin2021implicit}, and gradient descent on tensor-train completion shows a plateau followed by
+abrupt rank growth \citep{milanesi2021implicit}.
 
 % ===========================================================================================
 \subsection{Teacher and student on different trees}\label{sec:teacher-mismatch}
 
 A student bond must reach the rank of the teacher's matricization across it, bounded by products of
 bond dimensions over cuts of the teacher's tree \proven{} \knownresult[standard min-cut bound; cf.\
-\citealp{grasedyck2011introduction}, Lemmas~7--8] (\cref{app:teachers}):
-a binary8 student of an MPS8 teacher of bond rank $r$ needs rank $\min(d^2,r^2)$ on the bonds of sites
-$\{2,3\}$ and $\{4,5\}$. The routes give \emph{bottom-up order} \derived{} \newresult: the root bipartition
-$\{0123\}|\{4567\}$ (the teacher's middle bond) has a three-core route only after both halves have bond
-rank above one below it, so it grows only after a bottom bond on each half, whatever its teacher
-Schmidt value. Experiments \empirical{} \newresult{} (binary8 student, $\chi=4$, twelve random MPS8 teachers
-with bond ranks 2, $\isc=0.3$, $0.4$, $0.5$, eight seeds): in the 7 teachers whose root cut has a larger
-teacher Schmidt value than both bottom bonds of a half, so that a weight order disagrees, bottom-up
-order holds in 163 of 168 runs (56 of 56 at $\isc=0.3$), including 117 of 120 for five teachers whose root
-cut is the strongest of all by $5.5$--$13\%$; the 5 exceptions grow the root after a bottom bond on one half
-only. Over all 12 teachers: 249 of 256. ``Largest teacher Schmidt value first'' fails, and ``a sibling
-pair first'' is no rule (8--100\% of the runs by teacher). Scope: $\Ns=8$, $\isc=0.3$--$0.5$. (An MPS8 student of
-binary8 teachers at $\isc=0.45$ grows the predicted bond first in 2 of 24 runs; with $\ln(1/\isc)=0.8$ this is no
-test of the asymptotic race of \cref{prop:A-agf-race}.)
+\citealp{grasedyck2011introduction}, Lemmas~7--8] (\cref{app:teachers}): a binary8 student of an MPS8 teacher
+with bond ranks 2 and $d=2$ needs rank 4 on the bonds above the bottom cores of sites 2, 3 and of sites
+4, 5, whose cuts cross two teacher bonds. The routes give \emph{bottom-up order} \derived{} \newresult: the root
+bipartition $0$--$3|4$--$7$ (the teacher's middle bond) has a three-core route only after both halves have
+bond rank above one below it, so it grows only after a bottom bond on each half, whatever its teacher
+singular value. Experiments \empirical{} \newresult{} (binary8 student, $\chi=4$, twelve random MPS8 teachers
+with bond ranks 2, $\isc=0.3$, $0.4$, $0.5$ (two teachers at $0.4$ only), eight seeds): in the 7 teachers whose
+root cut has a larger teacher
+singular value than both bottom bonds of a half, so that a weight order disagrees, bottom-up order holds
+in 163 of 168 runs (56 of 56 at $\isc=0.3$), including 117 of 120 for five teachers whose root cut is the
+strongest of all by $5.5$--$13\%$; the 5 exceptions grow the root after a bottom bond on one half only. Over
+all 12 teachers: 249 of 256. ``Largest teacher singular value first'' fails, and ``a sibling pair first''
+is no rule (8--100\% of the runs by teacher). Scope: $\Ns=8$, $\isc=0.3$--$0.5$; the reverse mismatch, an MPS8
+student of binary8 teachers, was run only at a $\isc$ too large to test the asymptotic race
+(\cref{app:supp-cov}).
 
-% Summary table of Sec. 6.10, placed here so that it floats into the section.
+% ===========================================================================================
+\subsection{Star teachers: forgetting a learned component}\label{sec:teacher-star}
+
+A learned component $j$ without a two-core route to the rest is a strict saddle iff $\lambda_{\max}(\Gamma)>\tw j$,
+$\Gamma$ the weighted adjacency matrix of the piggyback graph, and then
+$\lambda_{\min}=-\tw j^{(\Kc-2)/\Kc}(\lambda_{\max}(\Gamma)-\tw j)$ \proven{} \newresult[for general trees; deep linear
+networks: \citealp{achour2024loss}, Thm~7; related: active units can become dormant,
+\citealp{pesme2023saddletosaddle}, and \citealp{kunin2025alternating}, Lemma~B.1]
+(\cref{prop:A-piggyback-graph}). The \emph{star} has $q=0000$ ($\tw q=2$)
+and $r=1010$, $r'=1001$ (weights $\tw r=\tw{r'}$, $d=2$), which share the piggyback node: $\lambda_{\max}(\Gamma)=\sqrt2\,\tw r$,
+so ``$q$ learned'' ($\params_q$) is strict iff $\tw r>\sqrt2$, although both residual components are smaller and
+each needs three or more cores. Experiments ($\chi=3$; MPS4, binary4, HT4; saddle start at $\params_q$ with
+$\varepsilon=10^{-6}$--$10^{-2}$, five seeds; random initialization at $\tw r=1.2$, $1.6$, ten seeds):
+\begin{itemize}
+  \item \emph{Hessian} \proven{} and computed: the formula holds to $10^{-15}$ on MPS4, binary4, HT4 and a
+    binary8 analogue; there is no negative eigenvalue for $\tw r\le1.40$.
+  \item \emph{Threshold} \empirical{} \newresult[dynamics]: started at $\params_q$ with $\varepsilon=10^{-6}$, no seed leaves
+    it at $\tw r=1.4138$ ($\lambda_{\max}(\Gamma)/\tw q=0.9997$) and all do at $1.4146$ ($1.0003$; three seeds each) on
+    MPS4 and binary4; on HT4 the step lies between $1.40$ and $1.42$ for $\varepsilon\le10^{-3}$. At $\varepsilon=10^{-2}$ it
+    moves to $1.43$--$1.44$ on MPS4 and binary4, where the polynomial route that adds $r$ beats the slow strict
+    escape.
+  \item \emph{One or two strict stages} \derived{} (from the computed Hessians) and \empirical{} \newresult:
+    where one strict stage is timed ($\tw r\ge1.48$; every $\tw r$ on binary4) the slope of the escape time
+    against $\ln(1/\varepsilon)$ is $1/\lambda_q$ within $0.21\%$, with $\lambda_q=-\lambda_{\min}$ at $\params_q$. Near the threshold
+    on MPS4 the flow stops at a blended rank-one point that is itself strict, and the two times add (within
+    $0.2\%$). On HT4 that point has no negative eigenvalue and is left in a time $\propto\varepsilon^{-1}$: a star
+    forgets $q$ in logarithmic time on MPS4 and binary4 but polynomially on HT4, the tree contrast of
+    \cref{sec:teacher-generic} again.
+  \item \emph{Random initialization} \empirical{} \newresult{} ($\tw r=1.6$): the flow never sits at $\params_q$
+    (at most $0.13$ time units at its loss level, one seed $1.7$). The initialization direction sets the
+    class, but not the outcome: $q$ learned last; $\ov q$ rising to $0.78$--$1.00$ and then, in most runs,
+    decaying (on MPS4 one of these seeds keeps $q$ for $\isc\ge0.025$, and three more do at $\isc=0.1$); or a
+    blended start.
+    Where $q$ decays, the decay deepens steeply as $\isc$ decreases, not as a power law, and $q$ is relearned
+    last. Sub-critical stars ($\tw r=1.2$) keep $q$ ($\min\ov q\ge0.991$). Per-class counts and the near-threshold
+    values are in \cref{app:supp-cov}.
+\end{itemize}
+
+% ===========================================================================================
+\subsection{Real data}\label{sec:real-data}
+% Sources, in order of authority: notes/reviews/real_data_round2_verification.md (errata E1-E6 and E9
+% applied here: 28/29 seed fits; quadtreeT in the worse half, local orders with vertical or mixed pairs
+% rank 13-21 of 27, not "among the worst"; B < 0 for raw features only; 11/11 review runs of which 10 new,
+% units 19-22 of 23-26 depending on grouping, 91/96 states; binary lambda_min 0.87-0.89 on three seeds,
+% not "consistent with 1"; interim look and late config commit disclosed; Fashion MPS first to L <= 0.12;
+% E7, E8 concern the agent's REPORT and section 7 of the notes, not cited here),
+% notes/real_data.md section 8 (fix round; supersedes sections 4-7), section 9 (pre-registered
+% order test: registration commit 2f4d99e, predictor values 44feb2f, results 01144a5) and section 5
+% (prediction table); experiments/real_data/ (README; results/fix1_analysis.{md,json}, order_test.{md,json},
+% tables.md, scaling.json, hessians_raw.json, routes_raw.json, fashion_tables.md, chi8_tables.md);
+% withdrawn claims from notes/reviews/real_data_round1.md. Settings: app:exp-real-data. The narrowed
+% results (tau clock, Fashion-MNIST, chi = 8, centred sweep) and the procedural points of the order test
+% are in sections/D_covariance.tex. "Independent runs" = the round-1 reviewers' runs ("review runs" in B.9).
+% Counted here from committed JSON (not in the notes): "in 95 of the 96 states the largest of the 28
+% amplitudes lies on a route with k = 5 or 7" (routes_raw.json, argmax of lam over the states with
+% rank1_rel_err <= 0.05; 25 of the 26 units of fix1_analysis.json "routes"; the exception is quadtree
+% seed 4 at sigma = 0.3, whose maximum is on a sibling pair); lambda_min ranges of the two plateaus are proj_min of
+% hessians_raw.json in the loss bands of fix1_analysis.py; "t_a sigma^(K-2) constant to four digits or
+% better": regime_analysis.json (binary, 6 digits) and fix1_analysis.json mps_full (MPS, relative spread
+% <= 2.5e-5 per seed).
+% WITHDRAWN or narrowed, do not reintroduce: "k = 3 gap ~ sigma^-1.0" and "1.01 +- 0.14" (attribution
+% bug; the free exponent is not robust); per-run counts across sigma ("35/35, 89/89", "34/35, 78/89":
+% one critical point counted once per sigma); "locality is a small-init dynamical effect", "88% vs 21%"
+% of the interaction on k <= 5 routes, "the advantage vanishes at sigma = 0.5"; "the MPS reaches every
+% loss level first at every sigma", "route degree (tree shape) beats locality", "fails on every task and
+% size"; "later routes have higher degree (k = 4-5, exponent 3.3)"; the Fashion slopes sigma^-0.92 ...
+% -0.97 and "siblings first 15/15" without "rise together 3/15"; the chi = 8 exponents 1.17 +- 0.06,
+% 0.97 +- 0.11, 0.79 +- 0.28 and the chi = 8 comparison at sigma = 0.5; "binary lambda_min exponent
+% 0.877, 12% low"; "MPS strict saddle of the first (k = 2) route"; "the lazy floor (0.105) lies well
+% above what feature learning reaches"; a rich regime with boundaries; whitened "80% S2S" (57%);
+% Kendall tau on the MPS as evidence of bottom-up growth; "L(1e4)" for runs stopped earlier.
+
+Do the teacher--student results survive real inputs, with a non-product input law and no teacher? The
+empirical loss is $\Loss=\frac12\ip{\W}{C\W}-\ip{Y}{\W}+\mathrm{const}$, with the second-moment operator $C$
+of the features, which is not a product, and the label tensor $Y=\E[y\Feat]$ (averages over the training set). Two
+predictions need no product law \derived. Near the origin $\Loss\approx\Loss(0)-\ip{Y}{\W}$, so the first
+escape is that of \cref{sec:s2s-escape} with $\Wt\to T$ (\cref{prop:A-escape-cov}). At a bond-rank-one
+critical point the routes that can open depend only on bond ranks and site dimensions (\cref{app:teachers},
+``Generic teachers''): on a binary tree, whose internal cores carry no pixel, the cheapest routes join
+two sibling bottom cores ($k=3$: a higher-order saddle, a plateau $\propto\isc^{-1}$); on an MPS any adjacent
+pair of cores can open one ($k=2$: strict, $\propto\ln(1/\isc)$). These are the generic-teacher predictions
+of \cref{sec:teacher-generic}, with $Y$ for $\Wt$ in the first escape; the route counting at the rank-one
+point does not depend on the target. The data decide which of the cheapest routes goes first,
+and the assignment of pixels to sites decides which pixel interactions lie on short routes.
+
+\paragraph{Setup} (details in \cref{app:exp-real-data}).
+MNIST 3 ($y=+1$) against 5 ($y=-1$): 4000 training and 1600 test images, cropped to $24\times24$ and
+block-averaged to $4\times4$ pixels ($\Ns=16$), with the features $\feat{}(x)=(\cos\frac{\pi x}2,\sin\frac{\pi x}2)$
+of \citet{stoudenmire2016supervised}; square loss ($\Loss(0)\approx\frac12$), fan-in initialization, $\chi=4$.
+Gradient flow runs through the first plateau to the time $t_a$ at which the loss has fallen by $1\%$,
+then on the clock $\tau=t-t_a$ up to $\tau=10^4$. Trees: binary16 ($\Kc=15$; two pixels per bottom core,
+none on the internal cores) and MPS16 ($\Kc=16$). Pixel orders: \emph{quadtree} (Morton order; bottom cores
+carry horizontally adjacent pixel pairs, level-2 subtrees $2\times2$ blocks), \emph{snake} (boustrophedon, for
+the MPS) and random permutations (\emph{scrambled}). Main sweep: binary quadtree, snake MPS and three
+scrambled binary orders, seven $\isc$ from $0.05$ to $0.5$ (four for one scrambled order), seeds 0--4, plus
+whitened site features for three of the orders. Events are loss drops (peaks of $-\dd\Loss/\dd t$; gaps on
+the $\tau$ clock) and rank events (a ratio $\bs ej/\bs e1$ of data-weighted singular values crossing $0.05$). Runs
+of one (order, seed) at different $\isc$ mostly reach the same rank-one critical point, so independent
+counts are per (order, seed) or per \emph{unit} (order, seed, critical point); per-state counts (one state
+per run, repeating a critical point over $\isc$) are given only next to them. $\pm$ is the standard error over
+seeds (over series for the free gap exponent below).
+
+\paragraph{What survives.}
+\begin{itemize}
+  \item \emph{First plateau: an identity, not evidence.} $t_a\isc^{\Kc-2}$ is constant per seed to four
+    digits or better (exponents $13.000\pm0.000$ on binary16, $14.000\pm0.000$ on MPS16). As $\isc\to0$ it tends to a
+    per-seed constant for any input law: with $\params=\isc\tilde\params$ and $s=\isc^{\Kc-2}t$, $\tilde\params$ follows the
+    flow of $\ip{Y}{\W}$ from $Z$ up to terms of relative order $\isc^{\Kc}$ \proven{} \knownresult[the exponent:
+    \citealp{jacot2022saddletosaddle,kumar2025early}]. It checks the integrator and the clock, not the theory.
+  \item \emph{The first binary route is a sibling pair} \empirical{} \newresult. After the escape, 96 of
+    the 124 binary states lie within $0.05$ (relative) of a rank-one product, the others mostly at
+    $\isc\ge0.3$. In all 20 (order, seed) pairs the first two edges to gain a singular value belong to two
+    sibling bottom cores, the predicted $k=3$ route, and in all 96 rank-one states they cross the threshold
+    together; 11 independent runs (nine orders, $\isc=0.1$) agree.
+  \item \emph{Route couplings pick the route} \empirical{} \newresult. At the rank-one state the
+    \emph{route coupling} $\mu_{uw}$ of two bottom cores is the norm of the residual's correlation between
+    their unused feature directions, weighted by the other cores \eqref{eq:real-route-amplitude}: the coupling
+    of \cref{rem:A-sequence}, not the size of the dormant route entries. It sets the rate of the route through
+    them up to factors common to all routes with the same number $k_{uw}\in\{3,5,7\}$ of cores
+    (\cref{def:A-local-residual}). The sibling pair with the largest $\mu_{uw}$ rises first in 91 of the 96
+    rank-one states, in about 80--85\% of the critical-point units (chance $\frac14$; \cref{app:supp-cov}) and in
+    11 of 11 independent runs. Unlike in the teacher runs, the couplings themselves decide these ties: the
+    largest sibling coupling exceeds the second by a median factor $60$ (quadtree) and $5$ (scrambled
+    orders). Degree comes before coupling: in 95 of the 96 states (25 of the 26 units) the largest of the 28
+    couplings lies on a route with $k=5$ or $7$, yet a sibling pair rises first (\cref{rem:A-sequence}).
+  \item \emph{The $k=3$ gap is $A/\isc+t_0$, not logarithmic} \empirical{} \newresult{} (\cref{fig:real-gaps}).
+    Over the 11 series (one per order and seed) whose first route, one sibling pair, rises inside the
+    second loss drop at every $\isc$ (at least four values over at least half a decade), the gap between the
+    first two drops fits $A/\isc+t_0$, the $k=3$ law \eqref{eq:locality-rule} with its $O(1)$ correction
+    (\cref{prop:A-head-start}), with relative rms residual at most $0.060$ and $t_0<0$ in all 11; the log law of a
+    two-core route leaves $0.11$--$0.30$. A free exponent ($1.22\pm0.03$, range $1.06$--$1.36$) mostly measures
+    the offset and depends on the $\isc$ range. All 11 series use raw features; the verdicts also hold over
+    all 124 binary runs (\cref{app:supp-cov}).
+  \item \emph{Saddle types} \empirical{} \newresult, from the $\isc$-scaling of $\lambda_{\min}(\Hperp)$ at plateau
+    midpoints (\cref{sec:setup-diagnostics}). Binary16 (quadtree) at the rank-one plateau ($\Loss\approx0.27$):
+    $\abs{\lambda_{\min}}\propto\isc^{0.87}$ to $\isc^{0.89}$ on the three seeds with five or six $\isc$ (and $\isc^{1.15}$ on a
+    seed with three): higher order, though below the exponent $1$ of $k=3$ (\cref{prop:A-signatures}) at these $\isc$.
+    MPS16 at $\Loss\approx0.23$ (five seeds): $\lambda_{\min}=-0.054$ to $-0.079$, exponent $0.047\pm0.016$, a strict
+    saddle; it comes after the first route has risen, with two or three eigenvalues below $-10^{-3}\lambda_{\max}$
+    at $\isc\le0.1$: the saddle of later two-core routes.
+  \item \emph{Logarithmic later routes on the MPS} \empirical{} \newresult. The first rank increase is on
+    one edge in all 25 runs where it is resolved (in 10 of 35 the threshold is met at $\tau=0$), within
+    two time units of the first drop's peak: it merges with the escape and has no measurable gap. Of the
+    later edges, timed by their first rise after the first drop, edges 3, 4 and 6--9 prefer the log law
+    (28 of 29 seed fits; relative rms $0.03$--$0.11$ against $0.17$--$0.36$), edge 4 with slope $14.7\pm1.5$
+    per unit of $\ln(1/\isc)$, comparable to $1/\abs{\lambda_{\min}}=13$--$19$. Edges 1 and 2 prefer a power
+    law and edge 0 is mixed, which rank-one counting ($k=2$ on every MPS edge) does not explain.
+  \item \emph{Plateaus creep} \empirical: between drops the loss falls by a median $0.76$ of the next
+    drop (56 intervals in 20 binary runs, $\isc=0.1$). With drops dated by rate peaks the separation ratios on
+    binary trees grow as $\isc\to0$ (quadtree: median smallest ratio $2.8$ at $\isc=0.5$, $24$ at $0.05$; all quadtree
+    runs saddle-to-saddle at $\isc\le0.07$), not on the MPS.
+\end{itemize}
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics{real_data/first_route_gaps.pdf}
+  \caption{First route after the escape on binary16 (MNIST 3 against 5, $\chi=4$): gap between the
+    first two loss drops ($\tau$ clock) against $\isc$, for the 11 series (one per order and seed; colour and
+    marker: order) whose first route, one sibling pair, rises inside the second drop at every $\isc$. Left:
+    log--log axes; lines: $A/\isc+t_0$ fitted with relative residuals; dashed: $\propto\isc^{-1}$. Right:
+    $\isc$ times the gap, in which $A/\isc+t_0$ is a line of slope $t_0$. Takeaway: every series follows the $k=3$
+    law with a negative $O(1)$ offset; a logarithmic law fails (source: \cref{tab:repro-figures}).}
+  \label{fig:real-gaps}
+\end{figure}
+
+% Summary table of the section (sec:cov-summary), placed here so that it floats into the section.
 \begin{table}[t]
   \centering
   \caption{Input covariance and teacher structure: what changes, and what predicts it. ``Escape'': the
@@ -368,237 +492,78 @@ test of the asymptotic race of \cref{prop:A-agf-race}.)
     aligned covariance & quantitative only: order and times follow $\Lambda_r\tw r$, plateaus and swaps
       $\Lambda_r\tw r^2$; exponents unchanged & whitened problems with $\Lambda\tw{}$ (race) and $\Lambda^{1/2}\tw{}$
       (landscape) \\
-    generic teachers & escape strict and logarithmic on MPS ($\le0.4\%$ from the saddle, $\le1.3\%$ from random
-      init); $\propto\varepsilon^{-1}$, $\isc^{-1}$ on binary and HT & two-core routes and their rates \\
+    generic teachers & escape strict and logarithmic on MPS ($\le0.4\%$ from the saddle; $\le1.3\%$ from random
+      init, MPS4, $d=2$); $\propto\varepsilon^{-1}$ on binary and HT, $\propto\isc^{-1}$ on binary4 (random initialization not
+      run on HT) & two-core routes and their rates \\
     misaligned covariance & plateaus at critical points of the $\Sig$-loss; early alignment (binary4); MPS4
       escape logarithmic & $\Sig^{1/2}\Wt$; slope only bounded \\
     cross-site correlations & binary4: first saddle with pairing terms; MPS4: logarithmic two-stage
-      escape & two-stage law (replication) \\
-    overlapping CP components & blended plateaus; MPS4 rank-one maxima merge at $c=1/2$; logarithmic
-      escape & rank-one landscape; $h_e$ within $1\%$ ($c\ge0.2$) \\
+      escape & two-stage law \\
+    overlapping CP components & blended plateaus; MPS4 rank-one maxima merge at overlap $\frac12$ (equal weights;
+      fold near $0.36$ for $(1,0.7)$); logarithmic
+      escape & rank-one landscape; $h_e$ within $1\%$ (overlap $\ge0.2$) \\
     random TTN teachers & plateaus at rank-constrained critical points (3 of 5 teachers separated from
       SVD truncations); ranks grow bond by bond & critical points; $h_{e^*}$ within $1.6\%$ \\
     teacher on another tree & bottom-up order on binary8 (163 of 168 discriminating runs) & routes \\
-    star teachers & larger learned component left iff $\lambda_{\max}(\Gamma)>\tw q$; log time on MPS4, polynomial
-      on HT4 & piggyback graph; rates within $0.2\%$ \\
-    real data (MNIST) & as for a generic teacher: binary first route a sibling pair, gap $A/\isc+B$;
-      MPS later routes logarithmic (6 of 9 edges); plateaus creep; the pixel order sets the final loss,
-      not through locality & route counting with $T=\E[y\Feat]$ for $\Wt$; route amplitudes (first route;
-      ranking of orders, pre-registered) \\
+    star teachers & started at the larger learned component ($\varepsilon\le10^{-3}$) the flow leaves it iff
+      $\lambda_{\max}(\Gamma)>\tw q$; from random initialization it never sits there; log time on MPS4, polynomial
+      on HT4 & piggyback graph; rates within $0.21\%$ \\
+    real data (MNIST) & as for a generic teacher: binary first route a sibling pair, gap $A/\isc+t_0$;
+      MPS later routes logarithmic (6 of 9 edges); plateaus creep; the pixel order sets the final loss at
+      small $\isc$ (locality in the image neither necessary nor sufficient) & route counting with
+      $Y=\E[y\Feat]$ for $\Wt$; route couplings (first route; ranking of orders, pre-registered) \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-% ===========================================================================================
-\subsection{Star teachers: forgetting a learned component}\label{sec:teacher-star}
-
-A learned component $j$ without a two-core route to the rest is a strict saddle iff
-$\lambda_{\max}(\Gamma)>\tw j$, $\Gamma$ the weighted adjacency matrix of the piggyback graph, and then
-$\lambda_{\min}=-q_j^{\Kc-2}(\lambda_{\max}(\Gamma)-\tw j)$ \proven{} \newresult[for general trees; deep linear networks:
-\citealp{achour2024loss}, Thm~7] (\cref{prop:A-piggyback-graph}). The \emph{star} has $q=0000$ ($\tw q=2$) and
-$r=1010$, $r'=1001$ (weight $w$ each, $d=2$), which share the piggyback node: $\lambda_{\max}(\Gamma)=\sqrt2\,w$, so
-``$q$ learned'' ($\params_q$) is strict iff $w>\sqrt2$, although both residual components are smaller and each
-needs three or more cores. Experiments ($\chi=3$; MPS4, binary4, HT4; saddle start at $\params_q$ with
-$\varepsilon=10^{-6}$--$10^{-2}$, five seeds; random initialization at $w=1.2$, $1.6$, ten seeds):
-\begin{itemize}
-  \item \emph{Hessian} \proven{} and computed: the formula holds to $10^{-15}$ on MPS4, binary4, HT4 and a
-    binary8 analogue ($-0.3716$, $-0.3310$, $-0.4311$, $-0.4311$ at $w=1.6$); no negative eigenvalue for $w\le1.40$.
-    This repeats the theory's check; binary4 is a deep linear network, where it is known.
-  \item \emph{Threshold} \empirical{} \newresult[dynamics]: at $\varepsilon=10^{-6}$ no seed leaves $\params_q$ at
-    $w=1.4138$ ($\lambda_{\max}(\Gamma)/\tw q=0.9998$) and all do at $1.4146$ ($1.0003$), on MPS4 and binary4; on HT4
-    the step lies between $1.40$ and $1.42$ for $\varepsilon\le10^{-3}$. At $\varepsilon=10^{-2}$ it moves to $1.43$--$1.44$: near the
-    threshold the strict escape is slow and the polynomial route that adds $r$ wins at moderate noise.
-  \item \emph{One or two strict stages} \derived{} (from the computed Hessians) and \empirical{}
-    \newresult: the slope of the escape time against $\ln(1/\varepsilon)$ is $1/\abs{\lambda_q}$ within $0.21\%$ where the
-    event times one strict stage ($w\ge1.48$ on all trees, every $w$ on binary4). Near the threshold on MPS4
-    the flow stops at a blended rank-one point that keeps $\ov q=0.98$, $0.93$ ($w=1.42$, $1.44$) and is itself
-    strict: the measured $130.0\pm0.2$ and $29.39\pm0.02$ equal $1/\abs{\lambda_q}+1/\abs{\lambda_b}=129.9$ and $29.3$ (one stage:
-    $86.4$, $19.4$). On HT4 that point has no negative eigenvalue, and leaving it takes a time $\propto\varepsilon^{-1}$
-    ($p=0.995$, $0.998$; at $w=1.6$, $\ov q<\frac12$ after $3.4\cdot10^3$, $3.3\cdot10^4$, $3.3\cdot10^6$ for $\varepsilon=10^{-3}$, $10^{-4}$,
-    $10^{-6}$). A star forgets $q$ in logarithmic time on MPS4 and binary4 but polynomially on HT4: the tree
-    contrast of \cref{sec:teacher-generic} again.
-  \item \emph{Random initialization} \empirical{} \newresult{} ($w=1.6$; $\isc=0.01$--$0.1$ on MPS4, $0.005$--$0.05$ on
-    binary4):
-    the flow never sits at $\params_q$ (at most $0.13$ time units at its loss level, one seed $1.7$; up to 538
-    at ``$q$ forgotten''). The initialization direction sets the class: $q$ learned last (binary4 7 of 10
-    seeds, MPS4 1 of 10), $\ov q$ rising to $0.78$--$1.00$ and decaying (3, 4 of 10), or a blended start with
-    $\ov q\le0.68$ (MPS4, 5 of 10). The decay deepens steeply as $\isc$ decreases, not as a power law; $q$ is
-    relearned last. Sub-critical stars ($w=1.2$) keep $q$ ($\min\ov q\ge0.992$).
-\end{itemize}
-\emph{Withdrawn:} the laws $\min\ov q\propto\isc^{5.7\pm0.3}$ and a relearning time $\propto\isc^{-1.4}$ from random
-initialization; they pooled two classes of runs, dropped the points where $\ov q$ crosses zero, and
-describe runs that never visit $\params_q$.
-
-% ===========================================================================================
-\subsection{Real data}\label{sec:real-data}
-% Sources, in order of authority: notes/reviews/real_data_round2_verification.md (errata E1-E6 and E9
-% applied here: 28/29 seed fits; quadtreeT in the worse half, local orders with vertical or mixed pairs
-% rank 13-21 of 27, not "among the worst"; B < 0 for raw features only; 11/11 review runs of which 10 new,
-% units 19-22 of 23-26 depending on grouping, 91/96 states; binary lambda_min 0.87-0.89 on three seeds,
-% not "consistent with 1"; interim look and late config commit disclosed; Fashion MPS first to L <= 0.12;
-% E7, E8 concern the agent's REPORT and section 7 of the notes, not cited here),
-% notes/real_data.md section 8 (fix round; supersedes sections 4-7), section 9 (pre-registered
-% order test: registration commit 2f4d99e, predictor values 44feb2f, results 01144a5) and section 5
-% (prediction table); experiments/real_data/ (README; results/fix1_analysis.{md,json}, order_test.{md,json},
-% tables.md, scaling.json, hessians_raw.json, routes_raw.json, fashion_tables.md, chi8_tables.md);
-% withdrawn claims from notes/reviews/real_data_round1.md. Settings: app:exp-real-data.
-% Counted here from committed JSON (not in the notes): "in 95 of the 96 states the largest of the 28
-% amplitudes lies on a route with k = 5 or 7" (routes_raw.json, argmax of lam over the states with
-% rank1_rel_err <= 0.05; 25 of the 26 units of fix1_analysis.json "routes"; the exception is quadtree
-% seed 4 at sigma = 0.3, whose maximum is on a sibling pair); lambda_min ranges of the two plateaus are proj_min of
-% hessians_raw.json in the loss bands of fix1_analysis.py; "t_a sigma^(K-2) constant to four digits or
-% better": regime_analysis.json (binary, 6 digits) and fix1_analysis.json mps_full (MPS, relative spread
-% <= 2.5e-5 per seed); the Fashion exponent 0.03 +- 0.09 is ttn.diagnostics.saddle_scaling on the 27 runs
-% of fashion_hessians.json with loss_mid in [0.31, 0.345] (projected; raw 0.02 +- 0.09).
-% WITHDRAWN or narrowed, do not reintroduce: "k = 3 gap ~ sigma^-1.0" and "1.01 +- 0.14" (attribution
-% bug; the free exponent is not robust); per-run counts across sigma ("35/35, 89/89", "34/35, 78/89":
-% one critical point counted once per sigma); "locality is a small-init dynamical effect", "88% vs 21%"
-% of the interaction on k <= 5 routes, "the advantage vanishes at sigma = 0.5"; "the MPS reaches every
-% loss level first at every sigma", "route degree (tree shape) beats locality", "fails on every task and
-% size"; "later routes have higher degree (k = 4-5, exponent 3.3)"; the Fashion slopes sigma^-0.92 ...
-% -0.97 and "siblings first 15/15" without "rise together 3/15"; the chi = 8 exponents 1.17 +- 0.06,
-% 0.97 +- 0.11, 0.79 +- 0.28 and the chi = 8 comparison at sigma = 0.5; "binary lambda_min exponent
-% 0.877, 12% low"; "MPS strict saddle of the first (k = 2) route"; "the lazy floor (0.105) lies well
-% above what feature learning reaches"; a rich regime with boundaries; whitened "80% S2S" (57%);
-% Kendall tau on the MPS as evidence of bottom-up growth; "L(1e4)" for runs stopped earlier.
-
-Do the teacher--student results survive real inputs, with a non-product input law and no teacher? The
-empirical loss is $\Loss=\frac12\ip{\W}{C\W}-\ip{T}{\W}+\mathrm{const}$, with the second-moment operator $C$
-of the features, which is not a product, and $T=\E[y\Feat]$ (averages over the training set). Two
-predictions need no product law \derived. Near the origin $\Loss\approx\Loss(0)-\ip{T}{\W}$, so the first
-escape is that of \cref{sec:s2s-escape} with $\Wt\to T$ (\cref{prop:A-escape-cov}). At a bond-rank-one
-critical point the routes that can open depend only on bond ranks and site dimensions (\cref{app:teachers},
-``Generic teachers''): on a binary tree, whose internal cores carry no pixel, the cheapest routes join
-two sibling bottom cores ($k=3$: a higher-order saddle, a plateau $\propto\isc^{-1}$); on an MPS any adjacent
-pair of cores can open one ($k=2$: strict, $\propto\ln(1/\isc)$). These are the generic-teacher predictions
-of \cref{sec:teacher-generic} with $T$ for $\Wt$. The data decide which of the cheapest routes goes first,
-and the assignment of pixels to sites decides which pixel interactions lie on short routes.
-
-\paragraph{Setup} (details in \cref{app:exp-real-data}).
-MNIST 3 ($y=+1$) against 5 ($y=-1$): 4000 training and 1600 test images, cropped to $24\times24$ and
-block-averaged to $4\times4$ pixels ($\Ns=16$), with the features $\feat{}(x)=(\cos\frac{\pi x}2,\sin\frac{\pi x}2)$
-of \citet{stoudenmire2016supervised}; square loss ($\Loss(0)\approx\frac12$), fan-in initialization, $\chi=4$.
-Gradient flow runs through the first plateau to the time $t_a$ at which the loss has fallen by $1\%$,
-then on the clock $\tau=t-t_a$ up to $\tau=10^4$. Trees: binary16 ($\Kc=15$; two pixels per bottom core,
-none on the internal cores) and MPS16 ($\Kc=16$). Pixel orders: \emph{quadtree} (Morton order; bottom cores
-carry horizontally adjacent pixel pairs, level-2 subtrees $2\times2$ blocks), \emph{snake} (boustrophedon, for
-the MPS) and random permutations (\emph{scrambled}). Main sweep: binary quadtree, snake MPS and three
-scrambled binary orders, seven $\isc$ from $0.05$ to $0.5$, seeds 0--4. Events are loss drops (peaks of
-$-\dd\Loss/\dd t$; gaps on the $\tau$ clock) and rank events (a ratio $\bs ek/\bs e1$ of data-weighted Schmidt
-values crossing $0.05$). Runs of one (order, seed) at different $\isc$ mostly reach the same rank-one critical
-point, so counts are per (order, seed) or per \emph{unit} (order, seed, critical point), never per run;
-$\pm$ is the standard error over seeds.
-
-\paragraph{What survives.}
-\begin{itemize}
-  \item \emph{First plateau: an identity, not evidence.} $t_a\isc^{\Kc-2}$ is constant per seed to four
-    digits or better (exponents $13.000\pm0.000$ on binary16, $14.000\pm0.000$ on MPS16). This holds for any
-    input law, since as $\isc\to0$ the flow from $\isc Z$ is the flow from $Z$ on a clock slowed by $\isc^{-(\Kc-2)}$
-    \proven{} \knownresult[the exponent: \citealp{jacot2022saddletosaddle,kumar2025early}]: it checks the
-    integrator and the clock, not the theory.
-  \item \emph{The first binary route is a sibling pair} \empirical{} \newresult. After the escape, 96 of
-    the 124 binary states lie within $0.05$ (relative) of a rank-one product, the others mostly at
-    $\isc\ge0.3$. In all 20 (order, seed) pairs the first two edges to gain a singular value belong to two
-    sibling bottom cores, the predicted $k=3$ route, and in all 96 rank-one states they cross the threshold
-    together; the 11 binary runs of the round-1 review (nine orders, $\isc=0.1$) agree.
-  \item \emph{Route amplitudes pick the route} \empirical{} \newresult. At the rank-one state the
-    \emph{route amplitude} $\mu_{uw}$ of two bottom cores is the norm of the residual's correlation between
-    their unused feature directions, weighted by the other cores \eqref{eq:real-route-amplitude}; it sets the
-    rate of the route through them up to factors common to all routes with the same number
-    $k_{uw}\in\{3,5,7\}$ of cores (\cref{def:A-local-residual}). The sibling pair with the largest $\mu_{uw}$
-    rises first in 91 of the 96 rank-one states, in about 80--85\% of the critical-point units (22 of 26
-    with our grouping of states, 19--20 of 23--24 with others; chance $\frac14$), and in 11 of 11 review runs
-    (10 of them new orders or seeds). Degree comes before amplitude: in 95 of the 96 states the largest of
-    the 28 amplitudes lies on a route with $k=5$ or $7$, yet a sibling pair rises first
-    (\cref{rem:A-sequence}).
-  \item \emph{The $k=3$ gap is $A/\isc+B$, not logarithmic} \empirical{} \newresult{}
-    (\cref{fig:real-gaps}). Over the 11 series (one per order and seed) whose first route, one sibling pair,
-    rises inside the second loss drop at every $\isc$ (at least four values over at least half a decade),
-    the gap between the first two drops fits $A/\isc+B$, the $k=3$ law \eqref{eq:locality-rule} with its
-    $O(1)$ correction (\cref{prop:A-head-start}), with relative rms residual at most $0.060$ and $B<0$ in all
-    11; the log law of a two-core route leaves $0.11$--$0.30$. A free exponent ($1.22\pm0.03$, range
-    $1.06$--$1.36$) mostly measures the offset and depends on the $\isc$ range. The verdicts hold for all
-    124 binary runs, each point attributed to the drop that contains the route's rank crossing (91 points
-    kept, ten seed series). All of these use raw features; the one whitened series that meets the same
-    rule has $B=+10.8$.
-  \item \emph{Saddle types} \empirical{} \newresult, from the $\isc$-scaling of $\lambda_{\min}(\Hperp)$ at
-    plateau midpoints (\cref{sec:setup-diagnostics}). Binary16 at the rank-one plateau ($\Loss\approx0.27$):
-    $\abs{\lambda_{\min}}\propto\isc^p$ with $p=0.87$--$0.89$ on the three seeds with five or six $\isc$ ($0.6$--$0.8$
-    decades) and $1.15$ on a seed with three (mean $0.95\pm0.07$): far from 0, so higher order, but below the
-    $1$ of $k=3$ (\cref{prop:A-signatures}) at these $\isc$. MPS16 at $\Loss\approx0.23$ (five
-    seeds): $\lambda_{\min}=-0.054$ to $-0.079$, exponent $0.047\pm0.016$, a strict saddle. That MPS plateau
-    comes after the first route has risen and has two or three negative directions: it is the saddle of
-    later two-core routes.
-  \item \emph{Logarithmic later routes on the MPS} \empirical{} \newresult. The first rank increase is on
-    one edge in all 25 runs where it is resolved (in 10 of 35 the threshold is met at $\tau=0$), within
-    two time units of the first drop's peak: it merges with the escape and has no measurable gap. Of the
-    later edges, timed by their first rise after the first drop, edges 3, 4 and 6--9 prefer the log law
-    (28 of 29 seed fits; relative rms $0.03$--$0.11$ against $0.17$--$0.36$), edge 4 with slope $14.7\pm1.5$
-    per unit of $\ln(1/\isc)$, comparable to $1/\abs{\lambda_{\min}}=13$--$19$. Edges 1 and 2 prefer a power
-    law and edge 0 is mixed, which rank-one counting ($k=2$ on every MPS edge) does not explain.
-  \item \emph{Plateaus creep} \empirical: between drops the loss falls by a median $0.76$ of the next
-    drop (56 intervals in 20 binary runs, $\isc=0.1$). With drops dated by rate peaks the S2S signature
-    holds on binary trees (quadtree: median smallest separation ratio $2.8$ at $\isc=0.5$, $24$ at $0.05$),
-    not on the MPS.
-\end{itemize}
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics{real_data/first_route_gaps.pdf}
-  \caption{First route after the escape on binary16 (MNIST 3 against 5, $\chi=4$): gap between the
-    first two loss drops ($\tau$ clock) against $\isc$, for the 11 series (one per order and seed; colour and
-    marker: order) whose first route, one sibling pair, rises inside the second drop at every $\isc$. Left:
-    log--log axes; lines: $A/\isc+B$ fitted with relative residuals; dashed: $\propto\isc^{-1}$. Right:
-    $\isc$ times the gap, in which $A/\isc+B$ is a line of slope $B$. Data: experiment \texttt{real\_data},
-    \texttt{fix1\_analysis.json} (\cref{tab:repro-figures}). Takeaway: every series follows the $k=3$ law with
-    a negative $O(1)$ offset; a logarithmic law fails.}
-  \label{fig:real-gaps}
-\end{figure}
-
 \paragraph{Pixel order: a pre-registered test.}
-In the main sweep the quadtree ends lowest: at $\isc\le0.14$ a scrambled order ends below the quadtree of
-the same seed in 1 of 50 runs (at $\isc=0.1$, $\Loss(10^4)=0.098\pm0.001$ against $0.19$--$0.23$ for the three
-scrambled orders), and it puts most of $\sum\mu_{uw}^2$ on routes with $k\le5$ ($0.89\pm0.01$ at $\isc=0.05$;
-scrambled orders $0.17\pm0.07$) \empirical. In the review runs, though, the equally local transposed
-quadtree (vertical pairs) ended above six random orders at seed 0. Before running any new order we
-registered a test of the share (\path{notes/real_data.md}, section 9; the registration and the predictor
-values were committed before the runs), reported here as registered.
+Among the binary orders of the main sweep the quadtree ends lowest at small $\isc$: at $\isc\le0.14$ a
+scrambled order ends below the quadtree of the same seed in 1 of 50 runs (at $\isc=0.1$,
+$\Loss(10^4)=0.098\pm0.001$ against $0.19$--$0.23$ for the three scrambled orders), while at $\isc=0.5$ scrambled
+orders end below it in 14 of 15 runs (the snake MPS ends lower still at every seed for $\isc\le0.3$). The
+quadtree puts most of $\sum\mu_{uw}^2$ on routes with $k\le5$ ($0.89\pm0.01$ at $\isc=0.05$; scrambled orders
+$0.17\pm0.07$) \empirical. In independent runs, though, the equally local transposed quadtree (vertical
+pairs) ended above six random orders at seed 0. Before running any new order we registered a test of
+this share; the registration and the predictor values were committed before the runs (\cref{app:supp-cov}),
+and the test is reported here as registered.
 \begin{itemize}
-  \item \emph{Design.} Hypothesis: across pixel orders of binary16 at $\isc=0.1$, the share $S$ of
+  \item \emph{Design.} Hypothesis: across pixel orders of binary16 at $\isc=0.1$, the share $\mathcal S$ of
     $\sum_{uw}\mu_{uw}^2$ on routes with $k_{uw}\le5$, evaluated at the best rank-one fit of the labels (no
     training), predicts (O1) the training loss at $\tau=10^4$ and (O2) $\log_{10}$ of the time to
-    $\Loss\le0.25$: Spearman $\rho<0$ with a 95\% bootstrap interval that excludes 0, for each outcome, over
-    all orders and within the new random orders. Orders: 20 new random ones and 7 structured ones
-    (quadtree; quadtreeT, the Morton order of the transposed image; row-major; column-major; snake; a
+    $\Loss\le0.25$: Spearman correlation $r_S<0$ with a 95\% bootstrap interval that excludes 0, for each
+    outcome, over all orders and within the new random orders. Orders: 20 new random ones and 7 structured
+    ones (quadtree; quadtreeT, the Morton order of the transposed image; row-major; column-major; snake; a
     Hilbert curve; mortonrev, bit-reversed Morton keys, which put every sibling pair two rows apart).
     Seeds 0--2: 81 runs, 74 new (the outcomes of quadtree, quadtreeT and row-major were seen before
     registration); outcomes averaged over seeds; O2 censored at $\tau=10^4$ (4 of 81 seeds).
   \item \emph{Result} \empirical{} (pre-registered) \newresult{} (\cref{fig:real-order}). O1:
-    $\rho=-0.60$ $[-0.82,-0.22]$ over the 27 orders (permutation $p=0.001$) and $-0.55$ $[-0.85,-0.09]$ within
-    the 20 random ones ($p=0.015$): \emph{supported}. O2: $-0.30$ $[-0.59,+0.06]$ and $-0.26$ $[-0.63,+0.23]$:
-    \emph{not supported}. The registered secondary analyses agree (O1 without the three orders seen
-    before registration: $-0.51$ $[-0.80,-0.08]$; with the round-0 scrambled orders added: $-0.60$). Orders
-    with the same pixel pairs share $S$ (24 distinct values over 27 orders), so the within-random result is
-    the cleaner test. Also registered: the rank-one search on the data does not always find the rank-one
-    state that gradient flow reaches (quadtree: a fit at loss $0.310$, while four of five runs plateau at
-    $0.27$), so $S$ is a noisy proxy.
-  \item \emph{Deviations.} None in the design or the analysis. The verification found two procedural
-    points missing from the experiment's own list: the run configuration and analysis script were
-    committed four minutes after the runs started (before any outcome), and an interim summary of 72 of the
-    81 runs (all 60 random-order runs) was written, and probably analysed, before the last runs finished.
+    $r_S=-0.60$ $[-0.82,-0.22]$ over the 27 orders (permutation p-value $0.001$) and $-0.55$ $[-0.85,-0.09]$
+    within the 20 random ones (p-value $0.015$): \emph{supported}. O2: $-0.30$ $[-0.59,+0.06]$ and $-0.26$
+    $[-0.63,+0.23]$: \emph{not supported}. The registered secondary analyses agree (O1 without the three orders
+    seen before registration: $-0.51$ $[-0.80,-0.08]$; with the three scrambled orders of the main sweep
+    added: $-0.60$). Orders with the same pixel pairs share $\mathcal S$ (24 distinct values over 27 orders), so the
+    within-random result is the cleaner test. Also registered: the rank-one search on the data does not
+    always find the rank-one state that gradient flow reaches (quadtree: a fit at loss $0.310$, while four of
+    five runs plateau at $0.27$), so $\mathcal S$ is a noisy proxy.
+  \item \emph{Deviations.} None in the design or the analysis; the compute budget of 8 processes was exceeded
+    for a few minutes, and two procedural points (the timing of one commit and an interim summary) are
+    listed in \cref{app:supp-cov}.
 \end{itemize}
-The pixel order thus sets how low a binary TTN ends at fixed training time, and a route-amplitude share
-computed from the data before training ranks the orders by that loss, but not by their early speed.
-Locality in the image is neither necessary nor sufficient: the three orders with horizontal pixel pairs
-(quadtree, snake, row-major; $S=0.989$) rank 1, 2 and 4 of 27 by O1, but the equally local orders with
-vertical or mixed pairs (quadtreeT, column-major, Hilbert) rank 13--21; the transposed quadtree ends at
-twice the loss of the quadtree ($0.189$ against $0.097$; the quadtree's outcome, the lowest, was seen
-before registration); and a random order with $S=0.994$ ranks third. Tree tensor networks for images are
+The pixel order thus sets how low a binary TTN ends at fixed training time, and a route-coupling share
+computed from the data before training predicts the ranking of the orders by that loss (Spearman
+correlation $-0.60$; $-0.55$ within random orders), but not by their early speed. Locality in the image is
+neither necessary nor sufficient: the three orders with horizontal pixel pairs (quadtree, snake, row-major;
+$\mathcal S=0.989$) rank 1, 2 and 4 of 27 by O1, but the equally local orders with vertical or mixed pairs (quadtreeT,
+column-major, Hilbert) rank 13--21; the transposed quadtree ends at twice the loss of the quadtree ($0.189$
+against $0.097$; the quadtree's outcome, the lowest, and two of the three transposed-quadtree seeds were
+seen before registration); and among random orders one with $\mathcal S=0.994$ ranks third (4 of its 8 bottom pairs
+happen to be adjacent in the image, against $1.6$ expected by chance) and one with $\mathcal S=0.990$ and no adjacent
+pair ranks sixth. Tree tensor networks for images are
 often built to follow the pixel geometry (e.g.\ \citealp{cheng2019tree}). Our explanation is a
 \conjecture: an order helps by placing label-relevant pixel interactions on routes that escape within the
 horizon ($k=5$, plateaus $\propto\isc^{-3}$) rather than on routes with $k=7$ ($\propto\isc^{-5}$).
 \emph{Exploratory, not registered:} the same share at the state each run actually reaches ranks O1 more
-strongly ($\rho=-0.83$ $[-0.91,-0.66]$; $-0.85$ $[-0.95,-0.60]$ within random orders) and O2 no better
+strongly ($r_S=-0.83$ $[-0.91,-0.66]$; $-0.85$ $[-0.95,-0.60]$ within random orders) and O2 no better
 \empirical.
 
 \begin{figure}[tbp]
@@ -606,59 +571,34 @@ strongly ($\rho=-0.83$ $[-0.91,-0.66]$; $-0.85$ $[-0.95,-0.60]$ within random or
   \includegraphics{real_data/order_test.pdf}
   \caption{Pre-registered order test: 27 pixel orders of binary16 (orange: 20 new random orders; blue:
     7 structured orders, labelled), $\isc=0.1$, seeds 0--2 (points: mean; bars: range over seeds); grey: the
-    three round-0 scrambled orders (secondary analysis only). Horizontal axis: the predictor $S$, computed
-    from the data before training. Left: training loss at $\tau=10^4$ (O1). Right: $\log_{10}$ of the time to
-    $\Loss\le0.25$ (O2), censored at 4. Titles: Spearman $\rho$ over the 27 orders, 95\% bootstrap
-    intervals. Data: experiment \texttt{real\_data}, \texttt{order\_test.json} (\cref{tab:repro-figures}).
-    Takeaway: $S$ ranks the orders by their final loss, not by their early speed; orders with the same pixel
-    pairs share $S$, and local orders with vertical or mixed pairs rank only 13--21 of 27.}
+    three scrambled orders of the main sweep (secondary analysis only). Horizontal axis: the predictor $\mathcal S$,
+    computed from the data before training. Left: training loss at $\tau=10^4$ (O1). Right: $\log_{10}$ of the
+    time to $\Loss\le0.25$ (O2), censored at 4. Titles: Spearman correlation $r_S$ over the 27 orders, 95\%
+    bootstrap intervals. Takeaway: $\mathcal S$ predicts the ranking of the orders by their final loss
+    ($r_S=-0.60$), not by their early speed; orders with the same pixel pairs share $\mathcal S$, and local orders with
+    vertical or mixed pairs rank only 13--21 of 27 (source: \cref{tab:repro-figures}).}
   \label{fig:real-order}
 \end{figure}
-
-\paragraph{Narrowed or withdrawn after review} (\path{notes/reviews/real_data_round1.md}).
-\begin{itemize}
-  \item \emph{``The MPS is fastest''} holds only on the clock $\tau$ started at the first escape (MNIST,
-    snake order; at $\isc=0.1$ the MPS reaches $\Loss\le0.2$ after 56 time units, the quadtree after 333)
-    \empirical. On the absolute clock the first escape dominates ($t_a\ge10^5$), $t_a\propto\isc^{-14}$ on MPS16
-    against $\isc^{-13}$ on binary16 \proven, and the MPS escapes later than the quadtree in 4 of 5 seeds at
-    $\isc=0.1$; on Fashion-MNIST it is the slowest tree to $\Loss\le0.25$ at $\isc\le0.14$ (but the first to
-    reach $\Loss\le0.12$). Only snake chains were run, so tree shape and pixel order are confounded, and
-    that the logarithmic routes make the MPS fast on the $\tau$ clock is a \conjecture.
-  \item \emph{Locality.} ``A small-initialization dynamical effect'', the round-0 contrast of $88\%$
-    against $21\%$ of the interaction on short routes (three random orders from the low tail, pooled over
-    $\isc$) and ``gone at $\isc=0.5$'' are withdrawn; the order effect above remains.
-  \item \emph{Exponents.} Withdrawn: the round-0 gap law $\isc^{-1.01\pm0.14}$ (an attribution bug), ``later
-    routes have higher degree'' (late events not identified by route), and the first-route exponents of the
-    Fashion-MNIST ($\isc^{-0.92}$ to $\isc^{-0.97}$) and $\chi=8$ sweeps ($1.17\pm0.06$, $0.97\pm0.11$), which are in
-    no committed output; the $\chi=8$ comparison at $\isc=0.5$ is confounded by 23 runs stopped at the
-    wall-clock limit. Kept \empirical: a sibling pair first at $\chi=8$ (14 of 15 runs per binary order) and
-    on Fashion-MNIST (first two rising edges, 15 and 14 of 15, rising together in only 3 and 2), where a
-    strict saddle ($\lambda_{\min}\propto\isc^{0.03\pm0.09}$) separates two rank-one states and the quadtree has
-    no advantage.
-  \item \emph{Regimes.} The centred sweep ($\isc=0.5$--$4$, quadtree) gives no regime map: ``rich'' rests
-    on $\isc=1.4$ alone, the S2S--rich boundary moves over $\isc=0.07$--$1$ with the separation threshold,
-    the lazy runs are unconverged at their horizon, and ``the lazy floor lies well above what feature
-    learning reaches'' is withdrawn (the small-initialization runs end below the floor for four of five
-    seeds). Kept \empirical: at $\isc\ge2$ the runs follow the linearized model, whose tangent kernel has
-    rank $304=\sum_v\fanin v\bd v-\sum_e\bd e^2$ of 528 parameters (\cref{prop:A-kernel}(c)).
-\end{itemize}
 
 \paragraph{Scope.}
 The scaling claims rest on one task at $4\times4$ pixels, gradient flow and 4000 fixed images; $8\times8$
 images (12 runs) show the same first routes but allow no fits, and whitened site features do not make
 the dynamics cleaner. The horizon $\tau=10^4$ cuts the escapes along routes with $k\ge5$ at $\isc<0.1$, so
 final losses are losses at fixed training time. Events are read from loss rates and spectral
-thresholds, so late events are only partly identified by route.
+thresholds, so late events are only partly identified by route. Results on Fashion-MNIST, at $\chi=8$, on
+the clock $\tau$ against the absolute clock, and at large $\isc$ are in \cref{app:supp-cov}.
 
 % ===========================================================================================
 \subsection{Summary}\label{sec:cov-summary}
 
-Only the aligned covariance leaves the qualitative picture unchanged (\cref{tab:cov-summary}). Every
-other complication breaks the orthogonality of the teacher's components in the metric of the loss, and
-then the student's tree decides whether the escape from the rank-one saddle is logarithmic (MPS) or
-polynomial (binary, HT). The baseline theory predicts each change after the substitution in the
-table, except the slope under a misaligned covariance from random initialization, which is only
-bounded. On MNIST the same tree contrast appears with the data's escape tensor $T$ in place of $\Wt$
-(sibling-pair routes with $A/\isc+B$ gaps on binary trees, logarithmic later routes on the MPS), while
-the effect of the pixel order is only ranked, by a data-only route-amplitude share (pre-registered;
-\cref{sec:real-data}).
+Only an aligned covariance leaves the qualitative picture unchanged (\cref{tab:cov-summary}). When a
+complication tested breaks the orthogonality of the teacher's components in the metric of the loss
+(overlap, misalignment, correlated sites, random TTN teachers), the student's tree decides whether the
+escape from the rank-one saddle is logarithmic (MPS) or polynomial (binary; HT from the saddle start,
+never with correlated inputs). Stars, whose components are orthogonal, change which saddle is strict. On
+MNIST the same tree contrast appears with the label tensor $Y$ in place of $\Wt$, while the effect
+of the pixel order is only ranked, by a data-only route-coupling share (pre-registered). The baseline
+theory predicts each change after a substitution, except the slope under a misaligned covariance from
+random initialization, which is only bounded, and, on MNIST, the creep of the plateaus and the power-law
+rises of MPS edges 0--2, which it does not explain.
+

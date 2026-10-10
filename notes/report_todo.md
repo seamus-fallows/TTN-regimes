@@ -33,3 +33,15 @@ Collected from agents' hand-backs; each item names where it came from. Tick off 
     cell means negative, >= -1.0%, all within 2.5 s.e.").
 19. Sec. 1 finding 7 (dead routes) and Sec. 4 failure modes: update from notes/theory_trap.md after its verification.
 20. Abstract is ~235 words; trim to <= 200.
+21. Sec. 7 table: the input-covariance references print "6.1, 6.3, 6.3"; drop the duplicate \ref.
+22. tab:notation additions from Sec. 6: cos phi, lambda_e, M_e, s-bar, h_e, lambda_q/lambda_b, mu_uw, \mathcal{S}, Y, C,
+    t_a, tau, t_0, beta; from App. A: see the header comment of A_derivations.tex; from Sec. 4/App. D: zeta, x.
+23. Sec. 4 still uses gamma for the growth exponent and (1-kappa_e)/gamma_e in a table; D_regimes uses kappa_K (A writes
+    a_0c/sigma_c). Align with App. A (beta(a_r) growth exponent, lambda_e, head start s_2(M_e)/s-bar).
+24. Captions: settle one source form, "(source: Table N)".
+25. Fig. 3 (s2s_core/plot_report.py): check the panel titles use 0-based sites (Sec. 6 editor's note).
+26. references.bib: add zhang2021embedding and simsek2021geometry (lem:A-unused TODO-CITE); verify on arXiv.
+27. A.8 large-K text vs Sec. 3: check they agree (both from regime-map round 2 + its verification).
+28. Trap: Sec. 4 failure-modes paragraph and Sec. 1 finding 7 from notes/reviews/trap_verification.md (safe to cite);
+    apply its errata to notes/theory_trap.md too.
+29. saddle-dyn: fill the placeholders in Sec. 1, Sec. 4 (k* subsection) and App. A.4 when it reports and is verified.

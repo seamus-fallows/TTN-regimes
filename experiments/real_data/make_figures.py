@@ -545,8 +545,9 @@ def fig_first_route_clean(fix1_json, out):
     axes[0].plot(xs, 10 / xs, color=MUTED, lw=0.8, ls="--", label=r"$\propto\sigma^{-1}$")
     axes[0].set_ylabel(r"gap between loss drops 0 and 1 ($\tau$)")
     axes[1].set_ylabel(r"$\sigma\times$ gap")
-    axes[0].set_title(r"lines: fits $A/\sigma + B$", fontsize=8)
-    axes[1].set_title(r"$A/\sigma+B$ is a line of slope $B<0$", fontsize=8)
+    # the offset is written t_0 in the report (B is the minibatch size there)
+    axes[0].set_title(r"lines: fits $A/\sigma + t_0$", fontsize=8)
+    axes[1].set_title(r"$A/\sigma+t_0$ is a line of slope $t_0<0$", fontsize=8)
     for ax in axes:
         ax.set_xlabel(r"$\sigma$")
     _sigma_ticks(axes[0])
@@ -693,7 +694,7 @@ def fig_order_test(order_json, out):
     names = {
         "new_random": "new random orders",
         "structured": "structured orders",
-        "old_random": "round-0 random (secondary)",
+        "old_random": "main-sweep scrambled (secondary)",
     }
     fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH, 0.4 * TEXT_WIDTH), sharex=True)
     for ax, key in ((axes[0], "O1"), (axes[1], "O2")):
@@ -738,10 +739,10 @@ def fig_order_test(order_json, out):
         r = res["primary"]["all"][key]
         lo, hi = r["ci95"]
         ax.set_title(
-            rf"all 27 orders: Spearman $\rho={r['rho']:.2f}$ $[{lo:.2f}, {hi:.2f}]$",
+            rf"all 27 orders: Spearman $r_S={r['rho']:.2f}$ $[{lo:.2f}, {hi:.2f}]$",
             fontsize=8,
         )
-        ax.set_xlabel(r"predictor $S$ (share on $k\leq5$ routes, best rank-1 fit)")
+        ax.set_xlabel(r"predictor $\mathcal{S}$ (share on $k\leq5$ routes, best rank-1 fit)")
         ax.set_xlim(-0.05, 1.3)
         ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
     axes[0].set_ylabel(r"train loss at $\tau=10^4$ (mean of 3 seeds)")
