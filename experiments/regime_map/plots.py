@@ -8,6 +8,7 @@ import os
 import sys
 
 import matplotlib
+import matplotlib.ticker
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -397,6 +398,7 @@ def phase_rows(ax, df, rowkey, xcol, rows, hatch_lazy_stall=True):
                 ax.text(np.sqrt(xe[i] * xe[i + 1]), j, f"{counts.iloc[0]}/{len(sub)}", ha="center",
                         va="center", fontsize=5.5, color=INK)
     ax.set_xscale("log")
+    ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
     allx = df[xcol].values
     ax.set_xlim(allx.min() / 1.3, allx.max() * 1.3)
     ax.set_ylim(-0.5, len(rows) - 0.5)
