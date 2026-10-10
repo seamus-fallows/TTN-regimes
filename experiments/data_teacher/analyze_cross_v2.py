@@ -2,10 +2,11 @@
 
 Events (e, k): first time after the first escape (L < 0.9 L(0)) that s_k^e >= f sigma_k^e(T), with
 f = 0.05 (diagnostics.md; sensitivity 0.03, 0.1) (the 50%-of-teacher rule of round 1 fires only after later escapes and gave
-artefacts). For each config's runs (default e4c_cross; also the saddle-start runs of r2_cross):
+artefacts). For each config's runs (default e4c_cross; also r2_cross and r2_cross_b):
 - binary student: are the first two k = 2 events a sibling pair (same parent)? Does the root
   bipartition get k = 2 only after a bottom bond on each half (P11)? Is P11 discriminating, i.e. is the
-  root cut's teacher s_2 NOT the smallest of all cuts (else a weight-order rule predicts the same)?
+  root cut's teacher s_2 above both bottom bonds of at least one half (else a weight-order rule predicts
+  the same order)? Is it above every bottom bond (then a weight-order rule predicts the root FIRST)?
   Pair-level naive rule: does the sibling pair containing argmax_e s_2^e(T) (bottom edges) go first?
 - MPS student: first edge vs the naive argmax_e s_2^e(T) and vs e* = argmax_e s2(M_e)
   (results/e4c_theory.csv).
@@ -69,7 +70,8 @@ def main():
                             ev_rows.append(dict(case=case["tag"], tree=tree, sigma=sigma, seed=seed,
                                                 f=f, t=te, edge=edges[j], k=k))
                         k2 = [(te, edges[j]) for te, j, k in ev if k == 2]
-                        row = dict(case=case["tag"], pair=case.get("pair"), tree=tree, sigma=sigma,
+                        row = dict(case=case["tag"], teacher_seed=case.get("teacher_seed"),
+                                   pair=case.get("pair"), tree=tree, sigma=sigma,
                                    seed=seed, f=f, first_edge=k2[0][1] if k2 else -1,
                                    order=" ".join(f"{edges[j]}:{k}" for _, j, k in ev))
                         s2t = {v: tsp[j, 1] for j, v in enumerate(edges)}
@@ -89,8 +91,16 @@ def main():
                             t_halves = max(halves.values()) if len(halves) == 2 else np.nan
                             row["bottom_up"] = bool(t_root > t_halves) if np.isfinite(
                                 t_root) and np.isfinite(t_halves) else np.nan
+                            # P11 differs from a weight-order rule only if on SOME half both bottom bonds
+                            # are weaker than the root cut (review of round 2, HIGH 1; the round-2 flag
+                            # "root not the weakest cut" was too loose)
                             root_s2 = min(s2t[v] for v in root_edges)
-                            row["p11_discriminating"] = bool(root_s2 > min(s2t.values()) + 1e-9)
+                            halves_b = {}
+                            for v in bottoms:
+                                halves_b.setdefault(par[v], []).append(s2t[v])
+                            row["p11_discriminating"] = bool(any(root_s2 > max(b) for b in halves_b.values()))
+                            row["root_above_all_bottoms"] = bool(root_s2 > max(s2t[v] for v in bottoms))
+                            row["root_margin"] = root_s2 / min(max(b) for b in halves_b.values())
                             naive = max(bottoms, key=lambda v: s2t[v])
                             row["naive_edge"] = naive
                             row["naive_pair_first"] = bool(k2 and k2[0][1] in bottoms
@@ -109,7 +119,8 @@ def main():
     df = pd.DataFrame(rows)
     df.to_csv(RESULTS / f"{name}_v2_summary.csv", index=False)
     agg = {c: (c, "mean") for c in ("sibling_first", "bottom_up", "naive_pair_first", "naive_ok",
-                                     "e_star_ok", "p11_discriminating") if c in df}
+                                     "e_star_ok", "p11_discriminating", "root_above_all_bottoms")
+           if c in df}
     print(df.groupby(["pair", "case", "sigma", "f"]).agg(n=("seed", "size"),
                                                           **agg).round(3).to_string())
 

@@ -36,7 +36,6 @@ from ttn.tree import make_tree
 
 HERE = Path(__file__).parent
 D = 2
-STOP_ROTATE = False  # set by the "threshold" mode and the ht4 completion runs
 
 
 def star(n, s_q, w1, w2):
@@ -64,7 +63,7 @@ def hessian_mode():
     cases = [("mps", 4), ("binary", 4), ("ht", 4), ("binary", 8)]
     for w in (1.2, 1.3, 1.4, 1.45, 1.6):
         for tree, n in cases:
-            torch.set_num_threads(8)
+            torch.set_num_threads(1)
             spec = spec_for(tree, n)
             teacher = star(n, 2.0, w, w)
             prob = Problem(spec, teacher)
@@ -136,7 +135,10 @@ def random_job(args):
 
 
 def saddle_job(args):
-    tree, n, w, sigma, seed = args
+    """stop_aq (passed with the job, not as a module global, which spawned workers would not see): stop
+    once a_q < stop_aq. 0.1 (sweep), 0.6 (threshold scan), 0.85 (ht4 completion: the strict escape on ht4
+    ends at a blended point with a_q ~ 0.67 that is left only in ~1/eps time)."""
+    tree, n, w, sigma, seed, stop_aq = args if len(args) == 6 else (*args, 0.1)
     torch.set_num_threads(1)
     path = OUT_ROOT / "r2_star_saddle" / f"{tree}{n}_w{w}_s{sigma}_seed{seed}.npz"
     if path.exists():
@@ -157,10 +159,8 @@ def saddle_job(args):
         ov = m["overlaps"]
         theta = torch.as_tensor(tr.data["theta_end"])
         t_off += chunk
-        # stop once q is forgotten, r is learned, or (STOP_ROTATE) once a_q < 0.6: on ht4 the strict
-        # escape from theta_q ends at a blended rank-1 point (a_q ~ 0.67) that is left only through a
-        # polynomial (3-core) route, so waiting for a_q < 0.1 takes ~1/eps
-        if (ov[:, 0] < (0.6 if STOP_ROTATE else 0.1)).any() or (ov[:, 1:] > 0.5).any() or t_off > 1e9:
+        # stop once q is forgotten (a_q < stop_aq) or r is learned
+        if (ov[:, 0] < stop_aq).any() or (ov[:, 1:] > 0.5).any() or t_off > 1e9:
             break
         chunk *= 2
     t = np.concatenate([p[0] for p in parts])
@@ -197,15 +197,14 @@ if __name__ == "__main__":
             rows = pool.map(random_job, jobs, chunksize=1)
         pd.DataFrame(rows).to_csv(RESULTS / "r2_star_random.csv", index=False)
     elif a.mode == "complete_ht":
-        # the 5 ht4 runs (w = 1.42, eps = 1e-6) stopped after the slow second stage was identified
-        globals()["STOP_ROTATE"] = True
-        jobs = [("ht", 4, 1.42, 1e-6, seed) for seed in range(5)]
+        # the 5 ht4 runs (w = 1.42, eps = 1e-6) of the sweep, which with stop_aq = 0.6 would wait ~1/eps
+        # in the second stage; the threshold bracket needs only "a_q < 0.9 before a_r > 1/2"
+        jobs = [("ht", 4, 1.42, 1e-6, seed, 0.85) for seed in range(5)]
         with Pool(5) as pool:
             pool.map(saddle_job, jobs, chunksize=1)
     elif a.mode == "threshold":
-        globals()["STOP_ROTATE"] = True
         # fine scan around w* = s_q / sqrt(2) = 1.41421 (rho(S) = s_q) at small noise
-        jobs = [(tree, n, w, s, seed)
+        jobs = [(tree, n, w, s, seed, 0.6)
                 for tree, n in (("mps", 4), ("binary", 4))
                 for w in (1.410, 1.412, 1.413, 1.4138, 1.4146, 1.4155, 1.417, 1.419)
                 for s in (1e-6,) for seed in range(3)]

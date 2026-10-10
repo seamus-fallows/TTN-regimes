@@ -5,10 +5,13 @@
     route). Fraction forgetting vs rho(S)/s_q per tree and sigma; the threshold w_c(sigma) where the
     fraction crosses 1/2 (linear interpolation in w); prediction w* = s_q/sqrt(2) = 1.4142 as sigma -> 0.
 (2) Random-init runs (results/r2_star_random.csv): super-critical (w = 1.6) vs sub-critical (1.2): peak
-    of a_q, its minimum afterwards (forgetting depth), time spent at the "q learned" level L = w^2 and at
-    the "q forgotten" level L = 2, vs sigma; power-law fit of the depth.
+    of a_q, its minimum afterwards, time spent at the "q learned" level L = w^2 and at the "q forgotten"
+    level L = 2, vs sigma. Fix round 2: super-critical runs are classified per seed by what a_q does
+    (keeps q / near q / blended); the decay of a_q is steep but not a power law (local exponents drift),
+    so only per-seed local exponents are reported.
 Usage: uv run python experiments/data_teacher/analyze_r2_star.py
-Writes results/r2_star_threshold.csv, results/r2_star_depth.csv, results/r2_star.png.
+Writes results/r2_star_saddle.csv, r2_star_threshold.csv, r2_star_rotation_law.csv, r2_star_depth.csv,
+r2_star_random_classes.csv, r2_star_depth_exponents.csv, r2_star.png.
 """
 
 from pathlib import Path
@@ -73,15 +76,23 @@ def main():
     t.to_csv(RESULTS / "r2_star_threshold.csv", index=False)
     print(t.to_string())
     # escape time from theta_q vs eps for super-critical stars: log law with slope 1/abs(lambda_min)?
-    hes = pd.read_csv(RESULTS / "r2_star_hessian.csv")
-    from lawfit import per_seed
+    # prediction at every w: lambda_min = -a^(K-2) (rho - s_q), a = s_q^(1/K) (theory_saddles P8; the
+    # exact Hessians of r2_star_hessian.csv match it to 1e-15 at w = 1.2 ... 1.6)
+    from lawfit import per_seed, per_seed_local
+    n_cores = {"mps4": 4, "binary4": 3, "ht4": 7}
     rot = sad[sad.rotate].assign(gap=lambda x: x["t_rotate"])
     ps, sm = per_seed(rot, ["tree", "w"], min_points=3)
     if len(sm):
-        sm = sm.merge(hes.rename(columns={"lambda_min": "lam"})[["tree", "w", "lam"]], on=["tree", "w"], how="left")
+        _, sl = per_seed_local(rot, ["tree", "w"], n_small=3)
+        sm = sm.merge(sl, on=["tree", "w"], how="left")
+        k = sm["tree"].map(n_cores)
+        sm["lam"] = -(2.0 ** ((k - 2) / k)) * (np.sqrt(2) * sm["w"] - 2.0)
         sm["pred_A"] = 1 / sm["lam"].abs()
+        sm["dev"] = sm["A_mean"] / sm["pred_A"] - 1
+        sm["dev_loc"] = sm["A_loc_mean"] / sm["pred_A"] - 1
         sm.to_csv(RESULTS / "r2_star_rotation_law.csv", index=False)
-        print(sm[["tree", "w", "n_seeds", "A_mean", "A_sem", "pred_A", "p_mean", "log_wins"]].round(3).to_string())
+        print(sm[["tree", "w", "n_seeds", "A_mean", "A_sem", "A_loc_mean", "pred_A", "dev", "dev_loc", "p_mean",
+                  "log_wins"]].round(4).to_string())
     if not (RESULTS / "r2_star_random.csv").exists():
         fig.tight_layout()
         fig.savefig(RESULTS / "r2_star.png", dpi=100)
@@ -94,31 +105,54 @@ def main():
         t_at_q_level=("time_at_q_level", "median"),
         t_at_forgot_level=("time_at_forgot_level", "median")).reset_index()
     dep.to_csv(RESULTS / "r2_star_depth.csv", index=False)
-    # forgetting depth per seed: slope of log(min a_q) vs log(sigma) over the points with
-    # 1e-10 < min a_q < 0.5 (q forgotten, not yet at the float floor)
+    # Review of round 2 (MEDIUM 4): random-init super-critical runs never sit at "q learned" (time at
+    # that loss level <= 0.13, one seed <= 1.7, vs 24-538 at "q forgotten"), so this is not the P8
+    # forgetting of a learned component. The init direction (seed) fixes what happens, at every sigma:
+    # "keeps q" (a_q -> 1 and stays; r, r' learned right after), "near q" (a_q peaks at 0.75-0.99, then
+    # decays), "blended" (a_q peaks at 0.55-0.68, near the blended rank-1 point, then decays).
+    sup = rnd[rnd.w == 1.6].copy()
+    cls = sup.groupby(["tree", "seed"]).agg(peak=("aq_peak", "median"), kept=("forgotten", lambda x: not x.any()))
+    cls["cls"] = np.where(cls.kept, "keeps q", np.where(cls.peak < 0.72, "blended", "near q"))
+    sup = sup.merge(cls["cls"].reset_index(), on=["tree", "seed"])
+    sup["forgot_time"] = sup["time_at_forgot_level"]
+    sup.to_csv(RESULTS / "r2_star_random_classes.csv", index=False)
+    # depth: min a_q (signed; it crosses zero for some seeds at small sigma) and the time on the
+    # "q forgotten" plateau, per seed vs sigma; local exponents between neighbouring sigma show the drift
     ex = []
-    for (tree, w, seed), g in rnd[rnd.w == 1.6].groupby(["tree", "w", "seed"]):
-        g = g[(g.aq_min_after > 1e-10) & (g.aq_min_after < 0.5)].sort_values("sigma")
-        if len(g) >= 3:
-            slope = np.polyfit(np.log(g.sigma), np.log(g.aq_min_after), 1)[0]
-            ex.append(dict(tree=tree, w=w, seed=seed, n_points=len(g), depth_exponent=slope))
+    for (tree, seed), g in sup[sup.cls != "keeps q"].groupby(["tree", "seed"]):
+        g = g.sort_values("sigma")
+        pos = g[g.aq_min_after > 0]
+        loc = np.diff(np.log(pos.aq_min_after.values)) / np.diff(np.log(pos.sigma.values))
+        ok = g[g.forgot_time > 0]
+        ex.append(dict(tree=tree, seed=seed, cls=g.cls.iloc[0], n_sigma=len(g),
+                       n_min_nonpositive=int((g.aq_min_after <= 0).sum()),
+                       depth_exponent_all=np.polyfit(np.log(pos.sigma), np.log(pos.aq_min_after), 1)[0],
+                       depth_local_min=loc.min(), depth_local_max=loc.max(),
+                       depth_local_small_sigma=loc[0], depth_local_large_sigma=loc[-1],
+                       min_aq_smallest_sigma=g.aq_min_after.iloc[0],
+                       forgot_time_exponent=-np.polyfit(np.log(ok.sigma), np.log(ok.forgot_time), 1)[0]))
     ex = pd.DataFrame(ex)
     ex.to_csv(RESULTS / "r2_star_depth_exponents.csv", index=False)
-    print(ex.groupby("tree").depth_exponent.agg(["mean", "sem", "size"]).round(2).to_string())
+    print(cls.groupby(["tree", "cls"]).size().to_string())
+    print(ex.round(3).to_string())
+    print(ex.groupby(["tree", "cls"])[["depth_exponent_all", "forgot_time_exponent"]].agg(
+        ["mean", "sem", "size"]).round(2).to_string())
     print(dep.round(4).to_string())
     for j, tree in enumerate(sorted(rnd.tree.unique())):
         ax = axes[1, j]
-        for w, mk in ((1.6, "o"), (1.2, "s")):
-            g = rnd[(rnd.tree == tree) & (rnd.w == w)]
-            if not len(g):
-                continue
-            ax.plot(g["sigma"], g["aq_min_after"], mk, ms=3, alpha=0.4, color="C3" if w == 1.6 else "C0")
-            m = g.groupby("sigma")["aq_min_after"].median()
-            fit = np.polyfit(np.log(m.index.values), np.log(m.values), 1)
-            ax.plot(m.index, m.values, mk + "-", color="C3" if w == 1.6 else "C0",
-                    label=f"w={w} (rho/s_q={np.sqrt(2) * w / 2:.2f}): median min a_q ~ sigma^{fit[0]:.2f}")
-        ax.set(xscale="log", yscale="log", xlabel="sigma (random init)",
-               ylabel="min a_q after its first peak", title=f"{tree}: forgetting depth")
+        for c, col in (("blended", "C3"), ("near q", "C1"), ("keeps q", "C2")):
+            g = sup[(sup.tree == tree) & (sup.cls == c)]
+            for k, (seed, gg) in enumerate(g.groupby("seed")):
+                gg = gg.sort_values("sigma")
+                ax.plot(gg.sigma, gg.aq_min_after.abs(), "o-", ms=3, lw=0.8, color=col,
+                        label=f"w=1.6, {c} ({g.seed.nunique()} seeds)" if k == 0 else None)
+                neg = gg[gg.aq_min_after <= 0]
+                ax.plot(neg.sigma, neg.aq_min_after.abs().clip(lower=1e-12), "x", color="k", ms=6)
+        g = rnd[(rnd.tree == tree) & (rnd.w == 1.2)]
+        m = g.groupby("sigma")["aq_min_after"].median()
+        ax.plot(m.index, m.values, "s-", color="C0", label="w=1.2 (sub-critical): median")
+        ax.set(xscale="log", yscale="log", xlabel="sigma (random init)", ylabel="|min a_q| after its first peak",
+               title=f"{tree}: a_q decay by init class (x: a_q crosses zero)")
         ax.legend(fontsize=7)
     axes[1, 2].set_visible(len(rnd.tree.unique()) > 2)
     fig.tight_layout()

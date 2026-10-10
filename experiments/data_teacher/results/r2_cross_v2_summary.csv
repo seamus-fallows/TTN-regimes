@@ -1,361 +1,361 @@
-case,pair,tree,sigma,seed,f,first_edge,order,sibling_first,bottom_up,p11_discriminating,naive_edge,naive_pair_first
-teacher_seed203,mps_on_binary,binary,0.3,0,0.03,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,0,0.05,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,0,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:4 3:3,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,1,0.03,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,1,0.05,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,1,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,2,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,2,0.05,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,2,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,3,0.03,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.3,3,0.05,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.3,3,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.3,4,0.03,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,4,0.05,4,3:3 4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.3,4,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.3,5,0.03,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.3,5,0.05,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.3,5,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.3,6,0.03,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,6,0.05,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,6,0.1,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,7,0.03,0,0:2 4:2 1:2 3:2 3:3 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,7,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.3,7,0.1,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,0,0.03,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,0,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,0,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,1,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,1,0.05,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,1,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,2,0.03,0,0:2 1:2 4:2 3:2 1:3 3:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,2,0.05,0,0:2 1:2 4:2 3:3 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,2,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,3,0.03,4,4:2 3:2 0:2 1:3 1:2 3:3 2:2 5:2 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.4,3,0.05,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.4,3,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.4,4,0.03,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,4,0.05,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,4,0.1,0,3:3 0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,5,0.03,0,0:2 3:2 4:2 1:2 3:3 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,5,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,5,0.1,4,4:2 0:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.4,6,0.03,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,6,0.05,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,6,0.1,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 3:2 4:2 3:3 1:3 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,7,0.05,0,0:2 1:2 4:2 3:2 3:3 1:3 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.4,7,0.1,0,0:2 4:2 3:2 1:2 1:3 3:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:3 3:2 4:2 1:2 3:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,0,0.05,0,0:2 4:2 3:2 1:3 1:2 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,0,0.1,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,1,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,1,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,1,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,2,0.03,0,0:2 1:2 1:3 3:2 4:2 3:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,2,0.05,0,0:2 1:2 4:2 3:2 1:3 3:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,2,0.1,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,3,0.03,0,0:2 1:3 3:2 4:2 1:2 3:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,3,0.05,0,0:2 4:2 3:2 1:3 1:2 3:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,3,0.1,4,4:2 3:2 0:2 1:2 1:3 3:3 2:2 5:2 3:4,True,True,True,3,True
-teacher_seed203,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:2 3:2 3:3 4:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,4,0.05,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,4,0.1,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,5,0.03,0,0:2 1:2 3:2 4:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,5,0.05,0,0:2 3:2 4:2 1:2 3:3 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,5,0.1,0,0:2 4:2 3:2 1:2 1:3 3:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:2 3:2 3:3 4:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,6,0.05,0,0:2 3:2 3:3 4:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,6,0.1,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 2:2 3:2 3:3 4:2 5:2 3:4,True,False,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 3:2 4:2 3:3 1:3 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed203,mps_on_binary,binary,0.5,7,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed204,mps_on_binary,binary,0.3,0,0.03,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,0,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,0,0.1,0,1:3 0:2 1:2 4:2 3:2 3:3 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.3,1,0.03,4,4:2 1:3 0:2 3:3 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,1,0.05,4,4:2 1:3 0:2 3:3 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,1,0.1,4,4:2 0:2 1:2 1:3 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,2,0.03,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,2,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,2,0.1,4,4:2 0:2 1:2 1:3 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,3,0.03,4,1:3 4:2 0:2 1:2 3:3 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,3,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,3,0.1,0,1:3 0:2 1:2 4:2 3:2 3:3 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.3,4,0.03,4,1:3 4:2 3:3 3:2 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,4,0.05,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,4,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,5,0.03,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,5,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,5,0.1,0,1:3 0:2 1:2 4:2 3:2 3:3 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.3,6,0.03,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,6,0.05,4,4:2 1:3 0:2 1:2 3:2 2:2 5:2 3:3,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,6,0.1,4,4:2 1:3 0:2 1:2 3:2 2:2 5:2 3:3,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,7,0.03,4,4:2 0:2 1:2 3:2 1:3 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,7,0.05,4,4:2 0:2 1:2 3:2 1:3 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.3,7,0.1,4,4:2 0:2 1:2 1:3 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,0,0.03,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,0,0.05,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,0,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,1,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.4,1,0.05,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,1,0.1,4,4:2 1:3 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,2,0.03,4,1:3 4:2 0:2 3:2 1:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,2,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,2,0.1,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,3,0.03,4,1:3 4:2 3:2 3:3 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,3,0.05,4,1:3 4:2 3:2 3:3 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,3,0.1,4,1:3 4:2 0:2 1:2 3:3 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,4,0.03,4,1:3 3:3 4:2 3:2 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,4,0.05,4,1:3 4:2 3:3 3:2 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,4,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,5,0.03,4,1:3 4:2 3:3 0:2 3:2 1:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,5,0.05,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,5,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,6,0.03,0,0:2 1:2 1:3 3:2 4:2 3:3 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.4,6,0.05,0,0:2 1:2 1:3 4:2 3:2 3:3 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.4,6,0.1,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.4,7,0.05,4,1:3 4:2 0:2 3:2 1:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.4,7,0.1,4,4:2 1:3 0:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:3 2:2 3:3 4:2 5:2 1:2 3:2,False,False,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,0,0.05,4,1:3 3:3 4:2 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,0,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,1,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,1,0.05,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,1,0.1,4,1:3 3:3 4:2 0:2 3:2 1:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,2,0.03,3,1:3 3:2 4:2 0:2 1:2 3:3 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,2,0.05,4,1:3 4:2 3:2 0:2 1:2 3:3 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,2,0.1,4,1:3 4:2 0:2 3:2 1:2 3:3 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,3,0.03,3,1:3 3:2 3:3 4:2 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,3,0.05,4,1:3 4:2 3:2 3:3 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,3,0.1,4,1:3 4:2 3:2 3:3 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,4,0.05,4,1:3 3:3 4:2 0:2 3:2 1:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,4,0.1,4,1:3 4:2 3:3 0:2 3:2 1:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,5,0.03,4,1:3 3:3 4:2 0:2 3:2 1:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,5,0.05,4,1:3 3:3 4:2 0:2 3:2 1:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,5,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,True,1,False
-teacher_seed204,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,6,0.05,0,0:2 1:2 1:3 3:2 4:2 3:3 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,6,0.1,0,0:2 1:3 4:2 1:2 3:2 3:3 2:2 5:2,False,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 2:2 3:2 3:3 4:2 5:2,True,False,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,True,1,True
-teacher_seed204,mps_on_binary,binary,0.5,7,0.1,4,1:3 3:3 4:2 3:2 0:2 1:2 2:2 5:2,True,True,True,1,False
-teacher_seed209,mps_on_binary,binary,0.3,0,0.03,0,0:2 1:3 1:2 4:2 3:2 1:4 3:3 2:2 5:2 3:4,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,0,0.05,0,0:2 1:3 4:2 3:2 1:4 3:3 1:2 2:2 5:2 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,0,0.1,0,0:2 4:2 1:3 3:3 1:2 2:2 3:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,1,0.03,0,0:2 4:2 1:3 1:2 3:3 3:2 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,1,0.05,0,0:2 4:2 1:3 1:2 3:3 3:2 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,1,0.1,0,0:2 4:2 1:3 1:2 2:2 3:2 5:2 3:3 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,2,0.03,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,2,0.05,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,2,0.1,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,3,0.03,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,3,0.05,0,0:2 1:3 4:2 3:2 1:2 2:2 5:2 3:3 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,3,0.1,0,0:2 4:2 1:3 3:2 1:2 2:2 5:2 3:3 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,4,0.03,4,4:2 1:3 3:2 3:3 0:2 1:4 1:2 2:2 5:2 3:4,True,True,True,1,False
-teacher_seed209,mps_on_binary,binary,0.3,4,0.05,4,4:2 1:3 3:2 3:3 0:2 1:2 2:2 5:2 1:4 3:4,True,True,True,1,False
-teacher_seed209,mps_on_binary,binary,0.3,4,0.1,4,4:2 3:2 0:2 1:2 2:2 5:2 3:3 1:3 3:4 1:4,True,True,True,1,False
-teacher_seed209,mps_on_binary,binary,0.3,5,0.03,0,0:2 4:2 3:3 1:2 3:2 1:3 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,5,0.05,0,0:2 4:2 1:2 3:2 3:3 1:3 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,5,0.1,0,0:2 4:2 3:2 1:2 1:3 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,6,0.03,0,0:2 4:2 1:3 3:2 3:3 1:2 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,6,0.05,0,0:2 4:2 3:2 1:3 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,6,0.1,0,0:2 4:2 3:2 1:2 3:3 1:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,7,0.03,0,0:2 4:2 1:2 1:3 3:3 3:2 3:4 1:4 2:2 5:2,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,7,0.05,0,0:2 4:2 1:3 1:2 3:3 3:2 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.3,7,0.1,0,0:2 1:3 4:2 3:3 1:2 3:2 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,0,0.03,0,0:2 1:3 1:2 4:2 3:3 1:4 3:2 2:2 5:2 3:4,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,0,0.05,0,0:2 1:3 1:2 4:2 3:3 1:4 3:2 2:2 5:2 3:4,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,0,0.1,0,0:2 1:3 4:2 3:3 1:4 1:2 2:2 3:2 5:2 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,1,0.03,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,1,0.05,0,0:2 4:2 1:3 1:2 3:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,1,0.1,0,0:2 4:2 1:3 3:3 1:2 2:2 3:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,2,0.03,0,0:2 1:3 4:2 1:2 3:2 3:3 1:4 2:2 5:2 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,2,0.05,0,0:2 1:3 4:2 1:2 3:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,2,0.1,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,3,0.03,0,0:2 1:3 4:2 3:3 1:2 3:2 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,3,0.05,0,0:2 1:3 4:2 3:3 3:2 1:2 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,3,0.1,0,0:2 1:3 4:2 3:2 1:2 2:2 5:2 3:3 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,4,0.03,0,0:2 1:3 1:4 3:2 3:3 4:2 3:4 1:2 2:2 5:2,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,4,0.05,4,1:3 4:2 1:4 0:2 3:2 3:3 3:4 1:2 2:2 5:2,False,True,True,1,False
-teacher_seed209,mps_on_binary,binary,0.4,4,0.1,4,4:2 1:3 0:2 3:3 3:2 1:4 3:4 1:2 2:2 5:2,False,True,True,1,False
-teacher_seed209,mps_on_binary,binary,0.4,5,0.03,0,0:2 3:3 4:2 1:2 3:2 1:3 3:4 2:2 5:2 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,5,0.05,0,0:2 4:2 3:3 1:2 3:2 1:3 1:4 2:2 5:2 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,5,0.1,0,0:2 4:2 3:2 1:2 3:3 1:3 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,6,0.03,0,0:2 1:3 4:2 3:2 1:2 3:3 3:4 2:2 5:2 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,6,0.05,0,0:2 4:2 1:3 3:2 1:2 3:3 2:2 3:4 5:2 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,6,0.1,0,0:2 4:2 1:3 3:2 3:3 1:2 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 1:3 4:2 1:4 3:3 3:2 3:4 2:2 5:2,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,7,0.05,0,0:2 4:2 1:3 1:2 1:4 3:3 3:2 3:4 2:2 5:2,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.4,7,0.1,0,0:2 4:2 1:3 3:3 3:2 1:2 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:2 1:3 3:3 4:2 1:4 3:2 2:2 5:2 3:4,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,0,0.05,0,0:2 1:2 1:3 4:2 3:3 1:4 3:2 2:2 5:2 3:4,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,0,0.1,0,0:2 1:3 4:2 1:2 3:3 1:4 2:2 5:2 3:2 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,1,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2 3:4 1:4,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,1,0.05,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,1,0.1,0,0:2 4:2 1:3 1:2 3:3 3:2 2:2 5:2 3:4 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,2,0.03,0,0:2 1:3 3:3 4:2 1:2 3:2 1:4 2:2 5:2 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,2,0.05,0,0:2 1:3 4:2 1:2 3:3 3:2 1:4 2:2 5:2 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,2,0.1,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,3,0.03,0,0:2 1:3 4:2 1:2 3:3 3:2 3:4 1:4 2:2 5:2,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,3,0.05,0,0:2 1:3 4:2 3:3 1:2 3:2 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,3,0.1,0,0:2 1:3 4:2 3:3 3:2 1:2 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:2 1:3 1:4 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,4,0.05,0,0:2 1:2 1:3 1:4 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,4,0.1,0,0:2 1:3 4:2 1:4 3:2 3:3 3:4 1:2 2:2 5:2,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,5,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 1:4 3:4 2:2 5:2,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,5,0.05,0,0:2 3:3 4:2 1:2 3:2 1:3 3:4 1:4 2:2 5:2,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,5,0.1,0,0:2 4:2 3:3 1:3 3:2 1:2 1:4 2:2 5:2 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 3:4 2:2 5:2 1:4,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,6,0.05,0,0:2 1:3 4:2 1:2 3:2 3:3 3:4 2:2 5:2 1:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,6,0.1,0,0:2 4:2 1:3 3:3 3:2 1:2 2:2 5:2 1:4 3:4,False,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 1:4 3:2 3:3 3:4 4:2 2:2 5:2,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 1:3 1:4 3:4 4:2 3:3 3:2 2:2 5:2,True,True,True,1,True
-teacher_seed209,mps_on_binary,binary,0.5,7,0.1,0,0:2 1:3 4:2 1:2 1:4 3:3 3:4 3:2 2:2 5:2,False,True,True,1,True
-teacher_seed212,mps_on_binary,binary,0.3,0,0.03,4,3:3 4:2 1:4 1:3 0:2 1:2 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,0,0.05,4,4:2 3:3 0:2 1:2 1:3 1:4 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,0,0.1,0,0:2 1:2 1:4 2:2 3:2 5:2 1:3 3:3 4:2 3:4,True,False,True,3,False
-teacher_seed212,mps_on_binary,binary,0.3,1,0.03,4,3:3 4:2 1:4 0:2 1:2 3:4 2:2 3:2 5:2 1:3,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,1,0.05,4,3:3 4:2 1:4 0:2 1:2 1:3 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,1,0.1,4,3:3 4:2 0:2 1:2 1:3 1:4 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,2,0.03,4,4:2 1:3 0:2 3:4 1:2 1:4 3:3 3:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,2,0.05,4,4:2 1:3 0:2 1:2 1:4 3:3 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,2,0.1,0,0:2 1:2 4:2 1:4 3:3 1:3 3:2 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.3,3,0.03,4,4:2 0:2 1:3 1:4 1:2 3:3 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,3,0.05,4,4:2 0:2 1:3 1:2 1:4 3:3 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,3,0.1,0,0:2 1:2 1:4 1:3 2:2 3:2 5:2 4:2 3:3 3:4,True,False,True,3,False
-teacher_seed212,mps_on_binary,binary,0.3,4,0.03,4,3:3 3:4 4:2 0:2 1:2 3:2 2:2 5:2 1:3 1:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,4,0.05,4,3:4 3:3 4:2 0:2 1:2 3:2 2:2 5:2 1:3 1:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,4,0.1,4,3:4 3:3 4:2 0:2 1:2 2:2 3:2 5:2 1:3 1:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,5,0.03,4,3:3 4:2 3:4 1:3 0:2 1:2 1:4 2:2 3:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,5,0.05,4,3:3 4:2 3:4 0:2 1:2 2:2 3:2 5:2 1:3 1:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,5,0.1,0,3:3 0:2 1:2 3:4 2:2 3:2 4:2 5:2 1:3 1:4,True,False,True,3,False
-teacher_seed212,mps_on_binary,binary,0.3,6,0.03,4,4:2 3:3 3:2 0:2 3:4 1:4 1:2 1:3 2:2 5:2,True,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,6,0.05,4,4:2 3:3 3:4 0:2 1:4 1:2 1:3 2:2 3:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,6,0.1,4,4:2 0:2 1:2 3:3 1:3 2:2 3:2 5:2 1:4 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,7,0.03,0,0:2 3:3 4:2 3:4 3:2 1:2 1:3 1:4 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.3,7,0.05,4,3:3 4:2 0:2 3:4 1:2 3:2 1:3 2:2 5:2 1:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.3,7,0.1,4,4:2 3:3 0:2 3:4 1:2 3:2 2:2 5:2 1:3 1:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,0,0.03,4,3:3 4:2 1:3 0:2 1:4 1:2 3:4 2:2 3:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,0,0.05,4,3:3 4:2 1:3 1:4 0:2 1:2 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,0,0.1,4,3:3 4:2 0:2 1:2 1:4 1:3 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,1,0.03,4,3:3 4:2 1:4 1:3 3:2 0:2 1:2 3:4 2:2 5:2,True,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,1,0.05,4,3:3 4:2 1:4 0:2 1:2 2:2 3:2 5:2 1:3 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,1,0.1,4,3:3 4:2 1:4 0:2 1:2 2:2 3:2 5:2 1:3 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,2,0.03,4,4:2 3:3 1:3 3:4 0:2 1:4 1:2 3:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,2,0.05,4,4:2 1:3 3:3 3:4 0:2 1:2 1:4 3:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,2,0.1,4,4:2 1:3 0:2 1:2 1:4 3:3 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,3,0.03,0,0:2 1:3 1:4 4:2 1:2 3:3 2:2 3:2 5:2 3:4,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.4,3,0.05,0,0:2 1:3 4:2 1:4 1:2 3:3 2:2 3:2 5:2 3:4,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.4,3,0.1,4,4:2 0:2 1:3 1:2 1:4 3:3 2:2 3:2 5:2 3:4,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,4,0.03,4,1:4 3:3 3:4 4:2 1:3 0:2 3:2 1:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,4,0.05,4,3:3 3:4 4:2 1:4 1:3 0:2 1:2 3:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,4,0.1,4,3:4 3:3 4:2 0:2 1:2 3:2 1:4 2:2 5:2 1:3,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,5,0.03,4,3:3 3:4 4:2 0:2 1:3 1:2 1:4 2:2 3:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,5,0.05,4,3:3 4:2 3:4 0:2 1:3 1:2 1:4 2:2 3:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,5,0.1,4,3:3 4:2 3:4 1:3 0:2 1:2 1:4 2:2 3:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,6,0.03,0,0:2 3:2 3:3 4:2 3:4 1:2 1:4 1:3 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.4,6,0.05,4,4:2 3:3 3:2 0:2 3:4 1:4 1:2 1:3 2:2 5:2,True,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,6,0.1,4,4:2 3:3 3:4 1:4 0:2 1:2 1:3 2:2 5:2 3:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 1:3 1:4 3:2 3:3 3:4 4:2 2:2 5:2,True,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.4,7,0.05,0,0:2 1:3 3:3 3:4 4:2 3:2 1:4 1:2 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.4,7,0.1,4,3:3 3:4 4:2 0:2 1:3 3:2 1:2 1:4 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:3 1:4 3:3 4:2 1:2 3:4 2:2 3:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,0,0.05,4,1:3 3:3 4:2 0:2 1:4 1:2 3:4 2:2 5:2 3:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,0,0.1,4,3:3 4:2 1:4 1:3 0:2 1:2 3:4 2:2 3:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,1,0.03,0,0:2 1:3 1:4 3:3 4:2 3:2 3:4 1:2 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,1,0.05,4,1:4 3:3 4:2 1:3 0:2 3:2 3:4 1:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,1,0.1,4,3:3 4:2 1:4 3:4 0:2 1:2 2:2 5:2 3:2 1:3,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,2,0.03,0,0:2 1:3 1:4 3:3 3:4 4:2 1:2 3:2 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,2,0.05,4,1:4 3:3 4:2 1:3 3:4 0:2 1:2 3:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,2,0.1,4,4:2 3:3 1:3 3:4 0:2 1:4 1:2 3:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,3,0.03,0,0:2 1:2 1:3 1:4 3:3 4:2 3:2 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,3,0.05,0,0:2 1:3 1:4 4:2 3:3 1:2 2:2 5:2 3:2 3:4,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,3,0.1,0,0:2 1:3 4:2 1:4 1:2 3:3 2:2 5:2 3:2 3:4,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:3 1:4 3:3 3:4 4:2 3:2 1:2 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,4,0.05,4,1:4 3:3 3:4 4:2 0:2 1:3 3:2 1:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,4,0.1,4,1:4 3:3 3:4 4:2 1:3 0:2 1:2 3:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,5,0.03,0,0:2 3:3 3:4 4:2 1:3 1:2 3:2 1:4 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,5,0.05,4,3:3 3:4 4:2 0:2 1:3 1:2 1:4 2:2 5:2 3:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,5,0.1,4,3:3 4:2 3:4 0:2 1:3 1:2 1:4 2:2 5:2 3:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:4 3:2 3:3 4:2 3:4 1:2 1:3 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,6,0.05,0,0:2 3:2 3:3 4:2 1:4 3:4 1:2 1:3 2:2 5:2,False,True,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,6,0.1,4,4:2 3:3 0:2 3:2 3:4 1:4 1:3 1:2 2:2 5:2,False,True,True,3,True
-teacher_seed212,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 1:4 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 1:3 1:4 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,3,False
-teacher_seed212,mps_on_binary,binary,0.5,7,0.1,0,0:2 1:3 1:4 3:3 3:4 4:2 3:2 1:2 2:2 5:2,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,0,0.03,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,0,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,0,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.3,1,0.03,4,4:2 3:2 3:3 0:2 1:2 2:2 5:2 1:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.3,1,0.05,4,4:2 3:2 3:3 0:2 1:2 2:2 5:2 1:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.3,1,0.1,4,4:2 3:2 0:2 1:2 2:2 5:2 1:3 3:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.3,2,0.03,0,0:2 1:3 4:2 1:2 3:2 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,2,0.05,0,1:3 0:2 4:2 1:2 3:2 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,2,0.1,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,3,0.03,4,4:2 0:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.3,3,0.05,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.3,3,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.3,4,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,4,0.05,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,4,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,5,0.03,0,0:2 1:2 4:2 3:2 2:2 5:2 1:3 3:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,5,0.05,0,0:2 1:2 4:2 3:2 2:2 5:2 1:3 3:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,5,0.1,0,0:2 1:2 4:2 3:2 2:2 5:2 1:3 3:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,6,0.03,0,0:2 4:2 1:2 3:2 2:2 5:2 1:3 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,6,0.05,0,0:2 4:2 1:2 3:2 2:2 5:2 1:3 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,6,0.1,0,0:2 4:2 1:2 3:2 2:2 5:2 1:3 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,7,0.03,0,0:2 3:2 4:2 3:3 1:2 3:4 1:3 2:2 5:2,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.3,7,0.05,3,3:2 4:2 0:2 3:3 1:2 3:4 1:3 2:2 5:2,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.3,7,0.1,4,4:2 3:2 0:2 1:2 1:3 3:3 2:2 5:2 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.4,0,0.03,0,0:2 1:2 1:3 3:3 4:2 3:2 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,0,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,0,0.1,0,0:2 4:2 3:2 1:3 1:2 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,1,0.03,3,3:2 3:3 4:2 0:2 1:2 1:3 2:2 5:2 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.4,1,0.05,4,4:2 3:2 3:3 0:2 1:2 2:2 5:2 1:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.4,1,0.1,4,4:2 3:2 3:3 0:2 1:2 2:2 5:2 1:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.4,2,0.03,0,0:2 1:2 1:3 4:2 3:2 3:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,2,0.05,0,0:2 1:2 1:3 4:2 3:2 3:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,2,0.1,0,0:2 1:3 4:2 3:2 1:2 2:2 5:2 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,3,0.03,0,0:2 4:2 3:2 1:2 3:3 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,3,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 3:3 5:2 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,3,0.1,4,4:2 0:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.4,4,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,4,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,4,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,5,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,5,0.05,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,5,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,6,0.03,0,0:2 1:2 3:2 4:2 3:3 3:4 2:2 5:2 1:3,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,6,0.05,0,0:2 1:2 4:2 3:2 3:3 2:2 5:2 1:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,6,0.1,0,0:2 4:2 1:2 3:2 2:2 5:2 1:3 3:3 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 3:4 5:2,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,7,0.05,0,0:2 1:2 1:3 3:2 3:3 4:2 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.4,7,0.1,3,3:2 4:2 0:2 3:3 1:3 1:2 3:4 2:2 5:2,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:2 1:3 3:3 4:2 3:2 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,0,0.05,0,0:2 1:2 1:3 3:3 4:2 3:2 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,0,0.1,0,0:2 1:2 4:2 3:2 2:2 5:2 3:3 1:3 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,1,0.03,3,3:2 3:3 4:2 0:2 1:3 1:2 2:2 5:2 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.5,1,0.05,3,3:2 3:3 4:2 0:2 1:2 1:3 2:2 5:2 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.5,1,0.1,4,4:2 3:3 3:2 0:2 1:2 2:2 5:2 1:3 3:4,True,True,True,3,True
-teacher_seed218,mps_on_binary,binary,0.5,2,0.03,0,0:2 1:2 3:3 1:3 4:2 3:2 3:4 2:2 5:2,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,2,0.05,0,0:2 1:2 1:3 4:2 3:2 3:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,2,0.1,0,0:2 1:3 4:2 1:2 3:2 3:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,3,0.03,0,0:2 4:2 1:2 3:2 3:3 1:3 3:4 2:2 5:2,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,3,0.05,0,0:2 4:2 3:2 1:2 3:3 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,3,0.1,0,0:2 4:2 3:2 1:2 1:3 3:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,4,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,4,0.1,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,5,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,5,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,5,0.1,0,0:2 1:2 4:2 3:2 1:3 3:3 2:2 5:2 3:4,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:2 3:2 4:2 3:3 3:4 1:3 2:2 5:2,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,6,0.05,0,0:2 1:2 3:2 4:2 3:3 3:4 1:3 2:2 5:2,True,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,6,0.1,0,0:2 4:2 1:2 3:2 3:3 1:3 2:2 5:2 3:4,False,True,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 1:3 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,3,False
-teacher_seed218,mps_on_binary,binary,0.5,7,0.1,0,0:2 1:3 3:2 3:3 4:2 1:2 2:2 5:2 3:4,False,True,True,3,False
+case,teacher_seed,pair,tree,sigma,seed,f,first_edge,order,sibling_first,bottom_up,p11_discriminating,root_above_all_bottoms,root_margin,naive_edge,naive_pair_first
+teacher_seed203,203,mps_on_binary,binary,0.3,0,0.03,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,0,0.05,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,0,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:4 3:3,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,1,0.03,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,1,0.05,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,1,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,2,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,2,0.05,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,2,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,3,0.03,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.3,3,0.05,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.3,3,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.3,4,0.03,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,4,0.05,4,3:3 4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.3,4,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.3,5,0.03,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.3,5,0.05,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.3,5,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.3,6,0.03,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,6,0.05,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,6,0.1,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,7,0.03,0,0:2 4:2 1:2 3:2 3:3 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,7,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.3,7,0.1,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,0,0.03,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,0,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,0,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,1,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 3:4 2:2 5:2,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,1,0.05,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,1,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,2,0.03,0,0:2 1:2 4:2 3:2 1:3 3:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,2,0.05,0,0:2 1:2 4:2 3:3 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,2,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,3,0.03,4,4:2 3:2 0:2 1:3 1:2 3:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.4,3,0.05,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.4,3,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.4,4,0.03,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,4,0.05,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,4,0.1,0,3:3 0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,5,0.03,0,0:2 3:2 4:2 1:2 3:3 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,5,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,5,0.1,4,4:2 0:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.4,6,0.03,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,6,0.05,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,6,0.1,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 3:2 4:2 3:3 1:3 3:4 2:2 5:2,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,7,0.05,0,0:2 1:2 4:2 3:2 3:3 1:3 3:4 2:2 5:2,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.4,7,0.1,0,0:2 4:2 3:2 1:2 1:3 3:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:3 3:2 4:2 1:2 3:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,0,0.05,0,0:2 4:2 3:2 1:3 1:2 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,0,0.1,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,1,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 3:4 2:2 5:2,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,1,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 3:4 2:2 5:2,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,1,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,2,0.03,0,0:2 1:2 1:3 3:2 4:2 3:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,2,0.05,0,0:2 1:2 4:2 3:2 1:3 3:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,2,0.1,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,3,0.03,0,0:2 1:3 3:2 4:2 1:2 3:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,3,0.05,0,0:2 4:2 3:2 1:3 1:2 3:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,3,0.1,4,4:2 3:2 0:2 1:2 1:3 3:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,True
+teacher_seed203,203,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:2 3:2 3:3 4:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,4,0.05,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,4,0.1,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,5,0.03,0,0:2 1:2 3:2 4:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,5,0.05,0,0:2 3:2 4:2 1:2 3:3 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,5,0.1,0,0:2 4:2 3:2 1:2 1:3 3:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:2 3:2 3:3 4:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,6,0.05,0,0:2 3:2 3:3 4:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,6,0.1,0,0:2 3:3 4:2 3:2 1:2 1:3 2:2 5:2 3:4,False,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 2:2 3:2 3:3 4:2 5:2 3:4,True,False,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 3:2 4:2 3:3 1:3 3:4 2:2 5:2,True,True,False,False,0.9950719584381668,3,False
+teacher_seed203,203,mps_on_binary,binary,0.5,7,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 3:4 2:2 5:2,True,True,False,False,0.9950719584381668,3,False
+teacher_seed204,204,mps_on_binary,binary,0.3,0,0.03,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,0,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,0,0.1,0,1:3 0:2 1:2 4:2 3:2 3:3 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.3,1,0.03,4,4:2 1:3 0:2 3:3 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,1,0.05,4,4:2 1:3 0:2 3:3 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,1,0.1,4,4:2 0:2 1:2 1:3 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,2,0.03,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,2,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,2,0.1,4,4:2 0:2 1:2 1:3 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,3,0.03,4,1:3 4:2 0:2 1:2 3:3 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,3,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,3,0.1,0,1:3 0:2 1:2 4:2 3:2 3:3 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.3,4,0.03,4,1:3 4:2 3:3 3:2 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,4,0.05,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,4,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,5,0.03,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,5,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,5,0.1,0,1:3 0:2 1:2 4:2 3:2 3:3 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.3,6,0.03,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,6,0.05,4,4:2 1:3 0:2 1:2 3:2 2:2 5:2 3:3,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,6,0.1,4,4:2 1:3 0:2 1:2 3:2 2:2 5:2 3:3,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,7,0.03,4,4:2 0:2 1:2 3:2 1:3 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,7,0.05,4,4:2 0:2 1:2 3:2 1:3 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.3,7,0.1,4,4:2 0:2 1:2 1:3 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,0,0.03,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,0,0.05,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,0,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,1,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.4,1,0.05,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,1,0.1,4,4:2 1:3 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,2,0.03,4,1:3 4:2 0:2 3:2 1:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,2,0.05,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,2,0.1,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,3,0.03,4,1:3 4:2 3:2 3:3 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,3,0.05,4,1:3 4:2 3:2 3:3 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,3,0.1,4,1:3 4:2 0:2 1:2 3:3 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,4,0.03,4,1:3 3:3 4:2 3:2 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,4,0.05,4,1:3 4:2 3:3 3:2 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,4,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,5,0.03,4,1:3 4:2 3:3 0:2 3:2 1:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,5,0.05,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,5,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,6,0.03,0,0:2 1:2 1:3 3:2 4:2 3:3 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.4,6,0.05,0,0:2 1:2 1:3 4:2 3:2 3:3 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.4,6,0.1,4,1:3 4:2 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.4,7,0.05,4,1:3 4:2 0:2 3:2 1:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.4,7,0.1,4,4:2 1:3 0:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:3 2:2 3:3 4:2 5:2 1:2 3:2,False,False,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,0,0.05,4,1:3 3:3 4:2 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,0,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,1,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,1,0.05,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,1,0.1,4,1:3 3:3 4:2 0:2 3:2 1:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,2,0.03,3,1:3 3:2 4:2 0:2 1:2 3:3 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,2,0.05,4,1:3 4:2 3:2 0:2 1:2 3:3 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,2,0.1,4,1:3 4:2 0:2 3:2 1:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,3,0.03,3,1:3 3:2 3:3 4:2 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,3,0.05,4,1:3 4:2 3:2 3:3 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,3,0.1,4,1:3 4:2 3:2 3:3 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,4,0.05,4,1:3 3:3 4:2 0:2 3:2 1:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,4,0.1,4,1:3 4:2 3:3 0:2 3:2 1:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,5,0.03,4,1:3 3:3 4:2 0:2 3:2 1:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,5,0.05,4,1:3 3:3 4:2 0:2 3:2 1:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,5,0.1,4,1:3 4:2 3:3 0:2 1:2 3:2 2:2 5:2,False,True,False,False,0.9966988198687768,1,False
+teacher_seed204,204,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,6,0.05,0,0:2 1:2 1:3 3:2 4:2 3:3 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,6,0.1,0,0:2 1:3 4:2 1:2 3:2 3:3 2:2 5:2,False,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 2:2 3:2 3:3 4:2 5:2,True,False,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,True
+teacher_seed204,204,mps_on_binary,binary,0.5,7,0.1,4,1:3 3:3 4:2 3:2 0:2 1:2 2:2 5:2,True,True,False,False,0.9966988198687768,1,False
+teacher_seed209,209,mps_on_binary,binary,0.3,0,0.03,0,0:2 1:3 1:2 4:2 3:2 1:4 3:3 2:2 5:2 3:4,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,0,0.05,0,0:2 1:3 4:2 3:2 1:4 3:3 1:2 2:2 5:2 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,0,0.1,0,0:2 4:2 1:3 3:3 1:2 2:2 3:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,1,0.03,0,0:2 4:2 1:3 1:2 3:3 3:2 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,1,0.05,0,0:2 4:2 1:3 1:2 3:3 3:2 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,1,0.1,0,0:2 4:2 1:3 1:2 2:2 3:2 5:2 3:3 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,2,0.03,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,2,0.05,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,2,0.1,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,3,0.03,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,3,0.05,0,0:2 1:3 4:2 3:2 1:2 2:2 5:2 3:3 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,3,0.1,0,0:2 4:2 1:3 3:2 1:2 2:2 5:2 3:3 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,4,0.03,4,4:2 1:3 3:2 3:3 0:2 1:4 1:2 2:2 5:2 3:4,True,True,True,True,1.0166583528010984,1,False
+teacher_seed209,209,mps_on_binary,binary,0.3,4,0.05,4,4:2 1:3 3:2 3:3 0:2 1:2 2:2 5:2 1:4 3:4,True,True,True,True,1.0166583528010984,1,False
+teacher_seed209,209,mps_on_binary,binary,0.3,4,0.1,4,4:2 3:2 0:2 1:2 2:2 5:2 3:3 1:3 3:4 1:4,True,True,True,True,1.0166583528010984,1,False
+teacher_seed209,209,mps_on_binary,binary,0.3,5,0.03,0,0:2 4:2 3:3 1:2 3:2 1:3 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,5,0.05,0,0:2 4:2 1:2 3:2 3:3 1:3 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,5,0.1,0,0:2 4:2 3:2 1:2 1:3 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,6,0.03,0,0:2 4:2 1:3 3:2 3:3 1:2 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,6,0.05,0,0:2 4:2 3:2 1:3 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,6,0.1,0,0:2 4:2 3:2 1:2 3:3 1:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,7,0.03,0,0:2 4:2 1:2 1:3 3:3 3:2 3:4 1:4 2:2 5:2,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,7,0.05,0,0:2 4:2 1:3 1:2 3:3 3:2 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.3,7,0.1,0,0:2 1:3 4:2 3:3 1:2 3:2 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,0,0.03,0,0:2 1:3 1:2 4:2 3:3 1:4 3:2 2:2 5:2 3:4,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,0,0.05,0,0:2 1:3 1:2 4:2 3:3 1:4 3:2 2:2 5:2 3:4,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,0,0.1,0,0:2 1:3 4:2 3:3 1:4 1:2 2:2 3:2 5:2 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,1,0.03,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,1,0.05,0,0:2 4:2 1:3 1:2 3:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,1,0.1,0,0:2 4:2 1:3 3:3 1:2 2:2 3:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,2,0.03,0,0:2 1:3 4:2 1:2 3:2 3:3 1:4 2:2 5:2 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,2,0.05,0,0:2 1:3 4:2 1:2 3:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,2,0.1,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,3,0.03,0,0:2 1:3 4:2 3:3 1:2 3:2 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,3,0.05,0,0:2 1:3 4:2 3:3 3:2 1:2 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,3,0.1,0,0:2 1:3 4:2 3:2 1:2 2:2 5:2 3:3 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,4,0.03,0,0:2 1:3 1:4 3:2 3:3 4:2 3:4 1:2 2:2 5:2,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,4,0.05,4,1:3 4:2 1:4 0:2 3:2 3:3 3:4 1:2 2:2 5:2,False,True,True,True,1.0166583528010984,1,False
+teacher_seed209,209,mps_on_binary,binary,0.4,4,0.1,4,4:2 1:3 0:2 3:3 3:2 1:4 3:4 1:2 2:2 5:2,False,True,True,True,1.0166583528010984,1,False
+teacher_seed209,209,mps_on_binary,binary,0.4,5,0.03,0,0:2 3:3 4:2 1:2 3:2 1:3 3:4 2:2 5:2 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,5,0.05,0,0:2 4:2 3:3 1:2 3:2 1:3 1:4 2:2 5:2 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,5,0.1,0,0:2 4:2 3:2 1:2 3:3 1:3 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,6,0.03,0,0:2 1:3 4:2 3:2 1:2 3:3 3:4 2:2 5:2 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,6,0.05,0,0:2 4:2 1:3 3:2 1:2 3:3 2:2 3:4 5:2 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,6,0.1,0,0:2 4:2 1:3 3:2 3:3 1:2 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 1:3 4:2 1:4 3:3 3:2 3:4 2:2 5:2,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,7,0.05,0,0:2 4:2 1:3 1:2 1:4 3:3 3:2 3:4 2:2 5:2,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.4,7,0.1,0,0:2 4:2 1:3 3:3 3:2 1:2 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:2 1:3 3:3 4:2 1:4 3:2 2:2 5:2 3:4,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,0,0.05,0,0:2 1:2 1:3 4:2 3:3 1:4 3:2 2:2 5:2 3:4,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,0,0.1,0,0:2 1:3 4:2 1:2 3:3 1:4 2:2 5:2 3:2 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,1,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 5:2 3:4 1:4,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,1,0.05,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,1,0.1,0,0:2 4:2 1:3 1:2 3:3 3:2 2:2 5:2 3:4 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,2,0.03,0,0:2 1:3 3:3 4:2 1:2 3:2 1:4 2:2 5:2 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,2,0.05,0,0:2 1:3 4:2 1:2 3:3 3:2 1:4 2:2 5:2 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,2,0.1,0,0:2 1:3 4:2 3:2 1:2 3:3 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,3,0.03,0,0:2 1:3 4:2 1:2 3:3 3:2 3:4 1:4 2:2 5:2,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,3,0.05,0,0:2 1:3 4:2 3:3 1:2 3:2 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,3,0.1,0,0:2 1:3 4:2 3:3 3:2 1:2 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:2 1:3 1:4 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,4,0.05,0,0:2 1:2 1:3 1:4 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,4,0.1,0,0:2 1:3 4:2 1:4 3:2 3:3 3:4 1:2 2:2 5:2,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,5,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 1:4 3:4 2:2 5:2,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,5,0.05,0,0:2 3:3 4:2 1:2 3:2 1:3 3:4 1:4 2:2 5:2,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,5,0.1,0,0:2 4:2 3:3 1:3 3:2 1:2 1:4 2:2 5:2 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 3:4 2:2 5:2 1:4,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,6,0.05,0,0:2 1:3 4:2 1:2 3:2 3:3 3:4 2:2 5:2 1:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,6,0.1,0,0:2 4:2 1:3 3:3 3:2 1:2 2:2 5:2 1:4 3:4,False,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 1:4 3:2 3:3 3:4 4:2 2:2 5:2,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 1:3 1:4 3:4 4:2 3:3 3:2 2:2 5:2,True,True,True,True,1.0166583528010984,1,True
+teacher_seed209,209,mps_on_binary,binary,0.5,7,0.1,0,0:2 1:3 4:2 1:2 1:4 3:3 3:4 3:2 2:2 5:2,False,True,True,True,1.0166583528010984,1,True
+teacher_seed212,212,mps_on_binary,binary,0.3,0,0.03,4,3:3 4:2 1:4 1:3 0:2 1:2 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,0,0.05,4,4:2 3:3 0:2 1:2 1:3 1:4 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,0,0.1,0,0:2 1:2 1:4 2:2 3:2 5:2 1:3 3:3 4:2 3:4,True,False,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.3,1,0.03,4,3:3 4:2 1:4 0:2 1:2 3:4 2:2 3:2 5:2 1:3,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,1,0.05,4,3:3 4:2 1:4 0:2 1:2 1:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,1,0.1,4,3:3 4:2 0:2 1:2 1:3 1:4 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,2,0.03,4,4:2 1:3 0:2 3:4 1:2 1:4 3:3 3:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,2,0.05,4,4:2 1:3 0:2 1:2 1:4 3:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,2,0.1,0,0:2 1:2 4:2 1:4 3:3 1:3 3:2 2:2 5:2 3:4,True,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.3,3,0.03,4,4:2 0:2 1:3 1:4 1:2 3:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,3,0.05,4,4:2 0:2 1:3 1:2 1:4 3:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,3,0.1,0,0:2 1:2 1:4 1:3 2:2 3:2 5:2 4:2 3:3 3:4,True,False,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.3,4,0.03,4,3:3 3:4 4:2 0:2 1:2 3:2 2:2 5:2 1:3 1:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,4,0.05,4,3:4 3:3 4:2 0:2 1:2 3:2 2:2 5:2 1:3 1:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,4,0.1,4,3:4 3:3 4:2 0:2 1:2 2:2 3:2 5:2 1:3 1:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,5,0.03,4,3:3 4:2 3:4 1:3 0:2 1:2 1:4 2:2 3:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,5,0.05,4,3:3 4:2 3:4 0:2 1:2 2:2 3:2 5:2 1:3 1:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,5,0.1,0,3:3 0:2 1:2 3:4 2:2 3:2 4:2 5:2 1:3 1:4,True,False,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.3,6,0.03,4,4:2 3:3 3:2 0:2 3:4 1:4 1:2 1:3 2:2 5:2,True,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,6,0.05,4,4:2 3:3 3:4 0:2 1:4 1:2 1:3 2:2 3:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,6,0.1,4,4:2 0:2 1:2 3:3 1:3 2:2 3:2 5:2 1:4 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,7,0.03,0,0:2 3:3 4:2 3:4 3:2 1:2 1:3 1:4 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.3,7,0.05,4,3:3 4:2 0:2 3:4 1:2 3:2 1:3 2:2 5:2 1:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.3,7,0.1,4,4:2 3:3 0:2 3:4 1:2 3:2 2:2 5:2 1:3 1:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,0,0.03,4,3:3 4:2 1:3 0:2 1:4 1:2 3:4 2:2 3:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,0,0.05,4,3:3 4:2 1:3 1:4 0:2 1:2 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,0,0.1,4,3:3 4:2 0:2 1:2 1:4 1:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,1,0.03,4,3:3 4:2 1:4 1:3 3:2 0:2 1:2 3:4 2:2 5:2,True,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,1,0.05,4,3:3 4:2 1:4 0:2 1:2 2:2 3:2 5:2 1:3 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,1,0.1,4,3:3 4:2 1:4 0:2 1:2 2:2 3:2 5:2 1:3 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,2,0.03,4,4:2 3:3 1:3 3:4 0:2 1:4 1:2 3:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,2,0.05,4,4:2 1:3 3:3 3:4 0:2 1:2 1:4 3:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,2,0.1,4,4:2 1:3 0:2 1:2 1:4 3:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,3,0.03,0,0:2 1:3 1:4 4:2 1:2 3:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.4,3,0.05,0,0:2 1:3 4:2 1:4 1:2 3:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.4,3,0.1,4,4:2 0:2 1:3 1:2 1:4 3:3 2:2 3:2 5:2 3:4,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,4,0.03,4,1:4 3:3 3:4 4:2 1:3 0:2 3:2 1:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,4,0.05,4,3:3 3:4 4:2 1:4 1:3 0:2 1:2 3:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,4,0.1,4,3:4 3:3 4:2 0:2 1:2 3:2 1:4 2:2 5:2 1:3,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,5,0.03,4,3:3 3:4 4:2 0:2 1:3 1:2 1:4 2:2 3:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,5,0.05,4,3:3 4:2 3:4 0:2 1:3 1:2 1:4 2:2 3:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,5,0.1,4,3:3 4:2 3:4 1:3 0:2 1:2 1:4 2:2 3:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,6,0.03,0,0:2 3:2 3:3 4:2 3:4 1:2 1:4 1:3 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.4,6,0.05,4,4:2 3:3 3:2 0:2 3:4 1:4 1:2 1:3 2:2 5:2,True,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,6,0.1,4,4:2 3:3 3:4 1:4 0:2 1:2 1:3 2:2 5:2 3:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 1:3 1:4 3:2 3:3 3:4 4:2 2:2 5:2,True,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.4,7,0.05,0,0:2 1:3 3:3 3:4 4:2 3:2 1:4 1:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.4,7,0.1,4,3:3 3:4 4:2 0:2 1:3 3:2 1:2 1:4 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:3 1:4 3:3 4:2 1:2 3:4 2:2 3:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,0,0.05,4,1:3 3:3 4:2 0:2 1:4 1:2 3:4 2:2 5:2 3:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,0,0.1,4,3:3 4:2 1:4 1:3 0:2 1:2 3:4 2:2 3:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,1,0.03,0,0:2 1:3 1:4 3:3 4:2 3:2 3:4 1:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,1,0.05,4,1:4 3:3 4:2 1:3 0:2 3:2 3:4 1:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,1,0.1,4,3:3 4:2 1:4 3:4 0:2 1:2 2:2 5:2 3:2 1:3,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,2,0.03,0,0:2 1:3 1:4 3:3 3:4 4:2 1:2 3:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,2,0.05,4,1:4 3:3 4:2 1:3 3:4 0:2 1:2 3:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,2,0.1,4,4:2 3:3 1:3 3:4 0:2 1:4 1:2 3:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,3,0.03,0,0:2 1:2 1:3 1:4 3:3 4:2 3:2 2:2 5:2 3:4,True,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,3,0.05,0,0:2 1:3 1:4 4:2 3:3 1:2 2:2 5:2 3:2 3:4,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,3,0.1,0,0:2 1:3 4:2 1:4 1:2 3:3 2:2 5:2 3:2 3:4,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:3 1:4 3:3 3:4 4:2 3:2 1:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,4,0.05,4,1:4 3:3 3:4 4:2 0:2 1:3 3:2 1:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,4,0.1,4,1:4 3:3 3:4 4:2 1:3 0:2 1:2 3:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,5,0.03,0,0:2 3:3 3:4 4:2 1:3 1:2 3:2 1:4 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,5,0.05,4,3:3 3:4 4:2 0:2 1:3 1:2 1:4 2:2 5:2 3:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,5,0.1,4,3:3 4:2 3:4 0:2 1:3 1:2 1:4 2:2 5:2 3:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:4 3:2 3:3 4:2 3:4 1:2 1:3 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,6,0.05,0,0:2 3:2 3:3 4:2 1:4 3:4 1:2 1:3 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,6,0.1,4,4:2 3:3 0:2 3:2 3:4 1:4 1:3 1:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,True
+teacher_seed212,212,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 1:4 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 1:3 1:4 2:2 3:2 3:3 3:4 4:2 5:2,True,False,True,True,1.0071583141116576,3,False
+teacher_seed212,212,mps_on_binary,binary,0.5,7,0.1,0,0:2 1:3 1:4 3:3 3:4 4:2 3:2 1:2 2:2 5:2,False,True,True,True,1.0071583141116576,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,0,0.03,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,0,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,0,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.3,1,0.03,4,4:2 3:2 3:3 0:2 1:2 2:2 5:2 1:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.3,1,0.05,4,4:2 3:2 3:3 0:2 1:2 2:2 5:2 1:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.3,1,0.1,4,4:2 3:2 0:2 1:2 2:2 5:2 1:3 3:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.3,2,0.03,0,0:2 1:3 4:2 1:2 3:2 2:2 5:2 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,2,0.05,0,1:3 0:2 4:2 1:2 3:2 2:2 5:2 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,2,0.1,0,0:2 4:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,3,0.03,4,4:2 0:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.3,3,0.05,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.3,3,0.1,4,4:2 3:2 0:2 1:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.3,4,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,4,0.05,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,4,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,5,0.03,0,0:2 1:2 4:2 3:2 2:2 5:2 1:3 3:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,5,0.05,0,0:2 1:2 4:2 3:2 2:2 5:2 1:3 3:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,5,0.1,0,0:2 1:2 4:2 3:2 2:2 5:2 1:3 3:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,6,0.03,0,0:2 4:2 1:2 3:2 2:2 5:2 1:3 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,6,0.05,0,0:2 4:2 1:2 3:2 2:2 5:2 1:3 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,6,0.1,0,0:2 4:2 1:2 3:2 2:2 5:2 1:3 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,7,0.03,0,0:2 3:2 4:2 3:3 1:2 3:4 1:3 2:2 5:2,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.3,7,0.05,3,3:2 4:2 0:2 3:3 1:2 3:4 1:3 2:2 5:2,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.3,7,0.1,4,4:2 3:2 0:2 1:2 1:3 3:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.4,0,0.03,0,0:2 1:2 1:3 3:3 4:2 3:2 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,0,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,0,0.1,0,0:2 4:2 3:2 1:3 1:2 2:2 5:2 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,1,0.03,3,3:2 3:3 4:2 0:2 1:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.4,1,0.05,4,4:2 3:2 3:3 0:2 1:2 2:2 5:2 1:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.4,1,0.1,4,4:2 3:2 3:3 0:2 1:2 2:2 5:2 1:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.4,2,0.03,0,0:2 1:2 1:3 4:2 3:2 3:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,2,0.05,0,0:2 1:2 1:3 4:2 3:2 3:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,2,0.1,0,0:2 1:3 4:2 3:2 1:2 2:2 5:2 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,3,0.03,0,0:2 4:2 3:2 1:2 3:3 1:3 2:2 5:2 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,3,0.05,0,0:2 4:2 3:2 1:2 1:3 2:2 3:3 5:2 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,3,0.1,4,4:2 0:2 3:2 1:2 1:3 2:2 5:2 3:3 3:4,False,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.4,4,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,4,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,4,0.1,0,0:2 1:2 4:2 3:2 3:3 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,5,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,5,0.05,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,5,0.1,0,0:2 1:2 4:2 3:2 1:3 2:2 5:2 3:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,6,0.03,0,0:2 1:2 3:2 4:2 3:3 3:4 2:2 5:2 1:3,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,6,0.05,0,0:2 1:2 4:2 3:2 3:3 2:2 5:2 1:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,6,0.1,0,0:2 4:2 1:2 3:2 2:2 5:2 1:3 3:3 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,7,0.03,0,0:2 1:2 1:3 3:2 3:3 4:2 2:2 3:4 5:2,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,7,0.05,0,0:2 1:2 1:3 3:2 3:3 4:2 3:4 2:2 5:2,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.4,7,0.1,3,3:2 4:2 0:2 3:3 1:3 1:2 3:4 2:2 5:2,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.5,0,0.03,0,0:2 1:2 1:3 3:3 4:2 3:2 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,0,0.05,0,0:2 1:2 1:3 3:3 4:2 3:2 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,0,0.1,0,0:2 1:2 4:2 3:2 2:2 5:2 3:3 1:3 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,1,0.03,3,3:2 3:3 4:2 0:2 1:3 1:2 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.5,1,0.05,3,3:2 3:3 4:2 0:2 1:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.5,1,0.1,4,4:2 3:3 3:2 0:2 1:2 2:2 5:2 1:3 3:4,True,True,False,False,0.9885797050294952,3,True
+teacher_seed218,218,mps_on_binary,binary,0.5,2,0.03,0,0:2 1:2 3:3 1:3 4:2 3:2 3:4 2:2 5:2,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,2,0.05,0,0:2 1:2 1:3 4:2 3:2 3:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,2,0.1,0,0:2 1:3 4:2 1:2 3:2 3:3 2:2 5:2 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,3,0.03,0,0:2 4:2 1:2 3:2 3:3 1:3 3:4 2:2 5:2,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,3,0.05,0,0:2 4:2 3:2 1:2 3:3 1:3 2:2 5:2 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,3,0.1,0,0:2 4:2 3:2 1:2 1:3 3:3 2:2 5:2 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,4,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,4,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,4,0.1,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,5,0.03,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,5,0.05,0,0:2 1:2 3:3 4:2 3:2 1:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,5,0.1,0,0:2 1:2 4:2 3:2 1:3 3:3 2:2 5:2 3:4,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,6,0.03,0,0:2 1:2 3:2 4:2 3:3 3:4 1:3 2:2 5:2,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,6,0.05,0,0:2 1:2 3:2 4:2 3:3 3:4 1:3 2:2 5:2,True,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,6,0.1,0,0:2 4:2 1:2 3:2 3:3 1:3 2:2 5:2 3:4,False,True,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,7,0.03,0,0:2 1:2 1:3 2:2 3:2 3:3 3:4 4:2 5:2,True,False,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,7,0.05,0,0:2 1:2 1:3 2:2 3:2 3:3 3:4 4:2 5:2,True,False,False,False,0.9885797050294952,3,False
+teacher_seed218,218,mps_on_binary,binary,0.5,7,0.1,0,0:2 1:3 3:2 3:3 4:2 1:2 2:2 5:2 3:4,False,True,False,False,0.9885797050294952,3,False
