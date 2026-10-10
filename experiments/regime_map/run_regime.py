@@ -11,8 +11,16 @@ init: same W_0 with every Q_e = 0, `balance.py`), rtol (1e-8), atol (1e-12).
 Time budget: T = 50 t_esc + tau_max / max(lambda_bar, 1), t_esc = (0.3 sigma)^-(K-2) / ((K-2) s_min)
 (aligned escape-time estimate for the smallest component) and lambda_bar = tr Theta(0) / D
 (kernel scale, notes/theory_regimes.md P1, with the per-core learning rates and init scales).
-Outputs: Trajectory under /root/outputs/regime_map/<exp>/traj/<run_id>.npz and one summary row
-(JSON) per run in /root/outputs/regime_map/<exp>/results.jsonl.
+Outputs: Trajectory under <OUT>/<exp>/traj/<run_id>.npz and one summary row (JSON) per run in
+<OUT>/<exp>/results.jsonl. OUT = $REGIME_MAP_OUT, default /root/outputs/regime_map (remote machine).
+
+Events (fix round 1): the event time of a component is the LAST upward crossing of 1/2 (its final
+rise, notes/diagnostics.md); a transient excursion above 1/2 while another component is learned is
+counted in `n_up` and does not set the event. Rows written before the fix (no 'event_rule' field)
+used the first crossing and are relabelled from their trajectories by `analysis.load`.
+Kernel change: `dK` is the 128-probe kernel (the label rule of notes/diagnostics.md); `dK_tensor` is
+the tensor-space kernel J D J^T of notes/theory_regimes.md (the one its constants refer to), for small
+trees (D * P <= TENSOR_MAX).
 """
 
 from __future__ import annotations
@@ -27,14 +35,15 @@ import numpy as np
 import torch
 
 from ttn import diagnostics as dg
-from ttn.dynamics import Problem, Recorder, integrate_gf
+from ttn.dynamics import Problem, Recorder, integrate_gf, merged_rows
 from ttn.network import TTNSpec, antisymmetric_double, to_dense
 from ttn.teachers import CPTeacher, ShiftedTeacher, odeco_teacher
 from ttn.tree import make_tree
 
-OUT = "/root/outputs/regime_map"
+OUT = os.environ.get("REGIME_MAP_OUT", "/root/outputs/regime_map")
 PROBE_SEED = 12345
 N_PROBE = 128
+TENSOR_MAX = 2e7  # largest D * P for the tensor-space kernel (dense D x P Jacobian)
 
 
 def make_spec(kind, n, d, chi, cap=True, bonds=None) -> TTNSpec:
@@ -42,7 +51,7 @@ def make_spec(kind, n, d, chi, cap=True, bonds=None) -> TTNSpec:
     if bonds is not None:  # explicit bond dims by subtree size, e.g. {2: 18, 4: 162}
         b = [1] * tree.n_nodes
         for v in tree.edges:
-            b[v] = int(bonds[len(tree.subtree_sites[v])])
+            b[v] = int({int(k): x for k, x in bonds.items()}[len(tree.subtree_sites[v])])
         return TTNSpec(tree, (d,) * n, tuple(b))
     return TTNSpec.uniform(tree, d, chi, cap=cap)
 
@@ -78,7 +87,19 @@ def run_id(cfg: dict) -> str:
     """Identifier of a run from its config (a result row works too: derived fields are ignored).
     Rows written before 2026-10-09 20:20 stored the derived init scale under 'alpha'; for
     experiments without an 'alpha' input it is dropped (see analysis.row_cfg)."""
-    keys = ["model", "kind", "n", "d", "chi", "sigma", "seed", "root_scale", "lr", "alpha", "balance"]
+    keys = [
+        "model",
+        "kind",
+        "n",
+        "d",
+        "chi",
+        "sigma",
+        "seed",
+        "root_scale",
+        "lr",
+        "alpha",
+        "balance",
+    ]
     return "_".join(f"{k}{cfg.get(k)}" for k in keys if cfg.get(k) is not None)
 
 
@@ -102,7 +123,9 @@ class ShiftedCP(CPTeacher):
 
 def build(cfg: dict):
     """(problem, theta0, spec, info) for a config."""
-    spec = make_spec(cfg["kind"], cfg["n"], cfg["d"], cfg["chi"], cfg.get("cap", True), cfg.get("bonds"))
+    spec = make_spec(
+        cfg["kind"], cfg["n"], cfg["d"], cfg["chi"], cfg.get("cap", True), cfg.get("bonds")
+    )
     scales, eta = parameterization(spec, cfg)
     weights = cfg.get("weights", [3.0, 2.0, 1.0])
     base = odeco_teacher(cfg["n"], cfg["d"], list(weights), seed=1000 + cfg["seed"])
@@ -133,11 +156,26 @@ def build(cfg: dict):
         raise ValueError(model)
     alpha = math.prod(cfg["sigma"] * s for s in scales)
     D = cfg["d"] ** cfg["n"]
-    lam_bar = alpha**2 / D * sum(e * f / (cfg["sigma"] * s) ** 2 for e, f, s in zip(eta, spec.fan_in, scales))
+    lam_bar = (
+        alpha**2
+        / D
+        * sum(e * f / (cfg["sigma"] * s) ** 2 for e, f, s in zip(eta, spec.fan_in, scales))
+    )
     if model == "twocopy":
         lam_bar *= 2
-    return problem, theta0, spec, dict(alpha=alpha, lam_bar=lam_bar, base=base, cores0=cores0, eta=eta,
-                                       direct=isinstance(problem.target, ShiftedCP))
+    return (
+        problem,
+        theta0,
+        spec,
+        dict(
+            alpha=alpha,
+            lam_bar=lam_bar,
+            base=base,
+            cores0=cores0,
+            eta=eta,
+            direct=isinstance(problem.target, ShiftedCP),
+        ),
+    )
 
 
 def kernel_weights(problem: Problem) -> torch.Tensor | None:
@@ -158,41 +196,108 @@ def _own_spectra(problem, theta, t):
     return out
 
 
-def refine_events(problem: Problem, t, A, params, kw, n_dense=200, max_steps=100_000):
-    """Event times and final-rise widths resolved in linear time.
+def final_rise(t, a, lo=0.1, mid=0.5, hi=0.9):
+    """(t_mid, width, n_up) of one component's rise (notes/diagnostics.md).
+
+    The rise is the one that first reaches `hi` (the component is then learned). t_mid is the LAST
+    upward crossing of `mid` before that point: a transient excursion above `mid` that fell back
+    before the component was learned does not set the event (the pre-fix rule took it when the log
+    grid caught it), and a later dip below `mid` after it was learned (while another component
+    escapes) does not move it either. width = t(first reach of `hi`) - t(last upward crossing of
+    `lo` before it), the final-rise width of `ttn.diagnostics.event_widths`. A component that never
+    reaches `hi`: t_mid = last upward crossing of `mid` (NaN if it ends below), width NaN. n_up counts
+    the upward crossings of `mid` before the first reach of `hi` (> 1: a pre-learning transient)."""
+    t, a = np.asarray(t, float), np.asarray(a, float)
+    reach = np.flatnonzero(a >= hi)
+    if reach.size == 0:
+        return float(dg.crossing_times(t, a, mid, last=True)), np.nan, int(dg.upward_crossings(a, mid))
+    i_hi = reach[0]
+    seg_t, seg_a = t[: i_hi + 1], a[: i_hi + 1]
+    n_up = int(dg.upward_crossings(seg_a, mid))
+    t_mid = float(dg.crossing_times(seg_t, seg_a, mid, last=True))
+    t_hi = float(dg.crossing_times(t, a, hi))
+    t_lo = float(dg.crossing_times(seg_t, seg_a, lo, last=True))
+    return t_mid, t_hi - t_lo, n_up
+
+
+def refine_events(problem: Problem, t, A, params, kw, n_dense=200, max_steps=100_000, merged=None):
+    """Event times and final-rise widths resolved in linear time (fix round 1: last crossing).
 
     The log-time grid cannot resolve O(1)-wide events at late times (spacing ~1% of t). For each
-    component whose final rise is recorded, re-integrate from the saved parameters at the last log
+    component whose rise to 0.9 is recorded, re-integrate from the saved parameters at the last log
     point before the rise (last a_r < 0.1 before the first a_r >= 0.9) to the first log point with
-    a_r >= 0.9, on a linear grid of n_dense points, and take t(1/2) and the width there. If the first
-    crossing of 1/2 lies before the window (a transient bump), the coarse event time is kept."""
-    times = dg.crossing_times(t, A, 0.5)
-    widths = dg.event_widths(t, A)
+    a_r >= 0.9, on a linear grid of n_dense points, and take the last upward crossing of 1/2 and the
+    rise width there (`final_rise`). Without a refinement window the coarse values of `final_rise` on
+    `merged` (log + fine rows, default the log rows) are kept.
+
+    Returns (times, widths, refined, n_up, times_old): n_up per component from `merged`, and
+    times_old = the event times of the pre-fix rule (first crossing; the coarse log-grid crossing if
+    it lies before the window), kept only to compare labels with the committed results."""
+    tm, Am = (t, A) if merged is None else merged
+    R = A.shape[1]
+    times, widths, n_up = np.full(R, np.nan), np.full(R, np.nan), np.zeros(R, dtype=int)
+    for r in range(R):
+        times[r], widths[r], n_up[r] = final_rise(tm, Am[:, r])
+    times_old = dg.crossing_times(t, A, 0.5)
     refined = []
-    for r in range(A.shape[1]):
-        hi = np.flatnonzero(A[:, r] >= 0.9)
-        if hi.size == 0:
+    for r in range(R):
+        a = A[:, r]
+        reach = np.flatnonzero(a >= 0.9)
+        if reach.size == 0:
             refined.append(False)
             continue
-        i1 = hi[0]
-        lo = np.flatnonzero(A[:i1, r] < 0.1)
+        i1 = reach[0]
+        lo = np.flatnonzero(a[:i1] < 0.1)
         i0 = lo[-1] if lo.size else 0
-        if i1 - i0 < 1 or i0 == i1:
+        if i1 - i0 < 1:
             refined.append(False)
             continue
         span = t[i1] - t[i0]
         grid = np.linspace(0.0, span, n_dense + 1)[1:]
-        sub = integrate_gf(problem, torch.from_numpy(params[i0]), span, log_times=grid, max_steps=max_steps,
-                           recorder=Recorder(spectra=False, conservation=False), **kw)
-        ts, a = sub["t"] + t[i0], sub["overlaps"][:, r]
-        w = dg.event_widths(ts, a)
-        t_half = dg.crossing_times(ts, a, 0.5)
+        sub = integrate_gf(
+            problem,
+            torch.from_numpy(params[i0]),
+            span,
+            log_times=grid,
+            max_steps=max_steps,
+            recorder=Recorder(spectra=False, conservation=False),
+            **kw,
+        )
+        ts, ad = sub["t"] + t[i0], sub["overlaps"][:, r]
+        t_mid, w, _ = final_rise(ts, ad)
         if np.isfinite(w):
             widths[r] = w
-        if np.isfinite(t_half) and not (times[r] < t[i0]):
-            times[r] = t_half
+        if np.isfinite(t_mid):
+            times[r] = t_mid
+        t_first = float(dg.crossing_times(ts, ad, 0.5))
+        if np.isfinite(t_first) and not (times_old[r] < t[i0]):
+            times_old[r] = t_first
         refined.append(True)
-    return times, widths, refined
+    return times, widths, refined, n_up, times_old
+
+
+def tensor_kernel(spec: TTNSpec, theta, w=None) -> torch.Tensor:
+    """Tensor-space kernel J diag(w) J^T, J = d vec(W) / d theta (D x P), by D batched reverse-mode
+    passes. Same matrix as `ttn.diagnostics.tensor_tangent_kernel` (up to a common permutation of
+    vec(W)), whose forward construction allocates an identity of size (core size)^2 per core
+    (34 GB for the two-copy root at chi = 128)."""
+    th = theta.detach().clone().requires_grad_(True)
+    W = to_dense(spec, spec.unflatten(th)).reshape(-1)
+    eye = torch.eye(W.numel(), dtype=W.dtype)
+    (jac,) = torch.autograd.grad(W, th, grad_outputs=eye, is_grads_batched=True)
+    return (jac if w is None else jac * w) @ jac.T
+
+
+def tensor_kernel_change(problem: Problem, theta0, theta_end) -> float:
+    """delta_K of the tensor-space kernel J D J^T (D = learning rates x mask), the kernel of
+    notes/theory_regimes.md; NaN for trees too large for a dense D x P Jacobian."""
+    spec = problem.spec
+    if math.prod(spec.phys_dims) * spec.n_params > TENSOR_MAX:
+        return np.nan
+    w = kernel_weights(problem)
+    T0 = tensor_kernel(spec, theta0, w)
+    T1 = tensor_kernel(spec, theta_end, w)
+    return dg.kernel_change(T1, T0)
 
 
 def run_point(cfg: dict) -> dict:
@@ -203,7 +308,11 @@ def run_point(cfg: dict) -> dict:
     sigma = cfg["sigma"]
     weights = cfg.get("weights", [3.0, 2.0, 1.0])
     s_min = min(weights)
-    t_esc = (0.3 * sigma) ** (-(K - 2)) / ((K - 2) * s_min) if K > 2 else math.log(1 / (0.3 * sigma)) / s_min
+    t_esc = (
+        (0.3 * sigma) ** (-(K - 2)) / ((K - 2) * s_min)
+        if K > 2
+        else math.log(1 / (0.3 * sigma)) / s_min
+    )
     t_max = cfg.get("t_max") or (50 * t_esc + cfg.get("tau_max", 1e4) / max(info["lam_bar"], 1.0))
     L0 = problem.loss(theta0).item()
     # Reference loss 1/2 ||W*||^2 (= L(0) for the centred and two-copy models). The plain model at
@@ -221,24 +330,37 @@ def run_point(cfg: dict) -> dict:
         extra.append(("spectra_W", _own_spectra))
 
     def integrate(kw):
-        return integrate_gf(problem, theta0, t_max, n_log=cfg.get("n_log", 300), loss_floor=floor,
-                            max_steps=cfg.get("max_steps", 100_000),
-                            recorder=Recorder(save_params=True, extra=extra), **kw)
+        return integrate_gf(
+            problem,
+            theta0,
+            t_max,
+            n_log=cfg.get("n_log", 300),
+            loss_floor=floor,
+            max_steps=cfg.get("max_steps", 100_000),
+            recorder=Recorder(save_params=True, extra=extra),
+            **kw,
+        )
 
     traj = integrate(kw)
     if traj.meta["stop_reason"] == "failed" and method == "lsoda":  # fall back to the reference
         kw["method"] = "dopri5"
         traj = integrate(kw)
     if traj.meta["stop_reason"] in ("failed", "nonfinite", "step_size_underflow"):
-        raise RuntimeError(f"integration failed: {traj.meta['stop_reason']} {traj.meta.get('message')}")
+        raise RuntimeError(
+            f"integration failed: {traj.meta['stop_reason']} {traj.meta.get('message')}"
+        )
     params = traj.data.pop("params")  # (n_log, P); used for the event refinement only, not saved
     theta_end = torch.from_numpy(traj["theta_end"])
     t, A = traj["t"], traj["overlaps"]
-    times, widths, refined = refine_events(problem, t, A, params, kw, max_steps=cfg.get("max_steps", 100_000))
-    rhos = dg.separation_ratios(times, widths)
+    m = merged_rows(traj.data, keys=("overlaps",))
 
-    probes = torch.randn(N_PROBE, cfg["n"], cfg["d"], generator=torch.Generator().manual_seed(PROBE_SEED),
-                         dtype=torch.float64)
+    probes = torch.randn(
+        N_PROBE,
+        cfg["n"],
+        cfg["d"],
+        generator=torch.Generator().manual_seed(PROBE_SEED),
+        dtype=torch.float64,
+    )
     w = kernel_weights(problem)
     K0 = dg.tangent_kernel(problem.spec, theta0, probes, w)
     KT = dg.tangent_kernel(problem.spec, theta_end, probes, w)
@@ -246,7 +368,33 @@ def run_point(cfg: dict) -> dict:
     y = info["base"](probes)
     dK_dir = abs(float(y @ (KT - K0) @ y)) / float(y @ K0 @ y)
     l_end = float(traj["loss"][-1] / L_ref)
+
+    # refine (default True): re-integrate every final rise on a linear grid. False / "auto" (fix
+    # round 1, speed): skip it always / when the run is lazy by the label rule (its label does not
+    # depend on the events); the events then come from the recorded log + fine rows.
+    refine = cfg.get("refine", True)
+    lazy = l_end < 1e-3 and dK < 0.1
+    if refine is True or (refine == "auto" and not lazy):
+        times, widths, refined, n_up, times_old = refine_events(
+            problem,
+            t,
+            A,
+            params,
+            kw,
+            max_steps=cfg.get("max_steps", 100_000),
+            merged=(m["t"], m["overlaps"]),
+        )
+    else:
+        R = A.shape[1]
+        times, widths, n_up = np.full(R, np.nan), np.full(R, np.nan), np.zeros(R, dtype=int)
+        for r in range(R):
+            times[r], widths[r], n_up[r] = final_rise(m["t"], m["overlaps"][:, r])
+        times_old, refined = dg.crossing_times(t, A, 0.5), [False] * R
+    rhos = dg.separation_ratios(times, widths)
+    rhos_old = dg.separation_ratios(times_old, widths)
     label = dg.classify_regime(dK, rhos, traj["loss"][-1], L_ref)
+    label_old = dg.classify_regime(dK, rhos_old, traj["loss"][-1], L_ref)
+    dK_tensor = tensor_kernel_change(problem, theta0, theta_end)
 
     sl = problem.spec.core_slices()
     dth_core = [float((theta_end[s] - theta0[s]).norm() / theta0[s].norm()) for s in sl]
@@ -268,13 +416,37 @@ def run_point(cfg: dict) -> dict:
 
     row = {k: v for k, v in cfg.items()}
     row.update(
-        K=K, P=problem.spec.n_params, alpha_init=info["alpha"], lam_bar=info["lam_bar"], t_max=t_max,
-        integrator=kw["method"], centred_direct=info["direct"],
-        t_end=float(traj.meta["t_end"]), stop=traj.meta["stop_reason"], stiff_at=traj.meta.get("stiff_at"),
-        n_steps=traj.meta["n_steps"], L0=L0, L_ref=L_ref, l_end=l_end, l_best=l_best, dK=dK, dK_dir=dK_dir,
-        dth=float(traj["rel_dist_from_init"][-1]), dth_core=dth_core,
-        q_drift=float(np.nanmax(traj["conservation_drift"])), event_times=times.tolist(),
-        event_widths=widths.tolist(), rhos=rhos.tolist(), label=label, dormant_min=dormant,
+        K=K,
+        P=problem.spec.n_params,
+        alpha_init=info["alpha"],
+        lam_bar=info["lam_bar"],
+        t_max=t_max,
+        integrator=kw["method"],
+        centred_direct=info["direct"],
+        t_end=float(traj.meta["t_end"]),
+        stop=traj.meta["stop_reason"],
+        stiff_at=traj.meta.get("stiff_at"),
+        n_steps=traj.meta["n_steps"],
+        L0=L0,
+        L_ref=L_ref,
+        l_end=l_end,
+        l_best=l_best,
+        dK=dK,
+        dK_tensor=dK_tensor,
+        dK_dir=dK_dir,
+        dth=float(traj["rel_dist_from_init"][-1]),
+        dth_core=dth_core,
+        q_drift=float(np.nanmax(traj["conservation_drift"])),
+        event_rule="last",
+        event_times=times.tolist(),
+        event_widths=widths.tolist(),
+        rhos=rhos.tolist(),
+        label=label,
+        n_up=n_up.tolist(),
+        event_times_old=times_old.tolist(),
+        rhos_old=rhos_old.tolist(),
+        label_old=label_old,
+        dormant_min=dormant,
         refined=refined,
         wall=time.time() - tic,
     )
@@ -293,12 +465,22 @@ def safe_run(cfg):
         return row
 
 
-def run_sweep(cfgs, exp=None, n_proc=340, order=None):
+def _init_worker(out):
+    """Pool initializer: spawned workers re-import this module, so OUT is set here."""
+    global OUT
+    OUT = out
+    torch.set_num_threads(1)
+
+
+def run_sweep(cfgs, exp=None, n_proc=340, order=None, out=None):
     """Run configs (possibly from several experiments, each cfg has 'exp') in one process pool;
-    rows go to /root/outputs/regime_map/<exp>/results.jsonl, and runs already there (without error)
-    are skipped, so sweeps are resumable."""
+    rows go to <out>/<exp>/results.jsonl (out defaults to OUT), and runs already there (without
+    error) are skipped, so sweeps are resumable. Workers are spawned (fork does not exist on
+    Windows) and reused (a fresh process costs seconds of imports on Windows)."""
     from multiprocessing import get_context
 
+    global OUT
+    OUT = out or OUT
     exps = sorted({c["exp"] for c in cfgs})
     done, files = set(), {}
     for e in exps:
@@ -314,7 +496,11 @@ def run_sweep(cfgs, exp=None, n_proc=340, order=None):
     todo = [c for c in cfgs if (c["exp"], run_id(c)) not in done]
     todo.sort(key=order or (lambda c: (-c["n"], c["sigma"])))
     print(f"{exps}: {len(todo)} runs to do ({len(done)} done)", flush=True)
-    with get_context("fork").Pool(min(n_proc, max(1, len(todo))), maxtasksperchild=1) as pool:
+    with get_context("spawn").Pool(
+        min(n_proc, max(1, len(todo))),
+        initializer=_init_worker,
+        initargs=(OUT,),
+    ) as pool:
         for i, row in enumerate(pool.imap_unordered(safe_run, todo)):
             f = files[row["exp"]]
             f.write(json.dumps(row, default=float) + "\n")

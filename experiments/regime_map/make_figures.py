@@ -2,9 +2,11 @@
 
 Order: (1) run the sweeps (`sweep.py configs/*.yaml`), (2) the lazy predictions
 (`lazy_predict.py`, `pilots/lazy_pred_b8.py`), (3) this script. Usage:
-    uv run python experiments/regime_map/make_figures.py [--out DIR] [--force] [--only NAME ...]
-Outputs go to --out (default experiments/regime_map/results); existing files are not overwritten
-unless --force.
+    uv run python experiments/regime_map/make_figures.py [--raw DIR] [--out DIR] [--force] [--only NAME ...]
+--raw: raw-output root (default $REGIME_MAP_OUT, else /root/outputs/regime_map). Outputs go to
+--out (default experiments/regime_map/results); existing files are not overwritten unless --force.
+Fix round 1 (local, partial raw data): `fix_round1.py analyse` regenerates the subset of figures
+that the local reruns support.
 """
 
 from __future__ import annotations
@@ -52,10 +54,13 @@ FIGURES = {
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", default=RES)
+    ap.add_argument("--raw", default=None, help="raw-output root (default $REGIME_MAP_OUT)")
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--only", nargs="*", default=list(FIGURES))
     a = ap.parse_args()
     plots.RES, plots.FORCE = a.out, a.force
+    if a.raw:
+        plots.analysis.OUT = a.raw
     for name in a.only:
         print("==", name, flush=True)
         FIGURES[name]()

@@ -1,7 +1,7 @@
 """Expand a YAML sweep config into run configs and run them (library dynamics, parallel, resumable).
 
 Config schema:
-  exp: name (outputs in /root/outputs/regime_map/<exp>/)
+  exp: name (outputs in <out>/<exp>/; out = --out, default $REGIME_MAP_OUT or /root/outputs/regime_map)
   base: {key: value}            defaults for every run (see run_regime.py for keys)
   grid: {key: [values]}         Cartesian product
   sigmas: {geomspace: [lo, hi, n]} or [values]  (optional shortcut for grid.sigma)
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("configs", nargs="+", help="YAML configs (a trailing integer = process count)")
     ap.add_argument("--n-proc", type=int, default=340)
-    ap.add_argument("--out", default=run_regime.OUT, help="raw output root (default /root/outputs/regime_map)")
+    ap.add_argument("--out", default=run_regime.OUT, help="raw output root (default $REGIME_MAP_OUT or /root/outputs/regime_map)")
     ap.add_argument("--order", default="cost", choices=["cost", "sigma_desc"],
                     help="cost: big trees and small sigma first; sigma_desc: large sigma first (boundary and"
                     " lazy regions before the deep S2S points, which are certain and slowest)")
