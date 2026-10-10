@@ -291,8 +291,8 @@ teacher rank on every tree, plus full bonds for MPS 6 / binary 8 / MPS 8), plain
   5/6 seeds stall at the smallest sigma; MPS 12: no seed reaches a resolved S2S boundary; centred floor
   above sigma ~ 1). Binary trees stall less (binary 16: S2S up to sigma = 0.63-1.0). See
   `stalls_vs_K.png`; at chi = teacher rank the stalled fraction is higher at every K >= 6 (2.2).
-- **Plain model.** Up to K = 8 the plain and centred boundaries agree (identical at K = 3, 5, 7: the
-  initial function is negligible there). At K >= 10 the plain boundary exceeds the centred one (binary
+- **Plain model.** Up to K = 8 the plain and centred boundaries agree within a grid step (0.20 vs 0.17
+  at K = 3, 0.61 vs 0.61 at K = 5, 0.75 vs 0.75 at K = 7: the initial function is negligible there). At K >= 10 the plain boundary exceeds the centred one (binary
   16: 1.50 vs 1.02): at sigma > 1 the plain run first collapses W_0 (loss / (1/2 ||W*||^2) from ~190 to
   ~1 by t ~ 0.1) and then learns saddle-to-saddle from the small residual scale. The plain model is
   therefore not a test of H4 at large K.
