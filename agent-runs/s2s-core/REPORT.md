@@ -215,9 +215,9 @@ E1, E2, E5, E7 unless marked):
   1e-4 sigma (ends still decaying when a run stopped), so the trapped fraction moves by a few runs per
   cell between 1e-10 and 1e-8 (sweep `main`, chi = 3: binary8 / ht4 / mps8 trapped 24 / 77 / 24% at
   1e-10 sigma vs 27 / 82 / 30% at 1e-8 sigma).
-- **Pooling**: exponents are fitted per seed only over the sigmas at which the seed follows its modal
-  learning order, and only on complete runs; K = 7, 8 cells are taken from the sweep with the longest
-  budget (large / k78), never pooled across tolerance settings.
+- **Pooling**: exponents are fitted per seed on the classified run sets of the fix round (below); K = 7,
+  8 cells are taken from one sweep each (large at chi = 6, main at chi = 3, where k78 has only 3
+  sigmas), never pooled across tolerance settings.
 - **Continuation test** of stalled runs on the 8 with the shortest predicted remaining plateau (to fit
   the time left); a spread sample from `large` was started as a check of the bias.
 
