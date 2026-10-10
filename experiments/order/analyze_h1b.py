@@ -35,6 +35,16 @@ LOG_LAW_SETS = {"h1b_saddle_b4": ("binary4 (m=2, k=3)", "rotated"),
 SCALING_SETS = ["h1b_saddle_mps4", "h1b_saddle_mps6", "h1b_saddle_b8"]  # m >= 3 (odeco)
 NATURAL_SETS = {"h1b_natural_b4": "rotated", "h1b_natural_mps4_sep": "rotated",
                 "h1b_natural_mps4_adj": "added", "h1b_natural_mps4": "added"}
+# predicted saddle eigenvalue for every run (also the ones without a resolved midpoint Hessian):
+# (number of cores K, kind)
+PRED_OF = {"h1b_natural_b4": (3, "rotation"), "h1b_natural_mps4_sep": (4, "rotation"),
+           "h1b_natural_mps4_adj": (4, "add"), "h1b_natural_mps4": (4, "none")}
+
+
+def lam_predicted(rho, k_cores, kind):
+    q = rho ** (1.0 / k_cores)
+    return {"rotation": -(1 - rho) * q ** (k_cores - 2), "add": -q ** (k_cores - 2),
+            "none": 0.0 * rho}[kind]
 
 
 def run_class(df):
@@ -122,6 +132,7 @@ def plot_natural(nat):
     plt = style.plt
     style.setup()
     w = nat[nat.wrong & (nat.a2_min_after_t1 < 0.1)].copy()
+    w["lam_pred"] = lam_predicted(w.rho, 3, "rotation")  # all runs, resolved Hessian or not
     w["scaled"] = (w.t1 - w.t2) * np.abs(w.lam_pred)
     fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.0), gridspec_kw=dict(wspace=0.45))
     ax = axes[0]
@@ -138,9 +149,10 @@ def plot_natural(nat):
     ax.legend(fontsize=6, loc="upper left", ncol=3)
     ax.set_ylim(0, 5.5)
     ax = axes[1]
-    for i, (rho, g) in enumerate(w.groupby("rho")):
+    wr = w[w.lam_min.notna()]  # runs with a resolved minimum-speed point (others: unresolved)
+    for i, (rho, g) in enumerate(wr.groupby("rho")):
         ax.plot(g.lam_pred, g.lam_min, "o", color=style.SERIES[i], ms=3, alpha=0.6, label=f"rho={rho}")
-    lim = [min(w.lam_pred.min(), w.lam_min.min()) * 1.1, 0]
+    lim = [min(wr.lam_pred.min(), wr.lam_min.min()) * 1.1, 0]
     ax.plot(lim, lim, color=style.MUTED, lw=0.8)
     ax.set_xlabel("predicted lambda_min = -(1-rho) rho^(1/3)")
     ax.set_ylabel("lambda_min at minimum speed")
@@ -206,11 +218,17 @@ def natural_table(name, cls):
     """Wrong-order runs from random init: classes, unresolved Hessians, |lambda_pred| (t1 - t2)
     for the class the law applies to, separation ratios."""
     nat = pd.read_csv(RES / f"{name}.csv")
+    for col in ("lam_min", "lam_min_raw", "loss_after_rotation", "a2_down"):
+        if col not in nat:
+            nat[col] = np.nan
+    if "gap" not in nat:
+        nat["gap"] = nat.t1 - nat.t2
     w = nat[nat.wrong].copy()
     w["cls"] = run_class(w)
     w["stalled"] = w.stalled.astype(bool) if "stalled" in w else False
-    lam = np.abs(w.lam_pred) if "lam_pred" in w else np.nan
-    w["scaled"] = np.where(w.cls == cls, (w.t1 - w.t2) * lam, np.nan)
+    k_cores, kind = PRED_OF[name]
+    w["lam_pred"] = lam_predicted(w.rho, k_cores, kind)
+    w["scaled"] = np.where(w.cls == cls, w.gap * np.abs(w.lam_pred), np.nan)
     sep = []
     for row in w.itertuples():
         path = OUT / name / f"rho{row.rho}_s{row.sigma:g}_seed{row.seed}.npz"
@@ -237,7 +255,7 @@ def natural_table(name, cls):
         scaled_mean=("scaled", "mean"),
         scaled_se=("scaled", lambda x: x.std() / np.sqrt(max(x.count(), 1))),
         lam_min=("lam_min", "mean"), lam_min_raw=("lam_min_raw", "mean"),
-        loss_after=("loss_after_rotation", "mean") if "loss_after_rotation" in w else ("t1", "size"),
+        loss_after=("loss_after_rotation", "mean"), gap_median=("gap", "median"),
         separation_median=("separation", "median"),
         frac_plateau=("separation", lambda v: np.mean(v > 3))).reset_index()
     g["set"] = name
