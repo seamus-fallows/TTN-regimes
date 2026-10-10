@@ -1,146 +1,160 @@
 # data-teacher: do input covariance and teacher structure change the saddle-to-saddle picture? (Q6, Q7)
 
-Status: working (round 2; interim report after item 1) - Branch: agent/data-teacher - Updated: 2026-10-09 21:55 UTC
+Status: done (round 2 and the fixes requested by the round-1 review) - Branch: agent/data-teacher - Updated: 2026-10-10 01:40 UTC
 
 ## Summary
-**Round 2 (in progress; interim report after item 1).**
+**Round 2** (lead's three items, plus the review of round 1). Notes: `notes/data_teacher.md` sections R2.0–R2.3;
+summary table at the top of that file.
 
-- **Item 1, tree-shape contrast, the same generic teacher on different trees.** The saddle-start protocol
-  (exact rank-1 saddle + noise ε) was run for 12 teachers on mps4/8, binary4/8 and ht4/8.
-  - Binary and HT students escape like ε⁻ᵖ with p = 1.01–1.03 (predicted 1); the log law is never
-    preferred.
-  - MPS students follow a log law (preferred in 59/60 seeds). For 10 teachers the slope matches
-    1/|λ_min| of the exact-saddle Hessian within 0.5–6%.
-  - The exact-saddle Hessian is strict on every MPS student and has no negative eigenvalue on any
-    binary or HT student.
-  - Random-init sweeps on mps4 and binary4, and an ε extension (down to 1e-8 on MPS, 1e-5 on
-    binary/HT), are running.
-- **Item 3, correlated inputs.** The MPS-4 later plateau follows the predicted log law: 2.131 ± 0.013
-  per halving of σ vs 2.128 predicted at ρ = 0.4; 14.89 ± 0.22 vs 14.39 at ρ = 0.2. Binary-4 stays σ⁻¹.
-- **Item 2, stars.** The exact Hessians match the predicted λ_min to 1e-15 (−0.3716, −0.3310, −0.4311).
-  The dynamics runs are queued.
-- **Review of round 1.** The claims that changed are listed in `notes/data_teacher.md` section R2.0:
-  - **Withdrawn:** the single-σ plateau durations (they were grid artefacts).
-  - **Corrected:** the 4a slopes, now fitted per seed on major-saddle runs: 36.6 ± 1.2 vs 34.1 and
-    5.98 ± 0.07 vs 5.68.
-  - **Narrowed:** "critical point, not HSVD" (teacher 105 only), 4c (20/24 sibling-first; P11 tested
-    only by teacher 203), early alignment (binary-4 only).
-  - **Fixed:** escape degree, Λ slope, wordings.
-  - **Reproducibility:** output and results directories are now configurable.
+1. **Tree-shape contrast for generic teachers.** For 13 generic teachers (non-orthogonal CP,
+   misaligned covariance, random TTN teachers; N = 4 and 8), the escape from the exact rank-1 saddle
+   (saddle-start protocol, ε over 6.7 decades on MPS and 3.7 on binary/HT):
+   - **MPS students** (mps4, mps8): strict saddle, log law in 65/65 seeds. Slope = 1/|λ_min| of the
+     exact-saddle Hessian within 0.04–4% for 11 teachers. One slow crossover is at +11%; one teacher is
+     degenerate and was replaced.
+   - **Binary and HT students** (binary4/8, ht4/8): no negative eigenvalue at the saddle, and the escape
+     time scales as ε^−p with p = 0.999–1.013 (prediction 1). The log law is never preferred.
+   - Random init on mps4/binary4 over 3 decades of σ gives the same contrast. mps4 slopes match R6
+     (with head start) within 0.1–6%. The plateau λ_min is σ-independent on mps4 and ∝ σ on binary4
+     (the sweep-level saddle-type rule).
+2. **Star teachers.**
+   - The exact Hessian at "q learned" matches −a^(K−2)(ρ(S) − s_q) to 1e-15 (−0.3716, −0.3310,
+     −0.4311).
+   - The threshold ρ(S) = s_q is confirmed to 3e-4 at ε = 1e-6. The escape from θ_q is log-time with
+     slope 1/|λ_min| (0.2%).
+   - With random init, super-critical stars forget q down to min a_q ∝ σ^(5.7 ± 0.3), and sub-critical
+     ones never do.
+   - New: on ht4 the forgetting stalls at a blended rank-1 point that is left only in ~1/ε time, the
+     same MPS/HT contrast as item 1.
+3. **Correlated inputs.**
+   - On MPS-4 the second plateau follows the predicted log law: 2.131 ± 0.013 per halving of σ at
+     ρ = 0.4 (predicted 2.128), 14.89 ± 0.22 at ρ = 0.2 (predicted 14.39).
+   - Binary-4 stays σ⁻¹.
+   - The plateaus stay separated on MPS-4, but only logarithmically (separation ratio 2.6 → 11 at
+     ρ = 0.4).
 
-**Round 1 (complete; see the review response above).** Covariance aligned with an odeco teacher only
-reweights: the race follows Λ·s and the landscape follows √Λ·s. Breaking orthogonality changes the
-later plateaus of MPS students from σ^−(K−2) to log(1/σ).
+**Review of round 1** (`notes/reviews/data_teacher_round1.md`). Section R2.0 of the notes lists every
+claim that changed:
+- **Withdrawn:** the single-σ plateau durations of steps 2, 3, 4a ("540 → <1", "137 → 0.14", …). They
+  were grid artefacts.
+- **Corrected:** 4a slopes, now per seed over 3 decades of σ, major-saddle runs only: 5.76 ± 0.04
+  (predicted 5.68) and 36.5 ± 0.8 (predicted 34.1).
+- **4b and the HSVD claim:** slopes are per seed by the edge that grows first (within 0.1–3%).
+  "Critical point, not SVD-type truncation" is shown for 3 of 5 teachers; for the other two a TT-SVD
+  truncation is within 0.003 of the critical point.
+- **4c:** P11 now holds 125/128 over 6 discriminating teachers at 3 σ. "Sibling pair first" does not
+  generalize.
+- **Narrowed:** early alignment then realignment (binary-4 only).
+- **Fixed:**
+  - escape degree (now 1.32 and 1.465 at the smallest σ, vs 2 − 2/K);
+  - Λ slope (−1.000 within each teacher direction);
+  - swap wording;
+  - float-floor scan on the dense runs (only the odeco baselines at σ ≤ 3e-3 are flagged; refits
+    unchanged).
+- **Reproducibility:** output and results folders are configurable, `PROCS` is an option, and the run
+  order is documented.
+
+**Round 1 in one line.** Covariance aligned with an odeco teacher only reweights: the race follows the
+whitened teacher with weights Λ·s; the landscape follows the one with √Λ·s. Making the teacher's
+components non-orthogonal (misalignment, CP overlap, correlations, generic TTN teachers) changes the law
+of the later plateaus on MPS students from σ^−(K−2) to log(1/σ). Binary and HT students keep σ⁻¹.
 
 ## Results
+Dynamics:
+- **Round 2 and every re-analysis:** gradient flow on the library integrator (`integrate_gf`, LSODA,
+  rtol 1e-9, atol 1e-14), with event times from merged fine rows.
+- **Correlated inputs:** scipy LSODA with the exact Hessian on the dense moment-matrix loss.
+- **Round-1 pilot runs:** scipy DOP853. Cross-checked against the library to 7e-7.
+- Log-row vs fine-row escape times agree to ≤ 0.5%.
 
-Dynamics: gradient flow, float64. Steps 1 to 3 and single-sigma runs use scipy DOP853 (rtol 1e-9,
-atol 1e-14), the pilot integrator. Sigma sweeps and TTN teachers use the library
-`ttn.dynamics.integrate_gf` (LSODA, rtol 1e-9, atol 1e-14) on a dense two-stage grid. The two
-integrators agree to 7e-7 relative (`results/crosscheck_library.csv`). Conservation drift is
-< 1e-9 for the pilot and < 6e-10 for the library runs. Teachers use N = 4 (N = 8 in 4c), with 6 to 40
-seeds per setting. Paths are relative to `experiments/data_teacher/`.
+| claim | number | evidence (paths under `experiments/data_teacher/`) | status |
+|---|---|---|---|
+| Exact rank-1 saddle strict on MPS, non-strict on binary/HT | 13 teachers × 3 trees | `results/r2_saddle_hessian.csv`, `r2_saddle_b_hessian.csv` | derived + computed |
+| MPS escape: log law, slope 1/\|λ_min\| | 65/65 seeds log; 11 teachers within 0.04–4% | `results/r2_saddle_fits.csv`, `r2_saddle_collapse.png`, `r2_saddle_law.png` | empirical, confirms R9/R13 |
+| Binary/HT escape: ε^−1 | p = 0.999–1.013, 26 tree × teacher cases | same | empirical |
+| Random init: mps4 log law (R6), binary4 σ⁻¹, plateau λ_min scaling | slopes within 0.1–6%; λ_min const vs ∝ σ | `results/r2_random_v2_summary.csv`, `r2_random_v2.png` | empirical |
+| Correlated inputs, MPS-4 increments per halving | 2.131 ± 0.013 (2.128), 14.89 ± 0.22 (14.39) | `results/r2_corr_fits.csv`, `r2_corr_law.png` | empirical, confirms theory_covariance |
+| Star Hessian / threshold / escape rate | 1e-15 / 3e-4 / 0.2% | `results/r2_star_hessian.csv`, `r2_star_threshold_scan.csv`, `r2_star_rotation_law.csv`, `r2_star.png` | derived + empirical |
+| Star forgetting depth (random init) | min a_q ∝ σ^(5.7 ± 0.3) (mps4), σ^(5.4 ± 0.4) (binary4) | `results/r2_star_depth_exponents.csv` | empirical |
+| ht4 star: two-stage forgetting | strict rotation in ~40 time units, then ∝ 1/ε | notes R2.2 item 4 | empirical |
+| 4a log law (round 1, re-analysed) | A = 5.76 ± 0.04 (5.68), 36.5 ± 0.8 (34.1); c = 0: p = 2.004 | `results/e4a_sigma_v2_summary.csv` | empirical |
+| 4b plateaus → rank-constrained critical point, not SVD truncations | distance ∝ σ^0.4–0.85; separated for 3/5 teachers | `results/e4b_ttn_plateaus.csv` | empirical |
+| 4c P11 (root bipartition last) | 125/128 runs, 6 discriminating teachers | `results/r2_cross_v2_summary.csv`, `e4c_cross_v2_summary.csv` | empirical |
+| Round-1 step-1 results (race Λ·s, landscape √Λ·s, swaps) | unchanged (see the round-1 table in the notes) | `results/e1_*` | derived + empirical |
 
-| claim | evidence | status |
-|---|---|---|
-| **1. Aligned covariance.** Aligned init: Pi_r(t; Sigma) = Pi_r^white(Lambda_r t) | half-times match the scalar ODE to 1e-9; the substitution s -> Lambda s gives widths wrong by up to 45% (`results/e1_exact_aligned.{csv,png}`) | derived + empirical |
-| First escape = whitened problem with weights Lambda s | same first component in 95-100% of 960 paired runs; times within 0.02-0.7% (max 1.3%) (`results/e1_paired_agg.csv`, `e1_paired_times.png`) | derived + empirical |
-| Order reversal by the covariance | smaller-s component first in 90-98% (binary-4) / 78% (MPS-4) of runs; P(first) identical to (I, Lambda s) (`results/e1_order_table.csv`, `e1_order_probs.png`) | empirical |
-| Swap criterion = Lambda s^2 (landscape) | P(swap given the "wrong" first) = 0.33 / 0.68 / 0.94 at sigma = 0.1 / 0.05 / 0.02, P(swap given the "right" first) = 0; no swaps on MPS-4 (960 runs); exact-saddle Hessian lambda_min = derived formula to 1e-15, strict/non-strict correct in 24/24 (`results/e1_examples.png`, `e1_hessian_check.csv`) | derived + empirical |
-| Race set by the flow metric, landscape by Fact B | same landscape and same start (mapped init): different first component in 10-53% of seeds, 11-23% slower | empirical |
-| Exponents unchanged | t_1 ~ sigma^-1.010+-0.002 (binary-4), sigma^-1.999+-0.001 (MPS-4); t_1 ~ (Lambda s)^-0.96+-0.007 / -1.009+-0.001 over 3.6 decades (`results/e1_scaling{.png,_fits.csv}`) | empirical |
-| **2. Misaligned covariance.** Plateau = rank-1 critical point of the Sigma-loss; early alignment with Sigma W*, then realignment | levels to 1e-6 - 1e-3; |cos| with race tensor 0.90-0.997 early, with saddle >= 0.998 on the plateau (`results/e2_misaligned_summary.png`) | empirical |
-| Later plateau law changes on MPS-4 | theta = 0: sigma^-1.98+-0.005; theta = 20 deg: Dt_2 = 15.0(+-0.4) log(1/sigma) + B (`results/e2_sigma_law{.png,_fits.csv}`) | empirical |
-| **3. Cross-site correlations.** S2S survives; plateaus = rank-1 critical points of the non-product loss | levels to <= 5e-3; binary-4's first saddle blends both components and non-teacher pairing features (level 0.33 -> 0.10 L(0) at rho = 0.5); MPS-4 later plateau shrinks 137 -> 0.14 (`results/e3_correlated_summary.png`) | empirical |
-| Sampled data agrees | online SGD (eta 0.01/0.002, B 256/4096) vs exact population GF: event times within 0.2-1.4 (`results/e3_sgd_check.{png,csv}`) | empirical |
-| **4a. Non-orthogonal CP.** Number of rank-1 saddles | MPS-4: 2 for c < 1/2, 1 above (equal weights; fold ~0.4 at s2 = 0.7); binary-4: always 1 (`results/rank1_predictions_*.csv`, `e4a_nonorth_summary.png`) | derived + numerical |
-| Later plateau law (MPS-4) | c = 0: sigma^-1.97+-0.01; c = 0.2: A = 31.9 +- 1.6 (predicted 34.1); c = 0.45: A = 4.7 +- 0.3 (medians ~5.6; predicted 5.68) (`results/e4a_sigma_law{.png,_fits.csv}`, `e4a_theory_slopes.csv`) | derived (theory_teachers R6) + empirical |
-| **4b. Random MPS teachers.** Saddles = critical points, not HSVD | rank-1 plateau 3x closer to the critical point (median 0.005 vs 0.016 of ||W*||); distance shrinks with sigma (`results/e4b_ttn_plateaus.csv`) | empirical |
-| Bond-by-bond growth, log plateaus | slopes 2.8/2.9/0.65/5.9/3.3 vs predicted 2.5/3.0/0.87/5.2/3.7; first bond = predicted in 43-100% (`results/e4b_law.png`, `e4b_order_fits.csv`) | derived + empirical |
-| **4c. Cross-tree.** Binary student, MPS teacher | bottom-up in 24/24 runs: sibling pairs first, root bipartition last; "largest teacher Schmidt value grows first" holds in 0/24 (binary student) and 6/24 (MPS student) (`results/e4c_cross.png`, `e4c_cross_summary.csv`) | empirical (confirms theory_teachers P11) |
-| MPS student, binary teacher | first bond is the predicted one in only 13-38% of runs at sigma = 0.45, where log(1/sigma) = 0.8; the asymptotic regime is out of reach at K = 8 (`results/e4c_theory.csv`) | empirical (negative at accessible sigma) |
+## What was done (round 2)
+1. Merged library and theory updates as announced. Saddle-start protocol (`r2_common.py`,
+   `r2_saddle_runs.py`): 2014 runs, ε to 1e-8 / 1e-5. Commits 98c1ed5…eee6deb.
+2. Random-init item-1 sweep (`configs/r2_random.yaml`, 540 dense runs). Commit ca563e7.
+3. Correlated-input dense runner and σ law (`r2_corr.py`, 300 runs). Commit f1f9c9d.
+4. Stars (`r2_star.py`: Hessian, 420 saddle-start runs, 48-run threshold scan, 240 random-init runs).
+   Commit a8b93d3.
+5. Review fixes:
+   - `lawfit.py`, `analyze_law_v2.py`, `analyze_cross_v2.py`, TT-SVD comparison;
+   - σ extensions of 4a, 2, 4b and new 4c teachers (660 dense runs);
+   - float-floor and resolution checks;
+   - reproducibility options;
+   - notes and README.
 
-## What was done
-1. Theory (`notes/data_teacher.md` sections 0-4):
-   - Fact A: binary-4 is a depth-3 DLN.
-   - Fact B: the whitened frame; this landscape map was also proposed by the lead.
-   - Exact aligned-init solution.
-   - Race vs landscape substitutions and the swap Hessian.
-   - The rank-1 saddle count for non-orthogonal teachers.
-   - The non-product moment metric for correlated inputs.
-
-   Commits a613ec8, 0620017.
-2. Tools:
-   - config-driven runners `run_aligned.py`, `run_generic.py`, `run_dense.py`;
-   - the rank-constrained critical-point finder (`constrained.py`);
-   - exact Isserlis moment matrices (`correlated.py`);
-   - analysis scripts.
-
-   Commits 0e23928, f696ffe, 1d421c6, c8e7c28.
-3. Step 1: 2800 runs plus checks; interim report. Commits 60a648d, 98c1ed5, 4a444ad.
-4. Steps 2, 3, 4a at one sigma: 1600 runs. Commits 07d390c, d288514.
-5. Library v0 cross-check and float64-floor scan. Plateau-law sigma sweeps and steps 4b/4c with the
-   library integrator: 618 dense runs. Commits c8e7c28, c587d51, ec98d94, c1185e2, 0e08d43.
+   Commits e3b6ad8, a08a658, 0e1b9ba, c4b9087, 90f366d and earlier.
 
 ## Decisions
-- **Pilot integrator first, library later.** I used scipy DOP853 on the flat vector (allowed by the
-  brief) until library v0 landed, then cross-checked against the library (7e-7). Every
-  measurement that needs to resolve short plateaus was redone with the library (LSODA, dense grid).
-  Steps 1-3 and the single-sigma runs were not rerun: the cross-check makes that unnecessary.
-- **Paired variants from the same init** (Sigma; I with Lambda s; I with sqrt(Lambda) s; the last from
-  the mapped init). This separates race from landscape, and landscape from gradient-flow metric, as
-  the lead asked. It is a much sharper test than comparing distributions.
-- **Teachers with controlled conflicts** between the orderings by s, Lambda s and Lambda s^2.
-  Covariance exponent 0.25 gives a Lambda ratio of 2, enough to reverse the order without stiffness.
-- **binary-4 and MPS-4 as the two student trees.** binary-4 is a depth-3 DLN (only one cut), MPS-4
-  is genuinely tensorial (three cuts). Many effects differ between the two, so both are always shown.
-- **Correlated inputs via the exact moment matrix** (N = 4) rather than SGD only, plus an online-SGD
-  check. The library `Problem` has no non-product metric, so step 3 stays on the pilot integrator.
-- **Plateau detection for generic teachers.** The odeco baseline's event rule (a_r = 1/2) has no
-  meaning for blended saddles. I used bond-spectrum and loss-level events and speed minima
-  (diagnostics.md), with the theory note's small fixed s_2 threshold where it applies. At
-  sigma = 0.3 the init's own singular values are ~1e-2, so I switched to loss levels there; this is
-  documented in each script.
-- **Effective rank at plateaus** counts s_k^e > 0.1 x the teacher's own s_k^e, instead of 0.1 x the
-  smallest teacher value: with teacher values ~1e-2, the diagnostics rule counted still-rising
-  singular values.
-- **4c at moderate sigma** (0.4/0.45 for K = 7/8). sigma^K <= 2e-3 is small in function space, but
-  log(1/sigma) < 1, so log-time races are not in their asymptotic regime. Smaller sigma costs
-  ~sigma^-(K-2); reported as a limitation.
-- **Deleted my own superseded outputs:** the pilot versions of the sigma sweeps (under-resolved) and
-  stale result files. Nothing created by others was touched.
+- **d = 2 for all round-2 teachers.** These are the theory notes' conventions, and they keep N = 8
+  cheap.
+- **N = 8 teacher choices:**
+  - Overlaps c = 0.45 and 0.7 instead of 0.2, because the MPS 2-core rate scales like c^(N−2).
+  - A balanced misaligned teacher (θ = 45°, α = 2). The θ = 20° one is degenerate over 8 sites; it is
+    kept in the tables and flagged.
+- **Random TTN teachers:** binary-tree teachers without decay, plus one MPS teacher with decay 1.5.
+  Random MPS teachers with decay < 1 are nearly rank 1.
+- **Saddle-start protocol for every tree** (the lead's suggestion). Random init was used where the
+  asymptotic regime is reachable (mps4, binary4).
+- **Escape event = onset rule** s₂ᵉ ≥ 0.05·s₂ᵉ* (diagnostics.md), with ≥ 10× growth over the start
+  value. The sensitivity over f = 0.03–0.1 is < 1.5% on MPS slopes.
+- **Both laws fitted and scored in log space, per seed.** Errors are standard errors over seeds; runs
+  are classified by visited saddle, and unresolved ones are excluded and counted.
+- **Stopped very long runs** that could not change a conclusion:
+  - 14 ht8 runs (c = 0.45, ε ≤ 3e-4, t > 1e8);
+  - the last degenerate misaligned8_20 run;
+  - 5 ht4 star runs at the threshold (ε = 1e-6), whose second, polynomial stage takes ~1e9.
+
+  Each is noted in the notes.
+- **Star "leaving q" event = a_q < 0.9.** On ht4 the strict escape ends at a_q ≈ 0.67, so a_q < 1/2
+  would time the second, polynomial stage.
+- **BLAS threads capped at 1 per process** (`env1.sh`). LSODA otherwise oversubscribed the machine
+  (load ~175).
+- **Superseded files** (the old overview figure and round-1 analysis CSVs): the figure was deleted (it
+  is in git history); the CSVs are kept and labelled in the README.
 
 ## Files left on the machine
-All under `/root/outputs/data_teacher/` (7.2 GB total). None of it is needed to read the results:
+All under `/root/outputs/data_teacher/` (9.5 GB). None of it is needed to read the results: the
 summary CSVs and figures are in git. All of it is regenerated by the commands in
-`experiments/data_teacher/README.md` (about 1.5 h on 28 cores).
-- `e1_order/` 2.7 GB, `e1_scaling_sigma/` 0.4 GB, `e1_scaling_lambda/` 0.6 GB, `e1_exact/`: step 1.
-- `e2_misaligned/` 0.9 GB, `e3_correlated/` 0.3 GB, `e4a_nonorth/` 0.7 GB: single-sigma runs.
-- `e4a_sigma_dense/` 0.56 GB, `e2_sigma_dense/` 0.41 GB, `e4b_ttn_dense/` 0.25 GB,
-  `e4c_cross_dense/` 0.17 GB: library-integrator runs (`Trajectory` npz with parameters).
-- `e4b_ttn/`, `e4c_cross/` (0.25 GB): pilot runs, superseded by the dense ones.
-- `e3_sgd/`, `pilots/`, `rank1_predictions_*.pt` (predicted critical tensors).
+`experiments/data_teacher/README.md`.
+- Round 2: `r2_saddle/` (1.1 GB, 2014 saddle-start runs incl. supplement and extension),
+  `r2_saddle_fine/`, `r2_random_dense/`, `r2_corr/`, `r2_star_saddle/`, `r2_star_random/`,
+  `r2_cross_dense/`.
+- Round 1 and its extensions: `e1_order/` (2.7 GB), `e1_scaling_*`, `e2_misaligned/`,
+  `e3_correlated/`, `e4a_nonorth/`, `e4a_sigma_dense/`, `e2_sigma_dense/`, `e4b_ttn_dense/`,
+  `e4c_cross_dense/`.
+- Superseded: `e4b_ttn/` and `e4c_cross/` (pilot versions).
+- Rank-1 predictions: `rank1_predictions_*.pt`.
 
 ## Caveats and next steps
-- **Theory dependence.** The slope predictions come from `notes/theory_teachers.md`, a draft still under
-  verification. My agreement there is 3-25% (4b), within the error bar (4a, c = 0.2), and ~20%
-  (4a, c = 0.45). The derivations in `notes/data_teacher.md` (Facts A/B, aligned solution, swap
-  Hessian, c* threshold) are mine and are checked numerically.
-- **Untested sigma law.** For correlated inputs the later-plateau law in sigma was not measured: no
-  non-product metric in the library. That it is logarithmic is a conjecture from the same mechanism.
-- **Single-sigma durations.** Durations below ~1 time unit (steps 2, 3, 4a; pilot grid) are
-  resolution-limited. The sigma sweeps on dense grids supersede them.
-- **Plateau detection in 4b** found 42 plateaus in 150 runs. Later plateaus are short at these sigma.
-  HSVD and critical points differ only at rank 1 for these teachers.
-- **4c, MPS student**: the asymptotic first-bond rule is not reached at accessible sigma.
-- **Next steps:**
-  - extend the sigma-law measurement to binary-8/HT students, where theory_teachers.md predicts
-    polynomial later plateaus even for generic teachers;
-  - run the misaligned case through a preconditioned version of R6 to predict its slope;
-  - measure a sigma law for correlated inputs with a dense pilot grid.
-- **Out of scope but relevant to `order`/`locality`:** the swap in step 1 is the H1b correction, with
-  the criterion generalized to Lambda s^2. Its probability rises toward 1 as sigma -> 0 on binary-4
-  (strict saddle vs polynomial learning).
+- **Slow crossover:** nonorth8_c0.45 on MPS-8 (rate ∝ c⁶) still sits +11% above its asymptotic slope
+  at ε = 1e-8.
+- **Unfitted cases:** two random mps4 teachers (randbin_303, randmps_301) have unresolved rank-1
+  plateaus with random init in most runs (large κ), so their R6 fits rest on 1–3 seeds.
+- **4c:** at K = 7–8 the MPS-8 student's first-bond rule is not reached at accessible σ. P11 is tested
+  at σ = 0.3–0.5 only.
+- **Unpredicted laws:** the star forgetting-depth law (σ^5.7) and the relearning time (~σ^−1.4) are
+  empirical. No theory predicts them yet.
+- **Correlated inputs:** studied at N = 4 only (dense moment matrix, d = 3).
+- **Theory still under review:** slope predictions come from theory_teachers v2, theory_saddles v2
+  and theory_covariance v2.
+- **Next:**
+  - a theory for the forgetting depth;
+  - correlated inputs at N = 6 (moment matrix 4096², feasible);
+  - a sweep-level saddle-type test for the ht8 star.
 
 ## Log
 - 18:20 Read brief, project map, model, diagnostics, plan, library code. Machine: CPU quota 30.7
@@ -206,3 +220,9 @@ summary CSVs and figures are in git. All of it is regenerated by the commands in
   0.999-1.013 in all 26 cases (log never preferred); MPS log law in 65/65 seeds, A within 0.04-4% of
   1/|lambda_min| for 11 teachers (nonorth8_c0.45 +11%, slow crossover; misaligned8_20 degenerate).
   14 very long ht8 runs (nonorth8_c0.45, eps <= 3e-4, t > 1e8) stopped to free the machine.
+- 00:50 Round-1 4a / 2 re-analysed over 3 decades (per seed): A = 5.76 / 36.5 vs 5.68 / 34.1; theta = 20: 12.6.
+- 01:05 Stars: threshold to 3e-4, escape slope 1/|lambda_min| to 0.2%, ht4 two-stage forgetting, depth ~sigma^5.7.
+- 01:15 4b (sigma to 1e-3): per-seed slopes by realized edge within 0.1-3%; critical point vs all SVD-type
+  truncations separated for 3/5 teachers. 4c with 5 discriminating teachers: P11 117/120.
+- 01:30 Float-floor scan on dense runs (odeco baselines at sigma <= 3e-3 flagged, refits unchanged);
+  resolution check (log rows vs fine rows <= 0.5%). README, notes, report finalized.
