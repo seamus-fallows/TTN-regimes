@@ -474,7 +474,8 @@ upward crossing of $0.1$ before $\ov{r}$ first reaches $0.9$ to that time. This 
 the one of the saddle-to-saddle (s2s-core) and regime-map experiments. The library (\path{runner.summary})
 and the locality, optimizer and optim-samples experiments take instead the last upward crossing after
 which $\ov{r}$ stays at least $\frac12$ until the end of the run, and the order, data-teacher (aligned
-covariance) and H2-pilot experiments the first crossing (\cref{app:experiments}). The first alternative
+covariance) and H2-pilot experiments the first crossing (code per experiment: \path{notes/diagnostics.md}).
+The first alternative
 differs only when a learned component later dips below $\frac12$ (star teachers, SGD noise, rotations to a
 better component, a few deep-tree runs): it then dates the relearning, or gives no event. The second differs
 only when a transient crosses $\frac12$ before the final rise. For
