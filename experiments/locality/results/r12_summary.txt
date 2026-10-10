@@ -1,0 +1,21 @@
+outcome                   dead  escaped  pinned
+start          pred_dead                       
+saddle         False         1       16       0
+               True          6        9       0
+small          False         6       44       0
+               True         24       16       0
+small_balanced False         0       44       4
+outcome                      dead       escaped       pinned
+pred_dead                   False True    False True   False
+tree S   start          chi                                 
+ht4  12  saddle         2       0     2       7     7      0
+mps4 03  small          2       0    10       4     2      0
+                        4       0     2       6     8      0
+mps6 03  small          2       2     4      10     0      0
+     05  small          4       2     4       0     4      0
+     135 saddle         2       1     4       9     2      0
+         small_balanced 2       0     0      16     0      0
+mps8 15  small          2       2     2      12     0      0
+         small_balanced 2       0     0      13     0      3
+     25  small          2       0     2      12     2      0
+         small_balanced 2       0     0      15     0      1

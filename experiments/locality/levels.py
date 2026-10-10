@@ -95,17 +95,34 @@ def measure(rec):
         t, L = loss_trajectory(rec)
     except FileNotFoundError:
         return []
+    from ttn.diagnostics import find_plateaus
+
+    # plateaus detected in L(t) by the library rule (linear time, separation ratio > 3)
+    try:
+        plats, _ = find_plateaus(t, L)
+    except Exception:  # noqa: BLE001
+        plats = []
+    # plateau-midpoint losses recorded by the runner (minimum speed between component events)
+    l_mids = [p["L_mid"] for p in rec.get("plateaus", []) if p.get("L_mid") is not None]
     rows = []
     for j, step in enumerate(predicted(rec)):
         if step["k_star"] == 0:
             continue
         dur, visited, n_in = occupation(t, L, step["loss"])
+        # best-matching detected plateau (level within 5%) and nearest recorded midpoint loss
+        match = [pl for pl in plats if abs(pl.level / step["loss"] - 1) < 0.05]
+        best = min(match, key=lambda pl: abs(pl.level / step["loss"] - 1)) if match else None
+        mid_err = min((abs(lm / step["loss"] - 1) for lm in l_mids), default=np.nan)
         rows.append(dict(case=rec.get("name"), tree=get_tree(rec["kind"], rec.get("n")).name,
                          n_inside=n_in, resolved=n_in >= 3,
                          start=rec.get("start", "small"), sigma=rec["sigma"], seed=rec["seed"],
                          order=">".join(str(r) for _, r in rec.get("events", [])),
-                         level_j=j, level=step["loss"], k_star=step["k_star"], visited=visited,
-                         duration=dur, L_final=float(L[-1])))
+                         level_j=j, level=step["loss"], k_star=step["k_star"],
+                         occupation=dur, duration=dur, L_final=float(L[-1]),
+                         detected=best is not None,
+                         detected_duration=(best.t_end - best.t_start) if best else np.nan,
+                         detected_level_err=abs(best.level / step["loss"] - 1) if best else np.nan,
+                         n_detected=len(plats), L_mid_err=mid_err))
     return rows
 
 
@@ -142,13 +159,22 @@ def main():
                 rp.append(law_rms(x, gs["duration"].values, "power"))
         pm, pse = mean_se(p)
         lm, lse = mean_se(lg)
+        # exponent of the detected plateau's duration (find_plateaus), per seed
+        pdet = []
+        for _, gs in g.groupby("seed"):
+            gs = gs[gs["detected"] & (gs["detected_duration"] > 0)]
+            if gs["sigma"].nunique() >= 3:
+                pdet.append(slope_se(np.log(1 / gs["sigma"].values), np.log(gs["detected_duration"].values))[0])
+        rlm, rpm = (float(np.median(rl)) if rl else np.nan), (float(np.median(rp)) if rp else np.nan)
         summ.append(dict(case=case, tree=tree, start=start, order=order, level_j=j, level=g["level"].iloc[0],
-                         k_star=k, visited_frac=g["visited"].mean(), runs=len(g),
+                         k_star=k, detected_frac=g["detected"].mean(), runs=len(g),
+                         L_mid_err_median=g["L_mid_err"].median(),
+                         p_detected=mean_se(pdet)[0], p_detected_se=mean_se(pdet)[1], detected_fit_seeds=len(pdet),
+                         law=("log" if rlm < rpm else "power") if rl else "n/a",
                          unresolved=int((~g["resolved"]).sum()), seeds=g["seed"].nunique(),
                          fit_seeds=len(p), p_pred=max(k - 2, 0), p_fit=pm, p_se=pse,
                          logslope=lm, logslope_se=lse,
-                         rms_log_law=float(np.median(rl)) if rl else np.nan,
-                         rms_power_law=float(np.median(rp)) if rp else np.nan,
+                         rms_log_law=rlm, rms_power_law=rpm,
                          median_duration_smallest_sigma=g[g["sigma"] == g["sigma"].min()]["duration"].median()))
     s = pd.DataFrame(summ)
     s.to_csv(args.out + "_summary.csv", index=False, float_format="%.5g")

@@ -27,3 +27,140 @@ event detection; Hessian and kernel computations.}
 
 \subsection{Optimizer and sample-size experiments}\label{app:exp-optim}
 \placeholder{Learning rates, batch sizes, training-set sizes and seeds of \cref{sec:other-optim}.}
+
+\subsection{Optimizers used in practice}\label{app:exp-optimizers}
+Settings of \cref{sec:other-optimizers}. Experiment folder \path{experiments/optimizers/} (one YAML
+configuration per sweep in \path{configs/}); findings and claims withdrawn after review in
+\path{notes/optimizers.md}, sections 2, 3 and 5.
+
+\paragraph{Problems.}
+Whitened Gaussian inputs, exact population loss (empirical loss in the finite-sample sweep), double
+precision. Teacher seed 100; initialization seeds 0--5, from a stream independent of the teacher's.
+\begin{itemize}
+  \item \emph{binary4}: binary tree, $\Ns=4$ ($\Kc=3$), $d=3$, $\chi=4$; odeco teacher with weights
+    $(3,2,1)$ and Haar-random site bases.
+  \item \emph{binary8}, \emph{MPS8}: $\Ns=8$ ($\Kc=7$ and $8$), the same odeco teacher, $d=3$, $\chi=4$.
+  \item \emph{E8} on binary8 and MPS8: pattern teacher with $d=2$, $\chi=3$ and patterns
+    $\pi_0=(1,\dots,1)$ (weight $1$), $\pi_A$ equal to $2$ at sites 4 and 5 (weight $0.4$) and
+    $\pi_B$ equal to $2$ at sites 2 and 7 (weight $0.7$), $1$ elsewhere. The cores that carry the
+    differing sites span $k=2$ ($\pi_A$) and $k=6$ ($\pi_B$) cores on the MPS and $k=5$ for both on
+    the binary tree.
+\end{itemize}
+
+\paragraph{Initializations.}
+Fan-in \eqref{eq:init} with per-core scale $\isc$; \emph{balanced}: the same $\Wz$ in the gauge with
+$\Q e=0$ on every edge. All deep-tree baselines use the balanced version, because fan-in gradient flow
+converges by $t=2\cdot10^6$ in none of the 12 MPS8 odeco runs (the conservation-law trap of
+\cref{prop:A-trap}, verified at the route ends in 11 of the 12 stalls), against 10 of 12 (binary8
+odeco), 11 of 12 (binary8 E8) and 11 of 12 (MPS8 E8) fan-in runs. Methods whose iterates depend on the
+gauge were run from both versions; re-gauged GD, Riemannian GD, ALS and DMRG depend only on $\Wz$
+and were run from the balanced one.
+
+\paragraph{Dynamics.}
+All methods stop at $\Loss<10^{-6}\Loss_0$ (finite samples: empirical loss below $10^{-8}$ times its
+initial value) or at their budget.
+\begin{itemize}
+  \item \emph{Gradient flow}: SciPy LSODA with relative and absolute tolerances $10^{-9}$ and
+    $10^{-14}$ and the exact Hessian as Jacobian (Radau as fallback), instead of the default
+    integrator of \cref{sec:setup-dynamics}; the crossings $\ov r\in\{0.1,0.5,0.9\}$ are located by
+    root finding, so event times are exact. Budgets: $t_{\max}=8/\isc$ (binary4), $2\cdot10^6$
+    (deep trees), $4\cdot10^6$ (binary8 scan), $10^6$ (finite samples).
+  \item \emph{GD and heavy ball} (PyTorch): $\lr=0.02$ and $0.002$ with $\beta=0.9$ on binary4
+    ($0.13\,\lr_c$ for both, counting heavy ball's effective step $\lr/(1-\beta)$); $\lr=0.01$ and
+    $0.001$ on the deep trees ($0.23$--$0.27\,\lr_c$), at $\isc=0.8$ only, because gradient-flow
+    plateaus at $\isc=0.3$ last $10^4$--$10^6$ time units. Budgets $8/\isc$ (binary4) and $2\cdot10^4$
+    (deep) gradient-flow time units, at most $5\cdot10^5$ steps.
+  \item \emph{Adam} (PyTorch, bias-corrected): $\beta_1=0.9$, $\beta_2=0.999$ (also $0.99$ and $0.9$
+    at $\lr=10^{-3}$ on binary4), $\epsilon=10^{-8}$ ($10^{-30}$ in the $\epsilon$ sweep),
+    $\lr\in\{10^{-4},3\cdot10^{-4},10^{-3},10^{-2}\}$ on binary4 and $\{10^{-3},10^{-2}\}$ on the deep
+    trees. \emph{RMSProp}: $\alpha=0.99$, $\epsilon=10^{-8}$, $\lr\in\{10^{-4},10^{-3}\}$. Budgets
+    $10^5$--$3\cdot10^5$ (binary4), $3\cdot10^5$ (deep), $5\cdot10^5$ (binary8 scan) and $2\cdot10^5$
+    ($\epsilon$ sweep) steps.
+  \item \emph{Re-gauged GD}: $\lr=0.02$ (binary4) and $0.01$ (deep); QR sweeps from the leaves to
+    the root bring the cores to the root-centred canonical form every 1 or 50 steps; $5\cdot10^4$,
+    $10^5$ and $2\cdot10^5$ (binary8 scan) steps.
+  \item \emph{Riemannian GD}: $\lr\in\{0.1,1\}$; tangent projection by least squares with the dense
+    Jacobian of $\W(\params)$ (relative cutoff $10^{-12}$), so only small $d^\Ns$ are feasible;
+    leaves-to-root HSVD retraction; 2000 steps.
+  \item \emph{Gram-preconditioned GD}: $\lr\in\{0.01,0.1,0.5\}$; each Kronecker factor of a core's
+    Hessian block is damped by $10^{-3}$ times its mean eigenvalue (scale-free) or, at $\lr=0.1$, by
+    an absolute floor $10^{-4}$ or $10^{-2}$; no divergence guard, because the first step overshoots
+    by up to $10^{34}\Loss_0$ before the loss returns; $5\cdot10^4$ (binary4; $2\cdot10^5$ with a
+    floor) and $10^5$ (deep) steps.
+  \item \emph{ALS} (one site) and \emph{DMRG} (two sites, then SVD truncation to at most $\chi$
+    values with relative cutoff $10^{-12}$): exact least squares; the orthogonality centre moves by QR
+    along a depth-first tour of the tree; at most 50 sweeps.
+\end{itemize}
+
+\paragraph{Sweeps and run counts.}
+\Cref{tab:exp-optimizers} lists the sweeps; six initialization seeds per setting, 2529 runs in total.
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the optimizer experiment (\cref{sec:other-optimizers}), one configuration file
+    per sweep in \texttt{experiments/optimizers/configs/}.}
+  \label{tab:exp-optimizers}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm}
+      >{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{2.5cm}X r@{}}
+    \toprule
+    sweep & problem & $\isc$ & methods & runs \\
+    \midrule
+    \texttt{scaling\_b4} & binary4, fan-in & $0.002\cdot2^j$, $j=0,\dots,6$ & 19 settings: gradient flow,
+      GD, heavy ball, Adam (6), RMSProp (2), re-gauged GD (2), Riemannian GD (2), Gram (2), ALS, DMRG
+      & 798 \\
+    \texttt{precond\_b4} & binary4, fan-in & as above & Gram: 3 step sizes with scale-free damping,
+      2 absolute floors & 210 \\
+    \texttt{deep} & binary8, MPS8; odeco, E8; balanced and fan-in & $0.3$, $0.8$ & gradient flow, GD
+      and heavy ball ($\isc=0.8$), Adam (2), RMSProp, Gram; from the balanced $\Wz$ only: re-gauged GD
+      (2), Riemannian GD (2), ALS, DMRG & 864 \\
+    \texttt{later\_b8} & binary8 odeco, balanced & $0.25$, $0.3$, $0.35$, $0.4$, $0.5$, $0.6$, $0.8$ &
+      gradient flow, Adam (2; every step recorded for the first 2000 steps), re-gauged GD & 168 \\
+    \texttt{eps\_mps8} & MPS8 odeco, balanced & $0.01$, $0.015$, $0.02$, $0.03$, $0.05$, $0.1$,
+      $0.2$, $0.3$ & Adam: $\lr\in\{10^{-3},10^{-2}\}$, $\epsilon\in\{10^{-8},10^{-30}\}$ & 192 \\
+    \texttt{implicit\_bias2\_b4} & binary4, $\nsamp\in\{45,60\}$, data seeds 200--203 & $0.01$,
+      $0.1$ & gradient flow, Adam (2); pairs share draw and initialization & 288 \\
+    \texttt{adam\_probe} & binary4, binary8, MPS8 E8 & single runs & Adam and RMSProp internal state
+      (illustration only) & 9 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Events and classification.}
+\begin{itemize}
+  \item Event $r$ is the last upward crossing of $\ov r=\frac12$ after which $\ov r$ stays at least
+    $\frac12$; transient crossings, which the first-crossing rule of \cref{sec:setup-diagnostics}
+    would count, are not events. Width: final rise from $0.1$ to $0.9$. Saddle-to-saddle: every
+    separation ratio $\sep i>3$ (\cref{tab:regimes}).
+  \item Discrete methods record loss and overlaps at every step for the first 2000 steps, then every
+    $\max(1,n_{\rm steps}/(5\cdot10^4))$ steps. A first escape or gap shorter than two recording
+    intervals is unresolved and excluded from fits (and counted in the result tables). Two components
+    that cross $\frac12$ in the same step or micro-step have no resolved order. For Gram-preconditioned
+    GD, events are defined only after the loss has returned below $\Loss_0$; a component already above
+    $\frac12$ at that point has no resolved event.
+  \item Exponents: per seed, a least-squares fit of $\ln T$ against $\ln\isc$ over the $\isc$ at which
+    the seed follows its most common learning order (for plateau durations, not for times to reach a
+    loss level); mean $\pm$ standard error over seeds. A logarithmic law fitted in the same space
+    serves as comparison (gradient flow on binary4: root-mean-square residual of $\ln T$ $0.005$ for
+    the power law, $0.62$ for the logarithmic law).
+  \item Orders are compared with gradient flow only where both are resolved, for the same problem,
+    $\isc$ and seed. Re-gauged GD, Riemannian GD, ALS and DMRG give one trajectory per seed at every
+    $\isc$, so their orders are counted over the six independent seeds (at the smallest $\isc$).
+  \item \emph{$\epsilon$ test} \eqref{eq:adam-eps}: $T_{\rm GF}(\isc)$ is the seed's exact
+    gradient-flow first-escape time at $\isc=0.3$ (\texttt{deep} sweep, same balanced initial point
+    up to scale) times $(0.3/\isc)^6$, and $n_{\rm sign}$ the median over $\isc$ of the same seed's
+    escape with $\epsilon=10^{-30}$ at the same $\lr$. Runs without an escape within $2\cdot10^5$ steps
+    enter only through the check that the prediction exceeds the budget.
+  \item Convergence for cost and time-to-loss tables: $\Loss<10^{-3}\Loss_0$. Runs that hit their budget
+    are reported as budget-limited, never as stalls. RMSProp hovers above $10^{-6}\Loss_0$ on the deep
+    trees within $3\cdot10^5$ steps; its events are used, its convergence flags are not.
+\end{itemize}
+
+\paragraph{Excluded runs.}
+Runs replaced after review round 1 are kept in \path{superseded/} subfolders of the raw data and
+ignored by the analysis: gradient-flow runs whose event times were interpolated on an output grid
+(errors up to $1.7\%$), Gram-preconditioned runs stopped by a $10^6\Loss_0$ loss guard after one step,
+binary8 Adam runs recorded only every 10 steps, and the first finite-sample sweep
+(\texttt{implicit\_bias\_b4}, 288 runs, one data draw per initialization). The pilots
+(\texttt{pilot\_calib}, \texttt{pilot\_trap}) support no claim. Raw trajectories (one file per run,
+2.2\,GB) are not in the repository; \cref{app:reproducibility} says how to regenerate them.

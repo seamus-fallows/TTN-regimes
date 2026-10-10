@@ -20,6 +20,27 @@
 %   data/s2s_core/... (regenerate with ...).
 % Figures are copied into report/figures/ by report/collect_figures.sh from the list in
 % report/figures.txt; the TikZ figure of Sec. 2 is drawn from report/tikz/trees.tex.
+% Rows of tab:repro-figures: one per figure, in the order of the report.
+
+\begin{table}[ht]
+  \centering
+  \caption{Figures of the report: the command that draws each one (from the repository root) and the
+    sweeps whose raw runs it reads. Figures are copied into \texttt{report/figures/} by
+    \texttt{report/collect\_figures.sh} from the list in \texttt{report/figures.txt}.}
+  \label{tab:repro-figures}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    figure & command & raw data (sweeps; \cref{app:experiments}) \\
+    \midrule
+    \ref{fig:optimizers-side} & \texttt{uv run python -m experiments.optimizers.make\_figures}
+      \texttt{-{}-results-dir experiments/optimizers/results b4} & \texttt{scaling\_b4}
+      (\cref{tab:exp-optimizers}) \\
+    \ref{fig:optimizers-adam-escape} & as above, with target \texttt{eps} & \texttt{scaling\_b4},
+      \texttt{eps\_mps8}, and \texttt{deep} for the gradient-flow reference times \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \subsection{Building the report}\label{app:repro-build}
 The report is built by \path{report/build.sh} (pdflatex, BibTeX, then pdflatex until the

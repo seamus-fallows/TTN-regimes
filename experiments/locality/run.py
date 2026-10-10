@@ -43,7 +43,10 @@ from ttn.dynamics import Problem  # noqa: E402
 from ttn.network import TTNSpec, aligned_init, conserved_quantities  # noqa: E402
 from ttn.teachers import pattern_teacher  # noqa: E402
 
-OUT = Path("/root/outputs/locality/traj")
+# raw outputs: trajectories under $LOCALITY_OUT/traj (default /root/outputs/locality)
+OUT = Path(os.environ.get("LOCALITY_OUT", "/root/outputs/locality")) / "traj"
+# LOCALITY_EAGER=1: no torch.compile (identical numbers; for machines without a C++ compiler)
+EAGER = os.environ.get("LOCALITY_EAGER", "0") == "1"
 LEVELS = (0.1, 0.5, 0.9)
 
 # torch.compile cannot trace the library's cached opt_einsum expressions; while compiling, plain
@@ -87,8 +90,11 @@ def model(kind, n, d, chi, weights, patterns, teacher_seed):
         def loss(x):
             return population_loss(spec, spec.unflatten(x), teacher, teacher_norm2=t2)
 
-        grad = torch.compile(torch.func.grad(loss), fullgraph=True, dynamic=False)
-        hess = torch.compile(torch.func.hessian(loss), dynamic=False)
+        grad = torch.func.grad(loss)
+        hess = torch.func.hessian(loss)
+        if not EAGER:
+            grad = torch.compile(grad, fullgraph=True, dynamic=False)
+            hess = torch.compile(hess, dynamic=False)
         _MODELS[key] = (spec, teacher, problem, grad, hess)
     return _MODELS[key]
 
@@ -168,6 +174,18 @@ def run_one(case, sigma):
         for lev in LEVELS:
             events.append((lambda r, lev: lambda t, y: overlaps(y)[r] - lev)(r, lev))
             names.append(f"a{r}_{lev}")
+    # every accepted step passes through the event functions: record (t, y) there so that a run stopped by
+    # the stall detector or the wall clock still leaves its trajectory
+    steps_t, steps_y = [], []
+    first_event = events[0]
+
+    def recording_event(t, y):
+        if not steps_t or t > steps_t[-1]:
+            steps_t.append(t)
+            steps_y.append(y.copy())
+        return first_event(t, y)
+
+    events[0] = recording_event
     done = lambda t, y: min(overlaps(y)) - 0.97  # noqa: E731
     done.terminal = True
     events.append(done)
@@ -175,16 +193,20 @@ def run_one(case, sigma):
     wall_limit = case.get("wall_limit", 1500)
 
     stall = dict(count=0)
+    integrating = dict(on=True)  # the wall-clock and stall checks apply only while integrating
+    stall_detect = case.get("stall_detect", True)
 
     def fun(t, y):
+        v = -grad(torch.from_numpy(y)).numpy()
+        if not integrating["on"]:
+            return v
         if time.time() - t0 > wall_limit:
             raise TimeoutError
-        v = -grad(torch.from_numpy(y)).numpy()
         # dead route (theory_saddles.md R12 / float64 floor): after a component has been learned the
         # field is pure roundoff (|v| ~ 1e-16) and LSODA would crawl to t_max; stop and record it
-        if np.abs(v).max() < 1e-12 and overlaps(y).max() > 0.5:
+        if stall_detect and np.abs(v).max() < 1e-12 and overlaps(y).max() > 0.5:
             stall["count"] += 1
-            if stall["count"] > 5000:
+            if stall["count"] > case.get("stall_patience", 5000):
                 raise Stalled(t, y.copy())
         else:
             stall["count"] = 0
@@ -211,12 +233,13 @@ def run_one(case, sigma):
                             rtol=out["rtol"], atol=out["atol"], events=events)
     except TimeoutError:
         out.update(status="timeout", wall=time.time() - t0)
-        return out, None
+        return out, (np.array(steps_t), np.array(steps_y).T) if case.get("save_partial") and steps_t else None
     except Stalled as st:
         ys = torch.from_numpy(st.args[1])
         out.update(status="stalled", wall=time.time() - t0, t_stall=float(st.args[0]),
                    L_stall=float(problem.loss(ys)), a_stall=overlaps(st.args[1]).tolist())
-        return out, None
+        return out, (np.array(steps_t), np.array(steps_y).T) if case.get("save_partial") and steps_t else None
+    integrating["on"] = False
     out.update(status=int(sol.status), message=sol.message, wall=time.time() - t0, nfev=int(sol.nfev),
                njev=int(sol.njev), nsteps=len(sol.t), t_end=float(sol.t[-1]))
     out["crossings"] = {nm: [float(x) for x in te] for nm, te in zip(names, sol.t_events[:-1])}

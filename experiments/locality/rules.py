@@ -217,14 +217,15 @@ def learned_subspace(w: np.ndarray, sites, tol=1e-10) -> np.ndarray:
 
 
 def route_rule(tree: Tree, w_saddle: np.ndarray, w_star: np.ndarray, max_size: int | None = None,
-               tol: float = 1e-9):
+               tol: float = 1e-9, sub_tol: float = 1e-10):
     """k* = smallest connected core set C whose local residual R_C is non-zero.
 
     R_C is the residual R = W* - W projected, on every subtree hanging off C, onto the subspace
     that the (fixed) outside cores already represent (the learned bond subspace of the saddle). A
     route on C (new entries inside C, new bond indices on its internal edges) changes W only inside
     that space, so its leading term is <R_C, .> of degree |C|. k* = 1 means a non-zero gradient.
-    Returns (k*, list of minimal C with their ||R_C|| / ||R||)."""
+    At a plateau point (not an exact saddle) use sub_tol ~ 1e-2 so that dormant singular directions
+    (~ sigma^2) are not counted as learned. Returns (k*, list of minimal C with their ||R_C|| / ||R||)."""
     R = w_star - w_saddle
     nR = np.linalg.norm(R)
     if nR == 0:
@@ -243,7 +244,7 @@ def route_rule(tree: Tree, w_saddle: np.ndarray, w_star: np.ndarray, max_size: i
             far = list(tree.subtree_sites[v]) if v not in C else \
                 [i for i in range(tree.n_sites) if i not in tree.subtree_sites[v]]
             far = sorted(far)
-            rc = _project_sites(rc, far, learned_subspace(w_saddle, far))
+            rc = _project_sites(rc, far, learned_subspace(w_saddle, far, tol=sub_tol))
         norm = np.linalg.norm(rc) / nR
         if norm > tol:
             best = len(C)
