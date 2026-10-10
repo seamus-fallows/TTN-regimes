@@ -1,0 +1,6 @@
+binary8 seed 0 sigma 0.2 t2=2.936e+05 learned=[0, 2] C'={0: 0.8729, 1: 0.8313, 3: 0.3066, 4: 0.5701} dying=0 pred=alive
+binary8 seed 1 sigma 0.2 t2=1.194e+05 learned=[0, 1] C'={0: 0.4456, 1: -0.1851, 3: 0.6386, 4: 0.2793} dying=1 pred=pinned
+binary8 seed 2 sigma 0.2 t2=1.465e+05 learned=[0, 1] C'={0: 0.634, 1: 0.4466, 3: 0.2393, 4: 0.5427} dying=0 pred=alive
+binary8 seed 3 sigma 0.2 t2=6.062e+05 learned=[0, 1] C'={0: 0.5333, 1: 0.8224, 3: -0.0369, 4: 0.0439} dying=1 pred=pinned
+binary8 seed 4 sigma 0.2 t2=1.173e+05 learned=[1, 2] C'={0: 0.9407, 1: 0.8444, 3: -0.0164, 4: 0.4364} dying=1 pred=pinned
+binary8 seed 5 sigma 0.2 t2=9.39e+05 learned=[0, 1] C'={0: 0.1247, 1: -0.0016, 3: -0.0439, 4: 0.1848} dying=2 pred=dead

@@ -52,6 +52,13 @@ $X/finalize.sh /tmp/locality_results 8     # every table and figure, into a fres
   `$LOCALITY_OUT/traj/<file>` when it does not exist (local copy: `LOCALITY_OUT=data/locality`).
 - `finalize.sh` never writes into `results/` unless that directory is passed; tables are restricted to the runs
   of the committed configs (`--config`), so they are regenerable.
+- The other steps that read trajectories (`hess_recompute.py`, `growth.py`, `route_amps.py`, `levels.py`,
+  `bond_events2.py`, `r12.py`) still open the stored path `/root/outputs/locality/traj/<run>.npz`: before
+  `finalize.sh` on another machine, make `/root/outputs/locality` a link to the copy of the raw outputs
+  (Linux: `ln -s <copy> /root/outputs/locality`; Windows, on the drive of the working directory:
+  `mklink /J C:\root\outputs\locality <copy>` after creating `C:\root\outputs`). Without it
+  `hess_recompute.py` skips every run (an empty `hessians.csv`, exit status 0), `make_figures.py` then fails,
+  and `finalize.sh` still prints "done" (its `py()` wrapper ends in `|| true`).
 - Case keys: `kind`, `n`, `S` (two-component teacher) or `name` + `patterns` + `weights`, `d`, `chi`, `start`
   (small | saddle | small_balanced), `sigmas`, `seeds`, `teacher_seed` (default 1000), `rtol`, `atol`, `t_max`,
   `wall_limit`, `stall_detect`, `stall_patience` (evaluations at |v| < 1e-12 before a run is called stalled;

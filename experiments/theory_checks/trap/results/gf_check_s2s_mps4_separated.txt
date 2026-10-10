@@ -1,0 +1,10 @@
+seed 0 t2=4842 learned=[0, 1] C'/sigma^2=[-0.4222, -0.033] sign=dead reduced=escape
+seed 1 t2=4128 learned=[0, 2] C'/sigma^2=[-0.028, -0.2085] sign=dead reduced=escape
+seed 2 t2=1584 learned=[0, 1] C'/sigma^2=[0.2549, 0.1194] sign=alive reduced=escape
+seed 3 t2=968.7 learned=[0, 1] C'/sigma^2=[-0.2096, -0.2301] sign=dead reduced=dead
+seed 4 t2=1154 learned=[0, 1] C'/sigma^2=[0.6794, -0.2467] sign=alive reduced=escape
+seed 5 t2=5634 learned=[0, 1] C'/sigma^2=[-0.3608, -0.7602] sign=dead reduced=dead
+seed 6 t2=2515 learned=[0, 2] C'/sigma^2=[-0.256, -0.2294] sign=dead reduced=dead
+seed 7 t2=751.1 learned=[0, 1] C'/sigma^2=[-0.4374, -0.7946] sign=dead reduced=dead
+seed 8 t2=1516 learned=[1, 2] C'/sigma^2=[0.9111, 0.9455] sign=alive reduced=escape
+seed 9 t2=2655 learned=[0, 1] C'/sigma^2=[0.319, -0.2263] sign=alive reduced=escape

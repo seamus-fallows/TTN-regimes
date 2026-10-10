@@ -89,8 +89,8 @@
 \newcommand{\Lemp}{\hat{L}_{\nsamp}}              % empirical loss
 \newcommand{\lr}{\eta}                            % learning rate (step size) of GD/SGD
 \newcommand{\lrm}[1]{\eta_{#1}}                   % per-core learning-rate multiplier
-\newcommand{\mask}{m}                             % 0/1 gradient mask
-\newcommand{\Pre}{D}                              % diagonal preconditioner diag(eta * m)
+\newcommand{\mask}{\mathfrak{m}}                  % 0/1 gradient mask (m is |V_D|)
+\newcommand{\Pre}{\operatorname{diag}(\boldsymbol{\eta})} % diagonal preconditioner (per-entry rates and mask); D is the site set
 \newcommand{\tmax}{t_{\max}}
 
 % ---- symmetries ------------------------------------------------------------------------------
