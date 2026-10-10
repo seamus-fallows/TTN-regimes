@@ -25,3 +25,4 @@ Pending.
 
 ## Log
 - 15:00 read brief, notes, saddle_order code; wrote pre-registration; merged origin/main (lead's hopper results)
+- 15:22 code committed (sdyn/runs/sweep); validated: H-B seed 7 sigma=0.01 dt=211.88 (verifier 211.9); launched H-A (1836 runs, 125 procs) and H-B (842 runs, 60 procs); trap rule + event fix as deviations

@@ -200,7 +200,19 @@ slow, the grid is cut from the small end and the range reached is reported; wind
 
 ## 8. Deviations from the pre-registration
 
-(none yet)
+1. **Trap stop rule (added before the sweep, after a timing test).** A test run (PS06, seed 0,
+   eps = 1e-2) never escapes: its route entries die (W[r] - 0 down to 1e-49 ... 1e-57) and
+   0 < L - L_S ~ 1e-32, and LSODA then crawls (t ~ 1e22 after 40 s, far from t_max = 1e30), so every
+   such run would have cost the full 3600 s wall cap. Rule: a run is stopped as **trapped** when
+   0 < L - L_S < 1e-30 at 10 consecutive checks spaced by a factor 10^0.1 in t (one decade) with
+   t > 1e6. Rationale: an escape needs L - L_S < 0, and a dormant structure of size ~1e-15 in W at
+   such times is below the float64 floor (library rule: signal < 1e-15 |W|); before an escape
+   L - L_S passes through (0, 1e-30) in one step, not for a decade. Trapped runs are counted and
+   reported with their final residual amplitudes, never fitted. Not applied in H-B phase 1.
+2. **Event root finding.** One H-B run crashed in scipy's event solver (brentq got equal signs at
+   the bracket ends because LSODA's dense output does not exactly reproduce the step values). The
+   solver now falls back to the first sign change on a 200-point grid of the step (refined by
+   brentq). No result changes; the 5 H-B runs written before the fix are kept (resumable sweep).
 
 # Part II: results
 

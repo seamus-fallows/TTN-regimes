@@ -27,8 +27,30 @@ from scipy.integrate import solve_ivp
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "theory_checks" / "saddle_order_verify"))
 from vttn import Net  # noqa: E402
 
+import scipy.integrate._ivp.ivp as _ivp  # noqa: E402
+
 torch.set_num_threads(1)
 DT = torch.float64
+_brent_event = _ivp.solve_event_equation
+
+
+def _robust_event(event, sol, t_old, t):
+    """scipy's brentq on the dense output, or, when LSODA's interpolant does not reproduce the step
+    values at the bracket ends (same signs; seen once), the first sign change on a 200-point grid,
+    refined by brentq; the step end if there is none."""
+    try:
+        return _brent_event(event, sol, t_old, t)
+    except ValueError:
+        ts = np.linspace(t_old, t, 201)
+        g = np.array([event(x, sol(x)) for x in ts])
+        idx = np.flatnonzero(np.sign(g[:-1]) != np.sign(g[1:]))
+        if len(idx) == 0:
+            return t
+        i = idx[0]
+        return _brent_event(event, sol, ts[i], ts[i + 1])
+
+
+_ivp.solve_event_equation = _robust_event
 U = 2.0**-53
 OUT = Path("/root/outputs/saddle_dyn")
 
