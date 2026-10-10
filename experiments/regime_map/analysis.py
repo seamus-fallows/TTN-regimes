@@ -13,6 +13,7 @@ the pre-fix values are kept in the columns *_old.
 from __future__ import annotations
 
 import json
+import warnings
 import os
 
 import numpy as np
@@ -143,6 +144,10 @@ def relabel_last_crossing(df: pd.DataFrame, exp: str) -> pd.DataFrame:
 
 
 TENSOR_CACHE = os.environ.get("REGIME_MAP_TENSOR_CACHE")  # dir of <exp>.csv (run_id, dK_tensor)
+# kernel of the label rule: "probe" (128-probe kernel, fix round 1) or "tensor" (tensor-space kernel
+# J D J^T of notes/theory_regimes.md; the lead's choice after round 2). With "tensor", dK holds the
+# tensor-space value and the probe value moves to dK_probe.
+LABEL_KERNEL = os.environ.get("REGIME_MAP_LABEL_KERNEL", "probe")
 
 
 def tensor_kernel_row(args) -> tuple[str, float]:
@@ -233,7 +238,7 @@ def load(exp: str) -> pd.DataFrame:
     Library runs (run_regime.py) carry event_times / event_widths / rhos in their rows (pre-fix rows
     are relabelled with the last-crossing rule, `relabel_last_crossing`); interim runs
     (pilots/interim.py) are re-analysed from their saved trajectories. Memoized per raw root."""
-    key = (OUT, exp, len(read_tensor_cache(exp)))
+    key = (OUT, exp, len(read_tensor_cache(exp)), LABEL_KERNEL)
     if key not in _LOADED:
         _LOADED[key] = _load(exp)
     return _LOADED[key].copy()
@@ -295,6 +300,13 @@ def _load(exp: str) -> pd.DataFrame:
         df["dK_tensor"] = [v if np.isfinite(v) else cached.get(i, np.nan) for v, i in zip(cur, ids)]
     df["min_rho"] = [float(np.min(np.asarray(r, float))) if len(r) else np.nan for r in df.rhos]
     df["n_events"] = [sum(np.isfinite(t) for t, _ in ev) for ev in df.events]
+    df["dK_probe"] = df.dK
+    if LABEL_KERNEL == "tensor":
+        tens = df.dK_tensor.astype(float) if "dK_tensor" in df.columns else pd.Series(np.nan, index=df.index)
+        need = (df.l_end < 1e-3) & tens.isna()  # converged runs: the lazy label depends on the kernel
+        if need.any():
+            warnings.warn(f"{exp}: {int(need.sum())} converged runs lack dK_tensor; their labels use NaN")
+        df["dK"] = tens
     for kt in K_THRESHOLDS:
         for rt in RHO_THRESHOLDS:
             df[f"label_{kt}_{rt}"] = [

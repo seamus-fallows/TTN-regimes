@@ -1,0 +1,10 @@
+13:33:31 516 runs submitted for 156 walkers
+13:34:09 25 done, 491 running, walkers {'ok': 7, 'open': 149}
+13:34:41 50 done, 468 running, walkers {'ok': 15, 'open': 141}
+13:35:10 75 done, 445 running, walkers {'ok': 22, 'open': 133, 'domain': 1}
+13:35:54 100 done, 420 running, walkers {'ok': 34, 'open': 117, 'domain': 5}
+13:37:42 125 done, 395 running, walkers {'ok': 42, 'open': 104, 'domain': 10}
+13:40:26 150 done, 374 running, walkers {'ok': 48, 'domain': 12, 'open': 95, 'stuck': 1}
+BrokenProcessPool, restarting from the saved rows: A process in the process pool was terminated abruptly while the future was running or pending.
+13:41:14 357 runs submitted for 156 walkers
+13:49:39 25 done, 340 running, walkers {'ok': 51, 'domain': 18, 'open': 86, 'stuck': 1}

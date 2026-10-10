@@ -81,6 +81,33 @@ Raw outputs are not in git; rerunning step 1 regenerates them (seeded; ~2-4 h on
 the remote outputs is in `data/regime_map/` of the main checkout (2026-10-10, read-only); fix-round
 reruns and the tensor-kernel cache in `data/regime_map_local/` (both gitignored).
 
+## Round 2: sigma_c(K) in realizable problems (pre-registered: `notes/regime_map.md` section 4)
+Question: does the S2S/rich boundary sigma_c(K) tend to a constant (1 or sqrt(d)) as K grows? Laws
+compared: sigma_c^K = const (H_A) vs sigma_c^K / sqrt(D) = const (H_B), through
+y = ln(sigma_c^K / u_0c(K)) = -gamma + beta ln sqrt(D) (beta = 0: H_A, beta = 1: H_B).
+- Arm P (`r2_plain`): plain model (target W*), chi = 4 = 2 x teacher rank, teacher weights (3, 2),
+  `binary_tree(N)` with N = 4..16 (K = 3..15), d = 2 and 3, 6 seeds.
+- Arm C (`r2_centred_full`): centred model, full bonds (chi_e = cut dimension), same teacher;
+  d = 2 for K = 3..8 and d = 3 for K = 3..4 (larger P was too slow).
+- Per seed, `round2.py` walks sigma adaptively until the first S2S-like -> rich-like transition
+  (rho* = 3) is bracketed within 2^(1/(K-2)) in sigma. Plain runs whose initial overlap
+  max_r |a_r(0)| >= 0.1 are outside the event rule's domain ('D').
+```
+uv run python experiments/regime_map/round2.py run --arms P --n-proc 300   # raw: /root/outputs/regime_map_r2/
+uv run python experiments/regime_map/round2.py run --arms C --n-proc 48
+uv run python experiments/regime_map/round2_analysis.py --force           # results/round2/
+```
+Tensor-kernel labels for the N = 4 maps (notes section 5):
+```
+R=/root/outputs/regime_map; C=$R/tensor_kernel
+uv run python experiments/regime_map/relabel_tensor.py compute --raw $R --cache $C   # dK_tensor of every run
+uv run python experiments/regime_map/relabel_tensor.py compare --raw $R --cache $C   # results/tensor_relabel/
+export REGIME_MAP_LABEL_KERNEL=tensor REGIME_MAP_TENSOR_CACHE=$C
+uv run python experiments/regime_map/make_figures.py --raw $R --force --only sigma_chi_b4 chi_b4 imbalance_b4 summary
+uv run python experiments/regime_map/report_tables.py --raw $R --tensor-cache $C --force --only sigma_chi_b4 imbalance
+uv run python experiments/regime_map/report_numbers.py && uv run python experiments/regime_map/plot_report.py
+```
+
 ## Experiments (configs)
 | config | what |
 |---|---|
@@ -101,8 +128,7 @@ a `variants` entry.
 
 ## Results
 Full account: `notes/regime_map.md` (section 0: which parameter moves which boundary; section 3: fix
-round 1, every changed claim with old -> new and status). Report `agent-runs/regime-map/REPORT.md`
-(its summary predates fix round 1). In short (6 seeds per point, per-seed statistics; status tags in
+round 1, every changed claim with old -> new and status). Report `agent-runs/regime-map/REPORT.md`. In short (6 seeds per point, per-seed statistics; status tags in
 the notes):
 - binary N = 4, centred, fan-in: S2S / rich / lazy. Per seed rho ~ sigma^-(1.02-1.05) on the S2S side
   (four seeds with transients above 1/2: -1.09 to -1.27), so each seed's boundary follows from its
@@ -112,12 +138,27 @@ the notes):
 - both boundaries ~ chi^-1/2 at N = 4 (chi 16-128, < 1 decade): the map collapses in sigma sqrt(chi),
   the TTN analogue of known width scales (empirical);
 - sigma x K (d = 2, centred, chi = 4): resolved up to K = 7 (0.17-0.75); at K >= 8 the label rule
-  gives only brackets, and with floor-stalled runs classified by rho the medians are 1.01, 1.16, 1.15
-  at K = 8, 10, 12 at deficient bonds; sigma_c -> sqrt(d) is a conjecture; stalls take over at large K;
+  gives only brackets. With floor-stalled runs classified by rho, K = 8 gives 1.01 (5/6 seeds,
+  deficient bonds). The K = 10 and 12 brackets mostly end at runs that learned nothing, so they are not
+  boundaries (verification erratum E1). sigma^K and sigma^K / sqrt(D) are indistinguishable on these
+  data. sigma_c -> sqrt(d) is a conjecture, and stalls take over at large K;
+- round 2 (realizable, d = 2 and 3, `results/round2/`, notes 4.7-4.8):
+  - Plain model with spare channels: at K >= 8 most seeds stay S2S up to the event rule's domain
+    limit (the sigma where W_0's overlap with a teacher component reaches 0.1, which tends to sqrt(d)),
+    with lower bounds 1.2-2.0. So sigma_c does not tend to 1.
+  - Mechanism: the plain model shrinks its cores (unlearns W_0) on the plateau once
+    sigma^K sqrt(D) / (s d) > ~1.
+  - Centred model with full bonds (K <= 8 at d = 2, K <= 4 at d = 3): sigma^K and sigma^K / sqrt(D)
+    are not resolved (beta = -0.07 +- 0.51).
+  - Run time: median 800-1,600 s per run at K = 13-15 (plain, chi = 4); about 1 h at full bonds with P = 2349;
 - large chi (tensor kernel): delta_K ~ chi^-3.02 (SP), NTK chi^-1 at chi >= 64, muP-TTN delta_K -> 6.2
   (theory P16);
-- imbalance: light root -> lazy (delta_K ~ lambda^2, saturating at 0.6 as P20 predicts); a heavy root is
-  lazy from alpha = 10, as at balance.
+- imbalance: light root -> lazy (delta_K ~ lambda^2, saturating at 0.6, the lower edge of P20's
+  0.6-0.7); with tensor-kernel labels a heavy root is lazy from alpha = 100, as at balance, a light root
+  from alpha = 1;
+- the N = 4 maps (sigma_chi_b4, chi_b4, imbalance_b4) and the report tables / figures built from them
+  are labelled with the tensor-space kernel since round 2 (`relabel_tensor.py`,
+  `REGIME_MAP_LABEL_KERNEL=tensor`; 65 of 5,298 labels change, lazy boundaries +4-9%; notes section 5).
 
 Figures and tables in `results/` were regenerated in fix round 1 by
 `make_figures.py --raw data/regime_map --force` (the copied remote outputs, relabelled with the
