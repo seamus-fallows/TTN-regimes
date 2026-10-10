@@ -188,14 +188,35 @@ def summarize(df: pd.DataFrame) -> pd.DataFrame:
     ).reset_index()
 
 
-def gap_fits(df: pd.DataFrame, plat: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
-    """Per-seed power-law fits against sigma, each on the runs where that step is a resolved S2S
+def fit_sets(g: pd.DataFrame) -> dict:
+    """Runs of one seed (one sweep / tree / chi / teacher / init) on which each step is a resolved S2S
     step of the seed's modal saddle sequence (review s2s_core round 1, issue 1):
-      t_1    runs whose first component is the seed's modal first component;
+      t1     runs whose first component is the seed's modal first component;
       gap1   t_2 - t_1 on runs with >= 2 events, first two components = the seed's modal pair, rho_1 > 3;
       gap2   t_3 - t_2 on complete runs in the seed's modal order with rho_1, rho_2 > 3.
-    Plateau 1 / 2 Hessian slopes (log(-lambda_min) vs log sigma, projected and raw) use the same run
-    sets. Exponent p in t ~ sigma^-p; at least `min_sigmas` sigmas per fit.
+    Returns {name: sorted runs} plus "order2" / "order" (the modal pair / order) when they exist."""
+    g = g[g.n_learned >= 1]
+    sets = {}
+    if not len(g):
+        return sets
+    first = g.order.str.split("-").str[0]
+    sets["t1"] = g[first == first.mode().iloc[0]].sort_values("sigma")
+    two = g[g.n_learned >= 2]
+    if len(two):
+        pair = two.order.str.split("-").str[:2].str.join("-")
+        sets["order2"] = pair.mode().iloc[0]
+        sets["gap1"] = two[(pair == sets["order2"]) & (two.rho1 > 3)].sort_values("sigma")
+    comp = g[g["class"] == "complete"]
+    if len(comp):
+        sets["order"] = comp.order.mode().iloc[0]
+        sets["gap2"] = comp[(comp.order == sets["order"]) & (comp.rho1 > 3) & (comp.rho2 > 3)].sort_values("sigma")
+    return sets
+
+
+def gap_fits(df: pd.DataFrame, plat: pd.DataFrame, min_sigmas: int = 4) -> pd.DataFrame:
+    """Per-seed power-law fits against sigma on the run sets of `fit_sets`. Plateau 1 / 2 Hessian
+    slopes (log(-lambda_min) vs log sigma, projected and raw) use the gap1 / gap2 sets. Exponent p in
+    t ~ sigma^-p; at least `min_sigmas` sigmas per fit.
     """
     def fit(x, y):
         ok = np.isfinite(y) & (y > 0)
@@ -213,24 +234,15 @@ def gap_fits(df: pd.DataFrame, plat: pd.DataFrame, min_sigmas: int = 4) -> pd.Da
         for i in (1, 2):
             row.update({f"lam{i}_slope": np.nan, f"lam{i}_slope_raw": np.nan,
                         f"lam{i}_over_pred_median": np.nan, f"sigma_range_gap{i}": ""})
-        first = g.order.str.split("-").str[0]
-        g1 = g[first == first.mode().iloc[0]].sort_values("sigma")
+        sets = fit_sets(g)
+        g1 = sets["t1"]
         row["p_t1"] = fit(np.log(g1.sigma.values), g1.t1.values)
         row["n_t1"] = len(g1)
-        two = g[g.n_learned >= 2]
-        pair = two.order.str.split("-").str[:2].str.join("-")
-        sets = {}
-        if len(two):
-            modal2 = pair.mode().iloc[0]
-            sets[1] = two[(pair == modal2) & (two.rho1 > 3)].sort_values("sigma")
-            row["order2"] = modal2
-        comp = g[g["class"] == "complete"]
-        if len(comp):
-            modal = comp.order.mode().iloc[0]
-            sets[2] = comp[(comp.order == modal) & (comp.rho1 > 3) & (comp.rho2 > 3)].sort_values("sigma")
-            row["order"] = modal
+        for k in ("order2", "order"):
+            if k in sets:
+                row[k] = sets[k]
         for i, col in ((1, "gap1"), (2, "gap2")):
-            d = sets.get(i)
+            d = sets.get(col)
             if d is None or not len(d):
                 row[f"p_{col}"], row[f"n_{col}"] = np.nan, 0
                 continue

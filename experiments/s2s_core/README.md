@@ -116,21 +116,32 @@ dormant amplitudes). Not in git; regenerate with the commands above.
 
 ## Results
 
-Full statements with status tags and numbers: `notes/s2s_core.md` section 2; summary in
-`agent-runs/s2s-core/REPORT.md`. In short (odeco teachers, d = 4, gradient flow):
+Full statements with status tags and numbers: `notes/s2s_core.md` section 2 (section 4 lists the claims
+changed after review round 1); summary in `agent-runs/s2s-core/REPORT.md`. In short (odeco teachers,
+d = 4, gradient flow):
 - Aligned init reproduces the exact mode solutions on all five trees (max |a_GF - a_theory| <= 3e-9).
-- First escape: t_1 = sigma^-(K-2) T(theta_hat) + c_K per seed with no free parameter (exponent
-  0.9996, 2.0000, 4.999, 5.9995 for K = 3, 4, 7, 8; prefactor to <= 2e-3 at the smallest sigma); the Kumar-Haupt
-  rho_0 law is a lower bound off by 3-2700x (K = 3-8) and up to 3e7 at K = 15; at full bond the binary4
-  prefactor is pi/2 independent of d; the RMS-overlap heuristic P3 tracks the K dependence within 2x.
-- Random init: S2S with plateaus at the partial-fit levels, one rank step per event on every edge at
-  once, every gap ~ sigma^-(K-2) per seed (1.00, 2.00, 5.0 for K = 3, 4, 7), plateaus are higher-order
-  saddles (lambda_min ~ sigma^(K-2), magnitude within 0.8-1.7 of the route formula).
-- Dormant suppression: escapes barely shrink dormant components; plateaus do, through the conservation-
-  law trap of fan-in init (dead route ends, decay rate ~ sigma^2): never at K = 3, a sigma-independent
-  4/10 seeds at K = 4, chi = 3, most HT4 runs at chi = 3; gauge-balanced init removes the trap (0/210
-  trapped); chi = 2R avoids it at K = 3, 4, 7 (binary8, HT4). Runs that stall with live routes are on
-  ever-longer plateaus (continued runs escape at 0.5-1.8x the route estimate in 10 of 11 cases).
+- First escape (replication of theory_escape E1, E2): t_1 = sigma^-(K-2) T(theta_hat) + c_K per seed with
+  no free parameter (exponent 0.9996, 2.0000, 4.999, 5.9995 for K = 3, 4, 7, 8; prefactor to <= 2e-3 at
+  the smallest sigma); the Kumar-Haupt rho_0 law is a lower bound off by 3-2700x (K = 3-8) and up to 3e7
+  at K = 15; at full bond the binary4 prefactor is pi/2 independent of d; the RMS-overlap heuristic P3
+  tracks the K dependence within 2x.
+- Random init, as measured: complete S2S sequences on binary4, mps4 (chi = 3, 6) and on binary8, ht4 at
+  chi = 6 (0.6 decade of sigma); mps8 never learns a third component (0/284). Plateaus at the partial-fit
+  levels, one rank step per event on every edge at once (497/531 tested runs). Gaps on runs classified
+  by order and S2S status: K - 2 per seed on binary4 (+-0.1) and mps4 (+-0.03); binary8 4.88-5.09, ht4
+  3.9-5.8 per seed; mps8 first gap 5.95 +- 0.05. Plateaus are higher-order saddles (lambda_min ~
+  sigma^(K-2)) on greedy binary4 and tensor-like trees; the wrong-order binary4 plateau (close teacher) is
+  a strict saddle, measured at 0.98 of the predicted eigenvalue.
+- Dormant suppression: escapes shrink dormant components by a median 0.1-0.75 at K >= 4 (x2-3 growth at
+  K = 3), with a >100x tail of 3-11% at K = 7, 8, chi = 3 (0.6-2% at chi = 6); plateaus kill them
+  through the conservation-law trap of fan-in init (dead route ends; decay rate ~ sigma^2 per seed,
+  checked at K = 4): never at K = 3; at K = 4, chi = 3 fixed per init direction (separated teacher 4/10
+  seeds at every sigma; close 14/80 trapped + 8/80 stalled); at K = 7, 8 lower bounds of 30-80% at
+  chi = 3; at chi = 6 binary8 0/50, ht4 5/50 (one seed), mps8 7/50 ("chi = 2R" is literal only on binary
+  trees: end / leaf bonds are capped at d = 4). Gauge-balanced init: 0/120 trapped where fan-in traps
+  (12/30, 47/90), but 69/90 balanced K = 7, 8 runs stall. Stalled runs with live routes are predicted to
+  be on ever-longer plateaus; checked on 8 runs of 3 seeds (escape at 0.50-0.87 of the route estimate)
+  and on small spread / random samples (see the notes).
 
 ## Figures (results/)
 
@@ -139,7 +150,7 @@ Full statements with status tags and numbers: `notes/s2s_core.md` section 2; sum
 | (a) aligned init vs exact solution | `fig_a_aligned.*` |
 | (b) representative runs | `fig_b_run_mps4_chi3_..._s0.01_seed0.*` (K = 4), `fig_b_run_binary8_chi6_..._s0.1_seed0.*` (K = 7) |
 | (c) t_1 vs sigma with per-seed prediction | `fig_c_first_escape_chi{3,6}_{fanin,balanced}.*` |
-| (d) gaps vs sigma | `fig_d_gaps_chi{3,6}_{separated,close}.*` |
+| (d) gaps vs sigma (S2S-classified run sets of the fits) | `fig_d_gaps_chi{3,6}_{separated,close}.*` |
 | (e) prefactor vs chi and vs K (leading order) | `fig_e_chi.*`, `fig_e2_K.*` |
 | (f) Hessian lambda_min vs sigma at plateau midpoints | `fig_f_hessian.*` |
-| (g) dormant suppression: run classes, trap decay rate | `fig_g_dormant.*` |
+| (g) dormant suppression: run classes (trapped = lower bound at K = 7, 8), trap decay rate / sigma^2 (mps4, fitted above 1e-9) | `fig_g_dormant.*` |
