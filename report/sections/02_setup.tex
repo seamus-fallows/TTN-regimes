@@ -246,16 +246,9 @@ messages \eqref{eq:messages} keep their size up the tree.
 
 \begin{proposition}[Initial scales]\label{prop:init-norm}
   \proven{} Under \eqref{eq:init}, $\E\normF{\W(\params_0)}^2=\prod_{v}\iscv{v}^2$ exactly,
-  $\E\normF{\G{v}}^2=\iscv{v}^2\bd{v}$, and hence $\E\norm{\params_0}^2=\sum_v\iscv{v}^2\bd{v}$.
+  $\E\normF{\G{v}}^2=\iscv{v}^2\bd{v}$, and hence $\E\norm{\params_0}^2=\sum_v\iscv{v}^2\bd{v}$
+  (proof in \cref{app:conservation}).
 \end{proposition}
-\begin{proof}
-  Let $\Sub{v}$ be the contraction of the subtree below $v$ ($\bd{v}$ columns). Given the children's
-  (independent) subtrees, the entries of $\G{v}$, of variance $\iscv{v}^2/\fanin{v}$, give
-  $\E[\Sub{v}\T\Sub{v}]=\frac{\iscv{v}^2}{\fanin{v}}\prod_{i\in\sites{v}}\pd[i]\prod_{u\in\ch{v}}
-  \tr(\Sub{u}\T\Sub{u})\,\Id$, so by induction from the leaves
-  $\E[\Sub{v}\T\Sub{v}]=(\prod_{u}\iscv{u}^2)\Id$ over the subtree of $v$; $\Sub{\vroot}$ is $\W$
-  flattened. Finally, $\E\normF{\G{v}}^2=\fanin{v}\bd{v}\,\iscv{v}^2/\fanin{v}$.
-\end{proof}
 
 We report both $\isc$ and the function-space scale $\fsc=\prod_v\iscv{v}$ ($=\isc^{\Kc}$ with one
 scale), the root-mean-square norm of $\W(\params_0)$: small $\isc$ makes $\W(\params_0)$
@@ -275,8 +268,7 @@ bond dimensions.
   \item \emph{Two-copy model} (\citealp[Sec.~3.1]{chizat2019lazy};
     \citealp[Sec.~4]{woodworth2020kernel}): $\W(\params^+)-\W(\params^-)$ with
     $\params^+(0)=\params^-(0)=\params_0$, zero at initialization for every $\isc$; a cross-check of
-    the centred model. It is trained as one TTN with doubled bonds and block-diagonal cores, which
-    needs a gradient mask (\cref{rem:two-copy-mask}; implementation in \cref{app:exp-common}).
+    the centred model, trained as one TTN with a gradient mask (\cref{rem:two-copy-mask}).
   \item \emph{Aligned (decoupled) initialization} for CP teachers (\cref{prop:aligned}): cores
     diagonal in the teacher's basis, giving exactly solvable Saxe-type dynamics.
   \item \emph{Per-core learning-rate multipliers} $\lrm{v}$ \eqref{eq:gf}. A fixed
@@ -285,16 +277,6 @@ bond dimensions.
     parameterizations of wide networks \citep{yang2021tensor}, transposed to large bond dimension
     (\cref{sec:other-regimes}).
 \end{enumerate}
-
-\begin{remark}[The two-copy model needs a gradient mask]\label{rem:two-copy-mask}
-  \proven{} Gradient flow on the doubled TTN does not keep its block-diagonal form: at a root with
-  children $u_1,u_2$ and no sites, the entry that pairs index $b_1$ of the $+$ half of $\edge{u_1}$
-  with index $b_2$ of the $-$ half of $\edge{u_2}$ has, at initialization, the gradient
-  $-\ipS{\Wt}{\Sub{u_1}^+[:,b_1]\otimes\Sub{u_2}^-[:,b_2]}$ (up to the order of sites), generically
-  nonzero. The two-copy dynamics is therefore the flow \eqref{eq:gf} with multipliers set to zero off
-  the diagonal blocks; it keeps the blocks and equals gradient flow of
-  $\tfrac12\normS{\W(\params^+)-\W(\params^-)-\Wt}^2$ in $(\params^+,\params^-)$.
-\end{remark}
 
 \begin{proposition}[Aligned initialization]\label{prop:aligned}
   \proven{} \knownresult[deep linear networks: \citealp{saxe2014exact}] Let $\Wt$ be odeco, inputs
@@ -405,14 +387,8 @@ symmetry-induced conservation laws \citep{kunin2021neural}. Consequences:
     \citep{kunin2024get}.
   \item The masked two-copy flow conserves the $\Q{e}$ of each copy; gradient descent and SGD conserve
     $\Q{e}$ only up to $O(\lr^2)$ per step.
-  \item \emph{Integrator check}: the conservation drift
-    \begin{equation}\label{eq:drift}
-      \mathrm{drift}(t)=\frac{\max_e\normmax{\Q{e}(t)-\Q{e}(0)}}
-      {\max_e\normmax{\Q{e}(0)}+\max_u\normF{\G{u}(t)}^2/\lrm{u}},
-    \end{equation}
-    with $\normmax{\cdot}$ the largest absolute entry, measures the integration error relative to the
-    terms that cancel in $\Q{e}$; it is required to stay below $10^{-6}$ under gradient flow
-    (exceptions are reported in \cref{app:experiments}).
+  \item \emph{Integrator check}: under gradient flow the drift \eqref{eq:drift} of $\Q{e}$
+    (\cref{app:exp-common}) measures the integration error.
 \end{itemize}
 
 % ===========================================================================================
@@ -470,18 +446,12 @@ settings of each experiment.
 Along every run we record the loss, the bond spectra of $\W$, the overlaps, the relative parameter
 change $\dth=\norm{\params(t)-\params(0)}/\norm{\params(0)}$ (also per core), the relative kernel change
 $\dTK$ and the conservation drift \eqref{eq:drift}, and at plateaus the Hessian $\Hess$ and its gauge
-projection $\Hperp$ (\cref{tab:notation}). The \emph{effective bond rank} $\rk{e}$ counts the
-$\bs{e}{j}$ above $0.1$ times the smallest nonzero teacher singular value on $e$ (threshold-free: the
-entropy rank $\rkH{e}=\exp(-\sum_j\hat s_j^2\ln\hat s_j^2)$, $\hat s_j=\bs{e}{j}/\normF{\W}$). The
-tangent kernel $\TK=\Jac\,\diag(\boldsymbol{\lr})\,\Jac\T$, $\Jac=\partial\W/\partial\params$, is the
-operator on $\R^{d^\Ns}$ that drives the function-space dynamics of \eqref{eq:gf}, and
-$\dTK=\normF{\TK_t-\TK_0}/\normF{\TK_0}$; it is computed where $d^\Ns\dim\params\le2\cdot10^7$
-(binary4 at every bond dimension used: its maps of regimes and the large-$\chi$ runs), and
-\cref{app:boundaries} derives its constants. The
-\emph{probe kernel} restricts $\TK$ to 128 fixed inputs $x_p\sim\Normal(0,\Sig)$ (for whitened inputs,
-$\Feat(x_p)\T\TK\,\Feat(x_{p'})$); it gives the regime labels of the larger trees (\cref{sec:regime-K} and the
-binary tree with $\Ns=8$) and of the large-$\chi$ sweep, whose exponents use the tensor kernel, and its change
-is written $\dTK^{\rm probe}$.
+projection $\Hperp$ (\cref{tab:notation}). The \emph{effective bond rank} $\rk{e}$ counts
+the $\bs{e}{j}$ above $0.1$ times the smallest nonzero teacher singular value on $e$. The tangent kernel
+$\TK=\Jac\,\diag(\boldsymbol{\lr})\,\Jac\T$, $\Jac=\partial\W/\partial\params$, is the operator on
+$\R^{d^\Ns}$ that drives the function-space dynamics of \eqref{eq:gf}, and
+$\dTK=\normF{\TK_t-\TK_0}/\normF{\TK_0}$; the \emph{probe kernel} restricts $\TK$ to 128 fixed inputs, and
+its change is written $\dTK^{\rm probe}$ (where each kernel is used: \cref{app:exp-common}).
 
 \paragraph{Learning events.}
 For CP teachers with orthogonal components (in the metric $\Sig$), \emph{event} $r$ is the time
@@ -650,7 +620,7 @@ table says where.
     $0$--$3|4$--$7$) & \S\labelcref{sec:setup-model} \\
   $\bs{e}{j}$, $\bst{e}{j}$; $\rk{e}$, $\rkH{e}$ & $j$-th singular value across $e$ of $\W$, of $\Wt$
     (their nonzero count: the bond rank); effective and entropy bond rank
-    & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-diagnostics} \\
+    & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-diagnostics}, \S\labelcref{app:exp-common} \\
   cut dimension, full; $\mathcal M_\chi$ & largest rank across $\edge{v}$; a bond is full when $\bd{v}$
     reaches it; the tensors with bond ranks $\bd e$ & \S\labelcref{sec:setup-trees};
     \cref{prop:A-kernel} \\

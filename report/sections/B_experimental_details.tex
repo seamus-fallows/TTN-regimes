@@ -58,10 +58,15 @@ as its Jacobian; short runs and references use Dormand--Prince or DOP853; Radau 
 \Cref{tab:exp-integrators} gives each experiment's choice and its seeds. Event times come from root finding on
 the integrator's dense output, from re-integrating the event window on a fine linear grid, or from dense
 merged records (log-spaced and linear output times plus the fine rows of \cref{sec:setup-dynamics});
-\cref{tab:exp-common} says which. Accuracy is checked by the conservation drift \eqref{eq:drift},
-below $10^{-6}$ (exceptions are reported per experiment), by the exact aligned solutions
-(\cref{sec:s2s-aligned}), by reruns at tighter tolerances, and by independent implementations in the
-reviews.
+\cref{tab:exp-common} says which. Accuracy is checked by the conservation drift
+\begin{equation}\label{eq:drift}
+  \mathrm{drift}(t)=\frac{\max_e\normmax{\Q{e}(t)-\Q{e}(0)}}
+  {\max_e\normmax{\Q{e}(0)}+\max_u\normF{\G{u}(t)}^2/\lrm{u}},
+\end{equation}
+with $\normmax{\cdot}$ the largest absolute entry, which measures the integration error relative to the
+terms that cancel in $\Q{e}$ (\cref{prop:conservation}) and is required to stay below $10^{-6}$ under gradient
+flow (exceptions are reported per experiment). Further checks are the exact aligned solutions
+(\cref{sec:s2s-aligned}), reruns at tighter tolerances, and independent implementations in the reviews.
 
 \paragraph{Seeds and random streams.}
 Teacher and initialization draw from independent random streams: the teacher's generator is
@@ -101,6 +106,16 @@ gradient mask of \cref{rem:two-copy-mask} and contracted in the same half-sum an
 (\path{ttn.network.sum_difference_cores}). Why the centred model is the main construction and the two-copy
 model a cross-check: \path{notes/model.md} and \path{notes/decisions.md}.
 
+\begin{remark}[The two-copy model needs a gradient mask]\label{rem:two-copy-mask}
+  \proven{} Gradient flow on the doubled TTN does not keep its block-diagonal form: at a root with
+  children $u_1,u_2$ and no sites, the entry that pairs index $b_1$ of the $+$ half of $\edge{u_1}$
+  with index $b_2$ of the $-$ half of $\edge{u_2}$ has, at initialization, the gradient
+  $-\ipS{\Wt}{\Sub{u_1}^+[:,b_1]\otimes\Sub{u_2}^-[:,b_2]}$ (up to the order of sites), generically
+  nonzero. The two-copy dynamics is therefore the flow \eqref{eq:gf} with multipliers set to zero off
+  the diagonal blocks; it keeps the blocks and equals gradient flow of
+  $\tfrac12\normS{\W(\params^+)-\W(\params^-)-\Wt}^2$ in $(\params^+,\params^-)$.
+\end{remark}
+
 \paragraph{Recording, kernels and Hessians.}
 Diagnostics are recorded at $t=0$ and on a logarithmic time grid, by default 200 times from
 $10^{-3}\min(\tau_0,\tau_\Loss,\tmax)$ to $\tmax$, where $\tau_0=\norm{\params}/\norm{\dot\params}$ and
@@ -115,10 +130,19 @@ direction and biased $\lambda_{\min}$ near rank-deficient saddles; all Hessians 
 with the fixed cutoff, and the raw $\lambda_{\min}$ is reported too (\cref{app:exp-locality}). The saddle type is
 read from how $\lambda_{\min}$ scales with $\isc$; the single-$\isc$ fallback (strict if
 $\lambda_{\min}(\Hperp)<-10^{-3}\max_j\abs{\lambda_j(\Hperp)}$) calls $k=3$ plateaus strict for $\isc\gtrsim0.01$--$0.04$
-and is not used for claims. The relative kernel change uses the probe kernel (in the regime map, 128
-Gaussian inputs from generator seed 12345; on real data, the first 128 test images) and, where the dense
-Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$), the tensor-space kernel $\Jac\Pre\Jac\T$, with
-$\boldsymbol\lr$ the per-parameter multipliers, set to zero where a gradient mask applies.
+and is not used for claims.
+
+Besides the effective bond rank $\rk{e}$ (\cref{sec:setup-diagnostics}), the
+threshold-free \emph{entropy rank} $\rkH{e}=\exp(-\sum_j\hat s_j^2\ln\hat s_j^2)$, $\hat s_j=\bs{e}{j}/\normF{\W}$,
+is recorded. The relative kernel change uses the probe kernel, the restriction of $\TK$ to 128 fixed inputs
+$x_p$ (for whitened inputs, $\Feat(x_p)\T\TK\,\Feat(x_{p'})$; in the regime map, 128 Gaussian inputs
+$x_p\sim\Normal(0,\Sig)$ from generator seed 12345; on real data, the first 128 test images) and, where the
+dense Jacobian fits in memory ($d^\Ns\dim\params\le2\cdot10^7$: binary4 at every bond dimension used, that
+is, its maps of regimes and the large-$\chi$ runs), the tensor-space kernel $\TK=\Jac\Pre\Jac\T$, with
+$\boldsymbol\lr$ the per-parameter multipliers, set to zero where a gradient mask applies;
+\cref{app:boundaries} derives its constants. The probe kernel gives the regime labels of the larger trees
+(\cref{sec:regime-K} and the binary tree with $\Ns=8$) and of the large-$\chi$ sweep, whose exponents use the
+tensor kernel.
 
 \paragraph{Event rules.}
 \Cref{tab:exp-common} gives the rule of every experiment. For CP teachers whose components are orthogonal
@@ -290,8 +314,8 @@ complete runs of \texttt{main}, in the event windows. The conservation drift (pe
 $3.3\cdot10^{-6}$; ten MPS8 runs and one binary8 run).
 
 \paragraph{Leading-order flow.}
-$\mathcal T(Z)$ and $r_1$ (\cref{cor:A-blowup,rem:A-recipe}) come from \path{s2s.correlation_flow_blowup}: the flow
-$\dot\params=\nabla g$ from the initialization at $\isc=1$, by DOP853 with relative tolerance $10^{-10}$,
+$\mathcal T(Z)$ and $r_1$ (\cref{cor:A-blowup,rem:A-recipe}) come from the flow $\dot\params=\nabla g$
+(\path{s2s.correlation_flow_blowup}) from the initialization at $\isc=1$, by DOP853 with relative tolerance $10^{-10}$,
 integrated in segments until the second-largest component amplitude $\abs{\ip{\W}{\U r}}$ is below $10^{-6}$
 of the largest and no longer growing relative to it, with a cap at amplitude $10^{30}$; the remaining time
 of a balanced mode from the stop is added. The 40 binary4 close-teacher jobs and 2 separated binary4 jobs
@@ -689,7 +713,7 @@ saddle-to-saddle regime at $\Kc\ge7$ the widths are not resolved; separation rat
 no label depends on them.
 
 \paragraph{Labels, kernels and boundaries.}
-Labels of \cref{tab:regimes} with convergence measured against $\frac12\normF{\Wt}^2$ (\cref{rem:regime-rules}),
+Labels of \cref{tab:regimes} (\cref{rem:regime-rules}), with convergence measured against $\frac12\normF{\Wt}^2$,
 at the nine threshold pairs $\delta_*\in\{0.05,0.1,0.2\}$, $\sep{}\in\{2,3,5\}$; a run that ends on a floor below
 $10^{-3}$ counts as converged. $\dTK^{\rm probe}$ uses 128 Gaussian probe inputs (generator seed 12345) and the
 weights $\Pre$; $\dTK$ uses the tensor-space kernel $\Jac\Pre\Jac\T$, computed in the run when
@@ -898,10 +922,9 @@ repository; the summary tables in \path{results/} suffice to redraw every figure
 
 \subsection{Discrete steps, gradient noise and finite samples}\label{app:exp-optim}
 Settings of \cref{sec:other-optim}. Experiment folder \path{experiments/optim_samples/} (README with
-the script list; YAML configurations in \path{configs/}); findings in \path{notes/optim_samples.md}; the two
-reviews in \path{notes/reviews/} (\path{optim_samples_round1.md} and
-\path{optim_samples_round2_verification.md}, whose errata are applied in \cref{sec:other-optim}); theory
-in \cref{app:optimizer}.
+the script list; YAML configurations in \path{configs/}); findings in \path{notes/optim_samples.md}; theory
+in \cref{app:optimizer}; the two reviews, whose errata are applied in \cref{sec:other-optim}, are
+\path{notes/reviews/optim_samples_round1.md} and \path{notes/reviews/optim_samples_round2_verification.md}.
 
 \paragraph{Problems.}
 Whitened Gaussian inputs, exact population loss (empirical loss in the finite-sample sweep), double

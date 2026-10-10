@@ -5,8 +5,7 @@
 % (sections 1.4, 3, 5). Status tags and new/known markers copy the notes' own tags and literature
 % mappings: do not upgrade a tag here without first changing the note. Numerical checks quoted
 % here are the notes' (scratch scripts outside the repository); the experiments that test the
-% predictions are reported in Sections 3-6. Citations marked "TODO-CITE" are references named in the
-% notes but absent from notes/literature.md section 7 (no verified metadata yet).
+% predictions are reported in Sections 3-6.
 % Trimmed 2026-10-10 (branch wip/appA-trim, ~24.8 -> ~20.4 pages): check paragraphs shortened (full
 % values in the notes), duplicates of Sec. 2/4 removed, table "saddle type" folded into the text.
 % Citations and new/known markers revised 2026-10-10 (branch wip/cite-apply) from the citation audit
@@ -49,7 +48,16 @@ support them. ``Checked'' refers to the numerical checks of the theory notes
 (\path{notes/theory_*.md}), which give all values; only the key ones are quoted here.
 
 % ===========================================================================================
-\subsection{Conservation laws, gauge and invariant subspaces}\label{app:conservation}
+\subsection{Initial scales, conservation laws, gauge and invariant subspaces}\label{app:conservation}
+
+\begin{proof}[Proof of \cref{prop:init-norm} (initial scales)]
+  Let $\Sub{v}$ be the contraction of the subtree below $v$ ($\bd{v}$ columns). Given the children's
+  (independent) subtrees, the entries of $\G{v}$, of variance $\iscv{v}^2/\fanin{v}$, give
+  $\E[\Sub{v}\T\Sub{v}]=\frac{\iscv{v}^2}{\fanin{v}}\prod_{i\in\sites{v}}\pd[i]\prod_{u\in\ch{v}}
+  \tr(\Sub{u}\T\Sub{u})\,\Id$, so by induction from the leaves
+  $\E[\Sub{v}\T\Sub{v}]=(\prod_{u}\iscv{u}^2)\Id$ over the subtree of $v$; $\Sub{\vroot}$ is $\W$
+  flattened. Finally, $\E\normF{\G{v}}^2=\fanin{v}\bd{v}\,\iscv{v}^2/\fanin{v}$.
+\end{proof}
 
 Besides \cref{prop:conservation}, three facts are used below.
 
@@ -71,11 +79,8 @@ and only while $g<0$}, i.e.\ only if $\ip{\Wz}{\Wt}<0$. The identity holds for a
 which $g$ is multilinear, e.g.\ the reduced cores of \cref{prop:A-reduced} (checked).
 
 \begin{lemma}[Unused bond channels are invariant]\label{lem:A-unused}
-  % TODO-CITE (lead): add zhang2021embedding (Zhang, Zhang, Luo & Xu, NeurIPS 2021, arXiv 2105.14573) and
-  % simsek2021geometry (Simsek et al., ICML 2021, arXiv 2105.12221; notes/literature.md) to references.bib
-  % and replace the plain-text names below by \citealp{zhang2021embedding,simsek2021geometry}.
-  \proven{} \newresult[elementary; the TTN case of the embedding principle of neural networks, Zhang, Zhang,
-  Luo and Xu (2021) and Simsek et al.\ (2021)]
+  \proven{} \newresult[elementary; the TTN case of the embedding principle of neural networks:
+  \citealp{zhang2021embedding,simsek2021geometry}]
   Let $e=\edge{v}$ with $p=\pa{v}$, and let $\mathcal B$ be a set of channels of $e$ such that every
   entry of $\G{v}$ and of $\G{p}$ whose $e$-index lies in $\mathcal B$ vanishes. Then, for every loss
   of the form $\mathcal L(\W(\params))$ (any input law, population or empirical), the gradient
@@ -235,8 +240,8 @@ $\isc^{\Kc-2}\le10^{-3}$.
 \end{proposition}
 \begin{proof}
   At a KKT point $\nabla g(\params^*)=\lambda\params^*$, and Euler's identity gives $\lambda=\Kc g^*>0$.
-  $g$ is invariant under the gauge transformations \eqref{eq:gauge}, so $\ip{\nabla g}{\delta\params}=0$
-  for every gauge direction $\delta\params=(M\Gm{v}{e},-M\T\Gm{p}{e})$, i.e.\
+  $g$ is invariant under the gauge transformations \eqref{eq:gauge}, so every gauge direction
+  $\delta\params=(M\Gm{v}{e},-M\T\Gm{p}{e})$ has $\ip{\nabla g}{\delta\params}=0$, i.e.\
   $\lambda\tr\big((\Gm{v}{e}\Gm{v}{e}\T-\Gm{p}{e}\Gm{p}{e}\T)M\big)=0$ for all $M$; hence $\Q{e}=0$. Since $g$
   is linear in each core, $\ip{\G{v}}{\nabla_{\G{v}}g}=g^*$, i.e.\ $\lambda\normF{\G{v}}^2=g^*$.
 \end{proof}
@@ -546,7 +551,7 @@ when 2, 3 and 4 cores must move (no lower bounds).
 
 \begin{lemma}[Several learned components]\label{lem:A-general-S}
   \proven{} \newresult{}
-  Let $E_+$ be the set of bonds $e$ with $\rank\mat{(\W_S+\U r)}{e}>\rank\mat{(\W_S)}{e}$. (i) $E_+$ is connected.
+  Let $E_+$ collect the bonds $e$ with $\rank\mat{(\W_S+\U r)}{e}>\rank\mat{(\W_S)}{e}$. (i) $E_+$ is connected.
   (ii) If $E_+=\emptyset$, one core can produce $\U r$: $\nabla\Loss(\params_S)\ne0$.
 \end{lemma}
 \begin{proof}
@@ -754,12 +759,12 @@ $\isc$-scaling of $\lambda_{\min}$ or from $\beta$.
   analogy for the order of their descent curves); specific to the TTN is that it is set by the tree, and that
   the plateau scales with the initialization, $\isc^{-(k-2)}$, not with the dimension.
 \end{remark}
-A program that applies this rule at every plateau (\path{experiments/saddle_hopper/}, \path{notes/saddle_hopper.md};
-audited in \path{notes/reviews/saddle_hopper_verification.md}) reproduces the worked examples of this appendix and the
+A program that applies this rule at every plateau reproduces the worked examples of this appendix and the
 measured sequences, but no better than the weight order where it commits to one sequence (97.0\% against
 95.8\% of the informative locality runs; 96.6\% for both on binary4) \empirical: a consistency check, not an
-independent test. Its accumulated-utility slopes (\cref{prop:A-agf-race}) for teacher TC on MPS8 started at the
-saddle match five plateaus within $3.5\%$ \empirical.
+independent test (program and notes: \path{experiments/saddle_hopper/}, \path{notes/saddle_hopper.md}; audited
+in \path{notes/reviews/saddle_hopper_verification.md}). Its accumulated-utility slopes (\cref{prop:A-agf-race})
+for teacher TC on MPS8 started at the saddle match five plateaus within $3.5\%$ \empirical.
 
 \begin{proposition}[Conservation-law trap]\label{prop:A-trap}
   \proven{} (the normal blocks; (i) within the reduced flow; the identity in (ii)) \derived{} (the reduced flow,
@@ -861,7 +866,7 @@ $\Pi_B\mathcal R=\sum_{r:V_{jr}=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\empty
   is at most $2\ell<k^*$.
 \end{theorem}
 \begin{proof}[Proof sketch of \cref{thm:A-order-lower}]
-  (Full proof: \path{notes/theory_saddle_order.md}, sections 3.1-3.5.) Let $y=\ip{\U j}{\W}$ ($=\tw j$ at
+  (Full proof: \path{notes/theory_saddle_order.md}, sections 3.1--3.5.) Let $y=\ip{\U j}{\W}$ ($=\tw j$ at
   $\params_S$) and $\mu_B=\Pi_B\W/y\in\mathcal H_B$. Sector orthogonality gives the exact identity
   \begin{equation}\label{eq:A-sector-identity}
     \Loss-\Loss_S=\tfrac12(y-\tw j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{y^2}2\norm{\mu_B}^2-y\ip{\Pi_B\mathcal R}{\mu_B}\Big].
@@ -1348,8 +1353,8 @@ pattern, with the products $Z_P(x)=\prod_i(t_{P,i}\cdot x^{(i)})$ of its site ve
 operator maps diagonal matrices to diagonal ones ($\E[Z_R^2Z_PZ_Q]=0$ for $P\ne Q$) and preserves the
 positive semidefinite cone, which gives the exact mean-square threshold
 \begin{equation}\label{eq:A-ms-threshold}
-  \lr^*_{\rm ms}(\batch)=\frac{2}{\lambda_{\max}(G_\batch)},\qquad
-  G_\batch=\Big(1-\frac1\batch\Big)\Lambda_\Hess+\frac1\batch\Lambda_\Hess^{1/2}\mathcal K\Lambda_\Hess^{1/2},\qquad
+  \lr^*_{\rm ms}(\batch)=\frac{2}{\lambda_{\max}(G_\batch)},\quad
+  G_\batch=\Big(1-\frac1\batch\Big)\Lambda_\Hess+\frac1\batch\Lambda_\Hess^{1/2}\mathcal K\Lambda_\Hess^{1/2},\quad
   \mathcal K_{PQ}=\prod_i\E\big[(t_{P,i}\cdot x^{(i)})^2(t_{Q,i}\cdot x^{(i)})^2\big],
 \end{equation}
 with $\Lambda_\Hess=\diag(\lambda_P)$; for Gaussian sites each factor is $3$ if the two site vectors coincide and
@@ -1484,7 +1489,7 @@ time $\propto\isc^{2\Kc}$ (\derived{} for $\Ns=4$; \conjecture{}, heuristic, for
     \sep i=\frac{I_\Kc(u_0/\tw{i+1},\frac12)-w^{\,2-2/\Kc}I_\Kc(u_0/\tw i,\frac12)}{\omega_\Kc}
     \simeq\Big(\frac{u_0}{\tw{i+1}}\Big)^{-(1-2/\Kc)}\frac{1-w}{(\Kc-2)\,\omega_\Kc}\quad(u_0\to0),
   \end{equation}
-  and the boundary $\sep i=3$ lies at $u_{0c}\simeq\tw{i+1}[(1-w)/(3(\Kc-2)\omega_\Kc)]^{\Kc/(\Kc-2)}$. As $\Kc\to\infty$,
+  and the boundary $\sep i=3$ is at $u_{0c}\simeq\tw{i+1}[(1-w)/(3(\Kc-2)\omega_\Kc)]^{\Kc/(\Kc-2)}$. As $\Kc\to\infty$,
   $\Kc I_\Kc(x_0,x_1)\to\frac1{x_0}-\frac1{x_1}+\ln\frac{x_1}{x_0}+\ln\frac{1-x_0}{1-x_1}$ and $\Kc\omega_\Kc\to\frac{80}9+2\ln9=13.283$:
   $u_{0c}$ stays finite ($1.306\cdot10^{-2}$ for weights $(3,2,1)$), and $a_{0c}=u_{0c}^{1/\Kc}=1+\ln u_{0c}/\Kc+O(\Kc^{-2})\to1$.
 \end{proposition}
