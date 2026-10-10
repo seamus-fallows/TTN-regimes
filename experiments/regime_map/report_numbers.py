@@ -263,11 +263,18 @@ def sec3_K_and_rest() -> None:
         "report/runs_sigma_chi_b4.csv",
     )
     rich = cen[cen.label == "rich"]
+    probe = rich.dK_probe if "dK_probe" in rich else rich.dK
     put(
         "rich runs: dK probe min, median, max",
-        f"{rich.dK.min():.3f}, {rich.dK.median():.0f}, {rich.dK.max():.2g}",
+        f"{probe.min():.3f}, {probe.median():.0f}, {probe.max():.2g}",
         "report/runs_sigma_chi_b4.csv",
     )
+    if "dK_probe" in rich:  # labels with the tensor-space kernel (dK = tensor value)
+        put(
+            "rich runs: dK tensor (label kernel) min, median, max",
+            f"{rich.dK.min():.3f}, {rich.dK.median():.0f}, {rich.dK.max():.2g}",
+            "report/runs_sigma_chi_b4.csv",
+        )
     # spread of per-seed boundaries at one chi
     sp1 = sc_spread(read("sensitivity_per_seed_sigma_chi_b4_centred.csv"), "s2s_3")
     b = read("boundaries_per_seed_chi_b4.csv")

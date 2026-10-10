@@ -1,0 +1,6 @@
+13:50:33 336 runs submitted for 156 walkers
+13:57:16 25 done, 311 running, walkers {'ok': 54, 'domain': 18, 'stuck': 2, 'open': 82}
+14:00:38 50 done, 290 running, walkers {'ok': 55, 'domain': 20, 'stuck': 2, 'open': 79}
+14:03:14 75 done, 271 running, walkers {'ok': 55, 'domain': 21, 'stuck': 2, 'open': 78}
+14:04:59 100 done, 250 running, walkers {'ok': 55, 'domain': 21, 'stuck': 4, 'open': 76}
+14:07:34 125 done, 231 running, walkers {'ok': 56, 'domain': 22, 'stuck': 5, 'open': 73}

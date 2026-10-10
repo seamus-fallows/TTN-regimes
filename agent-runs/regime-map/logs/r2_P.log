@@ -1,0 +1,27 @@
+12:34:48 780 runs submitted for 156 walkers
+12:37:27 25 done, 757 running, walkers {'open': 156}
+12:38:20 50 done, 738 running, walkers {'open': 156}
+12:39:09 75 done, 721 running, walkers {'open': 156}
+12:39:57 100 done, 710 running, walkers {'open': 156}
+12:41:09 125 done, 689 running, walkers {'open': 156}
+12:42:02 150 done, 670 running, walkers {'open': 156}
+12:42:56 175 done, 655 running, walkers {'open': 156}
+12:43:50 200 done, 638 running, walkers {'open': 156}
+12:44:38 225 done, 621 running, walkers {'open': 156}
+12:45:29 250 done, 604 running, walkers {'open': 156}
+12:46:11 275 done, 585 running, walkers {'open': 156}
+12:47:19 300 done, 576 running, walkers {'open': 156}
+12:48:24 325 done, 559 running, walkers {'open': 156}
+12:50:03 350 done, 550 running, walkers {'open': 156}
+Traceback (most recent call last):
+  File "/root/work/TTN-regimes/experiments/regime_map/round2.py", line 278, in <module>
+    now = dt.datetime.now(dt.timezone.utc)
+  File "/root/work/TTN-regimes/experiments/regime_map/round2.py", line 238, in run
+    for fut in done:
+              ^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py", line 453, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py", line 402, in __get_result
+    raise self._exception
+concurrent.futures.process.BrokenProcessPool: A process in the process pool was terminated abruptly while the future was running or pending.

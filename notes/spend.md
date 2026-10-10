@@ -39,3 +39,6 @@ Estimated total so far: about $36.
 2026-10-10 ~15:00 UTC: locality DELETED after verified copy (incl. obsolete_prefix; restart session $0.01). New agent
 saddle-dyn launched (192 vCPU Threadripper, Norway, $1.02/h; expected $8-12). regime-map round 2 running ($1.04/h,
 $2.65 so far this session). Estimated total so far: about $38.
+
+2026-10-10 ~16:00 UTC: regime-map DELETED after verified copy of round 1 + round 2 outputs (13,325 files, 1.69 GB;
+round-2 session $3.60, 3.47 h). Running: saddle-dyn ($1.02/h). Estimated total so far: about $43.

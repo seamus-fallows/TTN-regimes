@@ -329,8 +329,9 @@ def fig_side_by_side(
                 axes[i, j].set_xscale("symlog", linthresh=1.0 if c != 1 else 1.0)
     axes[0, 0].set_ylabel(r"$L/L_0$")
     axes[1, 0].set_ylabel(r"overlap $a_r$")
-    axes[2, 0].set_ylabel(r"singular values $s^e_k$")
-    # one legend below the panels: component r and singular-value index k share colour slot r = k
+    axes[2, 0].set_ylabel(r"singular values $s^e_j$")
+    # one legend below the panels: component r and singular-value index j share colour slot r = j
+    # (j, not k: the report reserves k for the route size)
     handles = [
         Line2D(
             [], [], color=colors[r], lw=1.2, label=f"$a_{r + 1}$, $s^e_{r + 1}$ ($s_{r + 1}={w:g}$)"
