@@ -297,7 +297,10 @@ pixels and moves the small-init asymptote to smaller sigma.
   sigma = 0.05 and 0.14 (k = 3; only two sigma values share the route, so this is not a scaling claim). New: at
   small sigma the loss drops twice before any rank grows (0.50 -> 0.33 -> 0.12, both drops at bond rank 1).
   The flow moves between two rank-1 critical points, the analogue of a wrong first escape corrected at rank 1
-  (theory_saddles.md 4.4, conjecture here: no Hessian taken). Locality: **no advantage** for the quadtree;
+  (theory_saddles.md 4.4). The Hessian at that plateau (L = 0.31-0.345, 27 runs, sigma = 0.05-0.5) has a
+  sigma-independent negative eigenvalue (lambda_min = -0.04 ... -0.25; `saddle_scaling` exponent
+  0.03 ± 0.09 projected, 0.02 ± 0.09 raw: strict). So the plateau is a strict saddle left by a rank-preserving rotation [empirical;
+  `results/fashion_hessians.json`]. Locality: **no advantage** for the quadtree;
   the task is almost solved by a rank-1 (product) function (L = 0.12, acc 0.92). Scrambled is as fast or
   faster (sigma = 0.05: L(1e4) 0.120 vs 0.123), and the MPS is slower at first but reaches the lowest loss
   (0.089, acc 0.945). Locality matters only as much as the label depends on pixel interactions that the
