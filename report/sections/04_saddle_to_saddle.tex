@@ -826,8 +826,8 @@ $I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$ ($I$ the regularized incomplete beta function, 
 physical directions normal to the learned pattern): $0.392$ at an MPS end that is a tree leaf and $0.5$ at the root
 end ($d=\chi=2$; \proven{} in this Gaussian model). With balanced initialization ends that are tree leaves cannot
 die at leading order, and spare bond dimension protects an end only when it reaches that end's own route edge,
-which reconciles the MPS8 stalls at $\chi=2\ncomp$ with the binary trees. \empirical{} Without any gradient flow the
-criterion separates the 3,492 fan-in locality runs with $k\ge4$ ($89\%$ of the predicted-dead runs stall, against
+which reconciles the MPS8 stalls at $\chi=2\ncomp$ with the binary trees. \empirical{} From the initialization and the
+$\isc$-free correlation flow alone, the criterion separates the 3,492 fan-in locality runs with $k\ge4$ ($89\%$ of the predicted-dead runs stall, against
 $1.8\%$ of the predicted-alive ones); in a pilot sweep with separate code (\cref{app:supp-s2s-locality}), by
 its own collapse detector, 56 of 63 predicted-dead runs collapse and none of 150 predicted-alive ones; on MPS4 at $\chi=2$ all 150
 predicted-dead runs stall or die, and none of the other 344. For the odeco teachers the trap is predicted from the

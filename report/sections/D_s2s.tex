@@ -571,7 +571,7 @@ of 150), but 69 of them stall (binary8 27, HT4 12, MPS8 30 of 30 each) \empirica
 
 \paragraph{Per-run tests} \empirical.
 Every committed two-component run of the locality sweeps and of the pilot was rebuilt from its configuration and seed
-and predicted without gradient flow. Fan-in initialization, saddle start and small initialization (3,492 locality
+and predicted from its initialization and the $\isc$-free correlation flow, without the gradient flow of the run. Fan-in initialization, saddle start and small initialization (3,492 locality
 runs with $k\ge4$, 587 stalled; the 191 wrong-order runs excluded, which behave like the rest), stalled over runs per
 predicted class: dead $408/457$ ($89\%$), pinned $141/934$ ($15\%$), alive $38/2{,}101$ ($1.8\%$); the earlier criterion
 (route part of $Y_{\rm nv}$ only; dead if two or more ends are unfavourable) gives $417/1{,}143$ ($36\%$), $119/1{,}116$ and
