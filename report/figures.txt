@@ -60,3 +60,7 @@ experiments/data_teacher/results/report_mps_laws.pdf   data_teacher/mps_laws.pdf
 # fix1_analysis.json and order_test.json)
 experiments/real_data/results/first_route_gaps.pdf   real_data/first_route_gaps.pdf
 experiments/real_data/results/order_test.pdf         real_data/order_test.pdf
+
+# Section 1, teaser figure, panels (b, c) (experiment report_figures; make_teaser.py, from the committed
+# results/teaser_run.csv and experiments/locality/results/twocomp_table.csv; panel (a) is tikz/teaser.tex)
+experiments/report_figures/results/teaser.pdf   intro/teaser.pdf
