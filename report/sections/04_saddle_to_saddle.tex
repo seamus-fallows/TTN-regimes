@@ -3,25 +3,9 @@
 % pilot_h2_locality; notes s2s_core.md, locality.md, order.md, theory_escape.md, theory_saddles.md,
 % theory_saddle_order.md. Final edit (2026-10-10) per notes/report_style.md: material moved out of this
 % section (tables, secondary checks, per-seed numbers, provenance and review history) is in
-% sections/D_s2s.tex with its labels; the parameter table (tab:s2s-parameters) moved to Sec. 7.
-% Old Sec. 5.3 "Stalled runs" is merged into the failure modes (sec:s2s-failure).
-
-% Merge-safe labels for material that moves between files of different editors: \LabelUnlessIn{file}{label}
-% defines the label here unless that file still contains "\label{label}". Before the editors' branches are
-% merged the old file keeps the label; after the merge (old copy deleted) this file defines it, so references
-% elsewhere keep working and no label is ever defined twice. Used for sec:other-stalled and tab:stall-test (old
-% Sec. 5.3, file 05) and for the stub of tab:s2s-parameters (moved to Sec. 7, file 07; see D_s2s.tex).
-\ExplSyntaxOn
-\cs_if_exist:NF \LabelUnlessIn
-  {
-    \cs_new_protected:Npn \LabelUnlessIn #1#2
-      {
-        \file_get:nnNTF {#1} { \cctab_select:N \c_str_cctab } \l_tmpa_tl
-          { \str_if_in:NnF \l_tmpa_tl { label{#2} } { \label{#2} } }
-          { \label{#2} }
-      }
-  }
-\ExplSyntaxOff
+% sections/D_s2s.tex with its labels; the parameter table moved to Sec. 7.1 (07, with its label).
+% Old Sec. 5.3 "Stalled runs" is merged into the failure modes (sec:s2s-failure); its stall-test table keeps the
+% label tab:stall-test (in D_s2s.tex); sec:other-stalled is an alias in Sec. 5 (05).
 
 \section{The saddle-to-saddle regime}\label{sec:s2s}
 
@@ -80,13 +64,13 @@ lasts $\propto\ln(1/\isc)$ ($k^*=2$), or lasts $\propto\isc^{-(k^*-2)}$ ($k^*\ge
 differs from the learned one on the sites $D$, the route is the Steiner subtree of the $m=\abs{V_D}$ cores
 that carry $D$, so it includes the cores on the paths between them \proven{} (\cref{prop:A-steiner}).
 
-\emph{Example} (teacher B4: patterns $0000$, $0110$, $1001$ with weights $1$, $0.3$, $0.6$; $0000$ is learned
-first on both trees). On MPS4 the $0.3$ component differs on sites 1 and 2, on adjacent cores: $k=2$, a
-logarithmic plateau. The $0.6$ component differs on sites 0 and 3, at the two ends of the chain: $k=4$, a
-$\isc^{-2}$ plateau. So the smaller component is learned first (\emph{locality beats weight}), in every run
-that escapes. On binary4 both components need the two leaf cores and the root: $k=3$ for both, each comes
-after a $\isc^{-1}$ plateau, and they are learned in the order of their weights, in all 48 runs
-(\cref{sec:s2s-several}).
+\emph{Example} (teacher B4, as in the introduction: patterns $0000$, $0110$, $1001$ with weights $1$, $0.3$, $0.6$;
+$0000$ is learned first on both trees). On MPS4 the $0.3$ component ($0110$) differs on sites 1 and 2, on adjacent
+cores: $k=2$, a logarithmic plateau. The $0.6$ component ($1001$) differs on sites 0 and 3, at the two ends of the
+chain: $k=4$, a $\isc^{-2}$ plateau. So the smaller component is learned first (\emph{locality beats weight}):
+$0110$ before $1001$ in all 60 runs. On binary4 both components need the two leaf cores and the root: $k=3$ for
+both, each comes after a $\isc^{-1}$ plateau, and they are learned in the order of their weights, $1001$ before
+$0110$, in all 48 runs (\cref{sec:s2s-several}).
 
 \smallskip
 \centering
@@ -565,9 +549,9 @@ determined. At the predicted saddles the measured bond-rank profile equals the p
 resolved (run, level) pairs. \newresult
 
 \paragraph{Locality beats weight.}
-\empirical{} On MPS4 every escaping run learns B4's $0.3$ component before its $0.6$ component, after a $k^*=2$
-level too short to be detected as a plateau; the $0.6$ component follows after a $\isc^{-2}$ plateau
-($p=2.015\pm0.013$, 5 seeds). On binary4 every run (48 of 48) learns them in weight order, after two $\isc^{-1}$
+\empirical{} On MPS4 all 60 runs learn B4's $0.3$ component before its $0.6$ component, after a $k^*=2$ level too
+short to be detected as a plateau; the $0.6$ component follows after a $\isc^{-2}$ plateau ($p=2.015\pm0.013$, 5
+seeds). On binary4 all 48 runs learn them in weight order, after two $\isc^{-1}$
 plateaus ($1.051\pm0.008$ and $1.028\pm0.005$, 8 seeds). As $\isc\to0$ a logarithmic route beats a power-law
 route whatever the weights (\cref{rem:A-sequence}) \derived; at finite $\isc$ weights and prefactors compete.
 \newresult
@@ -601,7 +585,7 @@ $2.018\pm0.017$. \newresult
   \label{fig:locality-trees}
 \end{figure}
 
-\paragraph{Whole sequences: a saddle hopper.}
+\paragraph{Whole sequences: a saddle hopper.}\label{sec:s2s-hopper}
 \empirical{} (bookkeeping of known theory) The sequence rules of this section (first escape, route rule, branches
 after a wrong first escape, race of logarithmic routes) were implemented as a predictor that hops from saddle to
 saddle, and scored on all committed runs without tuning (\cref{app:supp-s2s-hopper}). Where its prediction is
@@ -687,8 +671,8 @@ in 1,847 of 1,848 runs (the exception: a wrong first escape on binary4 at $\isc=
 tree, it is the largest in 639 of 640 runs \knownresult[deep linear networks: \citealp{jacot2022saddletosaddle},
 Thm~2 and Lemma~15]; on the tensor-like trees it varies from seed to seed but not with $\isc$, and the race of
 independent per-component flows names it in every MPS run, where the race is exact at leading order, in 480 of 488
-binary8 and HT4 runs, and in only 537 of 640 binary4 runs, where cores without sites couple the components
-(\cref{app:supp-s2s-order}).
+binary8 and HT4 runs, where cores without sites couple the components, and in only 537 of 640 binary4 runs, where
+that coupling decides (\cref{app:supp-s2s-order}).
 
 \paragraph{Tensor-like pairs: a race set by the initialization} (\cref{fig:order-first}(a,b)).
 \empirical{} In the main sweep (five trees, 28 settings of $(d,\chi)$, six values of $w$, $\isc=0.01$; 67,200 runs)
@@ -790,11 +774,12 @@ and a closed-form race when cores without sites couple the components.
 % Odeco part from notes/s2s_core.md 2.7 and the s2s-core round-2 verification (safe-to-cite items 12-17; errata
 % E4, E5, E12, E13, E15, E18-E20). Locality part from notes/locality.md 7.5, 7.9, 7.10 and the locality round-2
 % verification (items b, d). Regime-map stalls: old Sec. 5.3 "Stalled runs" (sec:other-stalled, deleted from
-% 05 by ed-regimes) merged here; its stall-test table is tab:s2s-stall-test in app:supp-s2s-failure. Stall
+% 05 by ed-regimes) merged here; its stall-test table keeps the label tab:stall-test (app:supp-s2s-failure). Stall
 % taxonomy of notes/report_style.md: stalled = dead route (trap) / slow / floor; odeco classes "trapped" and
 % "stalled" of app:exp-s2s are "dead route" and "slow". Claims review A: m20 (novelty: the route-end condition;
 % Luo et al.), m23 (hedge on the mechanism); todo item 1 (decay rate constant per seed: separated teacher only).
-% Pending: trap-theory results. WITHDRAWN, do not reintroduce: "measured decay rates 1.1-5.6x below the
+% Trap criterion: notes/theory_trap.md v1 (merged before its verification): keep "(pending verification)" until
+% the verifier's errata are applied. WITHDRAWN, do not reintroduce: "measured decay rates 1.1-5.6x below the
 % single-end estimate" (E5); the balanced-route estimate as an upper bound (E12); "stalls are ever-longer
 % plateaus" as established; K = 7, 8 decay rates and their sigma dependence (E19, E20); "40% at K = 4, fixed per
 % direction" for the close teacher (E15); ">100x drops 3-8%" and "0.6-2% at chi = 6" (E18: 2-8% and 0-2%).
@@ -812,8 +797,9 @@ entries of each route end to the imbalance of its bond, of order $\isc^2$ under 
 the Gauss--Newton term makes the new entries of an end that the imbalance does not favour decay at a rate of order
 $\isc^2$. Decay in a time $\propto\isc^{-2}$ competes with an escape in $\propto\isc^{-(k-2)}$: for $k=3$ the route
 escapes first, for $k=4$ both are of the same order, and for $k\ge5$ the ends are decided long before the route
-could escape. Exactly balanced initialization ($\Q e=0$) is expected to protect the ends \conjecture{} (in
-four-layer matrix factorization exactly balanced initialization can fail, \citealp{luo2025global}).
+could escape. Exactly balanced initialization ($\Q e=0$) is expected to protect the ends \conjecture{} (for ends
+that are tree leaves see below; in four-layer matrix factorization exactly balanced initialization can fail,
+\citealp{luo2025global}).
 \knownresult[related shrinkage of dormant weights: \citealp{jacot2022saddletosaddle}, App.~C.1;
 \citealp{kumar2025towards}; \citealp{kunin2025alternating}, Lemma~B.1]
 
@@ -882,15 +868,16 @@ initialization cuts the stalls tenfold (169 to 16 of 1,008), and the checked bal
 Spare bond channels remove the stalls only on routes with an uncapped end; on routes with both ends capped they rise
 from 90 to 106 at $\chi=4$. Counts and the effect on the exponents: \cref{app:supp-s2s-failure}. \newresult
 
-\paragraph{The regime maps meet the same failures.}\label{sec:s2s-stalls-maps}%
-\LabelUnlessIn{sections/05_other_regimes.tex}{sec:other-stalled}
+\paragraph{The regime maps meet the same failures.}\label{sec:s2s-stalls-maps}
 \empirical{} (confirming the prediction of \cref{app:boundaries}; mechanism \conjecture, heuristic) With $\chi$
 equal to the teacher rank $\ncomp$ the last component needs a route through all $\Kc$ cores, which can die for
 $\Kc\ge5$ (already at $\Kc=4$ for some initializations, as above). In a stall test at $\chi=\ncomp=3$
-(\cref{tab:s2s-stall-test}) most runs on binary8 and every fan-in run on MPS8 never learn the last component, in the
-plain as in the centred model, so the initial function is not the cause; from fan-in initialization the route is
-dead (28 of 32 stalled plain runs), and balanced initialization removes the dead routes but not the stalls. In the
-plain-model $\isc\times\Kc$ sweeps 546 of the 795 stalled runs end with a dead route. Spare channels remove the
+(\cref{tab:stall-test}) most runs on binary8 and every fan-in run on MPS8 do not learn the last component within
+the budget (9 of 18 fan-in MPS8 runs learn only the first), in the plain as in the centred model, so the initial
+function is not the cause; from fan-in initialization the route is dead (28 of 32 stalled plain runs), and balanced
+initialization removes the dead routes but not the stalls. In the plain-model $\isc\times\Kc$ sweeps 546 of the 795
+stalled runs end with the $\ncomp$-th bond singular value at roundoff, a dead route (182 of the 795 stopped at the
+step limit). Spare channels remove the
 stalls only where no route end is capped: on binary8 at $d=3$, $\chi=6$ no run stalls at $\isc\le0.63$ (30 runs),
 but on MPS8 every run stalls (50 of 50), its end bonds being capped at $d=3$, the teacher rank; one spare channel per
 end is not enough either (MPS8 and HT4 at $d=4$, above). With the centred model at $\chi=4$ the stalls below the

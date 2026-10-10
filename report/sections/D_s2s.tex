@@ -496,14 +496,16 @@ $0.05$--$0.12$) nor a law $\isc^{-(2k-6)}$ (both ends pinned, $a=2$; measured $a
 describes the data.
 
 \paragraph{Stall test of the regime maps.}
-\empirical{} The test of \cref{tab:s2s-stall-test} ran budgets of $6\cdot10^4$--$1.6\cdot10^7$ time units. Fan-in
+\empirical{} The test of \cref{tab:stall-test} ran budgets of $6\cdot10^4$--$1.6\cdot10^7$ time units. Fan-in
 initialization makes the root bonds child-heavy, $\E\Q e=\isc^2(1-1/\chi)\Id\succ0$, so with $\chi=\ncomp$ the route
 ends of the last component decay at a rate $\propto\isc^2$ while its escape needs a time $\propto\isc^{-(\Kc-2)}$. From
 fan-in initialization the stalled route is dead: its third bond singular value ends below $10^{-12}$ in 28 of 32
 stalled plain runs. With balanced initialization the route still decays and 12 of 18 runs do not escape: the third
 singular value is $1.4\cdot10^{-5}$ (median) at the end. In the plain-model $\isc\times\Kc$ sweeps the stalled runs are
-typed by the $\ncomp$-th bond singular value at the end, with the thresholds of \cref{tab:s2s-stall-test} and
-$10^{-4}$: 546 of 795 end with a dead route, 212 with a route still decaying and 37 on a long plateau. At $d=2$ the
+typed by the $\ncomp$-th bond singular value at the end (thresholds on the end value, not trends): below
+$10^{-12}$, a dead route (546 of 795), between $10^{-12}$ and $10^{-4}$ (212) or above (37); 182 of the 795 stopped
+at the step limit, and some of the 37 at $\isc\ge0.77$ learned nothing. In the stall test 9 of 18 fan-in MPS8 runs
+learn only the first component. At $d=2$ the
 MPS with full bonds still stall in up to 3 of 6 seeds. Some runs of the maps stop at the integrator's step limit:
 unfinished lazy fits at square bonds (\cref{sec:other-lazy}) and some deep-tree runs, for example on MPS with $\Ns=8$
 at $\isc=0.1$ (after $2\cdot10^4$ steps, at $t=1.4\cdot10^9$ of a budget of $5.7\cdot10^9$).
@@ -515,7 +517,7 @@ at $\isc=0.1$ (after $2\cdot10^4$ steps, at $t=1.4\cdot10^9$ of a budget of $5.7
     runs from the third bond singular value of $\W$ at the end, minimized over edges: dead route below $10^{-12}$,
     decaying up to $10^{-4}$ (no stalled run is above); the centred runs did not record the spectra of $\W$. Source:
     \texttt{experiments/regime\_map/results/report/stall\_test\_summary.csv}.}
-  \label{tab:s2s-stall-test}\LabelUnlessIn{sections/05_other_regimes.tex}{tab:stall-test}
+  \label{tab:stall-test}
   \footnotesize
   \begin{tabular}{@{}lllcccc@{}}
     \toprule
@@ -623,7 +625,4 @@ deep linear networks and are reported as checks; the single-route consistency of
 Steiner edges, not a prediction success rate; the law $\isc^{-(2k-6)}$ for steep MPS routes was the pilot's conjecture;
 the claims withdrawn in the reviews are not restated.
 
-% Stub for the parameter table tab:s2s-parameters, deleted from Sec. 4; ed-intro moves it to Sec. 7.1 with the same
-% label, and Sec. 1 refers to it. \LabelUnlessIn (defined in 04_saddle_to_saddle.tex) sets this invisible label only
-% while 07_open_questions.tex does not define it, so it disappears by itself once the table is in Sec. 7.
-\phantomsection\LabelUnlessIn{sections/07_open_questions.tex}{tab:s2s-parameters}
+
