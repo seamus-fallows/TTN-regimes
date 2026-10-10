@@ -1,7 +1,7 @@
 | source | k | start | pred. dead | pred. pinned | pred. alive |
 |---|---|---|---|---|---|
 | locality | 4 | saddle | 58/66 | 0/114 | 5/204 |
-| locality | 4 | small | 145/166 | 2/318 | 0/592 |
+| locality | 4 | small | 145/146 | 2/318 | 0/612 |
 | locality | 4 | small_balanced | - | 0/122 | 0/246 |
 | locality | 5 | saddle | 49/49 | 10/58 | 9/405 |
 | locality | 5 | small | 24/30 | 0/58 | 0/684 |

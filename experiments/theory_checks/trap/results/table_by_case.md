@@ -49,11 +49,11 @@
 | locality | midroot6 | 05 | 6 | small_balanced | 2 | - | - | 0/30 |
 | locality | mps4 | 0123 | 4 | saddle | 2 | 12/12 | 0/18 | 0/18 |
 | locality | mps4 | 0123 | 4 | small | 2 | - | 0/18 | 0/24 |
-| locality | mps4 | 0123 | 4 | small | 4 | 12/18 | 0/12 | 0/18 |
+| locality | mps4 | 0123 | 4 | small | 4 | 12/12 | 0/12 | 0/24 |
 | locality | mps4 | 0123 | 4 | small_balanced | 2 | - | - | 0/30 |
 | locality | mps4 | 03 | 4 | saddle | 2 | 12/12 | 0/18 | 0/18 |
 | locality | mps4 | 03 | 4 | small | 2 | 76/76 | 0/82 | 0/38 |
-| locality | mps4 | 03 | 4 | small | 4 | 14/28 | 0/56 | 0/76 |
+| locality | mps4 | 03 | 4 | small | 4 | 14/14 | 0/56 | 0/90 |
 | locality | mps4 | 03 | 4 | small | 8 | - | - | 0/48 |
 | locality | mps4 | 03 | 4 | small_balanced | 2 | - | - | 0/48 |
 | locality | mps6 | 012345 | 6 | saddle | 2 | 6/6 | 6/18 | 4/6 |

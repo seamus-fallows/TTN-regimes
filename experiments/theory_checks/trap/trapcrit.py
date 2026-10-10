@@ -120,8 +120,10 @@ def plateau_state(spec: TTNSpec, teacher, cores0, start: str, learned: int = 0, 
     start = 'saddle': the init already sits at the aligned saddle of component `learned` (bond
     index 0 on every edge); 'small' / 'small_balanced' / 'fanin' / 'balanced': correlation flow."""
     if start == "saddle":
-        w = {c: torch.nn.functional.one_hot(torch.tensor(0), spec.bond_dims[c]).double()
-             for c in spec.tree.edges}
+        w = {
+            c: torch.nn.functional.one_hot(torch.tensor(0), spec.bond_dims[c]).double()
+            for c in spec.tree.edges
+        }
         return cores0, learned, w
     cores, q = correlation_flow(spec, teacher, cores0, M=M)
     return cores, q, learned_directions(spec, cores)
@@ -232,15 +234,24 @@ def predict(spec, teacher, cores, w, q, D, r=1, weights=(1.0, 0.5)):
         qnn = float(torch.linalg.eigvalsh(Qn).max())
         yr = route_entry_norm2(spec, teacher, cores, w, r, nodes, partner, e)
         Qfull = sign * gram_on_edge(spec, cores, e)
-        row = dict(u=u, e=e, partner=partner, j=t["j"], q_nn=qnn, r12=qnn + yr,
-                   protected=bool(torch.linalg.eigvalsh(Qfull).min() > 0))
+        row = dict(
+            u=u,
+            e=e,
+            partner=partner,
+            j=t["j"],
+            q_nn=qnn,
+            r12=qnn + yr,
+            protected=bool(torch.linalg.eigvalsh(Qfull).min() > 0),
+        )
         if t["j"] == 2:
             ev = torch.linalg.eigvalsh(t["C"])
             row.update(C=float(ev.max()), n_pos=int((ev > 0).sum()), dying=bool(ev.max() <= 0))
         elif t["j"] == 3:
             cl = t["clusters"]
-            row.update(C=min(c["c1"] - min(0.0, c["c2"]) for c in cl),
-                       dying=any(c["c1"] < 0 and c["c1"] < c["c2"] for c in cl))
+            row.update(
+                C=min(c["c1"] - min(0.0, c["c2"]) for c in cl),
+                dying=any(c["c1"] < 0 and c["c1"] < c["c2"] for c in cl),
+            )
         else:
             row.update(C=float("nan"), dying=False)
         row["active"] = k >= 2 * t["j"]
@@ -255,11 +266,26 @@ def predict(spec, teacher, cores, w, q, D, r=1, weights=(1.0, 0.5)):
     nr, vr = classify([x["r12"] < 0 for x in rows]) if k >= 4 else (0, "alive")
     amps = route_amplitudes(spec, teacher, cores, w, r, nodes)
     v_k4 = None
-    if k == 4 and n == 2 and all(x["j"] == 2 for x in rows) and all(
-            spec.bond_dims[e] == 2 for e in [x["e"] for x in rows]):
+    # k = 4, two dying ends: the sigma-free competition decides (reduced route ODE with tensor route
+    # entries, basis invariant; ends need one new direction, inner edges may have spare ones)
+    if (
+        k == 4
+        and n == 2
+        and all(x["j"] == 2 for x in rows)
+        and all(spec.bond_dims[e] == 2 for e in [x["e"] for x in rows])
+    ):
         v_k4 = reduced_route(spec, teacher, cores, w, q, r, D, weights[q], weights[r])
         v = "dead" if v_k4 == "dead" else "alive"
-    return dict(k=k, verdict=v, n_dying=n, verdict_q=vq, verdict_r12=vr, ends=rows, amps=amps, verdict_k4=v_k4)
+    return dict(
+        k=k,
+        verdict=v,
+        n_dying=n,
+        verdict_q=vq,
+        verdict_r12=vr,
+        ends=rows,
+        amps=amps,
+        verdict_k4=v_k4,
+    )
 
 
 def nonvisible_gram(spec, cores, w, v, e):
@@ -315,57 +341,133 @@ def verdict_at(pred, unit, s_q, s_r, K):
     return ("dead" if ratio > 1 else "unstable"), ratio
 
 
-def reduced_route(spec, teacher, cores, w, q, r, D, s_q, s_r, unit=1.0, t_max=1e4):
-    """Reduced plateau model of one route (all ends with partners carrying sites, one new direction
-    on every route edge), integrated from the plateau-start values scaled by `unit` (the physical size
-    of one unit of the small entries; the result does not depend on it for k = 4):
-      x_u' = -A^2 |y_u|^2 x_u + c prod_(other route cores) b,  y_u' = -A^2 |X_u|^2 y_u  (each end u),
-      b_v' = c prod_(other route cores) b                            (inner route cores),
-    A^2 = a^(2(K-2)), c = s_r a^(K-k), a = s_q^(1/K); x_u is the end's route entry (signed), |X_u|^2 its
-    whole normal-visible block, y_u the partner's normal-visible block. Returns 'escape' (some
-    amplitude grew 1e3-fold), 'dead' (two end entries below 1e-12 of their start) or 'pinned'
-    (neither within t_max decay times)."""
+def route_tensors(spec, teacher, cores, w, r, nodes, rot=None):
+    """Route entry of every route core as a tensor with one leg per route edge (in the order of
+    neighbours(tree, v)), each leg in the new space of its edge: core v contracted with u_r on its
+    sites and with the learned direction on its non-route edges. rot (edge -> orthogonal matrix)
+    rotates the new-space basis of an edge (basis-invariance tests).
+    Returns (route cores sorted, tensors as numpy arrays, einsum subscripts: one letter per edge)."""
+    tree = spec.tree
+    rot = rot or {}
+    order = sorted(nodes)
+    letters, tensors, subs = {}, [], []
+    for v in order:
+        ops = {("site", s): teacher.factors[r, s] for s in tree.sites[v]}
+        sub = ""
+        for x, f in neighbours(tree, v):
+            if x in nodes:
+                ops[("edge", f)] = complement(w[f]) @ rot[f] if f in rot else complement(w[f])
+                sub += letters.setdefault(f, chr(ord("a") + len(letters)))
+            else:
+                ops[("edge", f)] = w[f]
+        tensors.append(contract(cores[v], tree, v, ops).numpy())
+        subs.append(sub)
+    return order, tensors, subs
+
+
+def reduced_route(
+    spec,
+    teacher,
+    cores,
+    w,
+    q,
+    r,
+    D,
+    s_q,
+    s_r,
+    unit=1.0,
+    t_max=1e4,
+    rot=None,
+    mode="tensor",
+    tensors=None,
+    full=False,
+):
+    """Reduced plateau model of one route whose ends all have partners carrying sites and one new
+    direction on their route edge (c_e = 1); inner route edges may have any number of new directions.
+    Integrated from the plateau-start values scaled by `unit` (the physical size of one unit of the
+    small entries; the result does not depend on it for k = 4):
+      T_v' = c dP/dT_v - [v end] A^2 |y_v|^2 T_v,   |y_u|^2' = -2 A^2 |X_u|^2 |y_u|^2  (each end u),
+    T_v = route entry of core v as a tensor over the new spaces of its route edges (route_tensors),
+    P = full contraction of all T_v (the route's overlap with U_r), A^2 = a^(2(K-2)), c = s_r a^(K-k),
+    a = s_q^(1/K); T_u at an end is its (signed) route entry, |X_u|^2 its whole normal-visible block,
+    y_u the partner's normal-visible block. The flow is equivariant under rotations of every new-space
+    basis, so the verdict is basis invariant (theory_trap.md section 2.6). mode='first_vector' keeps
+    only the first basis vector of every new space (the v1 scalar model; basis dependent when an inner
+    edge has c > 1, kept for the comparison). tensors: (order, tensors, subs) to use instead of
+    route_tensors (tests). Returns 'escape' (the route entries grew 1e3-fold), 'dead' (two end entries
+    below 1e-12 of their start) or 'pinned' (neither within t_max decay times); with full=True also
+    the solve_ivp solution (dense output) and the state layout."""
     tree = spec.tree
     K = spec.n_cores
     nodes, ends = route_ends(tree, D)
-    order = sorted(nodes)
+    order, T, subs = tensors or route_tensors(spec, teacher, cores, w, r, nodes, rot)
+    if mode == "first_vector":
+        T = [t[(slice(0, 1),) * t.ndim] for t in T]
+    T = [np.asarray(t, dtype=float) * unit for t in T]
+    shapes = [t.shape for t in T]
+    offs = np.cumsum([0] + [t.size for t in T])
+    nb = int(offs[-1])
     a = s_q ** (1.0 / K)
     A2, c = a ** (2 * (K - 2)), s_r * a ** (K - len(nodes))
-    b0 = []
-    for v in order:
-        ops = {("site", s): teacher.factors[r, s] for s in tree.sites[v]}
-        for x, f in neighbours(tree, v):
-            ops[("edge", f)] = complement(w[f])[:, 0] if x in nodes else w[f]
-        b0.append(float(contract(cores[v], tree, v, ops)) * unit)
     ix = {v: i for i, v in enumerate(order)}
-    endinfo = []
+    endinfo = []  # (position of the end's route entry in the state, rest2, |y|^2)
     for u, e, partner in ends:
+        if T[ix[u]].size != 1:
+            raise ValueError("reduced_route needs one new direction on every end edge")
         X = new_block(spec, teacher, cores, w, q, u, {e})
         Y = new_block(spec, teacher, cores, w, q, partner, {e})
-        rest2 = max(float(X.pow(2).sum()) * unit**2 - b0[ix[u]] ** 2, 0.0)
-        endinfo.append((ix[u], rest2, float(Y.pow(2).sum()) * unit**2))
-    n, m = len(order), len(ends)
-    y0 = np.array(b0 + [e[1] for e in endinfo] + [e[2] for e in endinfo])
-    scale = np.abs(y0[:n]).max()
+        bu = float(T[ix[u]].reshape(-1)[0])
+        rest2 = max(float(X.pow(2).sum()) * unit**2 - bu**2, 0.0)
+        endinfo.append((int(offs[ix[u]]), rest2, float(Y.pow(2).sum()) * unit**2))
+    m = len(ends)
+    y0 = np.concatenate(
+        [
+            np.concatenate([t.reshape(-1) for t in T]),
+            [e[1] for e in endinfo],
+            [e[2] for e in endinfo],
+        ]
+    )
+    # basis-invariant scale; equal to v1's max |b_v| when every route entry is a scalar
+    scale = max(float(np.linalg.norm(t)) for t in T)
+    eqs = [
+        ",".join(subs[j] for j in range(len(T)) if j != i) + "->" + subs[i] for i in range(len(T))
+    ]
 
     def rhs(_, z):
-        b, rest2, y2 = z[:n], z[n : n + m], z[n + m :]
-        db = np.array([c * np.prod(np.delete(b, i)) for i in range(n)])
+        Ts = [z[offs[i] : offs[i + 1]].reshape(shapes[i]) for i in range(len(T))]
+        db = np.concatenate(
+            [c * np.einsum(eqs[i], *(Ts[:i] + Ts[i + 1 :])).reshape(-1) for i in range(len(T))]
+        )
+        rest2, y2 = z[nb : nb + m], z[nb + m :]
         drest, dy2 = np.zeros(m), np.zeros(m)
-        for j, (i, _, _) in enumerate(endinfo):
-            db[i] -= A2 * y2[j] * b[i]
+        for j, (p, _, _) in enumerate(endinfo):
+            db[p] -= A2 * y2[j] * z[p]
             drest[j] = -2 * A2 * y2[j] * rest2[j]
-            dy2[j] = -2 * A2 * (b[i] ** 2 + rest2[j]) * y2[j]
+            dy2[j] = -2 * A2 * (z[p] ** 2 + rest2[j]) * y2[j]
         return np.concatenate([db, drest, dy2])
 
     def big(_, z):  # smooth, so event location is reliable
-        return float(np.sum(z[:n] ** 2)) - (1e3 * scale) ** 2
+        return float(np.sum(z[:nb] ** 2)) - (1e3 * scale) ** 2
 
     big.terminal = True
     t_end = t_max / (A2 * scale**2)
-    sol = solve_ivp(rhs, (0.0, t_end), y0, method="LSODA", rtol=1e-9, atol=1e-16 * scale, events=big)
+    sol = solve_ivp(
+        rhs,
+        (0.0, t_end),
+        y0,
+        method="LSODA",
+        rtol=1e-9,
+        atol=1e-16 * scale,
+        events=big,
+        dense_output=full,
+    )
     if sol.status == 1:
-        return "escape"
-    z = sol.y[:, -1]
-    ratios = sorted(abs(z[i]) / max(abs(y0[i]), 1e-300) for i, _, _ in endinfo)
-    return "dead" if ratios[1] < 1e-12 else "pinned"
+        verdict = "escape"
+    else:
+        z = sol.y[:, -1]
+        ratios = sorted(abs(z[p]) / max(abs(y0[p]), 1e-300) for p, _, _ in endinfo)
+        verdict = "dead" if ratios[1] < 1e-12 else "pinned"
+    if full:
+        layout = dict(offs=offs, shapes=shapes, subs=subs, ends=[p for p, _, _ in endinfo])
+        return verdict, sol, layout
+    return verdict

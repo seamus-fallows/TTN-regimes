@@ -16,7 +16,7 @@
 | locality | mps4 | 2 | saddle | 24/24 | 0/36 | 0/36 |
 | locality | mps4 | 2 | small | 76/76 | 0/100 | 0/62 |
 | locality | mps4 | 2 | small_balanced | - | - | 0/78 |
-| locality | mps4 | 4 | small | 26/46 | 0/68 | 0/94 |
+| locality | mps4 | 4 | small | 26/26 | 0/68 | 0/114 |
 | locality | mps4 | 8 | small | - | - | 0/48 |
 | locality | mps6 | 2 | saddle | 50/58 | 21/100 | 10/86 |
 | locality | mps6 | 2 | small | 47/48 | 0/102 | 1/58 |
