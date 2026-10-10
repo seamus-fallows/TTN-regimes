@@ -349,7 +349,7 @@ K = 12 and a "derived" sqrt(d) limit.*
   1.15-1.16, lie between them). **Conjecture** (as R9 / P15 in `notes/theory_regimes.md`); a test needs
   full bonds (or spare channels with the plain model), longer budgets at K >= 8, and d = 3.
 - **Stalls take over at large K.** Even with spare channels, MPS trees stall on the S2S side (MPS 8:
-  5/6 seeds stall at the smallest sigma; MPS 12: no seed reaches a resolved S2S boundary; centred floor
+  5/6 seeds stall at the smallest sigma; MPS 12: no seed reaches a resolved label boundary; centred floor
   above sigma ~ 1). Binary trees stall less (binary 16: S2S up to sigma = 0.63-1.0). See
   `stalls_vs_K.png`; at chi = teacher rank the stalled fraction is higher at every K >= 6 (2.2).
 - **Plain model.** Up to K = 8 the plain and centred boundaries agree within a grid step (0.17 vs 0.17
