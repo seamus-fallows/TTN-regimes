@@ -1,7 +1,7 @@
 % sections/A_derivations.tex -- Appendix A: derivations behind the theory of the report.
 % Sources (all v2, independently verified): notes/theory_escape.md (A.2), notes/theory_saddles.md
-% (A.3), notes/theory_teachers.md (A.4), notes/theory_covariance.md (A.5),
-% notes/theory_optimizer.md (A.6), notes/theory_regimes.md (A.7); background in notes/literature.md
+% (A.3), notes/theory_saddle_order.md (A.4), notes/theory_teachers.md (A.5), notes/theory_covariance.md
+% (A.6), notes/theory_optimizer.md (A.7), notes/theory_regimes.md (A.8); background in notes/literature.md
 % (sections 1.4, 3, 5). Status tags and new/known markers copy the notes' own tags and literature
 % mappings: do not upgrade a tag here without first changing the note. Numerical checks quoted
 % here are the notes' (scratch scripts outside the repository); the experiments that test the
@@ -413,8 +413,9 @@ gives exactly $\W(\params_S+\delta)=\sum_{\mathcal J}\W_{\mathcal J}[\delta]$, $
 Disconnected sets $\mathcal J$ also contribute, possibly below the route degree (MPS $\Ns=5$, $D=\{0,4\}$:
 degree 4), but each connected component $\mathcal J_i$ pays the Gauss--Newton cost $\frac12\normF{\W_{\mathcal J_i}}^2$ at the
 order of the gain; for one learned component and two blocks the quadratic form is positive
-semidefinite iff $\tw j\ge\tw r$, the condition of \cref{prop:A-piggyback-graph} \derived. That disconnected sets never
-descend before the single-core rotations is shown only in this case.
+semidefinite iff $\tw j\ge\tw r$, the condition of \cref{prop:A-piggyback-graph} \derived. In general (one learned
+component) whether disconnected sets descend before the route is decided by the generalized piggyback operator of
+\cref{app:saddle-order} \proven.
 
 \begin{definition}[Local residual]\label{def:A-local-residual}
   For a route $\mathcal C$, $\mathcal R_{\mathcal C}:=\ip{\mathcal R}{\bigotimes_{f\in\partial\mathcal C}\Sub{f}}$
@@ -437,11 +438,14 @@ descend before the single-core rotations is shown only in this case.
   the saddle is the first-escape problem of \cref{app:escape} for the route, with $\Kc\to k^*$ and
   $\Wt\to\mathcal R_{\mathcal C}$. This needs the old entries to sit at a local minimum of the fixed-rank
   problem; it fails at the strict saddles of \cref{prop:A-piggyback-graph}, where the old entries move
-  first.
+  first. It also needs the generalized piggyback operator below the learned weight
+  (\cref{thm:A-order-lower}); otherwise, from $k^*=5$ on, a smaller cluster of cores plus old rotations can
+  escape first (\cref{thm:A-order-sharp}).
 \end{proposition}
 
 \begin{proposition}[Steiner identity]\label{prop:A-steiner}
-  \proven{} (identity and upper bound on the order) \derived{} (order $=k^*$) \newresult[the route is the
+  \proven{} (identity and upper bound on the order; order $=k^*$ under the condition of
+  \cref{thm:A-order-lower}) \newresult[the route is the
   Steiner subtree of the residual's sites, which can be a proper subtree of a connected component of
   rank-deficient bonds; descent along a whole such component (model rank below target rank):
   \citealp{furman2026benign}, Lemma~D.8; with several such components the smallest gives the least
@@ -458,9 +462,10 @@ descend before the single-core rotations is shown only in this case.
   \end{equation}
   The bonds whose rank must grow to add $r$ are exactly the bonds of $\mathrm{St}(N(D_{jr}))$, so $k$ is one
   plus their number, and $k=1$ iff $D_{jr}$ lies on a single core. With route entries proportional to
-  $t$, $\Loss-\Loss_S=-c_rt^{k}+O(t^{2k})$: the saddle has order at most $k^*$. That no curve descends
-  faster is shown only up to order three (\cref{prop:A-hessian}); that the order equals $k^*$ is derived
-  (\cref{prop:A-escape-degree}).
+  $t$, $\Loss-\Loss_S=-c_rt^{k}+O(t^{2k})$: the saddle has order at most $k^*$. No curve descends faster if
+  the generalized piggyback operator stays below $\tw j$ (\cref{thm:A-order-lower}; always for $k^*=2$, for
+  $k^*\in\{3,4\}$ with a positive definite fixed-rank block, and for two-component teachers in the correct
+  order); otherwise the order can be smaller, from $k^*=5$ on (\cref{thm:A-order-sharp,cor:A-order}).
 \end{proposition}
 \begin{proof}
   Beyond a boundary bond $f$ the learned network is $\Sub{f}=q_j^{n_f}\U j|_{H_f}$ ($n_f$ cores, sites $H_f$,
@@ -598,7 +603,10 @@ all 5 forgets it, learns $r$, $r'$ and relearns $j$; with weights $1.2$ ($\lambd
   $\ov j\approx0$, and $j$ is relearned through its route after a time $\propto\isc_{\rm eff}^{-(k-2)}$, $\isc_{\rm eff}$ set
   by the largest new-index seed. (2) $k=2$: $r$ is added directly, at the larger rate $\tw r\tw j^{(\Kc-2)/\Kc}$,
   and $j$ is kept. (3) $m\ge3$ (tensor-like pair): no rotation; $r$ is added through its route after
-  $\Delta t\approx b^{-(k-2)}/((k-2)\tw r\tw j^{(\Kc-k)/\Kc})$, and $\ov j$ stays at $1$. So a correction through a
+  $\Delta t\approx b^{-(k-2)}/((k-2)\tw r\tw j^{(\Kc-k)/\Kc})$, and $\ov j$ stays at $1$. This needs $N(D_{jr})$
+  to have no split into two sets of degree below $k/2$; with one (from $k=5$ on, e.g.\ HT with $\Ns=4$ and
+  $D$ = all sites) the order is $2\ell^*<k$ (\cref{cor:A-order}), and at small enough $\isc$ a cluster escape
+  is expected to make $j$ forgotten and relearned (\derived, \cref{app:saddle-order}). So a correction through a
   strict saddle exists only for matrix-like pairs, where the wrong order becomes rare as $\isc\to0$
   (\cref{prop:A-matrix-like}). Checked on binary and MPS $\Ns=4$, before the random streams of teacher and
   initialization were separated.
@@ -686,7 +694,9 @@ $\isc$-scaling of $\lambda_{\min}$ or from $\gamma$.
   whichever is more unstable, in time $\propto\ln(1/\isc)$ (\cref{prop:A-escape-degree} does not apply);
   otherwise it is the route of smallest $k^*$ (logarithmic beats power law, smaller powers beat larger
   ones), ties being decided by the coupling and head start $c\,b_{\rm eff}^{k-2}$, dominated for $k\ge3$ by the
-  random route amplitudes. (3) The escape raises the bond rank by one on the bonds inside the route, and
+  random route amplitudes, provided the generalized piggyback operator stays below the learned weight; if a
+  level $\ell^*<k^*/2$ exceeds it, the order $2\ell^*$ competes with $k^*$ (\cref{cor:A-order}; a
+  leading-order race). (3) The escape raises the bond rank by one on the bonds inside the route, and
   the next saddle is the best approximation of $\Wt$ with the new rank profile (for pattern teachers
   without superpositions, the partial sum of the learned components), whose loss is the plateau level. Since $k^*$
   depends on the tree, \emph{locality beats weight} (teacher B4, \cref{sec:s2s-locality}). The number of cores
@@ -726,6 +736,146 @@ converge with probability at least $\frac12$, \citealp{luo2025global}, Thm~2), a
 stalled fraction tends to $P(\text{all ends unfavourable})$ as $\isc\to0$. The locality experiments contradict
 parts of this picture (dead runs with a live route end, no stall in 144 fan-in HT4 runs with $k=5$;
 \cref{sec:s2s-failure}).
+
+% ===========================================================================================
+\subsection{Saddle order: lower bound and sharpness}\label{app:saddle-order}
+% Source: notes/theory_saddle_order.md v2 (full proofs, sections 3-4; numerics, section 5), verified in
+% notes/reviews/saddle_order_verification_proof.md and saddle_order_verification_numerics.md.
+
+\Cref{prop:A-steiner} gives a descent curve of order $k^*$ at a learned saddle, an upper bound on the
+saddle order (as Lemma~D.8 of \citealp{furman2026benign} does for a whole connected component of
+rank-deficient bonds). Here we ask when no curve descends faster. Lower bounds on saddle orders are
+known in special cases only: in deep linear networks the strict/non-strict classification
+\citep[Thm~7]{achour2024loss} (order $2$ versus more than $2$), and for one parity saddle of a binary tree
+\citep[Prop.~5.3]{furman2026benign}.
+
+\paragraph{Setting.} One learned component $j$: $\params_S$ represents $\W_S=\tw j\U j$ (balanced or not),
+$\mathcal R=\Wt-\W_S$ is any residual with $\ip{\U j}{\mathcal R}=0$ (a pattern teacher only where stated),
+inputs are whitened. The \emph{saddle order} of $\params_S$ is the largest $p$ with
+$\Loss(\params)-\Loss_S\ge-C\norm{\params-\params_S}^p$ near $\params_S$; measuring the distance to the
+local gauge orbit instead gives the same $p$, because the gauge acts linearly and preserves $\Loss$. Let
+$P_v$ project onto the physical vector of core $v$ in $\U j$ (the pattern of $j$ on $\sites v$),
+$P_v^\perp=\Id-P_v$, and for $B\subseteq\nodes$ let
+$\Pi_B=\bigotimes_{v\in B}P_v^\perp\otimes\bigotimes_{v\notin B}P_v$. These $2^{\Kc}$ \emph{sector}
+projectors are orthogonal and sum to the identity, and the sector $\mathcal H_B=\mathrm{range}(\Pi_B)$
+satisfies $\mathcal H_{B_1}\otimes\mathcal H_{B_2}\cong\mathcal H_{B_1\sqcup B_2}$ for disjoint sets.
+$\params_S$ is critical iff $\Pi_{\{v\}}\mathcal R=0$ for every core $v$. The \emph{degree} of a set is
+$\deg B=\abs{\mathrm{St}(B)}$, the number of cores of its Steiner subtree, and
+$k^*=\min\{\deg B:\Pi_B\mathcal R\ne0\}$ (equal to \eqref{eq:A-kstar} for a pattern teacher, where
+$\Pi_B\mathcal R=\sum_{r:N(D_{jr})=B}\tw r\U r$). Let $\mathcal L_\ell=\{B\ne\emptyset:\deg B\le\ell\}$.
+
+\begin{definition}[Generalized piggyback operator]\label{def:A-gen-piggyback}
+  $\Gamma^{(\ell)}$ is the symmetric operator on $\bigoplus_{B\in\mathcal L_\ell}\mathcal H_B$ whose block
+  $(B_1,B_2)$ is the bilinear form $(x,y)\mapsto\ip{\Pi_{B_1\sqcup B_2}\mathcal R}{x\otimes y}$ if
+  $B_1\cap B_2=\emptyset$ and zero otherwise; $\lambda_\ell=\lambda_{\max}(\Gamma^{(\ell)})$, nondecreasing in
+  $\ell$. $\Gamma^{(1)}$ is the piggyback matrix $\Gamma$ of \cref{prop:A-piggyback-graph}. For a pattern
+  teacher with all $\tw r>0$, $\Gamma^{(\ell)}$ is, in the pattern basis, the weighted adjacency matrix of
+  the \emph{generalized piggyback graph}: its nodes are pairs $(B,w)$ of a set $B\in\mathcal L_\ell$ and a
+  pattern $w$ on its sites that differs from $j$ on every core of $B$, and every residual $r$ adds an edge
+  of weight $\tw r$ between $(B_1,\pi_r|_{B_1})$ and $(B_2,\pi_r|_{B_2})$ for every split
+  $N(D_{jr})=B_1\sqcup B_2$ with $B_1,B_2\in\mathcal L_\ell$. A node with $\abs{B}\ge2$ is reached by new
+  entries on $\mathrm{St}(B)$, a single core by an old rotation (\cref{prop:A-piggyback-graph}).
+\end{definition}
+
+\begin{theorem}[Lower bound]\label{thm:A-order-lower}
+  \proven{} \newresult[lower bounds were known for deep linear networks, \citealp{achour2024loss}, Thm~7
+  (order 2 or more), and for one parity saddle, \citealp{furman2026benign}, Prop.~5.3]
+  Let $\params_S$ be critical. (a) If $\lambda_{\lceil k^*/2\rceil-1}<\tw j$, there are $C,r_0>0$ with
+  $\Loss(\params)-\Loss_S\ge-C\norm{\params-\params_S}^{k^*}$ for $\norm{\params-\params_S}<r_0$; with the route
+  of \cref{prop:A-steiner} ($\bd e\ge2$ on the bonds of one minimal Steiner subtree) the saddle order is
+  exactly $k^*$. (b) (Level version.) If $2\le\ell\le\lceil k^*/2\rceil$ and $\lambda_{\ell-1}<\tw j$, then
+  $\Loss(\params)-\Loss_S\ge-C\norm{\params-\params_S}^{\min(k^*,2\ell)}$ near $\params_S$.
+\end{theorem}
+
+\begin{theorem}[Sharpness]\label{thm:A-order-sharp}
+  \proven{} \newresult{}
+  Let the teacher be a pattern teacher with all $\tw r>0$, let $\ell<k^*/2$, and let $X$ be a set of nodes of
+  the generalized piggyback graph on $\mathcal L_\ell$ whose adjacency matrix has spectral radius
+  $\rho_X>\tw j$. Assume the index condition: on every bond $e$, $\bd e-1$ is at least the number of nodes
+  $(B,w)\in X$ with $\abs{B}\ge2$ and $e$ a bond of $\mathrm{St}(B)$. Then there is a curve with
+  $\norm{\params(t)-\params_S}\le t$ and $\Loss(\params(t))-\Loss_S\le-ct^{2\ell}$: the saddle order is at most
+  $2\ell<k^*$.
+\end{theorem}
+\begin{proof}[Proof sketch of \cref{thm:A-order-lower}]
+  (Full proof: \path{notes/theory_saddle_order.md}, sections 3.1-3.5.) Let $\omega=\ip{\U j}{\W}$ ($=\tw j$ at
+  $\params_S$) and $\mu_B=\Pi_B\W/\omega\in\mathcal H_B$. Sector orthogonality gives the exact identity
+  \begin{equation}\label{eq:A-sector-identity}
+    \Loss-\Loss_S=\tfrac12(\omega-\tw j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{\omega^2}2\norm{\mu_B}^2-\omega\ip{\Pi_B\mathcal R}{\mu_B}\Big].
+  \end{equation}
+  Families $(f_B)_{B\subseteq\nodes}$, $f_B\in\mathcal H_B$, form a commutative algebra under
+  $(f*g)_B=\sum_{B_1\sqcup B_2=B}f_{B_1}\otimes g_{B_2}$; the cumulants $\kappa=\log\mu$ are given by the
+  set-partition moment-cumulant formulas. \emph{Locality of cumulants:} for $\abs B\ge2$,
+  $\norm{\kappa_B}\le C_0\prod_{v\in\mathrm{St}(B)}\norm{\nu_v}$, $\nu_v$ the new entries of core $v$. Indeed, if
+  $\nu_v=0$ the contraction factorizes at $v$, $\mu$ is a $*$-product of factors supported on $\{v\}$ and on
+  the branches at $v$, its logarithm is a sum of such factors, and none contains $B$; analyticity turns
+  this vanishing into the product bound. Now fix $\ell$, call a set \emph{low} if its degree is at most
+  $\ell-1$ and \emph{high} otherwise, and let $\varepsilon=\norm{\params-\params_S}$. High cumulants are
+  $O(\varepsilon^{\ell})$, low sets carry no residual ($\ell-1<k^*$), and the low part of the
+  Gauss--Newton sum is at least $(1-C\varepsilon)\norm{\kappa_{\rm low}}^2$. In the gain, the terms with two
+  low cumulants sum exactly to $\tfrac12\ip{\kappa_{\rm low}}{\Gamma^{(\ell-1)}\kappa_{\rm low}}$; every other
+  term contains a single cumulant on a set of degree at least $k^*$ ($O(\varepsilon^{k^*})$), or two high
+  cumulants ($O(\varepsilon^{2\ell})$, after Young's inequality for one low and one high), or is
+  $\varepsilon$ times the quadratic form. So
+  $\Loss-\Loss_S\ge\tfrac{\omega}2(\tw j-\lambda_{\ell-1}-O(\varepsilon))\norm{\kappa_{\rm low}}^2-O(\varepsilon^{\min(k^*,2\ell)})$,
+  which gives (b); (a) is $\ell=\lceil k^*/2\rceil$. Balance, pattern structure, bond dimensions and the
+  gauge are not used.
+\end{proof}
+\begin{proof}[Proof sketch of \cref{thm:A-order-sharp}]
+  (Full proof: section 4 of the note.) Take a Perron vector $x\ge0$, $\norm x=1$, of the adjacency matrix on
+  $X$. For $0<\eta\le1$, rotate each single core $v$ of a node $(\{v\},w)$ by $\eta x_{v,w}$ toward $w$ (old
+  entries), and give each node $n=(B,w)$ with $\abs B\ge2$ a \emph{polymer}: new entries of size
+  $q_j(\eta x_n)^{1/\abs{\mathrm{St}(B)}}$ on the cores of $\mathrm{St}(B)$, with the pattern $w$ on $B$, the
+  pattern of $j$ elsewhere, and a spare index on the bonds of $\mathrm{St}(B)$ that no other node of $X$
+  uses there (the index condition). A nonzero contraction term then uses whole polymers with disjoint
+  Steiner subtrees, so $\omega=\tw j$ exactly, the Gauss--Newton term at order $\eta^2$ is
+  $\tfrac{\tw j^2}{2}\norm x^2$, and the gain at order $\eta^2$ comes exactly from the edges of the graph,
+  $\tfrac{\tw j}2x\T A_Xx=\tfrac{\tw j}2\rho_X$. Hence $\Loss-\Loss_S=-\tfrac{\tw j}2(\rho_X-\tw j)\eta^2+O(\eta^3)$
+  while $\norm{\params-\params_S}=O(\eta^{1/\ell})$.
+\end{proof}
+
+\begin{corollary}[When the saddle order is $k^*$]\label{cor:A-order}
+  \proven{} \newresult{} With one learned component $j$ and the route of \cref{prop:A-steiner}:
+  (i) $k^*=2$: order $2$. (ii) $k^*\in\{3,4\}$: then $\Gamma^{(\lceil k^*/2\rceil-1)}=\Gamma$, so the order is
+  $k^*$ if $\lambda_{\max}(\Gamma)<\tw j$, i.e.\ if the fixed-rank block is positive definite modulo gauge, and
+  $2$ (strict saddle) if $\lambda_{\max}(\Gamma)>\tw j$; at equality it is $3$ for $k^*=3$ (positive
+  semidefinite Hessian) and open for $k^*=4$. (iii) Two-component teachers (one residual $r$): every node of
+  the graph has at most one edge, so $\lambda_\ell\in\{0,\tw r\}$. In the correct order ($\tw r<\tw j$) the
+  order is $k^*$ on every tree. In the wrong order it is $k^*$ if no split $N(D_{jr})=B_1\sqcup B_2$ has
+  both degrees below $k^*/2$, and otherwise exactly $2\ell^*<k^*$, $\ell^*$ the smallest
+  $\max(\deg B_1,\deg B_2)$ over such splits (lower bound by \cref{thm:A-order-lower}(b) at level
+  $\ell^*$, upper bound by \cref{thm:A-order-sharp}). (iv) In general, for a pattern teacher with the index
+  condition, the order is $\min(k^*,2\ell^*)$, $\ell^*$ the first level below $k^*/2$ with
+  $\lambda_{\ell^*}>\tw j$, provided $\lambda_{\ell^*-1}<\tw j$.
+\end{corollary}
+So the order can drop below $k^*$ only for $k^*\ge5$ (given a positive definite fixed-rank block; the
+boundary case $k^*=4$, $\lambda_{\max}(\Gamma)=\tw j$, is open), and only through a residual with at least
+three terminal cores, two of which lie in a set of degree below $k^*/2$. Two examples on the HT tree with $\Ns=4$ ($\Kc=7$) and wrong order: three-site $D$ have $k^*=6$ and
+no low split (two leaves already have degree $3=k^*/2$), so the order is $6$; $D=\{0,1,2,3\}$ has the split
+into the two leaf pairs (degrees $3$, $3$), so the order is $6$, not $k^*=7$. The binary tree with $\Ns=8$
+and $D$ = all sites is the same case.
+
+\paragraph{Counterexample with a positive semidefinite Hessian.} \proven{} (order) \empirical{} (numerics)
+MPS with $\Ns=6$, $d=\chi=2$, $j=000000$ ($\tw j=1$), residuals $r_1=110001$ and $r_2=110010$ with weight $0.8$
+each. The route of $r_2$ has $k^*=5$ (that of $r_1$ has $6$); the gradient vanishes and the Hessian is
+positive semidefinite (eigenvalues $0$, $1$, $6$), since no residual has two terminal cores and
+$\Gamma^{(1)}=0$. At level $2$ the node $(\{0,1\},11)$ is joined to $(\{5\},1)$ through $r_1$ and to
+$(\{4\},1)$ through $r_2$, a star with $\lambda_2=0.8\sqrt2=1.131>1$: by \cref{thm:A-order-lower}(b) and
+\cref{thm:A-order-sharp} the order is exactly $4<k^*$. The descent combines new entries of size $t$ on the
+bond between cores 0 and 1, which point at the \emph{non-residual} pattern $110000$, with old rotations of
+cores 4 and 5 of size $t^2$. Measured minimum over the sphere of radius $t$: $-0.0350\,t^4$ (slope
+$4.000$), against $-(2\cdot0.8^2-1)/8=-0.0350$; with weights $0.6$ ($\lambda_2=0.85$) the order is $5$
+($-0.0107\,t^5$, the route of $r_2$). Single wrong-order residuals give counterexamples to ``order $=k$'' for
+two-component teachers: $r=110001$ with weight $1.5$ on the same MPS ($k^*=6$, order $4$) and $r=1111$ with
+weight $1.5$ on the HT tree with $\Ns=4$ ($k^*=7$, order $6$, $-t^6/432$). The orders predicted by
+\cref{thm:A-order-lower,thm:A-order-sharp} were measured on 32 instances ($k^*=2$ to $7$, MPS, binary and HT
+trees, pattern and random residuals), 12 of them with independent code, with slopes within $0.003$ of the
+prediction (one slowly converging case). Dynamics \derived: where \cref{thm:A-order-sharp} applies at level $\ell$, the old rotations
+follow the cluster adiabatically and the cluster obeys $\dot b=c\,b^{2\ell-1}$, so the escape takes
+$\propto\isc^{-(2\ell-2)}$ instead of $\isc^{-(k^*-2)}$ once it beats the route. On the counterexample,
+gradient flow from $\params_S$ plus a perturbation of size $\isc$ escapes in $\propto\isc^{-2}$ (local
+exponents $1.98$ to $2.04$ at the smallest $\isc$, 5 seeds) along $110000$, then forgets $j$ and relearns it later; from small
+initialization only some seeds visit $\params_S$, and in those the $\isc^{-2}$ law sets in at a
+seed-dependent $\isc$ \empirical.
 
 % ===========================================================================================
 \subsection{Teachers that are not orthogonally decomposable}\label{app:teachers}
