@@ -78,7 +78,7 @@ Recorder keeps "fine rows" (log + integrator steps where theta or log L moved by
 |---|---|---|---|---|
 | Q1 | saddle sequence from small init | open | `s2s-core` | reviewed; fix round 1 merged (5647a0f); verification running (`notes/reviews/s2s_core_round2_verification.md`) |
 | Q2 | plateau scaling with sigma, K, chi | partly known | `s2s-core` | as Q1 |
-| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | DONE: reviewed twice + verified; report Sec. 4 locality subsection drafted |
+| Q3 | topology-dependent escape exponents (locality) | landscape known, dynamics open | `locality` (+ local pilot) | DONE: reviewed twice + verified; report Sec. 4.4. Theory: Steiner identity proven; saddle order = k* proven when the generalized piggyback operator stays below s_q (always for k* = 2, for k* in {3,4} with a PD old block, for two-component teachers in the correct order); otherwise order 2l* < k* (proven for pattern teachers with a spare bond index; first case k* = 5, MPS6 pair-star). notes/theory_saddle_order.md v2, verified twice; report App. A.4 |
 | Q4 | learning order | analogues known, TTN open | `order` | reviewed; fix round running (remote, small new runs) |
 | Q5 | regime map | analogues known, TTN open | `regime-map` | reviewed; fix round running LOCALLY (worktree `../wt/regime-map-fix`; machine cannot restart) |
 | Q6/Q7 | covariance / teacher structure | partly known / open | `data-teacher` | round 2 reviewed; fix round 2 merged (fe95253); verification running (`notes/reviews/data_teacher_round3_verification.md`) |

@@ -6,8 +6,10 @@ k* = |Steiner(terminal cores of a residual)| (R2 of `notes/theory_saddles.md`)? 
 answer: `notes/theory_saddle_order.md`.
 
 **Short answer.** Yes when the generalized piggyback operator S (sector couplings between core sets of
-degree < k*/2) has lambda_max(S) < s_q (Theorem 1, proven); no otherwise: the order is then
-2l < k* (Theorem 2). First counterexamples at k* = 5 (MPS6 "pair-star").
+degree < k*/2) has lambda_max(S) < s_q (Theorem 1, proven). When S exceeds s_q at a level l < k*/2,
+the order drops to 2l < k* (Theorem 2, proven for pattern teachers with a spare bond index; exact order
+2l* by Theorem 1'). Borderline cases (lambda_max = s_q) are not covered. First counterexamples at k* = 5
+(MPS6 "pair-star"). See notes/theory_saddle_order.md v2 and its two verifications in notes/reviews/.
 
 ## Method
 
