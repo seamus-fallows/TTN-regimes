@@ -1,2 +1,11 @@
 /root/work/TTN-regimes/.venv/lib/python3.13/site-packages/scipy/integrate/_ivp/lsoda.py:163: UserWarning: lsoda: Repeated convergence failures (perhaps bad Jacobian or tolerances).
   solver._y, solver.t = integrator.run(
+                                  run  component  t_end_before  predicted_remaining  measured_remaining  ratio_measured_over_predicted        stop         wall  predicted_over_elapsed
+0  mps8_chi6_w3-2-1_fanin_s0.15_seed1          1  9.364426e+08         1.687290e+08        2.318008e+08                       1.373806     stop_fn   230.047726                0.180181
+1   mps8_chi6_w3-2-1_fanin_s0.2_seed9          0  1.666667e+08         1.949347e+09                 NaN                            NaN   completed   494.055713               11.696084
+2   mps8_chi6_w3-2-1_fanin_s0.1_seed9          0  1.066667e+10         2.010923e+11                 NaN                            NaN  wall_limit  5615.711078               18.852400
+3   mps8_chi6_w3-2-1_fanin_s0.2_seed0          2  1.666667e+08         9.211162e+09        1.670486e+10                       1.813545     stop_fn  3862.337698               55.266973
+4  mps8_chi6_w3-2-1_fanin_s0.15_seed3          1  9.364426e+08         1.091902e+11                 NaN                            NaN  wall_limit  4882.438118              116.601065
+5  mps8_chi6_w3-2-1_fanin_s0.15_seed5          1  9.364426e+08         1.836399e+11                 NaN                            NaN  wall_limit  5104.153313              196.103750
+6  mps8_chi6_w3-2-1_fanin_s0.15_seed7          2  9.364426e+08         3.369501e+11                 NaN                            NaN  wall_limit  3011.586050              359.819301
+7   mps8_chi6_w3-2-1_fanin_s0.1_seed5          1  1.066667e+10         4.488154e+12                 NaN                            NaN      failed     1.011925              420.764425

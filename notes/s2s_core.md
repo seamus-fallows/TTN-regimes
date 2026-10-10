@@ -375,15 +375,21 @@ W_0, rescaled so that every Q_e = 0 (`s2s.gauge_balance`):
   Complete: binary8 3 vs 2, ht4 17 vs 3, mps8 0 vs 0 (30/30 balanced mps8 runs learn 2 of 3
   components; with fan-in 18/30 learn only 1). Balanced init is not uniformly better: 5 runs complete
   with fan-in but stall with balanced init (the first escapes differ).
-- **Stalled is not stuck (continuation test).** 8 stalled k78 runs (both inits; chosen as the ones with
-  the shortest predicted remaining plateau) were continued from their final state: all 8 escape, at
-  0.49-0.85x the balanced-route estimate of the remaining plateau b^-(K-2)/((K-2) s_r) with
-  b = (s_r |a_r|)^(1/K) from the dormant amplitude at the end of the run; the ratio is the same per
-  seed across sigma (e.g. 0.80-0.85, 0.49-0.54, 0.85). The estimate is an upper bound (derived: for a
-  fixed product of route amplitudes the balanced route is the slowest, since a_v^2 - a_w^2 is
-  conserved and the product's growth rate is s prod_v a_v sum_v 1/a_v^2). For all stalled runs the
-  estimate is a median 10-60x the time already integrated: these runs sit on ever-longer plateaus whose
-  length is set by how far the dormant amplitude was suppressed, (suppression)^-(K-2)/K.
+- **Stalled is (mostly) not stuck (continuation test, `results/continued_*.csv`).** Stalled runs were
+  continued from their final state. (i) 8 k78 runs (binary8, ht4, mps8 at chi = 3, both inits; chosen as
+  the shortest predicted remaining plateaus): all 8 escape, at 0.49-0.85x the balanced-route estimate of
+  the remaining plateau b^-(K-2)/((K-2) s_r) with b = (s_r |a_r|)^(1/K) from the dormant amplitude at the
+  end of the run, the ratio being the same per seed across sigma (0.80-0.85, 0.49-0.54, 0.85).
+  (ii) 8 mps8 chi = 6 runs from `large`, spread over the distribution of estimate / elapsed time
+  (0.2-420): 2 escape, at 1.37x and 1.81x the estimate; 1 has not escaped at 2x; 4 hit the 50-min wall
+  limit before reaching the estimate; 1 integrator failure. So 10 of the 11 runs integrated beyond 2x
+  their estimate escaped, at 0.49-1.81x of it. (Derived: for a route that obeys the balanced reduction
+  with a positive product, the balanced estimate is an upper bound, since a_v^2 - a_w^2 is conserved and
+  dP/dt = P^2 (s - P) sum_v 1/a_v^2 is smallest when all a_v are equal; the mps8 cases exceeding it show
+  that the reduction does not hold there, e.g. part of |a_r| is not on the route or a sign correction
+  is under way.) For all stalled runs the estimate is a median 10-60x (k78) and ~400x (mps8, chi = 6)
+  the time already integrated: these runs sit on ever-longer plateaus whose length is set by how far
+  the dormant amplitude was suppressed, ~ (suppression)^-(K-2)/K.
 
 **(d) Physics vs roundoff.** A dead end's slice decays exponentially until it reaches the integrator's
 absolute tolerance / float64 roundoff (~1e-12 .. 1e-15 absolute), where it stays; any later escape of
@@ -415,7 +421,7 @@ come from runs in which every dormant per-core slice stayed far above roundoff.
    - Later gaps ~ sigma^-(K-2) per seed (derived for odeco: every route has k = K; empirical: 1.00,
      2.00, 5.0 for K = 3, 4, 7). Prefactors are seed-dependent; for a gap whose dormant component was
      suppressed by a factor S the gap is longer by ~S^-(K-2)/K (derived from the route ODE; continued
-     runs escape at 0.5-0.85x the route estimate, which is an upper bound).
+     runs escape at 0.5-1.8x the route estimate, 10 of 11 that were integrated beyond 2x of it).
    - chi: weak decrease of the prefactor (slopes -0.26 .. -0.76), not the rho_0 law (empirical).
    - K: the prefactor grows roughly like the RMS-overlap heuristic P3 (within 2x, K = 3-15; heuristic).
 4. **Saddle type** (empirical; theory_saddles R10): higher-order at every plateau of the odeco runs,

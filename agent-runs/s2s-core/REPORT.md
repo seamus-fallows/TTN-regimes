@@ -15,7 +15,7 @@ Kumar-Haupt / rho_0 law is a lower bound off by 3-2600x (K = 3-8) and fails qual
 K. The main limitation of S2S at large K is the conservation-law trap of fan-in init: at chi = R it
 kills dormant components for a sigma-independent fraction of seeds (0 at K = 3, 40% at K = 4, 30-80%
 at K = 7, 8); gauge-balanced init removes it (0/210), chi = 2R removes it at K = 3, 4 and on binary8,
-and the remaining stalls are ever-longer plateaus (continued runs escape at 0.5-0.85x the route estimate).
+and the remaining stalls are ever-longer plateaus (continued runs escape at 0.5-1.8x the route estimate in 10 of 11 cases).
 
 ## Results
 Gradient flow throughout: LSODA with exact Hessian Jacobian, rtol 1e-8 / atol 1e-11 sigma (main,
@@ -103,10 +103,11 @@ Higher-order saddles, as predicted for odeco teachers. Magnitude vs the route fo
   (K = 7, 8 at chi = 3: sigma 0.15-0.3, sweep k78; chi = 6: sigma 0.07-0.3, sweep large.) At K = 4 the
   same seeds trap at every sigma (trap time ~ sigma^-2, escape ~ sigma^-2). Gauge-balanced init
   removes the trap (0/210).
-- "Stalled" runs (all route ends alive) are not stuck: 8 continued k78 runs all escape, at 0.49-0.85x
-  the balanced-route estimate b^-(K-2)/((K-2) s_r), b = (s_r |a_r|)^(1/K) (an upper bound, derived),
-  same ratio per seed across sigma; for all stalled runs that estimate is a median 10-60x the elapsed
-  time. So with live routes, S2S at large K is ever-longer plateaus (exponent K - 2, prefactor inflated
+- "Stalled" runs (all route ends alive) are mostly not stuck: continued from their final state, 10 of
+  the 11 runs integrated beyond 2x the balanced-route estimate b^-(K-2)/((K-2) s_r), b = (s_r |a_r|)^(1/K)
+  escape, at 0.49-1.81x of it (8/8 k78 runs at 0.49-0.85x, same ratio per seed across sigma; 2 of 3 mps8
+  chi = 6 runs at 1.4-1.8x, 1 not by 2x; 4 more mps8 runs could not be integrated that far). For all
+  stalled runs the estimate is a median 10-60x (k78) and ~400x (mps8, chi = 6) the elapsed time. So with live routes, S2S at large K is ever-longer plateaus (exponent K - 2, prefactor inflated
   by the dormant suppression S as S^-(K-2)/K), and stuck only where fan-in imbalance kills a route.
 
 ## What was done

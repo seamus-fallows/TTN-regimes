@@ -96,7 +96,7 @@ Full statements with status tags and numbers: `notes/s2s_core.md` section 2; sum
   law trap of fan-in init (dead route ends, decay rate ~ sigma^2): never at K = 3, a sigma-independent
   4/10 seeds at K = 4, chi = 3, most HT4 runs at chi = 3; gauge-balanced init removes the trap (0/210
   trapped); chi = 2R avoids it at K = 3, 4, 7 (binary8, HT4). Runs that stall with live routes are on
-  ever-longer plateaus (continued runs escape at 0.5-0.85x the route estimate).
+  ever-longer plateaus (continued runs escape at 0.5-1.8x the route estimate in 10 of 11 cases).
 
 ## Figures (results/)
 

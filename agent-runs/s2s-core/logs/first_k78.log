@@ -33,3 +33,11 @@ first: 52 jobs
 [32/52 6217s] binary8_chi6_separated_fanin_seed3 6217s
 [33/52 6422s] mps8_chi3_separated_fanin_seed1 2324s
 [34/52 6524s] mps8_chi3_separated_fanin_seed2 2201s
+[35/52 6694s] mps8_chi3_separated_fanin_seed3 2216s
+[36/52 6752s] mps8_chi3_separated_fanin_seed5 1966s
+[37/52 6775s] mps8_chi3_separated_fanin_seed0 2756s
+[38/52 6881s] mps8_chi3_separated_fanin_seed7 1810s
+[39/52 6944s] mps8_chi3_separated_fanin_seed6 1912s
+[40/52 7086s] mps8_chi3_separated_fanin_seed4 2501s
+[41/52 7348s] mps8_chi3_separated_fanin_seed9 1856s
+[42/52 7351s] mps8_chi3_separated_fanin_seed8 2012s
