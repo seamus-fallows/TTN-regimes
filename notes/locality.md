@@ -290,7 +290,8 @@ single-sigma fallback only.
   -(k-2)/k = -0.33, -0.50, -0.60, -0.71. This is partly circular: it follows from the growth law of the
   route mode alone, so it confirms that plateau lengths are set by the dormant amplitude, not the degree.
 - Growth exponent γ = d log ȧ / d log a in a in [1e-4, 1e-2] (theory P4): medians per row give
-  k = 2/(2 - γ) = 2.00 (k = 2, saddle start), 3.0, 4.0, 5.1-5.3, 6.0, 7.0-7.7, 7.7-7.9. **Validity range**:
+  k = 2/(2 - γ) = 2.00 (k = 2, saddle start), 3.0, 4.0, 5.1-5.3, 6.0, 7.0-7.7, and for k = 8 (mps8 {0,7})
+  7.9 (small init, 3 runs) but 6.1 (saddle start, 2 runs; a run that finished after round 2 was added). **Validity range**:
   saddle start, or small init when the plateau is long enough that the window lies after the escape
   transient; it fails for small-init k = 2 on mps6/mps8 (k estimate 2.4-3.3, the plateau is shorter than the
   transient), is biased high for k >= 5 (ht8: 5.3 for k = 5, 7.7 for k = 7), and cannot separate k = 7 from 8
@@ -404,12 +405,12 @@ consecutive evaluations (the loss sits at the partial fit, e.g. L = 0.125 = s2^2
 Redone (review issue 2; `bond_events2.py`): ranks right after each event (at the a = 0.9 crossing), not at the
 end of the run; effective rank = #{s_k^e > f x teacher s_k^{e,*}}, f = 0.05 (notes/diagnostics.md), with
 f = 0.03 and 0.1 as sensitivity.
-- **Two components** (`results/bond_events2_twocomp.csv`, 5,130 events; 4,447 with a resolved preceding plateau,
+- **Two components** (`results/bond_events2_twocomp.csv`, 5,131 events; 4,448 with a resolved preceding plateau,
   ρ >= 3; the other 683 are mostly small-init k = 2 runs whose "before" state is already part of the escape).
   What the data show is a **leakage bound** plus **single-route consistency**, not a test that could have
   picked out a wrong set of edges:
   - *Leakage bound*: on every non-Steiner edge the second singular value stays at the init-noise level from the
-    plateau midpoint to the end of the run: at most **4.3 sigma^2 x s2** over all 5,130 events (4.0 over the
+    plateau midpoint to the end of the run: at most **4.3 sigma^2 x s2** over all 5,131 events (4.0 over the
     resolved ones), scaling as sigma^2.07; < 3e-3 x s2 for sigma <= 0.03. This is the substantive result: the
     new component enters through the Steiner edges only, to O(sigma^2).
   - *Single-route consistency*: the edges whose effective rank (f = 0.05) is higher at a = 0.9 than at the

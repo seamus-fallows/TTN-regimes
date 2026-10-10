@@ -1,6 +1,6 @@
 # locality: tree locality of saddle-to-saddle escapes (Q3, H2/H3)
 
-Status: working (round 3: fixes after notes/reviews/locality_round2_verification.md) - Branch: agent/locality - Updated: 2026-10-10 00:12 UTC
+Status: done (round 3: fixes after notes/reviews/locality_round2_verification.md) - Branch: agent/locality - Updated: 2026-10-10 00:31 UTC
 
 ## Summary
 Asked: test H2 (the escape after a learned component needs the k cores of the Steiner subtree of the sites
@@ -66,8 +66,8 @@ plateau 1.012 ± 0.010 (8 seeds; detected 1.00), TC k* = 4 plateau 2.018 ± 0.01
 measured over 3 decades from the saddle start; elsewhere undetermined.
 
 ### 4. Bond spectra (step 4; `results/bond_events2_twocomp.csv`, `bond_profiles_multicomp.csv`, `bond_spectra.png`)
-**Leakage bound**: through every two-component event (5,130) the second singular value of every non-Steiner edge
-stays at the init-noise level, <= 4.3 σ² × s2 (4.0 on the 4,447 resolved events), scaling as σ^2.07. **Single-route
+**Leakage bound**: through every two-component event (5,131) the second singular value of every non-Steiner edge
+stays at the init-noise level, <= 4.3 σ² × s2 (4.0 on the 4,448 resolved events), scaling as σ^2.07. **Single-route
 consistency**: every Steiner edge gains rank between the plateau midpoint and a = 0.9 (99.75% of resolved events;
 this check cannot register a non-Steiner rise, so it is not a prediction success rate), and the Steiner edges cross
 together (median spread 5e-5 event widths, 95th percentile 0.25; the spread grows as σ^1.94 and tests "one route",
@@ -205,3 +205,4 @@ Round 2 (fix round after review 1):
 - 23:20 stopped the 6 remaining slow runs (documented); final tables, report
 - 00:05 round 3: merged main (verification note); provenance fixes (stall_tables.py, finalize.sh, ghost row)
 - 00:07 finalize.sh regenerating all tables; notes 7.1-7.10, 8, 10 and report corrected (items a-f)
+- 00:31 finalize.sh done (all tables regenerated, no errors; stall tables identical to the ones quoted; one more resolved bond event, 5,131 / 4,448; mps8 {0,7} saddle growth estimate 6.1 from 2 runs); notes and report synced; round 3 done
