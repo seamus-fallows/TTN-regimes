@@ -17,3 +17,9 @@ Budget: $300 total (set by the user, 2026-10-09). Target: <= $200 for two rounds
 Burn rate with all seven running: $5.21/h (~$125/day; ~57 h of all seven within the $300 cap). Running total: see `crab-student list` (field `spent`); updated at each check-in.
 
 Checkpoint 2026-10-10 ~00:30 UTC: listed agents $21.82 + deleted optimizers $3.68 = **$25.50** spent.
+
+Checkpoint 2026-10-10 ~10:05 UTC: about **$30** spent (estimate: ~$29 at 08:52 UTC plus the current sessions).
+`crab-student list` reports `spent` per machine session (it resets on restart), so session totals are now
+recorded here at each stop or delete. Sessions that ended: locality $2.19 (6.25 h), regime-map $6.45 (6.23 h),
+real-data $1.69 (3.25 h); all three stopped themselves and cannot restart yet (stopped disks ~$1.6/day together).
+Running fix rounds: s2s-core ($0.74/h), order ($0.84/h), data-teacher ($0.47/h).

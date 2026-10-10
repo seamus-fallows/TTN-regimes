@@ -78,3 +78,18 @@ here too.
   analysis/wording fixes by local agents on the committed code and CSVs, restarting a remote machine only if new
   runs are required; (3) copy + verify raw outputs, then delete machines (user's standing OK); (4) write the
   remaining report sections from reviewed results, final consistency pass, compile PDF.
+
+## 2026-10-10 (morning) — Fix rounds after the five reviews
+
+- **Triage.** Each review was condensed into a MUST/SHOULD fix list (s2s-core 8 MUST, order 7, regime-map 8,
+  data-teacher 7, real-data 8). Fix lists were sent to the three agents whose machines restarted (s2s-core,
+  order, data-teacher); order also runs a few small new runs (H1b on adjacent / separated MPS4 pairs).
+- **regime-map and real-data machines cannot restart** (Vast: "required resources are currently unavailable,
+  state change queued"; the locality machine likewise). Their fix rounds run **locally** instead, in git worktrees
+  (`../wt/<name>`, branches `wip/<name>`), on the committed code and CSVs plus the reviewers' local re-runs in
+  `data/review_<experiment>/`; light local reruns (<= ~1 h on 12 cores) are allowed for the few raw-dependent
+  items; anything heavier is scripted and left for when the machines come back. A watcher retries `start`
+  every ~30 min; when a machine starts, its raw outputs are copied and verified first, then it is deleted.
+- **Report writing in parallel worktrees.** Separate local agents for Sec. 5.5 (optim-samples), Sec. 2 polish,
+  Appendix A trim, and a citation / prior-work audit, each editing disjoint files on its own branch; the lead
+  merges. Sections 3, 4.1, 4.3, 5.1-5.4 and 6 wait for the corresponding fix rounds.
