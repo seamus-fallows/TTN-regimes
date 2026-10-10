@@ -109,6 +109,7 @@ if __name__ == "__main__":
     ap.add_argument("--seeds-ps08", default="0-39")
     ap.add_argument("--seeds-ps06", default="0-11")
     ap.add_argument("--seeds-b8w", default="0-29")
+    ap.add_argument("--reverse", action="store_true", help="largest eps / sigma first (a second instance on idle cores)")
     args = ap.parse_args()
     cells = args.cells.split(",")
     if args.what == "ha":
@@ -118,7 +119,7 @@ if __name__ == "__main__":
     else:
         jobs = jobs_hb({"PS08": seeds_arg(args.seeds_ps08), "PS06": seeds_arg(args.seeds_ps06),
                         "B8W": seeds_arg(args.seeds_b8w)})
-    jobs.sort(key=lambda j: j[3])  # smallest eps / sigma (longest runs) first
+    jobs.sort(key=lambda j: j[3], reverse=args.reverse)  # default: smallest eps / sigma (longest runs) first
     print(f"{len(jobs)} jobs, {args.procs} processes", flush=True)
     t0 = time.time()
     with Pool(args.procs) as pool:

@@ -330,10 +330,14 @@ def refine(ev, fun, jac, ta, ya, ga, tb, gb, rtol, atol, rel=1e-9, max_iter=40):
     return tr, advance(fun, jac, ta, ya, tr, rtol, atol)
 
 
-def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_after=None, trap=True):
+def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_after=None, trap=True,
+              switch_at=None, switch_fn=None):
     """LSODA (exact Hessian as Jacobian) driven step by step; events on the step values (scipy's LSODA
     dense output is not reliable here), refined by re-integration. Escape events "esc_<thr>" at
-    L - L_S = -thr. Stops at t_max, a terminal event, the wall clock, or the trap rule."""
+    L - L_S = -thr. Stops at t_max, a terminal event, the wall clock, or the trap rule.
+    switch_at / switch_fn: at the first step with t >= switch_at the reference becomes
+    model.set_ref(switch_fn(y)) inside the same solver (the ODE is unchanged up to roundoff; a fresh
+    solver started on a plateau can stay in nonstiff mode at its stability limit for ever)."""
     t_wall = time.time()
     cache = {}
 
@@ -367,8 +371,9 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
     # absolute times (escapes at t ~ 1e13-1e20, where float64 spacing in t is O(0.01-1e4)) stay resolved.
     off, t_loc_old, n_restart = 0.0, 0.0, 0
     fails = []  # (absolute t, LSODA istate) of failed steps; each is retried from the last good step
-    solver = LSODA(rhs, 0.0, y0, t_max, rtol=rtol, atol=atol, jac=jac, first_step=RESTART_H)
+    solver = LSODA(rhs, 0.0, y0, t_max, rtol=rtol, atol=atol, jac=jac)
     nxt, count = 1e6, 0
+    res.switch_index = None
     while True:
         if time.time() - t_wall > wall:
             res.status = "wall"
@@ -405,6 +410,11 @@ def integrate(model, y0, t_max, rtol, atol, events_extra=(), wall=3600.0, stop_a
             break
         res.t.append(t)
         res.y.append(y)
+        if switch_at is not None and res.switch_index is None and t >= switch_at:
+            model.set_ref(switch_fn(torch.from_numpy(y)))
+            cache.clear()
+            g_new = [ev.g(t, y) for ev in evs]
+            res.switch_index = len(res.t) - 1
         g_old = g_new
         t_loc_old = t_loc
         if solver.status == "finished":

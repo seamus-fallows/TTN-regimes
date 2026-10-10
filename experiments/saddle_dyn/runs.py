@@ -169,52 +169,44 @@ def merge_escapes(first, second):
 
 
 def run_ha(cell, seed, eps, rtol=1e-10, atol=1e-15, plain=False, wall=3600.0, follow=True):
-    """Phase 1: RELAX_HA time units from theta_S + eps xi (cancellation-free about theta_S, or plain);
-    phase 2: re-gauge and re-reference to the saddle point reached, then on to the escape."""
-    t_wall = time.time()
+    """One solver from theta_S + eps xi (cancellation-free about theta_S, or plain); at t = RELAX_HA the
+    reference becomes the old part of the state reached (same solver, no re-gauge), then on to the
+    escape."""
     model = make_model(cell)
     y0 = ha_init(model, cell, seed, eps)
     model.set_ref(None if plain else model.theta_S)
     Q0 = model.conserved(y0)
-    res1, info1 = integrate(model, y0.numpy(), RELAX_HA, rtol, atol, wall=600.0, stop_after=1e-2, trap=False)
+    sw = {} if plain else dict(switch_at=RELAX_HA, switch_fn=model.old_part)
+    res, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, wall=wall, stop_after=1e-2, **sw)
     rec = dict(kind="HA", cell=cell, seed=seed, eps=eps, rtol=rtol, atol=atol, plain=plain, k_star=model.k_star,
-               order=CELLS[cell]["order"], L_S=model.L_S, phase1=info1)
-    esc1 = escape_record(model, res1)
-    drift1 = float((model.conserved(torch.from_numpy(res1.y[:, -1])) - Q0).abs().max())
-    if res1.status == "event" or plain:
-        # escaped during the relaxation (large eps), or the plain-loss cross-check: no re-reference
-        if plain and res1.status == "t_max":
-            res2, info2 = integrate(model, res1.y[:, -1], T_MAX, rtol, atol, wall=wall, stop_after=1e-2)
-            rec["phase2"] = info2
-            esc1 = merge_escapes(esc1, escape_record(model, res2, t0=RELAX_HA))
-            rec.update(last_state_record(model, res2))
-            rec["t_last"] += RELAX_HA
-            res_last = res2
-        else:
-            rec.update(last_state_record(model, res1))
-            res_last = res1
-        rec.update(esc1)
-        rec["status"] = "escaped" if esc1["t_esc_0.001"] is not None else res_last.status
-        rec["escaped"] = esc1["t_esc_0.001"] is not None
-        rec["cons_drift"] = drift1
-        rec["floor_phi"] = None
-        rec["traj"] = trajectory(model, res1, n=60)
-        y_end = res_last.y[:, -1]
+               order=CELLS[cell]["order"], L_S=model.L_S, driver="switch", **info)
+    rec.update(escape_record(model, res))
+    rec["escaped"] = rec["t_esc_0.001"] is not None
+    rec["status"] = "escaped" if rec["escaped"] else res.status
+    rec.update(last_state_record(model, res))
+    rec["cons_drift"] = float((model.conserved(torch.from_numpy(res.y[:, -1])) - Q0).abs().max())
+    k0 = res.switch_index
+    if k0 is not None and not plain:
+        rec["ref_q_dev"] = float(model.W(model.ref)[model.q]) - model.s_q
+        sub = _sub(res, k0)
+        t_floor = (rec["t_esc_0.001"] if rec["escaped"] else float(res.t[-1])) - float(res.t[k0])
+        rec["floor_phi"], rec["min_new_norm"] = floor_index(model, sub, max(t_floor, 0.0))
     else:
-        ph = escape_phase(model, res1.y[:, -1], RELAX_HA, rtol, atol, max(60.0, wall - (time.time() - t_wall)))
-        rec["phase2"] = ph["info"]
-        rec.update(merge_escapes(esc1, ph["esc"]))
-        rec.update(ph["last"])
-        rec["escaped"] = rec["t_esc_0.001"] is not None
-        rec["status"] = "escaped" if rec["escaped"] else ph["info"]["status"]
-        rec["cons_drift"] = max(drift1, ph["cons_drift"])
-        rec["regauge_err"], rec["ref_q_dev"] = ph["regauge_err"], ph["ref_q_dev"]
-        rec["floor_phi"], rec["min_new_norm"] = ph["floor_phi"], ph["min_new_norm"]
-        rec["traj"] = trajectory(model, res1, n=30) + ph["traj"]
-        y_end = ph["res"].y[:, -1]
+        rec["floor_phi"] = None
+    rec["traj"] = trajectory(model, res, n=120)
     if follow and rec["escaped"] and rec["t_esc_0.01"] is not None:
-        rec["after"] = continue_after(model, y_end, 2 * rec["t_esc_0.001"] + 100, rtol, atol)
+        rec["after"] = continue_after(model, res.y[:, -1], 2 * rec["t_esc_0.001"] + 100, rtol, atol)
     return rec
+
+
+def _sub(res, k0):
+    """Steps from index k0 on, with time measured from there (for the floor index)."""
+    class S:
+        pass
+    s = S()
+    s.t = res.t[k0:] - res.t[k0]
+    s.y = res.y[:, k0:]
+    return s
 
 
 def hb_init(model, cell, seed, sigma):
@@ -253,34 +245,38 @@ def run_hb(cell, seed, sigma, rtol=1e-10, atol=1e-15, wall=3600.0, follow=False)
     if not visit:
         rec["status"] = "no_visit"
         return rec
-    # relax the learned component for RELAX time units (plain loss) so that the reference below is the
-    # converged saddle, then an exact orthogonal gauge map and the cancellation-free continuation
+    # exact orthogonal gauge map at t_v (each bond's q-message -> e_0); one solver from there: the
+    # learned component converges for RELAX time units (fast dynamics: LSODA turns stiff), then the
+    # reference switches to the old part of the converged state (same solver), on to the escape
     t_v = rec["t_v"]
-    res1b, info1b = integrate(model, res.y[:, -1], RELAX, rtol, atol, wall=600.0, stop_after=1e-2, trap=False)
-    rec["phase1b"] = info1b
-    esc1b = escape_record(model, res1b, t0=t_v)
-    if res1b.status == "event":  # escaped within RELAX of the visit: no plateau to speak of
-        rec.update(esc1b)
-        rec["escaped"] = True
-        rec["status"] = "escaped"
-        rec["dt"] = rec["t_esc_0.001"] - rec["t_q"] if rec["t_q"] is not None else None
-        rec["floor_phi"] = None
-        return rec
-    t_g = t_v + RELAX
-    ph = escape_phase(model, res1b.y[:, -1], t_g, rtol, atol, max(60.0, wall - info["secs"]))
-    rec["phase2"] = ph["info"]
-    rec.update(merge_escapes(esc1b, ph["esc"]))
-    rec.update(ph["last"])
+    yg = model.regauge(y)
+    rec["regauge_err"] = float((model.W(yg) - model.W(y)).abs().max())
+    model.set_ref(model.old_part(yg))
+    Q0 = model.conserved(yg)
+    res2, info2 = integrate(model, yg.numpy(), T_MAX, rtol, atol, wall=max(60.0, wall - info["secs"]), stop_after=1e-2,
+                            switch_at=RELAX, switch_fn=model.old_part)
+    rec["phase2"] = info2
+    rec["driver"] = "switch"
+    rec.update(escape_record(model, res2, t0=t_v))
     rec["escaped"] = rec["t_esc_0.001"] is not None
-    rec["status"] = "escaped" if rec["escaped"] else ph["info"]["status"]
+    rec["status"] = "escaped" if rec["escaped"] else res2.status
     rec["dt"] = rec["t_esc_0.001"] - rec["t_q"] if rec["escaped"] and rec["t_q"] is not None else None
-    rec["cons_drift"] = ph["cons_drift"]
-    rec["regauge_err"], rec["ref_q_dev"] = ph["regauge_err"], ph["ref_q_dev"]
-    rec["floor_phi"], rec["min_new_norm"] = ph["floor_phi"], ph["min_new_norm"]
-    rec["traj2"] = ph["traj"]
+    rec.update(last_state_record(model, res2))
+    rec["t_last"] += t_v
+    rec["cons_drift"] = float((model.conserved(torch.from_numpy(res2.y[:, -1])) - Q0).abs().max())
+    k0 = res2.switch_index
+    if k0 is not None:
+        rec["ref_q_dev"] = float(model.W(model.ref)[model.q]) - s_q
+        t_floor = ((rec["t_esc_0.001"] - t_v) if rec["escaped"] else float(res2.t[-1])) - float(res2.t[k0])
+        rec["floor_phi"], rec["min_new_norm"] = floor_index(model, _sub(res2, k0), max(t_floor, 0.0))
+    else:
+        rec["floor_phi"] = None
+    rec["traj2"] = trajectory(model, res2, n=100, t_shift=t_v)
     if follow and rec["escaped"]:
-        rec["after"] = continue_after(model, ph["res"].y[:, -1], 2 * (rec["t_esc_0.001"] - t_v) + 100, rtol, atol)
+        rec["after"] = continue_after(model, res2.y[:, -1], 2 * (rec["t_esc_0.001"] - t_v) + 100, rtol, atol)
     return rec
+
+
 def out_path(kind, cell, seed, x, tag=""):
     return OUT / kind / cell / f"s{seed:03d}_x{x:.6g}{('_' + tag) if tag else ''}.json"
 
