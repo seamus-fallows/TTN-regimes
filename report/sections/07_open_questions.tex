@@ -8,26 +8,8 @@
 % (notes/reviews/saddle_hopper_verification.md, sections 6 and 8).
 \section{Summary by parameter and open questions}\label{sec:summary}
 
-% Guard for the merge of the final edit (remove once merged): the table and subsection below come from
-% Sec. 4 with their labels. While sections/04_saddle_to_saddle.tex still holds the old copy, the labels
-% here would be defined twice, so they are set only when that file no longer defines the table label.
-\makeatletter
-\newif\ifsummarylabels \summarylabelstrue
-\begingroup
-  \newread\summaryscan
-  \edef\summarykey{\detokenize{label{tab:s2s-parameters}}}
-  \openin\summaryscan=sections/04_saddle_to_saddle.tex
-  \loop\unless\ifeof\summaryscan
-    \readline\summaryscan to\summaryline
-    \edef\summarytest{\noexpand\in@{\summarykey}{\summaryline}}\summarytest
-    \ifin@\global\summarylabelsfalse\fi
-  \repeat
-  \closein\summaryscan
-\endgroup
-\makeatother
-
 \subsection{How each parameter acts}\label{sec:summary-parameters}%
-\ifsummarylabels\label{sec:s2s-parameters}\fi
+\label{sec:s2s-parameters}
 
 \Cref{tab:s2s-parameters} collects, for each parameter, what it does to the saddle sequence (which
 saddles are visited and in which order), to the plateau durations, and to the regime boundaries of
