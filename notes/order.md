@@ -535,8 +535,9 @@ correction), which are the cases of `notes/theory_saddles.md` 4.4.
   R10, P14); the R = 3 statistics on MPS6 are conditional on completion (half of the runs). (The issue
   "why GF is slightly less greedy than independent clocks" is dropped: the paired test detects no such
   effect, E1.)
-- binary8 below the saddle-order crossover (sigma well below 0.15): order-6 escape ~sigma^-4 with
-  forgetting of the smaller component, predicted by `notes/theory_saddle_order.md` v2, not run.
+- binary8 below the saddle-order crossover (aligned amplitude b ~ 0.155): order-6 escape ~sigma^-4 with
+  forgetting of the smaller component, predicted by `notes/theory_saddle_order.md` v2; not run here, being
+  tested by the remote agent `saddle-dyn` (pre-registered; brief `notes/briefs/saddle-dyn.md`; running).
 - binary8 / HT trees with shared internal cores: the independent race is 96-99% exact; a coupled
   closed-form race is open.
 
