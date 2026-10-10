@@ -473,7 +473,7 @@ keep only 1--3 seeds) and 3 other rows. This accounts for the off-target saddle-
 \empirical{} Evaluated once, at the start of the plateau ($\ov1=0.99$), in the 122 fan-in and saddle-start runs of the
 stall diagnosis, an earlier form of the criterion of \cref{prop:A-trap}, which kept only the route entry of the
 partner's block $Y_{\rm nv}$ (an end is unfavourable if $C'_u=Q_{\nu\nu}+\norm{y_{\rm route}}^2<0$; dead if two or more ends
-are), is strongly associated with death (30 of 55 runs with both
+are), is associated with death (30 of 55 runs with both
 ends unfavourable died, 7 of 67 with a favourable end) but is neither sufficient (25 predicted-dead runs escaped) nor
 necessary (seven dead runs had a live end at the plateau start). It conflicts with the data in three places:
 (i)~exactly balanced initialization leaves no dead route in either experiment (consistent), but on the pattern-teacher
@@ -560,8 +560,8 @@ conserved bond imbalance oriented end minus partner ($Q^{(u)}_e=\Q e$ if $u$ is 
 parent) plus the partner's non-visible new entries minus the end's; an earlier
 form kept only the route part of $Y_{\rm nv}$ (exact identity; checked to 3--4 digits). (4)~A partner without sites
 gives no second-order cost: the end then decays through a three-core cluster at a rate $\propto\isc^4$; in general an
-end of visible degree $j_{\rm vis}$ decays at a rate $\propto\isc^{2(j_{\rm vis}-1)}$, so it can kill its route only if
-$k\ge2j_{\rm vis}$: $k\ge4$ for
+end $u$ of visible degree $\deg_{\rm vis}(u)$ decays at a rate $\propto\isc^{2(\deg_{\rm vis}(u)-1)}$, so it can kill its
+route only if $k\ge2\deg_{\rm vis}(u)$: $k\ge4$ for
 a partner with sites, $k\ge6$ at HT and binary leaves, never for $k\le3$ (\derived). (5)~For $k\le5$, as $\isc\to0$, a
 route is dead iff two or more of its ends die, and one dying end is pinned at an amplitude $\propto\isc^{k-3}$
 (\derived); at $k=4$ a $\isc$-free competition, settled by a reduced route model, decides (\derived{} as $\isc\to0$,

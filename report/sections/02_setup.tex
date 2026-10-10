@@ -55,8 +55,8 @@ rescales $\W$ by $\prod_v c_v$.
 \paragraph{Bipartitions and bond spectra.}
 Let $\below{v}$ be the sites in the subtree rooted at $v$; the edge $\edge{v}$ separates them from the
 rest, and $\mat{\W}{\edge{v}}$ is the matricization of $\W$ with the sites of $\below{v}$ as rows.
-Contracting the subtree below $v$ and the rest separately gives
-$\mat{\W}{\edge{v}}=\Sub{v}C_v\T$ with $\Sub{v}\in\R^{(\prod_{i\in\below{v}}\pd[i])\times\bd{v}}$, so
+Contracting the subtree below $v$ and the rest (the environment) separately gives
+$\mat{\W}{\edge{v}}=\Sub{v}\bar T_v\T$ with $\Sub{v}\in\R^{(\prod_{i\in\below{v}}\pd[i])\times\bd{v}}$, so
 the \emph{bond rank} $\rank\mat{\W}{\edge{v}}$ is at most $\bd{v}$
 \citep{hackbusch2009new,grasedyck2010hierarchical}. A bipartition is written by its two site sets
 as digit strings, e.g.\ $01|23$ for $\{0,1\}$ against $\{2,3\}$ (ranges: $0$--$3|4$--$7$). The
@@ -615,9 +615,9 @@ table says where.
     parent, its dimension; nominal bond dimension & \S\labelcref{sec:setup-model}, \eqref{eq:bond-cap} \\
   $\G{v}$, $\Gm{v}{e}$; $\fanin{v}$; $\params$ & core of $v$, matricized with its $e$-leg as rows; its
     fan-in; all parameters & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-conservation} \\
-  $h_v$; $\Sub{v}$, $C_v$; $C$ & message of core $v$; contraction of the subtree below $v$ and of the rest,
-    $\mat{\W}{\edge v}=\Sub vC_v\T$ (for a route end $u$, $C_u$ is instead the conserved quantity listed
-    below); alone, a positive constant (bounds, fits such as $C\isc^\gamma$)
+  $h_v$; $\Sub{v}$, $\bar T_v$; $C$ & message of core $v$; contraction of the subtree below $v$ and of the rest
+    (the environment), $\mat{\W}{\edge v}=\Sub v\bar T_v\T$; alone, a positive constant (bounds, fits such as
+    $C\isc^\gamma$; $C_u$ is the conserved quantity of a route end, below)
     & \eqref{eq:messages}, \S\labelcref{sec:setup-model} \\
   $\W$, $\Wt$, $\Wz$; $f_\params$, $f^*$ & tensor of the student, of the teacher, at initialization; model and
     teacher functions & \S\labelcref{sec:setup-model}, \S\labelcref{sec:setup-loss} \\
@@ -725,13 +725,15 @@ table says where.
     matrix (in \cref{app:derivations} and \S\labelcref{sec:teacher-generic} the singular-value index is
     $n$, since $j$ is the learned component) & \cref{app:derivations} \\
   $\beta(\ov r)$ & local growth exponent of an overlap & \eqref{eq:A-growth-exponent} \\
-  $C_u$; $Q_{\nu\nu}$, $Q^{(u)}_e$; $X_{\rm nv}$, $Y_{\rm nv}$ & conserved quantity of a route end $u$ (not the
-    environment $C_v$); $\nu\T Q^{(u)}_e\nu$, the imbalance of its bond $e$ oriented end minus partner
+  $C_u$; $Q_{\nu\nu}$, $Q^{(u)}_e$; $X_{\rm nv}$, $Y_{\rm nv}$ & conserved quantity of a route end $u$
+    ($C'_u$: the truncated form of an earlier criterion, \cref{app:supp-s2s-failure}); $\nu\T Q^{(u)}_e\nu$, the
+    imbalance of its bond $e$ oriented end minus partner
     ($Q^{(u)}_e=\Q e$ if $u$ is the child of $e$, $-\Q e$ if it is the parent) on the route's new direction
     $\nu$; new entries of the end, of its partner, that pair with nothing at second order
     & \cref{prop:A-trap} \\
-  visible degree, $j_{\rm vis}$ & of a route end: its slice decays at a rate $\propto\isc^{2(j_{\rm vis}-1)}$
-    ($j_{\rm vis}=2$ if the partner carries sites, $3$ at an HT or binary leaf of a rank-one saddle)
+  visible degree, $\deg_{\rm vis}(u)$; $\boldsymbol b_1$, $\boldsymbol b_2$ & of a route end $u$: its slice decays
+    at a rate $\propto\isc^{2(\deg_{\rm vis}(u)-1)}$ ($2$ if the partner carries sites, $3$ at an HT or binary
+    leaf of a rank-one saddle); vector route amplitudes of the two inner cores of a route with $k=4$
     & \cref{prop:A-trap} \\
   $I$; $F_u$, $n_u$ & identity matrix, and with arguments the regularized incomplete beta function; fan-in and
     number of normal physical directions of a route end & \S\labelcref{sec:setup-model};
@@ -760,8 +762,7 @@ table says where.
     gradient flow, under SGD
     & \eqref{eq:optim-collapse} \\
   $\beta$; $\beta_1$, $\beta_2$, $\epsilon$ & heavy-ball momentum; Adam's averaging parameters and its
-    regularizer ($\varepsilon$ is the perturbation scale; in \cref{prop:A-trap,app:supp-s2s-trap},
-    $\beta_1$, $\beta_2$ are the inner route entries of a route with $k=4$) & \S\labelcref{sec:other-optimizers} \\
+    regularizer ($\varepsilon$ is the perturbation scale) & \S\labelcref{sec:other-optimizers} \\
   $n_1$, $n_{\rm sign}$; $\isc_\times$ & Adam: steps to the first escape, their part in the sign regime;
     crossover scale & \eqref{eq:adam-eps} \\
   $P_{\W}$; $\mathrm{HSVD}_\chi$ & projector onto the tangent space at $\W$ of the fixed-rank manifold;
