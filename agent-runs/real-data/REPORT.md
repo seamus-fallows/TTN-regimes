@@ -5,8 +5,9 @@
 > section 8, which supersedes this report where they differ. In short: the k = 3 first-route gap had an
 > attribution bug (corrected: A/sigma + B fits all 11 clean series, free exponent 1.22 ± 0.03, not "1.01");
 > both gap laws are now fitted with relative residuals (log-law rms 0.11-0.30, still rejected); the
-> "locality" result is narrowed to a pixel-order/orientation effect measured by route amplitudes (an
-> equally local transposed quadtree is among the worst orders); "the MPS is fastest at every sigma / fails
+> "locality" result is narrowed to a pixel-order/orientation effect measured by route amplitudes (equally
+> local orders such as the transposed quadtree are not near the best: ranks 13-21 of 27 in the pre-registered
+> test); "the MPS is fastest at every sigma / fails
 > on every task" is narrowed to the tau = t - t_a clock on MNIST with the snake order (slower on the
 > absolute clock, slowest on Fashion, shape and order confounded); the MPS first route is merged with the
 > escape (10/35 rank events are the threshold at tau = 0), so its verdict is "partly"; the regime map's
@@ -17,7 +18,10 @@
 > B < 0 in 10/10; with fair fits 6 of 9 later MPS edges rise in log time, so the review's "2 of 9" was a fit
 > artifact), and a pre-registered order test was run (`notes/real_data.md` section 9) over 27 pixel
 > orders: a data-only route-amplitude share predicts the final loss (rho = -0.60 [-0.82, -0.22]) but not the time
-> to reach L <= 0.25.
+> to reach L <= 0.25. **Round-2 verification** (`notes/reviews/real_data_round2_verification.md`): the
+> pre-registration is intact and the main numbers reproduce; its errata E1-E9 are applied to the notes, the README
+> and this report, whose Summary, table and Caveats below now state the narrowed claims (the round-0 versions are
+> in the git history).
 
 Status: done - Branch: agent/real-data - Updated: 2026-10-10 04:25 UTC
 
@@ -27,45 +31,64 @@ test the teacher-student predictions. Main sweep: 234 runs; quadtree binary, sna
 binary trees; raw and whitened features; sigma 0.05-0.5; 5 seeds. Plus a 65-run regime sweep and checks
 on Fashion-MNIST, chi = 8 and 8x8 images (102 runs). Findings: `notes/real_data.md` (section 5 = table).
 
-Most predictions survive, and they survive where they follow from the tree structure. The first plateau
-scales as sigma^-(K-2) exactly. Ranks grow in discrete route escapes. The first route after the escape is a
-sibling pair of bottom cores on binary trees (k = 3; gap ∝ sigma^-1.0) and a single edge on the MPS (k = 2;
-gap linear in log(1/sigma); strict saddle by the Hessian). Route amplitudes predict which route goes first.
-The regime map S2S -> rich -> lazy appears, and the lazy regime is exactly the linearized model.
+The structural predictions survive where they follow from the tree structure; several round-0 claims were
+narrowed in the fix rounds (`notes/real_data.md` section 8 and the round-2 verification errata). The first
+plateau scales as sigma^-(K-2) exactly, an identity of small-init flow (an integrator check, not evidence).
+Ranks grow in discrete route escapes. On binary trees the first route after the escape is a sibling pair of
+bottom cores (k = 3) in all 20 (order, seed) pairs; its gap follows A/sigma + B with raw features (free
+exponent 1.20-1.22, not robust) and the log law is rejected. On the MPS the first rank rise (one edge) is
+merged with the escape, and 6 of 9 later edges rise in log time (28 of 29 seed fits). The MPS plateau after
+the first route is a strict saddle, the binary rank-1 plateau a higher-order one (lambda_min exponent
+0.87-0.89 on three seeds, 1.15 on a 3-point seed). Route amplitudes predict which sibling pair goes first in
+about 80-85% of critical-point units (chance 25%). Regimes: S2S at small sigma, rich at one sigma (1.4), lazy
+from sigma = 2, where the runs follow the linearized model but are unconverged at their horizon; the
+boundaries depend on the thresholds.
 
-Locality: on the same tree shape the quadtree learns far faster than scrambled orders at small init,
-because it puts 88% of the residual label interaction on short routes (scrambled: 21%). The effect vanishes
-at sigma = 0.5. Contrary to the brief's expectation, the MPS is the fastest tree at every sigma: route
-degree (tree shape) beats locality (time to reach each loss level). Loss plateaus are not flat on real data (they creep).
+Pixel order (not locality as such): at small sigma the quadtree order ends lowest at every seed, but equally
+local orders rank only 13-21 of 27 and early learning is not faster. In a pre-registered test over 27 orders a
+data-only route-amplitude share predicts the final loss (Spearman -0.60 [-0.82, -0.22]) but not the time to
+L <= 0.25; that the order acts through short vs long routes is a conjecture. MPS vs binary: the snake MPS
+reaches each loss level first only on the tau = t - t_a clock on MNIST; on the absolute clock its first escape
+is later (4 of 5 seeds at sigma = 0.1, 5 of 5 at sigma <= 0.07), and on Fashion it is the slowest tree to
+L <= 0.3-0.15 (the only one to reach L <= 0.12 early). Tree shape and pixel order are confounded (snake chains
+only), so the brief's "MPS between quadtree and scrambled" is undetermined, not refuted. Loss plateaus are not
+flat on real data: between drops the loss falls by a median 0.76 of the next drop's size.
 
 ## Results
-Full table of predictions vs observations: `notes/real_data.md` section 5 (short version below). Gradient
+Full table of predictions vs observations: `notes/real_data.md` section 5 (short version below, updated to
+the fix rounds and the round-2 verification; the round-0 table is in the git history). Counts are per
+(order, seed) or per critical-point unit, not per run. Gradient
 flow (DP5 to the escape, then LSODA, rtol 1e-8, atol 1e-14), MNIST 3 vs 5 4x4, n_train 4000, chi = 4, raw
 features unless stated; sigma = 0.05, 0.07, 0.1, 0.14, 0.2, 0.3, 0.5; seeds 0-4. Produced by
 `summarize.py` -> `scaling.py`, `tables.py`, `events_table.py`, `route_amplitudes.py`, `plateau_hessians.py`,
-`regime_analysis.py`, `make_figures.py` (README "How to run"); outputs in `experiments/real_data/results/`.
+`regime_analysis.py`, `make_figures.py`, then `fix1_analysis.py` and the order test (README "How to run");
+outputs in `experiments/real_data/results/`.
 
 | prediction | observed | verdict |
 |---|---|---|
-| t1 ∝ sigma^-(K-2) | 13.000 / 13.000 / 14.000 ± 0.000 per seed (quadtree, scrambled, MPS) | yes |
-| first route: sibling pair (binary, k = 3), one edge (MPS, k = 2) | first two rising edges are siblings in 35/35 quadtree and 89/89 scrambled runs (simultaneous in 35/35, 86/89); single edge in 34/35 MPS runs | yes |
-| k = 3 gap ∝ sigma^-1 | 1.01 ± 0.14 (quadtree, 4 seeds), 0.97 ± 0.11 / 1.27 ± 0.02 / 0.91 ± 0.23 (scrambled orders); log law rms 0.56-0.91 vs 0.03-0.14 | yes |
-| k = 2 gap ∝ log(1/sigma) | MPS edges 4 / 3: log rms 0.09 / 0.14 vs power 0.35 / 0.25 (5 seeds) | yes |
-| strict iff k = 2 (lambda_min vs sigma) | MPS sigma^0.04±0.03 (strict); binary sigma^0.877±0.005 (higher order, predicted 1) | yes (binary 12% low) |
-| route choice: lowest k, then largest amplitude | 34/35 quadtree, 78/89 scrambled | yes |
-| flat plateaus | plateaus creep; S2S signature holds with rate-peak drops (quadtree 100% at sigma <= 0.07, min rho 24 at 0.05) | partly |
-| locality: quadtree faster than scrambled | sigma = 0.1: L(1e4) 0.098 vs 0.207, acc 0.954 vs 0.872; 88% vs 21% of residual interaction on k <= 5 routes; not at sigma = 0.5 | yes (small init) |
-| MPS between the two | MPS reaches every loss level first at every sigma (e.g. L <= 0.2 at tau = 56 vs 333 quadtree, 6730 scrambled at sigma = 0.1); at sigma = 0.5 scrambled ends slightly lower at tau = 1e4 (0.078 vs 0.086) | no |
-| regimes S2S -> rich -> lazy | S2S <= 0.3, mixed 0.5-1, rich 1.4, lazy >= 2; lazy L(T) = linearized L_lin(T) (0.151); kernel rank 304 = R2 formula | yes |
-| (Fashion-MNIST sneaker vs boot) same structure | t1 exact; first two rising edges siblings 15/15, 14/15; a rank-1 strict saddle (lambda_min ∝ sigma^0.03±0.09) left by a rank-preserving rotation; no locality advantage (task ~solved at rank 1) | yes / locality: no |
-| (chi = 8) same structure | t1 exact; sibling first route 14/15 (both binary orders), MPS single edge 15/15; k = 3 gap exponent 1.17 ± 0.06 (quadtree, sigma 0.05-0.14); locality as at chi = 4 | yes |
-| (8x8 images, N = 64) same structure | t1 exponents 61.0000 / 62.0000 (K - 2); sibling first route 4/4, 4/4; MPS single edge 4/4; quadtree > scrambled, MPS best | yes |
+| t1 ∝ sigma^-(K-2) | 13.000 / 13.000 / 14.000 per seed (quadtree, scrambled, MPS): an identity of small-init flow, so an integrator check | identity (proven) |
+| ranks grow one route at a time | discrete escapes of s_k/s_1 from 1e-5-1e-3 to O(1); one negative Hessian direction at most binary small-sigma plateaus | yes |
+| flat plateaus | plateaus creep (between drops the loss falls by a median 0.76 of the next drop); S2S signature holds with rate-peak drops | partly |
+| first route on binary trees: sibling pair (k = 3) | all 20 (order, seed) pairs; the two siblings cross together in 96/96 rank-1 states | yes |
+| MPS: first route on one edge (k = 2) | edge 5 alone in 25/25 resolved runs, but merged with the escape (before the first drop's peak); 10/35 recorded rises are the threshold at tau = 0 | partly |
+| k = 3 gap ∝ sigma^-1 | raw features: A/sigma + B fits all 11 clean and all 10 window-checked series (B < 0); free exponent 1.22 ± 0.03 / 1.20 ± 0.03 (not robust); log law rms 0.11-0.30; the one whitened series has B = +10.8 | yes, as A/sigma + B |
+| k = 2 gap ∝ log(1/sigma) | later MPS edges 3, 4, 6-9 prefer the log law (28/29 seed fits; edge 4 slope 14.7 ± 1.5); edges 1, 2 power-like, edge 0 mixed | yes for 6 of 9 edges |
+| strict iff k = 2 (lambda_min vs sigma) | MPS plateau after the first route: exponent 0.047 ± 0.016 (strict); binary rank-1 plateau 0.87-0.89 on three seeds, 1.15 on one 3-point seed (mean 0.95 ± 0.07; higher order, predicted 1) | yes |
+| route choice: lowest k, then largest amplitude | 22/26 critical-point units (19-22 of 23-26 with other groupings; chance 1/4); 11/11 review runs (10 new orders or seeds) | yes |
+| locality: local pixel orders learn faster | quadtree lowest final loss at every seed (sigma <= 0.14) but not faster early; equally local orders rank 13-21 of 27; pre-registered: a data-only share predicts the final loss over 27 orders (rho -0.60 [-0.82, -0.22]), not the time to L <= 0.25 | no as locality; an order effect (final loss) |
+| MPS between quadtree and scrambled | snake MPS first on the tau clock (MNIST, e.g. L <= 0.2 at tau = 56 vs 333 quadtree at sigma = 0.1); later on the absolute clock (4/5 seeds at sigma = 0.1); slowest on Fashion to L <= 0.3-0.15; shape and order confounded | undetermined |
+| regimes S2S -> rich -> lazy | S2S at small sigma; rich at sigma = 1.4 only; lazy (>= 2) = linearized model, kernel rank 304 = R2 formula; boundaries threshold-dependent; lazy runs unconverged; lazy floor not above feature learning for every seed | partly |
+| (Fashion-MNIST sneaker vs boot) same structure | t1 exact; first two rising edges siblings 15/15, 14/15, but rising together only 3/15, 2/15; a rank-1 strict saddle (lambda_min ∝ sigma^0.03±0.09) left by a rank-preserving rotation; no order advantage (task ~solved at rank 1) | partly / order: no |
+| (chi = 8) same structure | t1 exact; sibling first route 14/15, 14/15; 23/45 runs wall-limited (losses at tau_end; MPS lowest L(tau_end) at small sigma); first-route exponents withdrawn (two-point slopes 1.27 / 1.20) | yes (structure) |
+| (8x8 images, N = 64) same structure | t1 exponents 61 / 62 (two-point identity); sibling first route 4/4, 4/4; MPS single edge 4/4; one permutation, two seeds, tau = 3000 | yes (small) |
 | integrator accuracy | drift <= 4.6e-8 (234 runs); 100x tighter tolerances: drop times within 0.1-0.9 units, L(T) to 6 digits | ok |
 
 Figures (`experiments/real_data/results/`): `loss_curves_raw` (train/test per tree and sigma),
 `bond_spectra_raw_s{0.05,0.1,0.5}`, `growth_order_raw_s*`, `scaling_raw` (t1, k = 3 gaps, MPS log law),
-`plateau_hessians`, `route_amplitudes`, `locality_raw_s{0.05,0.1,0.5}`, `regime_sweep`. Tables:
-`tables.md`, `events_table.md`, `scaling.json`, `regime_analysis.json`, `routes_raw.json`, `hessians_raw.json`.
+`plateau_hessians`, `route_amplitudes`, `locality_raw_s{0.05,0.1,0.5}`, `regime_sweep`; fix rounds:
+`first_route_gaps`, `scaling_fix1`, `locality_orders`, `order_test`. Tables:
+`tables.md`, `events_table.md`, `scaling.json`, `regime_analysis.json`, `routes_raw.json`, `hessians_raw.json`;
+fix rounds: `fix1_analysis.md`, `order_test.md`, `extra_orders_summary.csv`, `extra_orders_predictor.json`.
 
 ## What was done
 1. Reverted the launch commit b622158, `uv sync`, pushed (98042d5); merged main twice (34c76ad library final,
@@ -147,22 +170,31 @@ All under `/root/outputs/real_data/` (~0.6 GB; none in git):
 
 ## Caveats and next steps
 - **Scope.** Exponent fits come from one task (MNIST 3 vs 5, 4x4, chi = 4, raw features). Fashion-MNIST, chi = 8 and
-  8x8 runs confirm the structure (t1, first routes, locality direction on MNIST) but have 2-3 sigma values only.
-- **Locality is task dependent.** It is strong on MNIST 3 vs 5 at small sigma and absent on Fashion sneaker vs
-  boot, which a rank-1 (product) function almost solves. The mechanism (residual interaction on short vs long
-  routes) is measured by route amplitudes. The brief's "MPS in between" fails on every task and size: MPS
-  routes are all 2-core (log-time), so the MPS is fastest.
+  8x8 runs confirm the structure (t1, first routes, the pixel-order direction on MNIST) but have 2-3 sigma values
+  only.
+- **The pixel-order effect is task dependent.** On MNIST 3 vs 5 at small sigma the pixel order changes the final
+  loss, and a data-only route-amplitude share predicts the ranking of 27 orders (pre-registered); on Fashion
+  sneaker vs boot, which a rank-1 (product) function almost solves, there is no order advantage. Locality in the
+  image is neither necessary nor sufficient (equally local orders rank 13-21 of 27), and that the order acts
+  through residual interactions on short vs long routes is a conjecture. The brief's "MPS in between" is
+  undetermined, not refuted: tree shape and pixel order are confounded (snake chains only); the snake MPS is
+  fastest only on the tau clock on MNIST, later on the absolute clock and slowest on Fashion to L <= 0.3-0.15;
+  that its 2-core (log-time) routes make it fast is a conjecture.
 - **Adapted diagnostics.** No teacher: events are loss-rate peaks and s_k/s_1 = 0.05 crossings of data-weighted
   spectra. Plateaus creep, so the notes' progress-based widths were replaced by rate-peak FWHM (documented in
   `notes/real_data.md` section 3). Later events can merge; routes of later events are only partly identified.
 - **Horizon.** tau = 1e4 cuts late (k >= 5) escapes at sigma < 0.1, which lowers the small-sigma losses and
   accuracies at fixed time. 23/45 chi = 8 runs stopped at the 2 h wall limit (tau >= 4700).
-- **Open.** (i) The binary first-plateau lambda_min scales as sigma^0.88, not sigma^1. (ii) MPS edges far from the
-  first route rise with power-law-like sigma dependence (exponent ~1) where counting predicts k = 2. (iii) Whitened
-  features give weaker, noisier scaling (the small-init asymptote moves to smaller sigma).
+- **Open.** (i) The binary rank-1 plateau's lambda_min exponent is 0.87-0.89 on the three seeds with 5-6 sigma
+  values and 1.15 on one 3-point seed (mean 0.95 ± 0.07): whether it is the k = 3 value 1 is not established.
+  (ii) MPS edges 1 and 2 rise with power-law-like sigma dependence where counting predicts k = 2 (with fair fits
+  edges 3, 4, 6-9 rise in log time, edge 0 is mixed). (iii) Whitened features give weaker, noisier scaling (the
+  small-init asymptote moves to smaller sigma; the one whitened first-route series with the k = 3 form has
+  B > 0).
 - **Next steps (suggested).** Route amplitudes at higher-rank MPS states to explain (ii); longer horizons at
   sigma <= 0.07 to measure the k = 5 escapes (sigma^-3) systematically; tasks with more interaction structure
-  (one-vs-rest, 10-class one-hot targets) to map when locality matters; compare with sweep (DMRG) training.
+  (one-vs-rest, 10-class one-hot targets) to map when the pixel order matters; MPS chains in several pixel
+  orders to separate tree shape from order; compare with sweep (DMRG) training.
 - **Library.** No library changes; experiment code only (`experiments/real_data/`). Merged main 34c76ad and
   6c42d85 (gauge fix; all lambda_min here use the fixed projection, raw values reported alongside).
 - **Process note.** Twice I killed my own processes by pattern (`pkill -f`/`pgrep -f`), which also hit my own
