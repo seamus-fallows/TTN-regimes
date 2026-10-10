@@ -36,6 +36,7 @@ from ttn.tree import make_tree
 
 HERE = Path(__file__).parent
 D = 2
+STOP_ROTATE = False  # set by the "threshold" mode and the ht4 completion runs
 
 
 def star(n, s_q, w1, w2):
@@ -156,7 +157,10 @@ def saddle_job(args):
         ov = m["overlaps"]
         theta = torch.as_tensor(tr.data["theta_end"])
         t_off += chunk
-        if (ov[:, 0] < 0.1).any() or (ov[:, 1:] > 0.5).any() or t_off > 1e9:
+        # stop once q is forgotten, r is learned, or (STOP_ROTATE) once a_q < 0.6: on ht4 the strict
+        # escape from theta_q ends at a blended rank-1 point (a_q ~ 0.67) that is left only through a
+        # polynomial (3-core) route, so waiting for a_q < 0.1 takes ~1/eps
+        if (ov[:, 0] < (0.6 if STOP_ROTATE else 0.1)).any() or (ov[:, 1:] > 0.5).any() or t_off > 1e9:
             break
         chunk *= 2
     t = np.concatenate([p[0] for p in parts])
@@ -177,7 +181,7 @@ def saddle_job(args):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("mode", choices=["hessian", "random", "saddle", "threshold"])
+    ap.add_argument("mode", choices=["hessian", "random", "saddle", "threshold", "complete_ht"])
     ap.add_argument("--procs", type=int, default=28)
     a = ap.parse_args()
     if a.mode == "hessian":
@@ -192,7 +196,14 @@ if __name__ == "__main__":
         with Pool(a.procs) as pool:
             rows = pool.map(random_job, jobs, chunksize=1)
         pd.DataFrame(rows).to_csv(RESULTS / "r2_star_random.csv", index=False)
+    elif a.mode == "complete_ht":
+        # the 5 ht4 runs (w = 1.42, eps = 1e-6) stopped after the slow second stage was identified
+        globals()["STOP_ROTATE"] = True
+        jobs = [("ht", 4, 1.42, 1e-6, seed) for seed in range(5)]
+        with Pool(5) as pool:
+            pool.map(saddle_job, jobs, chunksize=1)
     elif a.mode == "threshold":
+        globals()["STOP_ROTATE"] = True
         # fine scan around w* = s_q / sqrt(2) = 1.41421 (rho(S) = s_q) at small noise
         jobs = [(tree, n, w, s, seed)
                 for tree, n in (("mps", 4), ("binary", 4))

@@ -593,8 +593,45 @@ rho >= 0.4). Binary-4 keeps its sigma^-1 law at every rho.
 
 ### R2.2 Star teachers (round-2 item 2)
 
-Exact Hessian at "q learned" (`r2_star.py hessian`, `results/r2_star_hessian.csv`; fixed gauge
-projection, raw equal): lambda_min = -0.371573 (mps4), -0.331034 (binary4), -0.431073 (ht4 and the
-binary8 analogue) for (2; 1.6, 1.6), equal to -a^(K-2)(rho(S) - s_q) to 1e-15; at w = 1.45
-(rho/s_q = 1.025) -0.071573 / -0.063764 / -0.083034; no negative eigenvalue for w <= 1.40
-(rho < s_q). Dynamics (forgetting depth vs sigma, threshold scan from theta_q + noise): queued.
+Teacher (theory_saddles.md v2 4.6, P8; d = 2, `r2_star.py`): q = 0000 (s_q = 2), r = 1010, r' = 1001
+(weights w each), so r and r' share the piggyback node (site-0 core, e1) and rho(S) = sqrt(2) w; the
+saddle "q learned" is predicted strict iff rho(S) > s_q, i.e. w > w* = sqrt(2) = 1.41421, with
+lambda_min = -a^(K-2)(rho(S) - s_q). Library LSODA (rtol 1e-9, atol 1e-14), merged fine rows.
+
+1. **Exact Hessian at "q learned"** (`results/r2_star_hessian.csv`; fixed gauge projection, raw equal) —
+   *derived and computed*: lambda_min = -0.371573 (mps4), -0.331034 (binary4), -0.431073 (ht4 and the
+   binary8 analogue) at w = 1.6, equal to the formula to 1e-15; at w = 1.45: -0.071573 / -0.063764 /
+   -0.083034; no negative eigenvalue for w <= 1.40.
+2. **Threshold** (`results/r2_star_threshold.csv`, `r2_star_threshold_scan.csv`, figure
+   `results/r2_star.png`) — *empirical, confirming P8*: started at theta_q plus noise eps, q is left
+   (a_q < 0.9 before any a_r > 1/2) in 3/3 seeds for w >= 1.4146 (rho/s_q = 1.0003) and in 0/3 for
+   w <= 1.4138 (rho/s_q = 0.9998), on mps4 and binary4 at eps = 1e-6: the threshold is rho(S) = s_q to
+   3e-4. The grid w in {1.30, ..., 1.60} at eps = 1e-6, 1e-4, 1e-3 (5 seeds) gives the same step between
+   w = 1.40 and 1.42 on all three trees; at eps = 1e-2 the apparent threshold moves to w ~ 1.43-1.44
+   (rho/s_q ~ 1.016): close to threshold the strict escape is slow (rate ~ rho - s_q) and the polynomial
+   route that learns r wins at moderate noise. As eps -> 0 the threshold converges to rho(S) = s_q.
+3. **Escape law from theta_q** (`results/r2_star_rotation_law.csv`) — *empirical*: log law in 5/5 seeds
+   on mps4 and binary4 at every super-critical w; at w = 1.6 the slope equals 1/abs(lambda_min):
+   mps4 2.686 +- 0.005 (pred 2.691), binary4 3.025 +- 0.004 (3.021), ht4 2.317 +- 0.008 (2.320). Close to
+   threshold (w = 1.42, 1.44) the a_q < 0.9 event needs a second step (the new rank-1 maximum lies close
+   to q), so its slope is not 1/abs(lambda_min(theta_q)).
+4. **Tree dependence of the second stage** — *empirical, new*: on mps4 (and binary4) the state leaves
+   theta_q and goes on to "r, r' learned, q forgotten" (a_q -> 0) through strict saddles. On ht4 the
+   strict escape (rate 0.43, checked by projecting on the unstable eigenvector: 1.2e-6 -> 0.94 in 50 time
+   units) ends at the blended bond-rank-1 point (a_q = 0.67), which is a higher-order saddle on HT
+   (internal cores, 3-core route); leaving it takes ~ 1/eps (t(a_q < 1/2) = 3.4e3, 3.4e4, 3.3e6 at
+   eps = 1e-3, 1e-4, 1e-6 for w = 1.6). So a star forgets q in log time on MPS but only in polynomial
+   time on HT, the same tree contrast as R2.1.
+5. **Random init: forgetting depth vs sigma** (`results/r2_star_depth.csv`, `r2_star_depth_exponents.csv`;
+   mps4 sigma 0.01-0.1, binary4 0.005-0.05, 6 values each, 10 seeds) — *empirical*: super-critical
+   (w = 1.6): q is forgotten in 5/10 (sigma = 0.1) to 9/10 (0.01) mps4 runs (the rest learn r by its
+   add route before the rotation instability grows) and in 3/10 binary4 runs at every sigma (on binary4,
+   a depth-3 linear network, most seeds first learn the top mode r + r' and then q, without forgetting).
+   When q is forgotten, the minimum of a_q falls as a power of sigma: min a_q ~ sigma^(5.7 +- 0.3) (mps4,
+   8 seeds) and sigma^(5.4 +- 0.4) (binary4, 3 seeds), fitted where 1e-10 < min a_q < 0.5 (deepest
+   3e-11, above the float64 floor); the time from that minimum to relearning q grows like ~sigma^-1.4.
+   Sub-critical (w = 1.2): q is never forgotten (min a_q >= 0.993) and the plateau at "q learned" lasts
+   ~ sigma^-1 (mps4: 16 -> 227 from sigma = 0.1 to 0.01; the add route of r has k = 3).
+   The depth and relearning laws are not predicted by the theory notes (theory_saddles.md 4.6 leaves
+   them open); a heuristic reading is that the forgotten component decays at the stable rate of the
+   (r, r')-learned saddle for a time that grows as sigma decreases (*conjecture*).
