@@ -126,7 +126,7 @@ quadtreeT and rowmajor seeds 0-1 from the review runs), so the runner skips them
 | `order_predictor.py` | data-only predictor of the pre-registered order test (best rank-1 fit, route-amplitude share) -> `results/extra_orders_predictor.json` |
 | `order_test.py` | registered analysis of the order test (seed-averaged outcomes, Spearman, bootstrap CIs, permutation p) -> `results/order_test.{json,md}` |
 | `configs/` | `main` (+ `main_extra`: 14 scrambled1 runs main.yaml does not generate), `regime`, `fashion`, `chi8` + `chi8b` (same cases, two runners), `img8`, `tol_check`; `fix1_local`, `fix1_mps` (fix round 1); `extra_orders` (order test); `pilot`, `smoke*` (development) |
-| `results/` | small outputs: tables, JSON summaries, figures (`fix1_*` = fix round 1; see the pending note above for round-0 files) |
+| `results/` | small outputs: tables, JSON summaries, figures (`fix1_*` = fix round 1, `order_test*`, `extra_orders*` = pre-registered order test; all regenerated from the raw outputs in round 2) |
 
 ## Results (details and evidence: `notes/real_data.md`; section 8 = fix round 1)
 - First plateau t1 ∝ sigma^-(K-2) (13.000 binary16, 14.000 mps16): an identity of small-init flow [proven],
