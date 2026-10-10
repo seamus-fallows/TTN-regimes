@@ -141,8 +141,16 @@ the notes):
   gives only brackets. With floor-stalled runs classified by rho, K = 8 gives 1.01 (5/6 seeds,
   deficient bonds). The K = 10 and 12 brackets mostly end at runs that learned nothing, so they are not
   boundaries (verification erratum E1). sigma^K and sigma^K / sqrt(D) are indistinguishable on these
-  data. sigma_c -> sqrt(d) is a conjecture, and stalls take over at large K. Round 2 (realizable
-  problems) is in the section above;
+  data. sigma_c -> sqrt(d) is a conjecture, and stalls take over at large K;
+- round 2 (realizable, d = 2 and 3, `results/round2/`, notes 4.7-4.8):
+  - Plain model with spare channels: at K >= 8 most seeds stay S2S up to the event rule's domain
+    limit (the sigma where W_0's overlap with a teacher component reaches 0.1, which tends to sqrt(d)),
+    with lower bounds 1.2-2.0. So sigma_c does not tend to 1.
+  - Mechanism: the plain model shrinks its cores (unlearns W_0) on the plateau once
+    sigma^K sqrt(D) / (s d) > ~1.
+  - Centred model with full bonds (K <= 8 at d = 2, K <= 4 at d = 3): sigma^K and sigma^K / sqrt(D)
+    are not resolved (beta = -0.07 +- 0.51).
+  - Run time: 0.1-0.4 h per run at K = 13-15 (plain, chi = 4); about 1 h at full bonds with P = 2349;
 - large chi (tensor kernel): delta_K ~ chi^-3.02 (SP), NTK chi^-1 at chi >= 64, muP-TTN delta_K -> 6.2
   (theory P16);
 - imbalance: light root -> lazy (delta_K ~ lambda^2, saturating at 0.6, the lower edge of P20's
