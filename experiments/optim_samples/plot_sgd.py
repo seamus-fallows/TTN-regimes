@@ -30,19 +30,19 @@ def main():
     ax = axes[0, 0]
     b = s[(s.block == "B_sweep")]
     for i, sig in enumerate(sorted(b.sigma.unique())):
-        g = b[b.sigma == sig].assign(rel1=lambda d: d.shift1 / d.t1_gf).groupby("B").rel1
+        g = b[b.sigma == sig].assign(rel1=lambda d: d.shift1 / d.t_esc_gf).groupby("B").rel1
         ax.errorbar(g.mean().index, g.mean(), yerr=g.sem(), fmt="o-", ms=3.5, lw=1,
                     color=ps.BLUES[2 * i + 1], label=f"first escape, σ = {sig:g}")
     sec = pd.read_csv(RES / "sgd_second_plateau.csv")
-    sec = sec[(sec.block == "B_sweep") & ~sec.near_tie]
+    sec = sec[(sec.block == "B_sweep") & ~sec.near_tie & (sec.n_inits >= 3)]
     for i, sig in enumerate(sorted(sec.sigma.unique())):
         g = sec[sec.sigma == sig].sort_values("B")
-        ax.errorbar(g.B, g.T_ratio - 1, yerr=g.T_ratio_se, fmt="s-", ms=3.5, lw=1, mfc="white",
+        ax.errorbar(g.B, g.T_ratio - 1, yerr=g.T_ratio_se_inits, fmt="s-", ms=3.5, lw=1, mfc="white",
                     color=ps.CAT[1 + i], label=f"second plateau, σ = {sig:g}")
         ax.plot(g.B, g.pred_P9_c35 - 1, ":", color=ps.CAT[1 + i], lw=1)
     ax.axhline(0, color=ps.INK2, lw=0.6)
     ax.set(xscale="log", xlabel="batch size B (η = 5·10⁻⁴)",
-           ylabel="relative change vs GF (mean ± s.e.)",
+           ylabel="relative change vs GF (mean ± s.e. over inits)",
            title="(a) noise lengthens, never shortens (dotted: P9, c_γ = 35)")
     ax.legend(fontsize=6.3, ncol=1)
     # (b) spread over noise vs eta / B, all fan-in blocks, normalized by sqrt(t_gf)
@@ -51,10 +51,10 @@ def main():
     for i, (blk, lab) in enumerate([("B_sweep", "B sweep, η = 5·10⁻⁴"),
                                    ("eta_sweep_B4", "η sweep, B = 4"),
                                    ("eta_sweep_B64", "η sweep, B = 64")]):
-        g = f[(f.block == blk) & (f.sigma == 0.1)].assign(y=lambda d: d.t1_std / np.sqrt(d.t1_gf))
+        g = f[(f.block == blk) & (f.sigma == 0.1)].assign(y=lambda d: d.t1_std / np.sqrt(d.t_esc_gf))
         m, se = pooled(g, "y")
         ax.errorbar(m.index, m, yerr=se, fmt="o", ms=3.5, color=ps.CAT[i], lw=1, label=lab)
-    g = f[f.sigma == 0.1].assign(p=lambda d: d.pred_std1 / np.sqrt(d.t1_gf))
+    g = f[f.sigma == 0.1].assign(p=lambda d: d.pred_std1 / np.sqrt(d.t_esc_gf))
     pm = g.groupby("x").p.mean()
     ax.plot(pm.index, pm, "-", color=ps.MUTED, lw=1, label="1D prediction ∝ (η/B)^½")
     ax.set(xscale="log", yscale="log", xlabel="η / B", ylabel="std(t₁) / √t₁^GF  (σ = 0.1)",
@@ -64,6 +64,7 @@ def main():
     ax = axes[1, 0]
     a = s[s.block == "aligned"].sort_values("B")
     if not a.empty:
+        a = a.assign(shift1_se=a.shift1_se_noise, shift2_se=a.t2_std / np.sqrt(a.t2_n))
         for r, col in ((1, ps.CAT[0]), (2, ps.CAT[1])):
             ax.errorbar(a.B, a[f"shift{r}"], yerr=a[f"shift{r}_se"], fmt="o", ms=3.5, color=col,
                         lw=1, label=f"mean shift, event {r}")

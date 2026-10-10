@@ -1,0 +1,18 @@
+# Learning-rate axis across the lazy transition with a genuinely lazy side (review round 1): binary
+# N=4, d = 3, centred model (target W* + W_0), student chi = 9 = cut dimension, so every target is
+# representable and GF converges (stopped at loss 1e-8, LSODA). GD steps are relative to each init's
+# own 2/lambda_GF (ratio_ref: gf), and GD runs as long as its GF reference took to converge.
+blocks:
+  # GF references over 1.2 decades of sigma (sharpness of the GF minimum vs sigma).
+  - {tree: binary, n: 4, centred: true, chi: 9, gf_method: lsoda, sigmas: [1.0, 1.41, 2.0, 2.83, 4.0, 5.66, 8.0, 11.3, 16.0],
+     seeds: [0, 1, 2, 3, 4], ratios: [], T: 1, T_gf: 10000.0, gf_loss_floor: 1.0e-8}
+  # GD class map around 2/lambda_GF at four init scales.
+  - {tree: binary, n: 4, centred: true, chi: 9, gf_method: lsoda, ratio_ref: gf, T_from_gf: 1.0,
+     sigmas: [1.0, 2.0, 4.0, 8.0], seeds: [0, 1, 2, 3, 4],
+     ratios: [0.5, 0.8, 0.95, 1.05, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0], T: 1, T_gf: 10000.0,
+     gf_loss_floor: 1.0e-8}
+  # Same at small init (plain model, chi = 9): the reference side of the map.
+  - {tree: binary, n: 4, chi: 9, gf_method: lsoda, ratio_ref: gf, T_from_gf: 1.0,
+     sigmas: [0.1, 0.3], seeds: [0, 1, 2, 3, 4],
+     ratios: [0.5, 0.8, 0.95, 1.05, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0], T: 1, T_gf: 10000.0,
+     gf_loss_floor: 1.0e-8}

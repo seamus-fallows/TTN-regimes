@@ -5,7 +5,9 @@ step (no label noise), time t = eta * steps. For each init (fan-in seed, or the 
 with per-core amplitude a0) many noise seeds are run, so the spread of event times over noise and the
 shift of their mean relative to gradient flow can be measured separately from init randomness.
 Recorded per run: event times t_r (a_r = 1/2, overlaps checked every `rec_every` steps, linear
-interpolation), final loss, overlaps, conservation-law drift and tr Q_e, effective bond ranks.
+interpolation; persistent last-crossing events and final-rise widths, `common.record_events`), final
+loss, overlaps, conservation-law drift and tr Q_e, effective bond ranks. Each run continues past the
+second GF event of its init (t_stop = 1.3 max(t1_GF, t2_GF) + 2), so transient crossings are resolved.
 
 Run:  uv run python experiments/optim_samples/sgd_sweep.py configs/sgd_sweep.yaml [--workers 30]
 Raw:  /root/outputs/optim_samples/sgd/<block>.jsonl (one line per run; resumable).
@@ -26,7 +28,7 @@ import numpy as np
 import torch
 import yaml
 
-from common import RAW, Problem, crossing_times, setup
+from common import RAW, Problem, record_events, setup
 from ttn.losses import sample_inputs
 from ttn.network import aligned_init, conserved_quantities, forward
 
@@ -52,14 +54,18 @@ def run(task):
     q0 = conserved_quantities(spec, spec.unflatten(p))
     trq0 = prob.q_traces(p)
     eta, batch = task["eta"], task["B"]
-    steps = int(math.ceil(task["T"] / eta))
+    # Run past the second GF event (review round 1): t_stop = 1.3 max(t1_GF, t2_GF) + 2, capped by T.
+    t_stop = min(task["T"], task.get("t_stop", task["T"]))
+    steps = int(math.ceil(t_stop / eta))
     rec = task.get("rec_every", 4)
-    n_stop = task.get("stop_after", teacher.n_components)  # stop once this many events happened
-    gen = torch.Generator().manual_seed(10_000 + 1000 * task["seed"] + task["noise_seed"])
+    # Independent noise for every (init, noise seed, B, eta): no shared sample streams across B or eta.
+    mixed = np.random.SeedSequence([task["seed"], task["noise_seed"], task["B"],
+                                    int(round(task["eta"] * 1e9))]).generate_state(1)[0]
+    gen = torch.Generator().manual_seed(int(mixed))
     n, d = spec.tree.n_sites, spec.phys_dims[0]
     ts, ovl = [], []
     t0 = time.time()
-    diverged, k, k_hit = False, 0, None
+    diverged, k = False, 0
     for k in range(steps + 1):
         if k % rec == 0:
             a = prob.overlaps(p)
@@ -67,10 +73,6 @@ def run(task):
             ovl.append(a)
             if not np.all(np.isfinite(a)) or np.abs(a).max() > 1e6:
                 diverged = True
-                break
-            if k_hit is None and np.sum(np.max(ovl, axis=0) > 0.5) >= n_stop:
-                k_hit = k
-            if k_hit is not None and k >= k_hit + 25 * rec:  # resolve the last crossing
                 break
         if k == steps:
             break
@@ -80,8 +82,10 @@ def run(task):
         (g,) = torch.autograd.grad(loss, pr)
         p = (pr - eta * g).detach()
     ts, ovl = np.array(ts), np.array(ovl)
-    out = dict(task=task, steps=k, diverged=diverged, t50=crossing_times(ts, ovl, 0.5),
-               t10=crossing_times(ts, ovl, 0.1), t90=crossing_times(ts, ovl, 0.9),
+    out = dict(task=task, steps=k, diverged=diverged, **record_events(ts, ovl),
+               a_min_after_learned=[float(np.min(ovl[np.argmax(ovl[:, r] >= 0.9):, r]))
+                                    if np.any(ovl[:, r] >= 0.9) else None
+                                    for r in range(ovl.shape[1])],
                wall=time.time() - t0)
     if not diverged:
         q = conserved_quantities(spec, spec.unflatten(p))
@@ -93,7 +97,28 @@ def run(task):
     return out
 
 
+def gf_stop_times(margin=1.3, extra=2.0):
+    """t_stop per (sigma, init seed) from the GF references of gd_sweep.py (binary N=4)."""
+    stops = {}
+    for p in (RAW / "gd").glob("binary4_sig*_gf.json"):
+        d = json.loads(p.read_text())
+        tk = d["task"]
+        if tk.get("centred") or tk.get("root_scale") or tk.get("chi", 3) != 3:
+            continue
+        t = [v for v in d["t50"][:2] if v is not None]
+        if len(t) == 2:
+            stops[(tk["sigma"], tk["seed"])] = margin * max(t) + extra
+    return stops
+
+
+def aligned_stop(a0, margin=1.3, extra=2.0):
+    from analyze_sgd import aligned_theory
+
+    return margin * aligned_theory(1, a0, 1.0, 1.0)[0] + extra
+
+
 def tasks_from_config(cfg):
+    stops = gf_stop_times()
     out = []
     for block in cfg["blocks"]:
         grid = itertools.product(block["sigmas"], block["seeds"], block["noise_seeds"],
@@ -102,15 +127,18 @@ def tasks_from_config(cfg):
             out.append(dict(block=block["name"], tree=block["tree"], n=block["n"],
                             init=block.get("init", "fanin"), sigma=sigma, seed=seed,
                             noise_seed=ns, B=batch, eta=eta,
-                            T=block["T"][sigma] if isinstance(block["T"], dict) else block["T"],
-                            stop_after=block.get("stop_after", 3)))
+                            T=block["T"][sigma] if isinstance(block["T"], dict) else block["T"]))
+            if out[-1]["init"] == "aligned":
+                out[-1]["t_stop"] = aligned_stop(sigma)
+            elif (sigma, seed) in stops:
+                out[-1]["t_stop"] = stops[(sigma, seed)]
     return out
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("config")
-    ap.add_argument("--workers", type=int, default=30)
+    ap.add_argument("--workers", type=int, default=min(30, os.cpu_count() or 1))
     args = ap.parse_known_args()[0]  # --raw-dir / --out-dir: see common.py
     cfg = yaml.safe_load(Path(args.config).read_text())
     OUT.mkdir(parents=True, exist_ok=True)
@@ -120,7 +148,7 @@ def main():
         for line in f.read_text().splitlines():
             done.add(key_of(json.loads(line)["task"]))
     todo = [t for t in tasks if key_of(t) not in done]
-    todo.sort(key=lambda t: -t["T"] / t["eta"] * (1 + t["B"] / 64))
+    todo.sort(key=lambda t: -t.get("t_stop", t["T"]) / t["eta"] * (1 + t["B"] / 64))
     print(f"{len(tasks)} tasks, {len(todo)} to run", flush=True)
     files = {}
     with Pool(args.workers) as pool:

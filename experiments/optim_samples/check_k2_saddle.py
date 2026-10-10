@@ -4,7 +4,8 @@ Gradient flow (lsoda) from fan-in init, sigma in {0.1, 0.07, 0.05, 0.03, 0.02, 0
 midpoint of the second plateau (minimum speed between the two events) the gauge-projected Hessian
 spectrum is computed with `ttn.diagnostics`. Saddle type by the sweep-level rule of
 notes/diagnostics.md: a strict saddle has lambda_min -> a negative sigma-independent constant as
-sigma -> 0 (prediction for a k = 2 route: -s2 * s1^{(K-2)/K} = -0.52); a higher-order saddle has
+sigma -> 0 (prediction for a k = 2 route: -s2 * s1^{(K-2)/K} = -0.5196); raw and projected values
+are both reported; a higher-order saddle has
 lambda_min -> 0 like sigma^(k-2).
 
 Run: uv run python experiments/optim_samples/check_k2_saddle.py [--workers 15] [--out-dir DIR]
@@ -12,6 +13,7 @@ Writes k2_saddle_hessian.json (sigma = 0.1, seed 0, full detail) and k2_saddle_s
 """
 
 import argparse
+import os
 import json
 from multiprocessing import Pool
 
@@ -55,11 +57,16 @@ def plateau_lambda_min(prob, spec, sigma, seed):
     mid = plateau_midpoints(traj["t"], traj["speed"], np.sort(events))[0]
     i = int(np.argmin(np.abs(traj["t"] - mid)))
     theta = torch.from_numpy(traj["params"][i])
-    h_proj, _ = project_out_gauge(hessian(prob.loss, theta), gauge_directions(spec, theta))
+    h = hessian(prob.loss, theta)
+    raw = torch.linalg.eigvalsh(h)
+    # Projection with the library default (rtol = 1e-3, after the fix of commit 6c42d85); the raw
+    # spectrum is reported alongside (notes/diagnostics.md).
+    h_proj, _ = project_out_gauge(h, gauge_directions(spec, theta))
     eigs = torch.linalg.eigvalsh(h_proj)
     return dict(sigma=sigma, seed=seed, t1=float(np.min(events)), t2=float(np.max(events)),
                 midpoint=float(traj["t"][i]), a2_mid=float(traj["overlaps"][i][1]),
                 lambda_min=eigs[0].item(), lambda_2=eigs[1].item(), lambda_max=eigs[-1].item(),
+                lambda_min_raw=raw[0].item(), lambda_2_raw=raw[1].item(),
                 n_negative_fallback=saddle_type(eigs)["n_negative"]), eigs
 
 
@@ -81,7 +88,7 @@ def make_problem():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--workers", type=int, default=15)
+    ap.add_argument("--workers", type=int, default=min(15, os.cpu_count() or 1))
     args = ap.parse_known_args()[0]
     # The sweep runs first: autograd must not be used in the parent before forking.
     tasks = [(sigma, seed) for sigma in (0.1, 0.07, 0.05, 0.03, 0.02, 0.01) for seed in range(5)]
@@ -98,9 +105,10 @@ def main():
     mid = plateau_midpoints(traj["t"], traj["speed"], np.sort(events))[0]
     i = int(np.argmin(np.abs(traj["t"] - mid)))
     theta = torch.from_numpy(traj["params"][i])
-    h_proj, _ = project_out_gauge(hessian(prob.loss, theta), gauge_directions(spec, theta))
+    h = hessian(prob.loss, theta)
+    h_proj, _ = project_out_gauge(h, gauge_directions(spec, theta))
     eigs = torch.linalg.eigvalsh(h_proj)
-    out = dict(events=events.tolist(), midpoint=float(traj["t"][i]),
+    out = dict(lowest_raw_eigs=torch.linalg.eigvalsh(h)[:4].tolist(),events=events.tolist(), midpoint=float(traj["t"][i]),
                overlaps_at_midpoint=traj["overlaps"][i].tolist(),
                lowest_eigs=eigs[:4].tolist(), top_eig=eigs[-1].item(),
                saddle=saddle_type(eigs), predicted_lambda_min=-0.3 * 3.0**0.5)
@@ -109,7 +117,7 @@ def main():
     df = pd.DataFrame(rows)
     df.to_csv(RESULTS / "k2_saddle_sweep.csv", index=False)
     print(df.to_string())
-    print(df.groupby("sigma").lambda_min.agg(["mean", "sem", "count"]))
+    print(df.groupby("sigma")[["lambda_min", "lambda_min_raw"]].agg(["mean", "sem", "count"]))
 
 
 if __name__ == "__main__":
