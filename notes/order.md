@@ -98,9 +98,33 @@ component is forgotten) -> relearning of component 2 by a k-core route (binary4:
 ## 7. Results
 
 ### 7.1 Step 1: order statistics (complete)
-See `agent-runs/order/REPORT.md` (Results, step 1) for the table and numbers; data
-`experiments/order/results/main_summary.csv`, figure `results/main_pg_vs_rho.png`. Full GF, sigma = 0.01,
-400 seeds x 6 rho x 28 settings.
+
+Full GF, sigma = 0.01, 400 seeds x 6 rho x 28 (tree, d, chi) settings with standard bond caps
+(`configs/main.yaml`; `results/main_summary.csv`, `main_settings.csv`, `main_d_pairs.csv`,
+`main_rules.csv`, `main_heuristic.csv`; figures `main_pg_vs_rho.png`, `main_spread.png`, `main_rules.png`).
+Accuracy (`tol_check.py`, `results/tol_check.csv`): rtol 1e-9 vs 1e-11 give the same winner on 400/400
+inits (4 trees), |delta t1|/t1 < 8e-10, conservation drift at the event < 4e-11.
+
+P(larger first), rho = 0.5 / 0.8 / 0.9 (binomial SE <= 0.025):
+
+| tree (K, m) | (d, chi) = (2,2) | (2,4) | (4,4) | (4,8) |
+|---|---|---|---|---|
+| binary4 (3, 2) | 0.99 / 0.86 / 0.69 | 1.00 / 0.87 / 0.70 | 1.00 / 0.91 / 0.76 | 1.00 / 0.92 / 0.77 |
+| mps4 (4, 4) | 0.79 / 0.60 / 0.54 | 0.82 / 0.61 / 0.55 | 0.87 / 0.61 / 0.52 | 0.88 / 0.65 / 0.55 |
+| mps6 (6, 6) | 0.69 / 0.55 / 0.52 | 0.73 / 0.54 / 0.52 | 0.81 / 0.61 / 0.56 | 0.82 / 0.62 / 0.53 |
+| binary8 (7, 4) | 0.70 / 0.58 / 0.53 | 0.76 / 0.59 / 0.54 | 0.78 / 0.59 / 0.51 | 0.86 / 0.64 / 0.57 |
+| mps8 (8, 8) | 0.63 / 0.51 / 0.50 | 0.71 / 0.58 / 0.54 | 0.73 / 0.55 / 0.52 | 0.76 / 0.58 / 0.53 |
+
+- Race model (O3) per seed: 100% of the 40800 MPS runs, 96-99% of binary8 runs; the race curve
+  P(tau_2/tau_1 > rho) from the pooled blow-up times overlays the GF points (figure). The log-normal
+  approximation Phi(ln(1/rho)/(sqrt 2 sd log tau)) is within the binomial error of the race curve.
+- sd(log tau) (`main_settings.csv`): MPS d = 2, chi = 2: 0.59 / 0.93 / 1.20 for K = 4 / 6 / 8; MPS8 d = 4:
+  1.19 / 0.76 / 0.66 for chi = 2 / 4 / 8 (agrees with `notes/theory_escape.md` table 2 within ~0.03).
+- d: pairs of settings with identical bonds and d = 2 vs 4 agree (chi^2 = 9.2 / 0.6 / 1.3, 6 dof, MPS4 /
+  6 / 8; binary8 3.8, 12 dof) [empirical; derived for MPS: d rescales every slice equally]. The largest
+  deviation (MPS4 d = 4, chi = 2 at rho = 0.5, 2.9 SE) was a seed-sample fluctuation: on 1500 fresh seeds
+  the race gives 0.81 and mean log(tau_1/tau_2) = -0.03 +- 0.02 (`configs/symmetry_check.yaml`).
+- Selection rule (O5): see section 8.
 
 ### 7.2 sigma dependence: m = 2 versus m >= 3 (complete)
 
