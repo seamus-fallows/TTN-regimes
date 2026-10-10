@@ -1,0 +1,6 @@
+K,d,seed,status,lo,hi,sigma_dom,y_lb,sigma_HA,sigma_HB,above_HA,above_HB
+5,3,0,all_s2s,0.38472,,,0.83456,0.536251,0.674855,False,False
+5,3,2,all_s2s,0.38472,,,0.83456,0.536251,0.674855,False,False
+5,3,3,all_s2s,0.38472,,,0.83456,0.536251,0.674855,False,False
+5,3,4,all_s2s,0.38472,,,0.83456,0.536251,0.674855,False,False
+5,3,5,all_s2s,0.38472,,,0.83456,0.536251,0.674855,False,False

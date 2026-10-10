@@ -40,8 +40,9 @@ K = 12: seeds ending at a crossing (values),0 (),fix1/k_sweep_per_seed.csv
 "plain full bonds, MPS: max stalled seeds per cell",3,report/k_sweep_cells.csv
 rho 2 -> 5 ratio range; max s.e.,2.14-2.34; 0.08,fix1/table_2_1_s2s.csv
 "dK 0.05 -> 0.2 ratio, chi >= 32: probe, tensor","1.301-1.346, 1.296-1.342",fix1/lazy_summary_chi_b4.csv
-centred binary4 labels; max changed over the 9 threshold pairs,912; 65,report/runs_sigma_chi_b4.csv
-"rich runs: dK probe min, median, max","0.103, 68, 1.2e+07",report/runs_sigma_chi_b4.csv
+centred binary4 labels; max changed over the 9 threshold pairs,912; 70,report/runs_sigma_chi_b4.csv
+"rich runs: dK probe min, median, max","0.068, 57, 1.2e+07",report/runs_sigma_chi_b4.csv
+"rich runs: dK tensor (label kernel) min, median, max","0.102, 55, 1.2e+07",report/runs_sigma_chi_b4.csv
 per-seed boundary spread (max/min) at chi <= 12; chi >= 16,1.9-15.9; 1.4-2.7,"sensitivity_per_seed_sigma_chi_b4_centred.csv, boundaries_per_seed_chi_b4.csv"
 two-copy chi = 3: labels and L/L0 range per sigma,1.003:{'rich': np.int64(6)}:9.85e-07-9.99e-07; 1.589:{'rich': np.int64(6)}:9.77e-07-9.96e-07; 2.52:{'rich': np.int64(6)}:9.95e-07-1e-06; 3.995:{'rich': np.int64(6)}:1e-06-0.000502; 6.333:{'stalled': np.int64(6)}:0.00482-0.0488; 10.04:{'stalled': np.int64(6)}:0.126-0.44; 15.92:{'stalled': np.int64(6)}:0.198-0.559; 25.23:{'stalled': np.int64(6)}:0.204-0.567; 40:{'stalled': np.int64(6)}:0.204-0.567,report/runs_sigma_chi_b4.csv
 "two-copy, smallest sigma: S2S seeds; max min_rho","chi 18, 0.01: 5, 7.1; chi 18, 0.01585: 4, 5.0; chi 24, 0.01: 4, 14.4; chi 24, 0.01585: 3, 8.9; chi 36, 0.01: 5, 4.8; chi 36, 0.01585: 2, 4.2",report/runs_sigma_chi_b4.csv
