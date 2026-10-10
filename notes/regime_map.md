@@ -262,6 +262,34 @@ minimum over edges): dead route < 1e-12, decaying 1e-12..1e-4, long plateau >= 1
 - Consequence for the map: at chi = teacher rank and K >= 7, "stalled" occupies the whole S2S side
   at practical budgets; the S2S boundary is measured with spare channels or full bonds (2.3).
 
+### 2.4 Imbalance: root scale at fixed function-space scale (binary N = 4)
+
+`configs/imbalance_b4.yaml`: root init lambda sigma, other cores sigma, alpha = lambda sigma^3 fixed;
+centred model; chi = 24 (full, overparameterized) and chi = 3 (deficient): 9 alpha (1e-6..100) x 10 lambda
+(1e-2..1e2 x the expected-balance point lambda_bal = sqrt(chi)) x 6 seeds; plus theory P20's check point
+chi = 16, alpha = 3.375, lambda = 0.01..100; `results/phase_imbalance_b4.png`.
+
+- **Check point P20 (chi = 16, alpha = 3.375).** Median delta_K = 1e-4, 7e-4, 0.0069, 0.036, 0.167, 0.45,
+  0.53, 0.50, 0.50 for lambda = 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30, 100. Local slope d ln delta_K / d ln lambda
+  = 2.18, 1.86, 1.51, 1.27 from the smallest lambda up: delta_K ~ lambda^2 as lambda -> 0 (theory: 1.8-1.9
+  between 0.03 and 0.1; measured 1.86), saturating at 0.50-0.53 for lambda >= 3 (theory: 0.6-0.7). Labels:
+  lazy for lambda <= 0.3 (6/6, 4/6 at 0.01 where the lazy fit had not finished), rich for lambda >= 1.
+  **Empirical**, confirming theory R13 (a small root makes training lazy; a large root freezes the root
+  and leaves a degree-(K-1) model that is not lazy); the saturation level is ~20% below the prediction.
+- **Map, chi = 24 (majority labels, 6 seeds).** The lazy boundary moves to smaller alpha as the root
+  shrinks: lazy for alpha >= 0.1 at lambda / sqrt(chi) = 0.01 and for alpha >= 1 at <= 0.1, but only for
+  alpha >= 10 at lambda >= sqrt(chi) (a factor ~100 in alpha). The S2S region is largest near the
+  expected-balance point lambda = sqrt(chi) (S2S up to alpha = 1e-3 there, 1e-4 for 0.1 <= lambda/sqrt(chi)
+  <= 10) and shrinks for strong imbalance in either direction (S2S only up to alpha = 1e-5 at
+  lambda / sqrt(chi) = 0.01 or 100). **Empirical.** So imbalance is a second knob in the sense of
+  Kunin et al. 2024, with the TTN-specific asymmetry of theory R13: a light root -> lazy, a heavy root ->
+  rich but non-incremental (its effective model has degree K - 1 = 2, whose plateaus are only
+  logarithmic, so rho grows only like log(1/sigma)).
+- **chi = 3 (deficient).** Same S2S/rich structure at small alpha; stalled at the centred floor for
+  alpha >= 1 (all lambda), with delta_K < 0.1 (lazy residual) at alpha = 100 for lambda >= sqrt(chi).
+- The fan-in default (lambda = 1) is root-light by sqrt(chi) (E Q_v = sigma^2 (1 - 1/chi) on the root
+  edges): at chi = 24 it sits at lambda / sqrt(chi) = 0.2, on the light side of balance.
+
 ### 2.5 Large bond dimension: SP, NTK and muP-TTN (binary N = 4)
 
 `configs/large_chi_b4.yaml`: chi = 4..128 (uncapped), parameterizations of theory_regimes section 4.3
