@@ -47,9 +47,11 @@ ARMS = {
     ),
     "C": dict(
         exp="r2_centred_full",
+        # LSODA: the dopri5 pilots (binary 8/10 at d = 2, 6/7 at d = 3; P = 830-3900) had not
+        # finished after 20 min under full load; P <= 1152 keeps the exact Hessian affordable
         base=dict(model="centred", kind="binary", chi=10**6, cap=True, weights=WEIGHTS,
-                  method="dopri5", direct_alpha=1e6, l_floor=1e-6, max_steps=100000),
-        cells=[(n, 2) for n in range(4, 11)] + [(n, 3) for n in range(4, 8)],
+                  method="lsoda", direct_alpha=1e6, l_floor=1e-6, max_steps=30000),
+        cells=[(n, 2) for n in range(4, 10)] + [(n, 3) for n in range(4, 6)],
     ),
 }
 
