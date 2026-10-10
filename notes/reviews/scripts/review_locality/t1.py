@@ -1,0 +1,6 @@
+import pandas as pd, numpy as np
+pd.set_option("display.width", 250, "display.max_columns", 60, "display.max_rows", 500, "display.precision", 3)
+R = "c:/Users/seamu/Iliad-ML/TTN_regimes/experiments/locality/results/"
+t = pd.read_csv(R + "twocomp_table.csv")
+cols = ["tree","case","start","w","k_rank","sigma_range","n_sigma","seeds","fit_seeds","runs","p_pred","p_fit","p_se","p_median","p_local","p_local_se","greedy","other_order","rotation","stalled","timeout","incomplete","error"]
+print(t[cols].to_string())

@@ -81,6 +81,15 @@
     \ref{fig:locality-bonds} & \texttt{plot\_bonds.py \$O/twocomp -{}-cases mps8:25 binary8:34 ht8:12s
       -{}-sigma 0.05 -{}-out R/bond\_spectra.png}
       & \texttt{twocomp} (saved trajectories) \\
+    \ref{fig:order-first} & \texttt{uv run python experiments/order/\allowbreak plot\_report.py} draws this
+      figure (\texttt{report\_order\_first}) and the next from committed tables: \texttt{main\_summary.csv}
+      (\texttt{analyze\_main.py}), \texttt{sigma\_table.csv}, \texttt{sigma\_fits.csv} (\texttt{analyze\_sigma.py};
+      also \cref{tab:order-gamma}), \texttt{chi\_scan.csv}, \texttt{chi\_gf.csv} (\texttt{analyze\_chi.py})
+      & \texttt{main}, \texttt{b4\_sigma}, \texttt{m4\_sigma}, \texttt{b8\_sigma}, \texttt{pat\_mps4\_*},
+      \texttt{pat\_mps6\_m3}, \texttt{chi\_scan}, \texttt{chi\_gf} (\cref{tab:exp-order}); local copy \texttt{data/order/} \\
+    \ref{fig:order-wrong} & as above (\texttt{report\_order\_wrong}), from \texttt{h1b\_saddle\_\{b4,mps4\_sep,mps4\_adj\}.csv}
+      (\texttt{h1b.py}) and \texttt{report\_examples.csv} (\texttt{plot\_report.py -{}-raw data/order})
+      & \texttt{h1b\_saddle\_*} \\
     \ref{fig:s2s-dormant} & \texttt{uv run python experiments/s2s\_core/\allowbreak plot\_dormant.py -{}-out
       experiments/s2s\_core/results} (\texttt{fig\_g\_dormant}) from \texttt{main\_runs.csv} and
       \texttt{dormant\_decay.csv} (\texttt{analyze\_main.py}, \texttt{analyze\_dormant.py})
