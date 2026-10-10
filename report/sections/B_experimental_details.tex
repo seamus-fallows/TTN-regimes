@@ -285,7 +285,114 @@ distinct intermediate plateau. A first sweep, made before the teacher and initia
 were separated, was discarded.
 
 \subsection{Regime-map experiments}\label{app:exp-regimes}
-\placeholder{Grids, seeds and time budgets of the phase diagrams of \cref{sec:regime-map}.}
+Settings of \cref{sec:regime-map} and \cref{sec:other-lazy,sec:other-rich,sec:other-stalled,sec:other-large-chi}.
+Experiment folder \path{experiments/regime_map/} (README with the run order; YAML configurations in
+\path{configs/}); findings in \path{notes/regime_map.md}, whose section 3 (fix round 1) overrides its sections
+0--2; review in \path{notes/reviews/regime_map_round1.md}; theory in \path{notes/theory_regimes.md} and
+\cref{app:boundaries}. Every number of \cref{sec:regime-map} and of \cref{sec:other-lazy,sec:other-rich,%
+sec:other-stalled,sec:other-large-chi} is an entry of the committed tables in \path{results/} (per-seed
+boundaries), \path{results/fix1/} (fix round 1) and \path{results/report/} (written from the raw runs by
+\path{report_tables.py}), or an aggregate of them in \path{results/report/numbers.csv} (\path{report_numbers.py}).
+
+\paragraph{Problems.}
+Whitened Gaussian inputs, exact population loss, double precision, the library model
+(\path{ttn.dynamics.Problem}). Odeco teachers with weights $(3,2,1)$ at $d=3$ or $(3,2)$ at $d=2$, Haar-random
+site bases from teacher seed $1000+s$ for initialization seed $s$ (an independent stream); fan-in initialization
+\eqref{eq:init}. Bond dimensions: binary4 uncapped ($\chi=3$--$128$); the other trees capped by
+\eqref{eq:bond-cap}, except the variant of the binary tree with $\Ns=8$ with bonds $8$ above two sites and $32$
+above four. Models: \emph{centred}, target $\Wt+\Wz$ through the cancellation-free shifted teacher, or, for
+$\fsc<10^{-2}$, through the direct loss $\frac12\normF{\W-\Wt-\Wz}^2$ (cancellation error about
+$10^{-16}\fsc^2$; on two configurations both forms gave identical labels, event times to $10^{-4}$ and kernel
+changes to six digits); \emph{plain}; \emph{two-copy} (\path{antisymmetric_double} with the gradient mask of
+\cref{rem:two-copy-mask}). Imbalance: root scale $\lambda\isc$ at fixed $\fsc=\lambda\isc^3$. Large $\chi$: the
+three parameterizations of \cref{sec:other-large-chi} as initial scales and multipliers $\lrm v$.
+
+\paragraph{Dynamics.}
+Gradient flow (\path{ttn.dynamics.integrate_gf}) by Dormand--Prince 5(4) with tolerances $10^{-8}$ and
+$10^{-12}$, or LSODA with the exact Hessian as Jacobian for long plateaus (the $\isc\times\Kc$ sweeps, the stall test,
+and $\isc<0.7$ in the sweeps of the binary tree with $\Ns=8$). A run stops when $\Loss<10^{-6}\cdot\frac12\normF{\Wt}^2$, at the time budget
+$T=50\,t_{\rm esc}+10^4/\max(\bar\lambda,1)$, with $t_{\rm esc}=(0.3\isc)^{-(\Kc-2)}/((\Kc-2)\tw{\min})$ the
+aligned escape time of the weakest component and $\bar\lambda=\tr\TK(0)/d^\Ns$, or at a step limit ($10^5$
+steps by default; $3\cdot10^4$ or $2\cdot10^4$ in the $\Ns=8$ and $\isc\times\Kc$ sweeps, $10^4$ for $\Kc\ge10$).
+Each final rise is re-integrated from the saved parameters on a 200-point linear grid
+(\path{run_regime.refine_events}); the event time is the last upward crossing of $\ov r=\frac12$ before $\ov r$
+first reaches $0.9$, the width the final rise from $0.1$ to $0.9$. Runs written before this rule are
+relabelled from their recorded log and fine rows (\path{analysis.relabel_last_crossing}). Deep in the
+saddle-to-saddle regime at $\Kc\ge7$ the widths are not resolved; separation ratios there are lower bounds, and
+no label depends on them.
+
+\paragraph{Labels, kernels and boundaries.}
+Labels of \cref{tab:regimes} with convergence measured against $\frac12\normF{\Wt}^2$ (\cref{rem:regime-rules}),
+at the nine threshold pairs $\delta_*\in\{0.05,0.1,0.2\}$, $\sep{}\in\{2,3,5\}$; a run that ends on a floor below
+$10^{-3}$ counts as converged. $\dTK^{\rm probe}$ uses 128 Gaussian probe inputs (generator seed 12345) and the
+weights $\Pre$ (multipliers times mask); $\dTK$ uses the tensor-space kernel $\Jac\Pre\Jac\T$, computed in the run
+when $d^\Ns\dim\params\le2\cdot10^7$, and for earlier runs from their final parameters by \path{fix_round1.py}
+(\texttt{tensor}).
+Per-seed boundaries: \path{analysis.seed_rho_boundary} (log-log interpolation of the crossing of $\min_i\sep i$),
+\path{seed_s2s_boundary} (label brackets; status ``unresolved'' when the next run is stalled) and
+\path{seed_kernel_boundary} (crossing of $\delta_*$ among converged runs); slopes against $\chi$ are pooled
+least-squares fits with standard errors from the scatter, checked by per-seed fits. Stall types come from the
+$\ncomp$-th bond singular value of $\W$ at the end, minimized over edges (\path{analysis.stall_type}); most centred
+runs recorded only the spectra of $\W-\Wz$ and are not typed.
+
+\paragraph{Sweeps and run counts.} \Cref{tab:exp-regimes}; six seeds ($0$--$5$) everywhere.
+
+\begin{table}[ht]
+  \centering
+  \caption{Sweeps of the regime-map experiment, one configuration each in
+    \texttt{experiments/regime\_map/configs/} (\texttt{stall\_test} has two); runs after de-duplication, from
+    \texttt{results/report/inventory.csv}.}
+  \label{tab:exp-regimes}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm}X r@{}}
+    \toprule
+    sweep & content & runs \\
+    \midrule
+    \texttt{sigma\_chi\_b4} & binary4, $d=3$; centred, plain, two-copy; $\chi=3,4,6,9,12,18,24,36$; 19 values of
+      $\isc\in[0.01,40]$ & 2,736 \\
+    \texttt{chi\_b4} & binary4; centred, $\chi=9$--$128$ (9 values), 22 values of $\isc\in[0.004,4]$; two-copy,
+      $\chi=16$--$128$, $\isc\in[0.25,4]$ & 1,428 \\
+    \texttt{sigma\_chi\_b8} & binary8, $d=3$, centred and plain, $\chi=3,6,24$, $\isc\in[0.3,4]$ & 227 \\
+    \texttt{sigma\_chi\_b8\_d2} & binary8, $d=2$, centred, $\chi=2,4,8,16$ and bonds $8/32$, $\isc\in[0.3,10]$ & 375 \\
+    \texttt{sigma\_K\_centred\_d2} & $d=2$, centred, $\chi=4$ on binary4, 8, 16 and MPS4, 5, 6, 8, 10, 12; full bonds
+      on MPS6, binary8, MPS8; $\isc$ from $\max(10^{-8/\Kc},0.02)$ to $2$ & 827 \\
+    \texttt{sigma\_K\_d2}, \texttt{sigma\_K\_full\_d2} & the same trees, plain, $\chi=2$ and $4$; full bonds on MPS6,
+      binary8, MPS8 & 1,293, 220 \\
+    \texttt{sigma\_K} & $d=3$, plain, $\chi=3$, $6$, binary8 and 16, MPS8, 10, 12 & 302 \\
+    \texttt{imbalance\_b4} & binary4, centred; $\chi=24$ and $3$: 9 values of $\fsc$ times 10 of $\lambda$;
+      $\chi=16$, $\fsc=3.375$, 9 values of $\lambda$ & 1,134 \\
+    \texttt{large\_chi\_b4} & binary4, centred and plain, $\chi=4$--$128$, SP, NTK, $\mu$P-TTN, $\isc=1$, $1.5$ & 432 \\
+    \texttt{large\_chi\_b8} & binary8, $d=2$, plain, $\chi=4$--$32$, $\isc=1$ (not interpreted) & 71 \\
+    \texttt{stall\_test} & binary8 and MPS8, $d=3$, $\chi=3$, $\isc=0.3$, $0.45$, $0.6$; fan-in and balanced;
+      plain and centred & 120 \\
+    \midrule
+    total & & 9,165 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Checks.}
+1,323 runs regenerated locally with the final driver from the committed configurations (the binary4
+saddle-to-saddle side and lazy windows, large $\chi$ at $\isc=1.5$, $\isc\times\Kc$ runs above the brackets) give the
+labels of the remote runs in every case, with median relative differences of $\min_i\sep i$ at most
+$2.5\cdot10^{-4}$, of $\dTK^{\rm probe}$ at most $2\cdot10^{-4}$ and of $\dTK$ at most $7\cdot10^{-7}$ per sweep
+(\path{results/fix1/validation_local_vs_remote.csv}). The fixed analysis applied with the first-crossing rule
+reproduces the per-seed tables committed before the fix round to $5\cdot10^{-15}$. The conservation drift
+\eqref{eq:drift} has a median of $10^{-12}$--$10^{-9}$ per sweep and a maximum of $9.5\cdot10^{-7}$. Of the 2,736
+runs of \texttt{sigma\_chi\_b4}, 317 stopped at the step limit, all at $\isc\ge4$: 283 are labelled stalled and 34
+had converged.
+
+\paragraph{Excluded and superseded runs.}
+Pilot runs made before the teacher and initialization streams were separated were discarded. A first map of
+binary4 with SciPy's RK45 on a logarithmic output grid (\texttt{b4\_sigma\_chi}) is superseded: its widths, read off
+that grid, were too coarse. Runs unfinished when the remote machine was stopped are missing from the tables
+(13 of 240 in \texttt{sigma\_chi\_b8}, 15 of 390 in \texttt{sigma\_chi\_b8\_d2}, 85 of 912 in
+\texttt{sigma\_K\_centred\_d2}, among them the full-bond binary8 and MPS8 runs at large $\isc$ and binary16 at
+$\isc=0.76$--$0.92$; the $\chi=6$ variants of the stall test); every count above is of finished runs. Compute: one
+remote machine with 384 vCPUs for 6.2 hours (\path{notes/spend.md}). The raw records (one row and one trajectory per run, 1.2\,GB;
+local copy \path{data/regime_map/}, with the fix-round reruns and the tensor-kernel cache in
+\path{data/regime_map_local/}) are not in the repository; \cref{app:reproducibility} says how to regenerate
+them.
 
 \subsection{Covariance and teacher experiments}\label{app:exp-data-teacher}
 Settings of \cref{sec:covariance-teacher}. Experiment folder \path{experiments/data_teacher/} (README with

@@ -1,0 +1,121 @@
+model,tree,K,init,sigma,seed,label,n_events,l_end,t_end,t_max,stop,sR_end,stall_kind
+centred,binary8,7,balanced,0.3,0,s2s,3,9.04724e-07,478138,1.70351e+06,converged,,
+centred,binary8,7,balanced,0.3,1,stalled,2,0.285714,1.70351e+06,1.70351e+06,completed,,unclassified
+centred,binary8,7,balanced,0.3,2,s2s,3,9.3611e-07,1.03295e+06,1.70351e+06,converged,,
+centred,binary8,7,balanced,0.3,3,stalled,2,0.0714286,1.70351e+06,1.70351e+06,completed,,unclassified
+centred,binary8,7,balanced,0.3,4,stalled,2,0.0714286,1.70351e+06,1.70351e+06,completed,,unclassified
+centred,binary8,7,balanced,0.3,5,stalled,2,0.285714,1.70351e+06,1.70351e+06,completed,,unclassified
+centred,binary8,7,balanced,0.45,0,s2s,3,1.48199e-06,233014,233014,completed,,
+centred,binary8,7,balanced,0.45,1,stalled,2,0.285713,233014,233014,completed,,unclassified
+centred,binary8,7,balanced,0.45,2,s2s,3,8.75829e-07,165794,233014,converged,,
+centred,binary8,7,balanced,0.45,3,stalled,2,0.0714287,233014,233014,completed,,unclassified
+centred,binary8,7,balanced,0.45,4,stalled,2,0.071429,233014,233014,completed,,unclassified
+centred,binary8,7,balanced,0.45,5,stalled,2,0.285714,233014,233014,completed,,unclassified
+centred,binary8,7,balanced,0.6,0,s2s,3,8.3174e-05,62922.1,62922.1,completed,,
+centred,binary8,7,balanced,0.6,1,s2s,3,4.45021e-05,62922.1,62922.1,completed,,
+centred,binary8,7,balanced,0.6,2,stalled,2,0.0714335,62922.1,62922.1,completed,,unclassified
+centred,binary8,7,balanced,0.6,3,s2s,3,8.20031e-06,62922.1,62922.1,completed,,
+centred,binary8,7,balanced,0.6,4,s2s,3,1.52783e-05,62922.1,62922.1,completed,,
+centred,binary8,7,balanced,0.6,5,stalled,2,0.285737,62922.1,62922.1,completed,,unclassified
+centred,binary8,7,fan-in,0.3,0,s2s,3,9.61774e-07,173732,1.70351e+06,converged,,
+centred,binary8,7,fan-in,0.3,1,stalled,2,0.285714,1.70351e+06,1.70351e+06,completed,,unclassified
+centred,binary8,7,fan-in,0.3,2,stalled,2,0.0714286,1.70351e+06,1.70351e+06,completed,,unclassified
+centred,binary8,7,fan-in,0.3,3,s2s,3,9.06454e-07,606560,1.70351e+06,converged,,
+centred,binary8,7,fan-in,0.3,4,stalled,2,0.0714286,1.70351e+06,1.70351e+06,completed,,unclassified
+centred,binary8,7,fan-in,0.3,5,stalled,2,0.285714,1.70351e+06,1.70351e+06,completed,,unclassified
+centred,binary8,7,fan-in,0.45,0,s2s,3,1.48199e-06,233014,233014,completed,,
+centred,binary8,7,fan-in,0.45,1,stalled,2,0.285713,233014,233014,completed,,unclassified
+centred,binary8,7,fan-in,0.45,2,stalled,2,0.0714283,233014,233014,completed,,unclassified
+centred,binary8,7,fan-in,0.45,3,stalled,2,0.0714288,233014,233014,completed,,unclassified
+centred,binary8,7,fan-in,0.45,4,stalled,2,0.071429,233014,233014,completed,,unclassified
+centred,binary8,7,fan-in,0.45,5,stalled,2,0.285714,233014,233014,completed,,unclassified
+centred,binary8,7,fan-in,0.6,0,s2s,3,8.3174e-05,62922.1,62922.1,completed,,
+centred,binary8,7,fan-in,0.6,1,stalled,2,0.285738,62922.1,62922.1,completed,,unclassified
+centred,binary8,7,fan-in,0.6,2,stalled,2,0.0714333,62922.1,62922.1,completed,,unclassified
+centred,binary8,7,fan-in,0.6,3,stalled,2,0.0714366,62922.1,62922.1,completed,,unclassified
+centred,binary8,7,fan-in,0.6,4,stalled,2,0.0714446,62922.1,62922.1,completed,,unclassified
+centred,binary8,7,fan-in,0.6,5,stalled,2,0.285737,62922.1,62922.1,completed,,unclassified
+centred,mps8,8,balanced,0.3,0,stalled,2,0.642857,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,balanced,0.3,1,s2s,3,9.67146e-07,694586,1.56906e+07,converged,,
+centred,mps8,8,balanced,0.3,4,stalled,2,0.0714286,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,balanced,0.3,5,stalled,2,0.0714286,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,balanced,0.45,0,stalled,2,0.642857,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,balanced,0.45,3,stalled,2,0.285714,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,balanced,0.45,4,stalled,2,0.0714286,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,balanced,0.45,5,stalled,2,0.0714286,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,balanced,0.6,1,stalled,2,0.642844,255010,255010,completed,,unclassified
+centred,mps8,8,balanced,0.6,2,s2s,3,1.12774e-06,255010,255010,completed,,
+centred,mps8,8,balanced,0.6,3,stalled,2,0.285722,255010,255010,completed,,unclassified
+centred,mps8,8,balanced,0.6,4,s2s,3,9.78453e-06,255010,255010,completed,,
+centred,mps8,8,fan-in,0.3,0,stalled,2,0.642857,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,fan-in,0.3,1,stalled,1,0.928571,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,fan-in,0.3,2,stalled,2,0.0714286,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,fan-in,0.3,3,stalled,1,0.357143,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,fan-in,0.3,4,stalled,2,0.285714,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,fan-in,0.3,5,stalled,1,0.357143,1.56906e+07,1.56906e+07,completed,,unclassified
+centred,mps8,8,fan-in,0.45,0,stalled,2,0.642857,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,fan-in,0.45,1,stalled,1,0.92857,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,fan-in,0.45,2,stalled,2,0.0714283,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,fan-in,0.45,3,stalled,1,0.357143,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,fan-in,0.45,4,stalled,2,0.285714,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,fan-in,0.45,5,stalled,1,0.357143,1.38663e+06,1.38663e+06,completed,,unclassified
+centred,mps8,8,fan-in,0.6,0,stalled,2,0.642861,255010,255010,completed,,unclassified
+centred,mps8,8,fan-in,0.6,1,stalled,2,0.285716,255010,255010,completed,,unclassified
+centred,mps8,8,fan-in,0.6,2,stalled,2,0.071427,255010,255010,completed,,unclassified
+centred,mps8,8,fan-in,0.6,3,stalled,2,0.285722,255010,255010,completed,,unclassified
+centred,mps8,8,fan-in,0.6,4,stalled,2,0.28572,255010,255010,completed,,unclassified
+centred,mps8,8,fan-in,0.6,5,stalled,1,0.357145,255010,255010,completed,,unclassified
+plain,binary8,7,balanced,0.3,0,s2s,3,9.48345e-07,479627,1.70351e+06,converged,,
+plain,binary8,7,balanced,0.3,1,stalled,2,0.285714,1.70351e+06,1.70351e+06,completed,3.02468e-06,decaying
+plain,binary8,7,balanced,0.3,2,s2s,3,9.45067e-07,1.03687e+06,1.70351e+06,converged,,
+plain,binary8,7,balanced,0.3,3,stalled,2,0.0714286,1.70351e+06,1.70351e+06,completed,9.83219e-07,decaying
+plain,binary8,7,balanced,0.3,4,stalled,2,0.0714286,1.70351e+06,1.70351e+06,completed,6.17429e-06,decaying
+plain,binary8,7,balanced,0.3,5,stalled,2,0.285714,1.70351e+06,1.70351e+06,completed,1.84922e-06,decaying
+plain,binary8,7,balanced,0.45,0,s2s,3,9.99966e-07,64594.4,233014,converged,,
+plain,binary8,7,balanced,0.45,1,stalled,2,0.285714,233014,233014,completed,1.82504e-05,decaying
+plain,binary8,7,balanced,0.45,2,s2s,3,9.7899e-07,167204,233014,converged,,
+plain,binary8,7,balanced,0.45,3,stalled,2,0.0714286,233014,233014,completed,8.0493e-06,decaying
+plain,binary8,7,balanced,0.45,4,stalled,2,0.0714286,233014,233014,completed,2.97141e-05,decaying
+plain,binary8,7,balanced,0.45,5,stalled,2,0.285714,233014,233014,completed,1.06362e-05,decaying
+plain,binary8,7,balanced,0.6,0,s2s,3,9.60797e-07,14387.1,62922.1,converged,,
+plain,binary8,7,balanced,0.6,1,stalled,2,0.285714,62922.1,62922.1,completed,5.90341e-05,decaying
+plain,binary8,7,balanced,0.6,2,s2s,3,9.04717e-07,57512.7,62922.1,converged,,
+plain,binary8,7,balanced,0.6,3,stalled,2,0.0714286,62922.1,62922.1,completed,3.14644e-05,decaying
+plain,binary8,7,balanced,0.6,4,stalled,2,0.0714286,62922.1,62922.1,completed,7.77942e-05,decaying
+plain,binary8,7,balanced,0.6,5,stalled,2,0.285714,62922.1,62922.1,completed,3.47325e-05,decaying
+plain,binary8,7,fan-in,0.3,0,s2s,3,9.91015e-07,173124,1.70351e+06,converged,,
+plain,binary8,7,fan-in,0.3,1,stalled,2,0.285714,1.70351e+06,1.70351e+06,completed,8.01794e-16,dead route
+plain,binary8,7,fan-in,0.3,2,stalled,2,0.0714286,1.70351e+06,1.70351e+06,completed,2.80105e-15,dead route
+plain,binary8,7,fan-in,0.3,3,s2s,3,9.38945e-07,607105,1.70351e+06,converged,,
+plain,binary8,7,fan-in,0.3,4,stalled,2,0.0714286,1.70351e+06,1.70351e+06,completed,5.19477e-16,dead route
+plain,binary8,7,fan-in,0.3,5,stalled,2,0.285714,1.70351e+06,1.70351e+06,completed,3.1051e-16,dead route
+plain,binary8,7,fan-in,0.45,0,s2s,3,9.22436e-07,24300.9,233014,converged,,
+plain,binary8,7,fan-in,0.45,1,stalled,2,0.285714,233014,233014,completed,8.96866e-16,dead route
+plain,binary8,7,fan-in,0.45,2,stalled,2,0.0714286,233014,233014,completed,1.41197e-15,dead route
+plain,binary8,7,fan-in,0.45,3,stalled,2,0.0714286,233014,233014,completed,5.84236e-06,decaying
+plain,binary8,7,fan-in,0.45,4,stalled,2,0.0714286,233014,233014,completed,4.80421e-16,dead route
+plain,binary8,7,fan-in,0.45,5,stalled,2,0.285714,233014,233014,completed,4.79129e-17,dead route
+plain,binary8,7,fan-in,0.6,0,s2s,3,9.79325e-07,7188.4,62922.1,converged,,
+plain,binary8,7,fan-in,0.6,1,stalled,2,0.285714,62922.1,62922.1,completed,2.85423e-16,dead route
+plain,binary8,7,fan-in,0.6,2,stalled,2,0.0714286,62922.1,62922.1,completed,3.93148e-16,dead route
+plain,binary8,7,fan-in,0.6,3,stalled,2,0.0714286,62922.1,62922.1,completed,1.09097e-06,decaying
+plain,binary8,7,fan-in,0.6,4,stalled,2,0.0714286,62922.1,62922.1,completed,1.14146e-15,dead route
+plain,binary8,7,fan-in,0.6,5,stalled,2,0.285714,62922.1,62922.1,completed,1.35084e-16,dead route
+plain,mps8,8,fan-in,0.3,0,stalled,2,0.642857,1.56906e+07,1.56906e+07,completed,3.1702e-16,dead route
+plain,mps8,8,fan-in,0.3,1,stalled,1,0.928571,1.56906e+07,1.56906e+07,completed,7.97927e-18,dead route
+plain,mps8,8,fan-in,0.3,2,stalled,2,0.0714286,1.56906e+07,1.56906e+07,completed,4.15398e-17,dead route
+plain,mps8,8,fan-in,0.3,3,stalled,1,0.357143,1.56906e+07,1.56906e+07,completed,1.16725e-16,dead route
+plain,mps8,8,fan-in,0.3,4,stalled,2,0.285714,1.56906e+07,1.56906e+07,completed,4.58045e-17,dead route
+plain,mps8,8,fan-in,0.3,5,stalled,1,0.357143,1.56906e+07,1.56906e+07,completed,5.51681e-13,dead route
+plain,mps8,8,fan-in,0.45,0,stalled,2,0.642857,1.38663e+06,1.38663e+06,completed,3.65785e-17,dead route
+plain,mps8,8,fan-in,0.45,1,stalled,1,0.928571,1.38663e+06,1.38663e+06,completed,1.36277e-17,dead route
+plain,mps8,8,fan-in,0.45,2,stalled,2,0.0714286,1.38663e+06,1.38663e+06,completed,3.60791e-17,dead route
+plain,mps8,8,fan-in,0.45,3,stalled,1,0.357143,1.38663e+06,1.38663e+06,completed,1.35888e-18,dead route
+plain,mps8,8,fan-in,0.45,4,stalled,2,0.285714,1.38663e+06,1.38663e+06,completed,2.42123e-16,dead route
+plain,mps8,8,fan-in,0.45,5,stalled,1,0.357143,1.38663e+06,1.38663e+06,completed,4.38496e-11,decaying
+plain,mps8,8,fan-in,0.6,0,stalled,2,0.642857,255010,255010,completed,2.1448e-17,dead route
+plain,mps8,8,fan-in,0.6,1,stalled,1,0.928571,255010,255010,completed,1.74604e-17,dead route
+plain,mps8,8,fan-in,0.6,2,stalled,2,0.0714286,255010,255010,completed,1.03926e-16,dead route
+plain,mps8,8,fan-in,0.6,3,stalled,1,0.357143,255010,255010,completed,4.14521e-17,dead route
+plain,mps8,8,fan-in,0.6,4,stalled,2,0.285714,255010,255010,completed,2.29805e-17,dead route
+plain,mps8,8,fan-in,0.6,5,stalled,1,0.357143,255010,255010,completed,1.05415e-09,decaying

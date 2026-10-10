@@ -1,0 +1,50 @@
+key,value,source
+rho exponent: fits,101,fix1/s2s_per_seed_*.csv
+rho exponent: fits in 1.015-1.048 (rounded),96,fix1/s2s_per_seed_*.csv
+rho exponent: exceptions min-max,1.093-1.274,fix1/s2s_per_seed_*.csv
+deepest-run ratio: range of 53 seeds,0.856-1.231,fix1/s2s_per_seed_chi_b4.csv
+deepest-run ratio: outlier,2.217,fix1/s2s_per_seed_chi_b4.csv
+"deep S2S width, component 1: range (aligned)",0.4645-0.4677 (0.4644),report/widths_deep_s2s_b4.csv
+"deep S2S width, component 2: range (aligned)",0.7978-0.8011 (0.7974),report/widths_deep_s2s_b4.csv
+"deep S2S width, component 3: range (aligned)",2.0096-2.0098 (2.0094),report/widths_deep_s2s_b4.csv
+lazy boundary above the P5 bracket at chi = 9-16 (%),6.3;2.9;1.5,fix1/lazy_summary_chi_b4.csv
+lazy boundary below P5 lower edge at chi = 128 (%),0.069,fix1/lazy_summary_chi_b4.csv
+"near-boundary runs (chi >= 32, 0.03 < dK < 0.3)",43,fix1/lazy_r4_check_chi_b4.csv
+"probe/tensor dK: min, median, max","0.54, 0.78, 1.11",fix1/lazy_r4_check_chi_b4.csv
+"dK / R4 law: min, median, max","0.69, 0.96, 1.82",fix1/lazy_r4_check_chi_b4.csv
+"first-order lazy estimate (kappa/0.1)^(1/3) at chi = 12, 36","2.39, 0.59",lazy_pred_b4.csv
+"lazy boundary, tensor kernel, chi = 36 (geometric mean)",1.088,sensitivity_per_seed_sigma_chi_b4_centred.csv
+"stalled centred runs at chi = 3, 4, 6",159,report/floor_sigma_chi_b4.csv
+max |L_end / Eckart-Young - 1| (%),0.039,report/floor_sigma_chi_b4.csv
+stall onset / P4 estimate,1.78;1.68;2.24,report/floor_sigma_chi_b4.csv
+sigma = 40: max |L_end / residual - 1| (%),0.13,report/floor_sigma_chi_b4.csv
+"-1/3 from the S2S slope, chi >= 16: pooled SE, per-seed SE","3.67, 2.67",fix1/slopes_vs_chi_chi_b4.csv
+"-1/3 from the S2S slope, chi >= 32: pooled SE, per-seed SE","2.75, 2.90",fix1/slopes_vs_chi_chi_b4.csv
+"rich window, chi >= 32: probe, tensor","18.4-22.8, 19.5-24.2",fix1/collapse_chi_b4.csv
+"Gram scale p = chi sigma^2 / d^2 at sigma sqrt(chi) = 0.30, 6.50","0.010, 4.69",(arithmetic)
+"K = 7, d = 2, chi = 4/8/16: median boundary [lo, hi]","0.834 [0.721, 0.966]",boundaries_per_seed_sigma_chi_b8_d2.csv
+"K = 7, d = 2, bonds 8/32: median boundary [lo, hi]","0.532 [0.463, 0.612]",boundaries_per_seed_sigma_chi_b8_d2.csv
+"K = 7, bonds 8/32: kernel boundary (median, seeds)","1.451, 4",boundaries_per_seed_sigma_chi_b8_d2.csv
+"K = 7, bonds 8/32: lazy runs per sigma",1.415:2/5; 1.871:2/3; 2.474:4/5; 3.271:4/5; 4.325:4/6; 5.719:4/6; 7.563:4/5; 10:2/5,report/runs_sigma_chi_b8.csv
+"K = 7, bonds 8/32: stalled lazy-side runs, L/L0 range, max dK","0.0014-0.0054, 0.015",report/runs_sigma_chi_b8.csv
+"K = 7, chi = 16 (square), sigma > 2: L/L0 range, stops","0.048-0.442, max_steps",report/runs_sigma_chi_b8.csv
+K = 7 rich window (8/32),2.73,boundaries_per_seed_sigma_chi_b8_d2.csv
+unresolved MPS seeds; S2S-like first floor run,18; 13,report/k_sweep_floor_runs.csv
+S2S-like: rho range; L/L0 range; smaller first,3.9-642; 0.0011-0.074; 9,report/k_sweep_floor_runs.csv
+K = 8: seeds ending at a crossing (values),"5 (1.01, 1.33, 0.77, 1.01, 1.01)",fix1/k_sweep_per_seed.csv
+K = 10: seeds ending at a crossing (values),"2 (0.90, 0.90)",fix1/k_sweep_per_seed.csv
+K = 12: seeds ending at a crossing (values),0 (),fix1/k_sweep_per_seed.csv
+"centred chi = 4, smallest sigma: stalled / runs",binary4:0/6; mps4:1/6; mps5:0/6; mps6:3/6; binary8:0/6; mps8:5/6; mps10:3/6; mps12:6/6; binary16:5/5,report/k_sweep_cells.csv
+"plain K sweeps, stalled: dead, decaying, long plateau, total","546, 212, 37, 795",report/k_sweep_runs.csv
+"d = 3, chi = 6: binary8 stalled at sigma <= 0.63 (runs); MPS8 stalled / runs",0 (30); 50/50,report/k_sweep_cells.csv
+"plain full bonds, MPS: max stalled seeds per cell",3,report/k_sweep_cells.csv
+rho 2 -> 5 ratio range; max s.e.,2.14-2.34; 0.08,fix1/table_2_1_s2s.csv
+"dK 0.05 -> 0.2 ratio, chi >= 32: probe, tensor","1.301-1.346, 1.296-1.342",fix1/lazy_summary_chi_b4.csv
+centred binary4 labels; max changed over the 9 threshold pairs,912; 65,report/runs_sigma_chi_b4.csv
+"rich runs: dK probe min, median, max","0.103, 68, 1.2e+07",report/runs_sigma_chi_b4.csv
+per-seed boundary spread (max/min) at chi <= 12; chi >= 16,1.9-15.9; 1.4-2.7,"sensitivity_per_seed_sigma_chi_b4_centred.csv, boundaries_per_seed_chi_b4.csv"
+two-copy chi = 3: labels and L/L0 range per sigma,1.003:{'rich': np.int64(6)}:9.85e-07-9.99e-07; 1.589:{'rich': np.int64(6)}:9.77e-07-9.96e-07; 2.52:{'rich': np.int64(6)}:9.95e-07-1e-06; 3.995:{'rich': np.int64(6)}:1e-06-0.000502; 6.333:{'stalled': np.int64(6)}:0.00482-0.0488; 10.04:{'stalled': np.int64(6)}:0.126-0.44; 15.92:{'stalled': np.int64(6)}:0.198-0.559; 25.23:{'stalled': np.int64(6)}:0.204-0.567; 40:{'stalled': np.int64(6)}:0.204-0.567,report/runs_sigma_chi_b4.csv
+"two-copy, smallest sigma: S2S seeds; max min_rho","chi 18, 0.01: 5, 7.1; chi 18, 0.01585: 4, 5.0; chi 24, 0.01: 4, 14.4; chi 24, 0.01585: 3, 8.9; chi 36, 0.01: 5, 4.8; chi 36, 0.01585: 2, 4.2",report/runs_sigma_chi_b4.csv
+runs; transients before learning; repeated crossings; labels changed,9165; 116; 130; 15,report/inventory.csv
+"SP, chi = 128, sigma = 1.5: median root, leaf change","0.086, 0.00021",report/large_chi_runs.csv
+stall test budgets (time units),6.29e+04-1.57e+07,report/stall_test_runs.csv

@@ -15,6 +15,11 @@
 # Example (not active):
 #   experiments/s2s_core/results/escape_vs_sigma.pdf   s2s/escape_vs_sigma.pdf
 
+# Section 3 and Sections 5.1-5.4, map of regimes and the regimes other than saddle-to-saddle (experiment
+# regime_map; plot_report.py, from the committed tables of results/, results/fix1/ and results/report/)
+experiments/regime_map/results/report_map.pdf     regime_map/map.pdf
+experiments/regime_map/results/report_other.pdf   regime_map/other.pdf
+
 # Sections 4.1-4.3 and 4.6, saddle-to-saddle phenomenology, aligned initialization, first escape and
 # failure modes of the odeco runs (experiment s2s_core; plot_report.py, plot_scaling.py,
 # plot_aligned.py, plot_dormant.py; commands in the experiment README and Appendix C)

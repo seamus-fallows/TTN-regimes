@@ -33,6 +33,12 @@
     \toprule
     figure & command & raw data (sweeps; \cref{app:experiments}) \\
     \midrule
+    \ref{fig:regime-map} & \texttt{uv run python experiments/regime\_map/\allowbreak plot\_report.py} draws this
+      figure (\texttt{report\_map}) and \cref{fig:other-regimes} from committed tables in \texttt{results/},
+      \texttt{results/fix1/} and \texttt{results/report/}; the last are written by \texttt{report\_tables.py
+      -{}-raw data/regime\_map -{}-tensor-cache data/regime\_map\_local/\allowbreak tensor\_kernel} (README)
+      & \texttt{sigma\_chi\_b4}, \texttt{chi\_b4}, \texttt{sigma\_K\_centred\_d2}, \texttt{imbalance\_b4}
+      (\cref{tab:exp-regimes}); local copy \texttt{data/regime\_map/} \\
     \ref{fig:s2s-runs} & \texttt{uv run python experiments/s2s\_core/\allowbreak plot\_report.py -{}-raw-main
       data/s2s\_core/main -{}-raw-large data/s2s\_core/large -{}-out experiments/s2s\_core/results} draws this
       figure (\texttt{report\_runs}) and \cref{fig:s2s-prefactor}; scripts below are in
@@ -66,6 +72,8 @@
       experiments/s2s\_core/results} (\texttt{fig\_g\_dormant}) from \texttt{main\_runs.csv} and
       \texttt{dormant\_decay.csv} (\texttt{analyze\_main.py}, \texttt{analyze\_dormant.py})
       & \texttt{main}, \texttt{large}, \texttt{k78}, \texttt{balanced} (\cref{tab:exp-s2s}) \\
+    \ref{fig:other-regimes} & as \cref{fig:regime-map} (\texttt{report\_other}) & \texttt{sigma\_chi\_b4},
+      \texttt{large\_chi\_b4} \\
     \ref{fig:optim-gd} & \texttt{uv run python experiments/optim\_samples/\allowbreak plot\_report.py
       -{}-out-dir experiments/optim\_samples/\allowbreak results} draws this figure and the next two from
       committed tables, here
