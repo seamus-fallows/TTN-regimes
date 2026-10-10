@@ -1,0 +1,162 @@
+842 jobs, 60 processes
+[1/842      15s] HB PS06 seed=1 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (15s)
+[2/842      17s] HB PS08 seed=11 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (17s)
+[3/842      17s] HB PS06 seed=8 x=0.0003162  residual_first (17s)
+[4/842      17s] HB PS08 seed=8 x=0.0003162  residual_first (17s)
+[5/842      18s] HB PS08 seed=3 x=0.0003162  residual_first (17s)
+[6/842      18s] HB PS06 seed=3 x=0.0003162  residual_first (18s)
+[7/842      18s] HB PS08 seed=1 x=0.0005623  residual_first (18s)
+[8/842      18s] HB PS08 seed=32 x=0.0003162  residual_first (18s)
+[9/842      18s] HB PS06 seed=9 x=0.0003162  residual_first (18s)
+[10/842      19s] HB PS08 seed=38 x=0.0003162  residual_first (19s)
+[11/842      19s] HB PS08 seed=18 x=0.0003162  residual_first (19s)
+[12/842      19s] HB PS08 seed=29 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (19s)
+[13/842      19s] HB PS08 seed=1 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (19s)
+[14/842      20s] HB PS08 seed=39 x=0.0003162  residual_first (19s)
+[15/842      20s] HB PS08 seed=3 x=0.0005623  residual_first (19s)
+[16/842      20s] HB PS06 seed=11 x=0.0003162  residual_first (19s)
+[17/842      20s] HB PS08 seed=0 x=0.0003162  residual_first (19s)
+[18/842      20s] HB PS08 seed=37 x=0.0003162  residual_first (20s)
+[19/842      20s] HB PS08 seed=0 x=0.0005623  residual_first (20s)
+[20/842      20s] HB PS08 seed=5 x=0.0005623  residual_first (20s)
+[21/842      21s] HB PS08 seed=6 x=0.0005623  residual_first (20s)
+[22/842      21s] HB PS08 seed=5 x=0.0003162  residual_first (20s)
+[23/842      21s] HB PS08 seed=36 x=0.0003162  residual_first (20s)
+[24/842      21s] HB PS08 seed=10 x=0.0003162  residual_first (20s)
+[25/842      21s] HB PS08 seed=12 x=0.0003162  residual_first (21s)
+[26/842      21s] HB PS08 seed=15 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (21s)
+[27/842      21s] HB PS08 seed=2 x=0.0005623  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (21s)
+[28/842      21s] HB PS08 seed=14 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (21s)
+[29/842      21s] HB PS08 seed=26 x=0.0003162  residual_first (21s)
+[30/842      21s] HB PS06 seed=5 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (21s)
+[31/842      21s] HB PS06 seed=6 x=0.0003162  residual_first (21s)
+[32/842      21s] HB PS08 seed=6 x=0.0003162  residual_first (21s)
+[33/842      21s] HB PS08 seed=9 x=0.0003162  residual_first (21s)
+[34/842      21s] HB PS06 seed=2 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (21s)
+[35/842      21s] HB PS08 seed=16 x=0.0003162  residual_first (21s)
+[36/842      22s] HB PS08 seed=2 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (21s)
+[37/842      22s] HB PS06 seed=10 x=0.0003162  ERROR Traceback (most recent call last): |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sweep.py", line 86, in work |     rec = run_hb(cell, seed, x) |   File "/root/work/TTN-regimes/experiments/saddle_dyn/runs.py", line 173, in run_hb |     sol, info = integrate(model, y0.numpy(), T_MAX, rtol, atol, events_extra=[ev_q, ev_visit] + ev_res, wall=wall, |                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ |                           trap=False) |                           ^^^^^^^^^^^ |   File "/root/work/TTN-regimes/experiments/saddle_dyn/sdyn.py", line 321, in integrate |     sol = solve_ivp(rhs, (0.0, t_max), y0, method="LSODA", rtol=rtol, atol=atol, jac=jac, |                     events=evs, dense_output=True, t_eval=t_eval) | ValueError: f(a) and f(b) must have different signs |  (22s)
+[38/842      22s] HB PS08 seed=30 x=0.0003162  residual_first (22s)
+[39/842      22s] HB PS08 seed=35 x=0.0003162  residual_first (22s)
+[40/842      23s] HB PS08 seed=33 x=0.0003162  residual_first (22s)
+[41/842      23s] HB PS08 seed=19 x=0.0003162  residual_first (22s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Process ForkPoolWorker-12:
+Traceback (most recent call last):
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 131, in worker
+    put((job, i, result))
+    ~~~^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/queues.py", line 397, in put
+    self._writer.send_bytes(obj)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 205, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 432, in _send_bytes
+    self._send(header + buf)
+    ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 389, in _send
+    n = write(self._handle, buf)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/process.py", line 313, in _bootstrap
+    self.run()
+    ~~~~~~~~^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 136, in worker
+    put((job, i, (False, wrapped)))
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/queues.py", line 397, in put
+    self._writer.send_bytes(obj)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 205, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 432, in _send_bytes
+    self._send(header + buf)
+    ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 389, in _send
+    n = write(self._handle, buf)
+BrokenPipeError: [Errno 32] Broken pipe
+Process ForkPoolWorker-42:
+Traceback (most recent call last):
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 131, in worker
+    put((job, i, result))
+    ~~~^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/queues.py", line 397, in put
+    self._writer.send_bytes(obj)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 205, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 432, in _send_bytes
+    self._send(header + buf)
+    ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 389, in _send
+    n = write(self._handle, buf)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/process.py", line 313, in _bootstrap
+    self.run()
+    ~~~~~~~~^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/pool.py", line 136, in worker
+    put((job, i, (False, wrapped)))
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/queues.py", line 397, in put
+    self._writer.send_bytes(obj)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 205, in send_bytes
+    self._send_bytes(m[offset:offset + size])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 432, in _send_bytes
+    self._send(header + buf)
+    ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/.uv/python_install/cpython-3.13.15-linux-x86_64-gnu/lib/python3.13/multiprocessing/connection.py", line 389, in _send
+    n = write(self._handle, buf)
+BrokenPipeError: [Errno 32] Broken pipe

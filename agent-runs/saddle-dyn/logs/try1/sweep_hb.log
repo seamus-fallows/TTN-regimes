@@ -1,0 +1,538 @@
+842 jobs, 60 processes
+[1/842       1s] HB PS08 seed=0 x=0.0003162  exists (0s)
+[2/842       1s] HB PS08 seed=3 x=0.0003162  exists (0s)
+[3/842       1s] HB PS08 seed=5 x=0.0003162  exists (0s)
+[4/842       1s] HB PS08 seed=6 x=0.0003162  exists (0s)
+[5/842       1s] HB PS08 seed=8 x=0.0003162  exists (0s)
+[6/842       1s] HB PS08 seed=9 x=0.0003162  exists (0s)
+[7/842       1s] HB PS08 seed=10 x=0.0003162  exists (0s)
+[8/842       1s] HB PS08 seed=16 x=0.0003162  exists (0s)
+[9/842       1s] HB PS08 seed=12 x=0.0003162  exists (0s)
+[10/842       1s] HB PS08 seed=18 x=0.0003162  exists (0s)
+[11/842       1s] HB PS08 seed=19 x=0.0003162  exists (0s)
+[12/842       1s] HB PS08 seed=26 x=0.0003162  exists (0s)
+[13/842       1s] HB PS08 seed=30 x=0.0003162  exists (0s)
+[14/842       1s] HB PS08 seed=33 x=0.0003162  exists (0s)
+[15/842       1s] HB PS08 seed=32 x=0.0003162  exists (0s)
+[16/842       1s] HB PS08 seed=35 x=0.0003162  exists (0s)
+[17/842       1s] HB PS08 seed=36 x=0.0003162  exists (0s)
+[18/842       1s] HB PS08 seed=38 x=0.0003162  exists (0s)
+[19/842       1s] HB PS08 seed=39 x=0.0003162  exists (0s)
+[20/842       1s] HB PS08 seed=37 x=0.0003162  exists (0s)
+[21/842       1s] HB PS06 seed=3 x=0.0003162  exists (0s)
+[22/842       1s] HB PS06 seed=6 x=0.0003162  exists (0s)
+[23/842       1s] HB PS06 seed=8 x=0.0003162  exists (0s)
+[24/842       1s] HB PS06 seed=9 x=0.0003162  exists (0s)
+[25/842       1s] HB PS06 seed=11 x=0.0003162  exists (0s)
+[26/842       1s] HB PS08 seed=0 x=0.0005623  exists (0s)
+[27/842       1s] HB PS08 seed=1 x=0.0005623  exists (0s)
+[28/842       1s] HB PS08 seed=3 x=0.0005623  exists (0s)
+[29/842       1s] HB PS08 seed=5 x=0.0005623  exists (0s)
+[30/842       1s] HB PS08 seed=6 x=0.0005623  exists (0s)
+[31/842       1s] HB PS08 seed=8 x=0.0005623  exists (0s)
+[32/842       1s] HB PS08 seed=9 x=0.0005623  exists (0s)
+[33/842      19s] HB PS08 seed=39 x=0.0005623  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[34/842      20s] HB PS08 seed=36 x=0.0005623  residual_first (19s)
+[35/842      20s] HB PS08 seed=11 x=0.0005623  residual_first (19s)
+[36/842      20s] HB PS08 seed=18 x=0.0005623  residual_first (19s)
+[37/842      20s] HB PS08 seed=12 x=0.0005623  residual_first (20s)
+[38/842      21s] HB PS08 seed=16 x=0.0005623  residual_first (20s)
+[39/842      21s] HB PS08 seed=1 x=0.0003162  residual_first (20s)
+[40/842      21s] HB PS06 seed=2 x=0.0003162  no_visit (20s)
+[41/842      21s] HB PS08 seed=10 x=0.0005623  residual_first (20s)
+[42/842      21s] HB PS08 seed=11 x=0.0003162  residual_first (20s)
+[43/842      21s] HB PS08 seed=15 x=0.0005623  residual_first (21s)
+[44/842      21s] HB PS08 seed=14 x=0.0005623  residual_first (21s)
+[45/842      21s] HB PS08 seed=35 x=0.0005623  residual_first (21s)
+[46/842      21s] HB PS06 seed=1 x=0.0003162  no_visit (21s)
+[47/842      21s] HB PS08 seed=26 x=0.0005623  residual_first (21s)
+[48/842      22s] HB PS08 seed=37 x=0.0005623  residual_first (21s)
+[49/842      22s] HB PS08 seed=32 x=0.0005623  residual_first (21s)
+[50/842      22s] HB PS08 seed=33 x=0.0005623  residual_first (21s)
+[51/842      22s] HB PS08 seed=29 x=0.0003162  no_visit (21s)
+[52/842      22s] HB PS06 seed=5 x=0.0003162  residual_first (21s)
+[53/842      22s] HB PS08 seed=14 x=0.0003162  residual_first (22s)
+[54/842      22s] HB PS06 seed=10 x=0.0003162  residual_first (22s)
+[55/842      22s] HB PS08 seed=19 x=0.0005623  residual_first (22s)
+[56/842      23s] HB PS08 seed=38 x=0.0005623  residual_first (22s)
+[57/842      23s] HB PS08 seed=15 x=0.0003162  residual_first (22s)
+[58/842      23s] HB PS08 seed=30 x=0.0005623  residual_first (23s)
+[59/842      25s] HB PS08 seed=2 x=0.0003162  no_visit (24s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[60/842      35s] HB PS08 seed=9 x=0.001  residual_first (13s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[61/842      37s] HB PS06 seed=3 x=0.0005623  residual_first (17s)
+[62/842      37s] HB PS06 seed=8 x=0.0005623  residual_first (16s)
+[63/842      40s] HB PS06 seed=11 x=0.0005623  residual_first (18s)
+[64/842      40s] HB PS08 seed=0 x=0.001  residual_first (19s)
+[65/842      40s] HB PS06 seed=5 x=0.0005623  residual_first (19s)
+[66/842      40s] HB PS08 seed=11 x=0.001  residual_first (18s)
+[67/842      40s] HB PS08 seed=8 x=0.001  residual_first (18s)
+[68/842      40s] HB PS06 seed=10 x=0.0005623  residual_first (19s)
+[69/842      40s] HB PS06 seed=6 x=0.0005623  residual_first (19s)
+[70/842      40s] HB PS08 seed=6 x=0.001  residual_first (18s)
+[71/842      40s] HB PS08 seed=3 x=0.001  residual_first (19s)
+[72/842      41s] HB PS08 seed=5 x=0.001  residual_first (19s)
+[73/842      41s] HB PS08 seed=12 x=0.001  residual_first (18s)
+[74/842      42s] HB PS08 seed=10 x=0.001  residual_first (19s)
+[75/842      42s] HB PS08 seed=1 x=0.001  residual_first (20s)
+[76/842      42s] HB PS06 seed=9 x=0.0005623  residual_first (21s)
+[77/842      44s] HB PS08 seed=14 x=0.001  residual_first (19s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[78/842      54s] HB PS08 seed=15 x=0.001  residual_first (19s)
+[79/842      55s] HB PS08 seed=16 x=0.001  residual_first (18s)
+[80/842      58s] HB PS08 seed=18 x=0.001  residual_first (18s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[81/842      59s] HB PS08 seed=26 x=0.001  residual_first (19s)
+[82/842      60s] HB PS08 seed=30 x=0.001  residual_first (18s)
+[83/842      60s] HB PS08 seed=19 x=0.001  residual_first (20s)
+[84/842      61s] HB PS08 seed=32 x=0.001  residual_first (17s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[85/842      74s] HB PS08 seed=33 x=0.001  residual_first (20s)
+[86/842      78s] HB PS08 seed=36 x=0.001  residual_first (19s)
+[87/842      78s] HB PS08 seed=39 x=0.001  residual_first (18s)
+[88/842      78s] HB PS08 seed=35 x=0.001  residual_first (20s)
+[89/842      79s] HB PS08 seed=37 x=0.001  residual_first (18s)
+[90/842      80s] HB PS08 seed=38 x=0.001  residual_first (20s)
+[91/842      81s] HB PS08 seed=7 x=0.0005623  escaped dt=70111.525390625 (80s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[92/842      88s] HB PS08 seed=21 x=0.0005623  escaped dt=154109.7822265625 (88s)
+[93/842      90s] HB PS08 seed=2 x=0.0005623  escaped dt=106051.796875 (90s)
+[94/842      93s] HB PS08 seed=34 x=0.0003162  escaped dt=532653.09375 (93s)
+[95/842      94s] HB PS08 seed=21 x=0.0003162  escaped dt=487329.84375 (94s)
+[96/842      96s] HB PS08 seed=7 x=0.001  escaped dt=22170.808227539062 (73s)
+[97/842      97s] HB PS06 seed=3 x=0.001  residual_first (19s)
+[98/842      98s] HB PS08 seed=7 x=0.0003162  escaped dt=221707.8203125 (98s)
+[99/842      98s] HB PS06 seed=5 x=0.001  residual_first (19s)
+[100/842      99s] HB PS06 seed=6 x=0.001  residual_first (19s)
+[101/842     102s] HB PS08 seed=25 x=0.0005623  escaped dt=1516832.0927734375 (102s)
+[102/842     103s] HB PS08 seed=34 x=0.0005623  escaped dt=168442.509765625 (102s)
+[103/842     103s] HB PS08 seed=2 x=0.001  escaped dt=33536.7939453125 (82s)
+[104/842     105s] HB PS08 seed=17 x=0.0005623  escaped dt=1493032.435546875 (104s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[105/842     106s] HB PS08 seed=25 x=0.0003162  escaped dt=4796629.1015625 (105s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[106/842     107s] HB PS08 seed=24 x=0.0005623  escaped dt=2310566.224609375 (106s)
+[107/842     108s] HB PS06 seed=9 x=0.001  residual_first (14s)
+[108/842     109s] HB PS06 seed=8 x=0.001  residual_first (19s)
+[109/842     109s] HB PS08 seed=20 x=0.0005623  escaped dt=683261.2265625 (108s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[110/842     111s] HB PS08 seed=23 x=0.0005623  escaped dt=38425518.927734375 (111s)
+[111/842     111s] HB PS06 seed=10 x=0.001  residual_first (17s)
+[112/842     113s] HB PS08 seed=17 x=0.0003162  escaped dt=4721363.046875 (112s)
+[113/842     113s] HB PS08 seed=31 x=0.0005623  escaped dt=25762213.587890625 (112s)
+[114/842     113s] HB PS08 seed=20 x=0.0003162  escaped dt=2160647.21875 (113s)
+[115/842     114s] HB PS08 seed=0 x=0.001778  residual_first (16s)
+[116/842     114s] HB PS08 seed=22 x=0.0005623  escaped dt=2896025.59765625 (114s)
+[117/842     115s] HB PS08 seed=3 x=0.001778  residual_first (16s)
+[118/842     116s] HB PS06 seed=11 x=0.001  residual_first (21s)
+[119/842     117s] HB PS08 seed=1 x=0.001778  residual_first (19s)
+[120/842     119s] HB PS08 seed=6 x=0.001778  residual_first (16s)
+[121/842     121s] HB PS08 seed=5 x=0.001778  residual_first (18s)
+[122/842     121s] HB PS08 seed=28 x=0.0003162  escaped dt=47942152.8203125 (121s)
+[123/842     122s] HB PS08 seed=21 x=0.001  escaped dt=48734.628967285156 (82s)
+[124/842     122s] HB PS08 seed=4 x=0.0005623  escaped dt=13993765.939453125 (122s)
+[125/842     122s] HB PS08 seed=23 x=0.0003162  escaped dt=121511780.375 (122s)
+[126/842     123s] HB PS08 seed=13 x=0.0005623  escaped dt=21872322.26953125 (122s)
+[127/842     124s] HB PS08 seed=31 x=0.0003162  escaped dt=81467148.421875 (123s)
+[128/842     124s] HB PS08 seed=8 x=0.001778  residual_first (18s)
+[129/842     124s] HB PS08 seed=29 x=0.0005623  escaped dt=23308773.671875 (124s)
+[130/842     125s] HB PS08 seed=9 x=0.001778  residual_first (18s)
+[131/842     125s] HB PS08 seed=10 x=0.001778  residual_first (18s)
+[132/842     126s] HB PS08 seed=11 x=0.001778  residual_first (17s)
+[133/842     126s] HB PS08 seed=34 x=0.001  escaped dt=53267.178955078125 (71s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[134/842     127s] HB PS08 seed=12 x=0.001778  residual_first (17s)
+[135/842     127s] HB PS08 seed=27 x=0.0005623  escaped dt=47506015.5234375 (127s)
+[136/842     128s] HB PS08 seed=15 x=0.001778  residual_first (15s)
+[137/842     129s] HB PS08 seed=13 x=0.0003162  escaped dt=69166310.5 (129s)
+[138/842     129s] HB PS08 seed=14 x=0.001778  residual_first (18s)
+[139/842     130s] HB PS08 seed=4 x=0.0003162  escaped dt=44259371.21875 (129s)
+[140/842     130s] HB PS08 seed=18 x=0.001778  residual_first (16s)
+[141/842     130s] HB PS08 seed=16 x=0.001778  residual_first (18s)
+[142/842     131s] HB PS08 seed=13 x=0.001  escaped dt=6916648.399597168 (107s)
+[143/842     132s] HB PS08 seed=19 x=0.001778  residual_first (17s)
+[144/842     132s] HB PS08 seed=20 x=0.001  escaped dt=216069.14599609375 (92s)
+[145/842     132s] HB PS08 seed=4 x=0.001  escaped dt=4423941.125488281 (111s)
+[146/842     132s] HB PS08 seed=22 x=0.0003162  escaped dt=9158010.96875 (132s)
+[147/842     133s] HB PS08 seed=27 x=0.0003162  escaped dt=150228266.6875 (132s)
+[148/842     134s] HB PS08 seed=28 x=0.0005623  escaped dt=15160647.50390625 (133s)
+[149/842     134s] HB PS08 seed=24 x=0.0003162  escaped dt=7306630.546875 (134s)
+[150/842     136s] HB PS08 seed=17 x=0.001  escaped dt=472142.92053222656 (99s)
+[151/842     139s] HB PS08 seed=26 x=0.001778  residual_first (17s)
+[152/842     140s] HB PS08 seed=22 x=0.001  escaped dt=915809.4072265625 (100s)
+[153/842     141s] HB PS08 seed=39 x=0.001778  residual_first (13s)
+[154/842     141s] HB PS08 seed=32 x=0.001778  residual_first (17s)
+[155/842     141s] HB PS08 seed=36 x=0.001778  residual_first (15s)
+[156/842     141s] HB PS08 seed=30 x=0.001778  residual_first (17s)
+[157/842     141s] HB PS08 seed=25 x=0.001  escaped dt=479668.3055419922 (101s)
+[158/842     144s] HB PS06 seed=3 x=0.001778  residual_first (14s)
+[159/842     144s] HB PS08 seed=33 x=0.001778  residual_first (18s)
+[160/842     144s] HB PS08 seed=35 x=0.001778  residual_first (18s)
+[161/842     145s] HB PS08 seed=28 x=0.001  escaped dt=4794226.616333008 (103s)
+[162/842     145s] HB PS08 seed=37 x=0.001778  residual_first (18s)
+[163/842     147s] HB PS08 seed=38 x=0.001778  residual_first (20s)
+[164/842     147s] HB PS06 seed=6 x=0.001778  residual_first (16s)
+[165/842     148s] HB PS08 seed=27 x=0.001  escaped dt=15022543.271484375 (107s)
+[166/842     148s] HB PS06 seed=5 x=0.001778  residual_first (18s)
+[167/842     149s] HB PS06 seed=9 x=0.001778  residual_first (16s)
+[168/842     150s] HB PS06 seed=8 x=0.001778  residual_first (17s)
+[169/842     150s] HB PS08 seed=0 x=0.003162  residual_first (16s)
+[170/842     152s] HB PS08 seed=29 x=0.001  escaped dt=7370932.8310546875 (110s)
+[171/842     152s] HB PS08 seed=6 x=0.003162  residual_first (11s)
+[172/842     152s] HB PS06 seed=10 x=0.001778  residual_first (20s)
+[173/842     152s] HB PS08 seed=24 x=0.001  escaped dt=730670.0559082031 (112s)
+[174/842     153s] HB PS06 seed=11 x=0.001778  residual_first (19s)
+[175/842     153s] HB PS08 seed=1 x=0.003162  residual_first (17s)
+[176/842     156s] HB PS08 seed=23 x=0.001  escaped dt=12151278.62524414 (116s)
+[177/842     157s] HB PS08 seed=3 x=0.003162  residual_first (16s)
+[178/842     157s] HB PS08 seed=5 x=0.003162  residual_first (16s)
+[179/842     157s] HB PS08 seed=8 x=0.003162  residual_first (16s)
+[180/842     157s] HB PS08 seed=31 x=0.001  escaped dt=8146754.382080078 (115s)
+[181/842     158s] HB PS08 seed=9 x=0.003162  residual_first (14s)
+[182/842     158s] HB PS08 seed=12 x=0.003162  residual_first (14s)
+[183/842     160s] HB PS08 seed=10 x=0.003162  residual_first (17s)
+[184/842     161s] HB PS08 seed=11 x=0.003162  residual_first (17s)
+[185/842     162s] HB PS08 seed=15 x=0.003162  residual_first (15s)
+[186/842     163s] HB PS08 seed=16 x=0.003162  residual_first (16s)
+[187/842     164s] HB PS08 seed=14 x=0.003162  residual_first (17s)
+[188/842     165s] HB PS08 seed=18 x=0.003162  residual_first (17s)
+[189/842     168s] HB PS08 seed=2 x=0.001778  escaped dt=10603.770263671875 (69s)
+[190/842     168s] HB PS08 seed=19 x=0.003162  residual_first (18s)
+[191/842     170s] HB PS08 seed=26 x=0.003162  residual_first (16s)
+[192/842     170s] HB PS08 seed=32 x=0.003162  residual_first (12s)
+[193/842     171s] HB PS08 seed=7 x=0.001778  escaped dt=7008.872619628906 (66s)
+[194/842     173s] HB PS08 seed=30 x=0.003162  residual_first (16s)
+[195/842     174s] HB PS08 seed=33 x=0.003162  residual_first (15s)
+[196/842     177s] HB PS08 seed=36 x=0.003162  residual_first (14s)
+[197/842     179s] HB PS08 seed=37 x=0.003162  residual_first (15s)
+[198/842     179s] HB PS08 seed=35 x=0.003162  residual_first (18s)
+[199/842     180s] HB PS08 seed=39 x=0.003162  residual_first (14s)
+[200/842     183s] HB PS08 seed=38 x=0.003162  residual_first (18s)
+[201/842     183s] HB PS08 seed=21 x=0.001778  escaped dt=15410.333435058594 (66s)
+[202/842     186s] HB PS06 seed=3 x=0.003162  residual_first (15s)
+[203/842     186s] HB PS06 seed=0 x=0.0003162  escaped dt=463261591453.66406 (186s)
+[204/842     187s] HB PS06 seed=6 x=0.003162  residual_first (13s)
+[205/842     188s] HB PS06 seed=5 x=0.003162  residual_first (15s)
+[206/842     193s] HB PS06 seed=8 x=0.003162  residual_first (14s)
+[207/842     194s] HB PS08 seed=7 x=0.003162  escaped dt=2212.48020362854 (53s)
+[208/842     194s] HB PS08 seed=20 x=0.001778  escaped dt=68328.29797363281 (79s)
+[209/842     195s] HB PS06 seed=9 x=0.003162  residual_first (16s)
+[210/842     196s] HB PS06 seed=10 x=0.003162  residual_first (17s)
+[211/842     197s] HB PS08 seed=2 x=0.003162  escaped dt=3349.9528045654297 (58s)
+[212/842     200s] HB PS08 seed=34 x=0.001778  escaped dt=16843.794647216797 (74s)
+[213/842     200s] HB B8W seed=0 x=0.003162  no_visit (17s)
+[214/842     202s] HB PS06 seed=11 x=0.003162  residual_first (19s)
+[215/842     203s] HB PS08 seed=17 x=0.001778  escaped dt=149307.56993103027 (90s)
+[216/842     204s] HB B8W seed=2 x=0.003162  no_visit (18s)
+[217/842     205s] HB PS06 seed=0 x=0.0005623  escaped dt=82381184344.75879 (186s)
+[218/842     205s] HB PS08 seed=4 x=0.001778  escaped dt=1398258.241394043 (103s)
+[219/842     206s] HB B8W seed=3 x=0.003162  no_visit (19s)
+[220/842     210s] HB B8W seed=5 x=0.003162  no_visit (17s)
+[221/842     212s] HB B8W seed=8 x=0.003162  no_visit (17s)
+/root/work/TTN-regimes/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+[222/842     214s] HB PS08 seed=21 x=0.003162  escaped dt=4870.506014347076 (63s)
+[223/842     215s] HB PS08 seed=13 x=0.001778  escaped dt=2187247.3915863037 (104s)
+[224/842     216s] HB PS06 seed=4 x=0.0003162  escaped dt=3458786686465.1562 (215s)
+[225/842     217s] HB PS08 seed=25 x=0.001778  escaped dt=151687.0562133789 (95s)
+[226/842     217s] HB B8W seed=10 x=0.003162  no_visit (19s)
+[227/842     218s] HB B8W seed=12 x=0.003162  no_visit (18s)
+[228/842     219s] HB B8W seed=11 x=0.003162  no_visit (19s)
+[229/842     220s] HB PS08 seed=22 x=0.001778  escaped dt=289607.94424438477 (103s)
+[230/842     220s] HB PS08 seed=20 x=0.003162  escaped dt=21606.79038619995 (70s)
+[231/842     221s] HB B8W seed=13 x=0.003162  no_visit (19s)
+[232/842     222s] HB B8W seed=16 x=0.003162  no_visit (18s)
+[233/842     224s] HB B8W seed=18 x=0.003162  no_visit (18s)
+[234/842     225s] HB PS08 seed=34 x=0.003162  escaped dt=5323.956899642944 (65s)
+[235/842     225s] HB PS08 seed=28 x=0.001778  escaped dt=1516076.5225372314 (103s)
+[236/842     226s] HB PS08 seed=24 x=0.001778  escaped dt=231061.17849731445 (105s)
+[237/842     226s] HB PS06 seed=4 x=0.0005623  escaped dt=353316525574.4453 (206s)
+[238/842     227s] HB PS08 seed=17 x=0.003162  escaped dt=47216.32733440399 (79s)
+[239/842     228s] HB B8W seed=19 x=0.003162  no_visit (18s)
+[240/842     228s] HB PS08 seed=25 x=0.003162  escaped dt=47968.80267715454 (75s)
+[241/842     229s] HB PS08 seed=22 x=0.003162  escaped dt=91583.70166015625 (77s)
+[242/842     231s] HB B8W seed=20 x=0.003162  no_visit (19s)
+[243/842     231s] HB PS08 seed=31 x=0.001778  escaped dt=2576249.5758361816 (107s)
+[244/842     233s] HB PS08 seed=23 x=0.001778  escaped dt=3842601.249404907 (114s)
+[245/842     234s] HB PS08 seed=29 x=0.001778  escaped dt=2330931.434692383 (111s)
+[246/842     234s] HB B8W seed=26 x=0.003162  no_visit (16s)
+[247/842     235s] HB PS08 seed=24 x=0.003162  escaped dt=73069.16027259827 (82s)
+[248/842     236s] HB PS08 seed=0 x=0.005623  residual_first (15s)
+[249/842     236s] HB B8W seed=25 x=0.003162  no_visit (19s)
+[250/842     238s] HB PS08 seed=1 x=0.005623  residual_first (15s)
+[251/842     238s] HB PS08 seed=3 x=0.005623  residual_first (13s)
+[252/842     238s] HB PS06 seed=1 x=0.001  no_escape (160s)
+[253/842     238s] HB B8W seed=27 x=0.003162  no_visit (19s)
+[254/842     238s] HB B8W seed=29 x=0.003162  no_visit (18s)
+[255/842     240s] HB PS08 seed=5 x=0.005623  residual_first (14s)
+[256/842     240s] HB PS08 seed=27 x=0.001778  escaped dt=4750454.102661133 (118s)
+[257/842     241s] HB PS08 seed=6 x=0.005623  residual_first (15s)
+[258/842     244s] HB PS08 seed=4 x=0.003162  escaped dt=441768.1583518982 (103s)
+[259/842     244s] HB PS08 seed=13 x=0.003162  escaped dt=691677.7758312225 (99s)
+[260/842     244s] HB PS08 seed=8 x=0.005623  residual_first (16s)
+[261/842     244s] HB PS08 seed=10 x=0.005623  residual_first (16s)
+[262/842     247s] HB PS08 seed=28 x=0.003162  escaped dt=479433.6968369484 (90s)
+[263/842     247s] HB PS08 seed=9 x=0.005623  residual_first (19s)
+[264/842     247s] HB PS08 seed=12 x=0.005623  residual_first (16s)
+[265/842     248s] HB PS08 seed=15 x=0.005623  residual_first (14s)
+[266/842     249s] HB PS08 seed=14 x=0.005623  residual_first (15s)
+[267/842     249s] HB PS08 seed=11 x=0.005623  residual_first (18s)
+[268/842     251s] HB PS08 seed=16 x=0.005623  residual_first (16s)
+[269/842     253s] HB PS08 seed=18 x=0.005623  residual_first (17s)
+[270/842     253s] HB PS08 seed=19 x=0.005623  residual_first (15s)
+[271/842     255s] HB PS08 seed=26 x=0.005623  residual_first (14s)
+[272/842     256s] HB PS06 seed=7 x=0.0003162  escaped dt=3086769891998581.5 (255s)
+[273/842     257s] HB PS08 seed=27 x=0.003162  escaped dt=1502182.3076286316 (102s)
+[274/842     260s] HB PS08 seed=23 x=0.003162  escaped dt=1215147.4133167267 (108s)
+[275/842     261s] HB PS08 seed=31 x=0.003162  escaped dt=814696.4298782349 (104s)
+[276/842     261s] HB PS08 seed=30 x=0.005623  residual_first (17s)
+[277/842     263s] HB PS08 seed=32 x=0.005623  residual_first (15s)
+[278/842     264s] HB PS08 seed=36 x=0.005623  residual_first (14s)
+[279/842     264s] HB PS08 seed=39 x=0.005623  residual_first (11s)
+[280/842     265s] HB PS08 seed=33 x=0.005623  residual_first (17s)
+[281/842     265s] HB PS08 seed=29 x=0.003162  escaped dt=737134.6809539795 (109s)
+[282/842     266s] HB PS08 seed=35 x=0.005623  residual_first (17s)
+[283/842     266s] HB PS08 seed=37 x=0.005623  residual_first (16s)
+[284/842     269s] HB PS08 seed=38 x=0.005623  residual_first (16s)
+[285/842     274s] HB PS06 seed=5 x=0.005623  residual_first (13s)
+[286/842     275s] HB PS06 seed=4 x=0.001  escaped dt=36707661771.739746 (197s)
+[287/842     276s] HB PS06 seed=7 x=0.0005623  escaped dt=308951727126452.5 (255s)
+[288/842     276s] HB PS06 seed=3 x=0.005623  residual_first (16s)
+[289/842     277s] HB PS06 seed=8 x=0.005623  residual_first (13s)
+[290/842     278s] HB PS06 seed=6 x=0.005623  residual_first (16s)
+[291/842     280s] HB PS06 seed=9 x=0.005623  residual_first (15s)
+[292/842     281s] HB PS06 seed=10 x=0.005623  residual_first (16s)
+[293/842     282s] HB PS08 seed=7 x=0.005623  escaped dt=693.9318678379059 (54s)
+[294/842     284s] HB PS06 seed=11 x=0.005623  residual_first (18s)
+[295/842     285s] HB B8W seed=0 x=0.005623  no_visit (19s)
+[296/842     286s] HB PS06 seed=0 x=0.001  escaped dt=14649862571.359802 (212s)
+[297/842     287s] HB PS08 seed=2 x=0.005623  escaped dt=1054.3101692199707 (63s)
+[298/842     290s] HB B8W seed=2 x=0.005623  no_visit (15s)
+[299/842     293s] HB B8W seed=3 x=0.005623  no_visit (18s)
+[300/842     294s] HB B8W seed=5 x=0.005623  no_visit (18s)
+[301/842     297s] HB B8W seed=8 x=0.005623  no_visit (17s)
+[302/842     298s] HB PS08 seed=21 x=0.005623  escaped dt=1535.7363651394844 (59s)
+[303/842     300s] HB B8W seed=10 x=0.005623  no_visit (18s)
+[304/842     300s] HB PS08 seed=17 x=0.005623  escaped dt=14930.495315670967 (64s)
+[305/842     304s] HB B8W seed=12 x=0.005623  no_visit (19s)
+[306/842     304s] HB B8W seed=11 x=0.005623  no_visit (20s)
+[307/842     305s] HB B8W seed=13 x=0.005623  no_visit (18s)
+[308/842     305s] HB PS08 seed=20 x=0.005623  escaped dt=6830.388605833054 (67s)
+[309/842     307s] HB PS08 seed=34 x=0.005623  escaped dt=1679.2914111614227 (58s)
+[310/842     311s] HB B8W seed=16 x=0.005623  no_visit (18s)
+[311/842     312s] HB PS06 seed=0 x=0.001778  escaped dt=2605259681.0597 (183s)
+[312/842     315s] HB B8W seed=20 x=0.005623  no_visit (15s)
+[313/842     315s] HB PS06 seed=2 x=0.0005623  escaped dt=810337448144314.4 (295s)
+[314/842     315s] HB B8W seed=18 x=0.005623  no_visit (18s)
+[315/842     316s] HB B8W seed=19 x=0.005623  no_visit (19s)
+[316/842     320s] HB PS06 seed=4 x=0.001778  escaped dt=3927121842.866974 (190s)
+[317/842     321s] HB PS08 seed=25 x=0.005623  escaped dt=15168.60878932476 (81s)
+[318/842     321s] HB PS08 seed=24 x=0.005623  escaped dt=23105.88701748848 (81s)
+[319/842     323s] HB B8W seed=26 x=0.005623  no_visit (16s)
+[320/842     323s] HB PS08 seed=22 x=0.005623  escaped dt=28961.075246810913 (85s)
+[321/842     323s] HB PS08 seed=4 x=0.005623  escaped dt=139475.5631196499 (98s)
+[322/842     325s] HB B8W seed=25 x=0.005623  no_visit (20s)
+[323/842     329s] HB B8W seed=27 x=0.005623  no_visit (18s)
+[324/842     329s] HB PS08 seed=0 x=0.01  residual_first (14s)
+[325/842     331s] HB B8W seed=29 x=0.005623  no_visit (16s)
+[326/842     331s] HB PS06 seed=4 x=0.003162  escaped dt=440805925.87755203 (160s)
+[327/842     332s] HB PS06 seed=0 x=0.003162  escaped dt=463346608.7676668 (164s)
+[328/842     332s] HB PS08 seed=3 x=0.01  residual_first (12s)
+[329/842     332s] HB PS08 seed=13 x=0.005623  escaped dt=218735.4267539382 (99s)
+[330/842     334s] HB PS08 seed=1 x=0.01  residual_first (19s)
+[331/842     335s] HB PS08 seed=5 x=0.01  residual_first (14s)
+[332/842     337s] HB PS08 seed=8 x=0.01  residual_first (14s)
+[333/842     339s] HB PS08 seed=6 x=0.01  residual_first (17s)
+[334/842     340s] HB PS08 seed=9 x=0.01  residual_first (15s)
+[335/842     342s] HB PS06 seed=7 x=0.001  escaped dt=30944144266905.33 (254s)
+[336/842     342s] HB PS08 seed=27 x=0.005623  escaped dt=475014.8308682442 (98s)
+[337/842     342s] HB PS08 seed=31 x=0.005623  escaped dt=257641.14149594307 (95s)
+[338/842     343s] HB PS06 seed=2 x=0.001  escaped dt=81078061958294.75 (264s)
+[339/842     343s] HB PS08 seed=12 x=0.01  residual_first (12s)
+[340/842     344s] HB PS08 seed=10 x=0.01  residual_first (15s)
+[341/842     344s] HB PS08 seed=14 x=0.01  residual_first (13s)
+[342/842     344s] HB PS08 seed=15 x=0.01  residual_first (13s)
+[343/842     345s] HB PS08 seed=11 x=0.01  residual_first (16s)
+[344/842     347s] HB PS08 seed=29 x=0.005623  escaped dt=233126.43387699127 (103s)
+[345/842     348s] HB PS08 seed=23 x=0.005623  escaped dt=384261.9152112007 (110s)
+[346/842     349s] HB PS08 seed=16 x=0.01  residual_first (17s)
+[347/842     350s] HB PS08 seed=18 x=0.01  residual_first (14s)
+[348/842     352s] HB PS08 seed=28 x=0.005623  escaped dt=151617.29509985447 (108s)
+[349/842     355s] HB PS08 seed=26 x=0.01  residual_first (12s)
+[350/842     356s] HB PS06 seed=2 x=0.001778  escaped dt=8115686713656.134 (226s)
+[351/842     358s] HB PS08 seed=19 x=0.01  residual_first (21s)
+[352/842     360s] HB PS06 seed=7 x=0.001778  escaped dt=3103158176534.1807 (228s)
+[353/842     360s] HB PS08 seed=30 x=0.01  residual_first (15s)
+[354/842     363s] HB PS08 seed=32 x=0.01  residual_first (14s)
+[355/842     364s] HB PS08 seed=33 x=0.01  residual_first (14s)
+[356/842     365s] HB PS08 seed=2 x=0.01  escaped dt=326.5417983531952 (49s)
+[357/842     369s] HB PS08 seed=36 x=0.01  residual_first (14s)
+[358/842     370s] HB PS08 seed=37 x=0.01  residual_first (14s)
+[359/842     370s] HB PS08 seed=35 x=0.01  residual_first (18s)
+[360/842     373s] HB PS08 seed=38 x=0.01  residual_first (15s)
+[361/842     373s] HB PS08 seed=39 x=0.01  residual_first (13s)
+[362/842     376s] HB PS08 seed=7 x=0.01  escaped dt=211.88446256518364 (54s)
+[363/842     379s] HB PS06 seed=3 x=0.01  residual_first (14s)
+[364/842     383s] HB PS06 seed=5 x=0.01  residual_first (13s)
+[365/842     384s] HB PS06 seed=6 x=0.01  residual_first (15s)
+[366/842     386s] HB PS06 seed=8 x=0.01  residual_first (13s)
+[367/842     390s] HB PS08 seed=20 x=0.01  escaped dt=2155.892466455698 (51s)
+[368/842     390s] HB PS06 seed=7 x=0.003162  escaped dt=311881554150.0375 (214s)
+[369/842     391s] HB PS06 seed=9 x=0.01  residual_first (15s)
+[370/842     394s] HB PS06 seed=10 x=0.01  residual_first (15s)
+[371/842     395s] HB PS08 seed=21 x=0.01  escaped dt=479.3711651712656 (55s)
+[372/842     396s] HB PS08 seed=17 x=0.01  escaped dt=4719.060308456421 (62s)
+[373/842     399s] HB PS06 seed=11 x=0.01  residual_first (16s)
+[374/842     399s] HB PS06 seed=2 x=0.003162  escaped dt=812968666614.3683 (229s)
+[375/842     400s] HB PS08 seed=34 x=0.01  escaped dt=524.9418739378452 (51s)
+[376/842     402s] HB B8W seed=0 x=0.01  no_visit (18s)
+[377/842     405s] HB B8W seed=2 x=0.01  no_visit (15s)
+[378/842     406s] HB PS06 seed=4 x=0.005623  escaped dt=53152078.59053707 (145s)
+[379/842     408s] HB PS08 seed=25 x=0.01  escaped dt=4794.595401525497 (65s)
+[380/842     409s] HB B8W seed=3 x=0.01  no_visit (18s)
+[381/842     409s] HB PS08 seed=22 x=0.01  escaped dt=9156.244321167469 (67s)
+[382/842     412s] HB B8W seed=5 x=0.01  no_visit (18s)
+[383/842     412s] HB PS08 seed=24 x=0.01  escaped dt=7304.321442365646 (70s)
+[384/842     416s] HB B8W seed=8 x=0.01  no_visit (17s)
+[385/842     418s] HB B8W seed=10 x=0.01  no_visit (18s)
+[386/842     420s] HB B8W seed=12 x=0.01  no_visit (15s)
+[387/842     420s] HB PS08 seed=13 x=0.01  escaped dt=69176.19973611832 (89s)
+[388/842     421s] HB B8W seed=11 x=0.01  no_visit (18s)
+[389/842     421s] HB PS08 seed=29 x=0.01  escaped dt=73741.21316421032 (77s)
+[390/842     421s] HB B8W seed=13 x=0.01  no_visit (15s)
+[391/842     427s] HB B8W seed=16 x=0.01  no_visit (18s)
+[392/842     427s] HB PS06 seed=0 x=0.005623  escaped dt=82428535.62704116 (172s)
+[393/842     427s] HB PS08 seed=27 x=0.01  escaped dt=150209.98009046912 (83s)
+[394/842     429s] HB B8W seed=18 x=0.01  no_visit (17s)
+[395/842     431s] HB PS06 seed=1 x=0.001778  no_escape (302s)
+[396/842     433s] HB B8W seed=19 x=0.01  no_visit (17s)
+[397/842     435s] HB PS08 seed=31 x=0.01  escaped dt=81482.55103377998 (88s)
+[398/842     435s] HB B8W seed=20 x=0.01  no_visit (17s)
+[399/842     436s] HB B8W seed=25 x=0.01  no_visit (15s)
+[400/842     437s] HB PS08 seed=23 x=0.01  escaped dt=121505.54103833437 (95s)
+[401/842     440s] HB PS08 seed=28 x=0.01  escaped dt=47951.264059111476 (95s)
+[402/842     442s] HB B8W seed=26 x=0.01  no_visit (16s)
+[403/842     444s] HB PS06 seed=2 x=0.005623  escaped dt=81545108171.15485 (187s)
+[404/842     445s] HB PS08 seed=0 x=0.01778  residual_first (13s)
+[405/842     447s] HB PS08 seed=1 x=0.01778  residual_first (15s)
+[406/842     447s] HB B8W seed=27 x=0.01  no_visit (21s)
+[407/842     448s] HB PS08 seed=3 x=0.01778  residual_first (12s)
+[408/842     449s] HB B8W seed=29 x=0.01  no_visit (19s)
+[409/842     450s] HB PS08 seed=5 x=0.01778  residual_first (12s)
+[410/842     454s] HB PS08 seed=6 x=0.01778  residual_first (14s)
+[411/842     454s] HB PS08 seed=8 x=0.01778  residual_first (10s)
+[412/842     458s] HB PS08 seed=9 x=0.01778  residual_first (13s)
+[413/842     460s] HB PS08 seed=12 x=0.01778  residual_first (12s)
+[414/842     460s] HB PS08 seed=10 x=0.01778  residual_first (13s)
+[415/842     460s] HB PS08 seed=11 x=0.01778  residual_first (13s)
+[416/842     462s] HB PS08 seed=14 x=0.01778  residual_first (13s)
+[417/842     464s] HB PS08 seed=16 x=0.01778  residual_first (9s)
