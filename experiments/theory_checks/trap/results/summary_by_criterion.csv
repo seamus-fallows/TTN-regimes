@@ -2,8 +2,8 @@ criterion,source,start,predicted,stalled,runs,rate
 verdict,locality,saddle,alive,25,681,0.037
 verdict,locality,saddle,dead,162,178,0.91
 verdict,locality,saddle,pinned,68,334,0.204
-verdict,locality,small,alive,13,1420,0.009
-verdict,locality,small,dead,246,279,0.882
+verdict,locality,small,alive,13,1440,0.009
+verdict,locality,small,dead,246,259,0.95
 verdict,locality,small,pinned,73,600,0.122
 verdict,locality,small_balanced,alive,4,990,0.004
 verdict,locality,small_balanced,dead,16,50,0.32

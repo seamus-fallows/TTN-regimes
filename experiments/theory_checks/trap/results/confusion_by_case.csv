@@ -48,11 +48,11 @@ locality,midroot6,05,6,small,4,0.0,12.0,18.0,0.0,12.0,18.0
 locality,midroot6,05,6,small_balanced,2,30.0,0.0,0.0,0.0,0.0,0.0
 locality,mps4,0123,4,saddle,2,18.0,12.0,18.0,0.0,12.0,0.0
 locality,mps4,0123,4,small,2,24.0,0.0,18.0,0.0,0.0,0.0
-locality,mps4,0123,4,small,4,18.0,18.0,12.0,0.0,12.0,0.0
+locality,mps4,0123,4,small,4,24.0,12.0,12.0,0.0,12.0,0.0
 locality,mps4,0123,4,small_balanced,2,30.0,0.0,0.0,0.0,0.0,0.0
 locality,mps4,03,4,saddle,2,18.0,12.0,18.0,0.0,12.0,0.0
 locality,mps4,03,4,small,2,38.0,76.0,82.0,0.0,76.0,0.0
-locality,mps4,03,4,small,4,76.0,28.0,56.0,0.0,14.0,0.0
+locality,mps4,03,4,small,4,90.0,14.0,56.0,0.0,14.0,0.0
 locality,mps4,03,4,small,8,48.0,0.0,0.0,0.0,0.0,0.0
 locality,mps4,03,4,small_balanced,2,48.0,0.0,0.0,0.0,0.0,0.0
 locality,mps6,012345,6,saddle,2,6.0,6.0,18.0,4.0,6.0,6.0

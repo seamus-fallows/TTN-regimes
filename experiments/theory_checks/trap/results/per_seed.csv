@@ -340,7 +340,7 @@ locality,mps4,0123,small,2,5,alive,6,0
 locality,mps4,0123,small,2,6,alive,6,0
 locality,mps4,0123,small,2,7,pinned,6,0
 locality,mps4,0123,small,4,0,dead,6,6
-locality,mps4,0123,small,4,1,dead,6,0
+locality,mps4,0123,small,4,1,alive,6,0
 locality,mps4,0123,small,4,2,alive,6,0
 locality,mps4,0123,small,4,3,alive,6,0
 locality,mps4,0123,small,4,4,pinned,6,0
@@ -369,7 +369,7 @@ locality,mps4,03,small,2,5,dead,26,14
 locality,mps4,03,small,2,6,pinned,26,0
 locality,mps4,03,small,2,7,dead,26,14
 locality,mps4,03,small,4,0,alive,20,0
-locality,mps4,03,small,4,1,dead,20,0
+locality,mps4,03,small,4,1,alive,20,0
 locality,mps4,03,small,4,2,pinned,20,0
 locality,mps4,03,small,4,3,alive,20,0
 locality,mps4,03,small,4,4,pinned,20,0

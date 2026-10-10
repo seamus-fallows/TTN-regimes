@@ -1,6 +1,6 @@
 # Theory: the conservation-law trap, predicted from the initial condition
 
-Status: **v1, 2026-10-10** (theorist, branch `wip/trap-theory`). Extends `notes/theory_saddles.md` R12,
+Status: **v1.2, 2026-10-10** (theorist; v1 on branch `wip/trap-theory`, v1.2 on `wip/trap-k4`). Extends `notes/theory_saddles.md` R12,
 section 8, P12, C8, C14. Code and data: `experiments/theory_checks/trap/` (README there). Tags:
 **proven** (complete argument), **derived** (stated assumptions, leading order in the small entries),
 **empirical**, **conjecture**; **checked** marks a numerical confirmation.
@@ -8,8 +8,15 @@ section 8, P12, C8, C14. Code and data: `experiments/theory_checks/trap/` (READM
 > **v1.1, 2026-10-10:** the 12 errata and the status tags of `notes/reviews/trap_verification.md` are applied
 > in place, marked "(verification erratum N)". Main changes: "dead iff two ends die" holds for $k\le5$ only
 > (inner three-core clusters from $k=6$); the pinned escape law is a conjecture; the $k=4$ route-ODE
-> verdicts at inner edges with $c>1$ are basis-dependent (MPS4 $\chi=4$ rows partly arbitrary); the $d\ge3$
+> verdicts at inner edges with $c>1$ are basis-dependent (MPS4 $\chi=4$ rows partly arbitrary; resolved in v1.2); the $d\ge3$
 > capped-end probabilities are about 0.023 and $1.5\cdot10^{-4}$; failure list and counts corrected.
+
+> **v1.2, 2026-10-10** (branch `wip/trap-k4`): verification erratum 4 is resolved. The $k=4$ route ODE now
+> carries the inner route entries as vectors over the whole new space of the inner edge. Its outcome
+> depends on them only through $p=\langle\beta_1,\beta_2\rangle$ and $S=\lvert\beta_1\rvert^2+\lvert\beta_2\rvert^2$, so the verdict is basis
+> invariant (new section 2.6, Proposition 3). Checked in full gradient flow (36 of 36 runs). The MPS4 $\chi=4$
+> rows are re-tabulated (predicted dead 26/26 stall, 0/182 others; v1: 26/46, 0/162), with the pooled
+> counts that contain them (sections 7, 8). The "partly arbitrary" caveats are removed.
 
 Question: some runs never learn a component because the route that should carry it dies (its end
 cores decay to roundoff). R12 explained this by the conserved gauge quantities $Q_e$ in a reduced
@@ -28,7 +35,7 @@ probability law; failures.
 | T3 | Identity: $C_u=\nu^\top Q^{(u)}_e\nu+\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+(y_\parallel^2-x_\parallel^2)$: the conserved bond Gram difference (end minus partner) plus the partner's non-visible new entries minus the end's; the last term is $O(\sigma^3)$ after a small-init escape. R12's $c=Q_{\nu\nu}+\lvert y_{\rm route}\rvert^2$ kept only the route part of $Y_{\rm nv}$. | proven (exact identity); $O(\sigma^3)$ remainder derived; checked (3-4 digits) |
 | T4 | A partner without sites (HT, binary internal nodes) gives no second-order cost (the product is tangent). The end then decays through a three-core cluster (end, partner, sibling with sites) at rate $\propto\sigma^4$ and dies iff it is the lightest factor. In general an end with visible degree $j$ decays at rate $\propto\sigma^{2(j-1)}$. | derived |
 | T5 | Decay time $\sigma^{-2(j-1)}$ against escape time $\sigma^{-(k-2)}$: an end can kill its route only if $k\ge2j$ (marginal at equality). $j=2$ (partner with sites): $k\ge4$; $j=3$ (HT/binary leaves at a rank-one saddle): $k\ge6$; $k\le3$: never. | derived; empirical (0 stalls in 5,744 committed $k\le3$ runs, locality + pilot; these verdicts are "alive" by construction of the rule, so this tests the rule, not $C_u$) |
-| T6 | For $k\le5$, as $\sigma\to0$, a route dies iff at least two of its ends die. (For every $k\ge5$ two dying ends kill it: the dead state is linearly stable because the ends' mutual drive is $\propto\sigma^{k-2}\ll$ decay $\propto\sigma^2$; the "only if" is what fails from $k=6$.) One dying end is pinned at $\propto\sigma^{k-3}$; a slow escape after $\propto\sigma^{-(2k-6)}$ would follow. For $k\ge6$ three-core clusters through inner route cores (rate $\propto\sigma^4$) are a further death channel: against a live route's escape it is marginal at $k=6$ and dominant for $k\ge7$, and it pre-empts the pinned escape for $k\ge6$ (verification errata 2, 3). At $k=4$ a $\sigma$-free competition decides; a reduced route ODE from the plateau-start values settles it, for routes with one new direction on every edge ($c=1$; verification erratum 4). | "dead iff $\ge2$ ends die": derived for $k\le5$, incomplete for $k\ge6$; pinned amplitude: derived, checked qualitatively (one GF run); pinned escape law: conjecture (untested; pre-empted for $k\ge6$); $k=4$ competition: derived ($c=1$ edges only) |
+| T6 | For $k\le5$, as $\sigma\to0$, a route dies iff at least two of its ends die. (For every $k\ge5$ two dying ends kill it: the dead state is linearly stable because the ends' mutual drive is $\propto\sigma^{k-2}\ll$ decay $\propto\sigma^2$; the "only if" is what fails from $k=6$.) One dying end is pinned at $\propto\sigma^{k-3}$; a slow escape after $\propto\sigma^{-(2k-6)}$ would follow. For $k\ge6$ three-core clusters through inner route cores (rate $\propto\sigma^4$) are a further death channel: against a live route's escape it is marginal at $k=6$ and dominant for $k\ge7$, and it pre-empts the pinned escape for $k\ge6$ (verification errata 2, 3). At $k=4$ a $\sigma$-free competition decides; a reduced route ODE from the plateau-start values settles it. It needs one new direction on each end edge; spare directions on the inner edge enter through vector route amplitudes, and the outcome depends on them only through $\langle\beta_1,\beta_2\rangle$ and $\lvert\beta_1\rvert^2+\lvert\beta_2\rvert^2$, so it is basis invariant (section 2.6; v1.2, resolves verification erratum 4). | "dead iff $\ge2$ ends die": derived for $k\le5$, incomplete for $k\ge6$; pinned amplitude: derived, checked qualitatively (one GF run); pinned escape law: conjecture (untested; pre-empted for $k\ge6$); $k=4$ competition: derived (ends with $c_e=1$, inner edges any $c$); its reduction to $(p,S)$: proven within the reduced flow; checked in full GF (36/36 runs, section 2.6) |
 | T7 | Exact: $\sigma_j(G_u)^2\ge\lambda_j(Q^{(u)}_e(0))$ for all $t$; at a dead end the partner's new-slice norm$^2$ is $-Q^{(u)}_{\nu\nu}(0)$ (explains C8). Spare channels: an end with more new directions on its route edge than its partner has normal-visible rows ($c_e>n_w$) generically never dies. | bound proven; protection derived |
 | T8 | The plateau-start state is $\sigma\times$ a function of the init direction (exactly for a saddle start; via the $\sigma$-free correlation flow for a small init), so the outcome is a property of the init direction. | derived ($\sigma\to0$); checked ($\sigma=0.02$ vs $0.005$: 3 digits); empirical per seed, with exceptions (section 7) |
 | T9 | Balanced init ($Q_e=0$): $C_u=\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+O(\sigma^3)\ge0$ at ends that are tree leaves, so odeco routes cannot die; ends with extra legs (pattern teachers) still can. In s2s-core no balanced odeco run traps (0/150), but 69/150 stall (verification erratum 10). | derived (leading order); empirical (s2s-core counts) |
@@ -159,14 +166,86 @@ $j=2$ and one new direction on each route edge,
 $$\dot b_v=c\prod_{w\ne v}b_w-[v\text{ end}]\,A^2\lvert Y_v\rvert^2b_v,\qquad \frac{d}{dt}\lvert Y_v\rvert^2=-2A^2\lVert X_v^\perp\rVert^2\lvert Y_v\rvert^2,$$
 with the end's other normal rows decaying like its route row. Integrated from the plateau-start values
 it returns escape / dead / pinned.
-(Verification erratum 4.) The model is defined for one new direction per route edge. The code
-(`trapcrit.reduced_route`) also applies it to inner route edges with $c>1$, where it takes the first
-basis vector of the new space (`complement(w)[:, 0]`): an arbitrary choice, so those verdicts are not
-gauge invariant. In the verifier's test (MPS4 $\{0,3\}$, $\chi=4$, small init, 8 seeds x 4 bases) seed 0 is
-"escape" in the code's basis and "dead" in 3 of 3 random rotations of the inner new space. The $k=4$ ODE
-verdict is therefore valid only for routes with $c=1$ on every edge (as `predict_locality` already
-requires for the finite-$\sigma$ version); vector route amplitudes would lift this. Not yet fixed in the
-code; the MPS4 $\chi=4$ rows of sections 7 and 8 are partly arbitrary until they are re-tabulated.
+(Verification erratum 4, resolved in v1.2.) As first written the model had scalar amplitudes, and the
+code applied it to inner route edges with $c>1$ by taking the first basis vector of the new space
+(`complement(w)[:, 0]`). That choice is arbitrary, and the verdict could change under a rotation of
+the basis (verifier: MPS4 $\{0,3\}$, $\chi=4$, seed 0 "escape" in the code's basis, "dead" in 3 of 3 random
+rotations). Section 2.6 replaces the scalars by vector amplitudes and shows that the verdict is basis
+invariant.
+
+### 2.6 The $k=4$ competition with spare inner channels (v1.2)
+
+A route with four cores is a path $u-v_1-v_2-u'$ or a star (a centre with three ends). In a star all three
+route edges are end edges, so with one new direction per end edge every route entry is a scalar. In a
+path the inner edge $f$ can have $c_f>1$ new directions while both end edges are capped ($c_e=c_{e'}=1$).
+Example: MPS4 at $d=2$, $\chi=4$, with bond dimensions 2, 4, 2, so $c_f=3$. The inner cores' route entries are then vectors
+$\beta_1,\beta_2\in\mathbb R^{c_f}$ (core $v_i$ contracted with $u_r$ on its sites, the new direction on its end
+edge, the new space $N_f$ on $f$). The route's overlap with $U_r$ is $c\,x\,\langle\beta_1,\beta_2\rangle\,x'$, with $x$, $x'$ the
+ends' route entries. v1 replaced $\beta_i$ by $\nu\cdot\beta_i$ for the first basis vector $\nu$ of $N_f$.
+
+**Assumptions** (those of the reduced route model, section 2.5). Rank-one plateau, leading order in the small
+entries ($\sigma\to0$). Both ends dying, with partners carrying sites ($j=2$) and $c_e=1$. The $\beta_i$ have new
+indices on both route legs, so they pair with nothing at second order and move only by the route drive.
+Three-core clusters (rate $\propto\sigma^4$) are slower than the $k=4$ competition (rate $\propto\sigma^2$) and are
+dropped.
+
+**Reduced flow with vector amplitudes** (derived). With $p=\langle\beta_1,\beta_2\rangle$ and $g=c\,x\,x'$:
+$$\dot x=c\,p\,x'-A^2\lvert Y_u\rvert^2x,\qquad\dot x'=c\,p\,x-A^2\lvert Y_{u'}\rvert^2x',\qquad\dot\beta_1=g\,\beta_2,\qquad\dot\beta_2=g\,\beta_1,$$
+and the partners' blocks evolve as in section 2.5. `trapcrit.reduced_route` now integrates every route entry
+as a tensor over the new spaces of its route edges (any route shape). The drive is the gradient of the
+full contraction, so the flow is equivariant under rotations of every new space.
+
+**Proposition 3** (exact reduction; proven within the reduced flow). Let $S=\lvert\beta_1\rvert^2+\lvert\beta_2\rvert^2$.
+Then $\dot p=gS$ and $\dot S=4gp$. So the reduced flow closes on $(x,x',\lvert Y_u\rvert^2,\lvert Y_{u'}\rvert^2,p,S)$
+(plus the ends' other normal rows), and its outcome depends on the inner pair only through $p(0)$ and
+$S(0)$. It is the scalar flow of section 2.5 with the effective inner amplitudes
+$\tilde b_{1,2}=\tfrac12\big(\sqrt{S+2p}\pm\sqrt{S-2p}\big)$, which are real because $S\ge2\lvert p\rvert$. Both inputs are invariant
+under rotations of $N_f$, so the $k=4$ verdict is basis invariant.
+*Proof.* $\dot p=\langle\dot\beta_1,\beta_2\rangle+\langle\beta_1,\dot\beta_2\rangle=g(\lvert\beta_2\rvert^2+\lvert\beta_1\rvert^2)$ and $\dot S=2\langle\beta_1,\dot\beta_1\rangle+2\langle\beta_2,\dot\beta_2\rangle=4gp$. The
+end equations see the inner pair only through $p$, and $g$ depends only on the ends. Scalars with
+$\tilde b_1\tilde b_2=p$ and $\tilde b_1^2+\tilde b_2^2=S$ obey the same two equations. $\square$
+
+**Reading: the flow picks its own direction.** Let $s=\beta_1+\beta_2$ and $m=\beta_1-\beta_2$. Then $\dot s=gs$ and $\dot m=-gm$:
+the flow amplifies the fixed vector $s$ (or $m$ while $g<0$), a direction of $N_f$ set by the initialization,
+not by a basis. We have $p=(\lvert s\rvert^2-\lvert m\rvert^2)/4$ and $S=(\lvert s\rvert^2+\lvert m\rvert^2)/2$, hence $p(t)=h\sinh(\varphi_0+2G(t))$ and
+$S=2h\cosh(\varphi_0+2G)$, with $h=\lvert s\rvert\lvert m\rvert/2$ conserved and $G(t)=\int_0^tg$.
+- A projection on a basis vector $\nu$ keeps only $(\nu\cdot s)^2$ and $(\nu\cdot m)^2$. It shrinks the growing mode and
+  can flip the sign of $p$. Committed MPS4 $\{0,3\}$, seed 1: $p=+0.204$ (plateau-start units) and
+  $\cos\angle(\beta_1,\beta_2)=0.61$, but $(\nu\cdot\beta_1)(\nu\cdot\beta_2)=-0.015$ in the code's basis.
+- Sign correction ($P=c\,x\,p\,x'<0$). Every squared route norm ($x^2$, $x'^2$, $\lvert\beta_1\rvert^2$, $\lvert\beta_2\rvert^2$) falls at the
+  same rate $2\lvert P\rvert$ (plus the ends' decay), in both models.
+  - With $c_f=1$, $p=b_1b_2$ changes sign only when the smaller factor reaches zero, i.e. after a loss
+    $\min(b_1^2,b_2^2)$.
+  - With non-parallel $\beta_1,\beta_2$ it changes sign (at $S=2h$) after the loss
+    $S_0/2-h\le\min(\lvert\beta_1\rvert^2,\lvert\beta_2\rvert^2)$, with equality iff $\beta_1\parallel\beta_2$ (Cauchy-Schwarz).
+  - So the ends keep more of their size. This is the plausible reason why more routes with two dying ends
+    escape with spare inner channels (section 8).
+
+**Checks.**
+- `k4_invariance.py` (`results/k4_invariance.csv`): 71 init directions with two dying ends, from MPS4 $\{0,3\}$ and $\{0,1,2,3\}$ at
+  $\chi=4$: the 6 committed (case, seed) keys and 65 of the 460 Monte Carlo draws of $\{0,3\}$.
+  - The new verdict is unchanged under 4 Haar-random rotations of $N_f$ in 71/71 cases.
+  - The effective-scalar flow of Proposition 3 gives the same verdict in 71/71 cases. Its end and route
+    trajectories agree to $\le2.4\cdot10^{-7}$ (relative; integrator rtol $10^{-9}$).
+  - The v1 verdict changes under a rotation in 37/71 cases. In the code's basis it differs from the new one in
+    25/71 (23 dead $\to$ escape, 2 escape $\to$ dead).
+- `gf_check_k4.py` (`results/gf_check_k4.csv`): full gradient flow (library loss, `integrate_gf` with LSODA, rtol $10^{-9}$,
+  atol $10^{-14}$, float64, one thread) at $\sigma=0.003$, $0.01$, $0.03$.
+  - Directions: 10 of the 25 where v1 and the new verdict disagree (6 small init, incl. committed seed 1 of both
+    teachers; 4 saddle start; both directions of disagreement), plus committed $\{0,3\}$ seeds 0 (the verifier's
+    case) and 7 as controls.
+  - The new verdict matches the gradient flow in 36/36 runs; v1 matches in 6/36, and in 0/30 on the disagreeing
+    directions.
+  - "Escape": $a_r\to1$, second escape at $t\propto\sigma^{-2}$. "Dead": $\lvert a_r\rvert\le2\cdot10^{-28}$ at the end, both
+    route-end entries below $10^{-8}\sigma$.
+  - The class does not depend on $\sigma$, as the $\sigma$-free competition predicts.
+
+Status: Proposition 3 **proven** (within the reduced flow). It is elementary two-layer algebra, like T2:
+the inner pair is a linear unit driven by the scalar $g$, and $\lvert\beta_1\rvert^2-\lvert\beta_2\rvert^2$ is its usual conserved
+balance. It is new only as the repair of the $k=4$ route model. The $k=4$ verdict is **derived** ($\sigma\to0$, the assumptions
+above) and basis invariant, **checked** in full gradient flow (36/36), **empirical** per run (section 7). It still
+needs $c_e=1$ on both end edges. Ends with $c_e>1$ die only if $C_u\preceq0$ on all their new directions (rare;
+section 3, Proposition 2), and no committed $k=4$ run has two such dying ends.
 
 ## 3. Exact statements (T7)
 
@@ -208,7 +287,8 @@ teacher, the tree and the differing sites $D$.
    protection count $c_e$ vs $n_w$.
 3. Verdict: an end is **dying** if $C_u\preceq0$ and $k\ge2j_u$. Route **dead** if $\ge2$ ends are dying,
    **pinned** if one is, **alive** otherwise. At $k=4$ with two dying ends the reduced route model decides
-   (valid only with $c=1$ on every route edge; section 2.5, verification erratum 4). The criterion
+   (ends with $c_e=1$; spare directions on the inner edge enter through vector amplitudes, basis
+   invariant; section 2.6). The criterion
    does not include the inner three-core clusters, so for $k\ge6$ "pinned" and "alive" can still die
    (section 2.5, verification erratum 2).
    At finite $\sigma$ the reduced model with the actual $\sigma$ can be integrated instead
@@ -284,7 +364,7 @@ $\sigma$, where it applies (all ends with partners carrying sites, one new direc
 
 | runs | criterion | pred. dead | pred. pinned | pred. alive |
 |---|---|---|---|---|
-| locality, saddle + small (3,492; 587 stalled) | L2 | **408/457 (89%)** | 141/934 (15%) | **38/2,101 (1.8%)** |
+| locality, saddle + small (3,492; 587 stalled) | L2 | **408/437 (93%)** | 141/934 (15%) | **38/2,121 (1.8%)** |
 | | reduced, at $\sigma$ | 303/319 (95%) | 97/194 (50%) | 25/780 (3.2%) |
 | | R12 | 417/1,143 (36%) | 119/1,116 | 51/1,233 (4.1%) |
 | | L0 | 462/1,514 (31%) | 89/1,155 | 36/823 (4.4%) |
@@ -294,14 +374,17 @@ $\sigma$, where it applies (all ends with partners carrying sites, one new direc
 
 So the criterion separates the classes far better than R12 (the gain comes from the partner's
 non-visible entries, T3, and the visible degree, T4; figure `results/fig_criteria.png`), and "alive" is
-a reliable prediction: 38 stalls in 2,101 runs, mostly slow escapes of barely-alive ends or the inner
+a reliable prediction: 38 stalls in 2,121 runs, mostly slow escapes of barely-alive ends or the inner
 three-core channel on long routes (below; "at $\sigma\ge0.08$" was dropped: that is where the grids
-start, verification erratum 7).
+start, verification erratum 7). The L2 row is v1.2. In v1 it read 408/457 (89%) and 38/2,101: there,
+20 MPS4 $\chi=4$ runs (all escaping) were predicted dead by the basis-dependent $k=4$ ODE (section 2.6).
 **Stall diagnosis** (dead / escaped / pinned after 60x patience; R12 had 30 of 55 vs 7 of 67):
-predicted dead 30 / 6 / 2, pinned 5 / 63 / 0, alive 2 / 56 / 0.
+predicted dead 30 / 4 / 2, pinned 5 / 63 / 0, alive 2 / 58 / 0. (v1: dead 30 / 6 / 2, alive 2 / 56 / 0;
+two MPS4 $\{0,3\}$ $\chi=4$ seed-1 runs moved from dead to alive.)
 
-**By $k$** (fan-in, saddle + small; `results/table_by_k.md`): $k=4$: dead 203/232, pinned 2/432, alive
-5/796 (at $k=4$ a pinned end is $O(\sigma)$, so "pinned" behaves as alive, as predicted); $k=5$: 73/79, 10/116,
+**By $k$** (fan-in, saddle + small; `results/table_by_k.md`): $k=4$: dead 203/212, pinned 2/432, alive
+5/816 (v1: 203/232 and 5/796; at $k=4$ a pinned end is $O(\sigma)$, so "pinned" behaves as alive, as
+predicted); $k=5$: 73/79, 10/116,
 9/1,089; $k=6$: 86/98, 87/284, 18/150; $k=7$: 25/27, 8/60, 0/42; $k=8$: 21/21, 34/42, 6/24. The stall rate of
 pinned runs is not monotone in $k$: 31% at $k=6$, 13% at $k=7$, 81% at $k=8$ (verification erratum 11; first
 written as "grows with $k$"). Pinned stalls at $k\ge6$ may be deaths through the inner three-core channel
@@ -328,7 +411,7 @@ robust rows; per (tree, $D$) in `results/table_by_case.md`, per $k$ in `results/
 | locality | mps4 | 2 | saddle | 24/24 | 0/36 | 0/36 |
 | locality | mps4 | 2 | small | 76/76 | 0/100 | 0/62 |
 | locality | mps4 | 2 | small_balanced | - | - | 0/78 |
-| locality | mps4 | 4 (*) | small | 26/46 | 0/68 | 0/94 |
+| locality | mps4 | 4 (*) | small | 26/26 | 0/68 | 0/114 |
 | locality | mps4 | 8 | small | - | - | 0/48 |
 | locality | mps6 | 2 | saddle | 50/58 | 21/100 | 10/86 |
 | locality | mps6 | 2 | small | 47/48 | 0/102 | 1/58 |
@@ -349,32 +432,46 @@ robust rows; per (tree, $D$) in `results/table_by_case.md`, per $k$ in `results/
 | pilot | mps6 | 2 | saddle | 20/25 | 11/38 | 2/5 |
 | pilot | mps6 | 2 | small | 32/34 | 6/68 | 0/24 |
 
-(*) Partly arbitrary (verification erratum 4): these $k=4$ verdicts come from the reduced route ODE
-with a $c=3$ inner edge, where the code picks an arbitrary basis vector, so the dead/alive split of
-this row depends on that choice. To be re-tabulated after the code fix (section 2.5).
+(*) v1.2. The $k=4$ verdicts on this row come from the reduced route ODE with a $c=3$ inner edge. v1
+projected that edge on an arbitrary basis vector and gave 26/46, 0/68, 0/94; the invariant version
+(section 2.6) gives 26/26, 0/68, 0/114. The 48 $d=4$ robust runs (end bonds uncapped, all predicted
+alive, none stalls) are in the alive column both times. Observed class against predicted class for
+the 160 $d=2$ runs:
+
+| observed \ predicted | v1: dead | v1: pinned | v1: alive | v1.2: dead | v1.2: pinned | v1.2: alive |
+|---|---|---|---|---|---|---|
+| stalled (5,000-evaluation detector) | 24 | 0 | 0 | 24 | 0 | 0 |
+| dead (stall diagnosis) | 2 | 0 | 0 | 2 | 0 | 0 |
+| escaped | 20 | 68 | 46 | 0 | 68 | 66 |
+
+Per teacher: $\{0,3\}$ 14/28, 0/56, 0/76 in v1 and 14/14, 0/56, 0/90 in v1.2; $\{0,1,2,3\}$ 12/18, 0/12, 0/18
+and 12/12, 0/12, 0/24. The 20 runs that moved are seed 1 of both teachers, which escapes at every $\sigma$
+(0.001-0.2).
 
 Readings: binary8 and star3 (all ends have siteless partners; $j=3$, active only for $k\ge6$) never
 stall where predicted alive; MPS4 at $\chi=2$ is predicted exactly (locality and pilot, fan-in: all
-150 predicted-dead runs stalled or died, none of the 344 others); HT4 with $k=5$ ($D=\{1,2\}$) is predicted
+150 predicted-dead runs stalled or died, none of the 344 others), and so is MPS4 at $\chi=4$ in v1.2
+(26 of 26 and none of the 182 others); HT4 with $k=5$ ($D=\{1,2\}$) is predicted
 alive and its 8 saddle-start stalls are slow escapes except two (below); the $\chi=4$ rows reproduce
 the measured effect of spare channels: fewer deaths where a route end gains spare directions
 (Proposition 2), none fewer where both ends are capped (midroot6 $\{0,5\}$: 30/30 predicted dead or
 pinned, 30/30 stalled; MPS6 $\{0,5\}$: 40/40 predicted dead or pinned, 24/40 stalled).
 
-**Per seed** (cases with $\ge3$ values of $\sigma$): locality, predicted alive: 447 of 462 seeds never stall,
-2 stall at every $\sigma$, 13 at some; predicted dead: 45 of 65 stall at every $\sigma$, 4 never, 16 at some
-(the escapes are mostly at the largest $\sigma$ values, as the $O(\sigma)$ corrections of section 5 predict);
+**Per seed** (cases with $\ge3$ values of $\sigma$): locality, predicted alive: 449 of 464 seeds never stall,
+2 stall at every $\sigma$, 13 at some; predicted dead: 45 of 63 stall at every $\sigma$, 2 never, 16 at some
+(the escapes are mostly at the largest $\sigma$ values, as the $O(\sigma)$ corrections of section 5 predict;
+v1: 447 of 462, and 45 of 65 with 4 never);
 pinned: 127 of 160 never, 13 always. Pilot: alive 24/25 never; dead 15/17 always; pinned 29/34 never.
 So the class is a property of the init direction wherever the prediction is alive or dead; the mixed
 seeds are near the boundary or at $\sigma\ge0.1$.
 
-**Where the criterion fails** (fan-in: 56 false alarms and 40 misses among 3,929 runs incl. pilot):
-1. $k=4$ with spare inner channels (MPS4 at $\chi=4$: 20 of 46 predicted dead escape). The reduced route
-   model treats one new direction per route edge; with $c=3$ inner directions the route's drive is
-   larger than the scalar model assumes. Worse than first described (verification erratum 4): the
-   code's scalar on the inner edge is a basis-dependent choice, so the 26/46 row is partly arbitrary.
-   Fix: restrict the $k=4$ ODE verdict to routes with $c=1$ on every edge, or use vector route
-   amplitudes, and re-tabulate MPS4 $\chi=4$ (not done).
+**Where the criterion fails** (fan-in: 36 false alarms and 40 misses among 3,929 runs incl. pilot; v1:
+56 false alarms, the 20 extra ones being failure 1):
+1. Resolved in v1.2: $k=4$ with spare inner channels (MPS4 at $\chi=4$: in v1, 20 of 46 predicted-dead
+   runs escaped). The cause was the projection of the inner route entries on one basis vector of the
+   inner new space (verification erratum 4), which is arbitrary and can shrink the growing mode or flip
+   the sign of $\langle\beta_1,\beta_2\rangle$. With vector route amplitudes (section 2.6) the 20 runs (seed 1 of both
+   teachers) are predicted alive, and all 26 remaining predicted-dead runs stall or die.
 2. The marginal $j=3$ case $k=6$ on HT4 ($D=\{0,1,2\}$: 11 of 18 predicted dead escape). At $k=2j$ the
    three-core decay and the escape are of the same order; only the sign test was used.
 3. Large $\sigma$, and long routes (rewritten after verification erratum 7):
@@ -539,7 +636,7 @@ verdicts; 400 draws per saddle-start case, 60 per small-init case; `results/mont
 | case ($d=2$) | $k$ | saddle: P(dead) MC / closed form | saddle: P(pinned) | small init: P(dead) | small: P(pinned) |
 |---|---|---|---|---|---|
 | MPS4 $\{0,3\}$, $\chi=2$ | 4 | 0.11 / (sign only 0.20) | 0.56 | 0.17 | 0.45 |
-| MPS4 $\{0,3\}$, $\chi=4$ (*) | 4 | 0.09 / (0.15) | 0.47 | 0.08 | 0.45 |
+| MPS4 $\{0,3\}$, $\chi=4$ (*) | 4 | 0.05 / (0.15) | 0.47 | 0.05 | 0.45 |
 | MPS6 $\{0,3\}$ | 4 | 0.12 / (0.20) | 0.53 | 0.12 | 0.52 |
 | MPS6 $\{1,4\}$ (internal ends) | 4 | 0.15 / (0.25) | 0.50 | 0.10 | 0.57 |
 | MPS6 $\{1,3,5\}$ | 5 | 0.22 / 0.25 | 0.50 | 0.20 | 0.43 |
@@ -550,12 +647,14 @@ verdicts; 400 draws per saddle-start case, 60 per small-init case; `results/mont
 | HT4 all sites ($j=3$, 4 ends) | 7 | 0.33 / - | 0.51 | 0.42 | 0.48 |
 | MPS8 $\{0,7\}$ | 8 | 0.215 / 0.196 | 0.47 | 0.25 | 0.53 |
 
-(standard errors: about 0.02 for 400 draws, 0.04-0.06 for 60. (*) $k=4$ verdicts from the reduced
-route ODE with a $c=3$ inner edge: basis-dependent, verification erratum 4.) The closed form agrees with the Monte
-Carlo within two standard errors at every $k\ge5$ case; at $k=4$ the reduced competition lets about
-40-60% of the draws with two unfavourable ends escape. The trap probability is of order 0.1-0.3 per
-run for every route whose two ends have partners with sites, with or without spare inner channels,
-and about 0.3-0.4 for the four-ended HT route at $k=7$.
+(Standard errors: about 0.02 for 400 draws, 0.04-0.06 for 60. (*) v1.2: the $k=4$ verdicts with a
+$c=3$ inner edge come from the invariant route ODE of section 2.6; the basis-dependent v1 gave 0.09 and
+0.08. Of the 58 saddle-start draws with two dying ends, 38 escape and 20 die; of the 7 small-init ones,
+4 escape.) The closed form agrees with the Monte Carlo within two standard errors at every $k\ge5$ case.
+At $k=4$ the reduced competition lets about 40% of the draws with two unfavourable ends escape at
+$\chi=2$ (MPS4, MPS6), and about 65% with three spare inner directions (MPS4 at $\chi=4$; section 2.6).
+The trap probability per run is of order 0.1-0.3 for routes whose two ends have partners with sites,
+0.05 on MPS4 at $\chi=4$, and about 0.3-0.4 for the four-ended HT route at $k=7$.
 
 **Comparison with the measured fractions.** The committed cases have 5-10 init seeds each, and the
 class is fixed per seed, so a measured fraction has a binomial error of order 0.15-0.2. Example: MPS4
@@ -638,8 +737,9 @@ verification; the corrections are marked in the items. The report items are for 
 
 **Report Sec. 4.6 (failure modes).**
 1. "Relation to the conservation-law trap": replace the R12 criterion and its weak association (30 of
-   55 vs 7 of 67) by the per-run results of section 7 (fan-in: 89% of predicted-dead runs stall vs 1.8%
-   of predicted-alive; stall diagnosis: 30 of 38 predicted dead died, 7 of 126 others), and drop
+   55 vs 7 of 67) by the per-run results of section 7 (fan-in: 93% of predicted-dead runs stall vs 1.8%
+   of predicted-alive; stall diagnosis: 30 of 36 predicted dead died, 7 of 128 others; v1.2 numbers, v1
+   had 89% and 30 of 38, 7 of 126), and drop
    "counts against the mechanism as stated": the counterexamples were R12's criterion, and the
    remaining ones are in the listed failure classes (not "at $\sigma\ge0.19$": pinned runs die at every
    $\sigma$ in the pilot, section 7 failure 5, verification erratum 8).
@@ -660,15 +760,33 @@ verification; the corrections are marked in the items. The report items are for 
    and the exponents 3.3-3.8 at $k=5$ qualitatively (not tested per seed). Tag conjecture: the pinned
    escape law is untested at $k=5$ and pre-empted for $k\ge6$ (verification erratum 3).
 6. New statements and tags: T1-T9 as in section 0 here.
+7. (v1.2) $k=4$ with spare inner channels. These numbers changed:
+   - Fan-in locality: predicted dead $408/457$ (89%) becomes $408/437$ (93%); alive $38/2{,}101$ becomes
+     $38/2{,}121$ (1.8%); pinned unchanged.
+   - By $k$, $k=4$: $203/232$ becomes $203/212$; $5/796$ becomes $5/816$.
+   - Stall diagnosis: predicted dead 30 dead / 6 escaped / 2 pinned becomes 30 / 4 / 2; predicted alive
+     2 / 56 / 0 becomes 2 / 58 / 0.
+   - Known failures: "56 false alarms" becomes 36. The failure class "$k=4$ with spare inner channels
+     (MPS4 at $\chi=4$: 20 of 46 predicted-dead runs escape)" is removed: MPS4 at $\chi=4$ is now 26 of 26
+     predicted-dead runs stalled or dead, none of the other 182.
+   - Monte Carlo, MPS4 $\{0,3\}$ $\chi=4$: P(dead) 0.05 (saddle and small init; v1 0.09 and 0.08).
+
+   Statement (iv) of `prop:A-trap` should drop "(where every route edge has one new direction)". Replace it
+   by: one new direction on each end edge; spare directions on the inner edge enter through vector route
+   amplitudes, and the decision depends on them only through $\langle\beta_1,\beta_2\rangle$ and
+   $\lvert\beta_1\rvert^2+\lvert\beta_2\rvert^2$, hence is basis invariant (Proposition 3, proven within the
+   reduced flow; checked in full gradient flow, 36/36 runs).
 
 ## 11. Open issues
 
 - **Multi-stage (odeco) prediction from the init.** Needs a $\sigma$-free reduced model of the second
   plateau (two dormant components sharing a two-dimensional new space, $j=2$ at MPS ends, three-core
   clusters at siteless partners) to carry the init to the third plateau.
-- **$k=4$ with spare inner channels** (vector route amplitudes in the reduced model) and the marginal
-  three-core case $k=6$ on HT trees. Until then the code's $k=4$ verdict should be restricted to routes
-  with $c=1$ on every edge and MPS4 $\chi=4$ re-tabulated (verification erratum 4).
+- **The marginal three-core case $k=6$ on HT trees** (only the sign test is used there). The $k=4$ case
+  with spare inner channels is closed in v1.2 (section 2.6). Two extensions remain open: a finite-$\sigma$
+  reduced model for routes with spare inner channels at $k\ge5$, and ends with $c_e>1$. The finite-$\sigma$
+  column of section 7 still requires $c=1$ on every route edge, although `reduced_route` now accepts
+  tensor amplitudes.
 - **Inner three-core clusters** (verification erratum 2): a death channel for live routes from $k=6$
   (marginal) and $k\ge7$ (dominant), and for pinned routes from $k=6$ (marginal at $k=5$). Derived to act,
   not implemented in the criterion; likely behind the pinned $\to$ dead runs (section 7, failure 5) and
