@@ -667,3 +667,65 @@ because its middle panel plotted the misattributed gaps, and `first_route_gaps` 
 | Fashion (7) | siblings first 15/15, 14/15; sigma^-0.92...-0.97 | siblings rise together 3/15; exponents withdrawn | empirical |
 | chi = 8 (7) | L(1e4); 1.17 ± 0.06; scrambled fits better at 0.5 | L(tau_end), 23 runs wall-limited; two-point slopes 1.27 / 1.20; sigma = 0.5 comparison withdrawn | empirical |
 | 8x8 (7) | L(1e4) | L(3000); one permutation, two seeds | empirical |
+
+## 9. Pre-registered test: does the route-amplitude share predict the effect of the pixel order?
+
+**Registration.** Written and committed on 2026-10-10 before any run of the new orders, before computing
+the predictor for them, and before any analysis of their outcomes (lead's request after fix round 1). Results
+are appended in 9.6 whatever they are; any deviation from this plan is listed there.
+
+### 9.1 Hypothesis
+Across pixel-to-leaf assignments ("orders") of the same binary16 tree (quadtree-shaped, K = 15), the share S of
+route amplitude on routes with k <= 5 cores, computed from the data before training, predicts (a) the final
+train loss L(tau = 1e4) and (b) the time to reach L <= 0.25 (tau clock), at sigma = 0.1: a larger S goes with a
+lower final loss and a shorter time (Spearman rho < 0 for both).
+
+### 9.2 Predictor S (data only, no training)
+1. Raw cos/sin features of the 4000 training images (data seed 0, MNIST 3 vs 5, 4x4). For an order, the bottom
+   core v of binary16 carries the two sites listed in `tree.sites[v]`, i.e. two pixels; Phi_v(x) =
+   phi_s(x) (x) phi_s'(x) in R^4.
+2. Rank-1 fit f(x) = prod_v g_v . Phi_v(x) (8 bottom cores; a bond-rank-1 binary TTN computes exactly such a
+   product) of y by least squares, from 32 starts: start i draws unit g_v from numpy `default_rng(1000 + i)`, runs
+   50 steps of higher-order power iteration on T = (1/n) sum_j y_j (x)_v Phi_v(x_j) (g_v <- T contracted with the
+   other g_u, normalised), rescales the product to its least-squares amplitude, then runs alternating least
+   squares on the square loss (one 4-dimensional linear solve per core per sweep) until the relative loss change
+   is < 1e-12 or 2000 sweeps. The fit with the lowest loss is the reference rank-1 state; its bottom-core norms
+   are then balanced (equal |g_v|, same f).
+3. At that state, for every pair (u, w) of bottom cores: r = f - y, h_uw = prod_{v != u, w} q_v (q_v = g_v . Phi_v),
+   M_uw = (1/n) sum_j r_j h_uw(x_j) Phi_u(x_j) Phi_w(x_j)^T, lambda_uw = |P_u M_uw P_w|_2 with P_u = I - g_u g_u^T /
+   |g_u|^2, and k_uw = number of cores on the tree path from u to w (3, 5 or 7). S = sum_{k_uw <= 5} lambda_uw^2 /
+   sum lambda_uw^2. This is the formula of `route_amplitudes.py` (sections 4.3, 8.4), evaluated at the best rank-1
+   fit of the data instead of at the plateau state that a gradient-flow run reaches.
+The predictor values for all orders are committed (`results/extra_orders_predictor.json`) before the runs finish.
+
+### 9.3 Orders and runs
+- **New random orders (20):** scrambled100 ... scrambled119 (`data.pixel_order`: permutation seed k + 12345); none was
+  used before.
+- **Structured orders (7):** quadtree (Morton), quadtreeT (Morton order of the transposed image: same 2 x 2 blocks,
+  vertical pairs), rowmajor, colmajor, snake (boustrophedon; on a binary tree it has the same pixel pairs and
+  groups as rowmajor up to sibling swaps, so it is a replicate of rowmajor with other effective inits), hilbert
+  (order-2 Hilbert curve: 2 x 2 blocks, left/right halves), mortonrev (bit-reversed Morton key: every sibling pair
+  is two rows apart; a structured non-local control).
+- **Runs:** init seeds 0, 1, 2 at sigma = 0.1, all settings of main.yaml (MNIST 3 vs 5, n_train = 4000, raw features,
+  chi = 4, rtol 1e-8, atol 1e-14, tau <= 1e4, same grids): `configs/extra_orders.yaml`. Reused identical cases (same
+  code and settings): quadtree seeds 0-2 (main sweep) and quadtreeT, rowmajor seeds 0-1 (round-1 review runs); the
+  other 74 runs are new. Outcomes already seen before registration: quadtree (seeds 0-2), quadtreeT and rowmajor
+  (seeds 0-1).
+
+### 9.4 Outcomes (per order, seeds averaged first)
+- O1 = mean over the 3 seeds of the train loss at tau = 1e4.
+- O2 = mean over the 3 seeds of log10 tau(L <= 0.25) (first time the running-minimum train loss is <= 0.25,
+  `summarize.py`); a seed that does not reach 0.25 within tau = 1e4 is set to tau = 1e4 (censored; the number of
+  censored seeds is reported).
+
+### 9.5 Analysis
+- One point per order (no pseudo-replication over seeds). Spearman rho(S, O1) and rho(S, O2): (i) across all 27
+  orders, (ii) within the 20 new random orders. 95% bootstrap CIs over orders (10,000 resamples of orders with
+  replacement, percentile intervals) and two-sided permutation p-values (10,000 permutations of S).
+- **Support criterion:** rho < 0 with the 95% CI excluding 0, judged separately for O1 and O2 and for (i) and (ii).
+- **Secondary (registered):** (a) (i) without the three orders whose outcomes were seen before registration;
+  (b) (i) and (ii) with the round-0 random orders scrambled0-2 added (main sweep, seeds 0-2, sigma = 0.1);
+  (c) validity of the predictor: S compared with the plateau-state share of the same order (routes_raw.json,
+  sigma = 0.1, seeds 0-4) for the four round-0 orders, i.e. whether the best rank-1 fit is the state the runs reach.
+- Anything else is labelled exploratory. Budget: at most 8 processes and about 1.5 h; if runs remain unfinished,
+  orders with fewer than 3 seeds are reported but left out of the primary analysis (a listed deviation).
