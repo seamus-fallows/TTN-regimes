@@ -4,8 +4,11 @@
 % result, Sec. 5 or App. D gives the detail.
 % Sources: notes/regime_map.md (its section 3, fix round 1, overrides sections 0-2),
 % experiments/regime_map/ (results/*.csv, results/fix1/*.csv, results/report/*.csv), the reviews
-% notes/reviews/regime_map_round1.md and regime_map_round2_verification.md (errata E1-E6 applied),
-% notes/reviews/final_review_claims_A.md (m11-m15, m26 applied), theory notes/theory_regimes.md v2.
+% notes/reviews/regime_map_round1.md, regime_map_round2_verification.md (errata E1-E6 applied) and
+% regime_map_round3_verification.md (round 2 and the tensor relabel; errata E1-E19 and its safe-to-cite list
+% applied), notes/reviews/final_review_claims_A.md (m11-m15, m26 applied) and final_review_claims_B.md (C2),
+% theory notes/theory_regimes.md v2. Large-K round 2: notes/regime_map.md sections 4.7-4.8, results/round2/.
+% Labels of the binary4 maps use the tensor kernel since round 2 (results/tensor_relabel/).
 % WITHDRAWN, do not reintroduce: "every boundary is predicted quantitatively" and the deepest-run
 % extrapolation as an a-priori prediction; "sigma_c -> sqrt(d), not 1" as derived, and the K >= 8 label
 % values as crossings (they are brackets); "the S2S region is widest near lambda = sqrt(chi)"; "the NTK slope
@@ -13,7 +16,10 @@
 % sigma sqrt(chi) as a new scaling; the interim scipy numbers; the realizability floor as the cause of the
 % high deepest-run ratios at chi = 3, 4; "44 stalled runs" at the Eckart-Young floor (159); the
 % rho-classified medians 1.16 (K = 10), 1.15 (K = 12) as S2S boundaries and "sigma_c > 1 at K = 10-12";
-% "sigma^K = const fails (chi^2 22.5)".
+% "sigma^K = const fails (chi^2 22.5)"; from round 2 (round-3 verification): "H_W confirmed by the core
+% shrinkage" (consistent only), "sigma_dom -> sqrt(d)" (about 1.15 sqrt(d)), "85 of 96 stay S2S up to the domain
+% limit" (76 there, 9 open), "at d = 3 every seed" (one crosses at 1.08), "no crossing below sqrt(d) at all"
+% (11 of 96 cross), "H_B favoured at rho* = 5" without the non-registered SE scaling.
 \section{Map of regimes}\label{sec:regime-map}\label{sec:regime-summary}
 
 Which regime of \cref{tab:regimes} does a run fall into, and which parameters decide it? This section maps the
@@ -22,9 +28,9 @@ $\chi$, the number of cores $\Kc$ and the imbalance between the root and the oth
 \cref{tab:regime-summary} at its end lists which parameter moves which boundary. On the binary tree with $\Ns=4$,
 training is saddle-to-saddle below $\isc_c\approx0.3/\sqrt\chi$, rich in a window of about 20 in $\isc$, and lazy
 above $\isc_{\rm lazy}\approx6.5/\sqrt\chi$ (values reached at $\chi\ge32$), but lazy only when every bond reaches
-its cut dimension; below it the runs end on a floor. With more cores the saddle-to-saddle boundary rises and
-stalled runs invade its side, and a light root makes training lazy at an up to 100 times smaller function-space
-scale. \Cref{sec:other-regimes} gives the detail of each regime other than saddle-to-saddle, and
+its cut dimension; below it the runs end on a floor. With more cores the saddle-to-saddle boundary rises (in the
+plain model above $\isc=1$ for most seeds at $\Kc\ge8$) and stalled runs invade its side, and a light root makes
+training lazy at an up to 100 times smaller function-space scale. \Cref{sec:other-regimes} gives the detail of each regime other than saddle-to-saddle, and
 \cref{sec:other-optim} adds discrete steps and gradient noise. \newresult[for TTNs] \knownresult[maps for linear
 and diagonal networks: \citealp{woodworth2020kernel,tu2024mixed,kunin2024get,domine2025lazy}]
 
@@ -37,8 +43,8 @@ initial function at every $\isc$, so $\isc$ alone moves a run from small to larg
 at $d=2$, exact population loss, fan-in initialization with one scale $\isc$ for every core unless stated, and
 gradient flow until the loss falls below $10^{-6}\cdot\frac12\normF{\Wt}^2$ or a budget ends. On the binary tree with
 $\Ns=4$ ($\Kc=3$, \emph{binary4}) the bonds are not capped: $\chi=9=d^2$ is the cut dimension, and larger $\chi$
-over-parameterizes the bonds. Labels follow \cref{tab:regimes}; the lazy label uses the probe kernel
-($\dTK^{\rm probe}$), comparisons with theory the tensor kernel ($\dTK$; \cref{sec:setup-diagnostics}). Boundaries
+over-parameterizes the bonds. Labels follow \cref{tab:regimes}, with the tensor kernel ($\dTK$) on binary4 and the
+probe kernel ($\dTK^{\rm probe}$) on the larger trees (\cref{sec:setup-diagnostics}). Boundaries
 are found per seed (six seeds; saddle-to-saddle where $\min_i\sep i$ crosses $3$, lazy where the kernel change
 crosses $0.1$) and reported as medians, or as geometric means $\times/$ their geometric standard error $f$ (the
 interval from the mean divided by $f$ to the mean times $f$). Settings: \cref{app:exp-regimes}; supplementary
@@ -110,8 +116,9 @@ full, the runs above $\isc=2$ stop at the step limit unconverged (\cref{sec:othe
     means. Blue: saddle-to-saddle boundary from the $\isc\times\chi$ sweep (filled, $\min_i\sep i=3$) and the $\chi$
     sweep (open, label bracket); dashed: $0.30\,\chi^{-1/2}$ (a guide). Green: lazy boundary (kernel change $0.1$;
     filled: tensor kernel, open: probe kernel), bracket of \cref{prop:A-lazy} (band) and its asymptote (dotted).
-    Triangles: $\isc$ from which every seed stalls on the floor (filled) and its small-$\isc$ estimate
-    \eqref{eq:A-centred-floor} (open); bonds are full right of the dotted vertical. (b)~$d=2$, teacher $(3,2)$,
+    Triangles: $\isc$ from which every seed stalls on the floor (filled) and, at $\chi=3$ only, where the small-$\isc$
+    floor \eqref{eq:A-centred-floor} would reach the convergence threshold (open); bonds are full right of the dotted
+    vertical. (b)~$d=2$, teacher $(3,2)$,
     $\chi=4$ (full bonds only for $\Kc\le5$). Dots: median per-seed boundary; bars: median bracket from the last
     saddle-to-saddle run to the next, stalled one; dashed: the aligned-initialization boundary $a_{0c}(\Kc)$
     (\cref{prop:A-s2s-aligned}). Hatched: stalled above the saddle-to-saddle runs, on the floor of the
@@ -140,16 +147,26 @@ six seeds resolved except at $\Kc=6$ (four). It stays above the aligned-initiali
 $a_{0c}(\Kc)=0.066$--$0.49$ of \cref{prop:A-s2s-aligned}. The plain model gives the same boundaries within one grid
 step up to $\Kc=7$; beyond, it must first remove $\Wz$.
 
-\paragraph{Beyond seven cores, and the limit.}
+\paragraph{Beyond seven cores.}
 \empirical{} At $\Kc=8$, $10$, $12$, $15$ at most one of six seeds is resolved: the run after the last
 saddle-to-saddle run stalls on the floor of the unrealizable target, so the label rule gives only brackets near
-1 (median brackets between $0.63$ and $1.36$), lower bounds rather than crossings (\cref{app:D-regimes}). On
-$\Kc=4$--$7$ a fixed $\isc_c^\Kc$ and a fixed per-component amplitude $\isc_c^\Kc/\sqrt{d^\Ns}$
-(\cref{prop:A-kernel}(b)) fit the medians equally well. The first would give $\isc_c\to\lim_\Kc a_{0c}(\Kc)=1$, like
-the per-layer threshold of aligned initialization \knownresult[\citealp{gissin2020implicit}, Thm~2], the second
-$\isc_c\to\sqrt d$; with all runs at $d=2$ and brackets beyond $\Kc=7$, the data distinguish neither limit
-\conjecture.
-\placeholder{Pending (regime-map round 2): the boundary at $\Kc\ge8$ from a realizable sweep at $d=2$ and $3$.}
+1 (median brackets between $0.63$ and $1.36$), lower bounds rather than crossings (\cref{app:D-regimes}).
+
+\paragraph{The limit at large $\Kc$, in realizable problems.}
+\empirical{} \newresult{} Two laws were candidates: a fixed $\isc_c^\Kc$, which gives $\isc_c\to\lim_\Kc a_{0c}(\Kc)=1$
+like the per-layer threshold of aligned initialization \knownresult[\citealp{gissin2020implicit}, Thm~2], and a fixed
+per-component amplitude $\isc_c^\Kc/\sqrt{d^\Ns}$ (\cref{prop:A-kernel}(b)), which gives $\isc_c\to\sqrt d$. A
+pre-registered second sweep with realizable targets (binary trees with $\Ns=4$--$16$, teacher $(3,2)$, $d=2$ and $3$,
+six seeds per cell) tests them. In the plain model with spare channels ($\chi=4$), 85 of the 96 seeds at $\Kc\ge8$
+find no crossing: they stay saddle-to-saddle up to the scale at which the initial function itself overlaps a teacher
+component, where the event rule stops applying, or to the end of the budget. Their lower bounds on $\isc_c$,
+$1.07$--$2.03$, all exceed 1 and both laws fitted on the resolved cells, so in the plain model $\isc_c$ does not tend
+to 1. A proposed mechanism, consistent with the data but not tested causally, is that the plain model unlearns
+$\Wz$ while it waits on the plateau, which lowers the effective amplitude \conjecture. The centred model with full
+bonds has no $\Wz$ to unlearn but is affordable only up to $\Kc=8$ at $d=2$ and $\Kc=4$ at $d=3$: there $\isc_c$ rises
+from $0.16$ to $0.83$ over $\Kc=3$--$8$, and the slope of $\ln(\isc_c^\Kc/a_{0c}^\Kc)$ against $\ln\sqrt{d^\Ns}$ ($0$ for
+the first law, $1$ for the second) is $-0.07\pm0.51$, which resolves neither law. Whether $\isc_c\to\sqrt d$ remains a
+\conjecture{} (details: \cref{app:D-regimes}).
 
 \paragraph{Stalls on the saddle-to-saddle side.}
 \empirical{} Below the boundary stalled runs take a growing part of the map (plain grey in
@@ -171,10 +188,10 @@ to $10^2$ times ten of $\lambda/\sqrt\chi$ from $0.01$ to $100$; and $\chi=16$, 
 ($\xi=\normF{\Wt}/\fsc=1.11$), $\lambda=0.01$--$100$ (\cref{fig:regime-map}(c), (d)).
 
 \paragraph{A light root makes training lazy; a heavy one does not.}
-\empirical{} \newresult[for TTNs] At $\chi=24$ the runs are lazy from $\fsc=0.1$ at $\lambda/\sqrt\chi=0.01$ (4 of 6
-seeds) and from $\fsc=1$ at $0.03$ (6 of 6), against $\fsc=10$ at balance (4 of 6): the lazy boundary moves by up
-to a factor 100 in $\fsc$. Ties of 3 of 6 lazy runs occur at $\lambda/\sqrt\chi=0.1$, $\fsc=1$, and for a heavy
-root ($\lambda/\sqrt\chi\ge3$) at $\fsc=10$; the heavy root is lazy at $\fsc=100$ (6 of 6), close to balance. The
+\empirical{} \newresult[for TTNs] At $\chi=24$ every seed is lazy from $\fsc=1$ for a light root
+($\lambda/\sqrt\chi=0.01$, $0.03$), from $\fsc=10$ for $\lambda/\sqrt\chi=0.1$--$0.32$ (the fan-in default is $0.2$),
+and only from $\fsc=100$ at balance (2 of 6 lazy at $\fsc=10$) and for a heavy root ($\lambda/\sqrt\chi\ge3$, none
+at $\fsc=10$): a light root lowers the lazy boundary by a factor 100 in $\fsc$, a heavy one does not move it. The
 saddle-to-saddle majority reaches $\fsc=10^{-4}$ for $0.1\le\lambda/\sqrt\chi\le10$ and $10^{-5}$ or $10^{-6}$
 outside; on this one-decade grid no widest point near balance can be read off. With $\chi=3$ every run stalls on
 the floor from $\fsc=1$.
@@ -183,7 +200,7 @@ the floor from $\fsc=1$.
 \empirical{} confirming \derived{} (\cref{app:boundaries}) At $\chi=16$, $\fsc=3.375$, $\dTK$ grows like $\lambda^2$
 from small $\lambda$ (local slope $1.85\pm0.06$ between $\lambda=0.03$ and $0.1$, predicted $1.8$--$1.9$) and
 saturates at $0.59$--$0.61$ for $\lambda\ge10$ (medians; at the lower edge of the predicted $0.6$--$0.7$); the runs
-are lazy up to $\lambda=0.3$ and rich from $\lambda=3$. In the aligned mode a small root is the only core that
+are lazy up to $\lambda=0.3$ and rich from $\lambda=1$. In the aligned mode a small root is the only core that
 moves, so the model is linear in it, while a large root freezes and leaves a degree-$(\Kc-1)$ model \derived.
 Two-layer linear networks share the first effect, a lazy phase that turns rich when the features are
 incomplete, but there a large output weight also gives lazy training
@@ -201,26 +218,27 @@ incomplete, but there a large output weight also gives lazy training
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}
       >{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.65cm}@{}}
     \toprule
-    parameter & effect & measured (predicted) & status \
+    parameter & effect & measured (predicted) & status \\
     \midrule
     scale $\isc$ & saddle-to-saddle, rich, then lazy or a floor & binary4: $\isc_c=0.24$ to $0.023$
-      ($\chi=3$--$128$), $\isc_{\rm lazy}=3.0$ to $0.57$ ($\chi=9$--$128$) & \empirical \
+      ($\chi=3$--$128$), $\isc_{\rm lazy}=3.0$ to $0.57$ ($\chi=9$--$128$) & \empirical \\
     bond dimension $\chi$, full bonds & both boundaries $\propto\chi^{-1/2}$ & slopes $-0.53\pm0.05$ and
       $-0.504\pm0.011$ ($-\frac12$ for the lazy one); $\isc_{\rm lazy}\sqrt\chi=6.40$--$6.56$ ($6.50$); rich window
-      $19$--$24$ & \empirical; \derived{} (lazy constants) \
+      $19$--$24$ & \empirical; \derived{} (lazy constants) \\
     $\chi$ below the cut dimension & no lazy regime, a floor & all seeds stalled from $\isc=1.0$, $1.0$, $1.6$ at
-      $\chi=3$, $4$, $6$ & \derived{} \empirical \
+      $\chi=3$, $4$, $6$ & \derived{} \empirical \\
     cores $\Kc$ ($d=2$, $\chi=4$) & $\isc_c$ rises; stalls below it & $\isc_c=0.17$, $0.49$, $0.61$, $0.68$, $0.75$ for
-      $\Kc=3$--$7$; brackets near 1 for $\Kc=8$--$15$ & \empirical{} \conjecture \
-    root imbalance $\lambda$ at fixed $\fsc$ & light root: lazy at up to $100\times$ smaller $\fsc$ &
+      $\Kc=3$--$7$; brackets near 1 for $\Kc=8$--$15$; realizable, plain model ($d=2$, $3$): no crossing in 85 of 96
+      seeds at $\Kc\ge8$, lower bounds $1.07$--$2.03$ & \empirical; \conjecture{} (limit $\sqrt d$) \\
+    root imbalance $\lambda$ at fixed $\fsc$ & light root: lazy at a $100\times$ smaller $\fsc$ &
       $\dTK\propto\lambda^2$ (slope $1.85\pm0.06$; $1.8$--$1.9$), saturation $0.59$--$0.61$ ($0.6$--$0.7$) &
-      \empirical{} \derived \
+      \empirical{} \derived \\
     parameterization, large $\chi$ & lazy (SP, NTK) or not ($\mu$P-TTN) & $\dTK\propto\chi^{-3.02\pm0.06}$ ($-3$);
       NTK: local slope $-1.01$ between $\chi=64$ and $128$ ($-1$; full-range fit $-0.79\pm0.04$); $\mu$P-TTN: $\dTK\to6.2$
-      ($6.2$--$6.3$); \cref{sec:other-large-chi} & \empirical{} \derived \
+      ($6.2$--$6.3$); \cref{sec:other-large-chi} & \empirical{} \derived \\
     thresholds $\delta_*$, $\sep{}$ & boundaries move, labels robust & $\times1.30$--$1.35$ for $\delta_*$:
-      $0.05\to0.2$ ($1.27$--$1.36$); $\times2.14$--$2.34$ for $\sep{}$: $2\to5$ ($2.5$); at most $7.1\%$ of labels
-      change, each to a neighbouring regime; \cref{app:D-regimes} & \empirical \
+      $0.05\to0.2$ ($1.27$--$1.36$); $\times2.14$--$2.34$ for $\sep{}$: $2\to5$ ($2.5$); at most $7.7\%$ of labels
+      change, each to a neighbouring regime; \cref{app:D-regimes} & \empirical \\
     \bottomrule
   \end{tabularx}
 \end{table}
