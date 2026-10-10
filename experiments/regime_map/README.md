@@ -118,8 +118,7 @@ a `variants` entry.
 
 ## Results
 Full account: `notes/regime_map.md` (section 0: which parameter moves which boundary; section 3: fix
-round 1, every changed claim with old -> new and status). Report `agent-runs/regime-map/REPORT.md`
-(its summary predates fix round 1). In short (6 seeds per point, per-seed statistics; status tags in
+round 1, every changed claim with old -> new and status). Report `agent-runs/regime-map/REPORT.md`. In short (6 seeds per point, per-seed statistics; status tags in
 the notes):
 - binary N = 4, centred, fan-in: S2S / rich / lazy. Per seed rho ~ sigma^-(1.02-1.05) on the S2S side
   (four seeds with transients above 1/2: -1.09 to -1.27), so each seed's boundary follows from its
@@ -129,8 +128,11 @@ the notes):
 - both boundaries ~ chi^-1/2 at N = 4 (chi 16-128, < 1 decade): the map collapses in sigma sqrt(chi),
   the TTN analogue of known width scales (empirical);
 - sigma x K (d = 2, centred, chi = 4): resolved up to K = 7 (0.17-0.75); at K >= 8 the label rule
-  gives only brackets, and with floor-stalled runs classified by rho the medians are 1.01, 1.16, 1.15
-  at K = 8, 10, 12 at deficient bonds; sigma_c -> sqrt(d) is a conjecture; stalls take over at large K;
+  gives only brackets. With floor-stalled runs classified by rho, K = 8 gives 1.01 (5/6 seeds,
+  deficient bonds). The K = 10 and 12 brackets mostly end at runs that learned nothing, so they are not
+  boundaries (verification erratum E1). sigma^K and sigma^K / sqrt(D) are indistinguishable on these
+  data. sigma_c -> sqrt(d) is a conjecture, and stalls take over at large K. Round 2 (realizable
+  problems) is in the section above;
 - large chi (tensor kernel): delta_K ~ chi^-3.02 (SP), NTK chi^-1 at chi >= 64, muP-TTN delta_K -> 6.2
   (theory P16);
 - imbalance: light root -> lazy (delta_K ~ lambda^2, saturating at 0.6 as P20 predicts); a heavy root is

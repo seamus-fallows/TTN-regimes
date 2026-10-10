@@ -1,150 +1,142 @@
 # regime-map: phase diagrams of TTN training regimes (Q5)
 
-> **Addendum, fix round 1 (2026-10-10, local).** Several claims below were corrected after review
-> round 1 (`notes/reviews/regime_map_round1.md`). The authoritative list, old -> new with status tags,
-> is **`notes/regime_map.md` section 3 "Fix round 1 (local)"**; tables and figures are in
-> `experiments/regime_map/results/fix1/`, and every figure in `results/` was regenerated from the
-> copied raw outputs (`data/regime_map/`). In short: (1) events now use the last crossing of 1/2 before
-> a component is learned (15 labels change, all rich -> S2S; chi = 12 seed 4: 0.013 -> 0.034); the
-> deepest-run "prediction" is a calibrated consistency check of rho ~ 1/sigma, not an a-priori
-> prediction; with the tensor-space kernel the lazy boundary lies in P5's bracket at chi = 24-96 and
-> at its lower edge at 128 (the 128-probe kernel of the labels gives ~5% lower boundaries). (2) The sigma sqrt(chi) collapse is
-> empirical for N = 4, fan-in, chi = 16-128 (< 1 decade), the TTN analogue of known width scales.
-> (4) K >= 8 boundaries were floor-limited brackets (5/6, 5/6, 6/6, 5/6 seeds unresolved at K = 8,
-> 10, 12, 15); sigma_c -> sqrt(d) is a conjecture. (5) With the tensor kernel, muP-TTN delta_K -> 6.2
-> and NTK ~ chi^-1 at chi >= 64, as P16 predicts. (6) P20's slope and saturation hold with the tensor
-> kernel; "S2S widest at lambda = sqrt(chi)" is withdrawn. Pending: section 3.3 of the notes.
+Status: working (round 2) - Branch: agent/regime-map - Updated: 2026-10-10 14:50 UTC
 
-Status: working (round 2) - Branch: agent/regime-map - Updated: 2026-10-10 12:58 UTC
+> This body was rewritten after round 2 (2026-10-10).
+> - It now matches `notes/regime_map.md` section 3 (fix round 1, every changed claim old -> new) and
+>   section 3.4 (errata E1-E6 of `notes/reviews/regime_map_round2_verification.md`).
+> - Withdrawn claims are not repeated here: "every boundary predicted quantitatively",
+>   "sigma_c -> sqrt(d), not 1 (H4 refined)", "chi^-0.84 as P16 predicts" and "S2S widest at
+>   lambda = sqrt(chi)".
+> - Round 2 (realizable sigma_c(K), d = 2 and 3) and the tensor-kernel relabel of the round-1 maps are
+>   items (j) and (k).
 
 ## Summary
-Asked: phase diagrams of saddle-to-saddle (S2S), rich non-incremental and lazy gradient-flow dynamics of
-TTNs over init scale sigma, bond dimension chi, number of cores K and core imbalance, with predicted
-boundaries and threshold sensitivity. Found (about 9,000 gradient-flow runs, 6 seeds per point,
-per-seed statistics):
-(1) Binary N = 4 (K = 3): every boundary is predicted quantitatively. The S2S boundary of each seed is
-predicted from that seed's deepest run alone (0.97-1.08x for chi >= 6). rho scales as sigma^-1.03 per
-seed (predicted -1). The lazy boundary follows the second-order law sigma_lazy = 6.50 / sqrt(chi) of
-theory_regimes P5 to 4-8%.
-(2) At large chi both boundaries scale as chi^-1/2, so the map collapses in sigma sqrt(chi), the
-per-bond Gram scale. Neither sigma^K nor sigma^K chi^(K-1) collapses it. The rich window is a fixed
-factor of ~21 in sigma.
-(3) A lazy regime exists only when every bond reaches the cut dimension. Below it the centred target is
-unrealizable and runs stall exactly at the Eckart-Young floor.
-(4) With K the S2S boundary rises from 0.17 (K = 3) to ~0.9-1.0 (K = 8-12). The K-stable variable is
-the per-component amplitude sigma^K / sqrt(D) ~ 0.01, which implies sigma_c -> sqrt(d), not 1 (H4
-refined). Stalls take over the S2S side for MPS trees and when chi equals the teacher rank.
-(5) Large chi: feature learning survives only under muP-TTN (delta_K ~ chi^0.03, vs chi^-3.09 for SP
-and chi^-0.84 for NTK), as theory P16 predicts.
-(6) Imbalance: a light root makes training lazy (delta_K ~ lambda^2); a heavy root does not. S2S is
-widest near the balance point lambda = sqrt(chi).
+Asked: phase diagrams of saddle-to-saddle (S2S), rich and lazy gradient-flow dynamics of TTNs over the
+init scale sigma, bond dimension chi, number of cores K and core imbalance, with boundaries compared to
+theory and threshold sensitivity. Round 1: about 9,000 runs, 6 seeds per point, per-seed statistics.
+Status tags as in the notes.
+
+1. **Binary N = 4 (K = 3).**
+   - Per seed, rho ~ sigma^-(1.02-1.05) on the S2S side, against -(K - 2) = -1 (empirical).
+   - So each seed's S2S boundary follows from its deepest run. This is a consistency check, not an
+     a-priori prediction.
+   - With the tensor-space kernel the lazy boundary lies inside theory P5's bracket at chi = 24-96 and
+     0.06% below it at chi = 128 (sigma_lazy sqrt(chi) = 6.40-6.56 vs 6.50; empirical, confirms derived
+     P5).
+2. **Both N = 4 boundaries scale ~ chi^-1/2** (chi = 16-128, under one decade). The map collapses in
+   sigma sqrt(chi). sigma^K chi^(K-1) is disfavoured at 2.7-2.9 SE (per-seed fits).
+   - This is the TTN analogue of known width scales (Tu et al. 2024, Geiger et al. 2020). Empirical,
+     N = 4 and fan-in only.
+3. **No lazy regime below the cut dimension.** The centred target is unrealizable there, and runs stall
+   at the Eckart-Young floor (derived R7; 44/44 runs).
+4. **The S2S boundary rises with K:** 0.17, 0.49, 0.61, 0.68, 0.75 at K = 3-7 (round 1, centred, d = 2,
+   chi = 4). Round 1 could not decide its large-K limit.
+   - Round 2 (realizable problems, d = 2 and 3, item (j)) finds that in the plain model with spare
+     channels the S2S region extends, at K >= 7, up to the sigma where the init function itself
+     overlaps the teacher components. This lies above both candidate laws, sigma^K = const and
+     sigma^K / sqrt(D) = const.
+   - The mechanism is the plain model unlearning W_0 on the plateau (H_W).
+   - In the centred model with full bonds (K <= 9, d = 2), the two laws remain indistinguishable.
+   - sigma_c -> 1 or sqrt(d) remains a conjecture.
+5. **Large chi** (N = 4, tensor kernel): only muP-TTN keeps an O(1) kernel change (delta_K -> 6.2).
+   - SP: delta_K ~ chi^-3.02.
+   - NTK: ~ chi^-1 at chi >= 64.
+   - All as theory P16 predicts.
+6. **Imbalance.**
+   - A light root makes training lazy, with delta_K ~ lambda^2 (local slopes 1.97, 1.85; P20).
+   - delta_K saturates at ~0.6, the lower edge of P20's 0.6-0.7.
+   - A heavy root is lazy from alpha = 10, as at balance.
+7. **Tensor-kernel labels** (item (k)): relabelling the N = 4 maps with the tensor-space kernel instead
+   of the 128-probe kernel changes few labels and moves the lazy boundaries up by about 5%.
 
 ## Results
 All numbers: whitened inputs, exact population loss, odeco teacher [3, 2, 1] (d = 3) or [3, 2]
-(d = 2), fan-in init, gradient flow with the shared library (DP5 rtol 1e-8 / atol 1e-12, LSODA for long
-stiff plateaus), every event re-integrated on a dense linear grid, 6 seeds per point. Raw runs:
-`/root/outputs/regime_map/<exp>/` (1.2 GB). Figures and tables: `experiments/regime_map/results/`,
-all regenerated by `uv run python experiments/regime_map/make_figures.py --force` from the raw runs.
-Derivations, per-seed tables and status tags: `notes/regime_map.md` (section numbers below; section 0
-is the "which parameter moves which boundary" table).
+(d = 2), fan-in init, gradient flow with the shared library, every event re-integrated on a dense
+linear grid (last upward 1/2-crossing before the component first reaches 0.9), 6 seeds per point.
+- Raw runs: `/root/outputs/regime_map/<exp>/` (round 1) and `/root/outputs/regime_map_r2/` (round 2).
+- Tables: `experiments/regime_map/results/` (fix round: `results/fix1/`; report tables:
+  `results/report/`; round 2: `results/round2/`).
+- Derivations and status tags: `notes/regime_map.md`.
 
-![summary](../../experiments/regime_map/results/summary.png)
+**(a) sigma x chi, binary N = 4** (`sigma_chi_b4`, centred; notes 2.1, 3.2 item 1; tables
+`fix1/table_2_1_s2s.csv`, `fix1/lazy_summary_chi_b4.csv`).
 
-**(a) sigma x chi, binary N = 4 (K = 3)**: `sigma_chi_b4`, 8 chi x 19 sigma in [0.01, 40], centred,
-plain and two-copy models, 2736 runs, notes 2.1. Figure `phase_sigma_chi_b4_centred.png`.
+| chi | 3 | 4 | 6 | 9 | 12 | 18 | 24 | 36 |
+|---|---|---|---|---|---|---|---|---|
+| S2S boundary (per-seed rho = 3 crossings, geometric mean) | 0.237 | 0.099 | 0.137 | 0.136 | 0.075 | 0.072 | 0.067 | 0.043 |
 
-| chi | S2S boundary (per seed) | predicted from deepest run | rho exponent (S2S side) | kernel boundary (dK = 0.1) | rho 2/5 ratio | dK 0.05/0.2 ratio |
-|---|---|---|---|---|---|---|
-| 3 | 0.236 | 0.283 | -1.056 +- 0.022 | stalled (floor) | 2.15 | - |
-| 6 | 0.137 | 0.143 | -1.030 +- 0.004 | stalled (floor) | 2.22 | - |
-| 9 | 0.136 | 0.141 | -1.030 +- 0.004 | 3.01 | 2.27 | 1.89 |
-| 18 | 0.072 | 0.073 | -1.031 +- 0.000 | 1.66 | 2.30 | 1.46 |
-| 36 | 0.043 | 0.044 | -1.034 +- 0.003 | 1.04 | 2.34 | 1.33 |
+- Per-seed rho exponent on the S2S side: -1.02 to -1.05 (53/54 chi_b4 seeds: -1.015 to -1.031). Four
+  seeds with transients above 1/2 are steeper (-1.09 to -1.27).
+- Deep-S2S event widths are 0.466, 0.798 and 2.010 for s = 3, 2, 1, against the aligned theory's 0.46,
+  0.80 and 2.01.
+- Threshold sensitivity:
+  - rho* from 2 to 5 moves the S2S boundary by x2.13-2.34 (asymptotic prediction 2.5);
+  - delta_K* from 0.05 to 0.2 moves the lazy boundary by x1.30-1.35 at chi >= 32 (P7) and by x1.97 at
+    chi = 9.
+- Below the cut dimension (chi < 9) every stalled centred run ends at the Eckart-Young floor of
+  W_0 + W*. A run ending on a floor below 1e-3 counts as converged.
 
-**Threshold sensitivity.** Predictions: (5/2)^(1/(K-2)) = 2.5 for the S2S boundary; 4^(1/(Ks)) for
-the kernel boundary, with local slope s between 1 and 2 (theory P7: 1.3-1.36 at chi >= 32). The
-regime labels are robust to the thresholds; only the boundary positions shift, as predicted.
-
-**Realizability.** Below the cut dimension every stalled run (44) ends at the Eckart-Young minimum of
-W_0 + W* (to 1e-6).
-
-**(b) Boundaries vs chi, N = 4**: `chi_b4`, chi = 9..128, 1428 runs, notes 2.1b. Figure
-`boundaries_vs_chi_chi_b4.png`.
+**(b) Boundaries vs chi** (`chi_b4`, chi = 9-128; notes 2.1b, 3.2 item 2).
 
 | | slope vs chi | sigma sqrt(chi) at the boundary | theory |
 |---|---|---|---|
-| S2S boundary | -0.524 +- 0.045 (chi 16-128, 42 seeds) | 0.27-0.31 | not derived |
-| lazy boundary, centred | -0.522 +- 0.020 (chi 32-128) | 6.10-6.29 | -1/2; 6.50 (P5) |
-| lazy boundary, two-copy | -0.514 +- 0.023 | 4.83-4.96 | -1/2; 5.16 (P6) |
+| S2S boundary | -0.528 +- 0.053 (chi 16-128) | 0.27-0.33 (measured medians) | not derived |
+| lazy boundary, tensor kernel | -0.504 +- 0.011 (chi 32-128) | 6.40-6.56 | -1/2; 6.50 (P5) |
+| lazy boundary, two-copy, tensor kernel | -0.499 +- 0.014 (chi 32-128) | 5.06-5.21 | -1/2; 5.16 (P6) |
 
-**(c) sigma x K**: `sigma_K_centred_d2` and `sigma_K_d2`/`sigma_K_full_d2`, d = 2, binary N = 4, 8,
-16 and MPS N = 4..12; notes 2.3. Figures `phase_sigma_K_centred_d2_chi4.png` and `sigma_c_vs_K.png`
-(table `sigma_c_vs_K.csv`), and `stalls_vs_K.png`.
+- The two-copy / centred lazy boundary ratio is 0.79 (P6: 2^(-1/3)).
+- The rich window (lazy / S2S boundary) is 18-23x in sigma.
 
-| K | 3 | 4 | 5 | 6 | 7 | 8 | 10 | 12 | 15 |
-|---|---|---|---|---|---|---|---|---|---|
-| sigma_c, centred chi = 4 (median) | 0.17 | 0.49 | 0.61 | 0.80 | 0.75 | 1.01 | 0.90 | 0.92* | [0.63, 1.36]* |
-| law (0.01 d^(N/2))^(1/K) | 0.34 | 0.45 | 0.56 | 0.66 | 0.77 | 0.80 | 0.89 | 0.96 | 1.07 |
+**(c) sigma x K, round 1** (centred, d = 2, chi = 4; notes 2.3, 3.2 item 4, 3.4 E1-E2).
+- Resolved label boundaries: 0.17, 0.49, 0.61, 0.68 (4/6 seeds) and 0.75 at K = 3-7.
+- K = 8: 1.01 (5/6 seeds; floor-stalled runs classified by rho at deficient bonds).
+- The K = 10 and 12 brackets end at no-learning stalls, so they are not boundaries.
+- sigma^K = const and sigma^K / sqrt(D) = const are indistinguishable (chi^2 0.8 vs 0.6 on K = 4-7;
+  7.7 vs 6.9 on K = 4-10 with crossing-terminated brackets).
 
-\* Unresolved: the next run up is floor-stalled, so the boundary lies in the bracket.
+**(d) K = 7 maps (binary N = 8)** (notes 2.6).
 
-- In alpha = sigma^K the boundary is not K-stable (alpha_c from 0.005 to ~1).
-- In sigma^K / sqrt(D) it is: about 0.01 for K >= 4.
-- Hence sigma_c -> sqrt(d), not 1, with x_i ~ N(0, I_d). This is derived from theory R9's
-  effective-amplitude law plus the measured constant. The K = 15 bracket [0.63, 1.36] contains both
-  1 and the predicted 1.07.
-- The plain model agrees with the centred one up to K = 8. Beyond that it collapses W_0 first and
-  then learns S2S from a small residual, so it is not a test of H4.
-
-**(d) K = 7 maps (binary N = 8)**: `sigma_chi_b8` (d = 3) and `sigma_chi_b8_d2` (d = 2); notes 2.6.
-Figures `phase_sigma_chi_b8*.png`.
-
-| tree / bonds | S2S boundary (median) | large sigma |
+| tree / bonds | S2S side | large sigma |
 |---|---|---|
-| d = 3, chi = 24 (deficient) | 0.54 | rich at 0.65-0.93; no lazy regime (floor-stalled from 1.3) |
-| d = 2, chi = 4, 8, 16 | 0.83 | floor-stalled (deficient chi) or an unfinished, ill-conditioned lazy fit (square chi = 16; P9) |
-| d = 2, bonds 8/32 (2x cut dimension) | 0.53 | **lazy from ~1.4** (kernel boundary 1.45) |
+| d = 3, chi = 24 (deficient) | sigma_c <= 0.65 (bracket [0.45, 0.65]; one S2S run per seed in 5/6 seeds) | rich at 0.65-0.93; floor-stalled from 1.3 |
+| d = 2, bonds 8/32 (2x cut dimension) | 0.53 | lazy from ~1.4 (kernel boundary 1.45) |
 
-**(e) Large chi** (N = 4, sigma = 1.5): `large_chi_b4`, notes 2.5. Figure
-`large_chi_large_chi_b4_centred_sigma1.5.png`.
+**(e) Large chi** (N = 4, centred, sigma = 1.5, chi = 16-128; notes 2.5, 3.2 item 5).
 
-| slope vs chi (chi 16-128) | delta_K | delta_theta | root change |
+| slope vs chi | delta_K (tensor kernel) | delta_theta | root change |
 |---|---|---|---|
-| SP (theory -3, -3/2, -1) | -3.09 +- 0.09 | -1.63 +- 0.04 | -1.02 +- 0.03 |
-| NTK (-1, -1/2, -1) | -0.84 +- 0.06 | -0.52 +- 0.03 | -0.93 +- 0.02 |
-| muP-TTN (0, 0, -1/2) | +0.03 +- 0.06 | -0.06 +- 0.02 | -0.50 +- 0.01 |
+| SP (theory -3, -3/2, -1) | -3.02 +- 0.06 | -1.63 +- 0.04 | -1.02 +- 0.03 |
+| NTK (-1, -1/2, -1) | -0.79 +- 0.04 (-1.01 between chi = 64 and 128; levels 0.250, 0.124 vs R4's 0.240, 0.120) | -0.52 +- 0.03 | -0.93 +- 0.02 |
+| muP-TTN (0, 0, -1/2) | +0.085 +- 0.024 (levels 5.1-6.2 -> 6.2) | -0.06 +- 0.02 | -0.50 +- 0.01 |
 
-**(f) Imbalance** (N = 4): `imbalance_b4`, notes 2.4. Figure `phase_imbalance_b4.png`.
-- At chi = 16, alpha = 3.375, delta_K goes from 1e-4 (lambda = 0.01) to 0.167 (lambda = 1) and
-  saturates at 0.50-0.53.
-- Local slope 2.18 -> 1.27 (theory P20: 1.8-1.9; saturation predicted 0.6-0.7).
-- At chi = 24 a light root moves the lazy boundary down by ~100x in alpha.
-- The S2S region is largest near lambda = sqrt(chi).
+**(f) Imbalance** (N = 4; notes 2.4, 3.2 item 6; `fix1/imbalance_P20.csv`).
+- At chi = 16 and alpha = 3.375, the per-seed local slopes of the tensor-kernel delta_K vs lambda are
+  1.97 +- 0.01, 1.85 +- 0.06, 1.55 +- 0.11 and 1.22 +- 0.09.
+- delta_K saturates at 0.60 (seeds 0.51-0.75), the lower edge of P20's 0.6-0.7.
+- At chi = 24 a light root lowers the lazy boundary by up to ~100x in alpha, and a heavy root is lazy
+  from alpha = 10, as at balance.
 
-**(g) Stalls at chi = teacher rank** (stall test, K = 7, 8; notes 2.2).
+**(g) Stalls at chi = teacher rank** (K = 7, 8; notes 2.2): fan-in init leaves dead routes in
+12/18 (binary 8) and 16/18 (MPS 8) runs. Gauge-balanced init removes them, but the route still decays
+(P14).
 
-| tree, init (plain model) | converged | dead routes |
-|---|---|---|
-| binary 8, fan-in | 4/18 | 12/18 |
-| MPS 8, fan-in | 0/18 | 16/18 |
-| binary 8, gauge-balanced | 6/18 | 0 |
+**(h) Two-copy model** (notes 2.x, 3.2 item 7):
+- It has the same lazy residual as the centred model and a second-order kernel change, which gives the
+  0.79 boundary ratio.
+- At small sigma, events 1 and 2 merge. The largest min_i rho_i at sigma <= 0.016 is 7.1, 14.4 and 4.8
+  at chi = 18, 24, 36, so the two-copy model is not a cross-check of the S2S boundary.
 
-With gauge-balanced init the route still decays, which agrees with P14.
-
-**(h) Two-copy cross-check** (notes 2.x):
-- Same lazy residual as the centred model.
-- Kernel change is second order, so the lazy boundary is lower, as P6 predicts.
-- At small sigma the two mirror copies escape together and merge events 1-2, so the S2S side cannot
-  be compared at large chi.
-- At deficient bonds and large sigma it escapes from the lazy residual (lazy-then-rich).
-
-**(i) Checks** (notes 2.y):
-- scipy RK45 vs library DP5 on 1937 matched runs: labels agree 98.1%, delta_K to 0.08%.
+**(i) Checks** (notes 2.y, 3):
+- scipy RK45 vs library DP5 on 1937 runs: labels agree in 98.1%.
 - Conservation drift <= 1e-9.
-- Every N = 4 event width is resolved.
-- At K >= 7 deep in the S2S region widths are unresolved. rho there is a lower bound, and no label
-  depends on it.
-- The direct centred loss (small alpha) matches the cancellation-free form to 1e-4 in event times.
+- Local reruns vs remote runs (1,323 runs): identical labels.
+- The tensor kernel matches the library to 2e-16 (verified independently).
+
+**(j) Round 2: sigma_c(K) in realizable problems** (pre-registered in notes section 4; results in
+notes 4.7-4.8): ROUND2_PLACEHOLDER
+
+**(k) Tensor-kernel relabel of the round-1 N = 4 maps** (notes section 5): TENSOR_PLACEHOLDER
 
 ## What was done
 Commit hashes on `agent/regime-map`:
