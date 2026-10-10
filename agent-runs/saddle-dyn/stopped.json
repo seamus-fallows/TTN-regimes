@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791663225,
+  "reason": "done",
+  "outputs": {
+    "files": 5110,
+    "bytes": 73672782,
+    "sample": [
+      "saddle_dyn_try1_badevents/HA/C2/s005_x1e-05.json",
+      "saddle_dyn_try1_badevents/HA/C2/s009_x1e-05.json",
+      "saddle_dyn_try1_badevents/HA/C2/s000_x1.77828e-05.json",
+      "saddle_dyn_try1_badevents/HA/C2/s003_x1e-05.json",
+      "saddle_dyn_try1_badevents/HA/C2/s005_x1.77828e-05.json"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}
