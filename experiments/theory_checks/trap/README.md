@@ -66,8 +66,9 @@ the s2s_core classes from the committed `experiments/s2s_core/results/main_runs.
 | `results/gf_check_k4.csv` | full gradient flow on 12 directions at sigma = 0.003, 0.01, 0.03: observed class, escape times, final overlaps and route-end entries, with both predictions |
 | `results/fig_criteria.*`, `fig_probability.*`, `probability_vs_measured.csv` | figures |
 
-Compute: per-run predictions about 6 min on 6 processes; Monte Carlo about 10 min on 4; gradient-flow
-checks a few minutes each (single process).
+Compute: per-run predictions about 6 min on 6 processes; Monte Carlo about 10 min on 4 (4 min on 6);
+gradient-flow checks a few minutes each (single process); `k4_invariance.py` 30 s and `gf_check_k4.py`
+about 20 s per sigma on 6 processes.
 
 ## Known limitations (from the verification, 2026-10-10)
 
