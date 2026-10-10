@@ -1,0 +1,15 @@
+# Resolution check (final library): a subset of the r2_saddle runs repeated with the Recorder's fine
+# rows (merged_rows), to bound the event-time error of the log-row-only base runs.
+name: r2_saddle_fine
+out_tag: r2_saddle_fine
+trees:
+  4: [mps, binary, ht]
+  8: [mps, binary, ht]
+teachers:
+  4:
+    nonorth_c0.45: {kind: nonorth, args: {c: 0.45}}
+    randbin_303: {kind: random_binary, args: {teacher_seed: 303, decay: 1.0}}
+  8:
+    nonorth8_c0.7: {kind: nonorth, args: {c: 0.7}}
+sigmas: [0.001, 0.005, 0.02]
+seeds: [0, 2]

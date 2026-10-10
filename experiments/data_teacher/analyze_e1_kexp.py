@@ -1,26 +1,27 @@
-"""Escape degree from single runs (theory_saddles.md R5): on a plateau
-d log(da/dt) / d log a -> 2 - 2/k, k = number of cores the escape needs. Fitted for the first-learned
-component over a in [1e-4, 1e-2] in every run of the e1_order sweep. Prediction: k = K (3 for
-binary-4, 4 for MPS-4) for every variant, i.e. the covariance does not change the escape degree.
-Writes results/e1_kexp.csv."""
+"""Escape degree from single runs (theory_saddles.md R5 / P4): on a plateau
+d log(da/dt) / d log a -> 2 - 2/k - a/(1-a), k = number of cores the escape needs.
+Fitted for the first-learned component of every e1_order run, per sigma, over the window
+a in [max(10 |a(0)|, 1e-5), 1e-2] (review of round 1: the old fixed window [1e-4, 1e-2] overlapped
+the init transient at sigma = 0.2, where |a(0)| ~ 1e-4). Prediction: 2 - 2/K = 1.333 (binary-4),
+1.5 (MPS-4), the same for every covariance variant. Writes results/e1_kexp.csv."""
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from common import OUT_ROOT
+from common import OUT_ROOT, RESULTS
 
 HERE = Path(__file__).parent
 
 
-def local_exponent(t, a, lo=1e-4, hi=1e-2):
+def local_exponent(t, a, lo, hi=1e-2):
     m = (a > lo) & (a < hi)
     if m.sum() < 5:
-        return np.nan
+        return np.nan, int(m.sum())
     tt, aa = t[m], a[m]
     da = np.gradient(aa, tt)
     ok = da > 0
-    return np.polyfit(np.log(aa[ok]), np.log(da[ok]), 1)[0]
+    return np.polyfit(np.log(aa[ok]), np.log(da[ok]), 1)[0], int(m.sum())
 
 
 rows = []
@@ -30,11 +31,14 @@ for _, r in df.iterrows():
                 allow_pickle=True)
     t, a = d["t"], d["overlaps"][:, int(r["first"])]
     k_end = np.argmax(a > 0.5)
-    p = local_exponent(t[:k_end], a[:k_end])
-    rows.append(dict(tree=r.tree, variant=r.variant, sigma=r.sigma, exponent=p, k_est=2 / (2 - p)))
+    lo = max(10 * abs(a[0]), 1e-5)
+    p, npts = local_exponent(t[:k_end], a[:k_end], lo)
+    rows.append(dict(tree=r.tree, variant=r.variant, sigma=r.sigma, exponent=p, n_points=npts,
+                     window_lo=lo))
 out = pd.DataFrame(rows)
-agg = out.groupby(["tree", "variant"]).agg(n=("k_est", "size"), exponent=("exponent", "mean"),
-                                           exponent_sem=("exponent", "sem"),
-                                           k_est=("k_est", "median"))
-agg.to_csv(HERE / "results" / "e1_kexp.csv")
-print(agg.to_string())
+agg = out.groupby(["tree", "sigma", "variant"]).agg(n=("exponent", "count"), exponent=("exponent", "mean"),
+                                                    exponent_sem=("exponent", "sem"),
+                                                    points=("n_points", "median")).reset_index()
+agg["pred"] = agg["tree"].map({"binary": 4 / 3, "mps": 1.5})
+agg.to_csv(RESULTS / "e1_kexp.csv", index=False)
+print(agg.round(4).to_string())

@@ -22,7 +22,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT, map_cores
+from common import RESULTS, OUT_ROOT, map_cores
 from run_generic import dense_bond_spectra, expand
 from setups import build
 
@@ -48,7 +48,7 @@ def two_stage(problem, theta0, t_max, n_dense, stop_rel, rtol=1e-9, atol=1e-14):
         if k == "theta_end" or k not in b.data:
             continue
         xa, xb = np.asarray(a.data[k]), np.asarray(b.data[k])
-        if k == "t":
+        if k in ("t", "fine_t"):  # stage-B times are relative to t_a (fine rows too)
             xb = xb + t_a
         if xa.ndim == 0:
             continue
@@ -103,5 +103,5 @@ if __name__ == "__main__":
     jobs.sort(key=lambda j: j[3])
     with Pool(a.procs) as pool:
         rows = [r for r in pool.map(job, jobs, chunksize=1) if r is not None]
-    pd.DataFrame(rows).to_csv(HERE / "results" / f"{cfg['name']}_dense_summary.csv", index=False)
+    pd.DataFrame(rows).to_csv(RESULTS / f"{cfg['name']}_dense_summary.csv", index=False)
     print("wrote", len(rows), "rows")

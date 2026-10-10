@@ -16,6 +16,7 @@ import pandas as pd
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from common import RESULTS  # noqa: E402
 
 HERE = Path(__file__).parent
 
@@ -23,8 +24,8 @@ HERE = Path(__file__).parent
 def main():
     name, key = sys.argv[1], sys.argv[2]
     pred_csv = sys.argv[3] if len(sys.argv) > 3 else "rank1_predictions.csv"
-    df = pd.read_csv(HERE / "results" / f"{name}_plateaus.csv")
-    pr = pd.read_csv(HERE / "results" / pred_csv)
+    df = pd.read_csv(RESULTS / f"{name}_plateaus.csv")
+    pr = pd.read_csv(RESULTS / pred_csv)
     pr = pr[(pr.exp == name) & (pr.kind == "saddle")]
     groups = [k for k in ("alpha", "s2") if k in df and df[k].nunique() > 1]
     gvals = sorted(df[groups[0]].unique()) if groups else [None]
@@ -77,7 +78,7 @@ def main():
                 ax.legend(fontsize=7)
             row += 1
     fig.tight_layout()
-    fig.savefig(HERE / "results" / f"{name}_summary.png", dpi=100)
+    fig.savefig(RESULTS / f"{name}_summary.png", dpi=100)
 
 
 if __name__ == "__main__":

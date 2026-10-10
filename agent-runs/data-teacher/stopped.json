@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791599127,
+  "reason": "done",
+  "outputs": {
+    "files": 9197,
+    "bytes": 10125954503,
+    "sample": [
+      "data_teacher/e1_order_analysis.txt",
+      "data_teacher/rank1_predictions_e3_correlated.pt",
+      "data_teacher/rank1_predictions_e2_misaligned_e4a_nonorth.pt",
+      "data_teacher/pilots/pilot_reversal.pkl",
+      "data_teacher/pilots/pilot_reversal_binary.png"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}

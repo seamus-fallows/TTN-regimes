@@ -1,0 +1,15 @@
+# Round 2, item 1, supplement to r2_saddle.yaml. The N = 8 misaligned teacher there (theta = 20 deg,
+# alpha = 2) is degenerate: over 8 sites the product covariance suppresses the second component's
+# function-space weight by ~(0.4/1.6)^8, so its rank-1 saddle already has L = 0.0023 and binary8/ht8
+# runs do not escape within t = 1e7. At theta = 45 deg both components have the same marginal
+# variance and the whitened per-site overlap is (l1 - l2)/(l1 + l2) = 0.6 (alpha = 2): a balanced
+# misaligned teacher.
+name: r2_saddle
+trees:
+  8: [mps, binary, ht]
+teachers:
+  8:
+    misaligned8_45: {kind: misaligned, args: {theta_deg: 45, alpha: 2.0}}
+sigmas: [0.001, 0.002, 0.005, 0.01, 0.02, 0.05]
+seeds: [0, 5]
+out_tag: r2_saddle_b

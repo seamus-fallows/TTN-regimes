@@ -18,7 +18,7 @@ import yaml
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from common import OUT_ROOT  # noqa: E402
+from common import RESULTS, OUT_ROOT  # noqa: E402
 from correlated import dense_metric_loss_fn, moment_matrix, sample_correlated, site_cross_cov  # noqa: E402
 from run_generic import expand  # noqa: E402
 from setups import build  # noqa: E402
@@ -86,10 +86,10 @@ def main():
                title=f"{TREE}-4, rho={RHO}, sigma={SIGMA}, seed {seed}", xlim=(0, T_MAX))
         ax.legend(fontsize=7)
     fig.tight_layout()
-    fig.savefig(HERE / "results" / "e3_sgd_check.png", dpi=110)
+    fig.savefig(RESULTS / "e3_sgd_check.png", dpi=110)
     import pandas as pd
     df = pd.DataFrame(rows)
-    df.to_csv(HERE / "results" / "e3_sgd_check.csv", index=False)
+    df.to_csv(RESULTS / "e3_sgd_check.csv", index=False)
     print(df.to_string())
 
 

@@ -7,9 +7,9 @@ base: {kind: nonorth, n_sites: 4, d: 4, chi: 4, s2: 0.7, overlap: 0.0}
 sweep:
   overlap: [0.0, 0.05, 0.2, 0.45]
 trees: [mps]
-sigmas: {mps: [0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]}
+sigmas: {mps: [0.0003, 0.001, 0.003, 0.03, 0.0474, 0.075, 0.1186, 0.1875, 0.3]}
 seeds: [0, 10]
-t_max: {mps: 1.0e+6}
+t_max: {mps: 1.0e+9}
 n_rec: 3000
 rtol: 1.0e-9
 atol: 1.0e-14

@@ -21,7 +21,7 @@ import pandas as pd
 import torch
 import yaml
 
-from common import OUT_ROOT
+from common import RESULTS, OUT_ROOT
 from run_generic import expand
 from setups import build
 
@@ -111,7 +111,7 @@ def main():
                     r.pop("spectral_events", None)
                     rows.append(r)
     df = pd.DataFrame(rows)
-    df.to_csv(HERE / "results" / f"{name}_plateaus.csv", index=False)
+    df.to_csv(RESULTS / f"{name}_plateaus.csv", index=False)
     keys = [k for k in ("alpha", "theta_deg", "variant", "s2", "overlap", "rho") if k in df]
     cols = [c for c in ("plateau_rel", "level_rel_err", "plateau_duration", "cos_race_early",
                         "cos_saddle_early", "cos_saddle_plateau") if c in df]

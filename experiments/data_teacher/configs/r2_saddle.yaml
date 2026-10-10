@@ -1,0 +1,28 @@
+# Round 2, item 1: saddle-start protocol (r2_saddle_runs.py). Same generic teachers (d = 2) on
+# mps / binary / ht students; start at the exact balanced rank-1 saddle + fan-in noise sigma.
+# N = 4: nonorth c = 0.2, 0.45 (weights 1, 0.7); misaligned covariance theta = 20 deg (alpha = 1);
+#        random binary-tree teachers (seeds 302, 303, decay 1) and a random MPS teacher (301, decay 1.5).
+# N = 8: nonorth c = 0.45, 0.7 (the MPS 2-core rate scales like c^(N-2), so c = 0.2 is nearly odeco at
+#        N = 8); misaligned theta = 20 deg with alpha = 2 (whitened per-site overlap 0.43; alpha = 1
+#        gives 0.22); random binary (302, 303) and MPS (303, decay 1.5) teachers.
+name: r2_saddle
+trees:
+  4: [mps, binary, ht]
+  8: [mps, binary, ht]
+teachers:
+  4:
+    nonorth_c0.2: {kind: nonorth, args: {c: 0.2}}
+    nonorth_c0.45: {kind: nonorth, args: {c: 0.45}}
+    misaligned_20: {kind: misaligned, args: {theta_deg: 20, alpha: 1.0}}
+    randbin_302: {kind: random_binary, args: {teacher_seed: 302, decay: 1.0}}
+    randbin_303: {kind: random_binary, args: {teacher_seed: 303, decay: 1.0}}
+    randmps_301: {kind: random_mps, args: {teacher_seed: 301, decay: 1.5}}
+  8:
+    nonorth8_c0.45: {kind: nonorth, args: {c: 0.45}}
+    nonorth8_c0.7: {kind: nonorth, args: {c: 0.7}}
+    misaligned8_20: {kind: misaligned, args: {theta_deg: 20, alpha: 2.0}}
+    randbin8_302: {kind: random_binary, args: {teacher_seed: 302, decay: 1.0}}
+    randbin8_303: {kind: random_binary, args: {teacher_seed: 303, decay: 1.0}}
+    randmps8_303: {kind: random_mps, args: {teacher_seed: 303, decay: 1.5}}
+sigmas: [0.001, 0.002, 0.005, 0.01, 0.02, 0.05]
+seeds: [0, 5]
