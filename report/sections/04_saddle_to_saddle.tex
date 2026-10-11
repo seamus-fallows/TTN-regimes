@@ -520,7 +520,17 @@ initialization), and then forgets the first component \empirical{} (seen from sm
 matched control with weights $0.6$, which meets the condition and has order $5$, the small-initialization exponent
 is about $3$ in some seeds and about $4$ in others, unexplained (\cref{sec:s2s-failure}).
 
-\placeholder{Pending (saddle-dyn): the dynamics test of the theorem; one sentence here when it lands.}
+A pre-registered test of these escape laws (runs started at the saddle plus a perturbation of size
+$\epsilon=10^{-1}$--$10^{-5}$, 12 directions per case, and runs from small initialization) supports the theorem where
+its order $p$ is below $k^*$ and the fit window lies below the crossover: the measured exponent of $\epsilon^{-(p-2)}$
+is $2.001\pm0.001$ (MPS6 pair-star and MPS6 $110001$, $p=4$) and $3.996$--$3.998$ (HT4 and binary8 wrong-order
+saddles, $p=6$, $k^*=7$), every direction within $0.05$, while the route law $k^*-2$ fits $10^3$--$10^5$ times worse;
+from small initialization the pair-star gives $2.002\pm0.001$ (16 of 40 seeds visit the saddle) \empirical{}
+(not independently verified). Where the window reaches above the crossover the result is mixed: binary8 at
+weight ratio $0.8$ is inconclusive (directions split between $4$ and the route law $5$), and an HT4 case fails the
+registered rule (8 of 11 directions at $5$). Controls with $p=k^*$ are inconclusive because many directions end on
+dead routes; those that escape never escape faster than the route law (source: \texttt{experiments/saddle\_dyn},
+pre-registration in \texttt{notes/saddle\_dyn.md}).
 
 \paragraph{Which experiments satisfy the condition.}
 Every two-component fit of \cref{sec:s2s-locality} (the runs that learn the larger component first), and every

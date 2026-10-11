@@ -6,36 +6,11 @@ checked against experiments. Main focus: saddle-to-saddle. End product: LaTeX re
 
 Read this file first; it is how the lead and all agents recover context. Keep it current.
 
-## HANDOFF (2026-10-10, ~23:00 UTC) — where things stand and what is left
+## Status (2026-10-11): FINAL
 
-The project is essentially complete. The report (`report/main.pdf`, 164 pages, builds cleanly) has every section
-written, two claims reviews + a readability review + a six-lens final review (with adversarial verification)
-applied, and a reconciliation pass. Everything is committed and pushed (main). Three things remain:
-
-1. **Vast 2FA login (needs the user).** Vast's session expired, so crab-student cannot see or control the last
-   machine (`saddle-dyn`, stopped itself after finishing at 19:13 UTC; costs disk only). The user runs
-   `vastai tfa login --method-type totp -c <code from the authenticator>`. Then: `crab-student start saddle-dyn
-   --json`; copy its raw outputs: from `data/`, `ssh -o BatchMode=yes crab-student-saddle-dyn "tar -C /root/outputs
-   -cf - saddle_dyn" | tar -xf -`; compare `find saddle_dyn -type f -printf '%p	%s
-'` on both sides; check
-   `git rev-list --count main..origin/agent/saddle-dyn` = 0; then `crab-student delete saddle-dyn --force`
-   (standing OK from the user for exactly this sequence). Record the session cost in notes/spend.md.
-2. **Verify saddle-dyn, then fill three placeholders.** saddle-dyn (merged as 6555568, UNVERIFIED) tests the
-   dynamical consequence of the saddle-order theorem. Its own summary (agent-runs/saddle-dyn/REPORT.md): where the
-   theorem lowers the order and the window is below the crossover, the measured exponent matches the theorem to
-   three digits in 5 cells plus the small-init pair-star (2.001-3.998; every seed within 0.05; the route law fits
-   1e3-2e5 worse); binary8 rho = 0.8 inconclusive and HT4S refuted by the registered rule (window above the
-   crossover); controls inconclusive (dead routes). Verify it first: re-run the workflow saved in
-   `notes/handoff/verify_saddle_dyn.workflow.js` (integrity lens + independent numerics lens + synthesis into
-   `notes/reviews/saddle_dyn_verification.md`; drop the raw-copy wait condition if the copy is done). Then put its
-   safe-to-cite wording into the three placeholders: Sec. 1 (finding on the saddle-order theorem), Sec. 4
-   subsection `sec:s2s-saddle-order`, App. A.4. Rebuild (`bash report/build.sh`; commit only after a pass).
-3. **Final bookkeeping.** Update "Key findings" below (saddle-order theorem + its dynamics test; trap criterion
-   notes/theory_trap.md v1.2; regime-map round 2; real-data pre-registered order test), the spend log, the
-   decision log; commit, push.
-
-Uncommitted-by-design: nothing. The verifier runs in experiments/theory_checks/saddle_order_verify/results/ are
-committed as they stood at shutdown (some seeds were still running and are incomplete).
+The report (`report/main.pdf`, 164 pages) is final. The saddle-dyn result is in Sec. 1, Sec. 4 (sec:s2s-saddle-order)
+and App. A.4, tagged empirical and marked as not independently verified (verification skipped to save cost).
+All Vast machines are deleted; saddle-dyn's raw outputs were not copied (summary CSVs are in experiments/saddle_dyn/).
 
 ## Environment and conventions
 
