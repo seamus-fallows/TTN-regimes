@@ -1,4 +1,4 @@
-% summary.tex -- short, plain-language version of the report (main text + appendix of figures).
+% summary.tex -- short version of the report for readers who know DLN training dynamics but not TTNs.
 % Build: from report/, pdflatex summary; bibtex summary; pdflatex summary; pdflatex summary
 \documentclass[11pt]{article}
 \usepackage[T1]{fontenc}
@@ -23,7 +23,7 @@
 % evidence labels
 \newcommand{\ev}[1]{\textsf{\small[#1]}}
 
-\title{How tree tensor networks learn: a plain-language summary}
+\title{Training dynamics of tree tensor networks: summary of findings}
 \author{Short version of the full report (\texttt{report/main.pdf})}
 \date{October 2026}
 
@@ -38,68 +38,56 @@ other models and we worked out what it does in tree networks; \KNOWN{} means it 
 approximations), \ev{empirical} (measured in simulations), \ev{conjecture} (a hypothesis we have not tested).
 Every simulation claim was re-checked by an independent agent, except one, which is marked.
 
-\section{The setting in plain terms}
+\section{Setting: what a tree tensor network is}
 
-\paragraph{The model.} The input is $N$ vectors $x_0,\dots,x_{N-1}\in\mathbb R^d$, for example $N$ pixels.
-The model's output is a weighted sum over all products of one entry from each vector:
+\paragraph{The model.} The input is $N$ vectors $x_0,\dots,x_{N-1}\in\mathbb R^d$ (e.g.\ one per pixel), and
+the model is linear in their tensor product:
 \begin{equation}
-f(x)=\sum_{i_0,\dots,i_{N-1}} W_{i_0 i_1\cdots i_{N-1}}\; x_0[i_0]\,x_1[i_1]\cdots x_{N-1}[i_{N-1}] .
+f(x)=\langle W,\;x_0\otimes x_1\otimes\dots\otimes x_{N-1}\rangle,\qquad W\in(\mathbb R^d)^{\otimes N}.
 \end{equation}
-The weight array $W$ has $d^N$ entries, which is too many to store, so a \textbf{tree tensor network}
-(TTN) builds $W$ from $K$ small arrays called \textbf{cores}. The cores sit at the nodes of a tree. Each
-input position (a \textbf{site}) attaches to one core, and neighbouring cores are joined by a shared index
-of size $\chi$, the \textbf{bond dimension}. Summing over the shared indices gives $W$. A larger $\chi$ lets the
-network represent more tensors. We compare three tree shapes (Fig.~\ref{fig:route}):
+$W$ has $d^N$ entries, so a \textbf{tree tensor network} (TTN) parameterizes it by $K$ small tensors called
+\textbf{cores}, placed on the nodes of a tree. Each input position $n$ (a \textbf{site}) is an open index
+of one core. Each tree edge (a \textbf{bond}) is an index of size $\chi$ (the \textbf{bond dimension}) shared
+by the two cores it joins, and $W$ is obtained by summing over all bond indices. The simplest example is the
+\textbf{MPS} (a chain, one core per site), where each entry is a product of matrices:
+\begin{equation}
+W_{i_0 i_1\cdots i_{N-1}}=A_0[i_0]\,A_1[i_1]\cdots A_{N-1}[i_{N-1}],\qquad A_n[i]\in\mathbb R^{\chi\times\chi}
+\ \ (\text{vectors at the two ends}).
+\end{equation}
+Cutting a bond splits the sites into two groups. Reshaping $W$ into a matrix along that split gives a matrix
+of rank at most $\chi$, the \textbf{bond rank}. So $\chi$ controls which tensors the network can represent.
+
+A TTN is multilinear of degree $K$ in its cores, like a depth-$K$ linear network. The difference is that the
+cores are arranged on a tree, and each core touches only some of the inputs. We compare three tree shapes
+(Fig.~\ref{fig:route}):
 \begin{itemize}
-\item \textbf{MPS} (a chain): one core per site, $K=N$.
-\item \textbf{Binary tree}: sites attach in pairs to the bottom cores, with $K=N-1$.
-\item \textbf{Hierarchical Tucker (HT)}: every site has its own leaf core, with a binary tree above,
-$K=2N-1$. The upper cores carry no sites.
+\item \textbf{MPS}: a chain, $K=N$.
+\item \textbf{Binary tree}: sites attach in pairs to the bottom cores, $K=N-1$.
+\item \textbf{Hierarchical Tucker (HT)}: one leaf core per site (a $d\times\chi$ matrix) with a binary tree
+above, $K=2N-1$. Its internal cores carry no sites.
 \end{itemize}
 
-\paragraph{The task.} A \emph{teacher} tensor $W^*$ is a sum of $R$ \textbf{components} with weights
-$s_1>s_2>\dots$:
+\paragraph{Task and training.} The teacher is a sum of $R$ rank-one \textbf{components},
 \begin{equation}
-W^*=\sum_{r=1}^R s_r\, u^{(r)}_0\otimes u^{(r)}_1\otimes\dots\otimes u^{(r)}_{N-1}.
+W^*=\sum_{r=1}^R s_r\, u^{(r)}_0\otimes\dots\otimes u^{(r)}_{N-1},\qquad s_1>s_2>\dots,
 \end{equation}
-In our main examples each $u^{(r)}_n$ is a basis vector. A component can then be written as a string such
-as $00011000$, which lists the basis vector used at each site. With whitened Gaussian inputs, the expected
-squared error is, up to a constant,
-\begin{equation}
-L=\tfrac12\,\lVert W-W^*\rVert^2 .
-\end{equation}
+and the loss is the population loss with whitened Gaussian inputs, $L=\tfrac12\lVert W-W^*\rVert^2$ (up to a
+constant). In our main examples every $u^{(r)}_n$ is a basis vector, so a component can be written as a string
+such as $00011000$. We train by gradient flow from random cores of scale $\sigma$ (fan-in Gaussian), so
+$W$ starts at size $\sim\sigma^K$.
 
-\paragraph{Training.} We use \textbf{gradient flow}, $\dot\theta=-\nabla L(\theta)$ (gradient descent with
-very small steps), where $\theta$ collects all core entries. The cores start random with overall size
-$\sigma$, the \textbf{initialization scale}. The output $f$ is a product of $K$ cores, so it starts at a
-size of roughly $\sigma^K$.
-
-\paragraph{Vocabulary for the dynamics.}
-\begin{itemize}
-\item \textbf{Plateau}: a long stretch in which the loss barely moves. \textbf{Saddle-to-saddle} training
-means the loss falls in steps, with one plateau before each component is learned.
-\item \textbf{Saddle}: a point where the gradient is zero but which is not a minimum. Plateaus happen near
-saddles.
-\item \textbf{Order of a saddle}: the smallest $p$ such that moving a distance $\varepsilon$ in some
-direction lowers the loss by about $\varepsilon^p$. Order $p=2$ is a \textbf{strict} saddle, where some
-direction curves downward. For $p\ge3$ the loss is flat to second order, so escape is much slower.
-\item \textbf{Lazy regime}: the weights barely move during training, and the network behaves like a linear
-model with fixed features (a ``kernel''). \textbf{Rich regime}: the features change, but without clear steps.
-\end{itemize}
-
-\paragraph{The one equation behind most results.} Suppose $m$ cores must all grow from size $\sim\sigma$ for
-the loss to fall, while the other cores are already of size $O(1)$. The gradient on each small core is a
-product of the other $m-1$ small cores, so their common size $a$ obeys
+\paragraph{The equation behind most results.} This is the standard small-initialization argument for
+products of weights. Suppose $m$ cores must all grow from size $\sim\sigma$ in some direction while the
+others are $O(1)$. Their common size $a$ then obeys
 \begin{equation}\label{eq:grow}
-\dot a\approx c\,a^{m-1},\qquad a(0)\sim\sigma
+\dot a\approx c\,a^{m-1},\quad a(0)\sim\sigma
 \quad\Longrightarrow\quad
-T_{\rm plateau}\approx\begin{cases}O(1) & m=1,\\[2pt] \dfrac{\ln(1/\sigma)}{c} & m=2,\\[6pt]
-\dfrac{\sigma^{-(m-2)}}{(m-2)\,c} & m\ge3.\end{cases}
+T_{\rm plateau}\approx\begin{cases}O(1) & m=1,\\[2pt] \ln(1/\sigma)/c & m=2,\\[3pt]
+\sigma^{-(m-2)}/\big((m-2)c\big) & m\ge3,\end{cases}
 \end{equation}
-For $m\ge3$ the solution blows up at a finite time, so the size stays near $\sigma$ for a long time and then
-shoots up: this is the plateau and the sudden drop. Here $c$ is proportional to the weight of the component
-being learned. Equation~\eqref{eq:grow} is standard for products of weights. Our results concern
-\emph{what $m$ is} in a tree network, \emph{which} cores are small, and when the simple picture fails.
+with $c\propto$ the weight being learned. Equivalently, the saddle has order $m$: the loss first decreases at
+order $\varepsilon^m$. What is specific to TTNs is \emph{what $m$ is}: which cores are small at each saddle,
+how that depends on the tree, and when this picture fails.
 
 \section{Results at a glance}
 
