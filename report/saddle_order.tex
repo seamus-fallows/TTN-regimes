@@ -1,0 +1,538 @@
+% saddle_order.tex -- self-contained statement and proof of the main result: the order of learned saddles
+% in tree tensor networks and the plateau laws it implies.
+% Sources: notes/theory_saddle_order.md v2 (verified twice), report App. A.2-A.4, experiments/locality,
+% experiments/saddle_dyn. Build: from report/, pdflatex saddle_order; bibtex saddle_order; pdflatex x2.
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage[round,authoryear]{natbib}
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=OliveGreen,urlcolor=RoyalPurple]{hyperref}
+\setlist{itemsep=2pt,topsep=3pt}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\St}{\mathrm{St}}
+\newcommand{\ord}{\mathrm{ord}}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+
+\title{The order of learned saddles in tree tensor networks\\[2pt]
+\large and the plateau laws of saddle-to-saddle training}
+\author{}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+\vspace{-2em}
+
+\begin{abstract}
+Gradient flow on a tree tensor network (TTN) from small initialization learns a low-rank target one
+component at a time, resting near a saddle before each new component. How long it rests is governed by
+the \emph{order} of the saddle: the power at which the loss first decreases away from it. We determine this
+order exactly at every saddle that represents one learned component. It is the smaller of two
+graph-theoretic numbers: the size $k^*$ of the smallest Steiner subtree of the tree that connects the cores
+on which a remaining component differs from the learned one, and twice the smallest level $\ell^*$ at which
+a weighted ``piggyback'' graph built from the remaining components has spectral radius above the learned
+weight. In particular the order is $k^*$ whenever the remaining components are individually and jointly
+weaker than the learned one in this spectral sense, which always holds for two components learned in weight
+order. The order is a property of the tree, so the same target has saddles of different order on different
+trees. At leading order, the escape from a saddle of order $p$ obeys $\dot b=c\,b^{p-1}$, so the plateau
+lasts $\propto\ln(1/\sigma)$ for $p=2$ and $\propto\sigma^{-(p-2)}$ for $p\ge3$; simulations on nine trees
+confirm these laws.
+\end{abstract}
+
+\section{Background and summary}
+
+For deep linear networks (DLNs) trained from small initialization, saddle-to-saddle dynamics is well
+understood: the network learns the singular modes of the target one at a time, and every plateau lasts
+$\propto\sigma^{-(K-2)}$, where $K$ is the depth and $\sigma$ the initialization scale
+\citep{saxe2014exact,jacot2022saddletosaddle}. The exponent has a simple origin. Every layer starts at size
+$\sigma$, the output is a product of all $K$ layers, so a product of $K$ small numbers must grow, and
+$\dot a\propto a^{K-1}$ from $a(0)=\sigma$ blows up after a time $\propto\sigma^{-(K-2)}$. In a DLN every mode
+needs every layer, so every plateau has the same exponent.
+
+A TTN is also multilinear in $K$ factors (its cores), but each core touches only some of the inputs. After
+the first component is learned most cores are large, and adding the next component only requires some of
+them to change from small values. The question is how many, and whether anything else can lower the loss
+faster. The answer is the order of the saddle at which the flow rests.
+
+\paragraph{The result in words.} Let one component $j$ with weight $s_j$ be learned. For each remaining
+component $r$, mark the cores carrying the sites where $r$ differs from $j$, and let $k_r$ be the number of
+cores in the smallest subtree connecting them (their Steiner subtree). Let $k^*=\min_rk_r$. Then
+(Theorem~\ref{thm:main}):
+\begin{itemize}
+\item the loss can always be lowered at order $k^*$, by opening a new bond channel on the cores of that subtree;
+\item it can be lowered at a lower order $2\ell<k^*$ exactly when some set of remaining components, each
+split into two pieces of at most $\ell$ cores, couples with total strength above $s_j$ (a spectral condition on a
+weighted graph, Definition~\ref{def:graph});
+\item nothing else lowers the loss faster. The saddle order is $\min(k^*,2\ell^*)$.
+\end{itemize}
+For two components learned in weight order the coupling is too weak, so the order is $k^*$; for $k^*\le4$ the
+order is $k^*$ unless the saddle is strict. When the spectral condition holds, the descent at order
+$2\ell^*$ uses a direction that is not a teacher component (Example~\ref{ex:pairstar}).
+
+\section{Setting}
+
+\paragraph{Tree tensor networks.} Let $T$ be a tree with node set $V$, $\lvert V\rvert=K$. Core $v\in V$ is a
+tensor $G_v$ with one physical leg of dimension $D_v$ and one bond leg per tree edge at $v$; bond $e$ has
+dimension $\chi_e$. Contracting all bond legs gives $W(\theta)\in\bigotimes_v\mathbb R^{D_v}$, where $\theta$
+collects all core entries. We call the input modes \emph{sites}; each core carries the sites of its physical leg
+($D_v=d^{n_v}$ for $n_v$ sites of dimension $d$, and $D_v=1$ for a core without sites). Examples: the MPS
+(a chain with one site per core), the binary tree (sites in pairs on the bottom cores), and the hierarchical
+Tucker (HT) tree (one leaf core per site, internal cores without sites).
+
+\paragraph{Teacher and loss.} The network computes $f(x)=\ip{W}{x_0\otimes\dots\otimes x_{N-1}}$, and labels are
+generated by a teacher tensor $W^*$ in the same way. For whitened Gaussian inputs the population loss is, up to
+a constant,
+\begin{equation}
+L(\theta)=\tfrac12\lVert W(\theta)-W^*\rVert^2 .
+\end{equation}
+A \emph{pattern teacher} is $W^*=\sum_rs_rU_r$, where each $U_r$ is a tensor product of standard basis vectors,
+one per site, the patterns are distinct, and $s_r>0$. A pattern is written as a string of basis indices,
+e.g.\ $110010$. Distinct patterns are orthonormal.
+
+\paragraph{Learned saddles.} Fix a component $j$. Let $q_v\in\mathbb R^{D_v}$ be the pattern of $j$ on the sites of
+$v$, so $U_j=\bigotimes_vq_v$. The \emph{learned saddle} $\theta_S$ has cores
+\begin{equation}
+G_v=a_v\,q_v\otimes e_0\otimes\dots\otimes e_0,\qquad \textstyle\prod_va_v=s_j,
+\end{equation}
+($e_0$ the first basis vector of each bond leg), so $W(\theta_S)=s_jU_j$. Every critical point representing
+$s_jU_j$ is gauge-equivalent to one of these. Core entries whose bond indices are all $0$ are \emph{old};
+the others are \emph{new}. The residual is $\mathcal R=W^*-s_jU_j=\sum_{r\ne j}s_rU_r$, and
+$L_S=L(\theta_S)=\tfrac12\lVert\mathcal R\rVert^2$.
+
+\paragraph{Saddle order.} The order of a critical point $\theta_S$ is the largest $p$ such that
+\begin{equation}
+L(\theta)-L_S\ \ge\ -C\,\lVert\theta-\theta_S\rVert^{p}\qquad\text{for all $\theta$ near $\theta_S$},
+\end{equation}
+for some $C>0$. A strict saddle has order $2$. Since $L$ is a polynomial, the order equals the smallest
+power $p$ for which some curve $\theta(t)$ with $\lVert\theta(t)-\theta_S\rVert\le t$ has
+$L(\theta(t))-L_S\le-ct^p$ (by the curve selection lemma for semialgebraic sets). Measuring distance to the
+gauge orbit of $\theta_S$ instead gives the same order (the gauge acts linearly and preserves $L$).
+
+\paragraph{Steiner subtrees and routes.} For a set $B\subseteq V$, $\St(B)$ is the smallest subtree of $T$
+containing $B$, and $\deg B=\lvert\St(B)\rvert$ (so $\deg\{v\}=1$). For a component $r\ne j$ let $D_r$ be the set of
+sites where the patterns of $r$ and $j$ differ, and $V_r$ the set of cores carrying them. Define
+\begin{equation}
+k_r=\deg V_r,\qquad k^*=\min_{r\ne j}k_r .
+\end{equation}
+Figure~\ref{fig:route} shows an example. $\theta_S$ is critical iff $k^*\ge2$ (Lemma~\ref{lem:sectors}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  core/.style={circle,draw,minimum size=5.2mm,inner sep=0pt},
+  hot/.style={core,fill=orange!70},
+  st/.style={font=\scriptsize,inner sep=1pt},
+  dif/.style={st,text=red,font=\scriptsize\bfseries}]
+\node[font=\small] at (2.8,1.0) {MPS: $k_r=2$};
+\foreach \i in {0,...,7} {
+  \ifnum\i=3 \node[hot] (m\i) at (0.8*\i,0) {};
+  \else\ifnum\i=4 \node[hot] (m\i) at (0.8*\i,0) {};
+  \else \node[core] (m\i) at (0.8*\i,0) {}; \fi\fi
+}
+\foreach \i in {0,1,2,5,6,7} { \node[st] (y\i) at (0.8*\i,-0.75) {$\i$}; \draw (m\i) -- (y\i); }
+\foreach \i in {3,4} { \node[dif] (y\i) at (0.8*\i,-0.75) {$\i$}; \draw (m\i) -- (y\i); }
+\foreach \i [evaluate=\i as \j using int(\i+1)] in {0,...,6} { \draw (m\i) -- (m\j); }
+\begin{scope}[xshift=7.6cm,yshift=-0.9cm]
+\node[font=\small] at (2.1,2.95) {binary tree: $k_r=5$};
+\foreach \i in {0,...,7} {
+  \ifnum\i=3 \node[dif] (b\i) at (0.6*\i,0) {$\i$};
+  \else\ifnum\i=4 \node[dif] (b\i) at (0.6*\i,0) {$\i$};
+  \else \node[st] (b\i) at (0.6*\i,0) {$\i$}; \fi\fi
+}
+\node[core] (A0) at (0.3,0.8) {}; \node[hot] (A1) at (1.5,0.8) {};
+\node[hot]  (A2) at (2.7,0.8) {}; \node[core] (A3) at (3.9,0.8) {};
+\node[hot] (B0) at (0.9,1.6) {}; \node[hot] (B1) at (3.3,1.6) {};
+\node[hot] (Rt) at (2.1,2.35) {};
+\draw (b0)--(A0) (b1)--(A0) (b2)--(A1) (b3)--(A1) (b4)--(A2) (b5)--(A2) (b6)--(A3) (b7)--(A3);
+\draw (A0)--(B0) (A1)--(B0) (A2)--(B1) (A3)--(B1) (B0)--(Rt) (B1)--(Rt);
+\end{scope}
+\end{tikzpicture}
+\caption{Learned $j=00000000$, remaining $r=00011000$: $D_r=\{3,4\}$ (red sites). Orange: $\St(V_r)$. On an MPS
+the two sites sit on adjacent cores ($k_r=2$); on a binary tree the subtree passes through the root
+($k_r=5$); on an HT tree $k_r=7$.}
+\label{fig:route}
+\end{figure}
+
+\paragraph{The piggyback graphs.} The second ingredient measures how strongly the remaining components can be
+fitted jointly by pieces that live on few cores.
+
+\begin{definition}[Piggyback graph at level $\ell$]\label{def:graph}
+For $\ell\ge1$, the graph $\mathcal G_\ell$ has as nodes the pairs $(B,\pi)$ where $B\subseteq V$ is nonempty with
+$\deg B\le\ell$, and $\pi$ is a pattern on the sites of $B$ that differs from the pattern of $j$ on every core of
+$B$. For every component $r\ne j$ and every split $V_r=B_1\sqcup B_2$ into two nonempty sets with
+$\deg B_1,\deg B_2\le\ell$, it has an edge of weight $s_r$ between $(B_1,\pi_r|_{B_1})$ and $(B_2,\pi_r|_{B_2})$,
+where $\pi_r|_B$ is the pattern of $r$ on the sites of $B$. Let $\Lambda_\ell$ be the spectral radius of its
+weighted adjacency matrix $\Gamma^{(\ell)}$ ($\Lambda_\ell=0$ if it has no edges), and
+\begin{equation}
+\ell^*=\min\{\ell<k^*/2:\ \Lambda_\ell>s_j\}\qquad(\ell^*=\infty\text{ if no such }\ell).
+\end{equation}
+\end{definition}
+A node $(\{v\},\pi)$ stands for rotating the learned vector of core $v$ toward $\pi$ (old entries); a node with
+$\lvert B\rvert\ge2$ stands for new entries on the cores of $\St(B)$ that produce $\pi$ on $B$. An edge says
+that the two pieces together produce component $r$. $\mathcal G_\ell$ is an induced subgraph of $\mathcal G_{\ell+1}$, so
+$\Lambda_\ell$ is nondecreasing in $\ell$. $\mathcal G_1$ is the classical piggyback graph: its edges are the components
+that differ from $j$ on exactly two cores.
+
+\section{Main result}
+
+\begin{theorem}[Order of a learned saddle]\label{thm:main}
+Let $W^*$ be a pattern teacher, $\theta_S$ a learned saddle of component $j$ with $k^*\ge2$, and assume
+\begin{enumerate}[label=(\alph*)]
+\item (genericity) $\Lambda_\ell\ne s_j$ for every $\ell<k^*/2$;
+\item (bond dimension) $\chi_e\ge2$ on the bonds of $\St(V_r)$ for some $r$ with $k_r=k^*$; and, if
+$\ell^*<\infty$, some node set $X$ of $\mathcal G_{\ell^*}$ with spectral radius above $s_j$ satisfies, on every bond
+$e$, $\chi_e-1\ge\#\{(B,\pi)\in X:\lvert B\rvert\ge2,\ e\in\St(B)\}$.
+\end{enumerate}
+Then
+\begin{equation}\label{eq:main}
+\ord(\theta_S)=\min(k^*,\,2\ell^*).
+\end{equation}
+\end{theorem}
+
+The theorem combines three bounds, proved in Section~\ref{sec:proofs}:
+\begin{itemize}
+\item $\ord\le k^*$: the \emph{route curve}, new entries on $\St(V_r)$, gives
+$L-L_S=-s_rs_j^{(K-k^*)/K}t^{k^*}+O(t^{2k^*})$ (Proposition~\ref{prop:route});
+\item $\ord\ge\min(k^*,2\ell)$ whenever $\Lambda_{\ell-1}<s_j$ (Proposition~\ref{prop:lower}); this holds for
+general residuals, not only pattern teachers;
+\item $\ord\le2\ell$ whenever $\Lambda_\ell>s_j$ and $\ell<k^*/2$ (Proposition~\ref{prop:sharp}).
+\end{itemize}
+Assumption (a) excludes the boundary cases $\Lambda_\ell=s_j$, where the bounds do not meet; (b) provides the
+unused bond channels that the descent curves need.
+
+\begin{corollary}\label{cor:cases}
+Under the assumptions of Theorem~\ref{thm:main}:
+\begin{enumerate}[label=(\roman*)]
+\item If $k^*=2$, the saddle is strict.
+\item If $k^*\in\{3,4\}$, the order is $k^*$ if $\Lambda_1<s_j$ and $2$ if $\Lambda_1>s_j$. Equivalently, the order is
+$k^*$ unless the Hessian has a negative eigenvalue; the Hessian block of rotations of single learned vectors is
+$s_j^{(K-2)/K}(s_jI-\Gamma^{(1)})$.
+\item If $W^*$ has two components and the larger is learned ($s_r<s_j$), the order is $k^*=k_r$ on every tree.
+\item If $W^*$ has two components and the smaller is learned ($s_r>s_j$), the order is $2\ell^*$ with
+$\ell^*=\min\max(\deg B_1,\deg B_2)$ over splits $V_r=B_1\sqcup B_2$, if this is below $k^*/2$, and $k^*$ otherwise.
+\item In general, the order can be below $k^*$ while the Hessian is positive semidefinite only if $k^*\ge5$.
+\end{enumerate}
+\end{corollary}
+
+\begin{example}[Order below $k^*$ with a positive semidefinite Hessian]\label{ex:pairstar}
+MPS with six cores, $d=\chi=2$. Learned $j=000000$ ($s_j=1$); remaining $r_1=110001$ and $r_2=110010$ with
+weight $0.8$ each. Then $V_{r_1}=\{0,1,5\}$ ($k=6$) and $V_{r_2}=\{0,1,4\}$ ($k=5$), so $k^*=5$. No component
+differs from $j$ on exactly two cores, so $\mathcal G_1$ has no edges and $\Lambda_1=0$: the Hessian is positive
+semidefinite. In $\mathcal G_2$ the node $(\{0,1\},11)$ is joined to $(\{5\},1)$ by $r_1$ and to $(\{4\},1)$ by $r_2$,
+a star with $\Lambda_2=0.8\sqrt2\approx1.13>1$. Hence $\ell^*=2<5/2$ and the order is $4$. The descent puts
+new entries on cores $0,1$ toward the pattern $110000$, which is not a teacher component, and rotates the
+learned vectors of cores $4$ and $5$ toward $1$; the two pieces together produce both $r_1$ and $r_2$. Minimizing
+$L-L_S$ numerically over the sphere $\lVert\theta-\theta_S\rVert=t$ gives slope $4.000$ and constant $-0.0350$,
+against the leading-order value $-(2\cdot0.8^2-1)/8=-0.0350$. With weights $0.6$ instead ($\Lambda_2=0.85<1$)
+the order is $5=k^*$.
+\end{example}
+
+\paragraph{Consequence for the dynamics.} Near a saddle of order $p$, the slowest part of the escape is the
+growth of the small amplitudes that realize the order-$p$ descent.
+
+\begin{proposition}[Escape time; derived at leading order]\label{prop:escape}
+Start gradient flow at $\theta_S$ plus a perturbation whose components along the order-$p$ descent have size
+$\varepsilon$. At leading order in $\varepsilon$, with the remaining variables relaxed adiabatically, the descent
+amplitude $b$ obeys $\dot b=c\,b^{p-1}$ with $c>0$, so the escape time is
+\begin{equation}\label{eq:escape}
+t_{\rm esc}\simeq\begin{cases}\ln(1/\varepsilon)/c, & p=2,\\[2pt] \varepsilon^{-(p-2)}/\big((p-2)c\big), & p\ge3.\end{cases}
+\end{equation}
+For the route ($p=k^*=k_r$, balanced), $c=s_rs_j^{(K-k_r)/K}$.
+\end{proposition}
+
+In a full run from small initialization the perturbation at the start of the plateau is of order $\sigma$, so the
+plateau after the first escape lasts $\propto\sigma^{-(p-2)}$ (or $\propto\ln(1/\sigma)$). For two components learned in
+weight order ($p=k_r$), integrating the route's growth during the first plateau gives
+\begin{equation}\label{eq:twocomp}
+\Delta t_2\simeq\frac{1-s_r/s_j}{s_rs_j^{(K-2)/K}}\ln\frac1\sigma\ \ (k_r=2),\qquad
+\Delta t_2\simeq\frac{1-s_r/s_j}{(k_r-2)\,s_rs_j^{(K-k_r)/K}}\,\sigma^{-(k_r-2)}\ \ (k_r\ge3),
+\end{equation}
+where the second formula assumes an initialization aligned with the teacher; the factor $1-s_r/s_j$ is the growth
+of the route during the first plateau.
+
+\paragraph{Evidence.}
+\begin{itemize}
+\item \emph{Order.} Minimizing $L-L_S$ over spheres of radius $t$ in 32 instances (MPS, binary and HT trees,
+$k^*=2$ to $7$, pattern and random residuals) gives slopes within $0.003$ of the predicted order in the 30 instances the
+theorem covers; 12 further instances computed with independent code agree within $5\cdot10^{-4}$.
+\item \emph{Plateaus with $p=k^*$.} About 11,600 gradient-flow runs of two-component teachers on nine trees ($K=3$
+to $15$) give per-seed exponents of $\Delta t_2$ equal to $k_r-2$ for $k_r=3,4,5$, and for $k_r=6,7$ on two trees with
+balanced initialization. For $k_r=2$ the logarithmic law fits better than a power law in all 14 settings, with slope
+$0.98$--$1.01$ against the predicted $1$ \eqref{eq:twocomp}. Off $\St(V_r)$, the second singular value of every bond
+stays below $4.3\,\sigma^2s_r$ in all 5,131 learning events.
+\item \emph{Plateaus with $p=2\ell^*<k^*$.} A pre-registered test (about 2,800 runs) started at $\theta_S$ plus a
+perturbation of size $\varepsilon$ measured $t_{\rm esc}\propto\varepsilon^{-\gamma}$ with $\gamma=2.001\pm0.001$ for $p=4$
+(Example~\ref{ex:pairstar}, and an MPS6 two-component case with $k^*=6$) and $\gamma=3.996$--$3.998$ for $p=6$ (HT and
+binary trees, $k^*=7$), wherever $\varepsilon$ lay below the size at which the order-$p$ descent is predicted to beat the
+route; the route law $\gamma=k^*-2$ fits $10^3$--$10^5$ times worse. Above that size the results were mixed. This test
+has not been independently re-checked.
+\end{itemize}
+
+\section{Relation to prior work}
+
+\paragraph{Deep linear networks.} Saddle-to-saddle learning from small initialization, the exponent $K-2$ of the
+first escape, and greedy order are established for DLNs \citep{saxe2014exact,jacot2022saddletosaddle}; the later
+saddles are conjectured there. \citet[Thm~7]{achour2024loss} classify DLN critical points as strict or non-strict,
+which is a lower bound of the form ``order $\ge3$''. The binary tree with four sites is exactly a depth-3 DLN, so
+Theorem~\ref{thm:main} reduces there to known facts: $k^*=3$, and the condition $\Lambda_1\lessgtr s_j$ is the DLN criterion for strict saddles.
+
+\paragraph{Homogeneous models.} Near the origin, the weights of a homogeneous model align with a KKT point of
+the correlation with the target and escape after a time $\propto\sigma^{-(K-2)}$ \citep{kumar2025early}. Escapes that
+need one, two, or $k\ge3$ small layers take $O(1)$, logarithmic and $\propto\sigma^{-(k-2)}$ time
+\citep[Thm~4.2]{rawal2026theory}, and alternating gradient flows carry dormant amplitudes across plateaus
+\citep{kunin2025alternating}, which gives head starts as in \eqref{eq:twocomp}
+\citep[Thm~4 for two-layer networks]{zhang2026saddletosaddle}. These results take the number of small factors as
+given. Theorem~\ref{thm:main} determines it for TTNs.
+
+\paragraph{The landscape of TTNs.} \citet{furman2026benign} study the landscape of exactly this model. They prove
+that minimum-norm local minima are global, and that at a minimum-norm critical point every connected set of
+rank-deficient bonds (model rank below teacher rank) with $N$ incident cores yields a straight-line descent of
+order $N$ (their Lemmas~D.8--D.9), which bounds the order from above. They remark that with several disjoint such
+sets the smallest gives the fastest escape and relate $N$ to the leap of \citet{abbe2023sgd}; they prove one
+lower bound, for a parity saddle (their Prop.~5.3), and do not treat dynamics.
+
+\paragraph{What is new here.}
+\begin{enumerate}[label=(\arabic*)]
+\item \emph{The exact order.} A matching lower bound at every learned saddle with one learned component, so
+the order is determined, not only bounded. Previously lower bounds were known for DLNs and one parity saddle.
+\item \emph{The relevant set is the smallest Steiner subtree.} For a two-component teacher the rank-deficient bonds are
+exactly the bonds of $\St(V_r)$, so the upper bound of \citet{furman2026benign} already equals $k^*$ there and our
+contribution is the lower bound. With several remaining components the rank-deficient bonds form one connected set,
+the union of all their Steiner subtrees, often the whole tree; the order is set by the smallest single Steiner
+subtree, which can be much smaller.
+\item \emph{Orders below $k^*$.} The spectral condition, the order $2\ell^*$, and the descent through non-teacher
+patterns are new; they show that ``smallest set of cores that must move'' is not the whole story from $k^*=5$ on.
+\item \emph{Dynamics.} The escape laws \eqref{eq:escape}--\eqref{eq:twocomp} with their TTN constants, and their tests.
+\end{enumerate}
+\citet{frandsen2022optimization} exhibit descents of order 2, 3 and 4 at balanced points of Tucker decompositions,
+without lower bounds.
+
+\section{Proofs}\label{sec:proofs}
+
+Throughout, $\theta_S$ is a learned saddle of component $j$, $\varepsilon=\lVert\theta-\theta_S\rVert$, and $\nu_v$ denotes the
+vector of new entries of core $v$.
+
+\subsection{Sectors}
+
+Let $P_v=q_vq_v^\top$, $P_v^\perp=I-P_v$, and for $B\subseteq V$
+\[
+\Pi_B=\bigotimes_{v\in B}P_v^\perp\otimes\bigotimes_{v\notin B}P_v .
+\]
+The $2^K$ projectors $\Pi_B$ are orthogonal and sum to the identity. Write $\mathcal H_B$ for the range of $\Pi_B$; then
+$\mathcal H_{B_1}\otimes\mathcal H_{B_2}\cong\mathcal H_{B_1\sqcup B_2}$ for disjoint $B_1,B_2$, and a basis of $\mathcal H_B$ is given by the patterns on
+the sites of $B$ that differ from $j$ on every core of $B$. Let $\mathcal R_B=\Pi_B\mathcal R$. For a pattern teacher,
+\begin{equation}\label{eq:RB}
+\mathcal R_B=\sum_{r:\,V_r=B}s_rU_r ,
+\end{equation}
+since $U_r$ lies in the sector of the cores on which it differs from $j$. Hence $k^*=\min\{\deg B:\mathcal R_B\ne0\}$.
+
+\begin{lemma}[Criticality and the energy identity]\label{lem:sectors}
+(i) $\theta_S$ is critical iff $\mathcal R_{\{v\}}=0$ for every $v$, i.e.\ iff $k^*\ge2$.
+(ii) Let $N(\theta)=\ip{U_j}{W(\theta)}$ and, for $B\ne\emptyset$, $m_B=\Pi_BW/N$. Then, wherever $N\ne0$,
+\begin{equation}\label{eq:identity}
+L(\theta)-L_S=\tfrac12(N-s_j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{N^2}{2}\lVert m_B\rVert^2-N\ip{\mathcal R_B}{m_B}\Big].
+\end{equation}
+\end{lemma}
+\begin{proof}
+(i) A new entry meets old entries with index $0$ on its bond in the neighbouring core, so it does not change $W$ at
+first order; an old entry of core $v$ moves $W$ within $\mathcal H_\emptyset\oplus\mathcal H_{\{v\}}$. The gradient therefore vanishes iff
+$\mathcal R$ has no component in any $\mathcal H_{\{v\}}$ (its component in $\mathcal H_\emptyset$ is zero by definition of $s_j$).
+(ii) By orthogonality $\lVert W-W^*\rVert^2=\sum_B\lVert\Pi_BW-\Pi_BW^*\rVert^2$, with $\Pi_\emptyset(W-W^*)=(N-s_j)U_j$,
+$\Pi_BW^*=\mathcal R_B$ and $\Pi_BW=Nm_B$ for $B\ne\emptyset$, and $L_S=\frac12\sum_B\lVert\mathcal R_B\rVert^2$.
+\end{proof}
+
+\subsection{Upper bound $k^*$: the route curve}
+
+\begin{proposition}\label{prop:route}
+Let $r$ have $k_r=k^*$ and $\chi_e\ge2$ on the bonds of $\St(V_r)$. Give each core $v\in\St(V_r)$ the new entry
+$t\cdot(\text{pattern of }r\text{ on the sites of }v)$ with bond index $1$ on the bonds inside $\St(V_r)$ and $0$ on the
+other bonds. At the balanced saddle ($a_v=s_j^{1/K}$),
+\[
+L(\theta(t))-L_S=-s_r\,s_j^{(K-k^*)/K}\,t^{k^*}+\tfrac12s_j^{2(K-k^*)/K}\,t^{2k^*},
+\]
+and $\lVert\theta(t)-\theta_S\rVert=\sqrt{k^*}\,t$. Hence $\ord(\theta_S)\le k^*$.
+\end{proposition}
+\begin{proof}
+Expand the contraction core by core into old and new entries. A term that uses a new entry on some core of
+$\St(V_r)$ but an old entry on a neighbouring core of $\St(V_r)$ contracts index $1$ with index $0$ and vanishes. So
+only two terms survive: all old entries, giving $s_jU_j$, and new entries on all of $\St(V_r)$ with old entries
+elsewhere, giving $t^{k^*}s_j^{(K-k^*)/K}U$, where $U$ has the pattern of $r$ on the sites of $\St(V_r)$ and that of $j$
+elsewhere. Since $r$ agrees with $j$ outside $V_r$, $U=U_r$. Thus $W-W^*=-\mathcal R+t^{k^*}s_j^{(K-k^*)/K}U_r$, and
+$\ip{\mathcal R}{U_r}=s_r$, $\lVert U_r\rVert=1$.
+\end{proof}
+
+\subsection{Lower bound: locality of cumulants}
+
+\paragraph{Cumulants.} Consider families $f=(f_B)_{B\subseteq V}$ with $f_B\in\mathcal H_B$, with the product
+$(f*g)_B=\sum_{B_1\sqcup B_2=B}f_{B_1}\otimes g_{B_2}$. This is a commutative associative algebra with unit
+$(1,0,0,\dots)$, and every $f$ with $f_\emptyset=0$ is nilpotent, so $\exp$ and $\log$ are finite series and
+$\log(f*g)=\log f+\log g$. With $m_\emptyset=1$ define the cumulants $\kappa=\log m$. Explicitly, by the set-partition
+formulas,
+\[
+m_B=\sum_{\pi\in\mathrm{Part}(B)}\bigotimes_{C\in\pi}\kappa_C,\qquad
+\kappa_B=\sum_{\pi\in\mathrm{Part}(B)}(-1)^{\lvert\pi\rvert-1}(\lvert\pi\rvert-1)!\bigotimes_{C\in\pi}m_C .
+\]
+All $m_B$ and $\kappa_B$ are real-analytic near $\theta_S$ and vanish at $\theta_S$ for $B\ne\emptyset$, so
+$\lVert\kappa_B\rVert\le C_0\varepsilon$.
+
+\begin{lemma}[Locality]\label{lem:locality}
+For $\lvert B\rvert\ge2$, near $\theta_S$,
+\[
+\lVert\kappa_B(\theta)\rVert\le C_0\prod_{x\in\St(B)}\lVert\nu_x\rVert .
+\]
+In particular $\lVert\kappa_B\rVert\le C_0\varepsilon^{\deg B}$.
+\end{lemma}
+\begin{proof}
+\emph{Vanishing.} Fix $x\in\St(B)$ and suppose $\nu_x=0$. Then every nonzero entry of $G_x$ has all bond indices $0$, so
+the contraction factorizes at $x$: $W=g_x\otimes\bigotimes_bW_b$, where $g_x$ is the physical vector of $G_x$, $b$ runs
+over the branches of $T$ at $x$ (the components of $T\setminus x$, with node sets $V_b$), and $W_b$ is the contraction
+of branch $b$ with its bond to $x$ fixed to $0$. The projectors factorize core by core, so $m=m^{(x)}*\prod_bm^{(b)}$,
+where $m^{(x)}$ is supported on $\{\emptyset,\{x\}\}$ and $m^{(b)}$ on subsets of $V_b$. Taking logarithms,
+$\kappa=\log m^{(x)}+\sum_b\log m^{(b)}$ is supported on subsets of $\{x\}$ or of a single $V_b$. $B$ is none of these:
+if $x\in B$, then $B\not\subseteq\{x\}$ and $B\not\subseteq V_b$; if $x\notin B$ and $B\subseteq V_b$, the connected set $V_b$
+would contain $\St(B)\ni x$. So $\kappa_B=0$ whenever $\nu_x=0$ for some $x\in\St(B)$.
+
+\emph{Bound.} Expand $\kappa_B$ as a power series in $\theta-\theta_S$. Setting $\nu_x=0$ removes exactly the monomials that
+contain a variable of $\nu_x$, and the result is zero; so every monomial contains a variable of $\nu_x$ for every
+$x\in\St(B)$. Factoring one such variable per $x$ out of each monomial and bounding the rest on a small polydisc gives
+the claim.
+\end{proof}
+
+Lemma~\ref{lem:locality} is the precise sense in which a change of $W$ in sector $B$ ``needs new entries on every core of
+$\St(B)$''.
+
+\begin{proposition}[Lower bound]\label{prop:lower}
+Let $\theta_S$ be critical, $2\le\ell\le\lceil k^*/2\rceil$, and let $\mathcal S_{\ell-1}$ be the operator on
+$\bigoplus_{\deg C\le\ell-1}\mathcal H_C$ with blocks $(x,y)\mapsto\ip{\mathcal R_{C_1\sqcup C_2}}{x\otimes y}$ for disjoint $C_1,C_2$ and
+zero otherwise. If $\lambda_{\max}(\mathcal S_{\ell-1})<s_j$, then $L(\theta)-L_S\ge-C\varepsilon^{\min(k^*,2\ell)}$ near $\theta_S$.
+For a pattern teacher $\mathcal S_{\ell-1}=\Gamma^{(\ell-1)}$ in the pattern basis, so the condition is $\Lambda_{\ell-1}<s_j$.
+\end{proposition}
+\begin{proof}
+Let $p=\min(k^*,2\ell)$, $y_C=\lVert\kappa_C\rVert$, and call $C$ \emph{low} if $\deg C\le\ell-1$ and \emph{high} otherwise. Four facts:
+(F1) a high set has $\deg C\ge\ell\ge2$, so $y_C\le C_0\varepsilon^\ell$ by Lemma~\ref{lem:locality};
+(F2) subsets of low sets are low;
+(F3) low sets carry no residual, since $\deg\le\ell-1<k^*$;
+(F4) summing $\ip{\mathcal R_B}{\kappa_{C_1}\otimes\kappa_{C_2}}$ over all $B$ and all unordered splits $B=C_1\sqcup C_2$ into low sets
+gives exactly $\frac12\ip{\kappa_{\rm low}}{\mathcal S_{\ell-1}\kappa_{\rm low}}\le\frac12\lambda_{\max}(\mathcal S_{\ell-1})\lVert\kappa_{\rm low}\rVert^2$,
+where $\lVert\kappa_{\rm low}\rVert^2=\sum_{C\text{ low}}y_C^2$.
+
+\emph{Quadratic term.} For low $B$, $m_B-\kappa_B$ is a sum of products of at least two cumulants of low sets (F2), each
+bounded by $C_0\varepsilon\,y_C$ for one of its factors. Hence $\sum_{B\text{ low}}\lVert m_B\rVert^2\ge(1-C_2\varepsilon)\lVert\kappa_{\rm low}\rVert^2$.
+The high-$B$ terms of the quadratic sum are nonnegative and are dropped.
+
+\emph{Linear term.} Only $B$ with $\mathcal R_B\ne0$ contribute, and then $\deg B\ge k^*$. Expand $m_B$ over partitions:
+the single cumulant gives $\lvert\ip{\mathcal R_B}{\kappa_B}\rvert\le C\varepsilon^{k^*}$; two low blocks give (F4); one low and one
+high block give at most $\frac\gamma2y_{C_1}^2+C_\gamma\varepsilon^{2\ell}$ (Young's inequality and F1); two high blocks give
+$O(\varepsilon^{2\ell})$; partitions with three or more blocks give either $O(\varepsilon)(y_{C_1}^2+y_{C_2}^2)$ (two low blocks)
+or $O(\varepsilon^{2\ell})$ (two high blocks). Summing,
+\[
+\sum_B\ip{\mathcal R_B}{m_B}\le\tfrac12\big(\lambda_{\max}(\mathcal S_{\ell-1})+M\gamma+C\varepsilon\big)\lVert\kappa_{\rm low}\rVert^2+C_\gamma\varepsilon^{p}.
+\]
+\emph{Conclusion.} By \eqref{eq:identity}, dropping $\frac12(N-s_j)^2\ge0$,
+\[
+L-L_S\ge\tfrac N2\big[N(1-C_2\varepsilon)-\lambda_{\max}(\mathcal S_{\ell-1})-M\gamma-C\varepsilon\big]\lVert\kappa_{\rm low}\rVert^2-NC_\gamma\varepsilon^p .
+\]
+With $g=s_j-\lambda_{\max}(\mathcal S_{\ell-1})>0$, $\gamma=g/(4M)$ and $N\ge s_j-C\varepsilon$, the bracket is positive for small $\varepsilon$,
+so $L-L_S\ge-C\varepsilon^p$.
+\end{proof}
+
+The proof uses only the sector decomposition, criticality and multilinearity. It does not use balance, the bond
+dimensions, or the pattern structure of $\mathcal R$.
+
+\subsection{Upper bound $2\ell$: polymer curves}
+
+\begin{proposition}[Sharpness]\label{prop:sharp}
+Let $W^*$ be a pattern teacher, $\ell<k^*/2$, and $X$ a node set of $\mathcal G_\ell$ whose adjacency matrix $A_X$ has spectral
+radius $\rho>s_j$, with the bond-dimension condition of Theorem~\ref{thm:main}(b). Then there is a curve with
+$\lVert\theta(t)-\theta_S\rVert\le t$ and $L(\theta(t))-L_S\le-ct^{2\ell}$.
+\end{proposition}
+\begin{proof}
+Work at the balanced saddle, $a_v=a=s_j^{1/K}$. Let $x\ge0$ be a unit Perron vector, $A_Xx=\rho x$. For $0<\eta\le1$:
+\begin{itemize}
+\item for a node $(\{v\},\pi)$, set the old entry $G_v[\pi,0,\dots,0]=a\,\eta\,x_{(\{v\},\pi)}$ (a rotation of the learned
+vector of $v$);
+\item for a node $n=(B,\pi)$ with $\lvert B\rvert\ge2$, let $P=\St(B)$ and $h=\lvert P\rvert\le\ell$. Choose on every bond inside
+$P$ a new index value used by no other multi-core node of $X$ on that bond (possible by the bond-dimension condition),
+and give each core $u\in P$ the new entry $a(\eta x_n)^{1/h}$ with physical index $\pi$ on $u\in B$ and that of $j$ on
+$u\in P\setminus B$, the chosen indices on the bonds of $P$, and $0$ on its other bonds.
+\end{itemize}
+Then $\lVert\theta-\theta_S\rVert\le C\eta^{1/\ell}$. In a nonzero term of the contraction, each connected set of bonds carrying
+nonzero indices uses the entries of a single multi-core node $n$ and equals its $\St(B)$. So $W$ is a sum over
+collections of nodes (``polymers'' and rotations) using disjoint cores, each contributing the factor $\eta x_n$ times its
+pattern, with $a$ on every other core. In particular $N=s_j$ exactly, and $m_B=\eta m_B^{(1)}+\eta^2m_B^{(2)}+O(\eta^3)$, where
+$m^{(1)}$ collects single nodes and $m^{(2)}$ pairs of nodes on disjoint cores.
+
+\emph{Order $\eta$.} $m^{(1)}_B=\sum_\pi x_{(B,\pi)}e_\pi$, so $\sum_B\lVert m^{(1)}_B\rVert^2=\lVert x\rVert^2=1$. No single node has
+$B=V_r$ (that would need $\deg B\ge k^*>\ell$), so $\sum_B\ip{\mathcal R_B}{m^{(1)}_B}=0$ by \eqref{eq:RB}.
+
+\emph{Order $\eta^2$.} For an edge between $(B_1,\pi_1)$ and $(B_2,\pi_2)$ from component $r$, the sets $\St(B_1)$ and $\St(B_2)$
+are disjoint; otherwise their union would be a connected set containing $V_r$ with at most $2\ell-1<k^*$ cores. So
+every edge is a pair on disjoint cores, and $\sum_B\ip{\mathcal R_B}{m^{(2)}_B}=\sum_{\rm edges}s_rx_{n_1}x_{n_2}=\frac12x^\top A_Xx=\frac\rho2$.
+
+By \eqref{eq:identity} with $N=s_j$,
+$L-L_S=\frac{s_j^2}{2}\eta^2-s_j\frac\rho2\eta^2+O(\eta^3)=-\frac{s_j}{2}(\rho-s_j)\eta^2+O(\eta^3)$. Setting $\eta=(t/C)^\ell$ gives the claim.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:main} and Corollary~\ref{cor:cases}}
+
+\emph{Case $\ell^*=\infty$.} Then $\Lambda_\ell<s_j$ for all $\ell<k^*/2$ by (a), in particular for $\ell=\lceil k^*/2\rceil-1$.
+Proposition~\ref{prop:lower} with $\ell=\lceil k^*/2\rceil$ gives $\ord\ge\min(k^*,2\lceil k^*/2\rceil)=k^*$, and
+Proposition~\ref{prop:route} gives $\ord\le k^*$. (If $k^*=2$ the order is $2$ directly: the route curve has order $2$ and every
+critical point has order at least $2$.)
+
+\emph{Case $\ell^*<\infty$.} If $\ell^*=1$, Proposition~\ref{prop:sharp} gives order $\le2$, hence $=2$. If $\ell^*\ge2$, then
+$\Lambda_{\ell^*-1}<s_j$ by minimality and (a), so Proposition~\ref{prop:lower} at level $\ell^*$ gives $\ord\ge\min(k^*,2\ell^*)=2\ell^*$,
+and Proposition~\ref{prop:sharp} gives $\ord\le2\ell^*$. In both cases $\ord=\min(k^*,2\ell^*)$. \qed
+
+\emph{Corollary~\ref{cor:cases}.} (i) $\ell^*<k^*/2=1$ is impossible. (ii) For $k^*\in\{3,4\}$ the only level below $k^*/2$ is
+$\ell=1$. Rotating the learned vector of core $u$ by $\varepsilon_u$ toward $\pi$ changes $W$ by a mixed pattern of norm
+$a^{K-1}\varepsilon_u$; two rotations couple through a component that differs from $j$ on exactly those two cores, with
+coefficient $-s_ra^{K-2}$. So the rotation block is $a^{2(K-1)}I-a^{K-2}\Gamma^{(1)}=s_j^{(K-2)/K}(s_jI-\Gamma^{(1)})$. (iii) With one
+remaining component every node of $\mathcal G_\ell$ has at most one edge, so $\Lambda_\ell\in\{0,s_r\}$, which is below $s_j$.
+(iv) Same observation with $s_r>s_j$: $\Lambda_\ell=s_r>s_j$ from the first level that admits a split.
+(v) For $k^*\le4$, by (i)--(ii) an order below $k^*$ requires $\Lambda_1>s_j$, which makes the Hessian indefinite. \qed
+
+\subsection{Escape time (Proposition~\ref{prop:escape})}
+
+\emph{Route.} With old entries frozen at $\theta_S$ and route amplitudes $b_v$ on $\St(V_r)$, the computation of
+Proposition~\ref{prop:route} gives $\dot b_v=A\prod_{u\ne v}b_u\,(s_r-A\prod_ub_u)$ with $A=a^{K-k}$. For a balanced route with
+$b\ll1$, $\dot b=s_ra^{K-k}b^{k-1}$, which is $\dot b=cb^{p-1}$ with $p=k$; integrating
+$\frac{d}{dt}b^{-(p-2)}=-(p-2)c$ gives \eqref{eq:escape}.
+
+\emph{Polymer.} In the setting of Proposition~\ref{prop:sharp} with one multi-core node, the rotations have $O(1)$ curvature and
+follow the polymer amplitude $y=\prod_{v\in P}b_v$ adiabatically. Eliminating them leaves $L_{\rm eff}=-\frac c2y^2$ with $c>0$
+(for Example~\ref{ex:pairstar}, $c=s_{r_1}^2+s_{r_2}^2-s_j^2$ in units $s_j=1$), so $\dot b_v=c\,b_v\prod_{u\ne v}b_u^2$, and for
+balanced amplitudes $\dot b=cb^{2\ell-1}=cb^{p-1}$.
+
+\emph{Head start.} During the first plateau the learned cores grow from $\sigma$ as $\dot a\simeq s_ja^{K-1}$, and the route
+already grows with coupling $s_ra^{K-k}$. For $k\ge3$, $\frac d{dt}b^{-(k-2)}=-(k-2)s_ra^{K-k}$ and
+$\int a^{K-k}dt=\int a^{1-k}da/s_j=\sigma^{-(k-2)}/((k-2)s_j)+O(1)$, so the route enters the plateau with
+$b^{-(k-2)}=\sigma^{-(k-2)}(1-s_r/s_j)+O(1)$. For $k=2$, $\ln b$ grows by $(s_r/s_j)\ln(1/\sigma)+O(1)$. Inserting into
+\eqref{eq:escape} gives \eqref{eq:twocomp}.
+
+\section{Scope}
+The theorem covers saddles with one learned component, pattern teachers for the exact equality (the lower bound
+holds for any residual), whitened inputs and the population loss. Saddles with several learned components and
+the boundary cases $\Lambda_\ell=s_j$ are open. Proposition~\ref{prop:escape} is a leading-order derivation, not a theorem;
+when $2\ell^*<k^*$ both mechanisms are present, and the lower order wins only below a crossover scale set by the
+prefactors.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}
