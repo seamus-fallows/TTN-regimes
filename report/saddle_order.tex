@@ -1,7 +1,8 @@
-% saddle_order.tex -- self-contained statement and proof of the main result: the order of the saddles
+% saddle_order.tex -- self-contained statement and proof of the main result: the order of the saddle
 % visited by gradient flow on tree tensor networks after one component is learned, and the plateau laws.
 % Sources: notes/theory_saddle_order.md v2 (verified twice), report App. A.2-A.4, experiments/locality,
-% experiments/saddle_dyn. Build: from report/, pdflatex saddle_order; bibtex saddle_order; pdflatex x2.
+% experiments/saddle_dyn. Revised after an external line-by-line review (2026-10-12).
+% Build: from report/, pdflatex saddle_order; bibtex saddle_order; pdflatex x2.
 \documentclass[11pt]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -23,6 +24,7 @@
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
 
 \newcommand{\St}{\mathrm{St}}
 \newcommand{\ord}{\mathrm{ord}}
@@ -40,14 +42,15 @@
 We study gradient flow on tree tensor networks (TTNs) fitted to a target that is a sum of rank-one
 tensors. From small initialization the flow learns the rank-one terms one at a time and stays near a
 saddle point between consecutive terms. How long it stays is controlled by the order of the saddle, the
-lowest power of the distance at which the loss can decrease. We compute this order exactly at the saddle
-reached after one term has been learned. Typically it equals the number of cores in the smallest subtree
-that connects the cores on which some unlearned term differs from the learned one. This number depends on
-the shape of the tree, so the same target produces plateaus of different lengths on different trees. The
-order is lower only when the unlearned terms are, in a precise spectral sense, stronger than the learned
-one, and we give its value in that case too. At leading order, a saddle of order $p$ is left after a time
-$\propto\ln(1/\sigma)$ if $p=2$ and $\propto\sigma^{-(p-2)}$ if $p\ge3$, where $\sigma$ is the initialization
-scale; simulations on nine trees agree.
+exponent of the fastest local decrease of the loss. We compute this order exactly at the critical point that
+represents one learned term with one channel per edge. Typically it equals the number of cores in the
+smallest subtree that connects the cores on which some unlearned term differs from the learned one. This
+number depends on the shape of the tree, so the same target produces plateaus of different lengths on
+different trees. The order is lower only when the unlearned terms are, in a precise spectral sense, stronger
+than the learned one, and we give its value in that case too. At leading order, a saddle of order $p$ is left
+after a time $\propto\ln(1/\sigma)$ if $p=2$ and $\propto\sigma^{-(p-2)}$ if $p\ge3$, where $\sigma$ is the
+initialization scale; when two descent mechanisms of different order coexist, the lower order governs the
+escape only below a crossover scale. Simulations on nine trees agree with these laws.
 \end{abstract}
 
 \section{Introduction}
@@ -61,11 +64,11 @@ grows quickly. In a DLN every mode needs every layer, so every plateau has the s
 
 A TTN is also a product of $K$ factors, its cores, but each core is attached to only some of the inputs. After
 the first term is learned, most cores are large. To add the next term, only some cores need to change from
-small values, and the length of the next plateau depends on how many. In the language of the loss landscape,
-it depends on the order of the saddle at which the flow rests.
+small values, and the length of the next plateau depends on how many. In terms of the loss landscape, it
+depends on the order of the saddle at which the flow rests.
 
-This note determines that order (Theorem~\ref{thm:main}) and derives the resulting plateau lengths
-(Proposition~\ref{prop:escape}). Section~\ref{sec:prior} compares the result with prior work.
+This note determines that order (Theorem~\ref{thm:main}) and derives the resulting plateau lengths at leading
+order (Section~\ref{sec:plateaus}). Section~\ref{sec:prior} compares the result with prior work.
 
 \section{Setting and definitions}\label{sec:setting}
 
@@ -91,35 +94,42 @@ We take $W^*$ to be a sum of distinct products of standard basis vectors,
 W^*=\sum_{r}s_r\,U_r,\qquad U_r=e_{\pi_r(0)}\otimes e_{\pi_r(1)}\otimes\dots\otimes e_{\pi_r(N-1)},\qquad s_r>0,
 \end{equation}
 where $\pi_r$ is a string of basis indices, one per site (for example $\pi_r=110010$). We call $U_r$ the
-\emph{components} of the target. Distinct components are orthonormal.
+\emph{components} of the target. Since the strings are distinct, the tensors $U_r$ are orthonormal.
 
 \paragraph{The saddle after one component is learned.} Fix a component $j$ and let $q_v\in\mathbb R^{D_v}$ be the
-basis vector that $U_j$ has on the sites of core $v$, so $U_j=\bigotimes_vq_v$. The point $\theta_S$ has cores
+basis vector that $U_j$ has on the sites of core $v$, so $U_j=\bigotimes_vq_v$. Let $\theta_S$ have cores
 \begin{equation}\label{eq:saddle}
-G_v=a_v\;q_v\otimes e_0\otimes\dots\otimes e_0,\qquad \textstyle\prod_va_v=s_j,
+G_v=a_v\;q_v\otimes e_0\otimes\dots\otimes e_0,\qquad a_v>0,\qquad \textstyle\prod_va_v=s_j,
 \end{equation}
 where $e_0$ is the first basis vector of each tree-edge leg. Then $W(\theta_S)=s_jU_j$: the network represents
-component $j$ exactly, using one channel (index $0$) on every edge. Every critical point with $W=s_jU_j$ has this
-form after a change of basis on the edges. The other $\chi_e-1$ indices of each edge are \emph{unused channels}.
-The loss at $\theta_S$ is $L_S=\frac12\lVert\mathcal R\rVert^2$, with residual $\mathcal R=W^*-s_jU_j=\sum_{r\ne j}s_rU_r$.
+component $j$ exactly, using one channel (index $0$) on every edge. The other $\chi_e-1$ indices of each edge are
+\emph{unused channels}. The loss at $\theta_S$ is $L_S=\frac12\lVert\mathcal R\rVert^2$, with residual
+$\mathcal R=W^*-s_jU_j=\sum_{r\ne j}s_rU_r$; we assume $\mathcal R\ne0$. When some $\chi_e\ge2$ there are other
+critical points with $W=s_jU_j$, for example with nonzero entries on an unused channel that meet only zeros in the
+neighbouring core; they are not of the form \eqref{eq:saddle}, and the results below concern the points
+\eqref{eq:saddle}.
 
-\paragraph{Order of a saddle.} The order of a critical point $\theta_S$ is the largest $p$ such that, for some
-$C>0$,
-\begin{equation}\label{eq:order}
-L(\theta)-L_S\ \ge\ -C\,\lVert\theta-\theta_S\rVert^{p}\qquad\text{for all $\theta$ near $\theta_S$.}
-\end{equation}
-Equivalently, it is the smallest $p$ for which some curve with $\lVert\theta(t)-\theta_S\rVert\le t$ has
-$L(\theta(t))-L_S\le-ct^p$ ($L$ is a polynomial, so the curve selection lemma applies). A saddle has order $2$ iff
-its Hessian has a negative eigenvalue (a \emph{strict} saddle). A saddle of order $p\ge3$ has a positive
-semidefinite Hessian and the loss decreases only at order $p$.
+Two points of the form \eqref{eq:saddle} differ only in the scalars $a_v$, and they are related by a diagonal change
+of basis on the edges: scaling index $0$ of edge $(u,v)$ by $\lambda$ in $G_u$ and by $1/\lambda$ in $G_v$ leaves $W$
+unchanged for every $\theta$ and trades $a_u$ against $a_v$. This map is linear, invertible and preserves $L$, so it
+preserves the order defined below. We therefore compute at the balanced point $a_v=a:=s_j^{1/K}$ where convenient.
+
+\paragraph{Order of a saddle.} For a critical point $\theta_S$ let
+$\psi(\tau)=\min_{\lVert\theta-\theta_S\rVert\le\tau}\big(L(\theta)-L_S\big)$. Since $L$ is a polynomial, $\psi$ is semialgebraic,
+so if $\psi\not\equiv0$ near $0$ then $\psi(\tau)=-c\,\tau^{\alpha}(1+o(1))$ for some $c>0$ and rational $\alpha$. The \emph{order}
+of $\theta_S$ is $\ord(\theta_S)=\alpha$: the exponent of the fastest local decrease of the loss. Equivalently, it is the
+largest $p$ with $L(\theta)-L_S\ge-C\lVert\theta-\theta_S\rVert^p$ near $\theta_S$. (This differs from the derivative-based
+notion of ``higher-order saddle'' used, for example, by Anandkumar and Ge, 2016.) At a critical point, order $2$ is
+equivalent to a negative Hessian eigenvalue: if the Hessian is positive semidefinite, Taylor's theorem gives
+$L-L_S\ge-C\lVert\theta-\theta_S\rVert^3$. A saddle of order $2$ is called \emph{strict}.
 
 \paragraph{Steiner subtrees.} For a set $B$ of cores, the \emph{Steiner subtree} $\St(B)$ is the smallest subtree of
-$T$ that contains $B$, and $\lvert\St(B)\rvert$ is its number of cores. For each component $r\ne j$ let
+$T$ containing $B$. We use the symbol both for its set of cores and for the subtree itself: $\lvert\St(B)\rvert$ is its
+number of cores, and the edges of $\St(B)$ are the tree edges between its cores. For each component $r\ne j$ let
 \begin{equation}
 V_r=\{\text{cores carrying a site where }\pi_r\text{ and }\pi_j\text{ differ}\},\qquad k_r=\lvert\St(V_r)\rvert,\qquad k^*=\min_{r\ne j}k_r .
 \end{equation}
-Figure~\ref{fig:steiner} gives an example. The point $\theta_S$ is a critical point iff $k^*\ge2$
-(Lemma~\ref{lem:decomp}).
+Figure~\ref{fig:steiner} gives an example. The point $\theta_S$ is critical iff $k^*\ge2$ (Lemma~\ref{lem:decomp}).
 
 \begin{figure}[t]
 \centering
@@ -168,25 +178,25 @@ contraction, by the neighbouring core's entries on the same channel, which are z
 $W$ only if the neighbour also uses that channel. A set of cores therefore changes $W$ through unused channels only
 if it is connected and all its cores use them together; the change is then a product of one small entry per core.
 To produce component $r$ in this way, the set must contain every core on which $\pi_r$ differs from $\pi_j$, hence
-all of $\St(V_r)$. With entries of size $t$ on the $k_r$ cores of $\St(V_r)$,
+all of $\St(V_r)$. With entries of size $\tau$ on the $k_r$ cores of $\St(V_r)$,
 \begin{equation}\label{eq:route}
-L-L_S=-c_r\,t^{k_r}+O(t^{2k_r}),\qquad c_r=s_r\,s_j^{(K-k_r)/K}
+L-L_S=-c_r\,\tau^{k_r}+O(\tau^{2k_r}),\qquad c_r=s_r\,s_j^{(K-k_r)/K}
 \end{equation}
-(Proposition~\ref{prop:route}, at $a_v=s_j^{1/K}$). So the order is at most $k^*$.
+(Proposition~\ref{prop:route}, at the balanced point). So the order is at most $k^*$.
 
 \paragraph{Combining two cheaper perturbations.} A perturbation can also change the indices of $W$ on a set
 $B$ of cores at lower cost, in two ways:
 \begin{itemize}
 \item if $B=\{v\}$ is a single core, by rotating its vector $q_v$ toward another basis vector, keeping the used
 channel; the change in $W$ is linear in the rotation angle;
-\item if $\lvert B\rvert\ge2$, by a new channel along $\St(B)$ as above; the change in $W$ has size $\epsilon$ when each
-of the $\lvert\St(B)\rvert$ entries has size $\epsilon^{1/\lvert\St(B)\rvert}$.
+\item if $\lvert B\rvert\ge2$, by a new channel along $\St(B)$ as above; the change in $W$ has size $\eta$ when each
+of the $\lvert\St(B)\rvert$ entries has size $\eta^{1/\lvert\St(B)\rvert}$ (in units of $a$).
 \end{itemize}
-Each such perturbation moves $W$ away from $s_jU_j$, which costs $\frac12s_j^2\epsilon^2$ at second order. Two of
-them on disjoint core sets $B_1,B_2$ also produce, at second order, the product tensor with modified indices on
-$B_1\cup B_2$. If that tensor is an unlearned component $r$, this gains $s_rs_j\epsilon_1\epsilon_2$. The net
-change is a quadratic form in the amplitudes, which is negative in some direction iff the gains beat the costs.
-The matrix below records the gains.
+Each such perturbation moves $W$ away from $s_jU_j$, which costs $\frac12s_j^2\eta^2$ at second order. Two of them on
+disjoint core sets $B_1,B_2$ also produce, at second order, the product tensor with modified indices on
+$B_1\cup B_2$. If that tensor is an unlearned component $r$, this gains $s_rs_j\eta_1\eta_2$. The net change is a
+quadratic form in the amplitudes, which is negative in some direction iff the gains beat the costs. The matrix below
+records the gains.
 
 \begin{definition}[Coupling matrix]\label{def:coupling}
 For $\ell\ge1$, let $\mathcal N_\ell$ be the set of pairs $(B,\beta)$, where $B$ is a nonempty set of cores with
@@ -200,45 +210,60 @@ s_r & \text{if }B_1\cap B_2=\emptyset\text{ and the string equal to }\beta_1\tex
 0 & \text{otherwise.}\end{cases}
 \end{equation}
 Let $\mu_\ell$ be its largest eigenvalue, and
-\begin{equation}
-\ell^*=\min\{\ell<k^*/2:\ \mu_\ell>s_j\}\qquad(\ell^*=\infty\text{ if there is no such }\ell).
+\begin{equation}\label{eq:lstar}
+\ell^*=\min\{\ell\ge1:\ \mu_\ell>s_j\}\qquad(\ell^*=\infty\text{ if there is no such }\ell).
 \end{equation}
 \end{definition}
 
-$M_\ell$ has nonnegative entries, and $\mu_\ell$ is nondecreasing in $\ell$ because $M_\ell$ is a principal submatrix of
-$M_{\ell+1}$. A nonzero entry requires a component $r$ with $V_r=B_1\sqcup B_2$, so if no component can be split into
-two pieces with Steiner subtrees of at most $\ell$ cores, then $M_\ell=0$.
+An unordered pair of elements determines one string, hence at most one component, so each unordered pair contributes
+one weight $s_r$ and $\frac12x^\top M_\ell x=\sum_{\{n_1,n_2\}}M_\ell[n_1,n_2]x_{n_1}x_{n_2}$, summed over unordered pairs.
+$M_\ell$ is symmetric with nonnegative entries, so $\mu_\ell$ is also its spectral radius (Perron--Frobenius), and $\mu_\ell$ is
+nondecreasing in $\ell$ because $M_\ell$ is a principal submatrix of $M_{\ell+1}$. A nonzero entry requires a component $r$
+with $V_r=B_1\sqcup B_2$, so if no $V_r$ splits into two sets whose Steiner subtrees have at most $\ell$ cores, then
+$M_\ell=0$.
 
-At level $\ell=1$ only single-core rotations occur. The corresponding block of the Hessian at $\theta_S$ (balanced,
-$a_v=s_j^{1/K}$) is
+At level $\ell=1$ only single-core rotations occur. Let $z_u$ be the entry of $G_u$ with a physical index other than that
+of $q_u$ and all edge indices $0$. The block of the Hessian at $\theta_S$ in these coordinates is
 \begin{equation}\label{eq:hessblock}
-H_{\rm rot}=s_j^{(K-2)/K}\big(s_jI-M_1\big),
+H_{\rm rot}=s_j\,D\big(s_jI-M_1\big)D,\qquad D=\mathrm{diag}(1/a_u),
 \end{equation}
-so $\mu_1>s_j$ iff this block has a negative eigenvalue. For $\ell\ge2$ the combined perturbation has
-$\lVert\theta-\theta_S\rVert\sim\epsilon^{1/\ell}$ and lowers the loss by $\sim\epsilon^2$, which is order $2\ell$ in the distance.
+which is $s_j^{(K-2)/K}(s_jI-M_1)$ at the balanced point. Since $D$ is invertible, $H_{\rm rot}$ has a negative eigenvalue iff
+$\mu_1>s_j$. For $\ell\ge2$ the combined perturbation has $\lVert\theta-\theta_S\rVert\sim\eta^{1/\ell}$ and lowers the loss by
+$\sim\eta^2$, which is order $2\ell$ in the distance.
 
 \section{Main result}
 
 \begin{theorem}[Order of the saddle after one learned component]\label{thm:main}
-Let $W^*$ be as in \eqref{eq:target} and $\theta_S$ as in \eqref{eq:saddle}, with $k^*\ge2$. Assume
+Let $W^*$ be as in \eqref{eq:target} and $\theta_S$ as in \eqref{eq:saddle}, with $\mathcal R\ne0$ and $k^*\ge2$. Assume
 \begin{enumerate}[label=(\alph*)]
 \item $\mu_\ell\ne s_j$ for every $\ell<k^*/2$;
-\item $\chi_e\ge2$ on the edges of $\St(V_r)$ for some $r$ with $k_r=k^*$; and, if $\ell^*<\infty$, there is a set
-$X\subseteq\mathcal N_{\ell^*}$ such that the submatrix of $M_{\ell^*}$ on $X$ has largest eigenvalue above $s_j$ and every
-edge $e$ has $\chi_e-1\ge\#\{(B,\beta)\in X:\lvert B\rvert\ge2,\ e\text{ is an edge of }\St(B)\}$.
+\item if $2\ell^*\ge k^*$: $\chi_e\ge2$ on the edges of $\St(V_r)$ for some $r$ with $k_r=k^*$;\\
+if $2\ell^*<k^*$: there is a set $X\subseteq\mathcal N_{\ell^*}$ such that the submatrix of $M_{\ell^*}$ on $X$ has largest
+eigenvalue above $s_j$ and every edge $e$ has $\chi_e-1\ge\#\{(B,\beta)\in X:\lvert B\rvert\ge2,\ e\text{ is an edge of }\St(B)\}$.
 \end{enumerate}
 Then
 \[
-\ord(\theta_S)=\begin{cases}k^* & \text{if }\mu_\ell<s_j\text{ for all }\ell<k^*/2,\\
-2\ell^* & \text{otherwise.}\end{cases}
+\ord(\theta_S)=\min(k^*,\,2\ell^*).
 \]
 \end{theorem}
 
-Assumption (a) excludes boundary cases. Assumption (b) provides the unused channels that the descent
-perturbations of Section~\ref{sec:mechanisms} need. The theorem follows from three bounds, proved in
-Section~\ref{sec:proofs}: $\ord\le k^*$ (Proposition~\ref{prop:route}), $\ord\ge\min(k^*,2\ell)$ whenever
-$\mu_{\ell-1}<s_j$ (Proposition~\ref{prop:lower}), and $\ord\le2\ell$ whenever $\mu_\ell>s_j$ and $\ell<k^*/2$
-(Proposition~\ref{prop:sharp}). The lower bound holds for any residual $\mathcal R$, not only sums of basis products.
+Assumption (a) excludes boundary cases. Assumption (b) provides the unused channels needed by the descent of order
+$k^*$ (first case) or $2\ell^*$ (second case). The theorem follows from three bounds, proved in
+Section~\ref{sec:proofs}: $\ord\le k^*$ (Proposition~\ref{prop:route}); $\ord\ge\min(k^*,2\ell)$ whenever
+$\mu_{\ell-1}<s_j$ (Proposition~\ref{prop:lower}); and $\ord\le2\ell$ whenever $\mu_\ell>s_j$ and $\ell<k^*/2$
+(Proposition~\ref{prop:sharp}).
+
+When $2\ell^*<k^*$, the descent of order $2\ell^*$ moves toward index strings that are not components of the target:
+each element $(B,\beta)$ it uses with $\lvert B\rvert\ge2$ has $\lvert\St(B)\rvert\le\ell^*<k^*$, while producing a component
+alone would require $B=V_r$ and hence $\lvert\St(B)\rvert\ge k^*$. Components appear only through pairs of elements.
+
+\begin{remark}[General targets]\label{rem:general}
+The lower bound does not need \eqref{eq:target}. For any $W^*$ and unit vectors $q_v$, let $U_j=\bigotimes_vq_v$,
+$s_j=\ip{W^*}{U_j}>0$, $\mathcal R=W^*-s_jU_j$, and $\theta_S$ as in \eqref{eq:saddle}. Then $\theta_S$ is critical iff
+$P_{\{v\}}\mathcal R=0$ for every core $v$ (notation of Section~\ref{sec:proofs}), and Proposition~\ref{prop:lower} holds with the
+condition $\lambda_{\max}(S_{\ell-1})<s_j$ on the operator defined there, which reduces to $\mu_{\ell-1}<s_j$ for targets
+\eqref{eq:target}.
+\end{remark}
 
 \begin{corollary}\label{cor:cases}
 Under the assumptions of Theorem~\ref{thm:main}:
@@ -247,8 +272,8 @@ Under the assumptions of Theorem~\ref{thm:main}:
 \item If $k^*\in\{3,4\}$, the order is $k^*$ if $\mu_1<s_j$ and $2$ if $\mu_1>s_j$. So the order is $k^*$ unless the
 Hessian has a negative eigenvalue.
 \item If $W^*=s_jU_j+s_rU_r$ with $s_r<s_j$ (the larger component was learned), the order is $k_r$.
-\item If $W^*=s_jU_j+s_rU_r$ with $s_r>s_j$, let $\ell_0=\min\max(\lvert\St(B_1)\rvert,\lvert\St(B_2)\rvert)$ over partitions
-$V_r=B_1\sqcup B_2$. The order is $2\ell_0$ if $\ell_0<k_r/2$, and $k_r$ otherwise.
+\item If $W^*=s_jU_j+s_rU_r$ with $s_r>s_j$, let $\ell_0=\min\max(\lvert\St(B_1)\rvert,\lvert\St(B_2)\rvert)$ over partitions of
+$V_r$ into two nonempty sets $B_1,B_2$. The order is $\min(k_r,2\ell_0)$.
 \item The order is below $k^*$ while the Hessian is positive semidefinite only if $k^*\ge5$.
 \end{enumerate}
 \end{corollary}
@@ -259,31 +284,40 @@ then the order is $k_r$, the size of a Steiner subtree, which depends on the tre
 \begin{example}[Order below $k^*$ with a positive semidefinite Hessian]\label{ex:pairstar}
 MPS with six cores, $d=\chi=2$, learned $\pi_j=000000$ with $s_j=1$, and two unlearned components $\pi_1=110001$ and
 $\pi_2=110010$ with weight $0.8$ each. Here $V_1=\{0,1,5\}$, so $k_1=6$, and $V_2=\{0,1,4\}$, so $k_2=5$; hence $k^*=5$.
-No component differs from $\pi_j$ on exactly two cores, so $M_1=0$ and the Hessian is positive semidefinite. In
-$M_2$, the pair $(\{0,1\},11)$ couples with $(\{5\},1)$ through component $1$ and with $(\{4\},1)$ through
-component $2$, so $\mu_2\ge0.8\sqrt2\approx1.13>s_j$. Thus $\ell^*=2<k^*/2$ and the order is $4$. The descent uses a
-new channel on cores $0,1$ that produces indices $11$ there (the string $110000$, not a component of $W^*$), together
-with rotations of cores $4$ and $5$. Numerically, $\min_{\lVert\theta-\theta_S\rVert=t}L-L_S$ has slope $4.000$ in $t$ and
-coefficient $-0.0350$, equal to the prediction $-(2\cdot0.8^2-1)/8$. With weights $0.6$, $\mu_2=0.85<1$ and the order is
-$5$.
+No component differs from $\pi_j$ on exactly two cores, so $M_1=0$. In $M_2$, the element $(\{0,1\},11)$ is coupled to
+$(\{5\},1)$ through component 1 and to $(\{4\},1)$ through component 2, so $\mu_2=0.8\sqrt2\approx1.13>s_j$ and
+$\ell^*=2$. Theorem~\ref{thm:main} gives order $\min(5,4)=4$. The Hessian is positive semidefinite: $\mu_1=0<s_j$, so
+Proposition~\ref{prop:lower} with $\ell=2$ gives order $\ge4>2$.
+
+The descent uses a new channel on cores 0 and 1 with entries $u,w$ that produce the indices $11$ there (the string
+$110000$, not a component), together with rotations $\alpha,\beta$ of cores 4 and 5. With $y=uw$ and in units $s_j=1$,
+$L-L_S=\frac12(y^2+\alpha^2+\beta^2)-0.8\,y(\alpha+\beta)$ plus higher-order terms. Minimizing over $\alpha,\beta$ gives
+$\alpha=\beta=0.8y$ and $L-L_S=-0.14\,y^2$. On the sphere $u^2+w^2=\tau^2$, $y\le\tau^2/2$, so this family reaches
+$-0.035\,\tau^4=-(2\cdot0.8^2-1)\tau^4/8$. Numerically, the minimum of $L-L_S$ over all of the sphere
+$\lVert\theta-\theta_S\rVert=\tau$ has slope $4.000$ in $\tau$ and coefficient $-0.0350$, so nothing else contributes at order
+$\tau^4$. With weights $0.6$ instead, $\mu_2=0.6\sqrt2\approx0.85<1$ and the order is $5$.
 \end{example}
 
-\section{Plateau lengths}
+\section{Plateau lengths}\label{sec:plateaus}
 
-\begin{proposition}[Escape time; derived at leading order]\label{prop:escape}
-Start gradient flow at $\theta_S$ plus a perturbation of size $\varepsilon$ along an order-$p$ descent direction of
-Section~\ref{sec:mechanisms}. At leading order in $\varepsilon$, with the other variables relaxed to their
-instantaneous minimum, the amplitude $b$ of the descent obeys $\dot b=c\,b^{p-1}$ with $c>0$, so the time to leave
-the saddle is
+The following is a leading-order derivation, not a theorem.
+
+\paragraph{Escape time.} Start gradient flow at the balanced $\theta_S$ plus a perturbation of size $\delta$ along an
+order-$p$ descent of Section~\ref{sec:mechanisms}. At leading order in $\delta$, with the other variables relaxed to their
+instantaneous minimum, the amplitude $b$ of the descent obeys $\dot b=c\,b^{p-1}$ with $c>0$, so the time to leave the
+saddle is
 \begin{equation}\label{eq:escape}
-t_{\rm esc}\simeq\begin{cases}\ln(1/\varepsilon)/c, & p=2,\\[2pt] \varepsilon^{-(p-2)}/\big((p-2)\,c\big), & p\ge3.\end{cases}
+t_{\rm esc}\simeq\begin{cases}\ln(1/\delta)/c, & p=2,\\[2pt] \delta^{-(p-2)}/\big((p-2)\,c\big), & p\ge3.\end{cases}
 \end{equation}
-For a new channel along $\St(V_r)$ (equal entries), $p=k_r$ and $c=c_r=s_rs_j^{(K-k_r)/K}$.
-\end{proposition}
+This is derived (Section~\ref{sec:escape-deriv}) in three cases: a new channel along $\St(V_r)$ with equal entries
+($p=k_r$, $c=c_r=s_rs_j^{(K-k_r)/K}$); pure rotations ($\ell^*=1$, $p=2$), where the escape is a linear instability with
+rate $c=-\lambda_{\min}(H_{\rm rot})$; and the descent of order $2\ell^*$ when $X$ contains a single element with
+$\lvert B\rvert\ge2$. When $2\ell^*<k^*$ both descents are present, and the lower order governs the escape only for $\delta$
+below a crossover scale set by their coefficients.
 
-In a run from small initialization of scale $\sigma$, the entries that will grow are of order $\sigma$ when the flow
-reaches $\theta_S$, so the plateau there lasts $\propto\ln(1/\sigma)$ or $\propto\sigma^{-(p-2)}$. These entries already grow
-somewhat while component $j$ is being learned. For $W^*=s_jU_j+s_rU_r$ with $s_r<s_j$, accounting for this growth
+\paragraph{From small initialization.} In a run from initialization scale $\sigma$, the entries that will grow are of order
+$\sigma$ when the flow reaches $\theta_S$, so the plateau there lasts $\propto\ln(1/\sigma)$ or $\propto\sigma^{-(p-2)}$. These
+entries already grow while component $j$ is being learned. For $W^*=s_jU_j+s_rU_r$ with $s_r<s_j$, accounting for this growth
 gives the time $\Delta t$ between learning $j$ and learning $r$:
 \begin{equation}\label{eq:twocomp}
 \Delta t\simeq\frac{1-s_r/s_j}{s_rs_j^{(K-2)/K}}\ln\frac1\sigma\quad(k_r=2),\qquad
@@ -293,20 +327,20 @@ where the second formula assumes an initialization aligned with the target's bas
 
 \paragraph{Evidence.}
 \begin{itemize}
-\item \emph{Order.} Minimizing $L-L_S$ numerically over spheres of radius $t$ in 32 cases (MPS, binary and HT trees,
-$k^*$ from $2$ to $7$, including residuals that are not sums of basis products) gives slopes within $0.003$ of the
-order predicted by Theorem~\ref{thm:main} in all 30 cases it covers; 12 further cases computed with independent code
-agree to $5\cdot10^{-4}$.
+\item \emph{Order.} Minimizing $L-L_S$ numerically over spheres of radius $\tau$ in 32 cases (MPS, binary and HT trees,
+$k^*$ from $2$ to $7$, including targets not of the form \eqref{eq:target}) gives slopes within $0.003$ of the order
+predicted by Theorem~\ref{thm:main} in all 30 cases it covers; 12 further cases computed with independent code agree to
+$5\cdot10^{-4}$.
 \item \emph{Two components, $s_r<s_j$.} In about 11,600 gradient-flow runs on nine trees ($K$ from $3$ to $15$), the
 fitted exponent of $\Delta t$ in $1/\sigma$ is $k_r-2$ for $k_r=3,4,5$, and for $k_r=6,7$ on two trees with
 balanced initialization. For $k_r=2$ a logarithmic law fits better than a power law in all 14 settings, with slope
 $0.98$--$1.01$ against the value $1$ predicted by \eqref{eq:twocomp}. On every edge outside $\St(V_r)$ the second
 singular value of the corresponding matricization of $W$ stays below $4.3\,\sigma^2s_r$.
 \item \emph{Order $2\ell^*<k^*$.} A pre-registered test (about 2,800 runs) started gradient flow at $\theta_S$ plus a
-perturbation of size $\varepsilon$ and fitted $t_{\rm esc}\propto\varepsilon^{-\gamma}$. For $\varepsilon$ below the scale at
-which the order-$2\ell^*$ descent is predicted to overtake the order-$k^*$ one, it found $\gamma=2.001\pm0.001$ for
-$p=4$ ($k^*=5$ and $6$) and $\gamma=3.996$--$3.998$ for $p=6$ ($k^*=7$); the exponent $k^*-2$ fits $10^3$--$10^5$
-times worse. Above that scale the results were mixed. This test has not been independently re-checked.
+perturbation of size $\delta$ and fitted $t_{\rm esc}\propto\delta^{-\gamma}$. For $\delta$ below the predicted crossover it
+found $\gamma=2.001\pm0.001$ for $p=4$ ($k^*=5$ and $6$) and $\gamma=3.996$--$3.998$ for $p=6$ ($k^*=7$); the exponent
+$k^*-2$ fits $10^3$--$10^5$ times worse. Above the crossover the results were mixed. This test has not been
+independently re-checked.
 \end{itemize}
 
 \section{Relation to prior work}\label{sec:prior}
@@ -332,203 +366,232 @@ for one saddle (a parity target, their Prop.~5.3) and do not study the dynamics.
 
 \paragraph{What is new.}
 \begin{enumerate}[label=(\arabic*)]
-\item A lower bound on the order at every saddle with one learned component, matching the upper bound, so the order is
-determined exactly. Previously lower bounds were known only for DLNs and one parity saddle.
-\item The order is set by the smallest single Steiner subtree $\St(V_r)$. For two components, the edges where the model
-rank is below the target rank are exactly the edges of $\St(V_r)$, so the upper bound of \citet{furman2026benign} already
-equals $k_r$ and the new part is the lower bound. With more components, those edges form the union of all the Steiner
-subtrees, often the whole tree, while the order is set by the smallest one.
+\item A lower bound on the order at the saddles \eqref{eq:saddle}, matching the upper bound, so the order is determined
+exactly. Previously lower bounds were known only for DLNs and one parity saddle.
+\item The order is set by the smallest single Steiner subtree $\St(V_r)$. At $\theta_S$ an edge has model rank below target
+rank exactly when cores of $\bigcup_rV_r$ lie on both sides of it, so the set of such edges is the edge set of
+$\St(\bigcup_rV_r)$. For two components this is $\St(V_r)$, the upper bound of \citet{furman2026benign} already equals
+$k_r$, and the new part is the lower bound. With more components, $\St(\bigcup_rV_r)$ can be much larger than the smallest
+$\St(V_r)$, which sets the order.
 \item The case $\mu_\ell>s_j$: the order $2\ell^*$, and descent through index strings that are not components of the target.
 \item The escape laws \eqref{eq:escape}--\eqref{eq:twocomp} for TTNs and their numerical tests.
 \end{enumerate}
 
 \section{Proofs}\label{sec:proofs}
 
-Write $\varepsilon=\lVert\theta-\theta_S\rVert$, and let $\nu_v$ be the vector of entries of core $v$ on unused channels (entries
-with at least one nonzero edge index).
+Throughout, $\varepsilon=\lVert\theta-\theta_S\rVert$, $\nu_v$ is the vector of entries of core $v$ on unused channels (entries with
+at least one nonzero edge index), and $C_0,C_1,C_2,C_\gamma,M$ denote constants that do not depend on $\varepsilon$. Sets of
+cores in this section are denoted $A,A_1,A_2,B$.
 
 \subsection{Decomposition by the cores on which a tensor differs from $U_j$}
 
-Let $P_v=q_vq_v^\top$, $P_v^\perp=I-P_v$, and for a set $B$ of cores
+Let $p_v=q_vq_v^\top$ and $p_v^\perp=I-p_v$ on $\mathbb R^{D_v}$, and for a set $B$ of cores
 \[
-\Pi_B=\bigotimes_{v\in B}P_v^\perp\otimes\bigotimes_{v\notin B}P_v .
+P_B=\bigotimes_{v\in B}p_v^\perp\otimes\bigotimes_{v\notin B}p_v ,
 \]
-The $2^K$ projections $\Pi_B$ are orthogonal and sum to the identity. Let $H_B$ be the range of $\Pi_B$: the tensors that
-differ from $U_j$ exactly on the cores of $B$. A basis of $H_B$ is given by the products of basis vectors whose indices
-differ from those of $\pi_j$ on every core of $B$, and $H_{B_1}\otimes H_{B_2}\cong H_{B_1\sqcup B_2}$ for disjoint sets.
-Let $\mathcal R_B=\Pi_B\mathcal R$. By \eqref{eq:target},
+with tensor factors labelled by cores. The $2^K$ projections $P_B$ are orthogonal and sum to the identity. Let
+$H_B=\bigotimes_{v\in B}q_v^\perp$ (factors labelled by the cores of $B$); it embeds in $\bigotimes_v\mathbb R^{D_v}$ by tensoring with
+$q_v$ for $v\notin B$, and its image is the range of $P_B$, the tensors that differ from $U_j$ exactly on the cores of $B$.
+A basis of $H_B$ is given by the products of basis vectors whose indices differ from those of $\pi_j$ on every core of $B$.
+For disjoint $B_1,B_2$, $H_{B_1}\otimes H_{B_2}=H_{B_1\sqcup B_2}$, with factors matched by core label. Let $\mathcal R_B=P_B\mathcal R$,
+viewed in $H_B$. By \eqref{eq:target},
 \begin{equation}\label{eq:RB}
 \mathcal R_B=\sum_{r:\,V_r=B}s_rU_r,\qquad\text{so}\qquad k^*=\min\{\lvert\St(B)\rvert:\mathcal R_B\ne0\}.
 \end{equation}
 
 \begin{lemma}\label{lem:decomp}
 (i) $\theta_S$ is critical iff $\mathcal R_{\{v\}}=0$ for every core $v$, i.e.\ iff $k^*\ge2$.
-(ii) Let $N(\theta)=\ip{U_j}{W(\theta)}$ and, for $B\ne\emptyset$, $m_B=\Pi_BW/N$. Wherever $N\ne0$,
+(ii) Let $\omega(\theta)=\ip{U_j}{W(\theta)}$ and, for $B\ne\emptyset$, $m_B=P_BW/\omega\in H_B$. Wherever $\omega\ne0$,
 \begin{equation}\label{eq:identity}
-L(\theta)-L_S=\tfrac12(N-s_j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{N^2}{2}\lVert m_B\rVert^2-N\ip{\mathcal R_B}{m_B}\Big].
+L(\theta)-L_S=\tfrac12(\omega-s_j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{\omega^2}{2}\lVert m_B\rVert^2-\omega\ip{\mathcal R_B}{m_B}\Big].
 \end{equation}
 \end{lemma}
 \begin{proof}
-(i) Entries on unused channels do not change $W$ at first order (Section~\ref{sec:mechanisms}). A change of the used
-entries of core $v$ changes $W$ within $H_\emptyset\oplus H_{\{v\}}$. So the gradient vanishes iff $\mathcal R$ has no
+(i) Entries on unused channels do not change $W$ at first order (Section~\ref{sec:mechanisms}). A change of the entries of
+core $v$ on the used channel changes $W$ within $H_\emptyset\oplus H_{\{v\}}$. So the gradient vanishes iff $\mathcal R$ has no
 component in any $H_{\{v\}}$; its component in $H_\emptyset$ is zero because $\ip{U_j}{\mathcal R}=0$.
-(ii) By orthogonality, $\lVert W-W^*\rVert^2=\sum_B\lVert\Pi_BW-\Pi_BW^*\rVert^2$, with $\Pi_\emptyset(W-W^*)=(N-s_j)U_j$, and for
-$B\ne\emptyset$, $\Pi_BW^*=\mathcal R_B$ and $\Pi_BW=Nm_B$. Also $L_S=\frac12\sum_B\lVert\mathcal R_B\rVert^2$.
+(ii) By orthogonality, $\lVert W-W^*\rVert^2=\sum_B\lVert P_BW-P_BW^*\rVert^2$, with $P_\emptyset(W-W^*)=(\omega-s_j)U_j$, and for
+$B\ne\emptyset$, $P_BW^*=\mathcal R_B$ and $P_BW=\omega m_B$. Also $L_S=\frac12\sum_B\lVert\mathcal R_B\rVert^2$.
 \end{proof}
 
 \subsection{Upper bound $k^*$}
 
 \begin{proposition}\label{prop:route}
-Let $k_r=k^*$ and $\chi_e\ge2$ on the edges of $\St(V_r)$. At $a_v=s_j^{1/K}$, set the entry of each core $v\in\St(V_r)$
+Let $k_r=k^*$ and $\chi_e\ge2$ on the edges of $\St(V_r)$. At the balanced point, set the entry of each core $v\in\St(V_r)$
 with physical index given by $\pi_r$ on the sites of $v$, index $1$ on the edges of $\St(V_r)$ and index $0$ on its other
-edges, to $t$. Then $\lVert\theta(t)-\theta_S\rVert=\sqrt{k^*}\,t$ and
+edges, to $\tau$. Then $\lVert\theta(\tau)-\theta_S\rVert=\sqrt{k^*}\,\tau$ and
 \[
-L(\theta(t))-L_S=-s_r\,s_j^{(K-k^*)/K}\,t^{k^*}+\tfrac12s_j^{2(K-k^*)/K}\,t^{2k^*}.
+L(\theta(\tau))-L_S=-s_r\,s_j^{(K-k^*)/K}\,\tau^{k^*}+\tfrac12s_j^{2(K-k^*)/K}\,\tau^{2k^*}.
 \]
 \end{proposition}
 \begin{proof}
 Expand the contraction by choosing, for each core of $\St(V_r)$, either its original entry or the new one. If a term
 uses the new entry on one core of $\St(V_r)$ and the original entry on a neighbouring core of $\St(V_r)$, the shared
 edge contracts index $1$ with index $0$ and the term vanishes. Only two terms remain: all original entries, giving
-$s_jU_j$, and all new entries on $\St(V_r)$, giving $t^{k^*}s_j^{(K-k^*)/K}U$, where $U$ has the indices of $\pi_r$ on the
+$s_jU_j$, and all new entries on $\St(V_r)$, giving $\tau^{k^*}a^{K-k^*}U$, where $U$ has the indices of $\pi_r$ on the
 sites of $\St(V_r)$ and those of $\pi_j$ elsewhere. Since $\pi_r=\pi_j$ outside $V_r$, $U=U_r$. Hence
-$W-W^*=-\mathcal R+t^{k^*}s_j^{(K-k^*)/K}U_r$, and $\ip{\mathcal R}{U_r}=s_r$.
+$W-W^*=-\mathcal R+\tau^{k^*}a^{K-k^*}U_r$, and $\ip{\mathcal R}{U_r}=s_r$.
 \end{proof}
 
 \subsection{Lower bound}
 
 \paragraph{Cumulants.} Consider families $f=(f_B)_{B\subseteq V}$ with $f_B\in H_B$, with the product
-$(f*g)_B=\sum_{B_1\sqcup B_2=B}f_{B_1}\otimes g_{B_2}$. This product is commutative and associative with unit
-$(1,0,0,\dots)$, and every family with $f_\emptyset=0$ is nilpotent, so $\exp$ and $\log$ are finite sums and
-$\log(f*g)=\log f+\log g$. With $m_\emptyset=1$, define $\kappa=\log m$. Explicitly,
+$(f*g)_B=\sum_{B_1\sqcup B_2=B}f_{B_1}\otimes g_{B_2}$. Because tensor factors are labelled by core, this product is commutative
+and associative, with unit $(1,0,0,\dots)$, and every family with $f_\emptyset=0$ is nilpotent; so $\exp$ and $\log$ are finite
+sums and $\log(f*g)=\log f+\log g$. With $m_\emptyset=1$, define $\kappa=\log m$. Explicitly,
 \[
-m_B=\sum_{\Pi\in\mathrm{Part}(B)}\ \bigotimes_{C\in\Pi}\kappa_C,\qquad
-\kappa_B=\sum_{\Pi\in\mathrm{Part}(B)}(-1)^{\lvert\Pi\rvert-1}(\lvert\Pi\rvert-1)!\bigotimes_{C\in\Pi}m_C ,
+m_B=\sum_{\mathcal P\in\mathrm{Part}(B)}\ \bigotimes_{A\in\mathcal P}\kappa_A,\qquad
+\kappa_B=\sum_{\mathcal P\in\mathrm{Part}(B)}(-1)^{\lvert\mathcal P\rvert-1}(\lvert\mathcal P\rvert-1)!\bigotimes_{A\in\mathcal P}m_A ,
 \]
-sums over set partitions of $B$. The $m_B$ and $\kappa_B$ are analytic near $\theta_S$ and vanish there for
-$B\ne\emptyset$, so $\lVert\kappa_B\rVert\le C_0\varepsilon$.
+sums over set partitions $\mathcal P$ of $B$. Near $\theta_S$, $\omega$ is close to $s_j\ne0$, so the $m_B$ and $\kappa_B$ are
+analytic there; they vanish at $\theta_S$ for $B\ne\emptyset$, so $\lVert\kappa_B\rVert\le C_0\varepsilon$.
 
 \begin{lemma}\label{lem:locality}
 For $\lvert B\rvert\ge2$, near $\theta_S$, $\lVert\kappa_B\rVert\le C_0\prod_{x\in\St(B)}\lVert\nu_x\rVert$. In particular
 $\lVert\kappa_B\rVert\le C_0\varepsilon^{\lvert\St(B)\rvert}$.
 \end{lemma}
 \begin{proof}
-Fix $x\in\St(B)$ and suppose $\nu_x=0$. Then all nonzero entries of $G_x$ have edge indices $0$, so $W$ factorizes at
-$x$: $W=g_x\otimes\bigotimes_bW_b$, where $g_x$ is the physical vector of $G_x$, $b$ runs over the components of $T$ with
-$x$ removed (node sets $V_b$), and $W_b$ is the contraction of component $b$ with its edge to $x$ set to $0$. The
-projections $\Pi_B$ factorize core by core, so $m=m^{(x)}*\prod_bm^{(b)}$ with $m^{(x)}$ supported on $\{\emptyset,\{x\}\}$
-and $m^{(b)}$ on subsets of $V_b$. Hence $\kappa=\log m^{(x)}+\sum_b\log m^{(b)}$ is supported on subsets of $\{x\}$ or of a
-single $V_b$. $B$ is neither: if $x\in B$, then $B\not\subseteq\{x\}$ and $B\not\subseteq V_b$; if $x\notin B$ and
-$B\subseteq V_b$, then the connected set $V_b$ contains $\St(B)$, which contains $x$. So $\kappa_B=0$ whenever $\nu_x=0$ for
-some $x\in\St(B)$. In the power series of $\kappa_B$ around $\theta_S$, every monomial therefore contains a variable of
-$\nu_x$ for each $x\in\St(B)$; factoring these out and bounding the rest on a small polydisc gives the claim.
+\emph{Vanishing.} Fix $x\in\St(B)$ and suppose $\nu_x=0$. Then all nonzero entries of $G_x$ have edge indices $0$, so $W$
+factorizes at $x$: $W=g_x\otimes\bigotimes_bW_b$, where $g_x\in\mathbb R^{D_x}$ is the physical vector of $G_x$, $b$ runs over the
+components of $T$ with $x$ removed (node sets $V_b$), and $W_b$ is the contraction of component $b$ with its edge to $x$ set
+to index $0$. Correspondingly $\omega=\omega_x\prod_b\omega_b$ with $\omega_x=\ip{q_x}{g_x}$ and $\omega_b=\ip{\bigotimes_{v\in V_b}q_v}{W_b}$, all close
+to their nonzero values at $\theta_S$. The projections $P_B$ factorize core by core, so $m=m^{(x)}*\prod_bm^{(b)}$, where
+$m^{(x)}_{\{x\}}=p_x^\perp g_x/\omega_x$, $m^{(b)}_A=P^{(b)}_AW_b/\omega_b$ for $A\subseteq V_b$ (with $P^{(b)}_A$ the analogous projection on
+the sites of $V_b$), and each has unit component on $\emptyset$. Hence $\kappa=\log m^{(x)}+\sum_b\log m^{(b)}$ is supported on
+subsets of $\{x\}$ or of a single $V_b$. $B$ is neither: if $x\in B$, then $B\not\subseteq\{x\}$ and $B\not\subseteq V_b$; if
+$x\notin B$ and $B\subseteq V_b$, then the connected set $V_b$ contains $\St(B)$, which contains $x$. So $\kappa_B=0$ whenever
+$\nu_x=0$ for some $x\in\St(B)$.
+
+\emph{Bound.} Expand $\kappa_B$ in a power series in $\theta-\theta_S$, absolutely convergent on a polydisc of radius $2r_0$. Setting
+$\nu_x=0$ removes exactly the monomials containing a variable of $\nu_x$, and the result is $0$; so every monomial with nonzero
+coefficient contains a variable of $\nu_x$, for each $x\in\St(B)$. Fix an ordering of the variables, and from each monomial
+factor out, for each $x\in\St(B)$, the first variable of $\nu_x$ that it contains. The remaining series converges on the
+polydisc of radius $r_0$ and is bounded there, which gives the claim.
 \end{proof}
 
 \begin{proposition}\label{prop:lower}
-Let $\theta_S$ be critical and $2\le\ell\le\lceil k^*/2\rceil$. Let $S_{\ell-1}$ be the symmetric operator on
-$\bigoplus_{\lvert\St(C)\rvert\le\ell-1}H_C$ with blocks $(x,y)\mapsto\ip{\mathcal R_{C_1\sqcup C_2}}{x\otimes y}$ for disjoint $C_1,C_2$ and
-zero otherwise. If $\lambda_{\max}(S_{\ell-1})<s_j$, then $L(\theta)-L_S\ge-C\varepsilon^{\min(k^*,2\ell)}$ near $\theta_S$. In the
-basis of products of basis vectors, $S_{\ell-1}=M_{\ell-1}$.
+Let $\theta_S$ be critical and $2\le\ell\le\lceil k^*/2\rceil$. On $\mathcal H_{\ell-1}=\bigoplus H_A$, summed over nonempty $A$ with
+$\lvert\St(A)\rvert\le\ell-1$, define the symmetric bilinear form
+\[
+Q(x,y)=\sum_{A_1\cap A_2=\emptyset}\ip{\mathcal R_{A_1\sqcup A_2}}{x_{A_1}\otimes y_{A_2}},
+\]
+and let $S_{\ell-1}$ be its operator. If $\lambda_{\max}(S_{\ell-1})<s_j$, then $L(\theta)-L_S\ge-C_1\varepsilon^{\min(k^*,2\ell)}$ near
+$\theta_S$. For targets \eqref{eq:target}, $S_{\ell-1}=M_{\ell-1}$ in the basis of products of basis vectors.
 \end{proposition}
 \begin{proof}
-Let $p=\min(k^*,2\ell)$ and $y_C=\lVert\kappa_C\rVert$. Call $C$ \emph{small} if $\lvert\St(C)\rvert\le\ell-1$ and \emph{large}
-otherwise. Then: (F1) a large set has $\lvert\St(C)\rvert\ge\ell\ge2$, so $y_C\le C_0\varepsilon^\ell$ by Lemma~\ref{lem:locality};
-(F2) subsets of small sets are small; (F3) $\mathcal R_C=0$ for small $C$, since $\lvert\St(C)\rvert<k^*$; (F4) summing
-$\ip{\mathcal R_B}{\kappa_{C_1}\otimes\kappa_{C_2}}$ over all $B$ and all unordered partitions $B=C_1\sqcup C_2$ into small sets gives
-$\frac12\ip{\kappa_{\rm s}}{S_{\ell-1}\kappa_{\rm s}}\le\frac12\lambda_{\max}(S_{\ell-1})\lVert\kappa_{\rm s}\rVert^2$, where $\kappa_{\rm s}$ collects the
+Let $p=\min(k^*,2\ell)$ and $y_A=\lVert\kappa_A\rVert$. Call $A$ \emph{small} if $\lvert\St(A)\rvert\le\ell-1$ and \emph{large}
+otherwise. Then: (F1) a large set has $\lvert\St(A)\rvert\ge\ell\ge2$, so $y_A\le C_0\varepsilon^\ell$ by Lemma~\ref{lem:locality};
+(F2) subsets of small sets are small; (F3) $\mathcal R_A=0$ for small $A$, since $\lvert\St(A)\rvert<k^*$; (F4) summing
+$\ip{\mathcal R_B}{\kappa_{A_1}\otimes\kappa_{A_2}}$ over all $B$ and all unordered partitions $B=A_1\sqcup A_2$ into small sets gives
+$\frac12Q(\kappa_{\rm s},\kappa_{\rm s})\le\frac12\lambda_{\max}(S_{\ell-1})\lVert\kappa_{\rm s}\rVert^2$, where $\kappa_{\rm s}$ collects the
 cumulants of small sets.
 
 \emph{Quadratic term of \eqref{eq:identity}.} For small $B$, $m_B-\kappa_B$ is a sum of products of at least two cumulants of
-small sets (F2), each at most $C_0\varepsilon\,y_C$ for one factor $C$. So
+small sets (F2), each at most $C_0\varepsilon\,y_A$ for one factor $A$. So
 $\sum_{B\text{ small}}\lVert m_B\rVert^2\ge(1-C_2\varepsilon)\lVert\kappa_{\rm s}\rVert^2$; the terms with large $B$ are nonnegative and dropped.
 
 \emph{Linear term.} Only $B$ with $\mathcal R_B\ne0$ contribute, and they have $\lvert\St(B)\rvert\ge k^*$. Expanding $m_B$ over set
 partitions: the single cumulant gives $O(\varepsilon^{k^*})$ (Lemma~\ref{lem:locality}); two small blocks give (F4); one small and
-one large block give at most $\frac\gamma2y_{C_1}^2+C_\gamma\varepsilon^{2\ell}$ (Young's inequality and F1); two large blocks give
-$O(\varepsilon^{2\ell})$; three or more blocks give $O(\varepsilon)(y_{C_1}^2+y_{C_2}^2)$ if two blocks are small and $O(\varepsilon^{2\ell})$ otherwise.
-Summing, $\sum_B\ip{\mathcal R_B}{m_B}\le\frac12(\lambda_{\max}(S_{\ell-1})+M\gamma+C\varepsilon)\lVert\kappa_{\rm s}\rVert^2+C_\gamma\varepsilon^p$.
+one large block give at most $\frac\gamma2y_{A_1}^2+C_\gamma\varepsilon^{2\ell}$ (Young's inequality and F1); two large blocks give
+$O(\varepsilon^{2\ell})$; three or more blocks give $O(\varepsilon)(y_{A_1}^2+y_{A_2}^2)$ if two blocks are small and $O(\varepsilon^{2\ell})$ otherwise.
+With $M$ the number of terms in which a given $y_A^2$ appears,
+$\sum_B\ip{\mathcal R_B}{m_B}\le\frac12(\lambda_{\max}(S_{\ell-1})+M\gamma+C_0'\varepsilon)\lVert\kappa_{\rm s}\rVert^2+C_\gamma\varepsilon^p$.
 
-\emph{Conclusion.} By \eqref{eq:identity}, dropping $\frac12(N-s_j)^2$,
-$L-L_S\ge\frac N2[N(1-C_2\varepsilon)-\lambda_{\max}(S_{\ell-1})-M\gamma-C\varepsilon]\lVert\kappa_{\rm s}\rVert^2-NC_\gamma\varepsilon^p$. With
-$g=s_j-\lambda_{\max}(S_{\ell-1})>0$, $\gamma=g/(4M)$ and $N\ge s_j-C\varepsilon$, the bracket is positive for small $\varepsilon$, so
-$L-L_S\ge-C\varepsilon^p$.
+\emph{Conclusion.} By \eqref{eq:identity}, dropping $\frac12(\omega-s_j)^2$,
+$L-L_S\ge\frac\omega2[\omega(1-C_2\varepsilon)-\lambda_{\max}(S_{\ell-1})-M\gamma-C_0'\varepsilon]\lVert\kappa_{\rm s}\rVert^2-\omega C_\gamma\varepsilon^p$.
+With $g=s_j-\lambda_{\max}(S_{\ell-1})>0$, $\gamma=g/(4M)$ and $\omega\ge s_j-C_0''\varepsilon$, the bracket is positive for small $\varepsilon$,
+so $L-L_S\ge-C_1\varepsilon^p$.
 \end{proof}
 
 \subsection{Upper bound $2\ell$}
 
 \begin{proposition}\label{prop:sharp}
-Let $\ell<k^*/2$ and let $X\subseteq\mathcal N_\ell$ satisfy assumption (b) of Theorem~\ref{thm:main} with $\ell$ in place of
-$\ell^*$, with largest eigenvalue $\rho>s_j$ of $M_\ell$ restricted to $X$. Then some curve has
-$\lVert\theta(t)-\theta_S\rVert\le t$ and $L(\theta(t))-L_S\le-ct^{2\ell}$.
+Let $\ell<k^*/2$ and let $X\subseteq\mathcal N_\ell$ be such that $M_\ell$ restricted to $X$ has largest eigenvalue $\rho>s_j$ and
+$X$ satisfies the edge condition of Theorem~\ref{thm:main}(b). Then some curve has $\lVert\theta(\tau)-\theta_S\rVert\le\tau$ and
+$L(\theta(\tau))-L_S\le-c\,\tau^{2\ell}$ for some $c>0$.
 \end{proposition}
 \begin{proof}
-Take $a_v=a=s_j^{1/K}$ and a unit eigenvector $x\ge0$ of $M_\ell|_X$ for $\rho$ (Perron--Frobenius). For $0<\eta\le1$:
+Work at the balanced point. Let $x\ge0$ be a unit eigenvector of $M_\ell|_X$ for $\rho$; it exists by Perron--Frobenius since the
+entries are nonnegative, and $x\ge0$ makes the roots below real. For $0<\eta\le1$:
 \begin{itemize}
 \item for $(\{v\},\beta)\in X$, set the entry of $G_v$ with physical index $\beta$ and all edge indices $0$ to $a\eta x_{(\{v\},\beta)}$
 (a rotation of $q_v$);
-\item for $n=(B,\beta)\in X$ with $\lvert B\rvert\ge2$, let $h=\lvert\St(B)\rvert\le\ell$. On every edge of $\St(B)$ choose an unused index not
-chosen by any other such element of $X$ (possible by (b)). Give each core $u\in\St(B)$ the entry $a(\eta x_n)^{1/h}$ with
-physical index $\beta$ (if $u\in B$) or that of $\pi_j$ (if $u\notin B$), the chosen indices on the edges of $\St(B)$, and $0$
-on its other edges.
+\item for $n=(B,\beta)\in X$ with $\lvert B\rvert\ge2$, let $h=\lvert\St(B)\rvert\le\ell$. On every edge of $\St(B)$ choose an unused index
+chosen by no other such element of $X$ (possible by the edge condition). Give each core $u\in\St(B)$ the entry
+$a(\eta x_n)^{1/h}$ with physical index $\beta$ (if $u\in B$) or that of $\pi_j$ (if $u\notin B$), the chosen indices on the edges
+of $\St(B)$, and $0$ on its other edges.
 \end{itemize}
-Then $\lVert\theta-\theta_S\rVert\le C\eta^{1/\ell}$. In a nonzero term of the contraction, every connected set of edges carrying
-nonzero indices uses the entries of a single element $n$ and equals its $\St(B)$. So $W$ is a sum over collections of
-elements of $X$ on disjoint cores, each contributing the factor $\eta x_n$ and changing the indices on its set $B$. In
-particular $N=s_j$, and $m_B=\eta m_B^{(1)}+\eta^2m_B^{(2)}+O(\eta^3)$, where $m^{(1)}$ collects single elements and $m^{(2)}$ pairs.
+Then $\lVert\theta-\theta_S\rVert\le C_0\eta^{1/\ell}$.
+
+\emph{Structure of $W$.} Consider a nonzero term of the contraction and an edge $e$ carrying a nonzero index. That index was
+chosen by exactly one element $n$, so both cores at $e$ use entries of $n$. The entries of $n$ carry $n$'s indices on every
+edge of $\St(B)$ and $0$ on all other edges, so the term uses $n$'s entries on all of $\St(B)$ and on no core outside it. Hence
+each connected set of edges with nonzero indices is the edge set of $\St(B)$ for a single element, used completely. $W$ is
+therefore a sum over collections of elements of $X$ on pairwise disjoint cores, in which each element contributes the factor
+$\eta x_n$ (the $h$ roots multiply to $\eta x_n$) and changes the indices on its set $B$, and every other core contributes $a$
+times its original vector. In particular $W$ is a polynomial in $\eta$ with integer powers, $\omega=s_j$ exactly, and
+$m_B=\eta\,m_B^{(1)}+\eta^2m_B^{(2)}+O(\eta^3)$, where $m^{(1)}$ collects single elements and $m^{(2)}$ pairs of elements.
 
 \emph{Order $\eta$.} $\sum_B\lVert m^{(1)}_B\rVert^2=\lVert x\rVert^2=1$. No single element has $B=V_r$, since that would need
 $\lvert\St(B)\rvert\ge k^*>\ell$; so $\sum_B\ip{\mathcal R_B}{m^{(1)}_B}=0$ by \eqref{eq:RB}.
 
 \emph{Order $\eta^2$.} If $M_\ell[n_1,n_2]=s_r>0$, then $\St(B_1)$ and $\St(B_2)$ are disjoint: otherwise their union would be a
-connected set containing $V_r$ with at most $2\ell-1<k^*$ cores. So every nonzero entry of $M_\ell|_X$ corresponds to a pair
-on disjoint cores, and $\sum_B\ip{\mathcal R_B}{m^{(2)}_B}=\frac12x^\top M_\ell|_Xx=\frac\rho2$.
+connected set containing $V_r$ with at most $2\ell-1<k^*$ cores. So every nonzero entry of $M_\ell|_X$ corresponds to a pair of
+elements on disjoint cores, and $\sum_B\ip{\mathcal R_B}{m^{(2)}_B}=\frac12x^\top M_\ell|_Xx=\frac\rho2$.
 
-By \eqref{eq:identity} with $N=s_j$: $L-L_S=\frac{s_j^2}{2}\eta^2-\frac{s_j\rho}{2}\eta^2+O(\eta^3)=-\frac{s_j}{2}(\rho-s_j)\eta^2+O(\eta^3)$.
-Set $\eta=(t/C)^\ell$.
+By \eqref{eq:identity} with $\omega=s_j$: $L-L_S=\frac{s_j^2}{2}\eta^2-\frac{s_j\rho}{2}\eta^2+O(\eta^3)=-\frac{s_j}{2}(\rho-s_j)\eta^2+O(\eta^3)$.
+Setting $\eta=(\tau/C_0)^\ell$ gives the claim.
 \end{proof}
 
 \subsection{Proof of Theorem~\ref{thm:main} and Corollary~\ref{cor:cases}}
 
-If $k^*=2$, the curve of Proposition~\ref{prop:route} has order $2$, and every critical point has order at least $2$.
-Let $k^*\ge3$.
+If $k^*=2$, the curve of Proposition~\ref{prop:route} has order $2$, every critical point has order at least $2$, and
+$\min(2,2\ell^*)=2$. Let $k^*\ge3$.
 
-\emph{All $\mu_\ell<s_j$.} Proposition~\ref{prop:lower} with $\ell=\lceil k^*/2\rceil$ (using $\mu_{\lceil k^*/2\rceil-1}<s_j$) gives
-$\ord\ge k^*$, and Proposition~\ref{prop:route} gives $\ord\le k^*$.
+\emph{Case $2\ell^*\ge k^*$} (including $\ell^*=\infty$). Every $\ell<k^*/2$ has $\ell<\ell^*$, so $\mu_\ell\le s_j$, and $\mu_\ell<s_j$ by
+(a). Proposition~\ref{prop:lower} with $\ell=\lceil k^*/2\rceil$ gives $\ord\ge k^*$, and Proposition~\ref{prop:route} gives
+$\ord\le k^*$. So $\ord=k^*=\min(k^*,2\ell^*)$.
 
-\emph{Some $\mu_\ell>s_j$.} If $\ell^*=1$, Proposition~\ref{prop:sharp} gives $\ord\le2$, so $\ord=2$. If $\ell^*\ge2$, then
-$\mu_{\ell^*-1}<s_j$ by minimality and (a), so Proposition~\ref{prop:lower} at $\ell=\ell^*$ gives $\ord\ge2\ell^*$, and
-Proposition~\ref{prop:sharp} gives $\ord\le2\ell^*$. \qed
+\emph{Case $2\ell^*<k^*$.} If $\ell^*=1$, Proposition~\ref{prop:sharp} gives $\ord\le2$, so $\ord=2$. If $\ell^*\ge2$, then
+$\mu_{\ell^*-1}\le s_j$ by minimality, and $<s_j$ by (a); Proposition~\ref{prop:lower} at $\ell=\ell^*\le\lceil k^*/2\rceil$ gives
+$\ord\ge\min(k^*,2\ell^*)=2\ell^*$, and Proposition~\ref{prop:sharp} gives $\ord\le2\ell^*$. \qed
 
-\emph{Corollary.} (i) There is no $\ell<1$. (ii) The only level below $k^*/2$ is $\ell=1$. For \eqref{eq:hessblock}: rotating $q_u$ by
-$\epsilon_u$ toward another basis vector changes $W$ by an orthonormal tensor times $a^{K-1}\epsilon_u$, and two rotations on cores
-$u,v$ couple through any component with $V_r=\{u,v\}$ with coefficient $-s_ra^{K-2}$. So the block is
-$a^{2(K-1)}I-a^{K-2}M_1=s_j^{(K-2)/K}(s_jI-M_1)$. (iii) With one unlearned component, each row of $M_\ell$ has at most one
-nonzero entry, $s_r$, so $\mu_\ell\le s_r<s_j$. (iv) Same, with $\mu_\ell=s_r>s_j$ from the first $\ell$ that admits a partition,
-namely $\ell_0$. (v) For $k^*\le4$, an order below $k^*$ requires $\mu_1>s_j$, which makes the Hessian indefinite. \qed
+\emph{Corollary.} (i) Shown above. (ii) An order below $k^*\le4$ requires $2\ell^*<4$, i.e.\ $\ell^*=1$, i.e.\ $\mu_1>s_j$. For
+\eqref{eq:hessblock}: changing $z_u$ changes $W$ by $z_u\,s_j/a_u$ times an orthonormal tensor, and two such coordinates on cores
+$u,v$ couple through any component with $V_r=\{u,v\}$, with coefficient $-s_r\,s_j/(a_ua_v)$. So the block is
+$s_jD(s_jI-M_1)D$. (iii) With one unlearned component, each row of $M_\ell$ has at most one nonzero entry, $s_r$, so
+$\mu_\ell\le s_r<s_j$ for all $\ell$ and $\ell^*=\infty$. (iv) Each row again has at most one nonzero entry, and some entry is
+nonzero iff $\ell\ge\ell_0$; so $\mu_\ell=s_r>s_j$ for $\ell\ge\ell_0$, $\ell^*=\ell_0$, and the order is $\min(k_r,2\ell_0)$. (v) For
+$k^*\le4$, by (ii) an order below $k^*$ means order $2$, which is equivalent to a negative Hessian eigenvalue
+(Section~\ref{sec:setting}). \qed
 
-\subsection{Escape time (Proposition~\ref{prop:escape})}
+\subsection{Derivation of the escape times}\label{sec:escape-deriv}
 
-\emph{New channel along $\St(V_r)$.} With the other entries fixed at $\theta_S$ and amplitudes $b_v$ on the cores of $\St(V_r)$,
-Proposition~\ref{prop:route} gives $\dot b_v=A\prod_{u\ne v}b_u(s_r-A\prod_ub_u)$ with $A=a^{K-k_r}$. For equal small amplitudes,
-$\dot b=s_rAb^{k_r-1}$, and $\frac{d}{dt}b^{-(p-2)}=-(p-2)c$ gives \eqref{eq:escape}.
+\emph{New channel along $\St(V_r)$.} With the other entries fixed at the balanced $\theta_S$ and amplitudes $b_v$ on the cores of
+$\St(V_r)$, the computation of Proposition~\ref{prop:route} gives
+$\dot b_v=a^{K-k_r}\prod_{u\ne v}b_u\,(s_r-a^{K-k_r}\prod_ub_u)$. For equal small amplitudes, $\dot b=c_rb^{k_r-1}$, and
+$\frac{d}{dt}b^{-(p-2)}=-(p-2)c$ integrates to \eqref{eq:escape}.
 
-\emph{Combined perturbation.} With one element of size $\lvert B\rvert\ge2$ (as in Example~\ref{ex:pairstar}), the rotations have $O(1)$
-curvature and follow the amplitude $y=\prod_{v\in\St(B)}b_v$. Minimizing over them leaves $L-L_S\approx-\frac c2y^2$ with $c>0$
-(in Example~\ref{ex:pairstar}, $c=0.8^2+0.8^2-1$). Then $\dot b_v=c\,b_v\prod_{u\ne v}b_u^2$, and for equal amplitudes
-$\dot b=cb^{2\ell-1}$.
+\emph{Rotations ($\ell^*=1$).} The flow is linear at leading order, $\dot z=-H_{\rm rot}z$, and grows along the eigenvector of the
+most negative eigenvalue of $H_{\rm rot}$ at rate $c=-\lambda_{\min}(H_{\rm rot})$.
 
-\emph{Growth before the plateau.} While $j$ is learned from aligned initialization, its cores grow as $\dot a\simeq s_ja^{K-1}$ and
-the entries on $\St(V_r)$ already grow at rate $s_ra^{K-k_r}b^{k_r-1}$. For $k_r\ge3$,
-$b^{-(k_r-2)}$ decreases by $(k_r-2)s_r\int a^{K-k_r}dt=(k_r-2)s_r\int a^{1-k_r}da/s_j=\frac{s_r}{s_j}\sigma^{-(k_r-2)}+O(1)$, so at the
-plateau $b^{-(k_r-2)}=(1-s_r/s_j)\sigma^{-(k_r-2)}+O(1)$. For $k_r=2$, $\ln b$ grows by $\frac{s_r}{s_j}\ln\frac1\sigma+O(1)$. Inserting
-into \eqref{eq:escape} gives \eqref{eq:twocomp}.
+\emph{Order $2\ell^*$ with one multi-core element.} Let $X$ contain one element $(B,\beta)$ with $\lvert B\rvert\ge2$, and $h=\lvert\St(B)\rvert$.
+Then $h=\ell^*$: if $h<\ell^*$, all elements of $X$ would lie in $\mathcal N_{\ell^*-1}$, so $\mu_{\ell^*-1}\ge\rho>s_j$, contradicting the
+minimality of $\ell^*$. The rotations have curvature of order one and follow the amplitude $y=\prod_{v\in\St(B)}b_v$; minimizing over
+them leaves $L-L_S\approx-\frac c2y^2$ with $c>0$ (in Example~\ref{ex:pairstar}, $c=2(0.14)=0.28$). Then
+$\dot b_v=c\,b_v\prod_{u\ne v}b_u^2$, and for equal amplitudes $\dot b=c\,b^{2h-1}=c\,b^{2\ell^*-1}$.
+
+\emph{Growth before the plateau.} While $j$ is learned from aligned initialization, its cores grow as $\dot a\simeq s_ja^{K-1}$ from
+$a=\sigma$, and the entries on $\St(V_r)$ already grow at rate $s_ra^{K-k_r}b^{k_r-1}$. For $k_r\ge3$, $b^{-(k_r-2)}$ decreases by
+$(k_r-2)s_r\int a^{K-k_r}dt=(k_r-2)\frac{s_r}{s_j}\int_\sigma a^{1-k_r}da=\frac{s_r}{s_j}\sigma^{-(k_r-2)}+O(1)$, so at the plateau
+$b^{-(k_r-2)}=(1-s_r/s_j)\sigma^{-(k_r-2)}+O(1)$. For $k_r=2$, $\ln b$ grows by $\frac{s_r}{s_j}\ln\frac1\sigma+O(1)$. Inserting into
+\eqref{eq:escape} gives \eqref{eq:twocomp}.
 
 \section{Scope}
-The theorem covers saddles with one learned component, targets that are sums of products of basis vectors (the lower
-bound holds for any target), whitened inputs and the population loss. Saddles with several learned components and the
-boundary cases $\mu_\ell=s_j$ are open. Proposition~\ref{prop:escape} is a leading-order derivation, not a theorem. When
-$2\ell^*<k^*$ both kinds of perturbation are present, and the lower order wins only below a scale set by their
-coefficients.
+The theorem covers the saddles \eqref{eq:saddle} with one learned component, targets \eqref{eq:target} for the exact value (the
+lower bound holds for any target, Remark~\ref{rem:general}), whitened inputs and the population loss. Saddles with several
+learned components and the boundary cases $\mu_\ell=s_j$ are open. Section~\ref{sec:plateaus} is a leading-order derivation, not a
+theorem, and covers the three cases listed there.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
