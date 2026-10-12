@@ -1,11 +1,11 @@
-% summary.tex -- short version of the report for readers who know DLN training dynamics but not TTNs.
+% summary.tex -- short version of the report for readers who know deep-linear-network dynamics but not TTNs.
 % Build: from report/, pdflatex summary; bibtex summary; pdflatex summary; pdflatex summary
 \documentclass[11pt]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage[margin=0.9in]{geometry}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{booktabs,tabularx,array}
 \usepackage[dvipsnames]{xcolor}
@@ -13,141 +13,93 @@
 \usepackage{tikz}
 \usepackage[round,authoryear]{natbib}
 \usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=OliveGreen,urlcolor=RoyalPurple]{hyperref}
-\setlist{itemsep=2pt,topsep=3pt}
-\setlength{\parskip}{3pt}
+\setlist{itemsep=1pt,topsep=2pt}
 
-% novelty labels
-\newcommand{\NEW}{\colorbox{ForestGreen!25}{\textsf{\small NEW}}}
-\newcommand{\TTN}{\colorbox{Goldenrod!35}{\textsf{\small KNOWN IDEA, NEW FOR TREES}}}
-\newcommand{\KNOWN}{\colorbox{gray!25}{\textsf{\small KNOWN}}}
-% evidence labels
+\newcommand{\NEW}{\colorbox{ForestGreen!22}{\textsf{\small new}}}
+\newcommand{\TTN}{\colorbox{Goldenrod!30}{\textsf{\small known mechanism, new for TTNs}}}
+\newcommand{\KNOWN}{\colorbox{gray!22}{\textsf{\small known}}}
 \newcommand{\ev}[1]{\textsf{\small[#1]}}
+\newcommand{\St}{\mathrm{St}}
+\newtheorem*{thm*}{Theorem}
+\newtheorem*{prop*}{Proposition}
 
-\title{Training dynamics of tree tensor networks: summary of findings}
+\title{Training dynamics of tree tensor networks: summary of results}
 \author{Short version of the full report (\texttt{report/main.pdf})}
 \date{October 2026}
 
 \begin{document}
 \maketitle
-\vspace{-1.5em}
+\vspace{-1.2em}
 
-\paragraph{How to read this.} Each result carries two labels.
-\emph{Novelty}: \NEW{} means we found no earlier statement of it; \TTN{} means the mechanism was known in
-other models and we worked out what it does in tree networks; \KNOWN{} means it was already known.
-\emph{Evidence}: \ev{proven} (a mathematical proof), \ev{derived} (a calculation that relies on stated
-approximations), \ev{empirical} (measured in simulations), \ev{conjecture} (a hypothesis we have not tested).
-Every simulation claim was re-checked by an independent agent, except one, which is marked.
+\begin{abstract}
+We study gradient flow on tree tensor networks (TTNs) trained to fit a low-rank teacher tensor, with most
+of the effort on the saddle-to-saddle regime reached from small initialization. The main result is that
+after the first component is learned, the length of each plateau is set by a graph quantity, the number $k$
+of cores in the smallest subtree that must change to add the next component: no plateau for $k=1$, a
+plateau $\propto\ln(1/\sigma)$ for $k=2$, and $\propto\sigma^{-(k-2)}$ for $k\ge3$. We prove that $k$ is
+exactly the order of the saddle under a spectral condition, and that the order can be lower when the
+condition fails. We also give a criterion, computed from the initialization, for which runs stall
+permanently, and we map the lazy and rich regimes.
+\end{abstract}
 
-\section{Setting: what a tree tensor network is}
+\section{Setting}
 
-\paragraph{The model.} The input is $N$ vectors $x_0,\dots,x_{N-1}\in\mathbb R^d$ (e.g.\ one per pixel), and
-the model is linear in their tensor product:
+\paragraph{Model.} A TTN represents a tensor $W\in(\mathbb R^d)^{\otimes N}$ by $K$ cores placed on the nodes of
+a tree. Each of the $N$ \emph{sites} (tensor modes) is an open leg of one core. Each tree edge is a bond of
+dimension $\chi$ shared by two cores, and $W$ is the contraction over all bonds. Cutting a bond $e$ splits
+the sites into two groups; the matricization of $W$ along that split has rank at most $\chi_e$. We use three
+trees: the MPS (a chain, one site per core, $K=N$), the binary tree (sites in pairs on the bottom cores,
+$K=N-1$) and the hierarchical Tucker (HT) tree (one leaf core per site with a binary tree above, $K=2N-1$;
+internal cores carry no sites). The model is
 \begin{equation}
-f(x)=\langle W,\;x_0\otimes x_1\otimes\dots\otimes x_{N-1}\rangle,\qquad W\in(\mathbb R^d)^{\otimes N}.
+f(x)=\langle W,\,x_0\otimes\dots\otimes x_{N-1}\rangle,\qquad
+L=\tfrac12\lVert W-W^*\rVert_F^2,
 \end{equation}
-$W$ has $d^N$ entries, so a \textbf{tree tensor network} (TTN) parameterizes it by $K$ small tensors called
-\textbf{cores}, placed on the nodes of a tree. Each input position $n$ (a \textbf{site}) is an open index
-of one core. Each tree edge (a \textbf{bond}) is an index of size $\chi$ (the \textbf{bond dimension}) shared
-by the two cores it joins, and $W$ is obtained by summing over all bond indices. The simplest example is the
-\textbf{MPS} (a chain, one core per site), where each entry is a product of matrices:
+where $L$ is the population loss for whitened Gaussian inputs (up to a constant). $L$ is a polynomial of
+degree $2K$ in the cores, so this is a deep linear network (DLN) whose factors are arranged on a tree rather
+than a chain. The teacher is
 \begin{equation}
-W_{i_0 i_1\cdots i_{N-1}}=A_0[i_0]\,A_1[i_1]\cdots A_{N-1}[i_{N-1}],\qquad A_n[i]\in\mathbb R^{\chi\times\chi}
-\ \ (\text{vectors at the two ends}).
+W^*=\sum_{r=1}^R s_r\,U_r,\qquad U_r=u^{(r)}_0\otimes\dots\otimes u^{(r)}_{N-1},\quad s_1>s_2>\dots>0.
 \end{equation}
-Cutting a bond splits the sites into two groups. Reshaping $W$ into a matrix along that split gives a matrix
-of rank at most $\chi$, the \textbf{bond rank}. So $\chi$ controls which tensors the network can represent.
+In a \emph{pattern teacher} every $u^{(r)}_n$ is a standard basis vector, so $U_r$ is labelled by a string
+such as $00011000$. We train by gradient flow from fan-in Gaussian cores of scale $\sigma$
+($G_v=\sigma Z_v/\sqrt{F_v}$, $F_v$ the fan-in of core $v$), so $\lVert W\rVert\sim\sigma^K$ at initialization.
+As in DLNs, gradient flow conserves on every bond $e$ between a core $v$ and its parent $p$ the imbalance
+$Q_e=G_vG_v^\top-G_pG_p^\top$ (both cores matricized with the $e$-leg as rows).
 
-A TTN is multilinear of degree $K$ in its cores, like a depth-$K$ linear network. The difference is that the
-cores are arranged on a tree, and each core touches only some of the inputs. We compare three tree shapes
-(Fig.~\ref{fig:route}):
-\begin{itemize}
-\item \textbf{MPS}: a chain, $K=N$.
-\item \textbf{Binary tree}: sites attach in pairs to the bottom cores, $K=N-1$.
-\item \textbf{Hierarchical Tucker (HT)}: one leaf core per site (a $d\times\chi$ matrix) with a binary tree
-above, $K=2N-1$. Its internal cores carry no sites.
-\end{itemize}
-
-\paragraph{Task and training.} The teacher is a sum of $R$ rank-one \textbf{components},
+\paragraph{Routes.} Let component $j$ be learned and $r$ not. Let $D$ be the set of sites where the patterns of
+$r$ and $j$ differ, $V_D$ the set of cores carrying them, and $\St(V_D)$ the Steiner subtree of $V_D$ (the
+smallest subtree containing it). We call $\St(V_D)$ the \emph{route} of $r$ and write
 \begin{equation}
-W^*=\sum_{r=1}^R s_r\, u^{(r)}_0\otimes\dots\otimes u^{(r)}_{N-1},\qquad s_1>s_2>\dots,
+k=\lvert\St(V_D)\rvert,\qquad k^*=\min_{r\ \text{not learned}}k .
 \end{equation}
-and the loss is the population loss with whitened Gaussian inputs, $L=\tfrac12\lVert W-W^*\rVert^2$ (up to a
-constant). In our main examples every $u^{(r)}_n$ is a basis vector, so a component can be written as a string
-such as $00011000$. We train by gradient flow from random cores of scale $\sigma$ (fan-in Gaussian), so
-$W$ starts at size $\sim\sigma^K$.
+Figure~\ref{fig:route} gives an example. The \emph{order} of a saddle $\theta_S$ is the largest $p$ with
+$L(\theta)-L(\theta_S)\ge-C\lVert\theta-\theta_S\rVert^p$ near $\theta_S$; order 2 is a strict saddle.
 
-\paragraph{The equation behind most results.} This is the standard small-initialization argument for
-products of weights. Suppose $m$ cores must all grow from size $\sim\sigma$ in some direction while the
-others are $O(1)$. Their common size $a$ then obeys
-\begin{equation}\label{eq:grow}
-\dot a\approx c\,a^{m-1},\quad a(0)\sim\sigma
-\quad\Longrightarrow\quad
-T_{\rm plateau}\approx\begin{cases}O(1) & m=1,\\[2pt] \ln(1/\sigma)/c & m=2,\\[3pt]
-\sigma^{-(m-2)}/\big((m-2)c\big) & m\ge3,\end{cases}
-\end{equation}
-with $c\propto$ the weight being learned. Equivalently, the saddle has order $m$: the loss first decreases at
-order $\varepsilon^m$. What is specific to TTNs is \emph{what $m$ is}: which cores are small at each saddle,
-how that depends on the tree, and when this picture fails.
+\paragraph{Status labels.} \ev{proven}: theorem with proof; \ev{derived}: calculation under stated
+approximations (typically leading order in $\sigma$); \ev{empirical}: measured; \ev{conjecture}: not
+established. Novelty labels: \NEW{} (no prior statement found in a literature search of about 270 queries),
+\TTN, \KNOWN. Each numerical result was re-checked by an independent re-analysis, except the test marked in
+Result~3.
 
-\section{Results at a glance}
-
-\begin{center}
-\small
-\begin{tabularx}{\textwidth}{@{}>{\raggedright}p{0.6cm}X>{\raggedright\arraybackslash}p{5.5cm}@{}}
-\toprule
-& Result & Novelty \\
-\midrule
-R1 & Learning is saddle-to-saddle; first plateau $\propto\sigma^{-(K-2)}$ with a prefactor predictable from the start & \TTN \\
-R2 & \textbf{Route rule}: later plateaus are set by how many cores a new component needs, not by its weight & \NEW{} (built on a known mechanism) \\
-R3 & \textbf{Saddle-order theorem}: when the route rule is exact, and when a faster shortcut exists & \NEW \\
-R4 & The tree shape decides whether saddles are strict (MPS) or not (binary, HT) & \NEW \\
-R5 & Which component is learned first: a random race or ``largest first'' & \TTN \\
-R6 & Dead routes: a quantity fixed at initialization predicts which runs get stuck & \NEW{} (related ideas known) \\
-R7 & Map of regimes: the lazy regime exists only with full bond dimension & \NEW \\
-R8 & Optimizers: GD step-size limit, SGD, Adam, ALS & mixed, see text \\
-R9 & MNIST: the tree's first learned features, and what predicts the final loss & \NEW{} (mechanism a conjecture) \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\section{The results explained}
-
-\subsection*{R1. One component at a time \hfill\TTN}
-From small $\sigma$ the loss falls in steps, and each step learns one component \ev{empirical}. Before
-the first step all $K$ cores are small, so $m=K$ in \eqref{eq:grow}:
-\begin{equation}
-T_1\approx\frac{\hat t(Z)}{s_1\,\sigma^{K-2}},
-\end{equation}
-where $Z$ is the random initial direction. We compute the number $\hat t(Z)$ by solving one
-$\sigma$-independent equation \emph{before training starts}. It predicts the first escape time, and which
-component is learned first in 1,847 of 1,848 runs \ev{derived, empirical}. The textbook estimate based
-only on the initial norm underestimates $T_1$, by up to a factor of $3\cdot10^7$.
-\emph{Known:} the $\sigma^{-(K-2)}$ law and the per-initialization formula hold for any model that is a
-product of $K$ weight layers \citep{kumar2025early,kunin2025alternating}. \emph{New:} evaluating them for
-trees and testing them run by run.
-
-\subsection*{R2. The route rule: ``locality beats weight'' \hfill\NEW}
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[
-  core/.style={circle,draw,minimum size=5.2mm,inner sep=0pt,font=\scriptsize},
+  core/.style={circle,draw,minimum size=5.2mm,inner sep=0pt},
   hot/.style={core,fill=orange!70},
   st/.style={font=\scriptsize,inner sep=1pt},
   dif/.style={st,text=red,font=\scriptsize\bfseries}]
-% MPS8
-\node[font=\small] at (2.8,1.0) {MPS: $k=2$, plateau $\propto\ln(1/\sigma)$};
+\node[font=\small] at (2.8,1.0) {MPS8: $k=2$, plateau $\propto\ln(1/\sigma)$};
 \foreach \i in {0,...,7} {
-  \pgfmathsetmacro{\x}{0.8*\i}
-  \ifnum\i=3 \node[hot] (m\i) at (\x,0) {};
-  \else\ifnum\i=4 \node[hot] (m\i) at (\x,0) {};
-  \else \node[core] (m\i) at (\x,0) {}; \fi\fi
+  \ifnum\i=3 \node[hot] (m\i) at (0.8*\i,0) {};
+  \else\ifnum\i=4 \node[hot] (m\i) at (0.8*\i,0) {};
+  \else \node[core] (m\i) at (0.8*\i,0) {}; \fi\fi
 }
 \foreach \i in {0,1,2,5,6,7} { \node[st] (y\i) at (0.8*\i,-0.75) {$x_{\i}$}; \draw (m\i) -- (y\i); }
 \foreach \i in {3,4} { \node[dif] (y\i) at (0.8*\i,-0.75) {$x_{\i}$}; \draw (m\i) -- (y\i); }
 \foreach \i [evaluate=\i as \j using int(\i+1)] in {0,...,6} { \draw (m\i) -- (m\j); }
-% Binary8
 \begin{scope}[xshift=7.6cm,yshift=-0.9cm]
-\node[font=\small] at (2.1,2.95) {Binary tree: $k=5$, plateau $\propto\sigma^{-3}$};
+\node[font=\small] at (2.1,2.95) {binary8: $k=5$, plateau $\propto\sigma^{-3}$};
 \foreach \i in {0,...,7} {
   \ifnum\i=3 \node[dif] (b\i) at (0.6*\i,0) {$x_{\i}$};
   \else\ifnum\i=4 \node[dif] (b\i) at (0.6*\i,0) {$x_{\i}$};
@@ -161,172 +113,359 @@ trees and testing them run by run.
 \draw (A0)--(B0) (A1)--(B0) (A2)--(B1) (A3)--(B1) (B0)--(Rt) (B1)--(Rt);
 \end{scope}
 \end{tikzpicture}
-\caption{The route for the same task on two trees. The network has learned $00000000$ and must now learn
-$00011000$, which differs at sites $x_3,x_4$ (red). The \textbf{route} is the set of cores that must change
-(orange): the cores holding the differing sites, plus every core on the tree path between them. On an HT tree
-the route has $k=7$ cores and the plateau grows like $\sigma^{-5}$.}
+\caption{Routes for $j=00000000$ learned and $r=00011000$, so $D=\{3,4\}$ (red). Orange: the route
+$\St(V_D)$. On HT8 the same $D$ gives $k=7$. Measured plateau exponents: logarithmic on MPS8,
+$2.998\pm0.078$ on binary8, $5.74\pm1.06$ on HT8 (limited range).}
 \label{fig:route}
 \end{figure}
 
-After the first component is learned, most cores are already large. To learn the next component, the
-network needs to change only some of them:
-\begin{itemize}
-\item the cores holding the sites where the new component \emph{differs} from what is already learned;
-\item every core on the tree path connecting those cores, because the new information has to pass through
-them.
-\end{itemize}
-We call this connected set of cores the \textbf{route}, and write $k$ for its number of cores (in graph
-theory it is the Steiner tree of those cores). Only the route cores start small in the new direction, so
-$m=k$ in \eqref{eq:grow}:
-\begin{equation}
-T_{\rm next}\;\propto\;
-\begin{cases}O(1)&k=1\ \text{(no plateau)},\\ \ln(1/\sigma)&k=2,\\ \sigma^{-(k-2)}&k\ge3.\end{cases}
+\section{Results}
+
+\subsection*{1. First escape \hfill\TTN}
+Near the origin $L\approx\tfrac12\lVert W^*\rVert^2-g(\theta)$ with $g=\langle W,W^*\rangle$, homogeneous of degree
+$K$. Writing $\theta=\rho\hat\theta$ and $d\tau=\rho^{K-2}dt$, the direction $\hat\theta$ follows a
+$\sigma$-independent spherical flow and $d\ln\rho/d\tau=K\,g(\hat\theta)$. Hence, for $\theta_0=\sigma Z$,
+\begin{equation}\label{eq:first}
+t_1=\sigma^{-(K-2)}\,\mathcal T(Z)+O(1),\qquad
+\mathcal T(Z)=\lVert Z\rVert^{-(K-2)}\int_0^\infty e^{-K(K-2)G(\tau)}d\tau,\quad G(\tau)=\int_0^\tau g(\hat\theta)\,d\tau'
 \end{equation}
-We measured the exponent $k-2$ for $k=1,\dots,5$ in about 11,600 runs on nine trees \ev{empirical}. The
-logic leading to it is \ev{derived}, and the count of route cores is \ev{proven}.
-Two consequences:
-\begin{itemize}
-\item \textbf{Locality beats weight.} As $\sigma\to0$, a \emph{smaller} component with a shorter route is learned before a
-larger component with a longer one. This is the reverse of the usual ``largest first'' rule.
-\item \textbf{The same task gives different laws on different trees} (Fig.~\ref{fig:route}): logarithmic on an MPS,
-$\sigma^{-3}$ on a binary tree, about $\sigma^{-5}$ on HT \ev{empirical}.
-\end{itemize}
-\emph{Known:} \citet{rawal2026theory} give escape laws in terms of the number of small layers, in an
-abstract form. \emph{New:} identifying which cores are small (the route) and how this depends on the tree.
+\ev{proven at leading order; offset derived}. $\mathcal T(Z)$ is computed from the initialization by one
+integration before training; it predicts $t_1$ in 231 initialization--teacher pairs (1,848 runs, five trees)
+to a relative $4\cdot10^{-8}$--$2\cdot10^{-3}$ at the smallest $\sigma$, and the first component learned in
+1,847 of 1,848 runs \ev{empirical}. The norm-based time
+$t_{\rm KH}=K^{K/2-1}\lVert\theta_0\rVert^{-(K-2)}/((K-2)s_1)$ is a lower bound \ev{proven}; median
+$\mathcal T/t_{\rm KH}$ ranges from 3 (binary4) to 2650 (binary8) and reaches $2.9\cdot10^7$ on binary16, because
+most of $\lVert\theta_0\rVert$ lies in core slices that do not move at leading order.
+After the escape each plateau sits at the critical point of the problem with bond ranks fixed, and each
+escape raises the rank of every bond on the route by one (497 of 531 runs with recorded spectra)
+\ev{empirical}.
+\emph{Prior work:} the exponent $K-2$ and the blow-up identity hold for homogeneous models
+\citep{kumar2025early,kunin2025alternating}; $t_{\rm KH}$ is from \citet{kumar2025towards}. New: the evaluation
+on trees, the run-by-run tests and the size of the gap to $t_{\rm KH}$.
 
-\subsection*{R3. The saddle-order theorem \hfill\NEW\ \ev{proven}}
-R2 assumes that the saddle after a learned component has order $p=k$. We proved when this is exactly true
-\ev{proven, checked twice independently}:
-\begin{itemize}
-\item \textbf{When it holds.} Let $s_j$ be the weight of the learned component. We define a matrix
-$\mathcal S$ that measures how strongly the components still to be learned couple through small groups
-of cores. If its largest eigenvalue satisfies $\lambda_{\max}(\mathcal S)<s_j$, the order is exactly $k$.
-This always holds when the teacher has two components learned largest first, and also for routes of
-3 or 4 cores under a mild condition.
-\item \textbf{When it fails.} If $\lambda_{\max}(\mathcal S)>s_j$, the network can take a shortcut: it
-splits the route into two pieces of at most $\ell$ cores each and escapes with order $2\ell<k$. This can
-happen when a larger component is still unlearned, or when several unlearned components share cores. The
-first counterexample has $k=5$ and order $4$, on an MPS with 6 sites.
-\end{itemize}
-\emph{What this predicts for training:} where the shortcut exists, escape is faster than the route rule
-says. A pre-registered test (about 2,800 runs) measured exponents $2.001$ (order 4, route rule $3$) and
-$3.996$--$3.998$ (order 6, route rule $5$), as predicted, when the starting point is close enough to the
-saddle; results were mixed further away \ev{empirical; \textbf{not} independently re-checked}.
-\emph{Known:} an \emph{upper} bound on the order (no larger than the number of rank-deficient cores,
-\citealp{furman2026benign}); lower bounds only for deep linear networks \citep{achour2024loss}.
-\emph{New:} that the relevant number is the route size, which can be much smaller, plus the exact
-condition and the shortcut.
-
-\subsection*{R4. Tree shape decides whether saddles are strict \hfill\NEW\ \ev{derived, empirical}}
-When the teacher's components are not exactly orthogonal, which is the generic case, the components
-overlap, and this overlap creates new routes of only two cores, but only between \emph{neighbouring cores
-that both carry sites}. An MPS has such pairs everywhere, so its saddles become strict ($p=2$) and the
-plateaus become logarithmic. In binary and HT trees the internal cores carry no sites, so the saddles stay
-higher-order and the plateaus stay power laws (13 teachers, $N=4$ and 8).
-
-\subsection*{R5. Which component comes first \hfill\TTN}
-Suppose two components compete, and they differ from each other at sites spread over $k$ cores.
-\begin{itemize}
-\item \textbf{$k\ge3$: a race.} By \eqref{eq:grow} each finishes at
-$T_r\propto(\sigma z_r)^{-(k-2)}/s_r$, where $z_r$ is a random number from the initialization. The ratio
-$T_1/T_2$ does not depend on $\sigma$, so the winner is random with fixed odds
-\ev{proven at leading order on MPS; empirical, 67,200 runs}.
-\item \textbf{$k=2$: greedy.} Now $T_r\approx\ln(1/\sigma)/s_r$, so the larger component wins with
-probability $\to1$ as $\sigma\to0$ \ev{derived, empirical}.
-\end{itemize}
-\emph{Known:} greedy learning in deep linear networks \citep{saxe2014exact,jacot2022saddletosaddle}, and
-races between spikes in tensor PCA \citep{benarous2025stochastic}. \emph{New:} the split by number of cores,
-and the exact race on MPS.
-
-\subsection*{R6. Dead routes: getting stuck for good \hfill\NEW{} (related ideas known)}
-Some runs never learn a component, because a core at an \emph{end} of its route shrinks to numerical zero
-(398 of 5,682 runs, all with $k\ge4$; most runs with $K=7,8$ at tight $\chi$) \ev{empirical}. Gradient flow
-conserves, for every bond, the difference of the squared sizes of the two cores it joins (as in deep
-linear networks). For each route end, the sign of this conserved quantity, which is fixed at
-initialization, decides whether that end can grow or must die \ev{derived}. The prediction from the
-initialization alone works: 93\% of runs predicted dead stall, against 1.8\% of runs predicted alive
-\ev{empirical}. Initializing with balanced core sizes prevents leaf ends from dying.
-\emph{Known:} stalls caused by unbalanced initialization \citep{furman2026benign}. \emph{New:} the route-end
-criterion and its probabilities.
-
-\subsection*{R7. Map of regimes \hfill\NEW}
-As $\sigma$ grows, training goes from saddle-to-saddle, through a rich window, to lazy \ev{empirical}. The lazy
-regime exists \emph{only if} every bond is full, meaning it has the largest rank it can possibly need:
-\begin{equation}
-\chi_e\;\ge\;\min\big(d^{\,n_e},\,d^{\,N-n_e}\big)\quad\text{for every bond }e,
+\subsection*{2. Plateau length after the first escape: the route rule \hfill\NEW}
+At a saddle with one learned component $j$, perturb the cores by $\delta$. Multilinearity gives
+$W(\theta_S+\delta)=\sum_{\mathcal J}W_{\mathcal J}[\delta]$, a sum over sets $\mathcal J$ of perturbed cores.
+Entries on unused bond channels move $W$ only when every core of a connected set $\mathcal C$ uses them, and
+then by a product of $\lvert\mathcal C\rvert$ small entries with no Gauss--Newton cost at that order. For a
+pattern teacher the residual seen by such a set is
+\begin{equation}\label{eq:steiner}
+\mathcal R_{\mathcal C}=s_j^{(K-\lvert\mathcal C\rvert)/K}\sum_{r:\,V_{D_r}\subseteq\mathcal C}s_r\,U_r\big|_{\mathcal C}
 \end{equation}
-where $n_e$ is the number of sites below bond $e$. Without this, large-$\sigma$ training stalls at a loss floor
-\ev{derived, empirical}. On the binary tree with 4 sites, both boundaries scale as $\chi^{-1/2}$, with
-$\sigma_{\rm lazy}\approx6.5/\sqrt\chi$ \ev{derived, empirical}.
-We also give a TTN version of the $\mu$P scaling, which keeps feature learning as $\chi$ grows \ev{derived}.
+\ev{proven}, so the cheapest route to component $r$ is $\St(V_{D_r})$, with coupling
+$c_r=s_r s_j^{(K-k)/K}$, and the saddle order is at most $k^*$. If the order equals $k^*$ (Result 3), the
+route amplitude $b$ obeys $\dot b\approx c_r b^{k-1}$ and, for two components learned in weight order,
+\begin{equation}\label{eq:route}
+\Delta t_2\simeq
+\begin{cases}
+O(1), & k=1,\\[2pt]
+\dfrac{1-s_2/s_1}{\lambda_2}\ln\dfrac1\sigma,\quad \lambda_2=s_2\,s_1^{(K-2)/K}, & k=2,\\[8pt]
+\dfrac{1-s_2/s_1}{(k-2)\,s_2\,s_1^{(K-k)/K}}\;\sigma^{-(k-2)}, & k\ge3
+\end{cases}
+\end{equation}
+\ev{derived; the prefactor for $k\ge3$ assumes aligned initialization}. The factor $1-s_2/s_1$ is a head
+start: the route grows during the first plateau. For $k=2$ the saddle is strict with
+$\lambda_{\min}=-\lambda_2$; for $k\ge3$ the Hessian has no negative eigenvalue.
 
-\subsection*{R8. Other optimizers \hfill mixed}
-\begin{itemize}
-\item \textbf{Gradient descent} with step $\eta$ follows the same sequence of saddles if
-$\eta<\eta_c=2/(K\,s_1^{\,2-2/K})$ \ev{proven}; above $\eta_c$ it oscillates or diverges. \TTN{}
-(cf.\ \citealp{macdonald2025convergence}).
-\item \textbf{SGD} never shortens the first plateau on average. It lengthens later plateaus and can stall a
-run \ev{empirical}. \TTN
-\item \textbf{Adam} still learns one component at a time, but the first escape takes a number of steps
-independent of $\sigma$, until $\sigma$ is so small that Adam's $\epsilon$ dominates \ev{derived, empirical}.
-\KNOWN{} (concurrent work, \citealp{sabanayagam2026optimizer}).
-\item \textbf{ALS, DMRG, Riemannian GD} (standard tensor-network optimizers) have no plateaus \ev{derived}.
+\emph{Tests} \ev{empirical}. About 11,600 runs of two-component teachers on nine trees ($K=3$ to 15). The
+per-seed exponent of $\Delta t_2$ is $k-2$ for $k=3,4,5$ (named exceptions in the report), and for $k=6,7$ on
+binary8 and HT4 with balanced initialization. For $k=2$ a log law fits better than a power law in all 14
+rows, with slope $0.98$--$1.01$ against the predicted $1$ (head start included) and $2.00$--$2.07$ against $2$
+when started at the saddle. The second bond singular value stays below $4.3\,\sigma^2 s_2$ on every bond off
+the route in all 5,131 events. Because $k$ depends on the tree, a smaller component with a shorter route is
+learned first as $\sigma\to0$: teacher $0000\,(1)$, $0110\,(0.3)$, $1001\,(0.6)$ on MPS4 learns $0110$
+($k=2$) before $1001$ ($k=4$) in every run, while binary4 ($k=3$ for both) learns them in weight order.
+With three or four components the rule, applied at the rank-constrained optimum reached at each plateau,
+predicts the plateau levels and their exponents within $0.2$ (seven teachers; one exception).
+
+\emph{Prior work:} the trichotomy $O(1)$ / logarithmic / $\sigma^{-(k-2)}$ for $k$ small layers
+\citep[Thm~4.2]{rawal2026theory}; the $k=2$ head start in two-layer linear networks
+\citep[Thm~4]{zhang2026saddletosaddle}; a descent curve along a whole connected set of rank-deficient bonds
+\citep[Lemma~D.8]{furman2026benign}. New: that the relevant set is the Steiner subtree of the differing
+sites, which can be much smaller than the rank-deficient set; the coupling $c_r$; the head start for
+$k\ge3$; the measurements.
+
+\subsection*{3. When $k^*$ is the saddle order \hfill\NEW}
+Result 2 gives an upper bound. For the lower bound define, for a pattern teacher, the \emph{generalized
+piggyback graph} at level $\ell$: its nodes are pairs $(B,\pi)$ of a core set $B$ with $\lvert\St(B)\rvert\le\ell$
+and a pattern $\pi$ on the sites of $B$ that differs from $j$ on every core of $B$; every unlearned
+component $r$ adds an edge of weight $s_r$ between $(B_1,\pi_r|_{B_1})$ and $(B_2,\pi_r|_{B_2})$ for every split
+$V_{D_r}=B_1\sqcup B_2$. Let $\lambda_\ell$ be the largest eigenvalue of its adjacency matrix $\Gamma^{(\ell)}$.
+
+\begin{thm*}[\ev{proven}; Appendix~\ref{app:order}]
+Let $\theta_S$ represent one learned component $j$, with a spare bond channel on the route.
+(a) If $\lambda_{\lceil k^*/2\rceil-1}<s_j$, the saddle order is exactly $k^*$.
+(b) If $\lambda_\ell>s_j$ for some $\ell<k^*/2$ (and enough spare channels), the order is at most $2\ell$.
+Hence the order is $\min(k^*,2\ell^*)$, with $\ell^*$ the first level at which $\lambda_\ell$ exceeds $s_j$.
+\end{thm*}
+Consequences: the order is $2$ when $k^*=2$; for $k^*\in\{3,4\}$ it is $k^*$ iff $\lambda_{\max}(\Gamma^{(1)})<s_j$
+(otherwise the saddle is strict); for two-component teachers learned in weight order it is $k^*$ on every
+tree. It can drop below $k^*$ at a saddle with positive semidefinite Hessian: on MPS6 with
+$j=000000\,(1)$ and $110001$, $110010\,(0.8$ each$)$, $k^*=5$ but $\lambda_2=0.8\sqrt2>1$, and the order is $4$
+(measured slope $4.000$, constant $-0.0350$ against $-0.0350$). The descent uses new entries on cores 0 and 1
+toward the pattern $110000$, which is not a teacher component, combined with rotations of cores 4 and 5.
+Two independent checks of the proofs and 44 numerical instances agree.
+
+\emph{Dynamics.} Where the order is $p<k^*$ the escape should take $\propto\sigma^{-(p-2)}$ rather than
+$\sigma^{-(k^*-2)}$ \ev{derived}. A pre-registered test (about 2,800 runs) measured $2.001\pm0.001$ for $p=4$
+($k^*=5,6$) and $3.996$--$3.998$ for $p=6$ ($k^*=7$) from the saddle, where the scale lies below the predicted
+crossover; the route law fits $10^3$--$10^5$ times worse. Above the crossover the results were mixed
+\ev{empirical; \textbf{not independently verified}}.
+
+\emph{Prior work:} the upper bound \citep{furman2026benign}; lower bounds only for DLNs (strict versus
+non-strict, \citealp[Thm~7]{achour2024loss}) and for one parity saddle \citep[Prop.~5.3]{furman2026benign}.
+
+\subsection*{4. Tree shape and strict saddles \hfill\NEW}
+With one learned component of a pattern teacher, $\theta_S$ is strict iff $k^*=2$ or
+$\lambda_{\max}(\Gamma^{(1)})>s_j$ \ev{proven}; the rotation block of the Hessian is
+$s_j^{(K-2)/K}(s_j I-\Gamma^{(1)})$. For non-orthogonal teachers (overlapping components, misaligned input
+covariance, correlated sites, random TTN teachers) the first plateau sits at a rank-one critical point
+$\bar s\,y_0\otimes\dots\otimes y_{N-1}$ that is not a teacher component. Criticality removes every single-core
+direction, so a two-core route has a nonzero residual only if both cores carry sites. On an MPS every bond
+joins two such cores, and bond $e=(i,i+1)$ has Hessian eigenvalue $-\bar s^{(N-2)/N}s_2(M_e)$, where $M_e$ is
+$W^*$ contracted with $y$ on all sites except $i,i+1$; the second escape takes
+$h_e\ln(1/\sigma)$ with $h_e=(1-s_2(M_e)/\bar s)/(\bar s^{(N-2)/N}s_2(M_e))$ \ev{derived}, which matches the
+measurements within $1$--$1.6\%$. On binary trees with $N=2^n$ and on HT trees no two adjacent cores both carry
+sites, so $k^*\ge3$ and the escape stays polynomial (13 teachers, $N=4,8$) \ev{derived, empirical}.
+\emph{Prior work:} for DLNs the piggyback graph is a single edge \citep[Thm~7]{achour2024loss}.
+
+\subsection*{5. Order of learning \hfill\TTN}
+Let two components differ on sites carried by $m$ cores. For $m\ge3$ every component is a local maximum
+of $g$ on the sphere; on an MPS with an orthogonal teacher the components evolve independently at leading
+order, so component $r$ blows up at $\sigma^{-(K-2)}\hat t_r/s_r$ with i.i.d.\ $\hat t_r$, and
+\begin{equation}
+P(\text{larger first})=P\big(\hat t_2/\hat t_1>s_2/s_1\big),
+\end{equation}
+independent of $\sigma$ \ev{proven at leading order}. All 40,800 MPS runs of the main sweep learn the winner of
+this race first; overall $P(\text{larger first})=0.60$--$0.88$ at $s_2/s_1=0.5$ (67,200 runs) \ev{empirical}.
+For $m=2$ the smaller component is a saddle of the spherical flow with $n$ unstable directions, and
+$P(\text{smaller first})\propto\sigma^{\gamma}$, $\gamma=n(1-w)/w$, $w=s_2/s_1$: consistent with the data for
+$n=1$ \ev{empirical, heuristic mechanism}, a conjecture for $n=\chi_e$.
+\emph{Prior work:} greedy learning in DLNs \citep[Thm~2]{jacot2022saddletosaddle}; the tensor/matrix
+dichotomy and the rule $\arg\max_r s_rX_r^{K-2}$ in multi-spike tensor PCA \citep{benarous2025stochastic}.
+New: the classification by $m$, the exact race on MPS, the $\sigma^\gamma$ law.
+
+\subsection*{6. Permanent stalls: a criterion from the initialization \hfill\NEW}
+Of 5,682 two-component runs, 398 stall permanently, all with $k\ge4$; with $\chi$ at the teacher rank most
+runs with $K=7,8$ stall \ev{empirical}. The stalled runs have a route-end core whose route entry has decayed
+to roundoff. Let $u$ be an end of the route (it carries a differing site) and $w$ its neighbour on the
+route, sharing bond $e$. Let $X_u^\perp$, $X_w^\perp$ be their entries on the unused channels of $e$ with
+physical index orthogonal to the learned pattern; the route entry of $u$ is one of them. On the plateau
+these blocks produce a two-core term that the residual does not contain, so the loss contains a term
+$\tfrac\kappa2\lVert X_u^{\perp\top}X_w^\perp\rVert^2$ (rows of $X$ indexed by the unused channels) and the flow on it is a two-layer linear network with
+zero target. It conserves
+\begin{equation}
+C_u=X_u^\perp X_u^{\perp\top}-X_w^\perp X_w^{\perp\top},
+\end{equation}
+and $X_u^\perp X_u^{\perp\top}\to[C_u]_+$. With one unused channel, the route entry of $u$ survives iff
+$C_u>0$ \ev{proven in the reduced flow}. The decay rate is $\propto\sigma^2$ ($\sigma^4$ at a binary or HT
+leaf, whose neighbour carries no site), while the escape takes $\sigma^{-(k-2)}$; so routes with $k\le3$
+never die, for $k=4$ decay and escape are of the same order and a reduced model of the route decides, and
+for $k=5$ a route dies when two or more of its ends die (one dying end pins it) \ev{derived}. Because the state at
+the start of the plateau is $\sigma$ times a function of the initial direction, $C_u$ is computed from
+the initialization. At a saddle start with fan-in noise an end dies with probability
+$I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$ ($I$ the regularized incomplete beta function, $n$ the number of orthogonal
+physical directions): $0.392$ at an MPS chain end, $0.5$ at a root end ($d=\chi=2$) \ev{proven}. On the 3,492
+fan-in runs with $k\ge4$, $93\%$ of runs predicted dead stall, against $1.8\%$ of those predicted alive
+\ev{empirical}. Balanced initialization ($Q_e=0$) protects ends that are tree leaves and cuts stalls tenfold.
+Derivation: Appendix~\ref{app:trap}.
+\emph{Prior work:} a conserved quantity decides which side of a unit can vanish
+\citep[Lemma~B.1]{kunin2025alternating}; imbalance can create spurious minima \citep[Thm~G.1]{furman2026benign}.
+
+\subsection*{7. Lazy and rich regimes \hfill\NEW}
+The tangent kernel at a generic initialization has rank
+$\sum_vF_v\chi_v-\sum_e\chi_e^2$ (capped at $d^N$), the dimension of the fixed-rank manifold; it reaches $d^N$
+iff every bond is full, $\chi_e\ge\min(d^{n_e},d^{N-n_e})$ with $n_e$ the number of sites below $e$
+\ev{proven}. Lazy training therefore reaches zero loss only with full bonds; otherwise it stops at
+$\tfrac12\lVert P_\perp W^*\rVert^2$. We map regimes with the initial function subtracted
+($f_\theta-f_{\theta_0}$). On binary4 with full bonds, training is saddle-to-saddle below
+$\sigma_c\approx0.3\,\chi^{-1/2}$ \ev{empirical} and lazy above $\sigma_{\rm lazy}\approx6.5\,\chi^{-1/2}$
+\ev{derived; measured slope $-0.504\pm0.011$}; the $\chi^{-1/2}$ comes from a coherent second-order kernel
+change. The saddle-to-saddle boundary rises with $K$ (above $\sigma=1$ for most seeds at $K\ge8$); its
+large-$K$ limit is open. We also give a $\mu$P-type parameterization that keeps the kernel moving as $\chi$
+grows \ev{derived}.
+\emph{Prior work:} regime maps for linear and diagonal networks \citep{woodworth2020kernel,kunin2024get}.
+
+\subsection*{8. Optimizers}
+\begin{itemize}[leftmargin=*]
+\item \TTN{} GD is linearly stable at the balanced global minimum iff
+$\eta<\eta_c=2/(K s_1^{2-2/K})$, since $\lambda_{\max}(\nabla^2L)=Ks_1^{2-2/K}$ there \ev{proven}. Below
+$\eta_c$ GD follows the saddle sequence of gradient flow (765 of 765 runs) with an $O(\eta)$ shift of the
+event times \ev{derived, empirical}. DLN case: \citet{mulayoff2020unique}.
+\item \TTN{} SGD does not shorten the first plateau; it lengthens later plateaus and can trap routes
+\ev{empirical}.
+\item \KNOWN{} Adam's first escape takes a $\sigma$-independent number of steps until $\epsilon$ dominates
+\ev{derived, empirical}; concurrent with \citet{sabanayagam2026optimizer}.
+\item ALS and DMRG are invariant to $\sigma$ \ev{proven}; they and Riemannian GD have no plateaus \ev{derived}.
 \end{itemize}
 
-\subsection*{R9. Real data: MNIST \hfill\NEW}
-On a binary tree over pixels, the first route learned is a pair of neighbouring cores ($k=3$). A test
-designed before the data was seen compared 27 pixel orderings. A data-only measure of how strongly
-short routes couple predicts the final loss (rank correlation $-0.60$, 95\% CI $[-0.82,-0.22]$) but not
-the training speed. Spatial closeness of pixels by itself is not the cause \ev{empirical}. Why the measure
-works is a \ev{conjecture}.
+\subsection*{9. MNIST \hfill\NEW}
+On $4\times4$ MNIST images with a binary tree over the pixels ($N=16$), the first route learned is a pair of
+sibling bottom cores ($k=3$). In a pre-registered test over 27 pixel orderings, the share of squared
+route couplings on routes with $k\le5$, computed from the data before training, predicted the ranking of
+the orderings by training loss at a fixed time (Spearman $-0.60$, 95\% CI $[-0.82,-0.22]$; $-0.55$ within
+the 20 random orderings) but not by time to reach loss $0.25$ \ev{empirical}. Orderings that are equally
+local in the image but pair pixels vertically rank 13--21 of 27, so spatial locality alone does not explain
+the effect. That the ordering acts by placing label-relevant pixel pairs on routes short enough to escape
+within the training time is a \ev{conjecture}.
 
-\section{What was already known}
-\KNOWN{} The binary tree with 4 sites is mathematically a 3-layer linear network, so its stepwise
-learning, largest-first order and strict wrong-order saddles were known
-\citep{saxe2014exact,jacot2022saddletosaddle,achour2024loss}. Also known: the balanced escape direction from
-zero \citep{kumar2025early}; the two-core case, which is matrix factorization \citep{jiang2023algorithmic};
-the bias of hierarchical tensor factorization toward low rank \citep{razin2022implicit}.
-To our knowledge no earlier paper describes saddle-to-saddle dynamics of tree networks with three or more
-cores.
+\section{Already known in this setting}
+The binary tree with $N=4$ is exactly a depth-3 DLN, so its saddle sequence, greedy limit and strict
+wrong-order saddles are known \citep{saxe2014exact,jacot2022saddletosaddle,achour2024loss}. The conservation
+of $Q_e=G_vG_v^\top-G_pG_p^\top$ on every bond is the tree form of DLN balancedness; the balanced, minimum-norm
+escape direction from the origin is in \citet{kumar2025early}; the two-core TTN is matrix factorization
+\citep{jiang2023algorithmic}; low hierarchical-rank bias of hierarchical tensor factorization is in
+\citet{razin2022implicit}. We found no prior analysis of saddle-to-saddle dynamics on TTNs with $K\ge3$
+dense cores.
 
-\section{Main caveats}
-\begin{itemize}
-\item Small trees ($N\le16$, mostly $N\le8$), exact expected loss, whitened Gaussian inputs, and
-mostly synthetic teachers.
-\item The boundary between saddle-to-saddle and rich training for large trees is open.
-\item The MNIST mechanism is a conjecture.
-\item The R3 dynamics test was not independently re-checked.
-\end{itemize}
-The full report has all numbers, error bars, and a record of claims withdrawn after review.
+\section{Limitations}
+Small trees ($N\le16$, mostly $N\le8$), exact population loss with whitened inputs, and mostly synthetic
+teachers. The saddle-order theorem covers saddles with one learned component. The large-$K$ boundary of the
+saddle-to-saddle regime is open. The dynamics test of Result~3 was not independently re-checked.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
 
 \clearpage
 \appendix
+\section{Derivations}
+
+Throughout, $\theta_S$ is a balanced critical point representing $s_jU_j$ (one learned component). Each core
+then equals $q_j=s_j^{1/K}$ times the pattern of $j$ on its sites and channel 1 on its bonds. $\mathcal R=W^*-s_jU_j$
+is the residual, $L_S=\tfrac12\lVert\mathcal R\rVert^2$, and entries on bond channels other than 1 are \emph{new}.
+
+\subsection{Escape from the origin (Result 1)}
+Near the origin $\dot\theta=\nabla g(\theta)+O(\lVert\theta\rVert^{2K-1})$. Since $g$ is homogeneous of degree $K$,
+$\nabla g(\rho\hat\theta)=\rho^{K-1}\nabla g(\hat\theta)$ and $\langle\hat\theta,\nabla g(\hat\theta)\rangle=Kg(\hat\theta)$.
+Hence $\dot\rho=\rho^{K-1}Kg(\hat\theta)$ and $\dot{\hat\theta}=\rho^{K-2}(I-\hat\theta\hat\theta^\top)\nabla g(\hat\theta)$.
+In the time $d\tau=\rho^{K-2}dt$ the direction obeys a $\rho$-free equation and $\rho(\tau)=\rho_0e^{KG(\tau)}$, so
+$dt=\rho_0^{-(K-2)}e^{-K(K-2)G(\tau)}d\tau$, and $\rho$ blows up at
+$t^*=\rho_0^{-(K-2)}\int_0^\infty e^{-K(K-2)G}d\tau$. With $\rho_0=\sigma\lVert Z\rVert$ this is \eqref{eq:first}. The
+direction converges to a KKT point of $g$ on the sphere, which is balanced with core norms $1/K$; the $O(1)$
+offset in \eqref{eq:first} is the time a balanced rank-one mode takes from there to the event.
+
+\subsection{Routes and the Steiner identity (Result 2)}
+For a set $\mathcal J$ of cores, let $W_{\mathcal J}[\delta]$ be $W$ with the cores in $\mathcal J$ replaced by
+perturbations $\delta_v$ and the rest at $\theta_S$. Then $W(\theta_S+\delta)=\sum_{\mathcal J}W_{\mathcal J}[\delta]$ and
+\begin{equation}
+L(\theta_S+\delta)=L_S-\sum_{\mathcal J\ne\emptyset}\langle\mathcal R,W_{\mathcal J}[\delta]\rangle
++\tfrac12\Big\lVert\sum_{\mathcal J\ne\emptyset}W_{\mathcal J}[\delta]\Big\rVert^2 .
+\end{equation}
+A new index of $\delta_v$ contracts, in a neighbouring unperturbed core, with a zero block. So
+$W_{\mathcal J}[\delta]\ne0$ with only new entries requires every new index to be matched inside $\mathcal J$:
+each connected part $\mathcal C$ of $\mathcal J$ has at least two cores, and
+$W_{\mathcal C}[\delta]=\mathcal W_{\mathcal C}(\delta)\otimes\bigotimes_{f\in\partial\mathcal C}\Sigma_f$, where $\mathcal W_{\mathcal C}$ is the small TTN
+formed by the $\delta_v$ and $\Sigma_f$ is the learned network beyond the boundary bond $f$. For a proper subset of
+$\mathcal C$ the product vanishes, so the gain $\langle\mathcal R,W_{\mathcal C}\rangle$ is of order $\lvert\mathcal C\rvert$ in $\delta$
+while the quadratic term is of order $2\lvert\mathcal C\rvert$.
+
+Beyond $f$ the learned network is $\Sigma_f=q_j^{n_f}U_j|_{H_f}$ ($n_f$ cores, sites $H_f$). Contracting
+$\mathcal R=\sum_{r\ne j}s_rU_r$ with it gives zero unless $U_r$ agrees with $U_j$ on $H_f$, i.e.\ unless all sites
+where $r$ differs from $j$ lie on cores of $\mathcal C$. This gives \eqref{eq:steiner}, and a connected
+$\mathcal C\supseteq V_{D_r}$ contains $\St(V_{D_r})$. Along the curve where each route core gets $t$ times the
+pattern of $r$ on a new channel, $L-L_S=-c_rt^k+\tfrac12q_j^{2(K-k)}t^{2k}$.
+
+\emph{Escape time.} With old entries frozen and route amplitudes $b_v$,
+$\dot b_v=A\prod_{u\ne v}b_u\,(s_r-A\prod_ub_u)$, $A=q_j^{K-k}$. For a balanced route at small amplitude
+$\dot b=c_rb^{k-1}$, so $b^{-(k-2)}$ decreases at rate $(k-2)c_r$ (or $\ln b$ grows at rate $c_r$ for $k=2$).
+During the first plateau the route already grows with coupling $s_rq_j(t)^{K-k}$ while $q_j$ rises from
+$\sigma$; integrating with $\dot q_j\simeq s_jq_j^{K-1}$ gives
+$b_{\rm eff}^{-(k-2)}=\sigma^{-(k-2)}(1-s_r/s_j)+O(1)$ for $k\ge3$ and
+$\ln(1/b_{\rm eff})=(1-s_r/s_j)\ln(1/\sigma)+O(1)$ for $k=2$, which gives \eqref{eq:route}.
+
+\subsection{Saddle order (Result 3)}\label{app:order}
+Let $P_v$ project the physical space of core $v$ onto the pattern of $j$, $P_v^\perp=I-P_v$, and
+$\Pi_B=\bigotimes_{v\in B}P_v^\perp\otimes\bigotimes_{v\notin B}P_v$. The $2^K$ sector projectors are orthogonal and
+sum to the identity. With $\deg B=\lvert\St(B)\rvert$, $k^*=\min\{\deg B:\Pi_B\mathcal R\ne0\}$. The general
+operator $\Gamma^{(\ell)}$ acts on $\bigoplus_{\deg B\le\ell}\mathrm{range}(\Pi_B)$ with block
+$(x,y)\mapsto\langle\Pi_{B_1\sqcup B_2}\mathcal R,x\otimes y\rangle$ for disjoint $B_1,B_2$ and zero otherwise; for a pattern
+teacher it is the adjacency matrix of the graph in Result~3.
+
+\begin{thm*}[Lower bound]
+If $\lambda_{\ell-1}<s_j$ for some $2\le\ell\le\lceil k^*/2\rceil$, then
+$L(\theta)-L_S\ge-C\lVert\theta-\theta_S\rVert^{\min(k^*,2\ell)}$ near $\theta_S$.
+\end{thm*}
+\emph{Proof sketch.} Let $y=\langle U_j,W\rangle$ and $\mu_B=\Pi_BW/y$. Sector orthogonality gives exactly
+\[
+L-L_S=\tfrac12(y-s_j)^2+\sum_{B\ne\emptyset}\Big[\tfrac{y^2}{2}\lVert\mu_B\rVert^2-y\langle\Pi_B\mathcal R,\mu_B\rangle\Big].
+\]
+Families $(f_B)$ form a commutative algebra under $(f*g)_B=\sum_{B_1\sqcup B_2=B}f_{B_1}\otimes g_{B_2}$; let
+$\psi=\log\mu$ (set-partition cumulants). If the new entries $\nu_v$ of a core vanish, the contraction factorizes
+at $v$ and no cumulant contains a set through $v$; analyticity turns this into
+$\lVert\psi_B\rVert\le C\prod_{v\in\St(B)}\lVert\nu_v\rVert$. Split sets into low ($\deg\le\ell-1$) and high. Low sets carry
+no residual, the Gauss--Newton term is at least $(1-C\varepsilon)\lVert\psi_{\rm low}\rVert^2$, and the gain terms
+with two low cumulants sum to $\tfrac12\langle\psi_{\rm low},\Gamma^{(\ell-1)}\psi_{\rm low}\rangle$. Every other term
+is $O(\varepsilon^{k^*})$ or $O(\varepsilon^{2\ell})$. Hence
+$L-L_S\ge\tfrac y2(s_j-\lambda_{\ell-1}-O(\varepsilon))\lVert\psi_{\rm low}\rVert^2-O(\varepsilon^{\min(k^*,2\ell)})$. \qed
+
+\begin{thm*}[Sharpness]
+For a pattern teacher, if a node set $X$ of the level-$\ell$ graph ($\ell<k^*/2$) has adjacency spectral radius
+$r(A_X)>s_j$ and each bond has enough spare channels, there is a curve with
+$\lVert\theta(t)-\theta_S\rVert\le t$ and $L-L_S\le-Ct^{2\ell}$.
+\end{thm*}
+\emph{Proof sketch.} Take the Perron vector $x$ of $A_X$. Rotate each single-core node by $\varepsilon x$ toward its
+pattern (old entries) and give each multi-core node $(B,\pi)$ new entries of size
+$q_j(\varepsilon x_{B,\pi})^{1/\deg B}$ on $\St(B)$, each on its own spare channel. Then
+$L-L_S=-\tfrac{s_j}{2}(r(A_X)-s_j)\varepsilon^2+O(\varepsilon^3)$ while the distance is $O(\varepsilon^{1/\ell})$. \qed
+
+For a two-component teacher in weight order every node has at most one edge, so $\lambda_\ell\in\{0,s_r\}$ with
+$s_r<s_j$ and the order is $k^*$. In the MPS6 example the node $(\{0,1\},11)$ is joined to $(\{5\},1)$ by $110001$
+and to $(\{4\},1)$ by $110010$: a star with $\lambda_2=0.8\sqrt2$.
+
+\subsection{Route-end trap (Result 6)}\label{app:trap}
+Let $u$ be a route end with route neighbour $w$ on bond $e$, and suppose one unused channel of $e$ is in play.
+Write $a=\lVert X_u^\perp\rVert^2$, $b=\lVert X_w^\perp\rVert^2$. On the plateau the old entries are at
+$\theta_S$ and the new entries are small, so the only term in the loss at second order in these two blocks is
+the Gauss--Newton cost $\tfrac\kappa2\lVert X_u^{\perp\top}X_w^\perp\rVert^2$, with $\kappa=q_j^{2(K-2)}$ when $w$
+carries sites: their product changes $W$ by a tensor that differs from $U_j$ exactly on the sites of $u$ and
+$w$, and the residual has no such component unless some component has the two-core route $\{u,w\}$. Gradient flow on this term gives
+\[
+\dot a=-2\kappa ab,\qquad \dot b=-2\kappa ab,
+\]
+so $C_u=a-b$ is conserved and $\dot a=-2\kappa a(a-C_u)$. If $C_u>0$, $a\to C_u$; if $C_u<0$, $a\to0$ at rate
+$2\kappa\lvert C_u\rvert$. The route entry of $u$ lies in $X_u^\perp$ (it carries a site where $r$ differs from
+$j$), so it survives iff $C_u>0$. With several channels the same computation gives
+$X_u^\perp X_u^{\perp\top}\to[C_u]_+$.
+
+\emph{Time scales.} $\lvert C_u\rvert=O(\sigma^2)$, so a dying end decays in time $\propto\sigma^{-2}$, against the
+escape time $\sigma^{-(k-2)}$: the end is decided before the escape when $k\ge5$, at the same order when $k=4$,
+and the route escapes first when $k\le3$. If $w$ carries no site (binary or HT leaf), the cheapest costly product
+passes through three cores, the rate is $\propto\sigma^4$, and the threshold becomes $k\ge6$.
+
+\emph{From the initialization.} The full imbalance $Q_e$ (Section~1) is exactly conserved.
+Restricted to the new direction $\nu$ and split into the orthogonal blocks and the entries that pair with
+nothing at second order ($X_{\rm nv}$, $Y_{\rm nv}$), it gives
+$C_u=Q_{\nu\nu}+\lVert Y_{\rm nv}\rVert^2-\lVert X_{\rm nv}\rVert^2+O(\sigma^3)$, evaluated after the first escape. That
+state is $\sigma$ times a function of the initial direction, obtained from the $\sigma$-free flow of A.1.
+
+\emph{Death probability.} At a saddle start the blocks are Gaussian with variances $\sigma^2/F_u$ and
+$\sigma^2/F_w$, so $a\sim\sigma^2\chi^2_{n_u}/F_u$ and $b\sim\sigma^2\chi^2_{n_w}/F_w$. With
+$Z=\chi^2_{n_u}/(\chi^2_{n_u}+\chi^2_{n_w})\sim\mathrm{Beta}(n_u/2,n_w/2)$, $a<b$ iff $Z<F_u/(F_u+F_w)$, so
+$P(\text{end dies})=I_{F_u/(F_u+F_w)}(n_u/2,n_w/2)$.
+
+\clearpage
 \section{Figures (from the full report)}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/intro/teaser.pdf}
-\caption{Saddle-to-saddle learning. Left: the loss falls in steps, with plateaus at the predicted partial-fit
-levels. Right: the measured plateau exponent against the route rule's $k-2$ (full report, Fig.~1).}
+\caption{Saddle-to-saddle runs with the predicted plateau levels, and the measured plateau exponent
+against $k-2$ (full report, Fig.~1).}
 \end{figure}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/locality/twocomp_exponents.png}
-\caption{Plateau exponent against route size $k$ across nine trees. The measurements follow $k-2$ (R2;
-full report, Sec.~4.4).}
+\caption{Per-seed plateau exponent against $k-2$ for every two-component setting with $k\ge3$ (left), and
+the $k=2$ log slope against $(1-s_2/s_1)/\lambda_2$ and $1/\lambda_2$ (right) (full report, Sec.~4.4).}
 \end{figure}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/data_teacher/contrast.pdf}
-\caption{Tree shape and generic teachers (R4): logarithmic, strict escape on an MPS; power-law, higher-order
-escape on binary and HT trees (full report, Sec.~6.2).}
+\caption{Non-orthogonal teachers: logarithmic escape from the rank-one saddle on an MPS, power law on
+binary and HT trees (full report, Sec.~6.2).}
 \end{figure}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/regime_map/map.pdf}
-\caption{Map of regimes (R7) on the binary tree with 4 sites, by initialization scale $\sigma$ and bond
-dimension $\chi$ (full report, Sec.~3).}
+\caption{Regimes of binary4 in $(\sigma,\chi)$ (full report, Sec.~3).}
 \end{figure}
 \end{document}
