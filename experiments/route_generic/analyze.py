@@ -159,7 +159,8 @@ def fit_series(pts: pd.DataFrame) -> dict:
     if "eff_depth_amp" in use:
         d_a = use["eff_depth_amp"].dropna()
         out["eff_depth_amp"] = float(d_a.median()) if len(d_a) else math.nan
-    ok = len(use) >= MIN_POINTS and out["span_dec"] >= MIN_SPAN - 1e-9
+    # 0.01 decade of tolerance: the MNIST grid values are rounded (0.005 ... 0.158 spans 1.4997 decades)
+    ok = len(use) >= MIN_POINTS and out["span_dec"] >= MIN_SPAN - 0.01
     out["fitted"] = bool(ok)
     if not ok:
         out["reason"] = "too few points" if len(use) < MIN_POINTS else "span < 1.5 decades"

@@ -353,5 +353,9 @@ event; these are also the cells with relearned singular values.
    onset: the bonds that start the event), with `dd_lead`, `dp_lead` in exponents.csv. Added at 20:10
    after seeing, in a partial table of the smallest sigma, that events of generic targets often contain
    bonds that start growing well after the first ones.
+5. **Span tolerance (rounding only).** The MNIST config lists rounded sigma values (0.005, 0.00889, ...,
+   0.158), so 7 consecutive grid points span 1.4997 decades and failed the ">= 1.5 decades" test; the test
+   now allows 0.01 decade of rounding (`analyze.fit_series`). The synthetic grid values are exact, so no
+   synthetic fit changes.
 4. **Exploratory plateau Hessians** (section 11, `plateau_hessian.py`), added after the synthetic results
    were known, to see what starts a multi-core event. Not part of the registered decisions.
