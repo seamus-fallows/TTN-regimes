@@ -31,7 +31,9 @@ from driver import Flow, integrate  # noqa: E402
 from ttn.routes import effective_depth  # noqa: E402
 
 torch.set_num_threads(1)
-KINDS = {"A": 0, "A_bal": 1, "B": 2, "C": 3}
+KINDS = {"A": 0, "A_bal": 1, "B": 2, "C": 3, "Cp": 4}
+# Cp (added after the first sweep, notes/route_escape.md section 7): the direction of C with the same
+# seed, projected onto M* (entries outside M* left at theta_J). A causal test of shifts in C.
 RTOL, ATOL = 1e-10, 1e-15
 SWITCH_AT = 200.0  # reference switch to the active part of the relaxed state (sdyn deviation 6/7)
 
@@ -65,11 +67,13 @@ class ReducedFlow(Flow):
 
 def direction(cell, kind: str, i: int) -> np.ndarray:
     """Flat perturbation xi (eps = 1) of the given kind and direction index."""
-    rng = np.random.default_rng(1000 * KINDS[kind] + i)
+    rng = np.random.default_rng(1000 * KINDS["C" if kind == "Cp" else kind] + i)
     xi = np.zeros(cell.spec.n_params)
     nd = int(cell.dormant_flat.sum())
     if kind == "C":
         xi = rng.standard_normal(cell.spec.n_params)
+    elif kind == "Cp":
+        xi = rng.standard_normal(cell.spec.n_params) * cell.mask
     elif kind == "A":
         xi[cell.man.flat[cell.dormant]] = np.abs(rng.standard_normal(nd))
     elif kind == "A_bal":
@@ -145,7 +149,7 @@ def run(cell_name: str, kind: str, i: int, log_eps: float, wall: float = 1800.0)
     out["diag"] = diag
     out["P0"] = res["P"][0].tolist()
     # reduced flow and isolated-route predictions on M*
-    if kind in ("A", "A_bal", "B"):
+    if kind in ("A", "A_bal", "B", "Cp"):
         red = ReducedModel(cell)
         g0 = cell.man.g(torch.from_numpy(theta0))
         with threadpool_limits(limits=1, user_api="blas"):

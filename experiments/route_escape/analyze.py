@@ -178,6 +178,15 @@ def diag_rows(o, r):
         late = d
     if late:
         summ(late[-1], "late")
+    # depletion: the smallest ratio over the region's nodes of (lowest norm reached on the plateau) /
+    # (norm at the switch checkpoint), and the node where it happens (a route entry being killed)
+    if sw and late:
+        base = sw[0][key]
+        lows = {v: min(x[key][v] for x in d if sw[0]["t"] <= x["t"] <= late[-1]["t"]) for v in base}
+        ratio = {v: lows[v] / base[v] if base[v] > 0 else math.nan for v in base}
+        v_min = min(ratio, key=lambda v: ratio[v])
+        out["route_depletion"] = ratio[v_min]
+        out["route_depleted_node"] = int(v_min)
     return out
 
 
@@ -280,7 +289,7 @@ def escape_fits(runs, static_summary):
             row["shift_int"] = int(round(dev))
             smallest = w.iloc[0]
             row["first_at_smallest"] = smallest.first_learned
-            if kind in ("A", "A_bal", "B"):
+            if kind in ("A", "A_bal", "B", "Cp"):
                 row["ratio_iso_smallest"] = smallest.ratio_iso
                 row["ratio_616_smallest"] = smallest.ratio_616
                 row["max_abs_ratio_iso_minus1"] = float(np.nanmax(np.abs(w.ratio_iso.values.astype(float) - 1)))
@@ -291,7 +300,7 @@ def escape_fits(runs, static_summary):
         if n_win:
             s0 = w.iloc[0]
             for k in ("P_greedy_0", "P_sw", "route_min_sw", "route_max_sw", "route_min_late", "route_gm_sw",
-                      "route_gm_late", "P_greedy_0_sign"):
+                      "route_gm_late", "P_greedy_0_sign", "route_depletion", "route_depleted_node"):
                 if k in w.columns:
                     row[k + "_smallest"] = s0.get(k)
         row["class"] = cls
@@ -327,7 +336,7 @@ def decisions(fits, runs):
         row["greedy_frac_window"] = float(rw.first_is_greedy.astype(bool).mean()) if len(rw) else None
         row["P6"] = ("SUPPORTED" if row["greedy_frac_window"] is not None and row["greedy_frac_window"] >= 0.9
                      else "NOT SUPPORTED")
-        if kind in ("A", "A_bal", "B"):
+        if kind in ("A", "A_bal", "B", "Cp"):
             both = r[r.t_red.notna() & r.t_esc.notna()]
             row["P3_runs"] = len(both)
             row["P3_max_rel"] = float(np.abs(both.rel_full_red).max()) if len(both) else None
