@@ -60,6 +60,7 @@ Plain-words glossary (details in the note, section 1):
 uv run python experiments/route_nonstar/make_targets.py          # configs/targets.yaml (1 min)
 uv run python experiments/route_nonstar/run.py sweep --workers 120   # 9,520 runs, resumable
 uv run python experiments/route_nonstar/analyze.py               # results/*.csv
+uv run python experiments/route_nonstar/entries.py               # results/route_entries.csv
 uv run python experiments/route_nonstar/headline.py              # results/headline.md
 uv run python experiments/route_nonstar/figures.py               # results/fig*.png/.pdf
 uv run python experiments/route_nonstar/run.py one R3 -2 0       # one run, record to stdout
@@ -84,6 +85,7 @@ uv run python experiments/route_nonstar/run.py one R3 -2 0       # one run, reco
 | `figures.py` | draft figures |
 | `headline.py` | cross-target numbers -> `results/headline.md` |
 | `load.py` | `read(name)`: load a result CSV with pattern columns as text |
+| `entries.py` | post-hoc route-entry norms at plateau points -> `results/route_entries.csv` |
 | `results/` | CSVs (below) and figures |
 
 ## CSV columns (`results/`)
@@ -198,6 +200,13 @@ else unclear), `n_neg_median`. Floor-flagged points excluded.
 escapes only the route rule can be right, when its string is the off-target string that changes
 most), `n_transitions`.
 
+**`route_entries.csv`** (`entries.py`, post hoc; star controls and RND3_mps6; one row per (run,
+plateau, missing pattern)): `segment`, `J`, `canonical`, `L`, `missing`, `align_quality`
+(smallest singular value of the normalised message matrices from `AlignedManifold.align`; 1 =
+aligned), `depth_paper`, `entry_min`, `entry_max`, `entry_geo` (minimum, maximum and geometric
+mean over the nodes of R_J(r) of `route_entry_norms`, divided by sigma), `n_nodes`, `error` (why a
+row has no norms). The `entry_*` columns of `plateaus.csv` are empty (note, deviation 4).
+
 **`run_classes.csv`** (one row per (target, sigma)): number of runs per status, `floor_flagged`,
 `forgetting` (runs with a forgetting event).
 
@@ -206,4 +215,31 @@ sequence agreement, run counts).
 
 ## Results
 
-(filled in after the sweep; see `notes/route_nonstar.md` Part II)
+Details, tables and status tags: `notes/route_nonstar.md` Part II; numbers: `results/headline.md`,
+per target: `results/summary_by_target.md`. 9,520 runs: 9,230 converged, 211 trapped (dead
+routes on mps4 chains), 79 wall-capped (float64 floor); no errors.
+
+- **Plateaus are often not partial targets** (`fig1`, `fig2`): after the first escape 68 % of the
+  plateau points of non-star targets are farther than 0.03 (relative) from every partial target
+  and 59 % carry a recombinant string; star controls: 0.4 % and 0.9 %. The non-canonical plateaus
+  are rank-constrained optima (18 of 19 types at a level of the locality route-rule sequence).
+  Recombinant family: the plateau is the best rank-1 approximation of W* (loss 0.019445 =
+  second singular value^2 / 2), carrying 10..01 with amplitude 0.166.
+- **Plateau lengths** (`fig3`, `fit_summary.csv`): the numerical route rule's k* - 2 matches the
+  per-seed exponents of 23 of 25 fitted non-star plateau types (every seed within 0.3); the
+  paper's route depth and the pairwise rule match 9 of 25 and predict "no plateau" at 13 types
+  where plateaus of length sigma^-1 to sigma^-3 exist. Registered hand orders hold everywhere
+  (R3, R3d: 1.00; R4, R4d: 2.00; canonical one-pattern plateaus via Theorem 3.2).
+- **Effective depth** (`fig4`): within 0.5 of k* in 94.7 % of 8,184 non-star escapes (paper's depth:
+  30.9 %).
+- **Escape type** (`fig5`, `escape_type.csv`): strict (sigma-independent negative eigenvalue,
+  log-time plateau) for all 10 k* = 2 types; degenerate, lambda_min ~ sigma^(k* - 2), for all 32
+  k* >= 3 types.
+- **Next step** (`fig6`, `sequence.csv`): on escapes that learn a pattern every rule is right
+  (paper 99.4 %, route rule 97.9 %); 45 % of non-star escapes are clean-ups (no pattern learned,
+  a recombinant removed), which only the route rule predicts.
+- **Exceptions**: spectral shortcuts (order 4 < k* = 5) at CTL1_mps6 {010101} (Theorem 3.2 predicts
+  it) and RND1_mps6 at a canonical three-pattern plateau (no theorem; parent-wise formula wrong);
+  a non-integer exponent 0.61 at a canonical depth-3 plateau of RND3_mps6 (route enters larger
+  than sigma); dead routes on R4 / R4d / B4_mps4 (5-6 seeds each, at every sigma); forgetting of
+  the heaviest pattern in the star control CTL1_mps6 (21 of 40 seeds).

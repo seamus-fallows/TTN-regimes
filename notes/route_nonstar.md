@@ -252,6 +252,15 @@ smallest sigma are too slow, log10 sigma = -3.5 (then -3.25) is cut for K = 6, 7
    construction a resolved plateau (deviation 1), so for these keys the rule is scored "fails (no
    plateau predicted)"; the registered exponent comparison is kept in the CSV
    (`frac_within_*`, `exp_*`).
+4. **Route-entry norms computed post hoc (21:05).** The registered per-run measurement of the
+   route-entry norms for the star controls was silently skipped: `run.py` built its
+   `AlignedManifold` with the manifold's own bond dimensions, which differ from the network's
+   (rank + 2 per edge), and then set it to None. `entries.py` recomputes them from the saved
+   plateau states with the manifold's `align` / `route_entry_norms` on the network's own spec
+   (they only read bond dimensions and the target), for the three controls and for RND3_mps6
+   (non-star, but its plateaus are aligned with quality > 0.9999), into `results/route_entries.csv`.
+   The `entry_*` columns of `plateaus.csv` stay empty. Event-based identities: deviation 3's
+   existence rule is replaced there by the same-drop rule (README).
 
 # Part II: results
 
@@ -417,7 +426,11 @@ the plateau length grows from 241 (sigma = 10^-1.5) to 5,293 (10^-3.5): local ex
 large end, 0.58 at the small end, median per-seed exponent 0.61; the escape itself has effective
 depth 3.03 and lambda_min ~ sigma^0.51. The amplitude of 000010 at the plateau point scales as
 sigma^2.33 (from 5.5e-6 to 1.2e-10), not sigma^3: the dormant route enters the plateau at about
-sigma^0.6-0.8, not sigma. This plateau follows two strict (log-time) plateaus; a candidate
+sigma^0.6-0.8, not sigma. The route-entry norms read off the aligned network
+(`results/route_entries.csv`, deviation 4; alignment quality 0.99999) confirm it: their geometric
+mean over the 3 route nodes scales as sigma^0.78 at this plateau (and as sigma^0.85 already at the
+strict plateau before it), where Assumption C.1(1) wants sigma^1; on the star controls the same
+slope is 0.80-1.11 for the depth-3 to depth-5 routes. This plateau follows two strict (log-time) plateaus; a candidate
 mechanism (**conjecture**) is that during a strict plateau of length ~ log(1/sigma)/lambda the
 dormant entries of the next route grow (or shrink) at a rate lambda', which turns sigma into
 sigma^(1 - lambda'/lambda) at entry and gives the exponent (c - 2)(1 - lambda'/lambda). This is a
