@@ -267,23 +267,38 @@ def escape_type(res: Path, out: Path):
 
 
 def sequence(res: Path, out: Path):
-    seq = read("sequence", res)
+    from analyze import sequence_scores
+
+    seq = sequence_scores(read("transitions", res))
     seq = seq[seq.log10_sigma <= -1.5]
-    w = seq.groupby("target")[["hit_paper", "hit_route", "hit_pair", "hit_weight"]].mean()
-    order = sorted(w.index, key=lambda n: (n.startswith(("CTL", "B4")), n))
-    w = w.loc[order]
-    fig, ax = plt.subplots(figsize=(15, 6))
+    order = sorted(seq.target.unique(), key=lambda n: (n.startswith(("CTL", "B4")), n))
     cols = palette(4)
     labels = ["paper's greedy rule (route depth)", "numerical route rule", "pairwise rule",
               "largest weight first"]
-    for i, (c, lab) in enumerate(zip(w.columns, labels)):
-        ax.bar(np.arange(len(w)) + (i - 1.5) * 0.2, w[c].values, 0.2, color=cols[i], label=lab)
-    ax.set_xticks(range(len(w)), w.index, rotation=45, ha="right")
-    ax.set_ylim(0, 1.05)
-    ax.set_ylabel("fraction of escapes whose outcome\nthe rule predicts correctly")
-    ax.legend(ncol=2, loc="upper left", fontsize=BIG - 2)
-    ax.set_title("What is learned next: rules scored on every escape from a plateau "
-                 "(given the patterns already learned)")
+    hits = ["hit_paper", "hit_route_any", "hit_pair", "hit_weight"]
+    fig, axes = plt.subplots(2, 1, figsize=(15, 10), sharex=True)
+    for ax, kind, title in [
+            (axes[0], "learn", "escapes in which a pattern is learned"),
+            (axes[1], "cleanup", "clean-up escapes: no pattern is learned, an off-target string "
+                                 "is removed or amplitudes are corrected")]:
+        g = seq[seq.next_kind == kind]
+        w = g.groupby("target")[hits].mean().reindex(order)
+        n = g.groupby("target").size().reindex(order).fillna(0).astype(int)
+        for i, (c, lab) in enumerate(zip(hits, labels)):
+            ax.bar(np.arange(len(w)) + (i - 1.5) * 0.2, w[c].fillna(0).values, 0.2,
+                   color=cols[i], label=lab)
+        for j, k in enumerate(n.values):
+            ax.text(j, 1.03, f"n={k}", ha="center", fontsize=BIG - 5)
+        ax.set_ylim(0, 1.12)
+        ax.set_ylabel("fraction predicted\ncorrectly")
+        ax.set_title(title)
+    axes[1].set_xticks(range(len(order)), order, rotation=45, ha="right")
+    h, l_ = axes[0].get_legend_handles_labels()
+    axes[1].legend(h, l_, ncol=2, loc="center right", fontsize=BIG - 1, frameon=True,
+                   facecolor="white", edgecolor="none")
+    fig.suptitle("What happens next: all rules name the next learned pattern; only the route "
+                 "rule predicts the clean-ups,\nwhich are almost half of the escapes on non-star "
+                 "targets (window sigmas; n = number of escapes)")
     savefig(fig, out / "fig6_sequence")
     plt.close(fig)
 
