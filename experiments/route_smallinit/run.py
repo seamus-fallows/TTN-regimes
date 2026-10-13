@@ -140,7 +140,8 @@ def _stopper(s):
         if L < DONE_LOSS:
             return "done"
         unl = P < 0.5 * s
-        if unl.any() and np.max(np.abs(P[unl]) / s[unl]) < DEAD_AMP:
+        # dead routes only after something was learned (at the origin every amplitude ~ sigma^K)
+        if unl.any() and not unl.all() and np.max(np.abs(P[unl]) / s[unl]) < DEAD_AMP:
             i = len(traj) - 1
             if state["dead_since"] is None:
                 state["dead_since"] = traj.exact(i)
