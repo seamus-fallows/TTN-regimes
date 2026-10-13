@@ -152,7 +152,8 @@ escape files add `kind`, `seed` (direction index) and `eps`.
 Counts of directions per class, the distribution of gamma over complete directions (median, quartiles,
 min, max, fraction within 0.3 of the prediction), the P5 decision (SUPPORTED / REFUTED /
 INCONCLUSIVE, rules in the note), the greedy fraction over escaped window runs and the P6 decision,
-for A/A_bal/B the P3 test (full vs reduced flow: number of runs, largest |t_esc / t_red - 1|, fraction
+for depth-2 cells the ratio of the log-law slope to its prediction 1/(s_r A_r(J)) (median, min, max over
+complete directions: `log_slope_ratio_*`), for A/A_bal/B/Cp the P3 test (full vs reduced flow: number of runs, largest |t_esc / t_red - 1|, fraction
 with the same first pattern) and the isolated-route test (fraction of window runs with
 |t_esc / t_iso - 1| <= 0.05, median ratio, fraction whose first pattern is the isolated-route winner),
 and run counts by outcome.

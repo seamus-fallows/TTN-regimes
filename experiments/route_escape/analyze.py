@@ -329,6 +329,11 @@ def decisions(fits, runs):
                   and len(comp) >= 10 if kind != "A_bal" else abs(row["gamma_median"] - row["gamma_pred"]) <= 0.15)
             ref = len(comp) >= 10 and abs(row["gamma_median"] - row["gamma_pred"]) > 0.5
             row["P5"] = "SUPPORTED" if ok else ("REFUTED" if ref else "INCONCLUSIVE")
+            if "log_slope_pred" in comp.columns and comp.log_slope_pred.notna().any():
+                q = (comp.log_slope / comp.log_slope_pred).values
+                row["log_slope_ratio_median"] = float(np.median(q))
+                row["log_slope_ratio_min"] = float(q.min())
+                row["log_slope_ratio_max"] = float(q.max())
         else:
             row["P5"] = "INCONCLUSIVE (no complete direction)"
         r = runs[(runs.cell == cell) & (runs.kind == kind)]

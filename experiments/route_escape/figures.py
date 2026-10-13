@@ -42,7 +42,7 @@ def big():
 
 def cell_label(name):
     c = get_cell(name)
-    return f"{name}\n{c.tree_name}, c*={c.c_star}"
+    return f"{name} ({c.tree_name}, c*={c.c_star})"
 
 
 # ---- 1. static orders -----------------------------------------------------------------------
@@ -65,15 +65,16 @@ def fig_static(orders, thm):
         if c.cfg.get("parents") is not None:
             ax.plot(i + 0.12, c.thm92()["order"], "D", mfc="none", mec=INK, ms=13, mew=1.3, zorder=4,
                     label="Thm 9.2 formula (family cells)" if name == "PS2" else None)
-    ax.set_xticks(x, [cell_label(n) for n in cells], rotation=0, fontsize=8)
+    ax.set_xticks(x, [cell_label(n) for n in cells], rotation=35, ha="right", rotation_mode="anchor",
+                  fontsize=9)
     ax.set_ylabel("saddle order\n(power of the first loss decrease)")
     ax.set_ylim(1.5, 6.5)
     ax.axvline(len(DYN) - 0.5, color=MUTED, lw=0.8, ls=":")
     ax.text(len(DYN) - 0.4, 6.3, "static-only Thm 9.2 family", fontsize=9, color=MUTED, va="top")
     ax.legend(loc="upper left", ncol=2, fontsize=9)
-    ax.set_title("Static saddle order: inside M* it equals the route depth c*_J in every cell; "
-                 "in the full space it drops below c*_J exactly where a spectral shortcut is predicted",
-                 fontsize=11)
+    ax.set_title("Static saddle order: inside M* it equals the route depth c*_J in every cell;\n"
+                 "in the full space it drops below c*_J exactly where Thm 9.2 predicts a spectral shortcut",
+                 fontsize=12)
     savefig(fig, RES / "fig1_static_orders")
     plt.close(fig)
 
@@ -96,22 +97,25 @@ def fig_inside(runs):
     ax.legend(loc="upper left", fontsize=9)
     ax.set_title("Every start inside M* (A, B): measured = predicted")
     ax = axs[1]
-    full_red = np.abs(r.rel_full_red.astype(float))
-    iso = np.abs(r.ratio_iso.astype(float) - 1)
+    w = r[(r.log_eps >= -4.5 - 1e-9) & (r.log_eps <= -3.0 + 1e-9)]
+    full_red = np.abs(w.rel_full_red.astype(float))
+    tie = w.cell == "TIE3"
+    iso = np.abs(w.ratio_iso.astype(float) - 1)
     bins = np.logspace(-12, 1, 40)
     ax.hist(np.clip(full_red, 1e-12, None), bins=bins, color=BLUE, alpha=0.8,
             label="full network vs reduced flow on M*")
-    ax.hist(np.clip(iso, 1e-12, None), bins=bins, color=ORANGE, alpha=0.6,
-            label="full network vs isolated-route formula")
+    ax.hist([np.clip(iso[~tie], 1e-12, None), np.clip(iso[tie], 1e-12, None)], bins=bins,
+            color=[ORANGE, PINK], alpha=0.7, stacked=True,
+            label=["full network vs isolated-route formula", "same, TIE3 (two routes share entries)"])
     ax.axvline(1e-4, color=MUTED, ls="--", lw=1)
     ax.axvline(0.05, color=MUTED, ls=":", lw=1)
     ax.text(1e-4, ax.get_ylim()[1] * 0.95, " P3 bound 1e-4", color=MUTED, fontsize=9, va="top")
     ax.text(0.05, ax.get_ylim()[1] * 0.80, " P4 bound 5 %", color=MUTED, fontsize=9, va="top")
     ax.set_xscale("log")
     ax.set_xlabel("relative difference of escape times |t_a / t_b - 1|")
-    ax.set_ylabel("number of runs")
+    ax.set_ylabel("number of runs (fit window eps = 1e-4.5 ... 1e-3)")
     ax.legend(loc="upper left", fontsize=9)
-    ax.set_title("The full network reproduces the reduced flow to ~1e-8")
+    ax.set_title("Full network = reduced flow (to 1e-7); the isolated-route\nformula fails only where two routes share entries (TIE3)")
     savefig(fig, RES / "fig2_inside_Mstar")
     plt.close(fig)
 
@@ -137,10 +141,11 @@ def fig_exponents(fits):
                     alpha=0.75, mec="none", label=KIND_LABEL[k] if i == 0 else None)
             nt = int((f[f.kind == k]["class"] == "trapped").sum())
             ni = int((f[f.kind == k]["class"] == "incomplete").sum())
-            if nt or ni:
-                ax.text(i + dx, -0.75, f"{nt}T\n{ni}I" if ni else f"{nt}T", ha="center", va="top",
-                        fontsize=7, color=KIND_COLOR[k])
-    ax.set_xticks(range(len(DYN)), [cell_label(n) for n in DYN], fontsize=8)
+            lab = "\n".join(x for x in (f"{nt}T" if nt else "", f"{ni}I" if ni else "") if x)
+            if lab:
+                ax.text(i + dx, -0.75, lab, ha="center", va="top", fontsize=8, color=KIND_COLOR[k])
+    ax.set_xticks(range(len(DYN)), [cell_label(n) for n in DYN], rotation=30, ha="right",
+                  rotation_mode="anchor", fontsize=9)
     ax.set_ylabel("escape exponent gamma\n(t_esc ~ eps^-gamma, fit over eps = 1e-4.5 ... 1e-3)")
     ax.set_ylim(-1.1, 4.6)
     ax.legend(loc="upper left", ncol=2, fontsize=9)
@@ -240,6 +245,65 @@ def fig_thm92(curves, thm):
     plt.close(fig)
 
 
+# ---- 7. why Gaussian directions shift: a route entry drained on the eps^-2 time scale -----------
+
+
+def fig_shift(cell="U5B8", seeds=(9, 2, 5), node="0"):
+    c = get_cell(cell)
+    r = c.greedy()
+    fig, axs = plt.subplots(1, 2, figsize=(12.5, 4.8))
+    cols = [ORANGE, BLUE, GREEN]
+    for seed, col in zip(seeds, cols):
+        for le, ls in ((-3.0, ":"), (-3.5, "--"), (-4.0, "-")):
+            p = OUT / "escape" / cell / f"C_{seed:02d}_{le:+.2f}.json"
+            if not p.exists():
+                continue
+            o = json.loads(p.read_text())
+            d = [x for x in o["diag"] if x["t"] > 0]
+            t = np.array([x["t"] for x in d])
+            v = np.array([x[f"route_{r}"][node] for x in d]) / o["eps"]
+            axs[0].loglog(t * o["eps"] ** 2, np.maximum(v, 1e-3), ls=ls, color=col,
+                          label=f"direction {seed}, eps = 1e{le:g}")
+        rows = []
+        for p in sorted((OUT / "escape" / cell).glob(f"C_{seed:02d}_*.json")):
+            o = json.loads(p.read_text())
+            if o["t_esc"] is not None:
+                rows.append((o["eps"], o["t_esc"], o["floor_phi"] > 0.01))
+        rows = np.array(sorted(rows))
+        ok = rows[:, 2] == 0
+        axs[1].loglog(rows[ok, 0], rows[ok, 1], "o", color=col, ms=6, label=f"direction {seed}")
+        axs[1].loglog(rows[~ok, 0], rows[~ok, 1], "o", color=col, ms=6, mfc="none")
+    e = np.logspace(-4.5, -2.5, 20)
+    anchors = {}
+    for seed in seeds:
+        p = OUT / "escape" / cell / f"C_{seed:02d}_-3.00.json"
+        if p.exists():
+            anchors[seed] = json.loads(p.read_text())["t_esc"]
+    if seeds[1] in anchors:
+        axs[1].loglog(e, anchors[seeds[1]] * (e / 1e-3) ** -3, color=MUTED, ls="--", lw=1.2,
+                      label="slope 3 = c*_J - 2 (prediction)")
+    if seeds[0] in anchors:
+        axs[1].loglog(e, anchors[seeds[0]] * (e / 1e-3) ** -4, color=MUTED, ls=":", lw=1.2,
+                      label="slope 4 (shifted by +1)")
+    axs[0].set_xlabel("time x eps^2  (the off-target clusters decay on the time scale eps^-2)")
+    axs[0].set_ylabel(f"route entry of {c.pattern_strings[r]} at leaf node {node}\n(norm / eps)")
+    axs[0].set_ylim(1e-3, 10)
+    axs[0].set_xlim(1e-4, 1e6)
+    axs[0].legend(fontsize=8, loc="lower left", ncol=1)
+    axs[0].set_title("The route entry at a leaf of the routing region is drained;\n"
+                     "curves for different eps collapse when time is scaled by eps^2", fontsize=11)
+    axs[1].set_xlabel("perturbation size eps")
+    axs[1].set_ylabel("escape time (gradient-flow time units)")
+    axs[1].invert_xaxis()
+    axs[1].legend(fontsize=8, loc="upper left")
+    axs[1].set_title("If it is drained to zero (direction 9) the escape exponent rises by one\n"
+                     "(open circles: floor-flagged runs)", fontsize=11)
+    fig.suptitle(f"{cell} (depth-5 route), Gaussian starts: why some directions escape later than eps^-3",
+                 fontsize=12)
+    savefig(fig, RES / "fig7_shift_mechanism")
+    plt.close(fig)
+
+
 def main():
     big()
     orders = pd.read_csv(RES / "static_orders.csv")
@@ -254,6 +318,7 @@ def main():
         fig_exponents(fits)
         fig_first(runs)
         fig_cor86(runs)
+        fig_shift()
 
 
 if __name__ == "__main__":
