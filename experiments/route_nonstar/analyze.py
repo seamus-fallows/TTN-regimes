@@ -287,7 +287,7 @@ def _dist_to(seg, info, J):
     return math.sqrt(off2 + float(((P - on) ** 2).sum())) / math.sqrt(float((w**2).sum()))
 
 
-def per_seed_fits(df, group_cols, dur_col, extra_cols):
+def per_seed_fits(df, group_cols, dur_col, extra_cols, min_span=MIN_SPAN, min_points=MIN_POINTS):
     """Per-seed least-squares slopes of -log10(duration) on log10(sigma) inside the window."""
     out = []
     win = df[(df.log10_sigma <= WINDOW_MAX + 1e-9) & (df[dur_col] > 0)]
@@ -298,7 +298,7 @@ def per_seed_fits(df, group_cols, dur_col, extra_cols):
         span = g.log10_sigma.max() - g.log10_sigma.min() if n else 0
         row = dict(zip(group_cols + ["seed"], keys))
         row.update(n_points=n, span=span)
-        if n >= MIN_POINTS and span >= MIN_SPAN - 1e-9:
+        if n >= min_points and span >= min_span - 1e-9:
             x, y = g.log10_sigma.values, np.log10(g[dur_col].values)
             slope, icpt = np.polyfit(x, y, 1)
             resid = y - (slope * x + icpt)
@@ -349,6 +349,13 @@ def summarize_fits(fits, group_cols, preds, rows_all=None):
             row[f"exp_{name}"] = pe
             row[f"frac_within_{name}"] = frac
             row[f"decision_{name}"] = decide(row["median"], frac if not np.isnan(frac) else 0, pe)
+            # deviation 3: an observed (resolved) plateau where a rule predicts none (order <= 1,
+            # or nothing missing) refutes the rule whatever the exponent
+            none = (name in ("paper", "pair") and (np.isnan(p) or p <= 1)) or \
+                (name == "route" and not np.isnan(p) and p <= 1)
+            row[f"predicts_plateau_{name}"] = not none
+            if none and "origin" not in str(keys):
+                row[f"decision_{name}"] = "fails (no plateau predicted)"
         rows.append(row)
     return pd.DataFrame(rows)
 
@@ -425,6 +432,17 @@ def main():
     fits = per_seed_fits(ok, ["target", "key"], "duration",
                          ["pred_paper", "pred_route", "pred_pair", "pred_hand"])
     fits.to_csv(out / "fits.csv", index=False, float_format="%.6g")
+    # deviation 2 (secondary, labelled): depth-5 plateaus are floor-flagged at sigma <= 1e-3, which
+    # leaves < 1.5 decades; (a) unflagged points with a 1-decade span, (b) flagged points included
+    conv = trans[(trans.status == "converged") & (trans.censored == False)]  # noqa: E712
+    sec = []
+    for variant, rows_, span in [("unflagged_span1", ok, 1.0), ("with_flagged", conv, MIN_SPAN)]:
+        f2 = per_seed_fits(rows_, ["target", "key"], "duration",
+                           ["pred_paper", "pred_route", "pred_pair", "pred_hand"], min_span=span)
+        f2["variant"] = variant
+        sec.append(f2)
+    sec = pd.concat(sec)
+    sec.to_csv(out / "fits_secondary.csv", index=False, float_format="%.6g")
     preds = dict(paper="pred_paper", route="pred_route", pair="pred_pair", hand="pred_hand")
     win_rows = trans[trans.log10_sigma <= WINDOW_MAX + 1e-9]
     summ = summarize_fits(fits, ["target", "key"], preds, win_rows)
@@ -437,6 +455,12 @@ def main():
         eff_depth_loss_median=("next_eff_depth_loss", "median"),
         route_k_median=("route_k", "median"), floor_flagged=("floor_flag", "sum"))
     summ = summ.merge(desc.reset_index(), on=["target", "key"], how="left")
+    for variant in ["unflagged_span1", "with_flagged"]:
+        sv = summarize_fits(sec[sec.variant == variant], ["target", "key"], preds, win_rows)
+        sv = sv[["target", "key", "n_fitted", "median", "q25", "q75", "frac_within_route",
+                 "frac_within_paper", "frac_within_hand"]]
+        sv.columns = ["target", "key"] + [f"{c}_{variant}" for c in sv.columns[2:]]
+        summ = summ.merge(sv, on=["target", "key"], how="left")
     summ.to_csv(out / "fit_summary.csv", index=False, float_format="%.4g")
     ev_ok = events.merge(runs[["target", "sigma", "seed", "status", "floor_flagged"]],
                          on=["target", "sigma", "seed"])
@@ -519,6 +543,11 @@ def write_summary(out: Path, infos, runs, trans, summ, esc, seq):
             dn = f"{x.d_near_median:.3g}" if not np.isnan(x.d_near_median) else "-"
             ex = f"{x['median']:.2f} [{x.q25:.2f}, {x.q75:.2f}] ({int(x.n_fitted)})" \
                 if x.n_fitted else f"- (0 of {int(x.n_seeds)})"
+            for v, lab in [("unflagged_span1", "1-decade"), ("with_flagged", "incl. flagged")]:
+                nf = x.get(f"n_fitted_{v}")
+                if not x.n_fitted and nf and not np.isnan(nf) and nf > 0:
+                    ex += (f"; {lab}: {x[f'median_{v}']:.2f} [{x[f'q25_{v}']:.2f}, "
+                           f"{x[f'q75_{v}']:.2f}] ({int(nf)})")
             canon = "-" if np.isnan(x.frac_canonical) else f"{x.frac_canonical:.2f}"
             eff = "-" if np.isnan(x.eff_depth_loss_median) else f"{x.eff_depth_loss_median:.2f}"
             nxt = x.next_kind if isinstance(x.next_kind, str) else "-"

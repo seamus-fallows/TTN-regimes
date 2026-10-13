@@ -86,29 +86,39 @@ def example_trajectories(raw: Path, res: Path, out: Path):
 def plateau_identity(res: Path, out: Path):
     tr = pd.read_csv(res / "transitions.csv")
     tr = tr[(tr.segment >= 1) & tr.d_near.notna() & (tr.log10_sigma <= -1.5)]
-    g = tr.groupby(["target", "family", "key"]).agg(d=("d_near", "median"),
-                                                    n=("seed", "size")).reset_index()
+    tr["recomb"] = tr.off_recombinants.fillna("").str.len() > 0
+    g = tr.groupby(["target", "family", "key"]).agg(d=("d_near", "median"), n=("seed", "size"),
+                                                    recomb=("recomb", "mean")).reset_index()
     g = g[g.n >= 20]
-    order = list(dict.fromkeys(tr.sort_values(["family", "target"]).target))
-    fams = {"recombinant": 0, "nested": 1, "two_edits": 2, "random": 3, "control": 5}
-    cols = palette(6)
-    fig, ax = plt.subplots(figsize=(11, 8))
+    fam_order = ["recombinant", "nested", "two_edits", "random", "control"]
+    targets = (tr[["target", "family"]].drop_duplicates()
+               .assign(f=lambda x: x.family.map(fam_order.index)).sort_values(["f", "target"]))
+    order = list(targets.target)
+    labels = [f"{t} ({f})" for t, f in zip(targets.target, targets.family)]
+    cols = palette(2)
+    fig, ax = plt.subplots(figsize=(12, 0.45 * len(order) + 2.5))
+    floor = 1e-8
     for _, r in g.iterrows():
         y = order.index(r.target)
-        ax.scatter(max(r.d, 1e-7), y, s=60, color=cols[fams[r.family]], edgecolor="black",
-                   lw=0.5, zorder=3)
+        c = cols[1] if r.recomb > 0.5 else cols[0]
+        ax.scatter(max(r.d, floor), y, s=90, color=c, edgecolor="black", lw=0.5, zorder=3,
+                   marker="D" if r.recomb > 0.5 else "o")
     ax.axvline(0.03, color="black", ls="--", lw=1.5)
-    ax.text(0.032, len(order) - 0.6, "canonical if left of this line (distance < 0.03)",
-            fontsize=BIG - 2)
-    ax.set_yticks(range(len(order)), order)
+    ax.text(0.035, -0.9, "partial-target point\nif left of the dashed line (< 0.03)",
+            fontsize=BIG - 2, va="top")
+    ax.set_yticks(range(len(order)), labels)
+    ax.set_ylim(len(order) - 0.5, -2.2)
     ax.set_xscale("log")
-    ax.set_xlabel("distance of the plateau point to the nearest partial target "
-                  "(relative to the target norm; median over seeds)")
-    for fam, c in fams.items():
-        ax.scatter([], [], color=cols[c], edgecolor="black", lw=0.5, s=60, label=fam)
-    ax.legend(title="target family", loc="lower right")
-    ax.set_title("Later plateaus of non-star targets are mostly not partial targets; "
-                 "star controls sit on them")
+    ax.set_xlim(floor / 2, 1)
+    ax.set_xlabel("distance from the plateau to the nearest partial target\n"
+                  "(relative to |W*|; median over seeds; values below 1e-8 drawn at 1e-8)")
+    ax.scatter([], [], color=cols[0], edgecolor="black", lw=0.5, s=90, marker="o",
+               label="plateau without off-target strings")
+    ax.scatter([], [], color=cols[1], edgecolor="black", lw=0.5, s=90, marker="D",
+               label="plateau carrying a recombinant string")
+    ax.legend(loc="lower left", fontsize=BIG - 1)
+    ax.set_title("Plateaus that carry a recombinant string are far from every partial target;\n"
+                 "all others sit on one (one marker per target and plateau type)")
     savefig(fig, out / "fig2_plateau_identity")
     plt.close(fig)
 
@@ -165,9 +175,15 @@ def effective_depth(res: Path, out: Path):
                                      ("k", "route rule k* at the plateau point")]):
         x = g[col].values + np.random.default_rng(1).uniform(-0.08, 0.08, len(g))
         y = g.eff.values
-        ax.errorbar(x, y, yerr=np.vstack([y - g.q25, g.q75 - y]), fmt="o", color=cols[1], ms=7,
-                    mec="black", mew=0.5, capsize=3, label="one plateau type (median over seeds)")
+        star = g.target.str.startswith(("CTL", "B4")).values
+        err = np.vstack([y - g.q25, g.q75 - y])
+        for m, c, lab in [(~star, cols[1], "targets breaking the star condition"),
+                          (star, cols[0], "star-satisfying controls")]:
+            ax.errorbar(x[m], y[m], yerr=err[:, m], fmt="o", color=c, ms=7, mec="black",
+                        mew=0.5, capsize=3, label=lab)
         ax.plot([0, 7], [0, 7], color="black", lw=1.5, label="effective depth = predicted")
+        ax.text(7.3, 0.3, "one marker = one target and plateau type\n(median over seeds, bars = quartiles)",
+                ha="right", fontsize=BIG - 3)
         ax.set_xlabel(lab)
         ax.set_xlim(-0.5, 7.5)
         ax.set_ylim(0, 7.5)

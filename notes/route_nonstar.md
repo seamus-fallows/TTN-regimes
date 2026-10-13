@@ -237,3 +237,18 @@ smallest sigma are too slow, log10 sigma = -3.5 (then -3.25) is cut for K = 6, 7
    |grad|^2 x width / (loss drop) at the segment's minimum-gradient point is < 1e-3 for every
    resolved segment (1,650) and >= 1e-3 for every unresolved one (77). Transient counts are kept
    per run (`runs.csv: n_transients`).
+2. **Secondary duration fits for plateaus at the float64 floor (analysis only, 20:10, after
+   seeing that the depth-5 plateaus of the K = 7 targets had no registered fit).** The registered
+   floor flag (|grad| < 100 x roundoff bound at the minimum-gradient point) removes sigma <= 1e-3
+   for depth-5 plateaus (the gradient on such a plateau is ~ sigma^4), leaving 1.25 decades, below
+   the registered 1.5. Their primary fits stay "not fitted". Added, labelled as secondary and never
+   used for the registered decisions: (a) unflagged points with a span of >= 1 decade, (b) all
+   points including floor-flagged ones (span 1.5 decades). Both are in `fits_secondary.csv` and in
+   `fit_summary.csv` (columns `*_unflagged_span1`, `*_with_flagged`).
+3. **Existence check for "no plateau" predictions (analysis only, 20:10).** When a rule predicts no
+   plateau (paper or pairwise: every missing pattern has depth <= 1, or nothing is missing; route
+   rule: k* <= 1), the registered exponent test compares the measured exponent with 0, which a
+   log-law plateau (k* = 2, exponent ~0.15 over two decades) also passes. Every plateau key is by
+   construction a resolved plateau (deviation 1), so for these keys the rule is scored "fails (no
+   plateau predicted)"; the registered exponent comparison is kept in the CSV
+   (`frac_within_*`, `exp_*`).
