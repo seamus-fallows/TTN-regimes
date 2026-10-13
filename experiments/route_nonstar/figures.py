@@ -84,7 +84,7 @@ def example_trajectories(raw: Path, res: Path, out: Path):
 
 
 def plateau_identity(res: Path, out: Path):
-    tr = pd.read_csv(res / "transitions.csv")
+    tr = pd.read_csv(res / "transitions.csv.gz")
     tr = tr[(tr.segment >= 1) & tr.d_near.notna() & (tr.log10_sigma <= -1.5)]
     tr["recomb"] = tr.off_recombinants.fillna("").str.len() > 0
     g = tr.groupby(["target", "family", "key"]).agg(d=("d_near", "median"), n=("seed", "size"),
@@ -159,7 +159,7 @@ def exponents(res: Path, out: Path):
 
 
 def effective_depth(res: Path, out: Path):
-    tr = pd.read_csv(res / "transitions.csv")
+    tr = pd.read_csv(res / "transitions.csv.gz")
     tr = tr[(tr.segment >= 1) & tr.next_eff_depth_loss.notna() & (tr.log10_sigma <= -1.5)
             & (tr.floor_flag == False)]  # noqa: E712
     g = tr.groupby(["target", "key"]).agg(eff=("next_eff_depth_loss", "median"),
@@ -196,7 +196,7 @@ def effective_depth(res: Path, out: Path):
 
 
 def escape_type(res: Path, out: Path):
-    tr = pd.read_csv(res / "transitions.csv")
+    tr = pd.read_csv(res / "transitions.csv.gz")
     tr = tr[(tr.segment >= 1) & tr.lam_min.notna() & (tr.floor_flag == False)]  # noqa: E712
     et = pd.read_csv(res / "escape_type.csv")
     fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)

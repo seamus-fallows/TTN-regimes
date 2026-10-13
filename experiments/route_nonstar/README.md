@@ -103,7 +103,7 @@ the end), `t_first_escape` (absolute time of the first loss drop), `t_end_rel` (
 the start of the first escape), `n_steps` (solver steps), `n_restart` (solver clock re-zeroings),
 `n_fails` (failed steps retried), `secs` (wall-clock seconds).
 
-**`transitions.csv`** (one row per plateau of a run, with what the escape from it does; the
+**`transitions.csv.gz`** (gzipped CSV, read with `pandas.read_csv`; one row per plateau of a run, with what the escape from it does; the
 initial plateau from the origin is `segment` 0, `key` "origin"): `segment` (index among the
 run's loss segments), `t_start`, `t_end` (times of the half-way points of the loss drops that enter
 and leave the plateau, relative to the start of the first escape), `duration` (= t_end - t_start,

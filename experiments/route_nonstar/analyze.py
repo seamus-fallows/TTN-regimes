@@ -399,6 +399,10 @@ def sequence_scores(trans):
     for col in ["pred_paper_next", "pred_route_next", "pred_pair_next", "pred_weight_next"]:
         t["hit_" + col.replace("pred_", "").replace("_next", "")] = t.apply(lambda r: hit(r, col),
                                                                          axis=1)
+    # secondary (not registered): on clean-up escapes, the route rule's string is the string
+    # changing most, target or not (R3d / R4d plateaus carry no off-target string)
+    t["hit_route_any"] = t.apply(lambda r: r.hit_route or (r.next_kind == "cleanup" and bool(
+        r.pred_route_next) and r.pred_route_next == r.next_top_change), axis=1)
     return t
 
 
@@ -419,7 +423,9 @@ def main():
                      (plats, "plateaus")]:
         df.sort_values(first + ([c for c in ["segment", "t_event"] if c in df]),
                        inplace=True)
-        df.to_csv(out / f"{name}.csv", index=False, float_format="%.6g")
+        # transitions.csv is the largest table (> 5 MB): stored gzipped (pandas reads it as is)
+        fn = out / (f"{name}.csv.gz" if name == "transitions" else f"{name}.csv")
+        df.to_csv(fn, index=False, float_format="%.6g")
     # ---- run classes
     cls = runs.groupby(["target", "log10_sigma", "status"]).size().unstack(fill_value=0)
     cls["floor_flagged"] = runs.groupby(["target", "log10_sigma"]).floor_flagged.sum()
@@ -478,7 +484,7 @@ def main():
     # ---- escape type and sequence agreement
     escape_types(trans).to_csv(out / "escape_type.csv", index=False, float_format="%.4g")
     seq = sequence_scores(trans)
-    cols = [c for c in seq.columns if c.startswith("hit_")]
+    cols = ["hit_paper", "hit_route", "hit_pair", "hit_weight", "hit_route_any"]
     seq_s = seq.groupby(["target", "log10_sigma"])[cols].mean().reset_index()
     seq_s["n_transitions"] = seq.groupby(["target", "log10_sigma"]).size().values
     seq_s.to_csv(out / "sequence.csv", index=False, float_format="%.4g")

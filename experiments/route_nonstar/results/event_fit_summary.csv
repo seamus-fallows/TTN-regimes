@@ -1,0 +1,178 @@
+target,ident,n_seeds,n_fitted,median,q25,q75,order_paper,exp_paper,frac_within_paper,decision_paper,predicts_plateau_paper,order_route,exp_route,frac_within_route,decision_route,predicts_plateau_route,order_pair,exp_pair,frac_within_pair,decision_pair,predicts_plateau_pair
+B4_mps4,"{0000,0110}->1001",35,35,2.001,2.001,2.002,4,2,1,holds,True,4,2,1,holds,True,4,2,1,holds,True
+B4_mps4,{0000}->0110,35,35,0.173,0.1619,0.1825,2,0,1,holds,True,2,0,1,holds,True,2,0,1,holds,True
+B4_mps4,{1001}->0000,1,0,,,,4,2,,n/a,True,,,,n/a,True,4,2,,n/a,True
+B4_mps4,{}->0000,35,34,2,2,2,4,2,1,holds,True,,,,n/a,True,4,2,1,holds,True
+CTL1_binary8,"{00011010,10011000,11001000}->10111001",40,0,,,,5,3,,n/a,True,5,3,,n/a,True,5,3,,n/a,True
+CTL1_binary8,"{00011010,10011000}->11001000",40,0,,,,3,1,,n/a,True,3,1,,n/a,True,3,1,,n/a,True
+CTL1_binary8,{00011010}->10011000,40,0,,,,5,3,,n/a,True,5,3,,n/a,True,5,3,,n/a,True
+CTL1_binary8,{10011000}->00011010,6,0,,,,5,3,,n/a,True,,,,n/a,True,5,3,,n/a,True
+CTL1_binary8,{}->00011010,37,0,,,,7,5,,n/a,True,,,,n/a,True,7,5,,n/a,True
+CTL1_mps6,"{010101,100011}->100100",1,0,,,,3,1,,n/a,True,3,1,,n/a,True,3,1,,n/a,True
+CTL1_mps6,{010101}->100011,1,0,,,,5,3,,n/a,True,5,3,,n/a,True,5,3,,n/a,True
+CTL1_mps6,"{100011,100100}->010101",40,1,3.668,3.668,3.668,5,3,0,fails,True,5,3,0,fails,True,5,3,0,fails,True
+CTL1_mps6,{100011}->100100,30,1,-0.003149,-0.003149,-0.003149,3,1,0,fails,True,5,3,0,fails,True,3,1,0,fails,True
+CTL1_mps6,{100100}->100011,10,0,,,,3,1,,n/a,True,3,1,,n/a,True,3,1,,n/a,True
+CTL1_mps6,{}->010101,1,0,,,,6,4,,n/a,True,,,,n/a,True,6,4,,n/a,True
+CTL1_mps6,{}->100011,30,1,3.987,3.987,3.987,6,4,1,holds,True,5,3,0,fails,True,6,4,1,holds,True
+CTL1_mps6,{}->100100,10,0,,,,6,4,,n/a,True,,,,n/a,True,6,4,,n/a,True
+NC_binary4,"{0000,1100,1110}->1111",19,3,-1,-1.001,-0.9987,1,0,0,fails (no plateau predicted),False,3,1,0,fails,True,1,0,0,fails (no plateau predicted),False
+NC_binary4,"{0000,1100,1111}->1110",21,4,-0.9998,-1.001,-0.9992,1,0,0,fails (no plateau predicted),False,3,1,0,fails,True,1,0,0,fails (no plateau predicted),False
+NC_binary4,"{0000,1100}->1110",40,33,1.003,-0.9993,1.005,1,0,0,fails (no plateau predicted),False,3,1,0.5758,partial,True,1,0,0,fails (no plateau predicted),False
+NC_binary4,"{0000,1100}->1111",40,35,1.003,-0.9996,1.007,1,0,0,fails (no plateau predicted),False,3,1,0.6,partial,True,1,0,0,fails (no plateau predicted),False
+NC_binary4,{0000}->1100,4,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+NC_binary4,{1100}->0000,40,40,-0.0106,-0.05973,0.1316,1,0,1,fails (no plateau predicted),False,,,,n/a,True,1,0,1,fails (no plateau predicted),False
+NC_binary4,{}->0000,7,0,,,,3,1,,n/a,True,,,,n/a,True,3,1,,n/a,True
+NC_binary4,{}->1100,40,40,1.002,1.002,1.003,3,1,1,holds,True,,,,n/a,True,3,1,1,holds,True
+NC_ht4,"{0000,1100,1110}->1111",40,40,0.002494,-0.01059,0.01625,1,0,1,fails (no plateau predicted),False,3,1,0,fails,True,1,0,1,fails (no plateau predicted),False
+NC_ht4,"{0000,1100}->1110",40,40,1.018,1.01,1.02,1,0,0,fails (no plateau predicted),False,3,1,1,holds,True,1,0,0,fails (no plateau predicted),False
+NC_ht4,{0000}->1100,40,40,1.003,1.002,1.006,3,1,1,holds,True,3,1,1,holds,True,3,1,1,holds,True
+NC_ht4,{1100}->0000,7,4,5,5,5,3,1,0,fails,True,3,1,0,fails,True,3,1,0,fails,True
+NC_ht4,{}->0000,37,35,5,5,5,7,5,1,holds,True,,,,n/a,True,7,5,1,holds,True
+NC_mps4,"{0000,1100,1110}->1111",40,40,0.1336,0.1177,0.1485,1,0,1,fails (no plateau predicted),False,2,0,1,holds,True,1,0,1,fails (no plateau predicted),False
+NC_mps4,"{0000,1100}->1110",40,40,0.1978,0.186,0.2151,1,0,1,fails (no plateau predicted),False,2,0,1,holds,True,1,0,1,fails (no plateau predicted),False
+NC_mps4,{0000}->1100,40,38,0.136,0.1057,0.2069,2,0,0.9211,holds,True,2,0,0.9211,holds,True,2,0,0.9211,holds,True
+NC_mps4,"{1100,1110}->0000",2,1,-0.2384,-0.2384,-0.2384,2,0,1,holds,True,,,,n/a,True,2,0,1,holds,True
+NC_mps4,{1100}->0000,4,0,,,,2,0,,n/a,True,,,,n/a,True,2,0,,n/a,True
+NC_mps4,{1110}->1100,1,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+NC_mps4,{}->0000,40,38,2,2,2,4,2,1,holds,True,,,,n/a,True,4,2,1,holds,True
+NC_mps4,{}->1100,4,1,2,2,2,4,2,1,holds,True,,,,n/a,True,4,2,1,holds,True
+R3,"{000,001}->100",6,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3,"{000,100}->001",40,40,-0.009079,-0.05505,0.09965,1,0,1,fails (no plateau predicted),False,,,,n/a,True,1,0,1,fails (no plateau predicted),False
+R3,{000}->001,7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3,{000}->100,40,40,0.003441,-0.04622,0.04916,1,0,1,fails (no plateau predicted),False,,,,n/a,True,1,0,1,fails (no plateau predicted),False
+R3,{}->000,40,40,1.002,1.001,1.002,3,1,0.975,holds,True,,,,n/a,True,3,1,0.975,holds,True
+R3,{}->100,2,0,,,,3,1,,n/a,True,,,,n/a,True,3,1,,n/a,True
+R3d,"{000,100,001}->101",40,40,-0.002066,-0.01708,0.01921,0,0,1,fails (no plateau predicted),False,,,,n/a,True,1,0,1,fails (no plateau predicted),False
+R3d,{001}->100,40,40,0.005134,-0.01628,0.01909,3,1,0,fails,True,,,,n/a,True,3,1,0,fails,True
+R3d,"{100,001}->000",40,40,0.006525,-0.01881,0.0182,0,0,1,fails (no plateau predicted),False,,,,n/a,True,1,0,1,fails (no plateau predicted),False
+R3d,{}->001,40,40,1.002,1.002,1.003,3,1,1,holds,True,,,,n/a,True,3,1,1,holds,True
+R3p,"{000,001,101}->100",9,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{000,001}->100",7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{000,001}->101",9,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{000,100,001}->101",4,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{000,100,101}->001",7,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{000,100}->001",7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{000,100}->101",7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{000}->001,4,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{000}->100,4,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{000}->101,3,0,,,,3,1,,n/a,True,,,,n/a,True,3,1,,n/a,True
+R3p,"{001,101}->000",1,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{001,101}->100",2,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{001}->000,7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{001}->100,4,0,,,,3,1,,n/a,True,,,,n/a,True,3,1,,n/a,True
+R3p,{001}->101,7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{100,001,101}->000",4,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{100,101}->000",6,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,"{100,101}->001",6,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{100}->000,8,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{100}->001,7,0,,,,3,1,,n/a,True,,,,n/a,True,3,1,,n/a,True
+R3p,{100}->101,7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{101}->000,5,0,,,,3,1,,n/a,True,,,,n/a,True,3,1,,n/a,True
+R3p,{101}->001,5,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{101}->100,5,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R3p,{}->000,40,39,-0.9993,-1,-0.9185,3,1,0.2308,fails,True,,,,n/a,True,3,1,0.2308,fails,True
+R3p,{}->001,40,40,-0.9997,-1.001,1.001,3,1,0.275,fails,True,,,,n/a,True,3,1,0.275,fails,True
+R3p,{}->100,40,39,-0.9999,-1.001,1.001,3,1,0.3077,fails,True,,,,n/a,True,3,1,0.3077,fails,True
+R3p,{}->101,40,40,-1.001,-1.002,-0.9986,3,1,0.2,fails,True,,,,n/a,True,3,1,0.2,fails,True
+R4,"{0000,0001}->1000",2,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4,"{0000,1000}->0001",34,31,0.05277,-0.0802,0.129,1,0,0.9355,fails (no plateau predicted),False,,,,n/a,True,1,0,0.9355,fails (no plateau predicted),False
+R4,{0000}->0001,2,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4,{0000}->1000,34,31,-0.01741,-0.06988,0.06917,1,0,0.9032,fails (no plateau predicted),False,,,,n/a,True,1,0,0.9032,fails (no plateau predicted),False
+R4,{1000}->0000,1,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4,{}->0000,34,31,2,2,2,4,2,0.9677,holds,True,,,,n/a,True,4,2,0.9677,holds,True
+R4,{}->1000,2,0,,,,4,2,,n/a,True,,,,n/a,True,4,2,,n/a,True
+R4d,"{0000,1000,0001}->1001",35,30,-0.006406,-0.04984,0.05224,0,0,1,fails (no plateau predicted),False,,,,n/a,True,1,0,1,fails (no plateau predicted),False
+R4d,{0001}->0000,1,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4d,{0001}->1000,35,31,0.001757,-0.03056,0.03403,4,2,0,fails,True,,,,n/a,True,4,2,0,fails,True
+R4d,"{1000,0001}->0000",35,31,0.005283,-0.03251,0.05453,0,0,1,fails (no plateau predicted),False,,,,n/a,True,1,0,1,fails (no plateau predicted),False
+R4d,"{1000,0001}->1001",2,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4d,{}->0001,35,31,2,2,2,4,2,1,holds,True,,,,n/a,True,4,2,1,holds,True
+R4p,"{0000,0001,1001}->1000",5,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{0000,0001}->1000",7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{0000,0001}->1001",7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{0000,1000,0001}->1001",9,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{0000,1000,1001}->0001",5,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{0000,1000}->0001",8,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{0000,1000}->1001",8,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{0000}->0001,6,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{0000}->1000,8,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{0000}->1001,4,0,,,,4,2,,n/a,True,,,,n/a,True,4,2,,n/a,True
+R4p,"{0001,1001}->0000",8,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{0001,1001}->1000",9,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{0001}->0000,5,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{0001}->1000,4,0,,,,4,2,,n/a,True,,,,n/a,True,4,2,,n/a,True
+R4p,{0001}->1001,4,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{1000,0001,1001}->0000",5,0,,,,0,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{1000,1001}->0000",6,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,"{1000,1001}->0001",6,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{1000}->0000,5,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{1000}->0001,4,0,,,,4,2,,n/a,True,,,,n/a,True,4,2,,n/a,True
+R4p,{1000}->1001,5,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{1001}->0000,4,0,,,,4,2,,n/a,True,,,,n/a,True,4,2,,n/a,True
+R4p,{1001}->0001,5,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{1001}->1000,6,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+R4p,{}->0000,40,40,-0.9989,-1,2,4,2,0.325,fails,True,,,,n/a,True,4,2,0.325,fails,True
+R4p,{}->0001,40,40,-0.9996,-1.001,2,4,2,0.275,fails,True,,,,n/a,True,4,2,0.275,fails,True
+R4p,{}->1000,40,40,-0.9996,-1.001,-0.9979,4,2,0.2,fails,True,,,,n/a,True,4,2,0.2,fails,True
+R4p,{}->1001,40,40,-1,-1.002,-0.9985,4,2,0.2,fails,True,,,,n/a,True,4,2,0.2,fails,True
+RND1_binary8,{00010110}->01010101,3,0,,,,5,3,,n/a,True,,,,n/a,True,5,3,,n/a,True
+RND1_binary8,{01000101}->01010101,7,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+RND1_binary8,"{01010101,01000101}->00010110",40,0,,,,5,3,,n/a,True,5,3,,n/a,True,5,3,,n/a,True
+RND1_binary8,{01010101}->01000101,28,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+RND1_binary8,{}->01000101,31,0,,,,7,5,,n/a,True,,,,n/a,True,7,5,,n/a,True
+RND1_binary8,{}->01010101,40,0,,,,7,5,,n/a,True,,,,n/a,True,7,5,,n/a,True
+RND1_mps6,{010100}->010110,12,5,-0.6189,-0.6443,-0.6167,1,0,0,fails (no plateau predicted),False,,,,n/a,True,1,0,0,fails (no plateau predicted),False
+RND1_mps6,{010100}->110101,2,0,,,,6,4,,n/a,True,,,,n/a,True,6,4,,n/a,True
+RND1_mps6,"{010110,010100,101110}->110101",20,19,1.996,1.978,2.015,5,3,0,fails,True,5,3,0,fails,True,5,3,0,fails,True
+RND1_mps6,"{010110,010100}->101110",20,19,1.003,1.001,1.008,3,1,0.9474,holds,True,3,1,0.9474,holds,True,3,1,0.9474,holds,True
+RND1_mps6,"{010110,010100}->110101",1,0,,,,6,4,,n/a,True,,,,n/a,True,6,4,,n/a,True
+RND1_mps6,{010110}->010100,6,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+RND1_mps6,{010110}->110101,1,0,,,,6,4,,n/a,True,3,1,,n/a,True,6,4,,n/a,True
+RND1_mps6,"{110101,010110,101110}->010100",22,0,,,,1,0,,fails (no plateau predicted),False,3,1,,n/a,True,1,0,,fails (no plateau predicted),False
+RND1_mps6,"{110101,101110}->010110",21,0,,,,3,1,,n/a,True,3,1,,n/a,True,3,1,,n/a,True
+RND1_mps6,{110101}->101110,21,0,,,,5,3,,n/a,True,5,3,,n/a,True,5,3,,n/a,True
+RND1_mps6,{}->010100,20,17,4,3.627,4,6,4,0.5294,partial,True,,,,n/a,True,6,4,0.5294,partial,True
+RND1_mps6,{}->010110,20,11,-0.5851,-3.336,4,6,4,0.4545,fails,True,,,,n/a,True,6,4,0.4545,fails,True
+RND1_mps6,{}->110101,19,0,,,,6,4,,n/a,True,,,,n/a,True,6,4,,n/a,True
+RND2_binary8,"{00111001,00111101,10001001}->10000001",40,40,2,1.999,2.001,1,0,0,fails (no plateau predicted),False,4,2,1,holds,True,1,0,0,fails (no plateau predicted),False
+RND2_binary8,"{00111001,00111101}->10001001",40,40,1.005,1.004,1.007,3,1,1,holds,True,3,1,1,holds,True,3,1,1,holds,True
+RND2_binary8,{00111001}->00111101,19,3,-0.307,-0.5793,-0.1534,1,0,0.3333,fails (no plateau predicted),False,1,0,0.3333,fails (no plateau predicted),False,1,0,0.3333,fails (no plateau predicted),False
+RND2_binary8,{00111101}->00111001,13,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+RND2_binary8,{10001001}->00111001,3,2,5,5,5,3,1,0,fails,True,1,0,0,fails (no plateau predicted),False,3,1,0,fails,True
+RND2_binary8,{}->00111001,39,31,5,-0.9945,5,7,5,0.6452,partial,True,,,,n/a,True,7,5,0.6452,partial,True
+RND2_binary8,{}->00111101,37,32,5,-0.992,5,7,5,0.5312,partial,True,,,,n/a,True,7,5,0.5312,partial,True
+RND2_mps6,"{000101,011101}->011100",40,38,2,1.999,2.002,1,0,0,fails (no plateau predicted),False,4,2,1,holds,True,1,0,0,fails (no plateau predicted),False
+RND2_mps6,{000101}->011101,40,38,0.1946,0.1707,0.217,2,0,0.8947,holds,True,2,0,0.8947,holds,True,2,0,0.8947,holds,True
+RND2_mps6,{}->000101,40,38,4,4,4,6,4,1,holds,True,,,,n/a,True,6,4,1,holds,True
+RND3_binary8,"{01111001,11001001}->11001000",18,18,-1.085e-05,-8.985e-05,0.001246,1,0,1,fails (no plateau predicted),False,3,1,0,fails,True,1,0,1,fails (no plateau predicted),False
+RND3_binary8,{01111001}->11001000,1,0,,,,6,4,,n/a,True,3,1,,n/a,True,6,4,,n/a,True
+RND3_binary8,{01111001}->11001001,18,18,1.008,1.005,1.018,3,1,1,holds,True,3,1,1,holds,True,3,1,1,holds,True
+RND3_binary8,{11001000}->11001001,4,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+RND3_binary8,"{11001001,11001000}->01111001",22,22,1.007,1.004,1.012,3,1,1,holds,True,3,1,1,holds,True,3,1,1,holds,True
+RND3_binary8,{11001001}->11001000,18,9,-0.4391,-0.5277,-0.391,1,0,0,fails (no plateau predicted),False,,,,n/a,True,1,0,0,fails (no plateau predicted),False
+RND3_binary8,{}->01111001,18,18,5,5,5,7,5,1,holds,True,,,,n/a,True,7,5,1,holds,True
+RND3_binary8,{}->11001000,17,6,2.352,-0.43,5,7,5,0.5,fails,True,,,,n/a,True,7,5,0.5,fails,True
+RND3_binary8,{}->11001001,22,21,5,5,5,7,5,0.8571,holds,True,,,,n/a,True,7,5,0.8571,holds,True
+RND3_mps6,"{000010,101010}->101100",2,2,4,4,4,2,0,0,fails,True,3,1,0,fails,True,2,0,0,fails,True
+RND3_mps6,{101010}->101100,3,3,4,4,4,2,0,0,fails,True,2,0,0,fails,True,2,0,0,fails,True
+RND3_mps6,"{101100,000010,101010}->110100",2,2,-0.0008755,-0.001222,-0.0005292,2,0,1,holds,True,3,1,0,fails,True,2,0,1,holds,True
+RND3_mps6,"{101100,101010}->110100",3,0,,,,2,0,,n/a,True,2,0,,n/a,True,2,0,,n/a,True
+RND3_mps6,{101100}->110100,6,3,-0.526,-0.5662,-0.2004,2,0,0.3333,fails,True,2,0,0.3333,fails,True,2,0,0.3333,fails,True
+RND3_mps6,"{110100,101100,101010}->000010",40,40,0.6044,0.5703,0.6964,3,1,0.25,fails,True,3,1,0.25,fails,True,3,1,0.25,fails,True
+RND3_mps6,"{110100,101100}->101010",40,40,0.2149,0.2029,0.2286,2,0,1,holds,True,2,0,1,holds,True,2,0,1,holds,True
+RND3_mps6,{110100}->101100,35,33,0.1871,0.1411,0.2756,2,0,0.8485,holds,True,,,,n/a,True,2,0,0.8485,holds,True
+RND3_mps6,{}->101100,3,2,4,4,4,6,4,1,holds,True,,,,n/a,True,6,4,1,holds,True
+RND3_mps6,{}->110100,35,33,4,4,4,6,4,1,holds,True,,,,n/a,True,6,4,1,holds,True
+TD_binary8,"{00000000,00001100}->11000000",1,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+TD_binary8,"{00000000,11000000}->00001100",40,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+TD_binary8,{00000000}->00001100,2,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+TD_binary8,{00000000}->11000000,40,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+TD_binary8,{11000000}->00000000,1,0,,,,1,0,,fails (no plateau predicted),False,,,,n/a,True,1,0,,fails (no plateau predicted),False
+TD_binary8,{}->00000000,40,0,,,,7,5,,n/a,True,,,,n/a,True,7,5,,n/a,True
+TD_binary8,{}->11000000,3,0,,,,7,5,,n/a,True,,,,n/a,True,7,5,,n/a,True
+TD_mps6,"{000000,000110}->110000",40,40,0.118,0.09682,0.1528,2,0,0.95,holds,True,2,0,0.95,holds,True,2,0,0.95,holds,True
+TD_mps6,"{000000,110000}->000110",1,0,,,,2,0,,n/a,True,,,,n/a,True,2,0,,n/a,True
+TD_mps6,{000000}->000110,40,40,0.1713,0.1416,0.2145,2,0,0.95,holds,True,,,,n/a,True,2,0,0.95,holds,True
+TD_mps6,{000000}->110000,1,0,,,,2,0,,n/a,True,,,,n/a,True,2,0,,n/a,True
+TD_mps6,{}->000000,40,40,4,4,4,6,4,1,holds,True,,,,n/a,True,6,4,1,holds,True
