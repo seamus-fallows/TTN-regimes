@@ -1,0 +1,137 @@
+# Cells of the route-escape experiment (notes/route_escape.md section 2).
+# A cell is a pattern target W* = sum_a s_a U_a (standard site basis) on a tree, and a learned set J
+# (indices into `patterns`). The network starts at the balanced partial-target point theta_J
+# (AlignedManifold.partial_target(J, relax_from=1e-2)), bond dimension max over edges of the number of
+# star blocks + 2 (spare channels).
+# role: dyn = static order + escape dynamics; thm92 = static only (Theorem 9.2 family, `parents`
+# assigns every missing pattern to the learned pattern it differs from on a small region).
+
+chi_extra: 2
+relax_from: 1.0e-2
+
+cells:
+  EX87_J01:
+    role: dyn
+    tree: [mps, 7]
+    d: 3
+    patterns: ["0000000", "1111111", "0022111"]
+    weights: [1.0, 0.9, 0.5]
+    J: [0, 1]
+    purpose: "Example 8.7: depth-2 splice (pairwise cost 4); log law. Larger J' of Corollary 8.6."
+  EX87_J0:
+    role: dyn
+    tree: [mps, 7]
+    d: 3
+    patterns: ["0000000", "1111111", "0022111"]
+    weights: [1.0, 0.9, 0.5]
+    J: [0]
+    purpose: "Unique shortest route of depth 5 (0022111; 1111111 has depth 7). Smaller J of Corollary 8.6."
+  S3:
+    role: dyn
+    tree: [mps, 7]
+    d: 3
+    patterns: ["0000000", "1111111", "0222111", "2222211"]
+    weights: [1.0, 0.9, 0.6, 0.8]
+    J: [0, 1]
+    purpose: "Unique shortest route of depth 3 (splice, pairwise 4); competitor depth 5 with larger weight."
+  S4:
+    role: dyn
+    tree: [mps, 7]
+    d: 3
+    patterns: ["0000000", "1111111", "0222211", "2222221"]
+    weights: [1.0, 0.9, 0.6, 0.8]
+    J: [0, 1]
+    purpose: "Unique shortest route of depth 4 (splice, pairwise 5); competitor depth 6 with larger weight."
+  U3HT:
+    role: dyn
+    tree: [ht, 4]
+    d: 2
+    patterns: ["0010", "0100", "1001", "1111"]
+    weights: [1.0, 0.9, 0.8, 0.6]
+    J: [0, 1, 2]
+    purpose: "Branched (ht4): unique route of depth 3 (splice of three learned patterns, pairwise 5)."
+  U4B8:
+    role: dyn
+    tree: [binary, 8]
+    d: 2
+    patterns: ["00110100", "01001101", "10101101", "10110111"]
+    weights: [1.0, 0.8, 0.7, 0.6]
+    J: [0, 1, 2]
+    purpose: "Branched (binary8): unique route of depth 4 (pairwise 5)."
+  U5B8:
+    role: dyn
+    tree: [binary, 8]
+    d: 2
+    patterns: ["00110100", "01001101", "10101101", "10110111"]
+    weights: [0.6, 1.0, 0.9, 0.8]
+    J: [1, 2, 3]
+    purpose: "Branched (binary8): unique route of depth 5."
+  TWO23:
+    role: dyn
+    tree: [mps, 7]
+    d: 3
+    patterns: ["0000000", "1111111", "0022111", "0000222"]
+    weights: [1.0, 0.9, 0.2, 0.9]
+    J: [0, 1]
+    purpose: "Two missing patterns, depths 2 (weight 0.2) and 3 (weight 0.9): greedy and weight order disagree."
+  TWO34:
+    role: dyn
+    tree: [binary, 8]
+    d: 2
+    patterns: ["00110100", "01001101", "10101101", "10110111"]
+    weights: [1.0, 0.3, 0.8, 0.9]
+    J: [0, 2]
+    purpose: "Branched (binary8): two missing, depths 3 (weight 0.3) and 4 (weight 0.9, splice, pairwise 5)."
+  TIE3:
+    role: dyn
+    tree: [ht, 4]
+    d: 2
+    patterns: ["0001", "0010", "0100", "1011"]
+    weights: [0.8, 0.4, 1.0, 0.9]
+    J: [2, 3]
+    purpose: "Branched (ht4): tie in depth (both 3, same region, pairwise 5), weights 0.8 and 0.4."
+  PS2:
+    role: dyn
+    tree: [mps, 6]
+    d: 3
+    patterns: ["000000", "222222", "110001", "110010"]
+    weights: [1.0, 0.9, 0.8, 0.8]
+    J: [0, 1]
+    parents: {2: 0, 3: 0}
+    purpose: "Pair-star residuals of parent 000000 next to a second learned pattern: c*_J = 5 but a spectral shortcut of order 4 is predicted (Theorem 9.2 formula)."
+  T92a:
+    role: thm92
+    tree: [mps, 6]
+    d: 3
+    patterns: ["000000", "111111", "002020", "211211"]
+    weights: [1.0, 0.8, 0.5, 0.5]
+    J: [0, 1]
+    parents: {2: 0, 3: 1}
+    purpose: "Theorem 9.2 family, both parents direct: k*_a = 3, k*_b = 4; formula 3."
+  T92b:
+    role: thm92
+    tree: [mps, 6]
+    d: 3
+    patterns: ["000000", "111111", "220002", "220020", "211121"]
+    weights: [1.0, 0.9, 0.8, 0.8, 0.5]
+    J: [0, 1]
+    parents: {2: 0, 3: 0, 4: 1}
+    purpose: "Theorem 9.2 family, parent a has a pair-star spectral shortcut (k* = 5, l* = 2), parent b direct k* = 5; formula 4."
+  T92c:
+    role: thm92
+    tree: [mps, 6]
+    d: 3
+    patterns: ["000000", "111111", "220002", "220020", "211121"]
+    weights: [1.0, 0.9, 0.6, 0.6, 0.5]
+    J: [0, 1]
+    parents: {2: 0, 3: 0, 4: 1}
+    purpose: "Control of T92b: pair weights 0.6 (mu_2 = 0.85 < 1), no shortcut; formula 5."
+  T92d:
+    role: thm92
+    tree: [mps, 6]
+    d: 3
+    patterns: ["000000", "111111", "200020", "221112", "221121"]
+    weights: [1.0, 0.5, 0.5, 0.4, 0.4]
+    J: [0, 1]
+    parents: {2: 0, 3: 1, 4: 1}
+    purpose: "Theorem 9.2 family, the shortcut is at the weaker parent (s_b = 0.5, pair weights 0.4: mu_2 = 0.57 > 0.5); formula 4."
