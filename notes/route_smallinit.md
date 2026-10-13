@@ -277,6 +277,10 @@ Scored per transition with J = the learned set actually reached (J nonempty), si
   ~1/((c-2) s_r A_r b_r^(c-2)), and b_r (the size of r's dormant entries, a random O(sigma) number
   per seed) varies by more than the weight ratio; in DB4 and TIE the dormant entries of the two tied
   patterns are coupled (they share nodes and bond channels), which makes the heavier one win always.
+- The tie-break coefficient matters once: at S5A {00000, 00201} the tied 10101 (weight 0.75) and 11200
+  (0.55) have s_r A_r(J) = 0.75 x A and 0.55 x A' with A' > A at the balanced partial target, so the
+  App. C rule picks 11200 while `RouteTarget.greedy_next` (weight only) picks 10101; training picked
+  11200 in 27/27 transitions [empirical].
 - Weight order is wrong wherever it differs from the greedy rule: the route depth, not the weight, sets
   the order (B4: 0110 with weight 0.3 is learned before 1001 with weight 0.6 in 100%).
 - The first pattern learned (first upward crossing; not predicted by the theory) is the heaviest in
