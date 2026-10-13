@@ -83,6 +83,114 @@ uv run python experiments/route_nonstar/run.py one R3 -2 0       # one run, reco
 | `figures.py` | draft figures |
 | `results/` | CSVs (below) and figures |
 
+## CSV columns (`results/`)
+
+All CSVs are long format, one row per observation. Identifying columns (every CSV that has them):
+`target` (name in `configs/targets.yaml`), `tree` (kind + number of sites, e.g. `mps6`), `d`
+(physical dimension, 2), `chi` (largest bond dimension of the network), `sigma` (init scale),
+`log10_sigma`, `seed` (init seed 0-39). Times are gradient-flow time (dimensionless; the loss is
+1/2 ||W - W*||^2 with ||W*||^2 = sum of squared weights). Losses in the same units. Pattern strings
+list the site values in site order. A *learned set* J is written `{p1,p2,...}`.
+
+**`runs.csv`** (one row per run): `family` (recombinant / nested / two_edits / random / control),
+`K` (cores), `n_params`, `status` (converged / trapped / wall = wall-clock cap / t_max / failed),
+`order_learned` (patterns in the order of their learning events), `n_learned`, `n_drops` (loss
+drops found by `find_plateaus`), `n_plateaus` (resolved plateaus after the first escape),
+`n_transients` (unresolved segments merged into escapes, deviation 1), `forgotten` (pattern@time of
+every forgetting event: P falls below s/4 after crossing s/2), `n_forgotten`, `floor_flagged`
+(some plateau point has |grad| < 100 x its roundoff bound), `L_end`, `off_end` (off-target mass at
+the end), `t_first_escape` (absolute time of the first loss drop), `t_end_rel` (end time relative to
+the start of the first escape), `n_steps` (solver steps), `n_restart` (solver clock re-zeroings),
+`n_fails` (failed steps retried), `secs` (wall-clock seconds).
+
+**`transitions.csv`** (one row per plateau of a run, with what the escape from it does; the
+initial plateau from the origin is `segment` 0, `key` "origin"): `segment` (index among the
+run's loss segments), `t_start`, `t_end` (times of the half-way points of the loss drops that enter
+and leave the plateau, relative to the start of the first escape), `duration` (= t_end - t_start,
+the plateau length used in the fits), `censored` (run ended on this plateau), `resolved`,
+`t_mid` (minimum-gradient point), `L` (loss there), `key` (plateau identity: learned set, `*` if not
+a partial-target point, `@RS<j>` = matches level j of the route-rule sequence within 5 %, else
+`@L<loss>`), `J` (learned set {a : P_a > s_a/2}), `n_J`, `canonical` (d_near < 0.03), `level_tag`,
+`d_near` (distance ||W - sum_J' s_a U_a|| / ||W*|| to the nearest partial target J'), `J_near`,
+`d_amp` (same distance to the partial target of J), `off_mass` (fraction of ||W||^2 outside the
+span of the target patterns), `off_strings` (off-target strings with |W[x]| >= 0.01 and their
+signed amplitudes), `off_recombinants` (those that are recombinants: `x=e<edge>:a|b` = x equals
+target a on the lower side of edge e and target b on the upper side), `n_off_strings`, `lam_min`,
+`lam_2` (two smallest Hessian eigenvalues), `n_neg` (eigenvalues < -1e-9), `gnorm` (|grad|),
+`grad_bound` (its roundoff bound), `floor_flag`, `route_k` (numerical route rule k*: size of the
+smallest connected core set with non-zero local residual), `route_nodes` (that set, node indices of
+`ttn.tree`), `route_string` (largest entry of its local residual; the route rule's predicted next
+string), `route_string_is_target`, `t_escape` (time from the plateau start until L < L - 1e-3),
+`pred_paper` (paper's route depth c*_J = min over missing r of |cap_a St(V_ra)|; empty = nothing
+missing; K for the origin), `pred_paper_next` (greedy rule's next pattern), `paper_depths`
+(c_J(r) of every missing pattern), `pred_route` (= route_k), `pred_route_next`, `pred_pair`
+(pairwise rule: min over missing r of min over a in J of |St(V_ar)|), `pred_pair_next`,
+`pred_weight_next` (largest missing weight), `pred_hand` (registered by-hand order: K for the
+rank-1 optimum of R3/R4/R3d/R4d, Theorem 3.2's min(k*, 2 l*) for a canonical one-pattern plateau),
+`next_learned` / `next_lost` (patterns entering / leaving J during the escape), `next_n_drops`
+(sub-drops merged into the escape), `next_top_change` (string whose W entry changes most),
+`next_top_change_is_target`, `next_L_after`, `next_off_peak` (largest off-target mass during the
+escape), `next_eff_depth_loss` (effective depth from the growth of L_plateau - L(t)),
+`next_eff_depth_amp` (pattern:effective depth of each pattern learned in the escape, from its
+amplitude), `next_kind` (learn = some pattern enters J; cleanup = none does).
+
+**`events.csv`** (brief's events table, one row per learning event = last upward crossing of
+P_a = s_a/2): `pattern`, `weight`, `t_event` (relative to the start of the first escape),
+`J_before`, `n_J_before`, `duration` (time since the previous learning event; the first event's is
+from t = 0), `drop` (index of the loss drop that contains it), `depth_paper` (c_J(r) for J =
+J_before; K if J is empty; 0 = r would be produced for free as a recombinant), `pair_cost`,
+`pred_paper_next`, `pred_pair_next`, `pred_weight_next` (each rule's next pattern from J_before),
+`route_k_before`, `pred_route_next` (route rule at the last plateau point before the event),
+`eff_depth` (amplitude estimator over [previous event, event]; empty if the amplitude passes the
+window [1e-4 s, 1e-2 s] too fast), `off_peak` (peak off-target mass in the drop),
+`plateau_before_L`, `plateau_before_L_J` (partial-target loss L_J = 1/2 sum of missing s^2),
+`plateau_before_d_canon` (distance of the plateau point before to the partial target of J_before).
+
+**`plateaus.csv`** (brief's plateau table, one row per (plateau, missing pattern); `missing` =
+"none" when J is complete): `segment`, `key`, `J`, `J_near`, `d_near`, `canonical`, `off_mass`,
+`off_strings`, `off_recombinants`, `L`, `L_J`, `route_k`, `missing`, `weight`, `depth_paper`,
+`pair_cost`, `P_r` (signed amplitude of the missing pattern at the plateau point), and for the
+star controls only `entry_min`, `entry_max`, `entry_geo` (minimum, maximum, geometric mean over
+the nodes of R_J(r) of the route-entry norms from `align` + `route_entry_norms`, divided by sigma)
+and `align_quality` (smallest singular value of the normalised message matrices; 1 = aligned).
+
+**`fits.csv`** (one row per (target, plateau key, seed)): `n_points` (window sigmas at which the
+seed visits the key, converged, not floor-flagged), `span` (decades), `exponent` (minus the
+least-squares slope of log10 duration on log10 sigma), `rms` (residual, decades), `fitted`
+(>= 5 points over >= 1.5 decades), `pred_*` (median predicted order of each rule).
+**`fits_secondary.csv`**: the same for the labelled secondary variants (deviation 2), column
+`variant` = `unflagged_span1` (>= 1 decade) or `with_flagged` (floor-flagged points included).
+
+**`fit_summary.csv`** (one row per (target, plateau key)): `n_seeds`, `n_fitted`, `median`, `q25`,
+`q75` (of the per-seed exponents); for each rule X in paper, route, pair, hand: `order_X`
+(predicted order), `exp_X` (predicted exponent max(order - 2, 0); 0 when nothing is missing),
+`frac_within_X` (fraction of fitted seeds within 0.3), `decision_X` (holds / partial / fails /
+"fails (no plateau predicted)" / n/a, note section 5 and deviation 3), `predicts_plateau_X`; what
+the plateau is: `n_points`, `frac_canonical`, `d_near_median`, `off_mass_median`, `L_median`,
+`off_recombinants` (most common), `next_kind`, `next_learned` (most common), `eff_depth_loss_median`,
+`route_k_median`, `floor_flagged` (count); secondary fits: `n_fitted_*`, `median_*`, `q25_*`,
+`q75_*`, `frac_within_{route,paper,hand}_*` for the two variants.
+
+**`event_fits.csv`, `event_fit_summary.csv`**: the same fits on the brief's event-to-event
+durations, grouped by `ident` = J_before -> pattern (for comparison with `route-smallinit`).
+
+**`escape_type.csv`** (one row per (target, key)): `n_points`, `n_sigmas`, `lam_min_at_smallest` /
+`lam_min_at_largest` (median lambda_min over seeds at the smallest / largest window sigma),
+`all_neg`, `slope_x` (slope of log10 |median lambda_min| on log10 sigma; estimates order - 2),
+`type` (strict: lambda_min < -1e-4 at every window sigma and x < 0.25; degenerate: x >= 0.5;
+else unclear), `n_neg_median`. Floor-flagged points excluded.
+
+**`sequence.csv`** (one row per (target, sigma)): `hit_paper`, `hit_route`, `hit_pair`, `hit_weight`
+(fraction of escapes whose outcome the rule predicts: its next pattern enters J; for clean-up
+escapes only the route rule can be right, when its string is the off-target string that changes
+most), `n_transitions`.
+
+**`run_classes.csv`** (one row per (target, sigma)): number of runs per status, `floor_flagged`,
+`forgetting` (runs with a forgetting event).
+
+**`summary_by_target.md`**: generated per-target tables (plateaus, predictor scores, escape type,
+sequence agreement, run counts).
+
 ## Results
 
 (filled in after the sweep; see `notes/route_nonstar.md` Part II)
