@@ -61,7 +61,8 @@ def clean(x):
 def work(task):
     import run as R  # noqa: E402
 
-    variant, cfg, lsig, seed, wall = task
+    variant, cfg, lsig, seed, wall = task[:5]
+    start = task[5] if len(task) > 5 else "lsoda"
     out = path_of(variant, cfg["name"], lsig, seed)
     if out.exists():
         return task, 0.0, "skip"
@@ -73,7 +74,7 @@ def work(task):
                 man, traj, info = R.run_reference(cfg, sigma, wall=wall)
                 run, ev, pl, small = R.reduce_run(cfg, traj, info, sigma)
             else:
-                model, traj, info = R.run_full(cfg, sigma, seed, wall=wall, arith=variant)
+                model, traj, info = R.run_full(cfg, sigma, seed, wall=wall, arith=variant, start=start)
                 run, ev, pl, small = R.reduce_run(cfg, traj, info, sigma, model=model)
         except Exception as exc:  # noqa: BLE001 (record and continue)
             run, ev, pl, small = dict(status="error", message=traceback.format_exc()[-1500:]), [], [], None
@@ -122,6 +123,8 @@ def main():
     rank = {"ref": 0, "dense": 0, "reorder": 1, "lib": 2}
     tasks.sort(key=lambda x: (rank[x[0]], x[2], -int(x[1]["n_sites"])))
     tasks = [x for x in tasks if not path_of(x[0], x[1]["name"], x[2], x[3]).exists()]
+    if cfg.get("integrator", "lsoda") != "lsoda":
+        tasks = [x + (cfg["integrator"],) for x in tasks]
     print(f"{len(tasks)} tasks, {args.procs} processes", flush=True)
     t0, done = time.time(), 0
     with Pool(args.procs, maxtasksperchild=50) as pool:

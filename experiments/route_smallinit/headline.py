@@ -81,7 +81,7 @@ def main():
     p(f"runs: {len(dn)}; status: {dn.status.value_counts().to_dict()}")
     p(f"behaviour: {dn.behaviour.value_counts().to_dict()}")
     for chk, x in fc.groupby("check"):
-        p(f"floor check '{chk}': {len(x)} duplicates, flagged {int(x.floor_flag.sum())}, rel duration diff {q(x.max_rel_duration_diff)}, max {x.max_rel_duration_diff.max():.2g}")
+        p(f"floor check '{chk}': {len(x)} duplicates, {int(x.complete.sum())} complete (both finished), flagged {int(x.floor_flag.sum())}, rel duration diff {q(x.max_rel_duration_diff)}, max {x.max_rel_duration_diff.max():.2g}")
     p(f"vode fallback segments: {int(dn.vode_segments.sum())} in {int((dn.vode_segments > 0).sum())} runs; solver fails {int(dn.fails.sum())}")
     p("\nper target (status / behaviour counts):\n")
     p(md(pd.crosstab(dn.target, dn.status)))
@@ -129,30 +129,35 @@ def main():
 
     p("\n## (c) exponents (per seed, window sigma in [1e-5, 1e-3])\n")
     if len(ex):
-        d = ex[ex.variant == "dense"]
-        for c, x in d.groupby("depth"):
-            p(f"depth {c}: exponent {q(x.exponent)}; within 0.3 of c-2: {(abs(x.exponent - (c - 2)) <= 0.3).mean():.3f}")
-        d3 = d[d.depth >= 3]
-        p(f"all c >= 3: within 0.3 of c-2: {(abs(d3.exponent - d3.pred_route) <= 0.3).mean():.3f} (n={len(d3)})")
-        dp = d3[d3.pairwise != d3.depth]
-        if len(dp):
-            p(f"cells where pairwise != depth (c>=3): within 0.3 of c-2 {(abs(dp.exponent - dp.pred_route) <= 0.3).mean():.3f}, of pairwise-2 {(abs(dp.exponent - dp.pred_pairwise) <= 0.3).mean():.3f} (n={len(dp)})")
-        d2 = d[d.depth == 2]
-        if len(d2):
-            p(f"depth 2: log-law slope / predicted 1/(s A): {q(d2.log_slope / d2.pred_log_slope)}; power exponent {q(d2.exponent)}")
-        oc = d[d.one_component_order.notna() & (d.one_component_order < d.depth)]
-        if len(oc):
-            p(f"|J|=1 cells with Thm 3.2 order < depth: exponent {q(oc.exponent)}; within 0.3 of order-2 {(abs(oc.exponent - (oc.one_component_order - 2)) <= 0.3).mean():.3f}; of c-2 {(abs(oc.exponent - oc.pred_route) <= 0.3).mean():.3f}")
-        r = ex[ex.variant == "ref"]
+        for basis in ("event", "event_clean", "pass"):
+            d = ex[(ex.variant == "dense") & (ex.basis == basis)]
+            later, first = d[d.J_before != "{}"], d[d.J_before == "{}"]
+            p(f"### basis {basis}")
+            for c, x in later.groupby("depth"):
+                p(f"later plateaus, depth {c}: exponent {q(x.exponent)}; within 0.3 of c-2: {(abs(x.exponent - (c - 2)) <= 0.3).mean():.3f}")
+            d3 = later[later.depth >= 3]
+            p(f"later plateaus c >= 3: within 0.3 of c-2: {(abs(d3.exponent - d3.pred_route) <= 0.3).mean():.3f} (n={len(d3)}); median |dev| {(d3.exponent - d3.pred_route).abs().median():.2g}")
+            dp = d3[d3.pairwise != d3.depth]
+            if len(dp):
+                p(f"splice cells (pairwise != depth, c >= 3): within 0.3 of c-2 {(abs(dp.exponent - dp.pred_route) <= 0.3).mean():.3f}, of pairwise-2 {(abs(dp.exponent - dp.pred_pairwise) <= 0.3).mean():.3f} (n={len(dp)})")
+            d2 = later[later.depth == 2]
+            if len(d2):
+                p(f"depth 2: log-law slope / 1/(s A) per cell: " + str((d2.log_slope / d2.pred_log_slope).groupby(d2.target + " " + d2.transition).median().round(3).to_dict()))
+            oc = later[later.one_component_order.notna() & (later.one_component_order < later.depth)]
+            if len(oc):
+                p(f"|J|=1 cells with Thm 3.2 order < depth: exponent {q(oc.exponent)}; within 0.3 of order-2 {(abs(oc.exponent - (oc.one_component_order - 2)) <= 0.3).mean():.3f}; of c-2 {(abs(oc.exponent - oc.pred_route) <= 0.3).mean():.3f}")
+            if len(first):
+                p(f"first plateau (from the origin, c = K): exponent - (K-2) {q(first.exponent - first.pred_route)}; within 0.3: {(abs(first.exponent - first.pred_route) <= 0.3).mean():.3f}")
+        r = ex[(ex.variant == "ref") & (ex.basis == "event")]
         if len(r):
             p(f"reference runs: c>=3 exponent minus (c-2): {q(r[r.depth >= 3].exponent - r[r.depth >= 3].pred_route)}")
-    cc = cells[cells.variant == "dense"]
-    p("\nper-cell decisions (dense):\n")
+    cc = cells[(cells.variant == "dense") & (cells.basis == "event_clean")]
+    p("\nper-cell decisions (dense, basis event_clean):\n")
     cols = ["target", "transition", "pattern_str", "depth", "pairwise", "one_component_order", "n_fitted", "exp_q1", "exp_median", "exp_q3",
             "frac_within_0p3_route", "log_slope_median", "pred_log_slope", "decision_exponent"]
     p(md(cc[cc.n_fitted > 0][[c for c in cols if c in cc]], index=False))
     p("\nreference decisions:\n")
-    rc = cells[(cells.variant == "ref") & (cells.n_fitted > 0)]
+    rc = cells[(cells.variant == "ref") & (cells.n_fitted > 0) & (cells.basis == "event")]
     p(md(rc[[c for c in cols if c in rc]], index=False))
 
     p("\n## (d) effective depth (sigma <= 1e-3)\n")

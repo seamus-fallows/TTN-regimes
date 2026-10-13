@@ -77,11 +77,13 @@ def floor_check(runs, events):
         if same and len(d1):
             big = np.abs(d1) > 1.0
             rel = float(np.max(np.abs(d1 - d2)[big] / np.abs(d1[big]))) if big.any() else 0.0
-        flag = (not same) or (rel > 1e-3)
+        # a duplicate (or original) stopped by its time cap gives no verdict
+        complete = r.status in ("done", "trapped") and dn.status in ("done", "trapped")
+        flag = complete and ((not same) or (rel > 1e-3))
         rows.append(dict(target=r.target, tree=r.tree, d=r.d, chi=r.chi, sigma=r.sigma,
                          log10_sigma=r.log10_sigma, seed=r.seed, check=dup, order_dense=dn.order,
                          order_check=r.order, status_dense=dn.status, status_check=r.status,
-                         max_rel_duration_diff=rel,
+                         max_rel_duration_diff=rel, complete=complete,
                          floor_flag=flag))
     return pd.DataFrame(rows)
 

@@ -206,14 +206,14 @@ All numbers: `experiments/route_smallinit/results/` (`headline.md` is generated 
 lists every number quoted here; CSV columns in the experiment README). "sigma <= 1e-3" pools the 9
 grid points 1e-5 ... 1e-3. Status tags: **[proven]** statement of the paper, **[empirical]** measured
 here, **[conjecture]** my interpretation. Sweep: 6000 training runs (10 targets x 15 sigma x 40
-seeds; PS stragglers in section 8), 150 reference runs on M*, 1206 floor-check duplicates.
+seeds; 20 PS runs unfinished, section 9), 150 reference runs on M*, 1300 floor-check duplicates.
 
 ## 1. One-paragraph answer
 
 On star-satisfying pattern targets the route theory describes training from small random init very
 well along the main path, and fails in four specific, reproducible ways. **Holds [empirical]:** plateaus
 sit at the canonical partial targets (98.7% within 1% of ||W*||); after the first pattern, the next
-pattern is the greedy one in every transition without a depth tie (6867 of 6867 transitions at
+pattern is the greedy one in every transition without a depth tie (6882 of 6882 transitions at
 sigma <= 1e-3), including all 747 transitions where the greedy and pairwise rules name different
 patterns (the splice is real; the pairwise rule is right in none of them); per-seed duration exponents
 equal c - 2 to within 0.3 in 98% of the 648 clean fits with c >= 3 (median deviation 1e-4; the
@@ -226,7 +226,7 @@ predicts the remaining plateau from the size of the dormant route entries (obser
 (the heavier pattern wins in 63% of D4 ties, 90-92% in S5A and S7, 100% in DB4 and TIE); (2) when a
 lighter pattern is learned before a heavier one that can use its cores, that plateau is a strict saddle
 (log-law escape, exponent ~0.1 instead of c - 2 = 1) and the heavier pattern takes over by *erasing*
-learned patterns, which are relearned later ("forgetting": 20-40% of the runs of S5A, S5B, S7, PS); for
+learned patterns, which are relearned later ("forgetting": 20-42% of the runs of S5A, S5B, S7, PS); for
 |J| = 1 this is Theorem 3.2's order 2 (and for PS its order 4: plateau ~ sigma^-2, not sigma^-3), for
 |J| = 2 it is a full-space shortcut below c*_J that the paper allows (Remark 8.5) but does not predict;
 (3) Assumption C.1 item 1 (dormant entries of order sigma at plateau entry) fails right after the first
@@ -241,36 +241,36 @@ that decay by up to 10 orders of magnitude before the escape.
 ## 2. (a) Are the plateaus canonical partial-target points?
 
 **Yes [empirical].** At the minimum-gradient point of every resolved plateau (k >= 1), the distance
-||W - sum_J s_a U_a|| / ||W*|| has median 8e-9 (quartiles 9e-11, 5e-6); 98.7% of 8376 plateaus at
+||W - sum_J s_a U_a|| / ||W*|| has median 8e-9 (quartiles 9e-11, 5e-6); 98.7% of 8382 plateaus at
 sigma <= 1e-3 are within 0.01 (registered rule: SUPPORTED, >= 90%). The fraction falls at large sigma
 (0.93 at 1e-2, 0.80 at 10^-1.5) because short plateaus no longer settle. The exceptions are three kinds:
 - **S5A after a mixed first escape** (29 plateaus, distance 0.21, L - L_J = -0.07): in 10-25% of the S5A
   seeds the escape from the origin produces a mixture of patterns (a rank-one "best fit" of W*), and the
   network passes 11200 almost immediately (unresolved plateau, exponent ~0.17 instead of 1).
-- **PS pair** (59 plateaus, 0.08-0.14): 110001 and 110010 differ only in the last two sites and are learned
+- **PS pair** (62 plateaus, 0.08-0.14): 110001 and 110010 differ only in the last two sites and are learned
   together (two at once); the plateau between them does not exist (duration exponent 0).
 - **B4 {0000} -> 0110** (14, distance 0.0125): a c = 2 plateau so short that the learned pattern has not
   fully converged when 0110 starts to rise (borderline).
-Unresolved plateaus (never reach the entry criterion): PS 273, S5A 89, S5B 27 (all two-at-once).
+Unresolved plateaus (never reach the entry criterion): PS 293, S5A 89, S5B 27 (all two-at-once).
 
 ## 3. (b) Is the next pattern the one the greedy rule predicts?
 
 Scored per transition with J = the learned set actually reached (J nonempty), sigma <= 1e-3:
 
-| rule | all transitions (n = 8767) | where the rules disagree (n = 3655) | greedy vs pairwise disagree (n = 747: B8, H4, S5A) |
+| rule | all transitions (n = 8791) | where the rules disagree (n = 3668) | greedy vs pairwise disagree (n = 747: B8, H4, S5A) |
 |---|---|---|---|
-| greedy (route depth, then s_r A_r(J)) | 0.961 | 0.985 | 1.000 |
-| pairwise (Prim rule, eq. C.8) | 0.876 | 0.781 | 0.000 |
-| weight order | 0.551 | 0.000 | - |
+| greedy (route depth, then s_r A_r(J)) | 0.960 | 0.985 | 1.000 |
+| pairwise (Prim rule, eq. C.8) | 0.875 | 0.782 | 0.000 |
+| weight order | 0.549 | 0.000 | - |
 
-- **Without a tie in route depth the greedy rule is never wrong [empirical]:** 6867/6867 transitions
+- **Without a tie in route depth the greedy rule is never wrong [empirical]:** 6882/6882 transitions
   at sigma <= 1e-3 (6007/6007 clean ones), and 0.996-1.000 at every sigma up to 10^-1.5; this includes
   the "contaminated" events (intervals with forgetting). The splice cases where the greedy and pairwise
   rules name different patterns (B8 at {00000000, 00001101}: greedy 10000001 (depth 4, splice), pairwise
   10000100 (5); H4 at {0000, 2200}: greedy 0201 (4), pairwise 1001 (5); S5A at {00000, 10101}) are all
   decided for the greedy rule. Registered decision: SUPPORTED (>= 90%).
 - **Ties are decided by the init, not by the weight [empirical; failure of the tie-break of App. C]:**
-  1900 tied transitions, greedy (= heavier) 0.82. Per cell: D4 after 0000: 0.63 (n = 216), after 1111:
+  1909 tied transitions, greedy (= heavier) 0.82. Per cell: D4 after 0000: 0.63 (n = 216), after 1111:
   0.64, after 2222: 0.00 (18); S5A after 00000: 0.92; S7 after 0000000: 0.91; S5B after 02201: 0.67;
   DB4 and TIE: 1.00. The winner of a tie is a property of the seed: for 99.5% of (target, J, seed) the
   same pattern wins at every sigma. [conjecture] With equal depth c the escape time is
@@ -303,6 +303,13 @@ trapped runs excluded. Three bases (`exponents.csv`): `event` (registered: every
 | 5 (PS only) | 22 | 3.30 [3.00, 3.97] | 0.50 |
 | first escape, c = K | 338 | K - 2 exactly (median deviation 0) | 1.00 |
 
+- **Registered decisions** (`cells.csv`, cells with fitted seeds, J nonempty): basis `event` (as
+  registered) 37 SUPPORTED, 7 INCONCLUSIVE, 3 NOT SUPPORTED, 3 REFUTED; basis `event_clean` 42
+  SUPPORTED, 3 NOT SUPPORTED (B4 {0000}->0110 log slope; PS pair, no plateau), 1 INCONCLUSIVE (PS
+  {pair}->000000). The 3 REFUTED and most INCONCLUSIVE cells of the registered basis are artifacts of
+  the learning-event definition in runs with forgetting: the "plateau" of a pattern that is learned,
+  erased and relearned is measured from an event whose interval contains other crossings (e.g. S5A
+  "{00201} -> 00000" with exponent 3 = the first-escape exponent K - 2, measured from t = 0).
 - **The route-depth law holds [empirical]:** 98% of the 648 clean fits with c >= 3 are within 0.3 of
   c - 2. In every splice cell (route depth below the pairwise cost: B8 {0,1}->2, H4 {0,3}->1, S5B
   {0,2,3}->1, S7 {0,1,2}->3; 125 fits) the exponent is c - 2 (2.000, 2.000, 1.003, 1.001) and none is at
@@ -322,6 +329,9 @@ trapped runs excluded. Three bases (`exponents.csv`): `event` (registered: every
   pattern. For |J| = 1 this is Theorem 3.2: the one-component order is 2 whenever the learned pattern is
   lighter than a missing one it can turn into (`one_component_order` = 2 in `predictions.csv`); here the
   same happens at |J| = 2, below the route depth: a full-space shortcut of the kind Remark 8.5 allows.
+  Pass basis, all one-pattern plateaus where Theorem 3.2 gives order 2 < route depth 3 (S5A {00201},
+  S5B {20200}): 17 seed fits, exponent 0.107 [0.096, 0.109], all at the log law (order 2) and none at
+  c - 2 = 1. **Theorem 3.2 is confirmed; the route depth is refuted there.**
 - **The spectral shortcut of the pair-star is confirmed [empirical; Theorem 3.2]:** PS seeds that learn
   000000 first (16/40, the same 16 at every sigma; saddle_dyn had 16/40 too) stay on {000000} for
   ~sigma^-2: per-seed exponent 2.000 [2.000, 2.000] (15 fits), the order-4 law of Theorem 3.2, not the
@@ -381,44 +391,48 @@ observed/predicted time (predictor B) is 2.1 [1.7, 2.9] (n = 473) against 1.1 [1
 ## 8. One-step-ahead test of the scalar route equation
 
 From the plateau entry (learned amplitudes within 1%), with c and A_r(J): **(A, brief)** b = (P_r /
-A_r)^(1/c): observed/predicted time 2.66 [0.92, 579] (n = 7898), within [0.5, 2] in 44%, predicted
+A_r)^(1/c): observed/predicted time 2.66 [0.92, 583] (n = 7910), within [0.5, 2] in 44%, predicted
 winner right in 82%: **fails [empirical]**. At entry, P_r still contains the remnants of the previous
 escape (for example in B8 the other patterns sit at 1-10% of their weight right after the first escape)
 which then decay by up to 10 orders of magnitude before the growing mode takes over
 (`fig_example_run`). **(B, added)** b = geometric mean of the dormant route entries at entry: ratio
-1.04 [0.93, 1.39] (n = 8376), within [0.5, 2] in 88%, winner right in 98%: **SUPPORTED for c <= 4**
-(c = 2: 0.90, c = 3: 1.04, c = 4: 1.49); fails at c = 5 (PS, 324) where the route is unbalanced.
+1.04 [0.93, 1.39] (n = 8382), within [0.5, 2] in 88%, winner right in 98%: **SUPPORTED for c <= 4**
+(c = 2: 0.90, c = 3: 1.04, c = 4: 1.49); fails at c = 5 (PS, 350) where the route is unbalanced.
 [conjecture] What decides the escape is the size of the dormant entries, as in eq. C.4-C.6, not the
 current amplitude.
 
 ## 9. Census of runs that do something else
 
-Dense runs: 6000 (5976 finished at the time of writing; PS stragglers: see Part III). Status: done
-5706, trapped 270 (B4 75 = 5 seeds x 15 sigma; D4 195 = 13 seeds x 15 sigma), unfinished 0 so far.
-Behaviour tags (a run can have several; `runs.csv` `behaviour`, `history`):
+Training runs: 6000. Status: done 5710, trapped 270 (B4 75 = 5 seeds x 15 sigma; D4 195 = 13 seeds x
+15 sigma), unfinished 20 (PS, 1-hour cap; deviation 7), failed 0. Behaviour tags (a run can have
+several; `runs.csv` `behaviour`, `history`):
 - **clean** 3691 (62%);
 - **first escape mixed** (another pattern above 10% of its weight when the first passes 90%; the theory
-  says nothing about the first escape) 1391: PS 534 (the pair), H4 374, B8 174, S5B 145, S5A 107;
-- **two patterns at once later** 793: PS pair 477, S5A 172, TIE 69, S5B 51;
-- **forgetting** 807: PS 242 (the pair erases 000000), S5A 195, S5B 175, S7 120 (lighter-first runs:
+  says nothing about the first escape) 1412: PS 555 (the pair), H4 374, B8 174, S5B 145, S5A 107;
+- **two patterns at once later** 813: PS pair 497, S5A 172, TIE 69, S5B 51;
+- **forgetting** 816: PS 251 (the pair erases 000000), S5A 195, S5B 175, S7 120 (lighter-first runs:
   the heavy all-zero pattern erases learned light patterns), H4 30, TIE 22, DB4 11, B8 10;
-- **non-canonical plateau** 552 (mostly at large sigma; at sigma <= 1e-3 the 107 listed in section 2);
+- **non-canonical plateau** 556 (mostly at large sigma; at sigma <= 1e-3 the 110 listed in section 2);
 - **trapped** 270: after learning two patterns, the third route dies: one of its dormant entries (the
   smallest at entry: 0.03-0.12 sigma, against 0.2-0.6 sigma in the seeds that escape) decays to ~1e-14
   sigma and the amplitude to ~1e-55. The routes that die (D4: 1111/2222/0000 as the last pattern; B4:
   1001) span the whole tree, including the end cores whose bond is capped at d (no spare channel).
   [conjecture] Without a spare channel at the route's end the dormant entry cannot rotate away from the
   direction in which it is suppressed; it is a seed property (same seeds at all sigma);
-- **floor-flagged** 10 (section 10).
+- **unfinished** 20 (PS, sigma <= 10^-3.5): all had learned the pair and were on the depth-5 plateau
+  before 000000 after > 1 million solver steps; in 9 of them the 000000 amplitude had fallen to
+  ~1e-33 (a dying route at the float64 floor, as in the trapped runs), in the others the solver crawled;
+- **floor-flagged** 11 (section 10).
 
 ## 10. Float64 floor and accuracy
 
-Duplicates with another contraction order (all seeds at the 3 smallest sigma, 1164 runs) differ in
-event durations by 4e-8 (median; max 2.2e-2); library-arithmetic duplicates (seeds 0-9 at 1e-5, 42
-runs so far) by 1.3e-7 (max 1.2e-3). 10 runs exceed 1e-3 (PS 4, S7 5, B4 1; all at sigma <=
-10^-4.75), never with a different order or outcome; they are excluded from the fits. The worst-case
-roundoff bound (`floor_ratio_*`) is far too pessimistic to use (it flags plateaus whose durations agree
-to 1e-9 between arithmetics). LSODA needed the VODE fallback in 1 run (2 failed steps).
+Duplicates with another contraction order (all seeds at the 3 smallest sigma: 1200 runs, 1171 where
+both finished) differ in event durations by 4e-8 (median; max 2.2e-2); library-arithmetic duplicates
+(seeds 0-9 at 1e-5: 100 runs, 43 finished within their 30-minute cap) by 1.3e-7 (max 1.2e-3). 11 runs
+exceed 1e-3 (PS 5, S7 5, B4 1; all at sigma <= 10^-4.75), never with a different order or outcome; they
+are excluded from the fits. The worst-case roundoff bound (`floor_ratio_*`) is far too pessimistic to
+use (it flags plateaus whose durations agree to 1e-9 between arithmetics). LSODA fell back to VODE in
+16 runs (17 failed steps).
 
 # Part III: deviations from the pre-registration (added after the sweep started)
 
@@ -451,3 +465,9 @@ to 1e-9 between arithmetics). LSODA needed the VODE fallback in 1 run (2 failed 
    that never reaches its entry point).
 6. **Exponents and cells also for event 0** (the escape from the origin, depth K, Saxe exponent K - 2):
    reported alongside, not used for the route-theory decisions.
+7. **PS runs unfinished after 1 hour (21:13).** 20 PS runs (sigma <= 10^-3.5; all had learned the
+   pair 110001 + 110010 and were still on the depth-5 plateau before 000000) hit the 3600 s wall. They
+   were rerun with a 10800 s wall (`configs/sweep_ps_long.yaml`, same code and seeds); the 1-hour
+   records are kept in `/root/outputs/route-smallinit/runs_unfinished_1h/`. Runs that still do not
+   finish are reported as unfinished with their 1-hour record. Their reorder floor-check duplicates
+   (sigma <= 10^-4.5) are not rerun.

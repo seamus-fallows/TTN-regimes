@@ -2,26 +2,26 @@
 
 ## Census of dense runs
 
-runs: 5976; status: {'done': 5706, 'trapped': 270}
-behaviour: {'clean': 3691, 'first_escape_mixed': 478, 'first_escape_mixed+two_at_once+forgetting': 362, 'noncanonical_plateau': 276, 'first_escape_mixed+two_at_once': 244, 'trapped': 240, 'forgetting': 148, 'first_escape_mixed+noncanonical_plateau': 136, 'first_escape_mixed+forgetting': 110, 'two_at_once+forgetting': 77, 'two_at_once': 64, 'forgetting+noncanonical_plateau': 43, 'trapped+noncanonical_plateau': 30, 'first_escape_mixed+two_at_once+forgetting+noncanonical_plateau': 27, 'first_escape_mixed+forgetting+noncanonical_plateau': 25, 'two_at_once+forgetting+noncanonical_plateau': 6, 'first_escape_mixed+two_at_once+noncanonical_plateau': 5, 'forgetting+floor_flag': 5, 'two_at_once+noncanonical_plateau': 4, 'first_escape_mixed+two_at_once+forgetting+floor_flag': 4, 'floor_flag': 1}
-floor check 'lib': 42 duplicates, flagged 1, rel duration diff median 1.27e-07 [quartiles 2.62e-08, 4.41e-07] (n=42), max 0.0012
-floor check 'reorder': 1164 duplicates, flagged 9, rel duration diff median 3.9e-08 [quartiles 1.63e-09, 2.13e-07] (n=1164), max 0.022
-vode fallback segments: 2 in 1 runs; solver fails 2
+runs: 6000; status: {'done': 5710, 'trapped': 270, 'unfinished_wall': 20}
+behaviour: {'clean': 3691, 'first_escape_mixed': 478, 'first_escape_mixed+two_at_once+forgetting': 364, 'noncanonical_plateau': 276, 'first_escape_mixed+two_at_once': 246, 'trapped': 240, 'forgetting': 148, 'first_escape_mixed+noncanonical_plateau': 135, 'first_escape_mixed+forgetting': 110, 'two_at_once+forgetting': 77, 'two_at_once': 64, 'forgetting+noncanonical_plateau': 43, 'trapped+noncanonical_plateau': 30, 'first_escape_mixed+two_at_once+forgetting+noncanonical_plateau': 27, 'first_escape_mixed+forgetting+noncanonical_plateau': 25, 'unfinished_wall+first_escape_mixed+two_at_once': 9, 'unfinished_wall+first_escape_mixed+two_at_once+forgetting': 7, 'two_at_once+forgetting+noncanonical_plateau': 6, 'first_escape_mixed+two_at_once+noncanonical_plateau': 5, 'forgetting+floor_flag': 5, 'two_at_once+noncanonical_plateau': 4, 'first_escape_mixed+two_at_once+forgetting+floor_flag': 4, 'unfinished_wall+noncanonical_plateau': 3, 'floor_flag': 1, 'first_escape_mixed+noncanonical_plateau+floor_flag': 1, 'unfinished_wall+first_escape_mixed+noncanonical_plateau': 1}
+floor check 'lib': 100 duplicates, 43 complete (both finished), flagged 1, rel duration diff median 1.34e-07 [quartiles 2.7e-08, 6.5e-07] (n=44), max 0.0012
+floor check 'reorder': 1200 duplicates, 1171 complete (both finished), flagged 10, rel duration diff median 3.93e-08 [quartiles 1.62e-09, 2.16e-07] (n=1182), max 0.022
+vode fallback segments: 27 in 16 runs; solver fails 17
 
 per target (status / behaviour counts):
 
-| target | done | trapped |
-|---|---|---|
-| B4 | 525 | 75 |
-| B8 | 600 | 0 |
-| D4 | 405 | 195 |
-| DB4 | 600 | 0 |
-| H4 | 600 | 0 |
-| PS | 576 | 0 |
-| S5A | 600 | 0 |
-| S5B | 600 | 0 |
-| S7 | 600 | 0 |
-| TIE | 600 | 0 |
+| target | done | trapped | unfinished_wall |
+|---|---|---|---|
+| B4 | 525 | 75 | 0 |
+| B8 | 600 | 0 | 0 |
+| D4 | 405 | 195 | 0 |
+| DB4 | 600 | 0 | 0 |
+| H4 | 600 | 0 | 0 |
+| PS | 580 | 0 | 20 |
+| S5A | 600 | 0 | 0 |
+| S5B | 600 | 0 | 0 |
+| S7 | 600 | 0 | 0 |
+| TIE | 600 | 0 | 0 |
 
 | target | first_escape_mixed | two_at_once | forgetting | noncanonical_plateau | trapped | floor_flag | clean |
 |---|---|---|---|---|---|---|---|
@@ -30,7 +30,7 @@ per target (status / behaviour counts):
 | D4 | 0 | 1 | 0 | 1 | 195 | 0 | 403 |
 | DB4 | 14 | 19 | 11 | 17 | 0 | 0 | 552 |
 | H4 | 374 | 1 | 30 | 52 | 0 | 0 | 207 |
-| PS | 534 | 477 | 242 | 99 | 0 | 4 | 0 |
+| PS | 555 | 497 | 251 | 103 | 0 | 5 | 0 |
 | S5A | 107 | 172 | 195 | 77 | 0 | 0 | 379 |
 | S5B | 145 | 51 | 175 | 33 | 0 | 0 | 406 |
 | S7 | 1 | 3 | 120 | 14 | 0 | 5 | 475 |
@@ -45,7 +45,7 @@ trapped per target and sigma:
 
 ## (a) canonical plateaus (events k >= 1 with an entry point, sigma <= 1e-3)
 
-canonical (rel dist < 0.01): 0.987 of 8376; rel dist median 7.78e-09 [quartiles 8.73e-11, 5.21e-06] (n=8376)
+canonical (rel dist < 0.01): 0.987 of 8382; rel dist median 7.78e-09 [quartiles 8.7e-11, 5.26e-06] (n=8382)
 | target | n | frac_canonical | median_rel_dist | no_entry |
 |---|---|---|---|---|
 | B4 | 673 | 0.979 | 0.000258 | 0 |
@@ -53,30 +53,30 @@ canonical (rel dist < 0.01): 0.987 of 8376; rel dist median 7.78e-09 [quartiles 
 | D4 | 603 | 1 | 3.87e-09 | 0 |
 | DB4 | 720 | 1 | 4.65e-10 | 0 |
 | H4 | 1080 | 1 | 6.13e-10 | 0 |
-| PS | 391 | 0.849 | 4.11e-12 | 273 |
+| PS | 397 | 0.844 | 4.11e-12 | 293 |
 | S5A | 991 | 0.966 | 3.66e-06 | 89 |
 | S5B | 1053 | 1 | 2.93e-08 | 27 |
 | S7 | 1065 | 1 | 3.59e-08 | 0 |
 | TIE | 720 | 1 | 1.3e-10 | 0 |
 
-by sigma (all targets): {-5.0: 0.98, -4.75: 0.983, -4.5: 0.988, -4.25: 0.992, -4.0: 0.991, -3.75: 0.991, -3.5: 0.992, -3.25: 0.991, -3.0: 0.975, -2.75: 0.965, -2.5: 0.959, -2.25: 0.955, -2.0: 0.931, -1.75: 0.881, -1.5: 0.797}
+by sigma (all targets): {-5.0: 0.979, -4.75: 0.982, -4.5: 0.987, -4.25: 0.992, -4.0: 0.991, -3.75: 0.991, -3.5: 0.991, -3.25: 0.991, -3.0: 0.975, -2.75: 0.965, -2.5: 0.959, -2.25: 0.955, -2.0: 0.931, -1.75: 0.881, -1.5: 0.797}
 non-canonical resolved plateaus by cell (sigma <= 1e-3):
 | target | J_before_str | pattern_str | n | dist | LmLJ |
 |---|---|---|---|---|---|
 | B4 | 0000 | 0110 | 14 | 0.0125 | -3.52e-05 |
-| PS | 110001 | 110010 | 15 | 0.0766 | -0.00692 |
+| PS | 110001 | 110010 | 18 | 0.0767 | -0.00562 |
 | PS | 110010 | 110001 | 44 | 0.14 | -0.0818 |
 | S5A | 00000 | 11200 | 29 | 0.208 | -0.071 |
 | S5A | 00000 00201 11200 | 10101 | 5 | 0.0129 | -0.000959 |
 
 ## (b) sequence (transitions with J nonempty, sigma <= 1e-3)
 
-all transitions: greedy 0.961, pairwise 0.876, weight 0.551 (n=8765)
-where the rules disagree: greedy 0.985, pairwise 0.781, weight 0.000 (n=3654)
+all transitions: greedy 0.960, pairwise 0.875, weight 0.549 (n=8791)
+where the rules disagree: greedy 0.985, pairwise 0.782, weight 0.000 (n=3668)
 greedy vs pairwise disagree: greedy 1.000, pairwise 0.000 (n=747, targets ['B8', 'H4', 'S5A'])
-no tie: greedy 1.000 (n=6865); tie: greedy 0.822 (n=1900)
+no tie: greedy 1.000 (n=6882); tie: greedy 0.818 (n=1909)
 by sigma, no tie: {-5.0: 1.0, -4.75: 1.0, -4.5: 1.0, -4.25: 1.0, -4.0: 1.0, -3.75: 1.0, -3.5: 1.0, -3.25: 1.0, -3.0: 1.0, -2.75: 1.0, -2.5: 1.0, -2.25: 0.999, -2.0: 0.999, -1.75: 0.999, -1.5: 0.996}
-by sigma, tie: {-5.0: 0.842, -4.75: 0.823, -4.5: 0.825, -4.25: 0.825, -4.0: 0.817, -3.75: 0.817, -3.5: 0.817, -3.25: 0.817, -3.0: 0.813, -2.75: 0.813, -2.5: 0.813, -2.25: 0.807, -2.0: 0.806, -1.75: 0.797, -1.5: 0.795}
+by sigma, tie: {-5.0: 0.826, -4.75: 0.819, -4.5: 0.817, -4.25: 0.817, -4.0: 0.817, -3.75: 0.817, -3.5: 0.817, -3.25: 0.817, -3.0: 0.813, -2.75: 0.813, -2.5: 0.813, -2.25: 0.807, -2.0: 0.806, -1.75: 0.797, -1.5: 0.795}
 
 greedy failures by cell (sigma <= 1e-3):
 | target | J_before_str | pred_greedy_str | pattern_str | tie | n | n_J |
@@ -105,88 +105,41 @@ tie outcome constant across sigma for a (target, J, seed): 0.995 of 216 seed-cel
 
 ## (c) exponents (per seed, window sigma in [1e-5, 1e-3])
 
-depth 2: exponent median 0.115 [quartiles 0.105, 0.122] (n=462); within 0.3 of c-2: 0.996
-depth 3: exponent median 1 [quartiles 1, 1] (n=1297); within 0.3 of c-2: 0.941
-depth 4: exponent median 2 [quartiles 2, 2] (n=807); within 0.3 of c-2: 0.980
-depth 5: exponent median 3 [quartiles 3, 3] (n=288); within 0.3 of c-2: 0.851
-depth 6: exponent median 4 [quartiles 2, 4] (n=143); within 0.3 of c-2: 0.685
-depth 7: exponent median 5 [quartiles 5, 5] (n=464); within 0.3 of c-2: 1.000
-all c >= 3: within 0.3 of c-2: 0.940 (n=2999)
-cells where pairwise != depth (c>=3): within 0.3 of c-2 1.000, of pairwise-2 0.000 (n=303)
-depth 2: log-law slope / predicted 1/(s A): median 1 [quartiles 0.7, 1] (n=462); power exponent median 0.115 [quartiles 0.105, 0.122] (n=462)
-|J|=1 cells with Thm 3.2 order < depth: exponent median 3 [quartiles 0.108, 3] (n=37); within 0.3 of order-2 0.459; of c-2 0.000
-reference runs: c>=3 exponent minus (c-2): median 5.8e-06 [quartiles 0, 0.000451] (n=79)
+### basis event
+later plateaus, depth 2: exponent median 0.115 [quartiles 0.105, 0.122] (n=210); within 0.3 of c-2: 0.995
+later plateaus, depth 3: exponent median 1 [quartiles 1, 1] (n=478); within 0.3 of c-2: 0.902
+later plateaus, depth 4: exponent median 2 [quartiles 2, 2] (n=251); within 0.3 of c-2: 0.936
+later plateaus, depth 5: exponent median 3 [quartiles 3, 3.97] (n=38); within 0.3 of c-2: 0.579
+later plateaus c >= 3: within 0.3 of c-2: 0.897 (n=767); median |dev| 0.00016
+splice cells (pairwise != depth, c >= 3): within 0.3 of c-2 1.000, of pairwise-2 0.000 (n=128)
+depth 2: log-law slope / 1/(s A) per cell: {'B4 {0}->1': 0.7, 'B8 {0,1,2}->3': 1.0, 'H4 {0,1,3}->2': 1.0, 'PS {1}->2': -0.0, 'PS {2}->1': -0.0, 'S5A {0,1,3}->2': 1.0, 'S5B {0,1,3}->2': 0.999, 'S5B {1,2,3}->0': 1.0, 'S7 {0,1,3}->2': 1.0}
+|J|=1 cells with Thm 3.2 order < depth: exponent median 3 [quartiles 3, 3] (n=20); within 0.3 of order-2 0.000; of c-2 0.000
+first plateau (from the origin, c = K): exponent - (K-2) median 0 [quartiles 0, 0] (n=362); within 0.3: 0.959
+### basis event_clean
+later plateaus, depth 2: exponent median 0.116 [quartiles 0.108, 0.122] (n=174); within 0.3 of c-2: 1.000
+later plateaus, depth 3: exponent median 1 [quartiles 1, 1] (n=399); within 0.3 of c-2: 1.000
+later plateaus, depth 4: exponent median 2 [quartiles 2, 2] (n=227); within 0.3 of c-2: 1.000
+later plateaus, depth 5: exponent median 3.3 [quartiles 3, 3.97] (n=22); within 0.3 of c-2: 0.500
+later plateaus c >= 3: within 0.3 of c-2: 0.983 (n=648); median |dev| 0.00011
+splice cells (pairwise != depth, c >= 3): within 0.3 of c-2 1.000, of pairwise-2 0.000 (n=125)
+depth 2: log-law slope / 1/(s A) per cell: {'B4 {0}->1': 0.7, 'B8 {0,1,2}->3': 1.0, 'H4 {0,1,3}->2': 1.0, 'PS {1}->2': -0.0, 'PS {2}->1': -0.0, 'S5A {0,1,3}->2': 1.0, 'S5B {0,1,3}->2': 0.999, 'S5B {1,2,3}->0': 1.0, 'S7 {0,1,3}->2': 1.0}
+first plateau (from the origin, c = K): exponent - (K-2) median 0 [quartiles 0, 0] (n=338); within 0.3: 1.000
+### basis pass
+later plateaus, depth 2: exponent median 0.114 [quartiles 0.106, 0.121] (n=61); within 0.3 of c-2: 1.000
+later plateaus, depth 3: exponent median 1 [quartiles 1, 1] (n=300); within 0.3 of c-2: 0.903
+later plateaus, depth 4: exponent median 2 [quartiles 2, 2] (n=125); within 0.3 of c-2: 1.000
+later plateaus, depth 5: exponent median 3 [quartiles 3, 3.97] (n=38); within 0.3 of c-2: 0.579
+later plateaus c >= 3: within 0.3 of c-2: 0.903 (n=463); median |dev| 0.00013
+splice cells (pairwise != depth, c >= 3): within 0.3 of c-2 1.000, of pairwise-2 0.000 (n=50)
+depth 2: log-law slope / 1/(s A) per cell: {'B4 {0}->1': 0.7, 'S5A {0,1,3}->2': 1.0, 'S5B {0,1,3}->2': 0.999}
+|J|=1 cells with Thm 3.2 order < depth: exponent median 0.107 [quartiles 0.0963, 0.109] (n=17); within 0.3 of order-2 1.000; of c-2 0.000
+first plateau (from the origin, c = K): exponent - (K-2) median 0 [quartiles 0, 0] (n=416); within 0.3: 0.962
+reference runs: c>=3 exponent minus (c-2): median 8.38e-05 [quartiles 1e-07, 0.000465] (n=29)
 
-per-cell decisions (dense):
+per-cell decisions (dense, basis event_clean):
 
 | target | transition | pattern_str | depth | pairwise | one_component_order | n_fitted | exp_q1 | exp_median | exp_q3 | frac_within_0p3_route | log_slope_median | pred_log_slope | decision_exponent |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| B4 | {0,1}->2 | 1001 | 4 | 4 | nan | 35 | 2 | 2 | 2 | 1 | 8.2e+09 | 1.67 | SUPPORTED |
-| B4 | {0}->1 | 0110 | 2 | 2 | 2 | 35 | 0.101 | 0.108 | 0.115 | 1 | 2.33 | 3.33 | NOT SUPPORTED |
-| B4 | {}->0 | 0000 | 4 | 4 | nan | 35 | 2 | 2 | 2 | 1 | 1.67e+09 | nan | SUPPORTED |
-| B8 | {0,1,2}->3 | 10000100 | 2 | 3 | nan | 40 | 0.113 | 0.12 | 0.124 | 1 | 4.6 | 4.6 | SUPPORTED |
-| B8 | {0,1}->2 | 10000001 | 4 | 5 | nan | 40 | 2 | 2 | 2 | 1 | 1.27e+10 | 3.41 | SUPPORTED |
-| B8 | {0}->1 | 00001101 | 3 | 3 | 3 | 40 | 1 | 1 | 1 | 1 | 2.63e+04 | 1.33 | SUPPORTED |
-| B8 | {}->0 | 00000000 | 7 | 7 | nan | 40 | 5 | 5 | 5 | 1 | 1.53e+24 | nan | SUPPORTED |
-| D4 | {0,1}->2 | 2222 | 4 | 4 | nan | 16 | 2 | 2 | 2 | 1 | 1.47e+10 | 2.22 | SUPPORTED |
-| D4 | {0,2}->1 | 1111 | 4 | 4 | nan | 5 | 2 | 2 | 2 | 1 | 2.12e+09 | 1.43 | SUPPORTED |
-| D4 | {0}->1 | 1111 | 4 | 4 | 4 | 10 | 2 | 2 | 2 | 1 | 2.26e+09 | 1.43 | SUPPORTED |
-| D4 | {0}->2 | 2222 | 4 | 4 | 4 | 5 | 2 | 2 | 2 | 1 | 3.78e+09 | 2.22 | SUPPORTED |
-| D4 | {1,2}->0 | 0000 | 4 | 4 | nan | 6 | 2 | 2 | 2 | 1 | 4.45e+09 | 1 | SUPPORTED |
-| D4 | {1}->0 | 0000 | 4 | 4 | 4 | 6 | 2 | 2 | 2 | 1 | 1.46e+09 | 1 | SUPPORTED |
-| D4 | {1}->2 | 2222 | 4 | 4 | 4 | 4 | 2 | 2 | 2 | 1 | 2.19e+09 | 2.22 | SUPPORTED |
-| D4 | {2}->1 | 1111 | 4 | 4 | 4 | 2 | 2 | 2 | 2 | 1 | 5.33e+08 | 1.43 | SUPPORTED |
-| D4 | {}->0 | 0000 | 4 | 4 | nan | 15 | 2 | 2 | 2 | 1 | 2.24e+09 | nan | SUPPORTED |
-| D4 | {}->1 | 1111 | 4 | 4 | nan | 10 | 2 | 2 | 2 | 1 | 2.61e+09 | nan | SUPPORTED |
-| D4 | {}->2 | 2222 | 4 | 4 | nan | 2 | 2 | 2 | 2 | 1 | 3.64e+09 | nan | SUPPORTED |
-| DB4 | {0,1}->2 | 2222 | 3 | 3 | nan | 40 | 1 | 1 | 1 | 1 | 6.03e+04 | 2.22 | SUPPORTED |
-| DB4 | {0}->1 | 1111 | 3 | 3 | 3 | 40 | 1 | 1 | 1 | 1 | 2.09e+04 | 1.43 | SUPPORTED |
-| DB4 | {}->0 | 0000 | 3 | 3 | nan | 40 | 1 | 1 | 1 | 1 | 3.26e+04 | nan | SUPPORTED |
-| H4 | {0,1,3}->2 | 1001 | 2 | 3 | nan | 40 | 0.111 | 0.118 | 0.126 | 1 | 2.57 | 2.57 | SUPPORTED |
-| H4 | {0,3}->1 | 0201 | 4 | 5 | nan | 40 | 2 | 2 | 2 | 1 | 9.79e+09 | 2.88 | SUPPORTED |
-| H4 | {0}->3 | 2200 | 3 | 3 | 3 | 40 | 1 | 1 | 1 | 1 | 6.75e+04 | 2.5 | SUPPORTED |
-| H4 | {}->0 | 0000 | 7 | 7 | nan | 40 | 5 | 5 | 5 | 1 | 1.2e+24 | nan | SUPPORTED |
-| PS | {1,2}->0 | 000000 | 5 | 5 | nan | 38 | 3 | 3 | 3.97 | 0.579 | 7.16e+14 | 1.31 | INCONCLUSIVE |
-| PS | {1}->2 | 110010 | 2 | 2 | 2 | 11 | -3.38e-05 | -8.12e-07 | 1.89e-05 | 0.909 | -3.32e-06 | 1.45 | NOT SUPPORTED |
-| PS | {2}->1 | 110001 | 2 | 2 | 2 | 12 | -2.85e-05 | -3.02e-06 | 2.4e-06 | 1 | -1.37e-06 | 1.45 | NOT SUPPORTED |
-| PS | {}->1 | 110001 | 6 | 6 | nan | 26 | -0.492 | 4 | 4 | 0.731 | 3.28e+18 | nan | INCONCLUSIVE |
-| PS | {}->2 | 110010 | 6 | 6 | nan | 27 | -2 | 4 | 4 | 0.704 | 5.37e+18 | nan | INCONCLUSIVE |
-| S5A | {0,1,3}->2 | 10101 | 2 | 3 | nan | 40 | 0.107 | 0.113 | 0.118 | 1 | 3.38 | 3.38 | SUPPORTED |
-| S5A | {0,1}->3 | 11200 | 3 | 3 | nan | 3 | 0.998 | 0.999 | 1 | 1 | 1.43e+04 | 2.16 | SUPPORTED |
-| S5A | {0,3}->1 | 00201 | 3 | 3 | nan | 37 | 1 | 1 | 1.01 | 1 | 1.24e+05 | 3.07 | SUPPORTED |
-| S5A | {0}->1 | 00201 | 3 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 5.49e+04 | 2.5 | SUPPORTED |
-| S5A | {0}->3 | 11200 | 3 | 3 | 3 | 36 | 0.17 | 1 | 1 | 0.639 | 1.47e+04 | 1.82 | INCONCLUSIVE |
-| S5A | {1}->0 | 00000 | 3 | 3 | 2 | 13 | 3 | 3 | 3 | 0 | 2.14e+14 | 1.44 | REFUTED |
-| S5A | {3}->0 | 00000 | 3 | 3 | 3 | 1 | 0.999 | 0.999 | 0.999 | 1 | 2.72e+03 | 1.27 | SUPPORTED |
-| S5A | {}->0 | 00000 | 5 | 5 | nan | 26 | 3 | 3 | 3 | 1 | 1.94e+14 | nan | SUPPORTED |
-| S5A | {}->3 | 11200 | 5 | 5 | nan | 1 | 3 | 3 | 3 | 1 | 2.38e+14 | nan | SUPPORTED |
-| S5B | {0,1,3}->2 | 20111 | 2 | 3 | nan | 2 | 0.113 | 0.114 | 0.116 | 1 | 4.22 | 4.22 | SUPPORTED |
-| S5B | {0,1}->3 | 20200 | 3 | 3 | nan | 2 | 0.99 | 0.994 | 0.997 | 1 | 1.06e+05 | 2.83 | SUPPORTED |
-| S5B | {0,2,3}->1 | 02201 | 3 | 4 | nan | 37 | 1 | 1 | 1.01 | 1 | 5.51e+04 | 1.62 | SUPPORTED |
-| S5B | {0,3}->2 | 20111 | 3 | 3 | nan | 37 | 1 | 1 | 1 | 0.757 | 1.27e+05 | 3.98 | INCONCLUSIVE |
-| S5B | {0}->3 | 20200 | 3 | 3 | 3 | 37 | 1 | 1 | 1 | 0.919 | 5.15e+04 | 2.5 | SUPPORTED |
-| S5B | {1,2,3}->0 | 00000 | 2 | 3 | nan | 1 | 0.14 | 0.14 | 0.14 | 1 | 2.06 | 2.06 | SUPPORTED |
-| S5B | {1,2}->3 | 20200 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 2.5e+05 | 3.71 | SUPPORTED |
-| S5B | {1}->0 | 00000 | 4 | 4 | 4 | 5 | 2 | 3 | 3 | 0.4 | 1.85e+14 | 1.06 | REFUTED |
-| S5B | {1}->2 | 20111 | 4 | 4 | 4 | 1 | 2 | 2 | 2 | 1 | 4.04e+08 | 1.93 | SUPPORTED |
-| S5B | {2,3}->0 | 00000 | 3 | 3 | nan | 2 | 3 | 3 | 3 | 0 | 3.53e+14 | 1.99 | INCONCLUSIVE |
-| S5B | {3}->0 | 00000 | 3 | 3 | 2 | 7 | 3 | 3 | 3 | 0 | 1.88e+14 | 1.44 | REFUTED |
-| S5B | {}->0 | 00000 | 5 | 5 | nan | 25 | 3 | 3 | 3 | 1 | 2.12e+14 | nan | SUPPORTED |
-| S5B | {}->1 | 02201 | 5 | 5 | nan | 3 | 3 | 3 | 3 | 1 | 1.6e+14 | nan | SUPPORTED |
-| S7 | {0,1,2}->3 | 0110100 | 3 | 4 | nan | 11 | 1 | 1 | 1 | 1 | 6.4e+04 | 1.8 | SUPPORTED |
-| S7 | {0,1,3}->2 | 0100011 | 2 | 3 | nan | 29 | 0.115 | 0.121 | 0.128 | 1 | 3.47 | 3.47 | SUPPORTED |
-| S7 | {0,1}->2 | 0100011 | 3 | 3 | nan | 3 | 1 | 1 | 1 | 1 | 6.47e+04 | 3.16 | SUPPORTED |
-| S7 | {0,3}->1 | 0001011 | 4 | 4 | nan | 29 | 2 | 2 | 2 | 1 | 7.15e+09 | 2.71 | SUPPORTED |
-| S7 | {0}->1 | 0001011 | 4 | 4 | 4 | 3 | 2 | 2 | 2 | 1 | 3.41e+09 | 2.5 | SUPPORTED |
-| S7 | {0}->3 | 0110100 | 4 | 4 | 4 | 29 | 2 | 2 | 2 | 0.793 | 1.45e+09 | 1.82 | INCONCLUSIVE |
-| S7 | {1,2}->0 | 0000000 | 4 | 4 | nan | 13 | 2 | 2 | 5 | 0.615 | 2.38e+10 | 2.06 | INCONCLUSIVE |
-| S7 | {2}->1 | 0001011 | 3 | 3 | 3 | 8 | 1 | 1 | 1 | 1 | 5.32e+04 | 2.95 | SUPPORTED |
-| S7 | {3}->0 | 0000000 | 4 | 4 | 4 | 2 | 5 | 5 | 5 | 0 | 9.98e+23 | 1.29 | INCONCLUSIVE |
-| S7 | {}->0 | 0000000 | 7 | 7 | nan | 24 | 5 | 5 | 5 | 1 | 1.35e+24 | nan | SUPPORTED |
-| S7 | {}->2 | 0100011 | 7 | 7 | nan | 8 | 5 | 5 | 5 | 1 | 1.39e+24 | nan | SUPPORTED |
-| TIE | {0,1}->2 | 2200 | 3 | 3 | nan | 40 | 1 | 1 | 1 | 1 | 9.25e+04 | 1.4 | SUPPORTED |
-| TIE | {0}->1 | 1100 | 3 | 3 | 3 | 40 | 1 | 1 | 1 | 1 | 2.77e+04 | 1.67 | SUPPORTED |
-| TIE | {}->0 | 0000 | 7 | 7 | nan | 40 | 5 | 5 | 5 | 1 | 1.49e+24 | nan | SUPPORTED |
 | B4 | {0,1}->2 | 1001 | 4 | 4 | nan | 35 | 2 | 2 | 2 | 1 | 8.2e+09 | 1.67 | SUPPORTED |
 | B4 | {0}->1 | 0110 | 2 | 2 | 2 | 35 | 0.101 | 0.108 | 0.115 | 1 | 2.33 | 3.33 | NOT SUPPORTED |
 | B4 | {}->0 | 0000 | 4 | 4 | nan | 35 | 2 | 2 | 2 | 1 | 1.67e+09 | nan | SUPPORTED |
@@ -212,11 +165,11 @@ per-cell decisions (dense):
 | H4 | {0,3}->1 | 0201 | 4 | 5 | nan | 40 | 2 | 2 | 2 | 1 | 9.79e+09 | 2.88 | SUPPORTED |
 | H4 | {0}->3 | 2200 | 3 | 3 | 3 | 35 | 1 | 1 | 1 | 1 | 6.74e+04 | 2.5 | SUPPORTED |
 | H4 | {}->0 | 0000 | 7 | 7 | nan | 40 | 5 | 5 | 5 | 1 | 1.2e+24 | nan | SUPPORTED |
-| PS | {1,2}->0 | 000000 | 5 | 5 | nan | 22 | 3 | 3.3 | 3.97 | 0.5 | 4.14e+15 | 1.31 | INCONCLUSIVE |
-| PS | {1}->2 | 110010 | 2 | 2 | 2 | 11 | -3.38e-05 | -8.12e-07 | 1.89e-05 | 0.909 | -3.32e-06 | 1.45 | NOT SUPPORTED |
-| PS | {2}->1 | 110001 | 2 | 2 | 2 | 12 | -2.85e-05 | -3.02e-06 | 2.4e-06 | 1 | -1.37e-06 | 1.45 | NOT SUPPORTED |
-| PS | {}->1 | 110001 | 6 | 6 | nan | 17 | -2 | 4 | 4 | 0.588 | 2.13e+18 | nan | INCONCLUSIVE |
-| PS | {}->2 | 110010 | 6 | 6 | nan | 20 | -2 | 4 | 4 | 0.6 | 8.54e+18 | nan | INCONCLUSIVE |
+| PS | {1,2}->0 | 000000 | 5 | 5 | nan | 22 | 3 | 3.3 | 3.97 | 0.5 | 3.99e+15 | 1.31 | INCONCLUSIVE |
+| PS | {1}->2 | 110010 | 2 | 2 | 2 | 1 | -8.12e-07 | -8.12e-07 | -8.12e-07 | 1 | -3.32e-06 | 1.45 | NOT SUPPORTED |
+| PS | {2}->1 | 110001 | 2 | 2 | 2 | 5 | -7.48e-06 | -1.01e-06 | -1.55e-08 | 1 | -1.68e-06 | 1.45 | NOT SUPPORTED |
+| PS | {}->1 | 110001 | 6 | 6 | nan | 10 | 4 | 4 | 4 | 1 | 1.22e+19 | nan | SUPPORTED |
+| PS | {}->2 | 110010 | 6 | 6 | nan | 19 | 4 | 4 | 4 | 1 | 9.75e+18 | nan | SUPPORTED |
 | S5A | {0,1,3}->2 | 10101 | 2 | 3 | nan | 27 | 0.111 | 0.116 | 0.118 | 1 | 3.38 | 3.38 | SUPPORTED |
 | S5A | {0,1}->3 | 11200 | 3 | 3 | nan | 3 | 0.998 | 0.999 | 1 | 1 | 1.43e+04 | 2.16 | SUPPORTED |
 | S5A | {0,3}->1 | 00201 | 3 | 3 | nan | 24 | 1 | 1 | 1 | 1 | 1.07e+05 | 3.07 | SUPPORTED |
@@ -248,61 +201,6 @@ per-cell decisions (dense):
 | S7 | {}->2 | 0100011 | 7 | 7 | nan | 8 | 5 | 5 | 5 | 1 | 1.39e+24 | nan | SUPPORTED |
 | TIE | {0,1}->2 | 2200 | 3 | 3 | nan | 40 | 1 | 1 | 1 | 1 | 9.7e+04 | 1.4 | SUPPORTED |
 | TIE | {0}->1 | 1100 | 3 | 3 | 3 | 39 | 1 | 1 | 1 | 1 | 2.87e+04 | 1.67 | SUPPORTED |
-| TIE | {}->0 | 0000 | 7 | 7 | nan | 40 | 5 | 5 | 5 | 1 | 1.49e+24 | nan | SUPPORTED |
-| B4 | {0,1}->2 | 1001 | 4 | 4 | nan | 35 | 2 | 2 | 2 | 1 | 8.2e+09 | 1.67 | SUPPORTED |
-| B4 | {0}->1 | 0110 | 2 | 2 | 2 | 40 | 0.101 | 0.11 | 0.115 | 1 | 2.33 | 3.33 | NOT SUPPORTED |
-| B4 | {}->0 | 0000 | 4 | 4 | nan | 40 | 2 | 2 | 2 | 1 | 1.64e+09 | nan | SUPPORTED |
-| B8 | {0,1}->2 | 10000001 | 4 | 5 | nan | 4 | 2 | 2 | 2 | 1 | 4.4e+09 | 3.41 | SUPPORTED |
-| B8 | {}->0 | 00000000 | 7 | 7 | nan | 40 | 5 | 5 | 5 | 1 | 1.53e+24 | nan | SUPPORTED |
-| D4 | {0,1}->2 | 2222 | 4 | 4 | nan | 16 | 2 | 2 | 2 | 1 | 1.47e+10 | 2.22 | SUPPORTED |
-| D4 | {0,2}->1 | 1111 | 4 | 4 | nan | 5 | 2 | 2 | 2 | 1 | 2.12e+09 | 1.43 | SUPPORTED |
-| D4 | {0}->1 | 1111 | 4 | 4 | 4 | 15 | 2 | 2 | 2 | 1 | 2.26e+09 | 1.43 | SUPPORTED |
-| D4 | {0}->2 | 2222 | 4 | 4 | 4 | 9 | 2 | 2 | 2 | 1 | 3.78e+09 | 2.22 | SUPPORTED |
-| D4 | {1,2}->0 | 0000 | 4 | 4 | nan | 6 | 2 | 2 | 2 | 1 | 4.45e+09 | 1 | SUPPORTED |
-| D4 | {1}->0 | 0000 | 4 | 4 | 4 | 9 | 2 | 2 | 2 | 1 | 1.54e+09 | 1 | SUPPORTED |
-| D4 | {1}->2 | 2222 | 4 | 4 | 4 | 5 | 2 | 2 | 2 | 1 | 2.18e+09 | 2.22 | SUPPORTED |
-| D4 | {2}->1 | 1111 | 4 | 4 | 4 | 2 | 2 | 2 | 2 | 1 | 5.33e+08 | 1.43 | SUPPORTED |
-| D4 | {}->0 | 0000 | 4 | 4 | nan | 24 | 2 | 2 | 2 | 1 | 2.19e+09 | nan | SUPPORTED |
-| D4 | {}->1 | 1111 | 4 | 4 | nan | 14 | 2 | 2 | 2 | 1 | 2.4e+09 | nan | SUPPORTED |
-| D4 | {}->2 | 2222 | 4 | 4 | nan | 2 | 2 | 2 | 2 | 1 | 3.64e+09 | nan | SUPPORTED |
-| DB4 | {0,1}->2 | 2222 | 3 | 3 | nan | 40 | 1 | 1 | 1 | 1 | 6.03e+04 | 2.22 | SUPPORTED |
-| DB4 | {0}->1 | 1111 | 3 | 3 | 3 | 40 | 1 | 1 | 1 | 1 | 2.09e+04 | 1.43 | SUPPORTED |
-| DB4 | {}->0 | 0000 | 3 | 3 | nan | 40 | 1 | 1 | 1 | 1 | 3.26e+04 | nan | SUPPORTED |
-| H4 | {0,3}->1 | 0201 | 4 | 5 | nan | 9 | 2 | 2 | 2 | 1 | 2.8e+09 | 2.88 | SUPPORTED |
-| H4 | {}->0 | 0000 | 7 | 7 | nan | 40 | 5 | 5 | 5 | 1 | 1.2e+24 | nan | SUPPORTED |
-| PS | {1,2}->0 | 000000 | 5 | 5 | nan | 38 | 3 | 3 | 3.97 | 0.579 | 7.16e+14 | 1.31 | INCONCLUSIVE |
-| PS | {}->0 | 000000 | 6 | 6 | nan | 15 | 4 | 4 | 4 | 1 | 5.37e+18 | nan | SUPPORTED |
-| PS | {}->1 | 110001 | 6 | 6 | nan | 26 | 2 | 2 | 4 | 0.423 | 2.62e+10 | nan | REFUTED |
-| PS | {}->2 | 110010 | 6 | 6 | nan | 12 | 4 | 4 | 4 | 1 | 1.54e+19 | nan | SUPPORTED |
-| S5A | {0,1,3}->2 | 10101 | 2 | 3 | nan | 19 | 0.119 | 0.123 | 0.125 | 1 | 3.38 | 3.38 | SUPPORTED |
-| S5A | {0,1}->3 | 11200 | 3 | 3 | nan | 3 | 0.998 | 0.999 | 1 | 1 | 1.43e+04 | 2.16 | SUPPORTED |
-| S5A | {0,3}->1 | 00201 | 3 | 3 | nan | 37 | 1 | 1 | 1.01 | 1 | 1.24e+05 | 3.07 | SUPPORTED |
-| S5A | {0}->1 | 00201 | 3 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 5.49e+04 | 2.5 | SUPPORTED |
-| S5A | {0}->3 | 11200 | 3 | 3 | 3 | 26 | 1 | 1 | 1 | 0.885 | 1.98e+04 | 1.82 | SUPPORTED |
-| S5A | {1}->0 | 00000 | 3 | 3 | 2 | 13 | 0.0963 | 0.105 | 0.108 | 0 | 6.38 | 1.44 | REFUTED |
-| S5A | {2}->1 | 00201 | 3 | 3 | 3 | 13 | 1 | 1 | 1 | 1 | 6.62e+04 | 2.8 | SUPPORTED |
-| S5A | {3}->0 | 00000 | 3 | 3 | 3 | 1 | 0.999 | 0.999 | 0.999 | 1 | 2.72e+03 | 1.27 | SUPPORTED |
-| S5A | {}->0 | 00000 | 5 | 5 | nan | 26 | 3 | 3 | 3 | 1 | 1.94e+14 | nan | SUPPORTED |
-| S5A | {}->2 | 10101 | 5 | 5 | nan | 13 | 3 | 3 | 3 | 1 | 2.14e+14 | nan | SUPPORTED |
-| S5A | {}->3 | 11200 | 5 | 5 | nan | 1 | 3 | 3 | 3 | 1 | 2.38e+14 | nan | SUPPORTED |
-| S5B | {0,1,3}->2 | 20111 | 2 | 3 | nan | 2 | 0.12 | 0.122 | 0.123 | 1 | 4.22 | 4.22 | SUPPORTED |
-| S5B | {0,1}->3 | 20200 | 3 | 3 | nan | 2 | 0.99 | 0.994 | 0.997 | 1 | 1.06e+05 | 2.83 | SUPPORTED |
-| S5B | {0,2,3}->1 | 02201 | 3 | 4 | nan | 37 | 1 | 1 | 1.01 | 1 | 5.51e+04 | 1.62 | SUPPORTED |
-| S5B | {0,3}->2 | 20111 | 3 | 3 | nan | 37 | 1 | 1 | 1 | 0.757 | 1.27e+05 | 3.98 | INCONCLUSIVE |
-| S5B | {0}->3 | 20200 | 3 | 3 | 3 | 34 | 1 | 1 | 1 | 1 | 5.98e+04 | 2.5 | SUPPORTED |
-| S5B | {1,2}->3 | 20200 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 2.5e+05 | 3.71 | SUPPORTED |
-| S5B | {1}->0 | 00000 | 4 | 4 | 4 | 5 | 2 | 2 | 2 | 1 | 9.48e+08 | 1.06 | SUPPORTED |
-| S5B | {1}->2 | 20111 | 4 | 4 | 4 | 1 | 2 | 2 | 2 | 1 | 4.04e+08 | 1.93 | SUPPORTED |
-| S5B | {2}->3 | 20200 | 3 | 3 | 3 | 9 | 1 | 1 | 1 | 1 | 6.64e+04 | 3.18 | SUPPORTED |
-| S5B | {3}->0 | 00000 | 3 | 3 | 2 | 4 | 0.104 | 0.11 | 0.113 | 0 | 5.89 | 1.44 | INCONCLUSIVE |
-| S5B | {}->0 | 00000 | 5 | 5 | nan | 25 | 3 | 3 | 3 | 1 | 2.12e+14 | nan | SUPPORTED |
-| S5B | {}->1 | 02201 | 5 | 5 | nan | 6 | 3 | 3 | 3 | 1 | 2.27e+14 | nan | SUPPORTED |
-| S5B | {}->2 | 20111 | 5 | 5 | nan | 9 | 3 | 3 | 3 | 1 | 1.82e+14 | nan | SUPPORTED |
-| S7 | {0,3}->1 | 0001011 | 4 | 4 | nan | 3 | 2 | 2 | 2 | 1 | 5.51e+09 | 2.71 | SUPPORTED |
-| S7 | {1,2}->0 | 0000000 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 4.64e+09 | 2.06 | SUPPORTED |
-| S7 | {}->0 | 0000000 | 7 | 7 | nan | 24 | 5 | 5 | 5 | 1 | 1.35e+24 | nan | SUPPORTED |
-| S7 | {}->2 | 0100011 | 7 | 7 | nan | 14 | 5 | 5 | 5 | 1 | 1.37e+24 | nan | SUPPORTED |
-| S7 | {}->3 | 0110100 | 7 | 7 | nan | 2 | 5 | 5 | 5 | 1 | 9.98e+23 | nan | SUPPORTED |
 | TIE | {}->0 | 0000 | 7 | 7 | nan | 40 | 5 | 5 | 5 | 1 | 1.49e+24 | nan | SUPPORTED |
 
 reference decisions:
@@ -344,77 +242,18 @@ reference decisions:
 | TIE | {0,1}->2 | 2200 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 6.38e+03 | 1.4 | SUPPORTED |
 | TIE | {0}->1 | 1100 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 1.21e+04 | 1.67 | SUPPORTED |
 | TIE | {}->0 | 0000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.66e+23 | nan | SUPPORTED |
-| B4 | {0,1}->2 | 1001 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 5.59e+08 | 1.67 | SUPPORTED |
-| B4 | {0}->1 | 0110 | 2 | 2 | 2 | 1 | 0.124 | 0.124 | 0.124 | 1 | 2.33 | 3.33 | NOT SUPPORTED |
-| B4 | {}->0 | 0000 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 6.89e+08 | nan | SUPPORTED |
-| B8 | {0,1,2}->3 | 10000100 | 2 | 3 | nan | 1 | 0.14 | 0.14 | 0.14 | 1 | 4.6 | 4.6 | SUPPORTED |
-| B8 | {0,1}->2 | 10000001 | 4 | 5 | nan | 1 | 2 | 2 | 2 | 1 | 1.35e+09 | 3.41 | SUPPORTED |
-| B8 | {0}->1 | 00001101 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 6.33e+03 | 1.33 | SUPPORTED |
-| B8 | {}->0 | 00000000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.59e+23 | nan | SUPPORTED |
-| D4 | {0,1}->2 | 2222 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 5.94e+08 | 2.22 | SUPPORTED |
-| D4 | {0}->1 | 1111 | 4 | 4 | 4 | 1 | 2 | 2 | 2 | 1 | 3.21e+08 | 1.43 | SUPPORTED |
-| D4 | {}->0 | 0000 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 7.49e+08 | nan | SUPPORTED |
-| DB4 | {0,1}->2 | 2222 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 1.44e+04 | 2.22 | SUPPORTED |
-| DB4 | {0}->1 | 1111 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 7.8e+03 | 1.43 | SUPPORTED |
-| DB4 | {}->0 | 0000 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 1.82e+04 | nan | SUPPORTED |
-| H4 | {0,1,3}->2 | 1001 | 2 | 3 | nan | 1 | 0.151 | 0.151 | 0.151 | 1 | 2.57 | 2.57 | SUPPORTED |
-| H4 | {0,3}->1 | 0201 | 4 | 5 | nan | 1 | 2 | 2 | 2 | 1 | 5.53e+08 | 2.88 | SUPPORTED |
-| H4 | {0}->3 | 2200 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 2.47e+04 | 2.5 | SUPPORTED |
-| H4 | {}->0 | 0000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.68e+23 | nan | SUPPORTED |
-| PS | {1,2}->0 | 000000 | 5 | 5 | nan | 1 | 3 | 3 | 3 | 1 | 1.46e+13 | 1.31 | SUPPORTED |
-| PS | {2}->1 | 110001 | 2 | 2 | 2 | 1 | 4.9e-05 | 4.9e-05 | 4.9e-05 | 1 | 6.14e-06 | 1.45 | NOT SUPPORTED |
-| PS | {}->2 | 110010 | 6 | 6 | nan | 1 | 4 | 4 | 4 | 1 | 2.29e+18 | nan | SUPPORTED |
-| S5A | {0,1,3}->2 | 10101 | 2 | 3 | nan | 1 | 0.142 | 0.142 | 0.142 | 1 | 3.37 | 3.38 | SUPPORTED |
-| S5A | {0,3}->1 | 00201 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 8.28e+03 | 3.07 | SUPPORTED |
-| S5A | {0}->3 | 11200 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 1.31e+04 | 1.82 | SUPPORTED |
-| S5A | {}->0 | 00000 | 5 | 5 | nan | 1 | 3 | 3 | 3 | 1 | 3.53e+13 | nan | SUPPORTED |
-| S5B | {0,2,3}->1 | 02201 | 3 | 4 | nan | 1 | 1.01 | 1.01 | 1.01 | 1 | 1.51e+04 | 1.62 | SUPPORTED |
-| S5B | {0,3}->2 | 20111 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 4.37e+04 | 3.98 | SUPPORTED |
-| S5B | {0}->3 | 20200 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 2.2e+04 | 2.5 | SUPPORTED |
-| S5B | {}->0 | 00000 | 5 | 5 | nan | 1 | 3 | 3 | 3 | 1 | 3.7e+13 | nan | SUPPORTED |
-| S7 | {0,1,3}->2 | 0100011 | 2 | 3 | nan | 1 | 0.144 | 0.144 | 0.144 | 1 | 3.46 | 3.47 | SUPPORTED |
-| S7 | {0,3}->1 | 0001011 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 6.98e+07 | 2.71 | SUPPORTED |
-| S7 | {0}->3 | 0110100 | 4 | 4 | 4 | 1 | 2 | 2 | 2 | 1 | 5.17e+08 | 1.82 | SUPPORTED |
-| S7 | {}->0 | 0000000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.76e+23 | nan | SUPPORTED |
-| TIE | {0,1}->2 | 2200 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 6.38e+03 | 1.4 | SUPPORTED |
-| TIE | {0}->1 | 1100 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 1.21e+04 | 1.67 | SUPPORTED |
-| TIE | {}->0 | 0000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.66e+23 | nan | SUPPORTED |
-| B4 | {0,1}->2 | 1001 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 5.59e+08 | 1.67 | SUPPORTED |
-| B4 | {0}->1 | 0110 | 2 | 2 | 2 | 1 | 0.124 | 0.124 | 0.124 | 1 | 2.33 | 3.33 | NOT SUPPORTED |
-| B4 | {}->0 | 0000 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 6.89e+08 | nan | SUPPORTED |
-| B8 | {}->0 | 00000000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.59e+23 | nan | SUPPORTED |
-| D4 | {0,1}->2 | 2222 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 5.94e+08 | 2.22 | SUPPORTED |
-| D4 | {0}->1 | 1111 | 4 | 4 | 4 | 1 | 2 | 2 | 2 | 1 | 3.21e+08 | 1.43 | SUPPORTED |
-| D4 | {}->0 | 0000 | 4 | 4 | nan | 1 | 2 | 2 | 2 | 1 | 7.49e+08 | nan | SUPPORTED |
-| DB4 | {0,1}->2 | 2222 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 1.44e+04 | 2.22 | SUPPORTED |
-| DB4 | {0}->1 | 1111 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 7.8e+03 | 1.43 | SUPPORTED |
-| DB4 | {}->0 | 0000 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 1.82e+04 | nan | SUPPORTED |
-| H4 | {}->0 | 0000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.68e+23 | nan | SUPPORTED |
-| PS | {1,2}->0 | 000000 | 5 | 5 | nan | 1 | 3 | 3 | 3 | 1 | 1.46e+13 | 1.31 | SUPPORTED |
-| PS | {}->2 | 110010 | 6 | 6 | nan | 1 | 4 | 4 | 4 | 1 | 2.29e+18 | nan | SUPPORTED |
-| S5A | {0,1,3}->2 | 10101 | 2 | 3 | nan | 1 | 0.153 | 0.153 | 0.153 | 1 | 3.37 | 3.38 | SUPPORTED |
-| S5A | {0,3}->1 | 00201 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 8.28e+03 | 3.07 | SUPPORTED |
-| S5A | {0}->3 | 11200 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 1.31e+04 | 1.82 | SUPPORTED |
-| S5A | {}->0 | 00000 | 5 | 5 | nan | 1 | 3 | 3 | 3 | 1 | 3.53e+13 | nan | SUPPORTED |
-| S5B | {0,2,3}->1 | 02201 | 3 | 4 | nan | 1 | 1.01 | 1.01 | 1.01 | 1 | 1.51e+04 | 1.62 | SUPPORTED |
-| S5B | {0,3}->2 | 20111 | 3 | 3 | nan | 1 | 1 | 1 | 1 | 1 | 4.37e+04 | 3.98 | SUPPORTED |
-| S5B | {0}->3 | 20200 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 2.2e+04 | 2.5 | SUPPORTED |
-| S5B | {}->0 | 00000 | 5 | 5 | nan | 1 | 3 | 3 | 3 | 1 | 3.7e+13 | nan | SUPPORTED |
-| S7 | {}->0 | 0000000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.76e+23 | nan | SUPPORTED |
-| TIE | {}->0 | 0000 | 7 | 7 | nan | 1 | 5 | 5 | 5 | 1 | 1.66e+23 | nan | SUPPORTED |
 
 ## (d) effective depth (sigma <= 1e-3)
 
-depth 2: eff median 2.02 [quartiles 2.02, 2.02] (n=1731); |eff - c| <= 0.3: 0.901; nan 0.099
+depth 2: eff median 2.02 [quartiles 2.02, 2.02] (n=1731); |eff - c| <= 0.3: 0.894; nan 0.106
 depth 3: eff median 3.02 [quartiles 3.02, 3.04] (n=3960); |eff - c| <= 0.3: 0.956; nan 0.035
 depth 4: eff median 4.09 [quartiles 4, 4.15] (n=2275); |eff - c| <= 0.3: 0.995; nan 0.000
-depth 5: eff median 5.16 [quartiles 5.16, 5.16] (n=332); |eff - c| <= 0.3: 0.997; nan 0.000
+depth 5: eff median 5.16 [quartiles 5.16, 5.16] (n=335); |eff - c| <= 0.3: 1.000; nan 0.000
 depth 6: eff n/a; |eff - c| <= 0.3: 0.000; nan 1.000
-event 0 (from origin, depth K): eff - K median -0.000804 [quartiles -0.0256, 0.00022] (n=3576)
+event 0 (from origin, depth K): eff - K median -0.00083 [quartiles -0.026, 0.000219] (n=3600)
 cells with mismatches:
 | target | J_before_str | pattern_str | depth | n | eff |
 |---|---|---|---|---|---|
-| PS | 110001 110010 | 000000 | 5 | 1 | 3.94 |
 | S5A | 00000 | 11200 | 3 | 2 | inf |
 | S5B | 00000 20200 | 20111 | 3 | 34 | 2.21 |
 | S7 | 0000000 | 0110100 | 4 | 1 | 47.5 |
@@ -422,26 +261,26 @@ cells with mismatches:
 
 ## (e) closeness to the aligned manifold
 
-peak off-target over transitions (k >= 1, sigma <= 1e-3): median 8.47e-09 [quartiles 2.05e-10, 3.76e-07] (n=8765); < 1e-2: 0.937
+peak off-target over transitions (k >= 1, sigma <= 1e-3): median 8.57e-09 [quartiles 2.06e-10, 3.9e-07] (n=8791); < 1e-2: 0.935
 by target: {'B4': '0.00014', 'B8': '1e-06', 'D4': '0.00066', 'DB4': '0.082', 'H4': '4.1e-05', 'PS': '0.52', 'S5A': '0.38', 'S5B': '0.29', 'S7': '0.14', 'TIE': '0.092'}
-by sigma (median, max): {-5.0: {'median': 2.7e-11, 'max': 0.5}, -4.75: {'median': 8.4e-11, 'max': 0.5}, -4.5: {'median': 2.5e-10, 'max': 0.5}, -4.25: {'median': 7.5e-10, 'max': 0.5}, -4.0: {'median': 2.3e-09, 'max': 0.5}, -3.75: {'median': 6.8e-09, 'max': 0.52}, -3.5: {'median': 2.1e-08, 'max': 0.51}, -3.25: {'median': 6.3e-08, 'max': 0.5}, -3.0: {'median': 1.8e-07, 'max': 0.5}, -2.75: {'median': 5.4e-07, 'max': 0.5}, -2.5: {'median': 1.7e-06, 'max': 0.52}, -2.25: {'median': 4.9e-06, 'max': 0.51}, -2.0: {'median': 1.5e-05, 'max': 0.51}, -1.75: {'median': 4.9e-05, 'max': 0.52}, -1.5: {'median': 0.00016, 'max': 0.68}}
-alignment quality at the min-gradient point: median 1 [quartiles 1, 1] (n=15856)
+by sigma (median, max): {-5.0: {'median': 2.8e-11, 'max': 0.5}, -4.75: {'median': 8.5e-11, 'max': 0.5}, -4.5: {'median': 2.6e-10, 'max': 0.5}, -4.25: {'median': 7.6e-10, 'max': 0.5}, -4.0: {'median': 2.3e-09, 'max': 0.5}, -3.75: {'median': 6.8e-09, 'max': 0.52}, -3.5: {'median': 2.1e-08, 'max': 0.51}, -3.25: {'median': 6.3e-08, 'max': 0.5}, -3.0: {'median': 1.8e-07, 'max': 0.5}, -2.75: {'median': 5.4e-07, 'max': 0.5}, -2.5: {'median': 1.7e-06, 'max': 0.52}, -2.25: {'median': 4.9e-06, 'max': 0.51}, -2.0: {'median': 1.5e-05, 'max': 0.51}, -1.75: {'median': 4.9e-05, 'max': 0.52}, -1.5: {'median': 0.00016, 'max': 0.68}}
+alignment quality at the min-gradient point: median 1 [quartiles 1, 1] (n=15910)
 
 ## (f) Assumption C.1
 
 (1) slope of log route-entry size vs log sigma: median 1 [quartiles 0.969, 1] (n=75); within 0.1 of 1: 0.840 (n=75)
-(1) route-entry geometric mean / sigma at entry: median 0.777 [quartiles 0.57, 1.35] (n=15226); spread max/min over nodes: median 2.25 [quartiles 1.41, 3.99] (n=15226)
-(2) gamma_obs / A_r(J) at min-gradient point: median 1 [quartiles 1, 1] (n=15856); within 5%: 0.948
-(3-4) unseparated events (k >= 1, sigma <= 1e-3): 0.017 (n=8765)
-by target: {'B4': 0.0, 'B8': 0.0, 'D4': 0.0, 'DB4': 0.003, 'H4': 0.0, 'PS': 0.208, 'S5A': 0.0, 'S5B': 0.0, 'S7': 0.0, 'TIE': 0.017}
-by sigma: {-5.0: 0.012, -4.75: 0.015, -4.5: 0.014, -4.25: 0.015, -4.0: 0.018, -3.75: 0.019, -3.5: 0.019, -3.25: 0.021, -3.0: 0.023, -2.75: 0.024, -2.5: 0.026, -2.25: 0.029, -2.0: 0.032, -1.75: 0.034, -1.5: 0.041}
+(1) route-entry geometric mean / sigma at entry: median 0.779 [quartiles 0.571, 1.35] (n=15258); spread max/min over nodes: median 2.25 [quartiles 1.42, 4.04] (n=15258)
+(2) gamma_obs / A_r(J) at min-gradient point: median 1 [quartiles 1, 1] (n=15910); within 5%: 0.946
+(3-4) unseparated events (k >= 1, sigma <= 1e-3): 0.018 (n=8791)
+by target: {'B4': 0.0, 'B8': 0.0, 'D4': 0.0, 'DB4': 0.003, 'H4': 0.0, 'PS': 0.213, 'S5A': 0.0, 'S5B': 0.0, 'S7': 0.0, 'TIE': 0.017}
+by sigma: {-5.0: 0.016, -4.75: 0.016, -4.5: 0.016, -4.25: 0.017, -4.0: 0.018, -3.75: 0.019, -3.5: 0.019, -3.25: 0.021, -3.0: 0.023, -2.75: 0.024, -2.5: 0.026, -2.25: 0.029, -2.0: 0.032, -1.75: 0.034, -1.5: 0.041}
 P_r(entry) <= 0 for the learned pattern: 0.054; for all missing patterns at entry: 0.058
 
 ## one-step-ahead (sigma <= 1e-3, events with an entry point)
 
-predictor A (P_r): ratio obs/pred median 2.66 [quartiles 0.915, 582] (n=7904); within [0.5, 2]: 0.440; winner agrees: 0.822
-predictor B (route-entry norms): ratio median 1.04 [quartiles 0.932, 1.39] (n=8376); within [0.5, 2]: 0.877; winner agrees: 0.981
-  depth 2: A median 0.903 [quartiles 0.875, 0.928] (n=1781); B median 0.902 [quartiles 0.873, 0.924] (n=1781)
+predictor A (P_r): ratio obs/pred median 2.66 [quartiles 0.915, 583] (n=7910); within [0.5, 2]: 0.440; winner agrees: 0.822
+predictor B (route-entry norms): ratio median 1.04 [quartiles 0.932, 1.39] (n=8382); within [0.5, 2]: 0.877; winner agrees: 0.981
+  depth 2: A median 0.903 [quartiles 0.875, 0.928] (n=1784); B median 0.902 [quartiles 0.873, 0.923] (n=1784)
   depth 3: A median 279 [quartiles 3.33, 1.74e+03] (n=3901); B median 1.04 [quartiles 0.998, 1.19] (n=3988)
   depth 4: A median 1.27 [quartiles 0.849, 19.1] (n=1890); B median 1.49 [quartiles 1.13, 1.95] (n=2275)
-  depth 5: A median 2.87e+10 [quartiles 1.93e+08, 7.68e+12] (n=332); B median 338 [quartiles 22.1, 2.06e+04] (n=332)
+  depth 5: A median 3.43e+10 [quartiles 2.01e+08, 1.07e+13] (n=335); B median 350 [quartiles 22.4, 2.19e+04] (n=335)

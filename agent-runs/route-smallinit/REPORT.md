@@ -28,6 +28,21 @@ predictor from the amplitude P_r fails; the same equation started from the dorma
 
 ## Results
 
+Targets (all satisfy the paper's star condition; bond = blocks + 2, capped at the cut rank):
+
+| name | tree (cores) | d | patterns (weights) | what it tests |
+|---|---|---|---|---|
+| D4 | mps4 (4) | 3 | 0000 (1), 1111 (.7), 2222 (.45) | decoupled: every plateau sigma^-2; ties |
+| DB4 | binary4 (3) | 3 | 0000 (1), 1111 (.7), 2222 (.45) | decoupled on a branched tree: sigma^-1 |
+| B4 | mps4 (4) | 2 | 0000 (1), 0110 (.3), 1001 (.6) | light pattern with the short route goes first |
+| S5A | mps5 (5) | 3 | 00000 (1), 00201 (.4), 10101 (.75), 11200 (.55) | tie by weight; splice (depth 2 vs pairwise 3) |
+| S5B | mps5 (5) | 3 | 00000 (1), 02201 (.75), 20111 (.55), 20200 (.4) | splice (depth 3 vs pairwise 4) |
+| S7 | mps7 (7) | 2 | 0000000 (1), 0001011 (.4), 0100011 (.75), 0110100 (.55) | brief's mps7 splice; tie |
+| H4 | ht4 (7) | 3 | 0000 (1), 0201 (.55), 1001 (.75), 2200 (.4) | splice that changes the predicted pattern |
+| B8 | binary8 (7) | 2 | 00000000 (1), 00001101 (.75), 10000001 (.4), 10000100 (.55) | same, on a binary tree |
+| TIE | ht4 (7) | 3 | 0000 (1), 1100 (.6), 2200 (.45) | tie in depth on a branched tree |
+| PS | mps6 (6) | 2 | 000000 (1), 110001 (.8), 110010 (.8) | pair-star: spectral shortcut (order 4 < route depth 5) |
+
 Plain-word definitions. A *pattern* U_a is a one-hot product tensor; the target is W* = sum_a s_a U_a
 with weights s_a. *Amplitude* P_a = <U_a, W>; pattern a is *learned* when P_a > s_a/2; a *learning
 event* is the last time that happens. A *plateau* is the time between two learning events. The *route
@@ -41,14 +56,14 @@ at sigma <= 1e-3 (9 grid points) unless stated. Every number: `experiments/route
 
 | question | answer | numbers | evidence |
 |---|---|---|---|
-| (a) plateaus at the canonical partial targets W = sum_J s_a U_a? | **yes** | 98.7% of 8376 resolved plateaus within 1% of ||W*||; median distance 8e-9 | `events.csv` (`rel_dist_mg`) |
-| (b) next pattern = greedy? | **yes without ties; ties: no** | no tie: 6867/6867 transitions; where greedy and pairwise rules name different patterns (747, the splices of B8, H4, S5A): greedy 100%, pairwise 0%; weight order wrong wherever it differs (0/3655); ties: heavier wins 82% overall (D4 62-64%, S5A 92%, S7 90%, S5B 67%, DB4/TIE 100%), the winner is fixed by the seed (same at every sigma in 99.5%) | `events.csv`, `fig_rules`, `fig_rules_vs_sigma` |
-| (c) duration ~ sigma^-(c-2)? | **yes on clean transitions** | per-seed exponents (sigma 1e-5..1e-3): c=3: 1.000 [1.000, 1.000] (399 fits), c=4: 2.000 [2.000, 2.000] (227); 98% of 648 fits with c >= 3 within 0.3 of c-2; all 125 splice fits at c-2, none at pairwise-2; c=2: log law, slope = 1/(s_r A_r(J)) within 1% in 6 of 7 cells; first escape: K-2 in 338/338 fits | `exponents.csv`, `cells.csv`, `fig_durations`, `fig_exponents` |
+| (a) plateaus at the canonical partial targets W = sum_J s_a U_a? | **yes** | 98.7% of 8382 resolved plateaus within 1% of ||W*||; median distance 8e-9 | `events.csv` (`rel_dist_mg`) |
+| (b) next pattern = greedy? | **yes without ties; ties: no** | no tie: 6882/6882 transitions; where greedy and pairwise rules name different patterns (747, the splices of B8, H4, S5A): greedy 100%, pairwise 0%; weight order wrong wherever it differs (0/3668); ties: heavier wins 82% overall (1909 tied transitions) (D4 62-64%, S5A 92%, S7 90%, S5B 67%, DB4/TIE 100%), the winner is fixed by the seed (same at every sigma in 99.5%) | `events.csv`, `fig_rules`, `fig_rules_vs_sigma` |
+| (c) duration ~ sigma^-(c-2)? | **yes on clean transitions** | per-seed exponents (sigma 1e-5..1e-3), clean transitions: c=3: 1.000 [1.000, 1.000] (399 fits), c=4: 2.000 [2.000, 2.000] (227); 98% of 648 fits with c >= 3 within 0.3 of c-2; all 125 splice fits at c-2, none at pairwise-2; c=2: log law, slope = 1/(s_r A_r(J)) within 1% in 6 of 7 cells; first escape: K-2 in 338/338 fits. Registered per-cell decisions: 42 SUPPORTED, 3 NOT SUPPORTED, 1 INCONCLUSIVE on clean events (37/7/3/3 incl. REFUTED on all events, the difference being forgetting runs) | `exponents.csv`, `cells.csv`, `fig_durations`, `fig_exponents` |
 | (c) failures | lighter-first plateaus; B4 slope; PS | S5A/S5B plateau with two light patterns learned: exponent 0.11 (log law) instead of 1, ending in a takeover; PS after 000000: exponent 2.000 (Theorem 3.2's order 4) instead of route depth 5's 3; PS 000000 after the pair: 3.0 or 3.9 depending on the seed; B4 c=2 slope 0.70 x prediction (also on M*) | `fig_shortcut_PS`, `fig_example_forgetting` |
 | (d) effective depth = c? | **yes** | medians 2.02 / 3.02 / 4.09 / 5.16 for c = 2/3/4/5 (90-100% within 0.3); first escape K within 0.03 | `fig_effective_depth` |
 | (e) close to M*? | **yes, except during takeovers and mixed first escapes** | peak off-target fraction of ||W||^2 over a transition: median 8e-9, quartiles 2e-10, 4e-7, scales ~sigma^2; up to 0.5 in PS/S5A/S5B takeovers | `fig_offtarget` |
 | (f) Assumption C.1 | items 1-3 mostly hold; 4 fails in takeovers | (1) dormant entries ~ sigma at plateau entry in 36/39 cells (per-seed slope 1.00), not in B4 (0.70) and PS (0.88); spread across the route's nodes 2.3x; (2) active factors = A_r(J): ratio 1.000; (3-4) another pattern above 10% when the learned one passes 90%: 1.7% of events (PS 21%) | `c1.csv`, `plateaus.csv` |
-| one-step-ahead (eq. 6.15) | **fails from P_r, works from the dormant-entry size** | from P_r(entry): observed/predicted 2.7 [0.9, 579], winner right 82%; from the geometric mean of the dormant entries: 1.04 [0.93, 1.39], winner right 98% (c <= 4) | `fig_onestep` |
+| one-step-ahead (eq. 6.15) | **fails from P_r, works from the dormant-entry size** | from P_r(entry): observed/predicted 2.7 [0.9, 583], within [0.5, 2] 44%, winner right 82%; from the geometric mean of the dormant entries: 1.04 [0.93, 1.39], within [0.5, 2] 88%, winner right 98% (c <= 4; c = 5: 350) | `fig_onestep` |
 
 Failures of a prediction, each with its evidence:
 1. **Tie-break by weight** (App. C): fails for D4, S5A, S7, S5B (see (b)); in D4 the lighter of two
@@ -60,6 +75,8 @@ Failures of a prediction, each with its evidence:
    S7 (6 seeds with forgetting), PS (16 seeds: the pair erases 000000). For one learned pattern this is
    Theorem 3.2 (order 2 when the learned pattern is lighter than a missing one); for two learned patterns
    it is a full-space shortcut below c*_J that the paper allows (Remark 8.5) but does not predict.
+   All 17 seed fits of one-pattern plateaus where Theorem 3.2 gives order 2 < route depth 3 (S5A
+   {00201}, S5B {20200}) are at the log law (exponent 0.107): Theorem 3.2 confirmed, route depth refuted.
 3. **Spectral shortcut of the pair-star** (target kind v): the route depth (5) predicts sigma^-3 after
    learning 000000; training gives sigma^-2.000 (15 seeds), Theorem 3.2's order 4. The greedy rule names
    the right next pattern (110010, then 110001 together) but the wrong duration.
@@ -80,13 +97,17 @@ Failures of a prediction, each with its evidence:
 8. **First escape** (not covered by the theory): in 23% of runs another pattern rises with the first
    (H4 62%, PS 89%, B8 29%); in S5A the first plateau is sometimes a mixture (distance 0.21).
 
-Counts (6000 training runs; final counts after the PS stragglers in the Log): done 5706, trapped 270,
-unfinished (1-h cap) see Log, floor-flagged 10 (duplicate with another contraction order differs by
-> 1e-3 in a duration; max 2%; never a different order; all PS/S7/B4 at sigma <= 10^-4.75; excluded from
-fits). Behaviour tags: clean 3691 (62%), mixed first escape 1391, two at once later 793 (PS pair 477),
-forgetting 807, non-canonical plateau 552 (mostly at large sigma). What was cut: the library-arithmetic
-floor check (registered for all seeds at the 3 smallest sigma) was reduced to seeds 0-9 at 1e-5, and 57
-of those 100 hit their 30-min cap (K = 7 targets); the same-cost reorder check covers every seed.
+Counts (6000 training runs): done 5710, **trapped 270** (D4 13 seeds and B4 5 seeds, x 15 sigma),
+**unfinished 20** (PS, sigma <= 10^-3.5, 1-hour cap: all had learned the pair and sat on the depth-5
+plateau before 000000 after > 1 million solver steps; 9 of them with the 000000 amplitude at ~1e-33,
+i.e. a dying route at the float64 floor; a rerun with a 3-hour cap and the BDF integrator is in
+progress, see Log), failed 0, **floor-flagged 11** (a duplicate with another contraction order or
+the library's arithmetic differs by > 1e-3 in a duration, max 2%, never in order or outcome; PS 5, S7
+5, B4 1, all at sigma <= 10^-4.75; excluded from fits). Behaviour tags: clean 3691 (62%), mixed first
+escape 1412, two at once later 813 (PS pair 497), forgetting 816, non-canonical plateau 556 (mostly at
+large sigma). **What was cut:** the library-arithmetic floor check (registered for all seeds at the 3
+smallest sigma) was reduced to seeds 0-9 at 1e-5, and 57 of those 100 hit their 30-min cap (K = 7
+targets); the same-cost reorder check covers every seed (1171 of 1200 completed; 29 PS incomplete).
 
 Figures (drafts, `experiments/route_smallinit/results/`): `fig_example_run` (one B8 run plateau by
 plateau), `fig_rules`, `fig_rules_vs_sigma`, `fig_durations`, `fig_exponents`, `fig_shortcut_PS`,

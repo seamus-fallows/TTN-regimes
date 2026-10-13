@@ -1,18 +1,19 @@
 {
- "n_runs": 5977,
+ "n_runs": 6000,
  "status": {
-  "done": 5707,
-  "trapped": 270
+  "done": 5710,
+  "trapped": 270,
+  "unfinished_wall": 20
  },
  "behaviour": {
   "clean": 3691,
   "first_escape_mixed": 478,
-  "first_escape_mixed+two_at_once+forgetting": 362,
+  "first_escape_mixed+two_at_once+forgetting": 364,
   "noncanonical_plateau": 276,
-  "first_escape_mixed+two_at_once": 245,
+  "first_escape_mixed+two_at_once": 246,
   "trapped": 240,
   "forgetting": 148,
-  "first_escape_mixed+noncanonical_plateau": 136,
+  "first_escape_mixed+noncanonical_plateau": 135,
   "first_escape_mixed+forgetting": 110,
   "two_at_once+forgetting": 77,
   "two_at_once": 64,
@@ -20,13 +21,18 @@
   "trapped+noncanonical_plateau": 30,
   "first_escape_mixed+two_at_once+forgetting+noncanonical_plateau": 27,
   "first_escape_mixed+forgetting+noncanonical_plateau": 25,
+  "unfinished_wall+first_escape_mixed+two_at_once": 9,
+  "unfinished_wall+first_escape_mixed+two_at_once+forgetting": 7,
   "two_at_once+forgetting+noncanonical_plateau": 6,
   "first_escape_mixed+two_at_once+noncanonical_plateau": 5,
   "forgetting+floor_flag": 5,
   "two_at_once+noncanonical_plateau": 4,
   "first_escape_mixed+two_at_once+forgetting+floor_flag": 4,
-  "floor_flag": 1
+  "unfinished_wall+noncanonical_plateau": 3,
+  "floor_flag": 1,
+  "first_escape_mixed+noncanonical_plateau+floor_flag": 1,
+  "unfinished_wall+first_escape_mixed+noncanonical_plateau": 1
  },
- "floor_checked": 1208,
- "floor_flagged": 10
+ "floor_checked": 1300,
+ "floor_flagged": 11
 }
