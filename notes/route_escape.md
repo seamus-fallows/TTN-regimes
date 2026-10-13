@@ -205,11 +205,68 @@ directions 12-15), and the windows are not moved.
    worker 30 min), so the first sweep was stopped at 3990 finished runs and restarted with the fixed
    driver for the remaining 4161 runs (files record `driver = "bdf_restart"`); the 13 wall-capped
    runs were moved to `unfinished_try1/` and rerun at the same time. Runs that had finished with the
-   old driver are kept (a stall costs time, not accuracy; the fixed driver reproduces a finished run:
-   U5B8 C seed 13 at eps = 10^-4.5 escapes at 1.05523e13 in 102 s).
+   old driver are kept (a stall costs time, not accuracy; the fixed driver reproduces a run finished by
+   the old one, EX87_J0 A seed 13 at eps = 1e-4, whose solver had been restarted: t_esc = 1.18056255e13
+   against 1.18056262e13, relative difference 5e-8; reduced flow 1.18056262e13).
+   *Amended 21:18 (1b, stall rule):* the restarted sweep showed the same stall without any restart:
+   LSODA started on an M* plateau (S4 and PS2, kinds A/B) can stay in nonstiff mode from the first
+   step (PS2 A seed 14, eps = 1e-2: 255k steps of ~0.1 at t < 2.5e4, plateau 1.5e5 long; S4 A/B runs
+   took 2000 s or hit the cap). Rule added: if 2000 consecutive steps advance t by less than 50 %
+   before the escape, the integration continues from the current state with BDF (same tolerances,
+   exact Jacobian). Healthy runs never meet the condition, so their results are unchanged. Check: PS2 A
+   seed 14, eps = 1e-2: t_esc = 152312.615 in 32 s, reduced flow 152312.621 (4e-8). The restarted
+   sweep was stopped with 31 runs still in progress; these and every run without an outcome (wall
+   cap) were rerun with this rule (`driver = "bdf_restart+stall"`, column `n_stall_switch`).
 2. **Added kind Cp (causal test; 20:05, after the first shifted C direction was seen).** U5B8 C seed 9
    escapes with exponent 4 instead of 3, and the diagnostics show its route entry at leaf node 0
    decaying to zero on the plateau. To test whether the entries outside M* cause this, kind Cp
    uses the same Gaussian direction as C (same seed) projected onto M* (entries outside the mask left
    at theta_J). Cp runs cover the fit window (log10 eps = -4.5 ... -3, 7 points) for all 16 seeds of
    every dynamics cell. Cp is not part of any registered decision; it is reported as a diagnostic.
+
+# Part II: results
+
+Data: 30 static tasks, 8085 escape runs (kinds A, A_bal, B, C) and the Cp diagnostic runs; raw JSON in
+`/root/outputs/route-escape/`, tidy CSVs in `experiments/route_escape/results/` (columns:
+`experiments/route_escape/README.md`). Tables below are printed by `experiments/route_escape/tables.py`.
+Status tags: **proven** (a theorem of the paper; numerics only illustrate it), **empirical**
+(measured here), **derived**, **conjecture**.
+
+## 8. Static order (P1, P2, Hessian)
+
+STATIC_TABLE
+
+- **P1 holds in all 15 cells** (empirical check of a proven statement): inside M* the measured order
+  is c*_J to within 0.0004 (local slope at t = 0.0175 -> 0.0125; the last two local slopes agree to
+  < 0.001 everywhere, so every order is resolved).
+- **P2: the full-space order equals c*_J in 12 cells and is lower in 3 (PS2, T92b, T92d: 4.000 against
+  c*_J = 5)** (empirical). These are exactly the cells where a parent has a pair-star spectral
+  shortcut (Thm 3.2 / Example 4.5 applied to one learned parent). The full-space minimiser there lies
+  almost entirely outside M* (97-100 % of its squared norm), and its output change is off-target:
+  e.g. PS2 at t = 0.0125: W(min) - W(theta_J) has 110000 (7.8e-5) and 000010, 000001 (6.3e-5 each),
+  i.e. a two-core piece "11" on nodes 0-1 plus single-core rotations at nodes 4 and 5, which pair up
+  into both residuals 110001 and 110010 (+4.9e-9 each) while the learned 000000 shrinks (-6.7e-9).
+  This is the mechanism of the paper's Example 4.5, now at a later (two-pattern) saddle. In T92d the
+  same structure sits at the weaker parent 111111 (221111, 111121, 111112). No other shortcut was
+  found: at every other cell the full-space minimiser reaches the same order and value by putting the
+  route partly or wholly in other spare channels (9-100 % of its squared norm outside the M*
+  coordinates, which fix one channel per block); the loss decrease is carried by the missing
+  pattern itself (e.g. EX87_J0 at t = 0.0125: m = -2.73e-12 = -s_r x Delta P_r with Delta P_r = 5.46e-12;
+  off-target pieces of similar size appear in the minimiser, but they cost only their square).
+- **Hessian.** Strict saddle (negative eigenvalue) only where c*_J = 2: EX87_J01 (lambda_min =
+  -0.478 = -s_r A_r(J)) and TWO23 (-0.191 = -s_r A_r(J)), 3 negative eigenvalues in the full space (one
+  per spare channel on the route's internal edge), 1 inside M*. Everywhere else lambda_min = 0 to
+  roundoff (|lambda_min| < 3e-15; gauge and flat directions), including the three shortcut cells:
+  their order-4 descent is invisible to the Hessian, as Thm 3.2 allows for l* = 2.
+
+## 9. Theorem 9.2 on its natural family (P8)
+
+THM92_TABLE
+
+**The formula holds at all five instances** (empirical): both parents direct (T92a: 3), a pair-star
+spectral shortcut at one parent (T92b, PS2: 4 < k* = 5), its control without the shortcut (T92c: 5),
+and the shortcut at the weaker parent (T92d: mu_2 = 0.57 > s_b = 0.5, order 4). The shortcut depends on
+the parent's own weight, not on the largest one, as the formula says. Caveat: this family is the one
+the theorem was built for (parents share no entry); splicing cells (c_J(r) < pair cost) are outside
+Assumption 9.1, and there the formula with the nearest parent over-predicts (e.g. EX87_J01: 4 against
+the measured 2), as the paper's remark after Thm 9.2 says.

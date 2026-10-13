@@ -175,7 +175,18 @@ def integrate(flow: Flow, y0, *, weights, J, missing, t_max=1e25, rtol=1e-10, at
         if solver.status == "finished":
             res["status"] = "t_max"
             break
-        if t_loc > 0 and solver.step_size < 1e-11 * t_loc:
+        # stall rule (deviation 1b): LSODA can also stay nonstiff from the start on an M* plateau;
+        # if 2000 steps advance t by less than 50 %, continue from here with BDF (always stiff)
+        res.setdefault("_ck", (len(res["t"]), t))
+        if len(res["t"]) - res["_ck"][0] >= 2000:
+            if t < 1.5 * res["_ck"][1] and isinstance(solver, LSODA) and t_esc is None:
+                off += t_loc
+                t_loc_old = 0.0
+                res["n_stall_switch"] = res.get("n_stall_switch", 0) + 1
+                solver = BDF(rhs, 0.0, y, t_max - off, rtol=rtol, atol=atol, jac=jac,
+                             first_step=max(RESTART_H, 0.1 * (t - res["_ck"][1]) / 2000))
+            res["_ck"] = (len(res["t"]), t)
+        if t_loc > 0 and solver.step_size is not None and t_loc_old > 0 and solver.step_size < 1e-11 * t_loc:
             off += t_loc
             t_loc_old = 0.0
             res["n_restart"] += 1
@@ -188,6 +199,7 @@ def integrate(flow: Flow, y0, *, weights, J, missing, t_max=1e25, rtol=1e-10, at
             if count >= 10:
                 res["status"] = "trapped"
                 break
+    res.pop("_ck", None)
     res["t"] = np.array(res["t"])
     res["dL"] = np.array(res["dL"])
     res["P"] = np.array(res["P"])
