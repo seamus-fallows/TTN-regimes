@@ -33,23 +33,23 @@ def style():
 
 def example_trajectories(raw: Path, res: Path, out: Path):
     """One run per target: amplitudes of the target patterns and of the largest off-target string."""
-    cases = [("R3", -2.0, 0, "recombinant 101 appears and is removed later"),
-             ("NC_ht4", -2.0, 0, "nested chain: 0010 and 0011 appear"),
-             ("TD_binary8", -2.0, 0, "two edits learned with their recombinant"),
-             ("CTL1_mps6", -2.0, 0, "star control: no off-target strings")]
+    cases = [("R3", -2.0, 0, "the recombinant 101 appears and stays for a long plateau", False),
+             ("NC_ht4", -2.0, 0, "plateaus 2 and 3 carry 0010 / 0011", False),
+             ("TD_binary8", -2.0, 0, "both edits learned at once, with their recombinant", False),
+             ("CTL1_mps6", -2.0, 0, "star control: only partial targets (log time)", True)]
     fig, axes = plt.subplots(2, 2, figsize=(13, 9))
-    for ax, (name, ls, seed, msg) in zip(axes.flat, cases):
-        stem = raw / "raw" / name / f"s{ls:+.2f}_seed{seed}"
-        if not stem.with_suffix(".json").exists():
+    for ax, (name, ls, seed, msg, logx) in zip(axes.flat, cases):
+        stem = str(raw / "raw" / name / f"s{ls:+.2f}_seed{seed}")
+        if not Path(stem + ".json").exists():
             ax.set_visible(False)
             continue
-        rec = json.loads(stem.with_suffix(".json").read_text())
-        z = np.load(stem.with_suffix(".npz"))
+        rec = json.loads(Path(stem + ".json").read_text())
+        z = np.load(stem + ".npz")
         t, P, W, keep = z["t"], z["P"], z["W"], z["keep"]
         drops = [d for d in rec["drops"] if d]
         t0 = drops[0]["t_half"] if drops else 0.0
         x = t - t0
-        ok = x > 0.1
+        ok = x > (0.1 if logx else -0.02 * x[-1])
         pats = [p for p in rec["crossings"]]
         weights = None
         tgt = pd.read_csv(res / "runs.csv")  # noqa: F841  (presence check)
@@ -67,16 +67,19 @@ def example_trajectories(raw: Path, res: Path, out: Path):
         if best is not None:
             j = int(best, 2)
             xk = x[keep]
-            okk = xk > 0.1
+            okk = xk > (0.1 if logx else -0.02 * x[-1])
             ax.plot(xk[okk], np.abs(W[okk, j]) / max(weights), color="black", ls="--", lw=2.2,
-                    label=f"{best} (not in target)")
-        ax.set_xscale("log")
+                    label=f"{best}: not in the target (|amplitude|)")
+        if logx:
+            ax.set_xscale("log")
         ax.set_ylim(-0.05, 1.25)
         ax.axhline(0.5, color=MUTED, lw=1, ls=":")
-        ax.set_xlabel("time after the first escape (gradient-flow time units)")
+        ax.set_xlabel("time after the first escape (gradient-flow time units"
+                      + (", log scale)" if logx else ")"))
         ax.set_ylabel("amplitude / its target weight")
-        ax.set_title(f"{name} ({rec['tree']}, sigma = 10^{ls:g}): {msg}", fontsize=BIG - 1)
-        ax.legend(loc="center left", fontsize=BIG - 3)
+        ax.set_title(f"{name} ({rec['tree']}, sigma = 10^{ls:g}):\n{msg}", fontsize=BIG - 1)
+        ax.legend(loc="center right", fontsize=BIG - 3, frameon=True, facecolor="white",
+                  framealpha=0.9, edgecolor="none")
     fig.suptitle("On targets that break the star condition, training stalls at points that "
                  "contain a string outside the target (dashed)")
     savefig(fig, out / "fig1_example_trajectories")
@@ -124,22 +127,43 @@ def plateau_identity(res: Path, out: Path):
 
 
 def exponents(res: Path, out: Path):
-    s = pd.read_csv(res / "fit_summary.csv")
-    s = s[(s.n_fitted >= 5) & (s.key != "origin")]
-    star = s.target.str.startswith(("CTL", "B4"))
-    fig, axes = plt.subplots(1, 3, figsize=(16, 6), sharey=True)
+    s0 = pd.read_csv(res / "fit_summary.csv")
+    s0 = s0[s0.key != "origin"]
+    s = s0[s0.n_fitted >= 5].copy()
+    # secondary (deviation 2): keys fitted only with floor-flagged sigmas included
+    s2 = s0[(s0.n_fitted < 5) & (s0.n_fitted_with_flagged.fillna(0) >= 5)].copy()
+    s2["median"], s2["q25"], s2["q75"] = (s2.median_with_flagged, s2.q25_with_flagged,
+                                          s2.q75_with_flagged)
+    fig, axes = plt.subplots(1, 3, figsize=(17, 6.5), sharey=True)
     names = [("paper", "paper's route depth c*_J - 2\n(applied outside its scope)"),
              ("route", "numerical route rule k* - 2\n(at the measured plateau point)"),
              ("pair", "pairwise rule: min Steiner cost - 2")]
     cols = palette(2)
+    rng = np.random.default_rng(0)
     for ax, (p, label) in zip(axes, names):
-        x = s[f"exp_{p}"].values + np.random.default_rng(0).uniform(-0.06, 0.06, len(s))
-        y = s["median"].values
-        err = np.vstack([y - s.q25.values, s.q75.values - y])
-        for mask, c, lab in [(~star, cols[1], "targets breaking the star condition"),
-                             (star, cols[0], "star-satisfying controls")]:
-            ax.errorbar(x[mask], y[mask], yerr=err[:, mask], fmt="o", color=c, ms=7, mec="black",
-                        mew=0.5, label=lab, capsize=3)
+        for df, hollow in [(s, False), (s2, True)]:
+            star = df.target.str.startswith(("CTL", "B4")).values
+            x = df[f"exp_{p}"].values + rng.uniform(-0.07, 0.07, len(df))
+            y = df["median"].values
+            err = np.vstack([y - df.q25.values, df.q75.values - y])
+            for mask, c, lab in [(~star, cols[1], "targets breaking the star condition"),
+                                 (star, cols[0], "star-satisfying controls")]:
+                if not mask.any():
+                    continue
+                ax.errorbar(x[mask], y[mask], yerr=err[:, mask], fmt="D" if hollow else "o",
+                            color=c, mfc="white" if hollow else c, ms=8, mec=c if hollow else
+                            "black", mew=1.5 if hollow else 0.5, capsize=3,
+                            label=None if hollow else lab)
+            if p == "route" and not hollow:
+                groups = {}
+                for xi, yi, (_, r) in zip(x, y, df.iterrows()):
+                    if abs(yi - r[f"exp_{p}"]) > 0.3:
+                        groups.setdefault((round(r[f"exp_{p}"]), round(yi, 1)), []).append(
+                            (xi, yi, r.target))
+                for (ex, _), pts in groups.items():
+                    names_ = ", ".join(sorted({t for _, _, t in pts}))
+                    ax.annotate(names_, (pts[0][0], pts[0][1]), xytext=(10, -18),
+                                textcoords="offset points", fontsize=BIG - 3)
         lim = [-0.5, 5.5]
         ax.plot(lim, lim, color="black", lw=1.5, label="measured = predicted")
         ax.fill_between(lim, [lim[0] - 0.3, lim[1] - 0.3], [lim[0] + 0.3, lim[1] + 0.3],
@@ -149,11 +173,15 @@ def exponents(res: Path, out: Path):
         ax.set_xlabel("predicted exponent: " + label)
         ax.set_title({"paper": "Paper's route depth", "route": "Numerical route rule",
                       "pair": "Pairwise rule"}[p])
+    axes[0].errorbar([], [], fmt="D", color="black", mfc="white", ms=8, mew=1.5,
+                     label="fit incl. floor-flagged sigmas (secondary)")
     axes[0].set_ylabel("measured exponent of plateau length vs sigma\n"
                        "(median over seeds, bars = quartiles)")
     axes[0].legend(loc="upper left", fontsize=BIG - 3)
-    fig.suptitle("Plateau lengths ~ sigma^-exponent: which rule predicts the exponent? "
-                 "(one point per target and plateau type)")
+    axes[0].text(2.3, -0.45, "predicted 0 = log-time plateau\nor no plateau at all", fontsize=BIG - 3)
+    fig.suptitle("Plateau length ~ sigma^-exponent: the numerical route rule predicts the exponent "
+                 "on non-star targets;\nthe paper's route depth and the pairwise rule predict no "
+                 "plateau (0) where one exists (one point per target and plateau type)")
     savefig(fig, out / "fig3_exponents_vs_predictors")
     plt.close(fig)
 
@@ -199,24 +227,36 @@ def escape_type(res: Path, out: Path):
     tr = pd.read_csv(res / "transitions.csv.gz")
     tr = tr[(tr.segment >= 1) & tr.lam_min.notna() & (tr.floor_flag == False)]  # noqa: E712
     et = pd.read_csv(res / "escape_type.csv")
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
+    fs = pd.read_csv(res / "fit_summary.csv")[["target", "key", "route_k_median"]]
+    et = et.merge(fs, on=["target", "key"])
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6.5), sharey=True)
     cols = palette(6)
+    picks = {"strict": et[et.type == "strict"].sort_values("n_points", ascending=False).head(4),
+             "degenerate": pd.concat([et[(et.type == "degenerate") & (et.route_k_median == k)]
+                                      .sort_values("n_points", ascending=False).head(2)
+                                      for k in (3, 4, 5)])}
     for ax, kind in zip(axes, ["strict", "degenerate"]):
-        keys = et[et.type == kind].sort_values("n_points", ascending=False).head(6)
-        for i, (_, r) in enumerate(keys.iterrows()):
+        for i, (_, r) in enumerate(picks[kind].iterrows()):
             g = tr[(tr.target == r.target) & (tr.key == r.key)]
             m = g.groupby("log10_sigma").lam_min.median()
-            ax.plot(10.0**m.index.values, np.abs(m.values), "o-", color=cols[i],
-                    label=f"{r.target}: {r.key[:28]}")
+            lab = f"{r.target}: {r.key.split('@')[0][:30]} (k* = {int(r.route_k_median)})"
+            ax.plot(10.0**m.index.values, np.abs(m.values), "o-", color=cols[i], label=lab)
+        if kind == "degenerate":
+            xs = np.array([1e-4, 1e-1])
+            for k, c0 in [(3, 3e-1), (4, 3e-2), (5, 3e-3)]:
+                ax.plot(xs, c0 * (xs / 0.1) ** (k - 2), ls="--", color=MUTED, lw=1.2)
+                ax.text(1.2e-1, c0, f"slope {k - 2}\n(k* = {k})", fontsize=BIG - 3,
+                        color=MUTED, va="center")
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_xlabel("initialization scale sigma")
-        ax.set_title({"strict": "strict saddles: curvature stays negative",
-                      "degenerate": "higher-order saddles: curvature -> 0 with sigma"}[kind])
-        ax.legend(fontsize=BIG - 4, loc="lower right")
+        ax.set_title({"strict": "k* = 2: strict saddles, curvature stays negative",
+                      "degenerate": "k* >= 3: flat saddles, curvature ~ sigma^(k*-2)"}[kind])
+        ax.legend(fontsize=BIG - 4, loc="lower right", frameon=True, facecolor="white",
+                  framealpha=0.9, edgecolor="none")
     axes[0].set_ylabel("|smallest Hessian eigenvalue| at the plateau\n(median over seeds)")
-    fig.suptitle("Escape type: order-2 plateaus keep a fixed negative curvature, "
-                 "higher-order ones flatten as sigma -> 0")
+    fig.suptitle("Escape type follows the route rule's k*: order-2 plateaus keep a fixed negative "
+                 "curvature, higher-order ones flatten as sigma^(k*-2)")
     savefig(fig, out / "fig5_escape_type")
     plt.close(fig)
 
