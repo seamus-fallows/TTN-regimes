@@ -1,0 +1,8 @@
+# route_generic MNIST sweep: the existing real_data pipeline (experiments/real_data/run.py, unchanged),
+# MNIST 3 vs 5, 4x4 pixels (16 sites), raw cos/sin features, chi = 4 (pre-registered in notes/route_generic.md).
+# sigma: 9 values, quarter decades from 0.005 to 0.5 (two decades); seeds 10-19: the optional extension of the registration, started when the synthetic sweep ended.
+# n_linear = 2000: phase-2 grid spacing 5 time units (main.yaml: 10), for the growth-law fits.
+defaults: {t2: 1.0e+4, n_per_decade: 30, n_linear: 2000, wall_limit: 7200, chi: 4, tag: rg}
+cases:
+  - {tree: binary, ordering: quadtree, features: raw, sigmas: [0.005, 0.00889, 0.0158, 0.0281, 0.05, 0.0889, 0.158, 0.281, 0.5], seeds: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.005, 0.00889, 0.0158, 0.0281, 0.05, 0.0889, 0.158, 0.281, 0.5], seeds: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]}

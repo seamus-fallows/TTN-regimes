@@ -24,6 +24,8 @@ FAMILIES = [
     ("ttn", "Random TTN teacher"),
     ("mnist", "MNIST 3 vs 5\n(16 pixels)"),
 ]
+SHORT = {"pattern": "Pattern control", "cp03": "CP, overlap 0.3", "cp06": "CP, overlap 0.6",
+         "ttn": "Random TTN", "mnist": "MNIST"}
 TREE_COLOR = {"mps": palette(2)[0], "binary": palette(2)[1]}
 TREE_LABEL = {"mps": "chain (MPS) tree", "binary": "binary tree"}
 FAM_COLORS = dict(zip([f for f, _ in FAMILIES], palette(5)))
@@ -65,9 +67,9 @@ def fig_vs_region(ex, out, ycol, ref, ylabel, ylim, title, ref_label, name):
         sub = df[df["target"] == fam]
         strip_panel(ax, sub, ycol, ref, ylabel if fam == fams[0][0] else "", ylim)
         ax.set_title(label, fontsize=11)
-        kmax = int(sub["k_region"].max()) if len(sub) else 7
+        kmax = max(int(sub["k_region"].max()) if len(sub) else 7, 7)
         ax.set_xlim(1.4, kmax + 0.6)
-        ax.set_xticks(range(2, kmax + 1))
+        ax.set_xticks(range(2, kmax + 1, 1 if kmax <= 8 else 2))
         ax.set_xlabel("cores that change at the event\n(k_region)")
     axes[0][0].plot([], [], ls="--", color=MUTED, label=ref_label)
     handles, labels = axes[0][0].get_legend_handles_labels()
@@ -143,14 +145,16 @@ def fig_agreement(sm, out, title):
     order = {f: i for i, (f, _) in enumerate(FAMILIES)}
     rows["o"] = rows["target"].map(order)
     rows = rows.sort_values(["o", "tree"])
-    labels = [f"{FAMILIES[o][1].split(chr(10))[0]} - {t}" for o, t in zip(rows["o"], rows["tree"])]
+    labels = [f"{SHORT[f]}, {t}" for f, t in zip(rows["target"], rows["tree"])]
     y = np.arange(len(rows))[::-1]
     fig, ax = plt.subplots(figsize=(7.0, 0.42 * len(rows) + 1.6))
-    c = palette(2)
-    ax.scatter(rows["frac_dd_within_0.3"], y + 0.12, s=50, color=c[0],
-               label="depth within 0.3 of cores that change")
-    ax.scatter(rows["frac_dp_within_0.3"], y - 0.12, s=50, marker="s", color=c[1],
-               label="exponent within 0.3 of (cores that change - 2)")
+    c = palette(3)
+    ax.scatter(rows["frac_dd_within_0.3"], y + 0.2, s=50, color=c[0],
+               label="growth-law depth within 0.3 of the cores that change")
+    ax.scatter(rows["frac_dp_within_0.3"], y, s=50, marker="s", color=c[1],
+               label="duration exponent within 0.3 of (cores that change - 2)")
+    ax.scatter(rows["frac_p_vs_depth_within_0.3"], y - 0.2, s=60, marker="^", color=c[2],
+               label="duration exponent within 0.3 of (growth-law depth - 2)")
     ax.axvline(0.7, ls="--", color=MUTED, lw=1)
     ax.text(0.71, y.max() + 0.6, "70% = 'holds' threshold", fontsize=8, color=MUTED, va="bottom")
     ax.set_yticks(y)
