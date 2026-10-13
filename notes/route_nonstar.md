@@ -234,6 +234,6 @@ smallest sigma are too slow, log10 sigma = -3.5 (then -3.25) is cut for K = 6, 7
    after; effective depth from the first sub-drop, whose window holds the onset of the escape;
    string changing most = that of the largest sub-drop). Durations are unchanged (they end at the
    first sub-drop). Check that the rule separates the two kinds: over those runs the ratio
-   |grad|^2 x width / (loss drop) at the segment's minimum-gradient point is < 1e-6 for every
-   resolved segment and > 1e-3 for every unresolved one (77 segments). Transient counts are kept
+   |grad|^2 x width / (loss drop) at the segment's minimum-gradient point is < 1e-3 for every
+   resolved segment (1,650) and >= 1e-3 for every unresolved one (77). Transient counts are kept
    per run (`runs.csv: n_transients`).
