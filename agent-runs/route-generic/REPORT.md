@@ -1,6 +1,6 @@
 # route-generic: does "depth = number of cores that change" hold outside pattern targets?
 
-Status: working - Branch: agent/route-generic - Updated: (see log)
+Status: done - Branch: agent/route-generic - Updated: 2026-10-13 21:30 UTC
 
 **Bug check of `ttn/routes.py`:** no bug found. I used `RouteTarget` (`is_star`, `n_blocks`, `region`,
 `depth`, `greedy_next`, `teacher`) and `effective_depth`; on the pattern control the bonds that gain rank
@@ -20,8 +20,11 @@ holds for pattern targets and for random TTN teachers on the binary tree, and st
 event changes more cores than the cheapest local move.** On the chain, every event of a generic teacher
 grows like depth 2 and has a log(1/sigma) plateau, even when all 6 cores change; on the binary tree it
 grows like depth 3 with a sigma^-1 plateau, even when all 7 cores change. The growth-law depth itself
-still predicts the plateau exponent (72-100 % of series) except for CP teachers with overlap 0.3, whose
-growth curves are not a single power law. MNIST: (pending, see below).
+still predicts the plateau exponent for the random TTN and CP 0.6 teachers (72-100 % of series), not for
+CP teachers with overlap 0.3, whose growth curves are not a single power law. MNIST (360 runs) shows the same split: the first route on the
+binary tree (a 3-core sibling pair) follows the picture (depth 3.07, plateau ~ sigma^-1.08), the chain's
+single-edge events follow a log law with depth 2, multi-core chain events still grow like depth 2, and the
+second binary route grows like depth 3 but its plateau scales only like sigma^-0.6.
 
 ## Results
 
@@ -47,8 +50,8 @@ All events after the escape from the origin (medians [quartiles] over fitted ser
 | CP, overlap 0.6 | mps6 | 45 | 6 [6, 6] | 1.97 [1.90, 2.00] | 0.13 [0.12, 0.15] | 0% | 0% | 89% | FAILS |
 | random TTN | binary8 | 71 | 3 [3, 3] | 3.04 [3.02, 3.07] | 1.00 [1.00, 1.00] | 83% | 83% | 100% | HOLDS |
 | random TTN | mps6 | 64 | 2 [2, 3] | 2.03 [1.83, 2.09] | 0.15 [0.11, 0.18] | 38% | 55% | 72% | FAILS |
-| MNIST | binary16 | (pending) | | | | | | | |
-| MNIST | mps16 | (pending) | | | | | | | |
+| MNIST | binary16 | 31 | 3 [3, 3] | 3.06 [3.03, 3.07] | 1.03 [0.62, 1.08] | 100% | 61% | 68% | PARTIAL |
+| MNIST | mps16 | 34 | 2 [2, 2] | 1.97 [1.83, 2.00] | 0.34 [0.30, 0.39] | 76% | 24% | 15% | PARTIAL |
 
 Source: `experiments/route_generic/results/summary.csv` / `summary.md` (by k_region class as well),
 `exponents.csv`, `events.csv`; produced by `uv run python experiments/route_generic/analyze.py
@@ -81,7 +84,23 @@ Per teacher family, in words:
   adjacent pair of cores, strict saddle), depth 3 on a binary tree (a sibling pair through an internal
   core). None of the 372 fitted CP/TTN series has p above 1.5. *Empirical; the mechanism was derived for
   the first rank increase in theory_teachers R9 / theory_saddles R13; for later events it is a conjecture.*
-- **MNIST:** (pending)
+- **MNIST (existing pipeline: 4 x 4 pixels, 16 sites; binary16 = 15 cores, mps16 = 16 cores; sigma
+  0.005-0.5, 20 seeds, horizon tau = 1e4).** binary16, first event (sibling pair of bottom bonds, 17 series):
+  d_eff 3.07, p 1.08 [1.06, 1.11]: holds. Second event (next singular value on the same pair, 14 series):
+  d_eff 3.03 but p 0.59 [0.54, 0.68]: the growth law says depth 3, the plateau does not scale like it.
+  mps16, first two events (single edges 4 then 3, 29 series): d_eff 1.86 / 2.00 and durations that follow
+  A ln(1/sigma) + B (A ~ 17; log-fit rms 0.005-0.011 against 0.06 for a power law, log preferred in 93-100 %).
+  Their effective p ~ 0.33 misses the registered "within 0.3 of 0" only because ln(1/sigma) is small over
+  0.005-0.158; by the law they agree with depth 2. Events further on could not be followed across sigma;
+  per event, mps16 events touching 3-16 cores all grow with d_eff 1.8-2.2, and on binary16 a class touching
+  4 cores (two bottom edges and their parent's edge) grows with d_eff 4.29, events touching 6-7 cores with
+  d_eff 1.9-2.1.
+- **What could not be measured on MNIST:** duration exponents of any event after the second (at sigma
+  <= 0.028 the binary16 runs reach only 2 events within tau = 1e4, and later bond sets change with sigma:
+  51 of 263 binary16 and 44 of 528 mps16 series fitted); the growth-law depth of the escape from the origin
+  (runner's grid too coarse; its exponent is an exact identity, 13.000 / 14.000); the onset of 35-39 % of the
+  later events (data-weighted spectra resolve only ~1e-8 of s_1); MNIST on the mps6 / binary8 trees (the
+  pipeline has 16 pixels).
 
 Event 0 (escape from the origin; p = K - 2 is an exact identity, used as a check): d_eff = 7.00 (binary8),
 6.00 (mps6), p = 5.000 / 4.000 in every family.
@@ -89,7 +108,9 @@ Event 0 (escape from the origin; p = K - 2 is an exact identity, used as a check
 Counts: synthetic runs 2640, all converged, 0 trapped, 0 stalled, 0 unfinished, 0 solver failures.
 Floor-flagged events (escape signal within 100x of roundoff, excluded from fits): 260, all on binary8 at
 sigma <= 1.8e-3 (CP 0.3: 110, CP 0.6: 68, pattern: 45, TTN: 37). Runs with a relearned singular value:
-90 (CP 0.3, binary8) and 86 (CP 0.6, binary8). MNIST: (pending).
+90 (CP 0.3, binary8) and 86 (CP 0.6, binary8). MNIST: 360 runs, all reached the horizon (median 23 min),
+0 floor-flagged (the measurement floor of the data-weighted spectra is reported instead), 110 runs with a
+relearned singular value. Nothing was cut from either grid; the optional MNIST seeds 10-19 were run.
 
 What is cited and what is new. Cited (data_teacher, safe-to-cite items 1-6, 9, 10; real_data section 8):
 log-law escape from the rank-one saddle on MPS students and sigma^-1 on binary/HT students for generic
@@ -108,7 +129,10 @@ the pattern-control validation of the bond-based event definition.
 4. Driver, event analysis, fits (`experiments/route_generic/`): a44c7a3, d4ed6db.
 5. Synthetic sweep, 2640 runs (19:41-20:34); interim table 609b495; final synthetic tables and figures
    adb27bf; note Part II aee6ac2.
-6. MNIST sweep (existing pipeline): (pending).
+6. Exploratory plateau Hessians (strict 2-core saddles before every generic chain event; order-3 saddles
+   before binary events; on the pattern control |lambda_min| ∝ sigma^(c-2)): e1864b0.
+7. MNIST sweep with the existing pipeline, 360 runs (19:41-21:24); span-tolerance fix for the rounded MNIST
+   sigma grid c023a00; final tables, figures, note, README e38c519; this report.
 
 ## Decisions
 
@@ -127,11 +151,11 @@ the pattern-control validation of the bond-based event definition.
 
 | path | size | what | needed to reproduce |
 |---|---|---|---|
-| `/root/outputs/route-generic/synthetic/` | (see below) | one .npz per synthetic run (every solver step) | yes (input of analyze.py) |
-| `/root/outputs/route-generic/mnist/` | | one .npz per MNIST run (real_data format) | yes |
-| `/root/outputs/route-generic/data/` | ~25 MB | MNIST / Fashion IDX files and 4x4, 8x8 npz | yes (or re-download) |
-| `/root/outputs/route-generic/pilot*`, `mnist_pilot/` | | timing pilots | no |
-| `/root/outputs/route-generic/logs/` | | sweep logs | no |
+| `/root/outputs/route-generic/synthetic/` | 2.7 GB | 2640 .npz, one per synthetic run (every solver step), + runs.jsonl | yes (input of analyze.py, plateau_hessian.py) |
+| `/root/outputs/route-generic/mnist/` | 881 MB | 360 .npz, one per MNIST run (real_data format), + runs.jsonl | yes (input of analyze.py) |
+| `/root/outputs/route-generic/data/` | 65 MB | MNIST / Fashion IDX files and 4x4, 8x8 npz (`download.py`) | yes (or re-download) |
+| `/root/outputs/route-generic/pilot/`, `pilot2/`, `mnist_pilot/` | 32 MB | timing pilots | no |
+| `/root/outputs/route-generic/logs/` | 0.5 MB | sweep logs | no |
 
 ## Caveats and next steps
 
@@ -141,8 +165,18 @@ the pattern-control validation of the bond-based event definition.
   routes at larger sigma, events right after another one); those series have no d_eff.
 - k_region groups rises with overlapping windows; two independent routes that happen to overlap are one
   event (column `n_components` flags disconnected ones).
-- Next: a saddle-start test of the multi-bond CP events (Hessian at the plateau: how many negative
-  directions, on which bonds), and the multi-phase growth of CP 0.3.
+- The "cheapest local route" explanation is supported by the exploratory plateau Hessians (strict saddles
+  carried by 2 adjacent cores before chain events, order-3 saddles on 3 cores before binary events) but was
+  derived only for the first rank increase (theory_teachers R9 / theory_saddles R13); for later events it
+  is a conjecture. For 2 of 5 CP 0.6 teachers on binary8 the plateau also has a sigma-independent negative
+  direction that does not start the event (not followed up).
+- MNIST: the second binary16 route (depth 3 by growth, p ~ 0.6) is unexplained; a head start from the
+  previous plateau is the first thing to check. The registered "p within 0.3 of 0" is too strict for a
+  log law over sigma 0.005-0.158; judge depth-2 MNIST events by the log-vs-power comparison.
+- Next: saddle-start runs at the multi-bond CP plateaus (escape time against the perturbation size), the
+  multi-phase growth of CP 0.3, and MNIST with a longer horizon to follow events 3+ across sigma.
+- For the lead: all CSV columns are documented in `experiments/route_generic/README.md`; the decisions use
+  `summary.csv`; `summary.md` has the tables quoted here.
 
 ## Log
 - 19:31 Started. Checked files: notes/briefs/route_theory.md, ttn/routes.py, tests/test_routes.py and the paper PDF exist; `uv run pytest tests/test_routes.py` passes (13 tests). Machine: 128 logical CPUs, cgroup quota ~122.9 CPUs, 251 GB RAM.
@@ -152,3 +186,6 @@ the pattern-control validation of the bond-based event definition.
 - 19:44 Jacobian switched to the library's contraction-based exact Hessian (Problem.hessian, 0.12 s vs 2.5 s for the dense double-backward; identical to 1e-21); synthetic sweep restarted, the 30 finished runs kept (numerics-only, Part III of the note).
 - 20:25 Interim table pushed (experiments/route_generic/results/partial/, 1680 synthetic runs). First reading: pattern control and random TTN on binary8 follow the picture; on generic targets the events often involve more cores than the growth-law depth and the duration exponent indicate. MNIST seeds 10-19 queued to start when the synthetic sweep ends.
 - 20:34 Synthetic sweep complete: 2640/2640 converged. Final synthetic tables, figures and note Part II pushed. MNIST seeds 10-19 started.
+- 21:24 MNIST complete: 360/360 runs (seeds 0-19). Span tolerance for the rounded MNIST sigma grid (deviation 5). Final analysis, tables, figures, note (Parts II, III), README and this report pushed.
+
+Status: done
