@@ -144,7 +144,8 @@ J_before; K if J is empty; 0 = r would be produced for free as a recombinant), `
 `eff_depth` (amplitude estimator over [previous event, event]; empty if the amplitude passes the
 window [1e-4 s, 1e-2 s] too fast), `off_peak` (peak off-target mass in the drop),
 `plateau_before_L`, `plateau_before_L_J` (partial-target loss L_J = 1/2 sum of missing s^2),
-`plateau_before_d_canon` (distance of the plateau point before to the partial target of J_before).
+`plateau_before_d_canon` (distance of the plateau point before to the partial target of J_before),
+`same_drop` (see below).
 
 **`plateaus.csv`** (brief's plateau table, one row per (plateau, missing pattern); `missing` =
 "none" when J is complete): `segment`, `key`, `J`, `J_near`, `d_near`, `canonical`, `off_mass`,
@@ -173,6 +174,13 @@ the plateau is: `n_points`, `frac_canonical`, `d_near_median`, `off_mass_median`
 
 **`event_fits.csv`, `event_fit_summary.csv`**: the same fits on the brief's event-to-event
 durations, grouped by `ident` = J_before -> pattern (for comparison with `route-smallinit`).
+`events.csv` has `same_drop` (the event lies in the same loss drop as the previous learning event,
+so no plateau separates them) and `event_fit_summary.csv` has `frac_same_drop`; where a rule
+predicts no plateau (depth <= 1) its decision is "holds (same drop)" if >= 90 % of the events share
+the previous event's drop and "fails (plateau before it)" if <= 10 % do. Caveat: when several
+patterns cross s/2 within one drop, J_before and the event-to-event "durations" (fractions of a
+time unit) depend on crossing order; exponents of such identities are meaningless. The plateau-based
+`fits.csv` / `fit_summary.csv` are the primary duration analysis.
 
 **`escape_type.csv`** (one row per (target, key)): `n_points`, `n_sigmas`, `lam_min_at_smallest` /
 `lam_min_at_largest` (median lambda_min over seeds at the smallest / largest window sigma),

@@ -243,7 +243,7 @@ def build_tables(recs, infos):
                                   align_quality=ent.get("quality"))
                     plats.append(pr)
         # ---- learning events (brief's events.csv)
-        seg_of_drop = {}
+        prev_drop = None
         for e in r["events"]:
             J = e["J_before"]
             q = e["a"]
@@ -256,7 +256,10 @@ def build_tables(recs, infos):
             cC, nC, _ = info.pairwise(J)
             nW = info.weight_next(J)
             d = drops[k_drop - 1] if k_drop and drops[k_drop - 1] else None
+            same = prev_drop is not None and k_drop == prev_drop
+            prev_drop = k_drop
             events.append(dict(**ident(r), pattern=e["pattern"], weight=info.w[q], t_event=e["t"],
+                               same_drop=same,
                                J_before=info.jstr(J), n_J_before=len(J),
                                duration=e["duration"], drop=k_drop,
                                depth_paper=depth, pair_cost=pair,
@@ -321,7 +324,7 @@ def decide(med, frac, pred):
     return "partial"
 
 
-def summarize_fits(fits, group_cols, preds, rows_all=None):
+def summarize_fits(fits, group_cols, preds, rows_all=None, existence=True):
     """Per group: distribution of the per-seed exponents and, per predictor, the predicted
     exponent, the fraction of fitted seeds within TOL and the decision. Predictions are medians
     over every window row of the group (rows_all), so groups without any fit still appear."""
@@ -354,8 +357,16 @@ def summarize_fits(fits, group_cols, preds, rows_all=None):
             none = (name in ("paper", "pair") and (np.isnan(p) or p <= 1)) or \
                 (name == "route" and not np.isnan(p) and p <= 1)
             row[f"predicts_plateau_{name}"] = not none
-            if none and "origin" not in str(keys):
+            if existence and none and "origin" not in str(keys):
                 row[f"decision_{name}"] = "fails (no plateau predicted)"
+            if not existence and none and "same_drop" in g:
+                # events: "no plateau" holds when the event is in the same loss drop as the
+                # previous learning event (nothing between them can be a plateau)
+                same = float(g.same_drop.mean())
+                row["frac_same_drop"] = same
+                row[f"decision_{name}"] = ("holds (same drop)" if same >= 0.9 else
+                                           "fails (plateau before it)" if same <= 0.1 else
+                                           "partial")
         rows.append(row)
     return pd.DataFrame(rows)
 
@@ -479,7 +490,7 @@ def main():
     efits.to_csv(out / "event_fits.csv", index=False, float_format="%.6g")
     esumm = summarize_fits(efits, ["target", "ident"],
                            dict(paper="pred_paper", route="pred_route", pair="pred_pair"),
-                           ev_ok[ev_ok.log10_sigma <= WINDOW_MAX + 1e-9])
+                           ev_ok[ev_ok.log10_sigma <= WINDOW_MAX + 1e-9], existence=False)
     esumm.to_csv(out / "event_fit_summary.csv", index=False, float_format="%.4g")
     # ---- escape type and sequence agreement
     escape_types(trans).to_csv(out / "escape_type.csv", index=False, float_format="%.4g")
