@@ -1,0 +1,31 @@
+{
+ "n_runs": 5970,
+ "status": {
+  "done": 5700,
+  "trapped": 270
+ },
+ "behaviour": {
+  "clean": 3692,
+  "first_escape_mixed": 478,
+  "first_escape_mixed+two_at_once+forgetting": 361,
+  "noncanonical_plateau": 275,
+  "first_escape_mixed+two_at_once": 243,
+  "trapped": 240,
+  "forgetting": 148,
+  "first_escape_mixed+noncanonical_plateau": 134,
+  "first_escape_mixed+forgetting": 110,
+  "two_at_once+forgetting": 77,
+  "two_at_once": 64,
+  "forgetting+noncanonical_plateau": 43,
+  "trapped+noncanonical_plateau": 30,
+  "first_escape_mixed+two_at_once+forgetting+noncanonical_plateau": 27,
+  "first_escape_mixed+forgetting+noncanonical_plateau": 25,
+  "two_at_once+forgetting+noncanonical_plateau": 6,
+  "first_escape_mixed+two_at_once+noncanonical_plateau": 5,
+  "forgetting+floor_flag": 5,
+  "two_at_once+noncanonical_plateau": 4,
+  "first_escape_mixed+two_at_once+forgetting+floor_flag": 3
+ },
+ "floor_checked": 1188,
+ "floor_flagged": 8
+}

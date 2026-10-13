@@ -103,7 +103,7 @@ def main():
 
     # ---- floor check and run-level flags ------------------------------------------------------
     fc = floor_check(runs, events)
-    fc.to_csv(out / "floor_check.csv", index=False)
+    fc.to_csv(out / "floor_check.csv", index=False, float_format="%.8g")
     flagged = set(zip(fc[fc.floor_flag].target, fc[fc.floor_flag].log10_sigma, fc[fc.floor_flag].seed))
     runs["floor_flag_bound"] = runs["floor_flag"]
     runs["floor_flag"] = [(t, ls, s) in flagged for t, ls, s in zip(runs.target, runs.log10_sigma, runs.seed)]
@@ -153,7 +153,7 @@ def main():
         ev["onestep_ratio_B"] = ev.t_entry_to_event / ev.onestep_pred_time_B
         ev["onestep_winner_B"] = [wB.get(k, -1) for k in key]
         ev.loc[ev.variant == "ref", ["onestep_pred_time_B", "onestep_ratio_B"]] = np.nan
-        pl.to_csv(out / "plateaus.csv", index=False)
+        pl.to_csv(out / "plateaus.csv", index=False, float_format="%.8g")
 
     # ---- run classification ----------------------------------------------------------------------
     g = ev[ev.event > 0].groupby(["variant", "target", "log10_sigma", "seed"])
@@ -198,9 +198,9 @@ def main():
                  "L_final", "t_final", "max_offtarget", "floor_flag", "floor_checked", "floor_flag_bound",
                  "steps", "segments", "restarts", "vode_segments", "fails", "secs"]
     runs = runs.sort_values(["variant", "target", "log10_sigma", "seed"])
-    runs[[c for c in cols if c in runs]].to_csv(out / "runs.csv", index=False)
+    runs[[c for c in cols if c in runs]].to_csv(out / "runs.csv", index=False, float_format="%.8g")
     ev = ev.sort_values(["variant", "target", "log10_sigma", "seed", "event"])
-    ev.to_csv(out / "events.csv", index=False)
+    ev.to_csv(out / "events.csv", index=False, float_format="%.8g")
 
     # ---- exponents per seed and cell -----------------------------------------------------------------
     use = ev[(~ev.floor_flag) & (ev.run_status == "done") & (ev.duration > 0)
@@ -223,7 +223,7 @@ def main():
                           log_slope=lslope,
                           pred_log_slope=1.0 / (targets[t]["weights"][r] * x.gamma.iloc[0])))
     ex = pd.DataFrame(erows)
-    ex.to_csv(out / "exponents.csv", index=False)
+    ex.to_csv(out / "exponents.csv", index=False, float_format="%.8g")
 
     # ---- cells: decisions ---------------------------------------------------------------------------
     crows = []
@@ -273,7 +273,7 @@ def main():
             )
         crows.append(row)
     cells = pd.DataFrame(crows)
-    cells.to_csv(out / "cells.csv", index=False)
+    cells.to_csv(out / "cells.csv", index=False, float_format="%.8g")
 
     # ---- C.1 item 1: route-entry norm vs sigma per (target, J, missing) --------------------------
     c1 = []
@@ -292,7 +292,7 @@ def main():
                            gamma_ratio_mg_median=float(x.gamma_ratio_mg.median()),
                            frac_gamma_within_5pct=float((abs(x.gamma_ratio_mg[x.log10_sigma <= SMALL + 1e-9] - 1) <= 0.05).mean()),
                            frac_P_entry_negative=float((x.P_entry <= 0).mean())))
-    pd.DataFrame(c1).to_csv(out / "c1.csv", index=False)
+    pd.DataFrame(c1).to_csv(out / "c1.csv", index=False, float_format="%.8g")
 
     # ---- summary ----------------------------------------------------------------------------------
     dn = runs[runs.variant == "dense"]
