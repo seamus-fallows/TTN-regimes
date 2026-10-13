@@ -427,10 +427,12 @@ large end, 0.58 at the small end, median per-seed exponent 0.61; the escape itse
 depth 3.03 and lambda_min ~ sigma^0.51. The amplitude of 000010 at the plateau point scales as
 sigma^2.33 (from 5.5e-6 to 1.2e-10), not sigma^3: the dormant route enters the plateau at about
 sigma^0.6-0.8, not sigma. The route-entry norms read off the aligned network
-(`results/route_entries.csv`, deviation 4; alignment quality 0.99999) confirm it: their geometric
-mean over the 3 route nodes scales as sigma^0.78 at this plateau (and as sigma^0.85 already at the
-strict plateau before it), where Assumption C.1(1) wants sigma^1; on the star controls the same
-slope is 0.80-1.11 for the depth-3 to depth-5 routes. This plateau follows two strict (log-time) plateaus; a candidate
+(`results/route_entries.csv`, deviation 4; alignment quality 0.99999) scale as sigma^0.78 at the
+plateau point (geometric mean over the 3 route nodes; sigma^0.85 already at the strict plateau
+before it). This does **not** isolate the cause: on star-control plateaus whose exponent is exactly
+c - 2 the same slope is also below 1 (0.80 for B4's depth-4 route, 0.85-0.86 for CTL1_binary8's
+depth-5 routes with exponent 3.00), so the norm at the minimum-gradient point is not the entry
+amplitude that sets the plateau length. This plateau follows two strict (log-time) plateaus; a candidate
 mechanism (**conjecture**) is that during a strict plateau of length ~ log(1/sigma)/lambda the
 dormant entries of the next route grow (or shrink) at a rate lambda', which turns sigma into
 sigma^(1 - lambda'/lambda) at entry and gives the exponent (c - 2)(1 - lambda'/lambda). This is a
