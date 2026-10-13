@@ -240,6 +240,6 @@ routes on mps4 chains), 79 wall-capped (float64 floor); no errors.
   a recombinant removed), which only the route rule predicts.
 - **Exceptions**: spectral shortcuts (order 4 < k* = 5) at CTL1_mps6 {010101} (Theorem 3.2 predicts
   it) and RND1_mps6 at a canonical three-pattern plateau (no theorem; parent-wise formula wrong);
-  a non-integer exponent 0.61 at a canonical depth-3 plateau of RND3_mps6 (route enters larger
-  than sigma); dead routes on R4 / R4d / B4_mps4 (5-6 seeds each, at every sigma); forgetting of
+  a non-integer exponent 0.61 at a canonical depth-3 plateau of RND3_mps6 (effective depth 3.03;
+  cause open); dead routes on R4 / R4d / B4_mps4 (5-6 seeds each, at every sigma); forgetting of
   the heaviest pattern in the star control CTL1_mps6 (21 of 40 seeds).

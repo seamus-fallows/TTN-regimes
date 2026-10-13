@@ -285,7 +285,7 @@ at a level of the numerical route-rule sequence within 5 %).
   or proceeds without a plateau, while a plateau of length sigma^-1 to sigma^-3 follows
   (13 of 25 fitted non-star plateau types: "no plateau predicted" but one exists; 3 more with the
   wrong exponent). It **holds at the canonical plateaus** (8 of 10 fitted canonical non-star
-  types; the 2 misses are the spectral shortcut and the head start below, where the route rule
+  types; the 2 misses are the spectral shortcut and the non-integer exponent below, where the route rule
   fails too), it names the next pattern correctly on 99.4 % of the escapes that learn a pattern,
   and depth 0 ("produced for free as a recombinant")
   is right in the narrow sense that such a pattern crosses half weight in the same drop as its
