@@ -278,8 +278,10 @@ Scored per transition with J = the learned set actually reached (J nonempty), si
   patterns are coupled (they share nodes and bond channels), which makes the heavier one win always.
 - Weight order is wrong wherever it differs from the greedy rule: the route depth, not the weight, sets
   the order (B4: 0110 with weight 0.3 is learned before 1001 with weight 0.6 in 100%).
-- The first pattern (from the origin; not predicted) is usually but not always the heaviest; with K = 7
-  the random projections dominate (S7: 0000000 first in 24/40 seeds).
+- The first pattern learned (first upward crossing; not predicted by the theory) is the heaviest in
+  95-100% of the runs of B4, B8, DB4, H4, TIE, but only in 60-65% for D4, S5A, S5B, S7 and 40% for PS
+  (the pair 110001 + 110010 escapes first in 24/40 seeds). The path is a property of the seed: 359 of
+  the 400 (target, seed) pairs have the same crossing history at all 15 sigma.
 
 ## 4. (c) Do plateau durations scale as sigma^-(c-2)?
 
@@ -333,10 +335,10 @@ trapped runs excluded. Three bases (`exponents.csv`): `event` (registered: every
 sigma <= 1e-3: c = 2: 2.02 [2.02, 2.02], 90% within 0.3 (10% of events have too few points in the
 window); c = 3: 3.02 [3.02, 3.04], 96%; c = 4: 4.09 [4.00, 4.15], 99.5%; c = 5: 5.16 [5.16, 5.16],
 100%; first escape (c = K = 3 ... 7): K to within 0.03 (median deviation -0.001). **SUPPORTED
-[empirical]** in every cell except S5B {00000, 20200}->20111 (2.21 instead of 3: the relearning of a
-forgotten pattern, whose amplitude does not start from O(sigma^3)) and S7 {0001011, 0100011}->0000000
-(4.45). The estimator's systematic +0.02/+0.09/+0.16 at c = 3/4/5 is the finite window (the reference
-flow on M* gives the same values).
+[empirical]** in every cell (>= 80% within 0.3). The few mismatches are relearned patterns after
+forgetting (S5B 20111: median 2.8-2.9 in the forgetting histories, 3.06 otherwise) and S7
+{0001011, 0100011} -> 0000000 (4.26). The estimator's systematic +0.02/+0.09/+0.16 at c = 3/4/5 is the
+finite window (the reference flow on M* gives the same values).
 
 ## 6. (e) Does training stay close to the aligned manifold?
 
@@ -352,13 +354,13 @@ The lighter-first takeovers suggest that this happens (section 4) [conjecture].
 
 ## 7. (f) Assumption C.1
 
-1. **Dormant entries of order sigma at plateau entry: holds in 31 of 34 cells, fails after shared first
-   escapes [empirical].** Per-seed slope of log(route-entry geometric mean) on log sigma (sigma <=
-   1e-2): median 1.00 (all quartiles 1.00) in every cell except B4 {0000} -> 0110 (0.70), PS
-   {pair} -> 000000 (0.88, spread across nodes 125x), S5A {00000,00201,11200} -> 10101 (0.50 in a
-   quarter of the seeds, the relearned 10101 after forgetting). Geometric mean / sigma: 0.78 [0.57,
-   1.34]; spread max/min over the route's nodes: 2.3 [1.4, 4.0] (the entries are of common order but
-   not balanced).
+1. **Dormant entries of order sigma at plateau entry: holds in 36 of 39 cells [empirical].** Per-seed
+   slope of log(route-entry geometric mean) on log sigma (sigma <= 1e-2; cells with >= 3 seed fits):
+   median within 0.1 of 1 in 36 cells (in most exactly 1.00). Exceptions: B4 {0000} -> 0110 (0.70; the
+   entries grow with the shared cores during the first escape), PS {pair} -> 000000 (0.88, entries
+   spread 125x across the route's nodes), PS pair internal (0: two at once). Geometric mean / sigma:
+   0.78 [0.57, 1.34]; spread max/min over the route's nodes: 2.3 [1.4, 4.0] (the entries are of common
+   order but not balanced).
 2. **Active factors independent of sigma: holds [empirical]:** gamma_obs / A_r(J) = 1.000 (within 5%
    in 95% of rows).
 3.-4. **Separated events: holds except PS [empirical]:** at sigma <= 1e-3, 1.7% of the events have
@@ -366,8 +368,10 @@ The lighter-first takeovers suggest that this happens (section 4) [conjecture].
    1.7%, all others <= 0.3%); the fraction grows slowly with sigma (1.2% at 1e-5, 4.1% at 10^-1.5).
    Item 4 fails in the takeover transitions (a learned pattern is lost when the next arrives), which the
    separation test does not see because the erased pattern was already learned.
-Signs: P_r <= 0 at plateau entry for 5.4% of the learned patterns (5.8% of all missing patterns); such
-routes still escape (the spare channels let them change sign), with no measurable delay at c >= 3.
+Signs: P_r <= 0 at plateau entry for 5.4% of the learned patterns (5.8% of all missing patterns). Such
+routes still escape (the spare channels let them change sign) but later: at c >= 3 their
+observed/predicted time (predictor B) is 2.1 [1.7, 2.9] (n = 473) against 1.1 [1.0, 1.4] for P_r > 0
+[empirical].
 
 ## 8. One-step-ahead test of the scalar route equation
 
@@ -389,11 +393,11 @@ Dense runs: 6000 (5976 finished at the time of writing; PS stragglers: see Part 
 Behaviour tags (a run can have several; `runs.csv` `behaviour`, `history`):
 - **clean** 3691 (62%);
 - **first escape mixed** (another pattern above 10% of its weight when the first passes 90%; the theory
-  says nothing about the first escape) 1330, mostly H4 (374/600), PS, B8 (174), S5B, S5A;
-- **two patterns at once later** 768: PS pair (477), S5A (172), TIE (69), S5B (51);
-- **forgetting** 913: PS 242 (the pair erases 000000), S5A 195, S5B 175, S7 120 (lighter-first runs:
-  the heavy all-zero pattern erases learned light patterns), H4 30, TIE 22;
-- **non-canonical plateau** 579 (mostly at large sigma; at sigma <= 1e-3 the 49 listed in section 2);
+  says nothing about the first escape) 1391: PS 534 (the pair), H4 374, B8 174, S5B 145, S5A 107;
+- **two patterns at once later** 793: PS pair 477, S5A 172, TIE 69, S5B 51;
+- **forgetting** 807: PS 242 (the pair erases 000000), S5A 195, S5B 175, S7 120 (lighter-first runs:
+  the heavy all-zero pattern erases learned light patterns), H4 30, TIE 22, DB4 11, B8 10;
+- **non-canonical plateau** 552 (mostly at large sigma; at sigma <= 1e-3 the 63 listed in section 2);
 - **trapped** 270: after learning two patterns, the third route dies: one of its dormant entries (the
   smallest at entry: 0.03-0.12 sigma, against 0.2-0.6 sigma in the seeds that escape) decays to ~1e-14
   sigma and the amplitude to ~1e-55. The routes that die (D4: 1111/2222/0000 as the last pattern; B4:
