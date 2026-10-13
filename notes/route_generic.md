@@ -176,3 +176,26 @@ CSVs only.
 ~4 h wall clock. Synthetic sweep: 2640 runs (pilot: 8-150 s each) on ~64 workers; MNIST: 180 runs on
 ~56 workers. If too slow, cut from the expensive end: first the MNIST extra seeds, then the smallest
 MNIST sigma, then synthetic sigma = 10^-3.5; anything cut is listed in Part III.
+
+# Part III: deviations from the pre-registration
+
+1. **Jacobian implementation (numerics only, 19:44, before any result was looked at).** The registration
+   says "exact Hessian as Jacobian"; the first implementation differentiated the dense tensor twice
+   (2.5 s per call on binary8, d = 3), which made the binary8 runs ~5x slower than the budget allowed.
+   It was replaced by the library's contraction-based exact Hessian (`ttn.dynamics.Problem.hessian`,
+   0.12 s; equal to the dense one to 1e-21 on a test point). The Jacobian only enters LSODA's Newton
+   matrix, not the vector field, so trajectories agree to the integration tolerance. The 30 runs
+   finished with the first version (pattern, binary8, sigma = 10^-3.5) were kept; the sweep was
+   restarted for the rest.
+2. **Clock of the event-0 growth-law fit (numerics only).** The registration fits the escape from the
+   origin on the absolute clock. At sigma = 10^-3.5 the escape happens at t ~ 1e17-1e18, where the
+   float64 spacing of t is 16-128 time units, longer than the growth window (~100-3000 units), so the
+   fit returned nothing on binary8. Event 0 (and the amplitude version) now uses the relative clock,
+   whose differences inside the escape's solver segment are exact (`events.relative_clock`). With it
+   event 0 gives d_eff = 7.00 on binary8 (K = 7) and 6.00 on mps6 (K = 6), the exact identity.
+3. **Exploratory columns added after the registration** (not used by the registered decisions):
+   `first_bond`, `onset_spread_rel` (spread of the onsets of an event's rises over the plateau duration)
+   and `k_lead` (cores of the rises whose onset lies within 10 % of the plateau duration of the earliest
+   onset: the bonds that start the event), with `dd_lead`, `dp_lead` in exponents.csv. Added at 20:10
+   after seeing, in a partial table of the smallest sigma, that events of generic targets often contain
+   bonds that start growing well after the first ones.

@@ -18,7 +18,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "real_data"))
 from analysis import load as rd_load, loss_drops  # noqa: E402
 
-from events import bond_components, crossing, depth_on_plateau  # noqa: E402
+from events import _k_lead, bond_components, crossing, depth_on_plateau  # noqa: E402
 
 from ttn.tree import Tree  # noqa: E402
 
@@ -83,7 +83,8 @@ def mnist_run_events(run: dict):
         event=0, rises=";".join(f"{e}:0" for e in edges) + pre_s, prior="", bonds=" ".join(map(str, edges)), n_bonds=len(edges), k_region=k_tree,
         t_event=float(meta["t_a"]), duration=float(meta["t_a"]), eff_depth=math.nan, eff_depth_min=math.nan,
         eff_depth_max=math.nan, n_depth=0, eff_depth_wide=math.nan, n_components=1, k_max_component=k_tree,
-        floor_min=math.nan, floor_flag=False, relearn=0, merged_into_escape=len(pre), t_escape_peak=t0))
+        floor_min=math.nan, floor_flag=False, relearn=0, merged_into_escape=len(pre), t_escape_peak=t0,
+        k_lead=k_tree))
     prev_t = t0
     prior = [f"{e}:0" for e in edges] + [f"{r['edge']}:{r['k']}" for r in pre]
     for j, g in enumerate(groups, start=1):
@@ -116,7 +117,11 @@ def mnist_run_events(run: dict):
             n_components=len(comps), k_max_component=max(len(c) for c in comps),
             floor_min=float(np.nanmin(floors)) if np.isfinite(floors).any() else math.nan,
             floor_flag=False, below_meas_floor=bool(any(np.isfinite(f) and f < MEAS_FLOOR for f in floors)),
-            relearn=int(sum(max(r["n_up"] - 1, 0) for r in g)), merged_into_escape=0, t_escape_peak=t0))
+            relearn=int(sum(max(r["n_up"] - 1, 0) for r in g)), merged_into_escape=0, t_escape_peak=t0,
+            first_bond=min(g, key=lambda r: r["t_on"])["edge"],
+            onset_spread_rel=(max(r["t_on"] for r in g) - min(r["t_on"] for r in g)) / (t_ev - prev_t)
+            if t_ev > prev_t else math.nan,
+            k_lead=_k_lead(tree, g, j, t_ev, prev_t)))
         prev_t = t_ev
         prior += [f"{r['edge']}:{r['k']}" for r in g]
     for r in rs:

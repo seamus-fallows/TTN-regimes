@@ -127,6 +127,20 @@ def bond_components(tree, edges) -> list[set[int]]:
     return comps
 
 
+LEAD_FRAC = 0.1  # exploratory: rises whose onset is within 10 % of the plateau duration of the first onset
+
+
+def _k_lead(tree, g, j, t_ev, prev_t) -> int:
+    """Cores of the leading rises of an event (exploratory, added after the registration)."""
+    from common import k_region
+
+    if j == 0 or not t_ev > prev_t:
+        return k_region(tree, sorted({r["edge"] for r in g}))
+    first = min(r["t_on"] for r in g)
+    lead = [r for r in g if r["t_on"] - first <= LEAD_FRAC * (t_ev - prev_t)]
+    return k_region(tree, sorted({r["edge"] for r in lead}))
+
+
 def run_events(run: dict, tree) -> tuple[list[dict], list[dict]]:
     """Events (one dict per event) and the rises with their per-rise effective depth and floor value."""
     from common import k_region
@@ -147,8 +161,9 @@ def run_events(run: dict, tree) -> tuple[list[dict], list[dict]]:
             y = spec[:, cols[(r["edge"], r["k"])]]
             top = spec[:, cols[(r["edge"], 0)]]
             if j == 0:
-                # escape from the origin: absolute clock (the relative clock is float64-limited there)
-                t_lo, t_hi, clock = -math.inf, r["t_half_abs"], run["t"]
+                # escape from the origin: the relative clock (exact solver-local differences inside the
+                # escape's segment; absolute times ~1e17 have a float64 spacing of ~16)
+                t_lo, t_hi, clock = -math.inf, r["t_half"], tt
             else:
                 t_lo, t_hi, clock = prev_t, r["t_half"], tt
             d = depth_on_plateau(clock, y, r["target"], t_lo, t_hi)
@@ -191,6 +206,7 @@ def run_events(run: dict, tree) -> tuple[list[dict], list[dict]]:
             relearn=int(sum(max(r["n_up"] - 1, 0) for r in g)),
             # exploratory (added after registration): do the bonds start together or one after another?
             first_bond=min(g, key=lambda r: r["t_on"])["edge"],
+            k_lead=_k_lead(tree, g, j, t_ev, prev_t),
             onset_spread_rel=((max(r["t_on"] for r in g) - min(r["t_on"] for r in g)) / (t_ev - prev_t)
                               if j > 0 and t_ev > prev_t else math.nan),
         )
@@ -223,7 +239,7 @@ def amplitude_events(run: dict, weights_target: np.ndarray) -> list[dict]:
     for r in order:
         y = amps[:, r["component"]]
         if prev is None:
-            d = depth_on_plateau(run["t"], y, r["target"], -math.inf, run["t"][r["i_half"]])
+            d = depth_on_plateau(tt, y, r["target"], -math.inf, r["t_half"])
         else:
             d = depth_on_plateau(tt, y, r["target"], prev, r["t_half"])
         r["eff_depth"] = math.nan if d is None else d["depth"]

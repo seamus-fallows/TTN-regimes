@@ -193,6 +193,8 @@ def exponents(events: pd.DataFrame) -> pd.DataFrame:
     for key, g in events.groupby(keys, dropna=False, sort=False):
         first = g.sort_values("sigma").iloc[0]
         row = dict(zip(keys, key))
+        kl = g.sort_values("sigma")["k_lead"].dropna() if "k_lead" in g else pd.Series(dtype=float)
+        row["k_lead"] = int(kl.head(WINDOW_POINTS).median()) if len(kl) else math.nan
         row.update(event=int(g["event"].median()), event_min=int(g["event"].min()), event_max=int(g["event"].max()),
                    bonds=first["bonds"], n_bonds=int(first["n_bonds"]), k_region=int(first["k_region"]),
                    n_components=int(first["n_components"]), k_max_component=int(first["k_max_component"]),
@@ -205,6 +207,8 @@ def exponents(events: pd.DataFrame) -> pd.DataFrame:
         row["dp"] = row.get("p", math.nan) - row["p_pred"]
         row["dd"] = row["eff_depth"] - row["k_region"]
         row["dp_vs_depth"] = row.get("p", math.nan) - (row["eff_depth"] - 2)
+        row["dd_lead"] = row["eff_depth"] - row["k_lead"]  # exploratory
+        row["dp_lead"] = row.get("p", math.nan) - (row["k_lead"] - 2)  # exploratory
         rows.append(row)
     return pd.DataFrame(rows)
 
@@ -244,6 +248,9 @@ def summarize(ex: pd.DataFrame) -> pd.DataFrame:
         row["frac_p_vs_depth_within_0.3"] = (float((g["dp_vs_depth"].dropna().abs() <= 0.3).mean())
                                              if g["dp_vs_depth"].notna().any() else math.nan)
         row["frac_log_preferred"] = float(g["log_preferred"].mean())
+        for c in ("dd_lead", "dp_lead"):  # exploratory: against the cores of the leading bonds
+            v = g[c].dropna() if c in g else pd.Series(dtype=float)
+            row[f"frac_{c}_within_0.3"] = float((v.abs() <= 0.3).mean()) if len(v) else math.nan
         row["frac_disconnected"] = float((g["n_components"] > 1).mean())
         row["verdict"] = verdict(both["dd"], both["dp"], len(both)) if sub == "all" or cls == "later" else ""
         rows.append(row)
