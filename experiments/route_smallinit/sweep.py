@@ -73,8 +73,7 @@ def work(task):
                 man, traj, info = R.run_reference(cfg, sigma, wall=wall)
                 run, ev, pl, small = R.reduce_run(cfg, traj, info, sigma)
             else:
-                model, traj, info = R.run_full(cfg, sigma, seed, wall=wall,
-                                               arith="lib" if variant == "lib" else "dense")
+                model, traj, info = R.run_full(cfg, sigma, seed, wall=wall, arith=variant)
                 run, ev, pl, small = R.reduce_run(cfg, traj, info, sigma, model=model)
         except Exception as exc:  # noqa: BLE001 (record and continue)
             run, ev, pl, small = dict(status="error", message=traceback.format_exc()[-1500:]), [], [], None
@@ -95,7 +94,7 @@ def main():
     ap.add_argument("config")
     ap.add_argument("--procs", type=int, default=300)
     ap.add_argument("--only", default=None)
-    ap.add_argument("--variants", default="ref,dense,lib")
+    ap.add_argument("--variants", default="ref,dense,reorder,lib")
     args = ap.parse_args()
     cfg = yaml.safe_load(open(args.config))
     targets = yaml.safe_load(open(HERE / cfg["targets"]))["targets"]
@@ -103,7 +102,9 @@ def main():
         targets = [t for t in targets if t["name"] in args.only.split(",")]
     sigmas = sigma_grid(cfg["sigma"])
     seeds = list(range(cfg["seeds"]))
-    lib_sigmas = sorted(sigmas)[: cfg["floor_check"]["n_smallest_sigmas"]]
+    fcfg = cfg["floor_check"]
+    reorder_sigmas = sorted(sigmas)[: fcfg["reorder_n_smallest_sigmas"]]
+    lib_sigmas = sorted(sigmas)[: fcfg["lib_n_smallest_sigmas"]]
     variants = args.variants.split(",")
     tasks = []
     for t in targets:
@@ -113,10 +114,13 @@ def main():
             for s in seeds:
                 if "dense" in variants:
                     tasks.append(("dense", t, ls, s, cfg["wall"]))
-                if "lib" in variants and ls in lib_sigmas:
-                    tasks.append(("lib", t, ls, s, cfg["wall"]))
-    # expensive first: small sigma, many cores
-    tasks.sort(key=lambda x: (x[2], -int(x[1]["n_sites"])))
+                if "reorder" in variants and ls in reorder_sigmas:
+                    tasks.append(("reorder", t, ls, s, cfg["wall"]))
+                if "lib" in variants and ls in lib_sigmas and s < fcfg["lib_seeds"]:
+                    tasks.append(("lib", t, ls, s, fcfg["lib_wall"]))
+    # main runs first, then the floor checks; within each, expensive first (small sigma, many sites)
+    rank = {"ref": 0, "dense": 0, "reorder": 1, "lib": 2}
+    tasks.sort(key=lambda x: (rank[x[0]], x[2], -int(x[1]["n_sites"])))
     tasks = [x for x in tasks if not path_of(x[0], x[1]["name"], x[2], x[3]).exists()]
     print(f"{len(tasks)} tasks, {args.procs} processes", flush=True)
     t0, done = time.time(), 0

@@ -18,6 +18,21 @@ import pandas as pd  # noqa: E402
 from ttn.plotting import MUTED, palette, savefig, set_style, subplots  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
+STR_COLS = ("order", "J", "J_before", "J_prev_events", "J_str", "first_pattern", "patterns", "forgotten",
+            "transition", "region", "weights", "bonds", "order_dense", "order_check")
+
+
+class EmptyDataError(Exception):
+    pass
+
+
+def read_csv(path):
+    """read_csv keeping pattern strings such as 00201 as text."""
+    try:
+        head = pd.read_csv(path, nrows=0).columns
+    except pd.errors.EmptyDataError as exc:
+        raise EmptyDataError(str(exc)) from exc
+    return pd.read_csv(path, dtype={c: str for c in head if c.endswith("_str") or c in STR_COLS})
 SMALL = -3.0
 ORDER = ["D4", "DB4", "B4", "S5A", "S5B", "S7", "H4", "B8", "TIE", "PS"]
 
@@ -228,6 +243,65 @@ def fig_census(runs, out):
     plt.close(fig)
 
 
+
+
+def fig_example(out, name="B8", lsig=-4.0, seed=0):
+    """One run, one panel per plateau: amplitudes P_a/s_a against the time since the previous
+    learning event (exact), with the learned pattern's route depth."""
+    import sys
+
+    import yaml
+
+    sys.path.insert(0, str(HERE))
+    from fractions import Fraction
+
+    from run import learning_events, predictions, run_full
+    from model import build_target
+
+    cfg = {c["name"]: c for c in yaml.safe_load(open(HERE / "configs/targets.yaml"))["targets"]}[name]
+    target = build_target(cfg)
+    model, traj, info = run_full(cfg, 10.0**lsig, seed)
+    P = np.array([o[1] for o in traj.obs])
+    s = np.array(target.weights)
+    events, _, _ = learning_events(traj, P, s)
+    fig, axes = subplots(1, len(events), width=12, panel_aspect=0.9, sharey=True)
+    cols = palette(target.n)
+    prev, i_prev = Fraction(0), 0
+    J = []
+    for k, (ax, ev) in enumerate(zip(axes, events)):
+        i_end = min(ev["i"] + 40, len(P) - 1)
+        t = np.array([float(traj.exact(i) - prev) for i in range(i_prev, i_end + 1)])
+        if k == 0:  # first escape: linear time in units of the first event time
+            t = t / float(ev["t"])
+        ok = t > 0
+        for a in range(target.n):
+            ax.plot(t[ok], np.abs(P[i_prev:i_end + 1, a][ok]) / s[a], color=cols[a],
+                    label="".join(map(str, target.patterns[a])) + f" (weight {s[a]:g})")
+        r = ev["pattern"]
+        c = target.depth(J, r) if J else target.tree.n_nodes
+        pr = predictions(cfg, target, J)["greedy"] if J else None
+        ax.set_xscale("linear" if k == 0 else "log")
+        ax.set_yscale("log")
+        ax.set_ylim(1e-22, 3)
+        ax.axhline(0.5, color=MUTED, ls=":", lw=1)
+        what = "".join(map(str, target.patterns[r]))
+        if pr is None:
+            sub = f"from the origin (all K = {c} cores)"
+        else:
+            ok_ = "matches" if pr == r else "differs from"
+            sub = f"route depth c = {c}; {ok_} greedy"
+        ax.set_title(f"plateau {k} -> learns {what}\n{sub}", fontsize=10)
+        ax.set_xlabel("time / first-event time" if k == 0 else "time since previous event")
+        J = J + [r]
+        prev, i_prev = ev["t"], ev["i"]
+    axes[0].set_ylabel("|amplitude P_a| / weight s_a")
+    axes[0].legend(fontsize=8.5, loc="lower right")
+    fig.suptitle(f"One training run ({name}, sigma = 1e{lsig:g}, seed {seed}): patterns are learned one at a time,\n"
+                 "each after a plateau whose length is set by its route depth (dotted line: half the weight = learned)", fontsize=12)
+    savefig(fig, out / "fig_example_run")
+    plt.close(fig)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--res", default=str(HERE / "results"))
@@ -235,13 +309,13 @@ def main():
     res = Path(args.res)
     set_style("sans")
     big_fonts()
-    ev = pd.read_csv(res / "events.csv")
-    runs = pd.read_csv(res / "runs.csv")
+    ev = read_csv(res / "events.csv")
+    runs = read_csv(res / "runs.csv")
     try:
-        ex = pd.read_csv(res / "exponents.csv")
-    except pd.errors.EmptyDataError:
+        ex = read_csv(res / "exponents.csv")
+    except EmptyDataError:
         ex = pd.DataFrame()
-    targets = pd.read_csv(res / "targets.csv")
+    targets = read_csv(res / "targets.csv")
     w = {t: [float(v) for v in s.split()] for t, s in zip(targets.target, targets.weights)}
     ev["pattern_weight"] = [w[t][int(p)] for t, p in zip(ev.target, ev.pattern)]
     ref = ev[(ev.variant == "ref") & (ev.event > 0)]
@@ -254,6 +328,7 @@ def main():
     fig_onestep(ev, res)
     fig_offtarget(ev, res)
     fig_census(runs, res)
+    fig_example(res)
 
 
 if __name__ == "__main__":

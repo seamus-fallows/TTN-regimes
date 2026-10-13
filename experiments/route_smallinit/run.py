@@ -294,6 +294,23 @@ def reduce_run(cfg, traj, info, sigma, model=None, man=None):
                                     for p in pl_rows if p["event"] == k and p["learned_next"])
             floor_flag |= row["floor_flag"]
         ev_rows.append(row)
+    # unfinished last plateau (trapped / unfinished runs): rows for the patterns never learned
+    missing_end = [q for q in range(n) if P[-1, q] <= 0.5 * s[q]]
+    if model is not None and missing_end and events:
+        k = len(events)
+        i_prev = events[-1]["i"]
+        J = sorted(a for a in range(n) if P[-1, a] > 0.5 * s[a])
+        entry = next((i for i in range(i_prev, len(L)) if all(abs(P[i, a] - s[a]) < ENTRY_TOL * s[a] for a in J)), None)
+        inner = list(range(entry if entry is not None else i_prev, len(L)))
+        mg = inner[int(np.argmin(gn[inner]))]
+        for q in missing_end:
+            prow = dict(event=k, plateau=k - 1, J=_jstr(J), missing=q, missing_str=_pstr(target, q),
+                        learned_next=False, final=True, depth=target.depth(J, q),
+                        pairwise=min(target.pair_cost(a, q) for a in J), gamma=gamma(cfg, J, q),
+                        onestep_pred_time=math.nan, P_end=float(P[-1, q]))
+            for tag, i in (("entry", entry), ("mg", mg)):
+                prow.update(_route_diag(model, traj, i, J, q, sigma, tag))
+            pl_rows.append(prow)
     order = [e["pattern"] for e in events]
     run = dict(
         status=info["status"], n_learned=len(events), order=" ".join(_pstr(target, a) for a in order),

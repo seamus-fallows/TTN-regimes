@@ -199,3 +199,35 @@ forgetting, non-canonical plateau, floor-flagged; examples are described.
 
 Results carry: proven (statements of the paper), derived (consequences under stated assumptions),
 empirical (everything measured here), conjecture.
+
+# Part III: deviations from the pre-registration (added after the sweep started)
+
+1. **Trap rule (19:50, before any result was looked at).** The first sweep launch was stopped after
+   one minute: the trap rule ("every unlearned |P_r|/s_r < 1e-35 for a decade") fired on the very
+   first plateau of the K = 7 targets at sigma = 1e-5, where every amplitude starts at ~sigma^7 ~
+   1e-38 (nothing is dead there). The rule now applies only once at least one pattern is learned.
+2. **Orphaned workers; full restart (20:09).** Killing that first launch left its 300 worker processes
+   alive (orphaned); they kept running the old code (with the trap-rule bug) for 20 minutes, competed
+   with the second launch for the CPUs (load ~600 on a 307-CPU quota) and wrote results into the same
+   output folder. Everything from both launches was set aside (`/root/outputs/route-smallinit/
+   runs_try1_trapbug/`, `runs_try2_contaminated/`) and the whole grid was restarted from scratch with
+   the code of item 1. Not outcome-selective: nothing from the set-aside runs is used.
+3. **Floor check (20:09).** The registered check duplicates every run at the 3 smallest sigma with the
+   library's norm-form gradient. For the K = 7 targets at sigma = 1e-5 these duplicates take 30-60
+   minutes each (slower gradient and ~3x more solver steps because of the larger roundoff), i.e. about
+   two machine-hours for the check alone. Replaced by: (a) every seed at the 3 smallest sigma is
+   duplicated with a different contraction order of the same dense model (`arith="reorder"`: operands
+   reversed, greedy path; a different roundoff realization at the same cost); (b) the library-arithmetic
+   duplicate is kept for seeds 0-9 at sigma = 1e-5 only (wall cap 1800 s). Flag rule unchanged (either
+   duplicate gives a different order or status, or a duration > 1 that differs by more than 1e-3
+   relative). Main runs are scheduled before all floor checks.
+4. **Final-plateau diagnostics (added during the first launches).** Runs that end with patterns never
+   learned (trapped, unfinished) get `plateaus.csv` rows for their last plateau (`final = True`,
+   `P_end`), so that the trapped routes can be described. Additive; the restarted sweep has it for
+   every run.
+5. **Run behaviour tags (analysis only).** "two_at_once" is split into `first_escape_mixed` (at the
+   first escape from the origin another pattern is above 10% of its weight when the first passes 90%;
+   the theory makes no prediction there) and `two_at_once` (the same at a later transition, or a plateau
+   that never reaches its entry point).
+6. **Exponents and cells also for event 0** (the escape from the origin, depth K, Saxe exponent K - 2):
+   reported alongside, not used for the route-theory decisions.

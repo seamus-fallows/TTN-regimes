@@ -52,13 +52,15 @@ def load(raw: Path):
 
 
 def floor_check(runs, events):
-    """dense vs lib duplicate at the smallest sigmas: flag if order/status differ or any duration
-    differs by more than 1e-3 relative."""
-    lib = runs[runs.variant == "lib"]
+    """dense vs duplicate with other arithmetic ("reorder": other contraction order; "lib": library
+    norm-form gradient): flag if order/status differ or any duration > 1 differs by more than 1e-3
+    relative."""
+    lib = runs[runs.variant.isin(["reorder", "lib"])]
     rows = []
     ev = events.set_index(["variant", "target", "log10_sigma", "seed"]).sort_index()
     for _, r in lib.iterrows():
         key = (r.target, r.log10_sigma, r.seed)
+        dup = r.variant
         dn = runs[(runs.variant == "dense") & (runs.target == r.target) & (runs.log10_sigma == r.log10_sigma)
                   & (runs.seed == r.seed)]
         if dn.empty:
@@ -66,7 +68,7 @@ def floor_check(runs, events):
         dn = dn.iloc[0]
         try:
             d1 = ev.loc[("dense",) + key].sort_values("event").duration.to_numpy()
-            d2 = ev.loc[("lib",) + key].sort_values("event").duration.to_numpy()
+            d2 = ev.loc[(dup,) + key].sort_values("event").duration.to_numpy()
         except KeyError:
             d1 = d2 = np.array([])
         same = len(d1) == len(d2) and dn.order == r.order and dn.status == r.status
@@ -77,8 +79,9 @@ def floor_check(runs, events):
             rel = float(np.max(np.abs(d1 - d2)[big] / np.abs(d1[big]))) if big.any() else 0.0
         flag = (not same) or (rel > 1e-3)
         rows.append(dict(target=r.target, tree=r.tree, d=r.d, chi=r.chi, sigma=r.sigma,
-                         log10_sigma=r.log10_sigma, seed=r.seed, order_dense=dn.order, order_lib=r.order,
-                         status_dense=dn.status, status_lib=r.status, max_rel_duration_diff=rel,
+                         log10_sigma=r.log10_sigma, seed=r.seed, check=dup, order_dense=dn.order,
+                         order_check=r.order, status_dense=dn.status, status_check=r.status,
+                         max_rel_duration_diff=rel,
                          floor_flag=flag))
     return pd.DataFrame(rows)
 
@@ -96,7 +99,7 @@ def main():
     out = Path(args.out)
     out.mkdir(exist_ok=True)
     targets, runs, events, plats = load(Path(args.raw))
-    pred = pd.read_csv(HERE / "results/predictions.csv")
+    pred = pd.read_csv(HERE / "results/predictions.csv", dtype={"J": str, "J_str": str, "missing_str": str})
 
     # ---- floor check and run-level flags ------------------------------------------------------
     fc = floor_check(runs, events)
@@ -160,6 +163,14 @@ def main():
                              zip(runs.variant, runs.target, runs.log10_sigma, runs.seed)]
     runs["all_greedy"] = [allg.get((v, t, ls, s), np.nan) for v, t, ls, s in
                           zip(runs.variant, runs.target, runs.log10_sigma, runs.seed)]
+    later = ev[ev.event > 0].groupby(["variant", "target", "log10_sigma", "seed"])
+    unsep_later = later.unseparated.sum()
+    noentry_later = later.has_entry.apply(lambda h: int((~h.astype(bool)).sum()))
+    unsep0 = ev[ev.event == 0].set_index(["variant", "target", "log10_sigma", "seed"]).unseparated
+    keyr = list(zip(runs.variant, runs.target, runs.log10_sigma, runs.seed))
+    runs["n_unseparated_later"] = [int(unsep_later.get(k, 0)) for k in keyr]
+    runs["n_no_entry"] = [int(noentry_later.get(k, 0)) for k in keyr]
+    runs["first_escape_mixed"] = [bool(unsep0.get(k, False)) for k in keyr]
     first = ev[ev.event == 0].set_index(["variant", "target", "log10_sigma", "seed"]).pattern_str
     runs["first_pattern"] = [first.get((v, t, ls, s)) for v, t, ls, s in
                              zip(runs.variant, runs.target, runs.log10_sigma, runs.seed)]
@@ -168,7 +179,9 @@ def main():
         tags = []
         if r.status != "done":
             tags.append(str(r.status))
-        if r.n_unseparated > 0 or r.n_no_entry > 0:
+        if r.first_escape_mixed:
+            tags.append("first_escape_mixed")
+        if r.n_unseparated_later > 0 or r.n_no_entry > 0:
             tags.append("two_at_once")
         if r.n_forgotten > 0:
             tags.append("forgetting")
@@ -180,7 +193,8 @@ def main():
 
     runs["behaviour"] = runs.apply(behaviour, axis=1)
     cols = ID + ["variant", "status", "behaviour", "n_learned", "order", "order_idx", "first_pattern",
-                 "all_greedy", "n_forgotten", "forgotten", "n_unseparated", "n_no_entry", "n_noncanonical",
+                 "all_greedy", "n_forgotten", "forgotten", "first_escape_mixed", "n_unseparated", "n_unseparated_later",
+                 "n_no_entry", "n_noncanonical",
                  "L_final", "t_final", "max_offtarget", "floor_flag", "floor_checked", "floor_flag_bound",
                  "steps", "segments", "restarts", "vode_segments", "fails", "secs"]
     runs = runs.sort_values(["variant", "target", "log10_sigma", "seed"])
@@ -189,7 +203,7 @@ def main():
     ev.to_csv(out / "events.csv", index=False)
 
     # ---- exponents per seed and cell -----------------------------------------------------------------
-    use = ev[(ev.event > 0) & (~ev.floor_flag) & (ev.run_status == "done") & (ev.duration > 0)
+    use = ev[(~ev.floor_flag) & (ev.run_status == "done") & (ev.duration > 0)
              & (ev.log10_sigma >= WINDOW[0] - 1e-9) & (ev.log10_sigma <= WINDOW[1] + 1e-9)]
     erows = []
     for (v, t, J, r, sd), x in use.groupby(["variant", "target", "J_before", "pattern", "seed"]):
@@ -213,8 +227,8 @@ def main():
 
     # ---- cells: decisions ---------------------------------------------------------------------------
     crows = []
-    small = ev[(ev.event > 0) & (ev.log10_sigma <= SMALL + 1e-9) & (~ev.floor_flag)]
-    for (v, t, J, r), x in ev[ev.event > 0].groupby(["variant", "target", "J_before", "pattern"]):
+    small = ev[(ev.log10_sigma <= SMALL + 1e-9) & (~ev.floor_flag)]
+    for (v, t, J, r), x in ev.groupby(["variant", "target", "J_before", "pattern"]):
         xs = small[(small.variant == v) & (small.target == t) & (small.J_before == J) & (small.pattern == r)]
         c = int(x.depth.iloc[0])
         row = dict(variant=v, target=t, J_before=J, pattern=r, pattern_str=x.pattern_str.iloc[0],

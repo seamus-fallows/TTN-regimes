@@ -55,8 +55,9 @@ class SpareManifold(AlignedManifold):
         self.__dict__.pop("mask", None)
 
 
-def dense_expression(spec: TTNSpec):
-    """opt_einsum expression: cores -> dense W with axes in site order."""
+def dense_expression(spec: TTNSpec, reorder: bool = False):
+    """opt_einsum expression: cores -> dense W with axes in site order. reorder=True: operands in
+    reverse order with a greedy path (same result, different roundoff: floor check)."""
     tree = spec.tree
     letters = iter(string.ascii_letters)
     site = [next(letters) for _ in range(tree.n_sites)]
@@ -67,20 +68,27 @@ def dense_expression(spec: TTNSpec):
         legs = [site[s] for s in tree.sites[v]] + [bond[c] for c in tree.children[v]]
         legs.append(bond[v] if v != tree.root else root_leg)
         terms.append("".join(legs))
-    eq = ",".join(terms) + "->" + "".join(site)
-    return opt_einsum.contract_expression(eq, *spec.shapes, optimize="optimal")
+    out = "".join(site)
+    if reorder:
+        expr = opt_einsum.contract_expression(
+            ",".join(reversed(terms)) + "->" + out, *reversed(spec.shapes), optimize="greedy"
+        )
+        return lambda *cores, backend: expr(*reversed(cores), backend=backend)
+    return opt_einsum.contract_expression(",".join(terms) + "->" + out, *spec.shapes, optimize="optimal")
 
 
 class Model:
     def __init__(self, cfg: dict, spare: int = 2, arith: str = "dense"):
         self.cfg = cfg
-        self.arith = arith  # "dense" (E entrywise) or "lib" (library norm-form gradient: floor check)
+        # "dense" (E entrywise); floor checks: "reorder" (other contraction order) or "lib" (library
+        # norm-form gradient, larger roundoff)
+        self.arith = arith
         self.target = target = build_target(cfg)
         self.d = d = int(cfg["d"])
         self.man = SpareManifold(target, d, spare)
         self.spec = spec = self.man.spec
         self.P = spec.n_params
-        self.expr = dense_expression(spec)
+        self.expr = dense_expression(spec, reorder=(arith == "reorder"))
         self.idx = [tuple(p) for p in target.patterns]
         self.s = np.array(target.weights)
         Ws = torch.zeros((d,) * target.tree.n_sites, dtype=DT)
