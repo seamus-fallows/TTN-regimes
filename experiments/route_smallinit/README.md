@@ -53,7 +53,7 @@ A single run: `run.run_full(cfg, sigma, seed)` then `run.reduce_run(...)`.
 | `figures.py` | draft figures `results/fig_*.png/pdf` |
 | `headline.py` | `results/headline.md`: every number quoted in the note and the report |
 | `diag_trapped.py` | post-hoc: D4 and B4 without the bond cap (spare channels on the end edges) -> `results/diag_trapped.csv` (columns as runs.csv plus `bond_cap`, `bonds`) |
-| `configs/sweep_ps_long.yaml` | rerun of the 20 PS runs unfinished after 1 h (3 h cap, BDF integrator) |
+| `configs/sweep_ps_long.yaml` | attempted rerun of the 20 PS runs unfinished after 1 h (3 h cap, BDF integrator; abandoned, see note Part III item 7) |
 
 ## CSV columns (all in `results/`)
 
@@ -157,13 +157,13 @@ Numbers at sigma <= 1e-3 unless stated; `results/headline.md` lists them all (ge
 | question | answer | evidence |
 |---|---|---|
 | (a) plateaus at the canonical partial targets? | yes: 98.7% within 1% of ||W*|| (median distance 8e-9) | `events.csv` `rel_dist_mg`, `canonical` |
-| (b) next pattern = greedy rule? | always when there is no tie in route depth (6867/6867); the pairwise rule is wrong in all 747 transitions where it differs (splices); ties go to the heavier pattern only 62-100% of the time, decided by the seed | `events.csv` `agree_*`, `fig_rules`, `fig_rules_vs_sigma` |
+| (b) next pattern = greedy rule? | always when there is no tie in route depth (6882/6882); the pairwise rule is wrong in all 747 transitions where it differs (splices); ties go to the heavier pattern only 62-100% of the time, decided by the seed | `events.csv` `agree_*`, `fig_rules`, `fig_rules_vs_sigma` |
 | (c) duration ~ sigma^-(c-2)? | yes on clean transitions: 98% of 648 per-seed fits (c >= 3) within 0.3, log law with the predicted slope for c = 2 in 6 of 7 cells; exceptions: lighter-first plateaus are strict saddles (log law, Theorem 3.2 / Remark 8.5), PS after 000000 follows Theorem 3.2's order 4 (sigma^-2, not the route depth's sigma^-3), B4 log slope 0.70 x prediction | `exponents.csv`, `cells.csv`, `fig_durations`, `fig_exponents`, `fig_shortcut_PS` |
 | (d) effective depth = c? | yes: medians 2.02, 3.02, 4.09, 5.16; first escape K | `events.csv` `eff_depth`, `fig_effective_depth` |
-| (e) close to the aligned manifold? | yes between and during clean transitions (peak off-target mass median 8e-9, ~sigma^2); not during takeovers and mixed first escapes (up to 0.5) | `peak_offtarget`, `fig_offtarget` |
+| (e) close to the aligned manifold? | yes during clean transitions (peak off-target mass median 9e-9, ~sigma^2); not during takeovers and mixed first escapes (up to 0.5) | `peak_offtarget`, `fig_offtarget` |
 | (f) Assumption C.1 | (1) dormant entries ~ sigma at entry in 36/39 cells (B4: sigma^0.70); (2) active factors = A_r(J) (ratio 1.000); (3-4) separated in 98% of events (PS 79%), but takeovers erase learned patterns | `c1.csv`, `plateaus.csv` |
 | one-step-ahead (eq. 6.15) | from P_r at entry: fails (ratio 2.7, IQR 0.9-579); from the dormant-entry size: works (1.04, IQR 0.93-1.39) for c <= 4 | `onestep_ratio`, `onestep_ratio_B`, `fig_onestep` |
-| runs doing something else | forgetting 807 runs (13%; S5A, S5B, S7, PS), two at once later 793 (PS pair), trapped 270 (D4 13 seeds, B4 5 seeds, at every sigma), mixed first escape 1391 | `runs.csv` `behaviour`, `history`, `fig_census`, `fig_example_forgetting` |
+| runs doing something else | forgetting 816 runs (14%; S5A, S5B, S7, PS), two at once later 813 (mostly the PS pair), trapped 270 (D4 13 seeds, B4 5 seeds, at every sigma; none without the bond cap, `diag_trapped.csv`), unfinished 20 (PS, 1-h cap), mixed first escape 1412, floor-flagged 11 | `runs.csv` `behaviour`, `history`, `fig_census`, `fig_example_forgetting` |
 
 Figures (`results/`): `fig_example_run` (one B8 run, plateau by plateau), `fig_rules`, `fig_rules_vs_sigma`,
 `fig_durations`, `fig_exponents`, `fig_shortcut_PS`, `fig_example_forgetting`, `fig_effective_depth`,

@@ -197,7 +197,7 @@ def fig_offtarget(ev, out):
     ax.set_yscale("log")
     ax.set_xlabel("initialization scale sigma")
     ax.set_ylabel("peak off-target fraction of ||W||^2\nduring a transition")
-    ax.set_title("During transitions training stays close to the aligned manifold\n(the off-target part of W stays tiny)")
+    ax.set_title("Most transitions stay on the aligned manifold (median off-target part ~ sigma^2);\nthe takeovers and two-at-once transitions of PS, S5A, S5B do not (maximum)")
     ax.legend(fontsize=9)
     savefig(fig, out / "fig_offtarget")
     plt.close(fig)

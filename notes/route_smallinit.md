@@ -347,7 +347,7 @@ trapped runs excluded. Three bases (`exponents.csv`): `event` (registered: every
 ## 5. (d) Effective depth
 
 `ttn.routes.effective_depth` on the learned pattern's amplitude, from the plateau entry to the event,
-sigma <= 1e-3: c = 2: 2.02 [2.02, 2.02], 90% within 0.3 (10% of events have too few points in the
+sigma <= 1e-3: c = 2: 2.02 [2.02, 2.02], 89% within 0.3 (10% of events have too few points in the
 window); c = 3: 3.02 [3.02, 3.04], 96%; c = 4: 4.09 [4.00, 4.15], 99.5%; c = 5: 5.16 [5.16, 5.16],
 100%; first escape (c = K = 3 ... 7): K to within 0.03 (median deviation -0.001). **SUPPORTED
 [empirical]** in every cell (>= 80% within 0.3). The few mismatches are relearned patterns after
@@ -358,7 +358,7 @@ finite window (the reference flow on M* gives the same values).
 ## 6. (e) Does training stay close to the aligned manifold?
 
 **Yes, except during the escapes that the theory does not cover [empirical].** Peak off-target fraction
-of ||W||^2 over a transition (k >= 1, sigma <= 1e-3): median 8e-9 (quartiles 2e-10, 4e-7); 93.8%
+of ||W||^2 over a transition (k >= 1, sigma <= 1e-3): median 9e-9 (quartiles 2e-10, 4e-7); 93.5%
 below 1e-2. It scales as ~sigma^2 (median 3e-11 at 1e-5, 1.6e-4 at 10^-1.5). The large values (up to
 0.5) come from PS (the pair escape), S5A/S5B/S7 takeovers (0.14-0.38) and the mixed first escapes.
 Alignment quality of `align` at the plateau minimum-gradient points: 1.000 (all quartiles). The
@@ -378,9 +378,9 @@ The lighter-first takeovers suggest that this happens (section 4) [conjecture].
    order but not balanced).
 2. **Active factors independent of sigma: holds [empirical]:** gamma_obs / A_r(J) = 1.000 (within 5%
    in 95% of rows).
-3.-4. **Separated events: holds except PS [empirical]:** at sigma <= 1e-3, 1.7% of the events have
+3.-4. **Separated events: holds except PS [empirical]:** at sigma <= 1e-3, 1.8% of the events have
    another unlearned pattern above 10% of its weight when the learned one passes 90% (PS 21%, TIE
-   1.7%, all others <= 0.3%); the fraction grows slowly with sigma (1.2% at 1e-5, 4.1% at 10^-1.5).
+   1.7%, all others <= 0.3%); the fraction grows slowly with sigma (1.6% at 1e-5, 4.1% at 10^-1.5).
    Item 4 fails in the takeover transitions (a learned pattern is lost when the next arrives), which the
    separation test does not see because the erased pattern was already learned.
 Signs: P_r <= 0 at plateau entry for 5.4% of the learned patterns (5.8% of all missing patterns). Such
@@ -471,8 +471,9 @@ use (it flags plateaus whose durations agree to 1e-9 between arithmetics). LSODA
 6. **Exponents and cells also for event 0** (the escape from the origin, depth K, Saxe exponent K - 2):
    reported alongside, not used for the route-theory decisions.
 7. **PS runs unfinished after 1 hour (21:13).** 20 PS runs (sigma <= 10^-3.5; all had learned the
-   pair 110001 + 110010 and were still on the depth-5 plateau before 000000) hit the 3600 s wall. They
-   were rerun with a 10800 s wall (`configs/sweep_ps_long.yaml`, same code and seeds); the 1-hour
-   records are kept in `/root/outputs/route-smallinit/runs_unfinished_1h/`. Runs that still do not
-   finish are reported as unfinished with their 1-hour record. Their reorder floor-check duplicates
-   (sigma <= 10^-4.5) are not rerun.
+   pair 110001 + 110010 and were still on the depth-5 plateau before 000000) hit the 3600 s wall after
+   more than a million solver steps. A rerun with a 10800 s wall and VODE-BDF from the start
+   (`configs/sweep_ps_long.yaml`) was abandoned after 8 minutes: VODE reported repeated error-test
+   failures from the origin on. The 20 runs are reported as unfinished with their 1-hour records
+   (copies in `/root/outputs/route-smallinit/runs_unfinished_1h/`); they are excluded from the fits,
+   which biases the PS {pair} -> 000000 cell at sigma <= 10^-4.25 toward the faster seeds.

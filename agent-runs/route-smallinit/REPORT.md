@@ -1,6 +1,6 @@
 # route-smallinit: route theory vs gradient-flow training from small random init (star targets)
 
-Status: working - Branch: agent/route-smallinit - Updated: 2026-10-13 20:50 UTC
+Status: done - Branch: agent/route-smallinit - Updated: 2026-10-13 21:30 UTC
 
 **Bugs in `ttn/routes.py`: none found.** Two usage notes (not bugs): `RouteTarget.greedy_next` breaks
 depth ties by the weight alone, not by s_r A_r(J) as in App. C. My greedy rule uses s_r A_r(J) (A_r at the
@@ -60,9 +60,9 @@ at sigma <= 1e-3 (9 grid points) unless stated. Every number: `experiments/route
 | (b) next pattern = greedy? | **yes without ties; ties: no** | no tie: 6882/6882 transitions; where greedy and pairwise rules name different patterns (747, the splices of B8, H4, S5A): greedy 100%, pairwise 0%; weight order wrong wherever it differs (0/3668); ties: heavier wins 82% overall (1909 tied transitions) (D4 62-64%, S5A 92%, S7 90%, S5B 67%, DB4/TIE 100%), the winner is fixed by the seed (same at every sigma in 99.5%) | `events.csv`, `fig_rules`, `fig_rules_vs_sigma` |
 | (c) duration ~ sigma^-(c-2)? | **yes on clean transitions** | per-seed exponents (sigma 1e-5..1e-3), clean transitions: c=3: 1.000 [1.000, 1.000] (399 fits), c=4: 2.000 [2.000, 2.000] (227); 98% of 648 fits with c >= 3 within 0.3 of c-2; all 125 splice fits at c-2, none at pairwise-2; c=2: log law, slope = 1/(s_r A_r(J)) within 1% in 6 of 7 cells; first escape: K-2 in 338/338 fits. Registered per-cell decisions: 42 SUPPORTED, 3 NOT SUPPORTED, 1 INCONCLUSIVE on clean events (37/7/3/3 incl. REFUTED on all events, the difference being forgetting runs) | `exponents.csv`, `cells.csv`, `fig_durations`, `fig_exponents` |
 | (c) failures | lighter-first plateaus; B4 slope; PS | S5A/S5B plateau with two light patterns learned: exponent 0.11 (log law) instead of 1, ending in a takeover; PS after 000000: exponent 2.000 (Theorem 3.2's order 4) instead of route depth 5's 3; PS 000000 after the pair: 3.0 or 3.9 depending on the seed; B4 c=2 slope 0.70 x prediction (also on M*) | `fig_shortcut_PS`, `fig_example_forgetting` |
-| (d) effective depth = c? | **yes** | medians 2.02 / 3.02 / 4.09 / 5.16 for c = 2/3/4/5 (90-100% within 0.3); first escape K within 0.03 | `fig_effective_depth` |
+| (d) effective depth = c? | **yes** | medians 2.02 / 3.02 / 4.09 / 5.16 for c = 2/3/4/5 (89-100% within 0.3); first escape K within 0.03 | `fig_effective_depth` |
 | (e) close to M*? | **yes, except during takeovers and mixed first escapes** | peak off-target fraction of ||W||^2 over a transition: median 8e-9, quartiles 2e-10, 4e-7, scales ~sigma^2; up to 0.5 in PS/S5A/S5B takeovers | `fig_offtarget` |
-| (f) Assumption C.1 | items 1-3 mostly hold; 4 fails in takeovers | (1) dormant entries ~ sigma at plateau entry in 36/39 cells (per-seed slope 1.00), not in B4 (0.70) and PS (0.88); spread across the route's nodes 2.3x; (2) active factors = A_r(J): ratio 1.000; (3-4) another pattern above 10% when the learned one passes 90%: 1.7% of events (PS 21%) | `c1.csv`, `plateaus.csv` |
+| (f) Assumption C.1 | items 1-3 mostly hold; 4 fails in takeovers | (1) dormant entries ~ sigma at plateau entry in 36/39 cells (per-seed slope 1.00), not in B4 (0.70) and PS (0.88); spread across the route's nodes 2.3x; (2) active factors = A_r(J): ratio 1.000; (3-4) another pattern above 10% when the learned one passes 90%: 1.8% of events (PS 21%) | `c1.csv`, `plateaus.csv` |
 | one-step-ahead (eq. 6.15) | **fails from P_r, works from the dormant-entry size** | from P_r(entry): observed/predicted 2.7 [0.9, 583], within [0.5, 2] 44%, winner right 82%; from the geometric mean of the dormant entries: 1.04 [0.93, 1.39], within [0.5, 2] 88%, winner right 98% (c <= 4; c = 5: 350) | `fig_onestep` |
 
 Failures of a prediction, each with its evidence:
@@ -102,8 +102,8 @@ Failures of a prediction, each with its evidence:
 Counts (6000 training runs): done 5710, **trapped 270** (D4 13 seeds and B4 5 seeds, x 15 sigma),
 **unfinished 20** (PS, sigma <= 10^-3.5, 1-hour cap: all had learned the pair and sat on the depth-5
 plateau before 000000 after > 1 million solver steps; 9 of them with the 000000 amplitude at ~1e-33,
-i.e. a dying route at the float64 floor; a rerun with a 3-hour cap and the BDF integrator is in
-progress, see Log), failed 0, **floor-flagged 11** (a duplicate with another contraction order or
+i.e. a dying route at the float64 floor; a rerun with the BDF integrator failed from the start and
+was abandoned; they are excluded from the fits), failed 0, **floor-flagged 11** (a duplicate with another contraction order or
 the library's arithmetic differs by > 1e-3 in a duration, max 2%, never in order or outcome; PS 5, S7
 5, B4 1, all at sigma <= 10^-4.75; excluded from fits). Behaviour tags: clean 3691 (62%), mixed first
 escape 1412, two at once later 813 (PS pair 497), forgetting 816, non-canonical plateau 556 (mostly at
@@ -118,16 +118,22 @@ plateau), `fig_rules`, `fig_rules_vs_sigma`, `fig_durations`, `fig_exponents`, `
 ## What was done
 
 1. Read the brief (1-3, 4.1), the paper (abstract, Secs. 1-3, 6-8, 10, App. C), `notes/saddle_dyn.md`
-   sec. 8, the drivers. Checked files and `uv run pytest tests/test_routes.py` (13 passed).
+   sec. 8, the drivers. Checked files and `uv run pytest tests/test_routes.py` (13 passed; still passing
+   at the end, `ttn/` untouched).
 2. Chose 10 targets with `ttn.routes` (`targets.py`, `results/predictions.csv`); the brief's ht4/binary8
    examples and decoupled mps5 have later route depths > 4 and were replaced by searched targets.
 3. Wrote the model (dense entrywise residual, exact Hessian), a step-driven LSODA driver with exact time
    bookkeeping, run reduction and sweep; pilots; pre-registration `notes/route_smallinit.md` Part I
-   (commit d44bc78, before the sweep).
-4. Sweep (two false starts, see Decisions), analysis (`analyze.py`), crossing histories and passes,
-   headline numbers, draft figures; first results pushed at 60f90a8.
-5. Investigated the failures (histories, passes, dormant-entry scaling, trapped routes); note Part II
-   and Part III (deviations).
+   (commit d44bc78, pushed before the sweep).
+4. Sweep: 6000 training runs, 150 reference runs on M*, 1300 floor-check duplicates (after two false
+   starts, Decisions), `uv run python experiments/route_smallinit/sweep.py configs/sweep.yaml`; first
+   results pushed at 60f90a8.
+5. Analysis (`analyze.py`: CSVs, crossing histories, passes, per-seed fits, per-cell decisions;
+   `headline.py`: every quoted number in `results/headline.md`; `figures.py`: 11 draft figures);
+   final analysis 7e7692f.
+6. Investigated the failures (histories, passes, dormant-entry scaling, trapped routes) and ran the
+   post-hoc no-cap diagnostic of the traps (`diag_trapped.py`, 35c2919). Note Part II (results with
+   status tags) and Part III (7 deviations).
 
 ## Decisions
 
@@ -150,12 +156,13 @@ plateau), `fig_rules`, `fig_rules_vs_sigma`, `fig_durations`, `fig_exponents`, `
 
 ## Files left on the machine
 
-- `/root/outputs/route-smallinit/runs/{dense,reorder,lib,ref}/<target>/*.json|npz` (~2.5 GB): raw
-  per-run records and trajectories; needed to rerun `analyze.py` (the CSVs in git are complete without
-  them).
-- `/root/outputs/route-smallinit/runs_try1_trapbug/`, `runs_try2_contaminated/`: set-aside outputs of the
-  two false starts (not used).
-- `/root/outputs/route-smallinit/logs/`: sweep logs.
+- `/root/outputs/route-smallinit/runs/{dense,reorder,lib,ref}/<target>/*.json|npz` (3.1 GB): raw
+  per-run records (events, plateau diagnostics) and trajectories (t, L, P, off-target mass, gradient
+  norm per solver step); needed to rerun `analyze.py`. The CSVs in git are complete without them.
+- `/root/outputs/route-smallinit/runs_unfinished_1h/` (278 MB): copies of the 20 unfinished PS records.
+- `/root/outputs/route-smallinit/runs_try1_trapbug/` (32 MB), `runs_try2_contaminated/` (187 MB):
+  set-aside outputs of the two false starts (not used; can be deleted).
+- `/root/outputs/route-smallinit/logs/` (1.4 MB): sweep logs.
 
 ## Caveats and next steps
 
@@ -179,3 +186,9 @@ plateau), `fig_rules`, `fig_rules_vs_sigma`, `fig_durations`, `fig_exponents`, `
 - 20:25 First results pushed (5970/6000 training runs; 30 slow PS runs at small sigma still running): CSVs, cells.csv decisions, results/headline.md, draft figures.
 - 20:35 Crossing histories reveal forgetting/takeovers (S5A, S5B, S7, PS) and the PS spectral shortcut (sigma^-2); passes table and clean-event basis added; note Part II drafted.
 - 20:50 Report drafted; waiting for the last PS runs (1-h cap) and their floor checks.
+- 21:13 20 PS runs ended at the 1-h cap (unfinished: >1M solver steps on the depth-5 plateau); rerun with BDF abandoned (VODE error-test failures); reported as unfinished (deviation 7).
+- 21:19 Sweep finished; final analysis; floor-check rule fixed so that a duplicate stopped by its own time cap gives no verdict (11 flagged of 1214 complete comparisons). Pushed 7e7692f.
+- 21:22 Post-hoc diagnostic: D4 and B4 without the bond cap never trap (0/160 vs 18/80 per sigma with the cap). Pushed 35c2919.
+- 21:30 Final numbers checked against results/headline.md; report complete.
+
+Status: done
