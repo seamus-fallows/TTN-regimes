@@ -1,0 +1,14 @@
+# Star-satisfying pattern targets for route_smallinit (selection: notes/route_smallinit.md, sec. 2).
+# kind: (i) decoupled, (ii) shared entries / smaller weight has the shorter route, (iii) splice on
+# the greedy path, (iv) tie in route depth broken by weight, (v) spectral shortcut at plateau 1.
+targets:
+  - {name: D4,   kind: "i",      tree: mps,    n_sites: 4, d: 3, patterns: ["0000", "1111", "2222"], weights: [1.0, 0.7, 0.45]}
+  - {name: DB4,  kind: "i",      tree: binary, n_sites: 4, d: 3, patterns: ["0000", "1111", "2222"], weights: [1.0, 0.7, 0.45]}
+  - {name: B4,   kind: "ii",     tree: mps,    n_sites: 4, d: 2, patterns: ["0000", "0110", "1001"], weights: [1.0, 0.3, 0.6]}
+  - {name: S5A,  kind: "iii,iv", tree: mps,    n_sites: 5, d: 3, patterns: ["00000", "00201", "10101", "11200"], weights: [1.0, 0.4, 0.75, 0.55]}
+  - {name: S5B,  kind: "iii",    tree: mps,    n_sites: 5, d: 3, patterns: ["00000", "02201", "20111", "20200"], weights: [1.0, 0.75, 0.55, 0.4]}
+  - {name: S7,   kind: "iii,iv", tree: mps,    n_sites: 7, d: 2, patterns: ["0000000", "0001011", "0100011", "0110100"], weights: [1.0, 0.4, 0.75, 0.55]}
+  - {name: H4,   kind: "ii,iii", tree: ht,     n_sites: 4, d: 3, patterns: ["0000", "0201", "1001", "2200"], weights: [1.0, 0.55, 0.75, 0.4]}
+  - {name: B8,   kind: "iii",    tree: binary, n_sites: 8, d: 2, patterns: ["00000000", "00001101", "10000001", "10000100"], weights: [1.0, 0.75, 0.4, 0.55]}
+  - {name: TIE,  kind: "iv",     tree: ht,     n_sites: 4, d: 3, patterns: ["0000", "1100", "2200"], weights: [1.0, 0.6, 0.45]}
+  - {name: PS,   kind: "v",      tree: mps,    n_sites: 6, d: 2, patterns: ["000000", "110001", "110010"], weights: [1.0, 0.8, 0.8]}
