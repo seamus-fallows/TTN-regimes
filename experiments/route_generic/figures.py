@@ -123,19 +123,20 @@ def fig_examples(ev, ex, out, title):
         pts = pts[(pts["duration"] > 0) & (~pts["floor_flag"].astype(bool))]
         color = TREE_COLOR[tree_kind(row["tree"])]
         ax.loglog(pts["sigma"], pts["duration"], "o-", color=color, ms=5, lw=1.5, label="measured")
-        s = np.array([pts["sigma"].min(), pts["sigma"].max()])
-        mid = np.exp(np.mean(np.log(pts["duration"])))
-        smid = np.exp(np.mean(np.log(pts["sigma"])))
-        ax.loglog(s, mid * (s / smid) ** (-(k - 2)), ls="--", color=MUTED, lw=1.2,
-                  label=f"prediction from cores that change: slope -{k - 2}")
-        ax.set_title(f"{label.replace(chr(10), ' ')}\n{row['tree']}, event {int(row['event'])}, k_region = {k}",
-                     fontsize=10)
+        # prediction anchored at the smallest sigma: duration ~ sigma^-(k_region - 2)
+        s = np.geomspace(pts["sigma"].min(), pts["sigma"].max(), 20)
+        pred = pts["duration"].iloc[0] * (s / pts["sigma"].iloc[0]) ** (-(k - 2))
+        lo, hi = pts["duration"].min() / 30, pts["duration"].max() * 30
+        ax.loglog(s, pred, ls="--", color=MUTED, lw=1.4, label="prediction: slope -(cores that change - 2)")
+        ax.set_ylim(lo, hi)
+        ax.set_title(f"{SHORT[fam]}\n{row['tree']}, event {int(row['event'])}, cores that change = {k}", fontsize=10)
         ax.set_xlabel("init scale sigma")
         if fam == fams[0][0]:
             ax.set_ylabel("plateau duration before the event\n(gradient-flow time)")
-        ax.legend(frameon=False, fontsize=8, loc="best")
+    handles, labels = axes[0][0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=2, frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
     fig.suptitle(title, fontsize=13)
-    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    fig.tight_layout(rect=(0, 0.07, 1, 0.93))
     savefig(fig, out / "examples_duration_vs_sigma")
     plt.close(fig)
 
