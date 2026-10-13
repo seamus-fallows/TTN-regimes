@@ -306,8 +306,8 @@ at a level of the numerical route-rule sequence within 5 %).
   canonical three-pattern plateau of RND1_mps6 (order 4, effective depth 3.9, route depth 5), where
   no theorem applies and the parent-wise formula of Theorem 9.2 predicts 2 (wrong); (ii) a
   **non-integer exponent** 0.61 [0.57, 0.70] at a canonical depth-3 plateau of RND3_mps6 whose
-  escape still has effective depth 3.03: the route enters the plateau larger than sigma
-  (Assumption C.1(1) fails); **empirical**, mechanism **conjecture** (section 13).
+  escape still has effective depth 3.03; **empirical**; the cause is not established (a head start
+  of the route during the preceding strict plateaus is a **conjecture**, section 13).
 - Learning on these targets also produces **dead routes** (training stuck for good at a
   rank-constrained optimum with a recombinant, 146 runs on R4 / R4d, always the same 5-6 seeds at
   every sigma) and **forgetting** at spectral escapes (section 14).
@@ -461,7 +461,7 @@ was not tested further.
    exist and last sigma^-1 to sigma^-3. **empirical**
 4. The numerical route rule at the measured plateau point predicts exponent, effective depth,
    escape type and the next string for every plateau type except spectral shortcuts and one
-   head-start case. **empirical**
+   case with a non-integer exponent (cause open). **empirical**
 5. At canonical one-pattern plateaus Theorem 3.2 gives the order also on non-star targets,
    including a spectral shortcut (order 4 < k* = 5) on a star control. **proven** (order),
    **empirical** (dynamics)
