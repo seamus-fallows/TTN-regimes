@@ -6,6 +6,7 @@ usage: uv run python experiments/route_generic/figures.py <results_dir>
 from __future__ import annotations
 
 import sys
+import textwrap
 from pathlib import Path
 
 import matplotlib
@@ -102,7 +103,7 @@ def fig_exponent_vs_depth(ex, out, title):
     ax.set_xlabel("effective depth from the growth law (d_eff)")
     ax.set_ylabel("plateau duration exponent p\n(duration ~ sigma^-p)")
     ax.legend(frameon=False, fontsize=9, loc="upper left")
-    ax.set_title(title, fontsize=12)
+    ax.set_title(textwrap.fill(title, 60), fontsize=12)
     fig.tight_layout()
     savefig(fig, out / "exponent_vs_depth")
     plt.close(fig)
@@ -164,7 +165,7 @@ def fig_agreement(sm, out, title):
     ax.set_ylim(-0.7, y.max() + 1.2)
     ax.set_xlabel("fraction of series (seed x event) that agree with the picture")
     ax.legend(frameon=False, fontsize=9, loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=1)
-    ax.set_title(title, fontsize=12)
+    ax.set_title(textwrap.fill(title, 70), fontsize=12)
     fig.tight_layout()
     savefig(fig, out / "agreement_by_target")
     plt.close(fig)

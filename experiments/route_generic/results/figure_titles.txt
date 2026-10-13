@@ -1,5 +1,5 @@
 depth = Outside pattern targets the growth-law depth stays near 2 (chain) or 3 (binary tree), however many cores change
 exponent = Outside pattern targets the plateau exponent stays near 0 (chain) or 1 (binary tree), however many cores change
-exp_depth = The growth-law depth predicts the plateau exponent, except for CP teachers with overlap 0.3
+exp_depth = The growth-law depth predicts the plateau exponent for most events; exceptions: CP teachers with overlap 0.3 and the second MNIST route on the binary tree
 examples = Plateau duration against init scale, one typical event per target: the prediction from the cores that change fails for CP teachers on the chain
-agreement = "Depth = cores that change" holds for pattern targets and random TTNs on the binary tree only
+agreement = The picture holds for pattern targets, for random TTNs on the binary tree and for the first MNIST route on the binary tree; elsewhere it fails

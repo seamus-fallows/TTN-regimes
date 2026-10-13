@@ -31,6 +31,10 @@ Medians [quartiles] over fitted series (seed x event). d_eff: growth-law depth; 
 | random TTN | mps6 | k=4 | 2 | 4 [4, 4] | 2.12 [2.11, 2.12] | 0.14 [0.13, 0.14] | 0% | 0% | 100% | 100% | INCONCLUSIVE |
 | random TTN | mps6 | k=5 | 6 | 5 [5, 5] | 2.03 [2.02, 2.06] | 0.16 [0.14, 0.17] | 0% | 0% | 83% | 67% | INCONCLUSIVE |
 | random TTN | mps6 | k=6 | 7 | 6 [6, 6] | 2.05 [2.01, 2.06] | 0.16 [0.11, 0.18] | 0% | 0% | 86% | 86% | INCONCLUSIVE |
+| MNIST | binary16_quadtree | all | 31 | 3 [3, 3] | 3.06 [3.03, 3.07] | 1.03 [0.62, 1.08] | 100% | 61% | 68% | 0% | PARTIAL |
+| MNIST | binary16_quadtree | k=3 | 31 | 3 [3, 3] | 3.06 [3.03, 3.07] | 1.03 [0.62, 1.08] | 100% | 61% | 68% | 0% | PARTIAL |
+| MNIST | mps16_snake | all | 34 | 2 [2, 2] | 1.97 [1.83, 2.00] | 0.34 [0.30, 0.39] | 76% | 24% | 15% | 97% | PARTIAL |
+| MNIST | mps16_snake | k=2 | 34 | 2 [2, 2] | 1.97 [1.83, 2.00] | 0.34 [0.30, 0.39] | 76% | 24% | 15% | 97% | PARTIAL |
 
 ### Event 0 (escape from the origin; p = K - 2 is an exact identity: a check of the estimators)
 
@@ -44,6 +48,8 @@ Medians [quartiles] over fitted series (seed x event). d_eff: growth-law depth; 
 | CP, overlap 0.6 | mps6 | 30 | 6 [6, 6] | 6.003 [5.999, 6.031] | 4.000 [4.000, 4.000] |
 | random TTN | binary8 | 30 | 7 [7, 7] | 7.001 [7.000, 7.003] | 5.000 [5.000, 5.000] |
 | random TTN | mps6 | 25 | 6 [6, 6] | 5.990 [5.972, 5.995] | 4.000 [4.000, 4.000] |
+| MNIST | binary16_quadtree | 20 | 15 [15, 15] | - | 13.000 [13.000, 13.000] |
+| MNIST | mps16_snake | 10 | 16 [16, 16] | - | 14.000 [14.000, 14.000] |
 
 ### Runs and counts
 
@@ -57,5 +63,5 @@ Medians [quartiles] over fitted series (seed x event). d_eff: growth-law depth; 
 | CP, overlap 0.6 | mps6 | 330 | 330 | 0 | 0 | 0 (0) | 75 / 117 |
 | random TTN | binary8 | 330 | 330 | 0 | 0 | 37 (37) | 101 / 111 |
 | random TTN | mps6 | 330 | 330 | 0 | 0 | 0 (0) | 89 / 210 |
-| MNIST | binary16_quadtree | 90 | 90 | 0 | 26 | 0 (0) | 0 / 126 |
-| MNIST | mps16_snake | 22 | 22 | 0 | 1 | 0 (0) | 0 / 107 |
+| MNIST | binary16_quadtree | 180 | 180 | 0 | 56 | 0 (0) | 51 / 263 |
+| MNIST | mps16_snake | 180 | 180 | 0 | 54 | 0 (0) | 44 / 528 |
