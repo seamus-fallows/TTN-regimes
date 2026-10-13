@@ -26,3 +26,4 @@ Status: working - Branch: agent/route-generic - Updated: 2026-10-13 19:31 UTC
 - 19:38 Pilots: 16 synthetic runs (8-150 s each, all converged), 4 MNIST runs (tau = 2000: 150-250 s).
 - 19:40 Pre-registration committed (f31079c, notes/route_generic.md Part I). Sweeps launched: synthetic 2640 runs (64 workers), MNIST 180 runs (56 workers).
 - 19:44 Jacobian switched to the library's contraction-based exact Hessian (Problem.hessian, 0.12 s vs 2.5 s for the dense double-backward; identical to 1e-21); synthetic sweep restarted, the 30 finished runs kept (numerics-only, Part III of the note).
+- 20:25 Interim table pushed (experiments/route_generic/results/partial/, 1680 synthetic runs). First reading: pattern control and random TTN on binary8 follow the picture; on generic targets the events often involve more cores than the growth-law depth and the duration exponent indicate. MNIST seeds 10-19 queued to start when the synthetic sweep ends.
