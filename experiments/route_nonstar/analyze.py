@@ -132,9 +132,24 @@ def build_tables(recs, infos):
                          t_first_escape=r.get("t_first_escape_abs"), t_end_rel=r["t_end"],
                          n_steps=r["n_steps"], n_restart=r["n_restart"], n_fails=len(r["fails"]),
                          secs=r["secs"]))
-        # ---- one row per segment (plateau) with the drop that leaves it
-        for k, s in enumerate(segs):
+        # ---- plateaus = resolved segments (deviation 1: an unresolved segment between two drops
+        # is a transient inside one escape, merged with the drops around it)
+        def is_plateau(k, s):
             if s is None:
+                return False
+            if s.get("final") and r["status"] == "converged":
+                return False
+            return k == 0 or bool(s.get("resolved")) or (s.get("final") and "J_amp" in s)
+
+        plateau_ks = [k for k, s in enumerate(segs) if is_plateau(k, s)]
+        n_transient = sum(1 for k, s in enumerate(segs) if s is not None and not is_plateau(k, s)
+                          and not (s.get("final") and r["status"] == "converged"))
+        runs[-1]["n_transients"] = n_transient
+        runs[-1]["n_plateaus"] = sum(1 for k in plateau_ks if k >= 1)
+        P_end = np.array(r["P_end"])
+        J_end = [a for a in range(len(info.pats)) if P_end[a] > info.w[a] / 2]
+        for k, s in enumerate(segs):
+            if k not in plateau_ks:
                 continue
             final = s.get("final", False)
             converged_end = final and r["status"] == "converged"
@@ -177,17 +192,28 @@ def build_tables(recs, infos):
                            pred_pair=cC, pred_pair_next=info.pats[nC] if nC is not None else None,
                            pred_weight_next=info.pats[nW] if nW is not None else None,
                            pred_hand=info.hand_order(s["canonical"], J, tag))
-            # what the next drop does
-            if k < len(drops) and drops[k] is not None:
-                d = drops[k]
-                row.update(next_learned=" ".join(d["learned"]), next_lost=" ".join(d["lost"]),
-                           next_top_change=d["top_change"],
-                           next_top_change_is_target=d["top_change_is_target"],
-                           next_L_after=d["L_after"], next_off_peak=d["off_peak"],
-                           next_eff_depth_loss=d["eff_depth_loss"],
+            # what the escape does: the drops up to the next plateau (or to the end), merged
+            later = [q for q in plateau_ks if q > k]
+            k2 = later[0] if later else len(segs) - 1
+            group = [d for d in drops[k:k2] if d is not None] if k < len(drops) else []
+            if group and (later or r["status"] == "converged"):
+                J_this = set(s.get("J_amp_idx", []))
+                J_next = set(segs[k2]["J_amp_idx"]) if later else set(J_end)
+                big = max(group, key=lambda d: d["L_before"] - d["L_after"])
+                amp = {}
+                for d in group:
+                    amp.update(d["eff_depth_amp"])
+                learned = [info.pats[a] for a in sorted(J_next - J_this)]
+                row.update(next_learned=" ".join(learned),
+                           next_lost=" ".join(info.pats[a] for a in sorted(J_this - J_next)),
+                           next_n_drops=len(group), next_top_change=big["top_change"],
+                           next_top_change_is_target=big["top_change_is_target"],
+                           next_L_after=group[-1]["L_after"],
+                           next_off_peak=max(d["off_peak"] for d in group),
+                           next_eff_depth_loss=group[0]["eff_depth_loss"],
                            next_eff_depth_amp=" ".join(f"{p}:{v:.3f}" if v else f"{p}:nan"
-                                                       for p, v in d["eff_depth_amp"].items()),
-                           next_kind="learn" if d["learned"] else "cleanup")
+                                                       for p, v in amp.items()),
+                           next_kind="learn" if learned else "cleanup")
             trans.append(row)
             # plateaus.csv: one row per (plateau, missing pattern)
             if k >= 1:
@@ -222,7 +248,8 @@ def build_tables(recs, infos):
             J = e["J_before"]
             q = e["a"]
             k_drop = e["drop"]
-            before = segs[k_drop - 1] if k_drop and k_drop - 1 < len(segs) else None
+            prior = [segs[q] for q in plateau_ks if q >= 1 and segs[q]["t_mid"] < e["t"]]
+            before = prior[-1] if prior else None
             depth = info.rt.depth(J, q) if J else info.K
             pair = min((info.rt.pair_cost(a, q) for a in J), default=info.K)
             cA, nA, _ = info.paper(J)
@@ -236,16 +263,15 @@ def build_tables(recs, infos):
                                pred_paper_next=info.pats[nA] if nA is not None else None,
                                pred_pair_next=info.pats[nC] if nC is not None else None,
                                pred_weight_next=info.pats[nW] if nW is not None else None,
-                               route_k_before=before.get("route_k") if before and k_drop > 1
-                               else None,
+                               route_k_before=before.get("route_k") if before else None,
                                pred_route_next=(before.get("route") or {}).get("string")
-                               if before and k_drop > 1 else None,
+                               if before else None,
                                eff_depth=e["eff_depth"],
                                off_peak=d["off_peak"] if d else None,
                                plateau_before_L=before.get("L") if before else None,
                                plateau_before_L_J=info.rt.partial_loss(J),
                                plateau_before_d_canon=_dist_to(before, info, J)
-                               if before and k_drop > 1 else None))
+                               if before else None))
     return (pd.DataFrame(runs), pd.DataFrame(trans), pd.DataFrame(events), pd.DataFrame(plats))
 
 
@@ -295,20 +321,28 @@ def decide(med, frac, pred):
     return "partial"
 
 
-def summarize_fits(fits, group_cols, preds):
+def summarize_fits(fits, group_cols, preds, rows_all=None):
+    """Per group: distribution of the per-seed exponents and, per predictor, the predicted
+    exponent, the fraction of fitted seeds within TOL and the decision. Predictions are medians
+    over every window row of the group (rows_all), so groups without any fit still appear."""
+    src = rows_all if rows_all is not None else fits
     rows = []
-    for keys, g in fits.groupby(group_cols, dropna=False):
-        f = g[g.fitted]
-        row = dict(zip(group_cols, keys if isinstance(keys, tuple) else (keys,)))
-        e = f.exponent.values
-        row.update(n_seeds=len(g), n_fitted=len(f),
+    for keys, g in src.groupby(group_cols, dropna=False):
+        keys = keys if isinstance(keys, tuple) else (keys,)
+        sel = np.ones(len(fits), dtype=bool)
+        for c, v in zip(group_cols, keys):
+            sel &= (fits[c] == v).values
+        f = fits[sel & fits.fitted.values] if len(fits) else fits
+        row = dict(zip(group_cols, keys))
+        e = f.exponent.values if len(f) else np.array([])
+        row.update(n_seeds=int(sel.sum()), n_fitted=len(e),
                    median=float(np.median(e)) if len(e) else np.nan,
                    q25=float(np.percentile(e, 25)) if len(e) else np.nan,
                    q75=float(np.percentile(e, 75)) if len(e) else np.nan)
         for name, col in preds.items():
             p = g[col].median() if col in g and g[col].notna().any() else np.nan
             pe = exp_of(p) if not np.isnan(p) else np.nan
-            if name in ("paper", "pair") and np.isnan(pe):
+            if name in ("paper", "pair") and np.isnan(pe) and "origin" not in str(keys):
                 pe = 0.0  # every pattern already in J: these rules predict no plateau
             frac = float(np.mean(np.abs(e - pe) <= TOL)) if len(e) and not np.isnan(pe) else np.nan
             row[f"order_{name}"] = p
@@ -392,7 +426,8 @@ def main():
                          ["pred_paper", "pred_route", "pred_pair", "pred_hand"])
     fits.to_csv(out / "fits.csv", index=False, float_format="%.6g")
     preds = dict(paper="pred_paper", route="pred_route", pair="pred_pair", hand="pred_hand")
-    summ = summarize_fits(fits, ["target", "key"], preds)
+    win_rows = trans[trans.log10_sigma <= WINDOW_MAX + 1e-9]
+    summ = summarize_fits(fits, ["target", "key"], preds, win_rows)
     # attach what the plateau is (P1) and what leaves it
     desc = trans[(trans.log10_sigma <= WINDOW_MAX + 1e-9)].groupby(["target", "key"]).agg(
         n_points=("seed", "size"), frac_canonical=("canonical", "mean"),
@@ -413,7 +448,8 @@ def main():
                           ["pred_paper", "pred_route", "pred_pair", "eff_depth"])
     efits.to_csv(out / "event_fits.csv", index=False, float_format="%.6g")
     esumm = summarize_fits(efits, ["target", "ident"],
-                           dict(paper="pred_paper", route="pred_route", pair="pred_pair"))
+                           dict(paper="pred_paper", route="pred_route", pair="pred_pair"),
+                           ev_ok[ev_ok.log10_sigma <= WINDOW_MAX + 1e-9])
     esumm.to_csv(out / "event_fit_summary.csv", index=False, float_format="%.4g")
     # ---- escape type and sequence agreement
     escape_types(trans).to_csv(out / "escape_type.csv", index=False, float_format="%.4g")

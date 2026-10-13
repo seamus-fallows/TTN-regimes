@@ -220,4 +220,20 @@ smallest sigma are too slow, log10 sigma = -3.5 (then -3.25) is cut for K = 6, 7
 
 ## 8. Deviations from the pre-registration
 
-(none yet)
+1. **Transient segments merged into the escape (analysis only, 19:55, before any fit was looked
+   at; seen on the first ~800 runs, K = 7 trees at the smallest sigmas).** `find_plateaus` sometimes
+   splits one escape into two drops when its rate has two stages (e.g. TD_binary8: 0.0152 -> 0.0105
+   -> 0; CTL1_binary8: 0.1013 -> 0.0724 -> 0 while 10111001 is being learned). The segment between
+   such drops is not a plateau: its minimum-gradient point has |grad| ~ 0.01-0.07 and is not near a
+   critical point (route rule k* = 1). As registered, it would get its own plateau key and would
+   split the transition, e.g. the star control CTL1_binary8 would show a "clean-up" drop followed
+   by learning, and every predictor would be scored on a non-plateau. Rule now: a segment is a
+   **plateau only if `find_plateaus` resolves it** (separation ratio > 3, the repo's plateau
+   definition; registered as the "resolved" flag); an unresolved segment is a transient and the
+   drops around it form one escape (learned set = difference between the plateau points before and
+   after; effective depth from the first sub-drop, whose window holds the onset of the escape;
+   string changing most = that of the largest sub-drop). Durations are unchanged (they end at the
+   first sub-drop). Check that the rule separates the two kinds: over those runs the ratio
+   |grad|^2 x width / (loss drop) at the segment's minimum-gradient point is < 1e-6 for every
+   resolved segment and > 1e-3 for every unresolved one (77 segments). Transient counts are kept
+   per run (`runs.csv: n_transients`).
