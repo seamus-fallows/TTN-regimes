@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791927913,
+  "reason": "user",
+  "outputs": {
+    "files": 16649,
+    "bytes": 3733489631,
+    "sample": [
+      "route-smallinit/logs/sweep_try1_trapbug.log",
+      "route-smallinit/logs/sweep_try2_contaminated.log",
+      "route-smallinit/logs/sweep.log",
+      "route-smallinit/logs/sweep_ps_long.log",
+      "route-smallinit/logs/diag_trapped.log"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}
