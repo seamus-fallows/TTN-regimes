@@ -84,7 +84,7 @@ def direction(cell, kind: str, i: int) -> np.ndarray:
 
 
 def summarize_crossings(res, missing):
-    learn = [c for c in res["cross"] if c["kind"] == "learn"]
+    learn = sorted((c for c in res["cross"] if c["kind"] == "learn"), key=lambda c: c["t"])
     first = learn[0] if learn else None
     return first
 

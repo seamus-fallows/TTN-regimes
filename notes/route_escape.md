@@ -234,7 +234,23 @@ Status tags: **proven** (a theorem of the paper; numerics only illustrate it), *
 
 ## 8. Static order (P1, P2, Hessian)
 
-STATIC_TABLE
+| cell | tree | c_star | order_Mstar | order_full | decision | hess_lam_min | hess_n_neg | minimiser_off_M |
+|---|---|---|---|---|---|---|---|---|
+| EX87_J01 | mps7 | 2 | 2.000 | 2.000 | = c*_J | -0.478 | 3 | 0.086 |
+| EX87_J0 | mps7 | 5 | 5.000 | 5.000 | = c*_J | -1.3e-15 | 0 | 0.836 |
+| S3 | mps7 | 3 | 3.000 | 3.000 | = c*_J | -1.3e-15 | 0 | 0.921 |
+| S4 | mps7 | 4 | 4.000 | 4.000 | = c*_J | -1.6e-15 | 0 | 0.878 |
+| U3HT | ht4 | 3 | 3.000 | 3.000 | = c*_J | -2.1e-15 | 0 | 0.775 |
+| U4B8 | binary8 | 4 | 4.000 | 4.000 | = c*_J | -1.4e-15 | 0 | 0.601 |
+| U5B8 | binary8 | 5 | 5.000 | 5.000 | = c*_J | -1.7e-15 | 0 | 0.772 |
+| TWO23 | mps7 | 2 | 2.000 | 2.000 | = c*_J | -0.191 | 3 | 0.710 |
+| TWO34 | binary8 | 3 | 3.000 | 3.000 | = c*_J | -1.4e-15 | 0 | 0.996 |
+| TIE3 | ht4 | 3 | 3.000 | 3.000 | = c*_J | -1.6e-15 | 0 | 0.215 |
+| PS2 | mps6 | 5 | 5.000 | 4.000 | shortcut | -9.8e-16 | 0 | 0.972 |
+| T92a | mps6 | 3 | 3.000 | 3.000 | = c*_J | -1.1e-15 | 0 | 0.827 |
+| T92b | mps6 | 5 | 5.000 | 4.000 | shortcut | -1.6e-15 | 0 | 0.997 |
+| T92c | mps6 | 5 | 5.000 | 5.000 | = c*_J | -1.6e-15 | 0 | 0.661 |
+| T92d | mps6 | 5 | 5.000 | 4.000 | shortcut | -1.2e-15 | 0 | 0.972 |
 
 - **P1 holds in all 15 cells** (empirical check of a proven statement): inside M* the measured order
   is c*_J to within 0.0004 (local slope at t = 0.0175 -> 0.0125; the last two local slopes agree to
@@ -261,7 +277,17 @@ STATIC_TABLE
 
 ## 9. Theorem 9.2 on its natural family (P8)
 
-THM92_TABLE
+| cell | parent | parent_weight | residuals | k_star | l_star | parent_order | formula | c_star | order_full | holds |
+|---|---|---|---|---|---|---|---|---|---|---|
+| PS2 | 000000 | 1.000 | 110001:0.8 110010:0.8 | 5 | 2.000 | 4 | 4 | 5 | 4.000 | True |
+| T92a | 000000 | 1.000 | 002020:0.5 | 3 |  | 3 | 3 | 3 | 3.000 | True |
+| T92a | 111111 | 0.800 | 211211:0.5 | 4 |  | 4 | 3 | 3 | 3.000 | True |
+| T92b | 000000 | 1.000 | 220002:0.8 220020:0.8 | 5 | 2.000 | 4 | 4 | 5 | 4.000 | True |
+| T92b | 111111 | 0.900 | 211121:0.5 | 5 |  | 5 | 4 | 5 | 4.000 | True |
+| T92c | 000000 | 1.000 | 220002:0.6 220020:0.6 | 5 |  | 5 | 5 | 5 | 5.000 | True |
+| T92c | 111111 | 0.900 | 211121:0.5 | 5 |  | 5 | 5 | 5 | 5.000 | True |
+| T92d | 000000 | 1.000 | 200020:0.5 | 5 |  | 5 | 4 | 5 | 4.000 | True |
+| T92d | 111111 | 0.500 | 221112:0.4 221121:0.4 | 5 | 2.000 | 4 | 4 | 5 | 4.000 | True |
 
 **The formula holds at all five instances** (empirical): both parents direct (T92a: 3), a pair-star
 spectral shortcut at one parent (T92b, PS2: 4 < k* = 5), its control without the shortcut (T92c: 5),
@@ -270,3 +296,379 @@ the parent's own weight, not on the largest one, as the formula says. Caveat: th
 the theorem was built for (parents share no entry); splicing cells (c_J(r) < pair cost) are outside
 Assumption 9.1, and there the formula with the nearest parent over-predicts (e.g. EX87_J01: 4 against
 the measured 2), as the paper's remark after Thm 9.2 says.
+
+## 10. Starts inside M*: full network = reduced flow = isolated-route formula (P3, P4)
+
+Kinds A (positive dormant entries), A_bal (all dormant entries = eps), B (random signs) and the
+diagnostic Cp (Gaussian projected onto M*), every eps, every cell.
+
+| cell | kind | P3_runs | P3_max_rel | P3_first_agree | P3 | iso_frac_within_5pct | iso_ratio_median | iso_winner_frac_window |
+|---|---|---|---|---|---|---|---|---|
+| EX87_J01 | A | 220.000 | 1.3e-09 | 1.000 | holds | 1.000 | 0.999 | 1.000 |
+| EX87_J01 | A_bal | 13.000 | 6.8e-11 | 1.000 | holds | 1.000 | 0.999 | 1.000 |
+| EX87_J01 | B | 234.000 | 1.2e-09 | 1.000 | holds | 1.000 | 0.999 | 1.000 |
+| EX87_J01 | Cp | 112.000 | 1.2e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| TWO23 | A | 224.000 | 7.1e-10 | 1.000 | holds | 1.000 | 0.999 | 1.000 |
+| TWO23 | A_bal | 14.000 | 2.6e-10 | 1.000 | holds | 1.000 | 0.999 | 1.000 |
+| TWO23 | B | 237.000 | 9.1e-10 | 1.000 | holds | 1.000 | 0.999 | 1.000 |
+| TWO23 | Cp | 112.000 | 1.1e-09 | 1.000 | holds | 1.000 | 0.999 | 1.000 |
+| S3 | A | 239.000 | 3.6e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| S3 | A_bal | 15.000 | 2.3e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| S3 | B | 240.000 | 3.4e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| S3 | Cp | 112.000 | 3.6e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U3HT | A | 237.000 | 4.1e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U3HT | A_bal | 15.000 | 1.8e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U3HT | B | 240.000 | 5.8e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U3HT | Cp | 112.000 | 5.8e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| TWO34 | A | 238.000 | 4.8e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| TWO34 | A_bal | 15.000 | 9.3e-10 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| TWO34 | B | 240.000 | 6.3e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| TWO34 | Cp | 112.000 | 2.6e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| TIE3 | A | 238.000 | 3.9e-09 | 0.992 | fails | 0.000 | 0.796 | 0.938 |
+| TIE3 | A_bal | 14.000 | 1.6e-09 | 1.000 | holds | 0.000 | 0.804 | 1.000 |
+| TIE3 | B | 240.000 | 5.7e-09 | 1.000 | holds | 0.125 | 0.984 | 0.875 |
+| TIE3 | Cp | 112.000 | 8.5e-09 | 1.000 | holds | 0.188 | 0.949 | 0.812 |
+| S4 | A | 230.000 | 5.2e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| S4 | A_bal | 15.000 | 9.2e-07 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| S4 | B | 232.000 | 5.1e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| S4 | Cp | 112.000 | 5.2e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U4B8 | A | 238.000 | 2.7e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U4B8 | A_bal | 15.000 | 1.2e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U4B8 | B | 238.000 | 2.8e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U4B8 | Cp | 112.000 | 9.9e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| EX87_J0 | A | 240.000 | 9.8e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| EX87_J0 | A_bal | 15.000 | 2.2e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| EX87_J0 | B | 240.000 | 5.0e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| EX87_J0 | Cp | 112.000 | 2.1e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U5B8 | A | 239.000 | 4.5e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U5B8 | A_bal | 15.000 | 4.6e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U5B8 | B | 240.000 | 2.9e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| U5B8 | Cp | 112.000 | 6.0e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| PS2 | A | 240.000 | 4.3e-08 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| PS2 | A_bal | 15.000 | 3.4e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| PS2 | B | 240.000 | 9.4e-09 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+| PS2 | Cp | 112.000 | 1.5e-07 | 1.000 | holds | 1.000 | 1.000 | 1.000 |
+
+- **P3 holds** (empirical illustration of the proven Thm 7.7): in all 4 kinds x 11 cells the full
+  network's escape time equals the reduced flow's to at most 9.2e-7 relative (median 3e-10), 6597
+  runs; the full network stays exactly on M* (off-target mass 0 at every escape). The single "fails"
+  entry (TIE3 A) is one run at eps = 10^-1.25 where the two tied patterns cross s/2 within one
+  solver step of the reduced flow, which then reports the lower pattern index (bookkeeping, not
+  dynamics: the escape times agree to 2e-10 and the full run's two crossings are 0.008 apart).
+- **P4 (eq. 6.16 with its prefactor) holds wherever the route is isolated** (empirical): in 10 of 11
+  cells every window run of A, A_bal, B and Cp has |t_esc / t_iso - 1| <= 0.05 (median ratio 0.9986-
+  1.0000; the largest deviation is 1.0 %, PS2 Cp at eps = 1e-3, where the second missing pattern's
+  route shares entries; depth-2 cells up to 0.6 %). For balanced starts the
+  literal eq. 6.16 holds:
+
+| cell | depth | sA | smallest_eps | t_esc | t_iso | ratio_iso | t_616 | ratio_616 | log_slope | log_slope_pred |
+|---|---|---|---|---|---|---|---|---|---|---|
+| EX87_J01 | 2 | 0.478 | 3.2e-05 | 15.225 | 15.232 | 1.000 | 21.680 | 0.702 | 2.092 | 2.092 |
+| TWO23 | 2 | 0.191 | 3.2e-05 | 40.517 | 40.562 | 0.999 | 54.201 | 0.748 | 5.231 | 5.231 |
+| S3 | 3 | 0.574 | 3.2e-05 | 55124.201 | 55124.568 | 1.000 | 55139.028 | 1.000 |  |  |
+| U3HT | 3 | 0.339 | 3.2e-05 | 93138.677 | 93139.825 | 1.000 | 93160.338 | 1.000 |  |  |
+| TWO34 | 3 | 0.264 | 3.2e-05 | 1.2e+05 | 1.2e+05 | 1.000 | 1.2e+05 | 1.000 |  |  |
+| TIE3 | 3 | 0.776 | 3.2e-05 | 32770.261 | 40724.661 | 0.805 | 40736.488 | 0.804 |  |  |
+| S4 | 4 | 0.582 | 3.2e-05 | 8.6e+08 | 8.6e+08 | 1.000 | 8.6e+08 | 1.000 |  |  |
+| U4B8 | 4 | 0.462 | 3.2e-05 | 1.1e+09 | 1.1e+09 | 1.000 | 1.1e+09 | 1.000 |  |  |
+| EX87_J0 | 5 | 0.500 | 3.2e-05 | 2.1e+13 | 2.1e+13 | 1.000 | 2.1e+13 | 1.000 |  |  |
+| U5B8 | 5 | 0.528 | 3.2e-05 | 2.0e+13 | 2.0e+13 | 1.000 | 2.0e+13 | 1.000 |  |  |
+| PS2 | 5 | 0.800 | 3.2e-05 | 1.3e+13 | 1.3e+13 | 1.000 | 1.3e+13 | 1.000 |  |  |
+
+  For depth >= 3 the leading term of eq. 6.16, eps^-(c-2) / ((c-2) s_r A_r(J)), is within 0.03 % of
+  the measured time at eps = 10^-4.5 (ratio_616 = 1.000). For depth 2 the slope of t_esc against
+  ln(1/eps) equals 1/(s_r A_r(J)) to 6 digits (EX87_J01: 2.092 vs 2.092; TWO23: 5.231 vs 5.231); the
+  leading term of eq. 6.16 lacks the additive O(1) constant (ratio 0.70-0.75), which the isolated-
+  route integral includes (ratio 1.000). Random signs (B) do not change the exponent: a negative
+  starting product only lengthens the escape (the smallest factor has to cross zero), exactly as the
+  isolated-route integral with the start's own factors predicts (B: ratio within 5 % in every window
+  run of 10 cells).
+- **P4 fails in TIE3** (empirical): the two tied missing patterns 0001 and 0010 share 2 of their 3
+  dormant entries, so their routes are not isolated (Assumption C.1(3) fails). With positive entries
+  (A, A_bal) the shared entries are pushed by both routes and the escape comes earlier than the
+  isolated-route formula (window ratio 0.54-0.91, median 0.80; balanced 0.80); with random signs (B)
+  the two routes can help or fight (ratio 0.51-3.2, median 0.98). The reduced flow of Thm 7.7 still predicts every run exactly.
+
+## 11. Escape exponents (P5)
+
+Per direction: OLS slope gamma of log t_esc on log(1/eps) over eps = 10^-4.5 ... 10^-3.
+
+| cell | kind | gamma_pred | n_complete | n_at_pred | n_shifted | n_trapped | n_incomplete | gamma [q1, q3] | frac_within_03 | P5 | greedy_frac_window | P6 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EX87_J01 | A | 0.000 | 16 | 16 | 0 | 0 | 0 | 0.176 [0.163, 0.193] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| EX87_J01 | A_bal | 0.000 | 1 | 1 | 0 | 0 | 0 | 0.185 [0.185, 0.185] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| EX87_J01 | B | 0.000 | 16 | 16 | 0 | 0 | 0 | 0.163 [0.150, 0.170] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| EX87_J01 | C | 0.000 | 16 | 16 | 0 | 0 | 0 | 0.190 [0.183, 0.201] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| EX87_J01 | Cp | 0.000 | 16 | 16 | 0 | 0 | 0 | 0.163 [0.148, 0.191] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| TWO23 | A | 0.000 | 16 | 16 | 0 | 0 | 0 | 0.162 [0.151, 0.176] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| TWO23 | A_bal | 0.000 | 1 | 1 | 0 | 0 | 0 | 0.170 [0.170, 0.170] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| TWO23 | B | 0.000 | 16 | 16 | 0 | 0 | 0 | 0.151 [0.140, 0.157] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| TWO23 | C | 0.000 | 16 | 16 | 0 | 0 | 0 | 0.174 [0.168, 0.183] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| TWO23 | Cp | 0.000 | 16 | 16 | 0 | 0 | 0 | 0.151 [0.138, 0.175] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| S3 | A | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.002 [1.001, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S3 | A_bal | 1.000 | 1 | 1 | 0 | 0 | 0 | 1.002 [1.002, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S3 | B | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.001 [1.001, 1.001] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S3 | C | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.003 [1.003, 1.004] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S3 | Cp | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.002 [1.001, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U3HT | A | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.002 [1.001, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U3HT | A_bal | 1.000 | 1 | 1 | 0 | 0 | 0 | 1.002 [1.002, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U3HT | B | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.001 [1.001, 1.001] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U3HT | C | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.003 [1.002, 1.004] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U3HT | Cp | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.001 [1.000, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TWO34 | A | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.001 [1.001, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TWO34 | A_bal | 1.000 | 1 | 1 | 0 | 0 | 0 | 1.002 [1.002, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TWO34 | B | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.001 [1.001, 1.001] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TWO34 | C | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.002 [1.001, 1.003] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TWO34 | Cp | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.001 [1.000, 1.001] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TIE3 | A | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.002 [1.002, 1.003] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TIE3 | A_bal | 1.000 | 1 | 1 | 0 | 0 | 0 | 1.003 [1.003, 1.003] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TIE3 | B | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.001 [1.001, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TIE3 | C | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.003 [1.003, 1.004] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| TIE3 | Cp | 1.000 | 16 | 16 | 0 | 0 | 0 | 1.001 [1.001, 1.002] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S4 | A | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S4 | A_bal | 2.000 | 1 | 1 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S4 | B | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S4 | C | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [2.000, 2.001] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| S4 | Cp | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U4B8 | A | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U4B8 | A_bal | 2.000 | 1 | 1 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U4B8 | B | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U4B8 | C | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U4B8 | Cp | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [2.000, 2.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| EX87_J0 | A | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| EX87_J0 | A_bal | 3.000 | 1 | 1 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| EX87_J0 | B | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| EX87_J0 | C | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [2.999, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| EX87_J0 | Cp | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U5B8 | A | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U5B8 | A_bal | 3.000 | 1 | 1 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U5B8 | B | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| U5B8 | C | 3.000 | 7 | 7 | 0 | 0 | 9 | 3.001 [3.000, 3.002] | 1.000 | INCONCLUSIVE | 1.000 | SUPPORTED |
+| U5B8 | Cp | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| PS2 | A | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| PS2 | A_bal | 3.000 | 1 | 1 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| PS2 | B | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+| PS2 | C | 2.000 | 16 | 16 | 0 | 0 | 0 | 2.000 [1.999, 2.001] | 1.000 | SUPPORTED | 0.384 | NOT SUPPORTED |
+| PS2 | Cp | 3.000 | 16 | 16 | 0 | 0 | 0 | 3.000 [3.000, 3.000] | 1.000 | SUPPORTED | 1.000 | SUPPORTED |
+
+- **Inside M* (A, A_bal, B, Cp): every one of the 441 directions at cells with c*_J >= 3 has gamma
+  within 0.005 of c*_J - 2** (the depth-2 log law is in section 10). Status: empirical, consistent with the proven
+  order (Thm 8.4(3)) and the derived eq. 6.16.
+- **Gaussian starts (C): 167 of 176 directions are complete; at the 9 cells with p >= 3 all complete
+  ones are within 0.05 of p - 2** (135 of 135; 131 within 0.01), p the static full-space order. The 9 incomplete ones are all in U5B8 (depth 5); each has at least one
+  floor-flagged window run (eps <= 10^-4) and is excluded by the registered rule, so U5B8 C is
+  INCONCLUSIVE by rule. Not registered, for information: fitting all 7 window runs of these 9
+  directions gives 2.996-3.034 for 8 of them and **4.004 for direction 9**, which is at 4.0 already on
+  its unflagged points (t_esc = 3.0e10, 3.0e12 at eps = 1e-3, 10^-3.5; section 12).
+- **PS2 C: gamma = 2.000 for all 16 directions**, the shortcut order 4 measured statically, not the
+  route depth 5 (gamma = 3). The Gaussian start finds the spectral shortcut; starts inside M* (A, B,
+  Cp) cannot reach it and escape with gamma = 3.000. This is the dynamical counterpart of Remark 8.5.
+- **Depth-2 cells: P5 is INCONCLUSIVE by my own registered rule, which was mis-specified for a log
+  law**: t = a ln(1/eps) + b has a log-log slope a/t ~ 0.16 in this window, never within 0.15 of 0.
+  The log law itself is confirmed by the registered P4 test (slope of t against ln(1/eps) = 1/(s_r
+  A_r(J)) to 6 digits for A, A_bal, B; Gaussian starts: ratio 0.996-1.005 to the same prediction).
+- No direction of any kind was trapped and none had a shifted exponent apart from U5B8 C direction 9.
+
+## 12. Why a Gaussian direction is shifted: route entries drained by off-target clusters
+
+U5B8 C direction 9 escapes with exponent 4 at every eps from 1e-3 to 10^-4.5 (t_esc = 3.0e10, 3.0e12,
+3.05e14, 3.05e16; the last two floor-flagged), one power more than c*_J - 2 = 3 (`fig7_shift_mechanism`).
+Following the route entries with `align` + `route_entry_norms` (`escape_runs.csv`, columns
+`route_*`; raw checkpoints in the JSON):
+
+1. In every Gaussian (C) run of the deep cells the route entries at the two *ends* of the routing
+   region are drained during the plateau, and only there (EX87_J0: nodes 2 and 6; S4: 1 and 4; U4B8:
+   2 and 4; U5B8: 0 and 4; PS2: 4 and 0). Median lowest/initial ratio at eps = 1e-4: U4B8 0.94, S4
+   0.78, EX87_J0 0.73, PS2 0.68, U5B8 0.43 (column `route_depletion`). Starts inside M* show no
+   drain.
+2. The drain runs on the time scale eps^-2: the time at which the U5B8 leaf entry halves times eps^2
+   is constant per direction over 1.5 decades of eps (direction 0: 1.75, 1.35, 1.15, 1.41 at eps =
+   1e-3 ... 10^-4.5; direction 2: 0.33, 0.24, 0.27, 0.24; direction 9: 1.74, 1.41, 1.20, 1.27).
+   For a depth-c route the escape takes eps^-(c-2), so the drain finishes first when c >= 5,
+   competes when c = 4, and is too slow to matter when c = 3.
+3. In most directions the drain stops at a finite level (direction 2 at 0.007 of its start at eps =
+   10^-4.5) and only the prefactor changes (direction 2 keeps exponent 3.000). In direction 9 it goes
+   to zero (below 1e-4 of its start at eps = 10^-4.5, numerically 0 at eps = 1e-4): the route through leaf node 0 is dead, P_r stays ~eps^6, and the escape needs one
+   more small factor: exponent 4.
+4. **Causal tests.** (a) Cp, the same Gaussian direction projected onto M*: all 16 U5B8 directions
+   (including 9) escape with gamma = 3.000, no drain. So the entries outside M* cause the shift.
+   (b) `diag_partner.py`: in direction 9, set to zero only the 30 "partner" entries (of 355
+   parameters): the entries of the region node next to each region end whose leg toward the end is a
+   spare channel and whose other legs are active channels. The drain disappears (the leaf entry stays
+   at 1.33 eps throughout) and the escape returns to eps^-3: t_esc = 2.56e8, 8.10e9, 2.56e11 at eps =
+   1e-3, 10^-3.5, 1e-4 (with the partners: 3.0e10, 3.0e12, 3.05e14).
+
+Reading (derived from the tests above; the selection rule is a conjecture): a partner entry and the
+route entry at the region end together form a two-core off-target piece (a learned pattern with two
+cores changed). It costs loss at fourth order in eps, so both entries shrink on the time scale
+eps^-2, coupled by the bond Gram conservation law of their shared edge (Prop. 6.3). Whether the route
+entry or the partner is the one driven to zero depends on the direction (which side of that
+conserved balance is larger); when the route entry loses, the route is cut and the escape exponent
+rises by one. This is the mechanism that `notes/saddle_dyn.md` D7 conjectured for its control
+cells ("route entry slaved by a decaying two-core cluster"); here it is observed directly and
+removed by intervention. It does not contradict the theory: the order is a statement about the
+fastest possible descent, and a shifted direction descends more slowly. It does limit the escape-time
+law to typical directions when c >= 5. In this experiment 1 of 48 Gaussian directions at depth-5
+cells is shifted (U5B8 9; EX87_J0 and PS2: none).
+
+## 13. Which pattern is learned first (P6, greedy rule)
+
+| cell | kind | -1.0 | -1.25 | -1.5 | -1.75 | -2.0 | -2.25 | -2.5 | -2.75 | -3.0 | -3.25 | -3.5 | -3.75 | -4.0 | -4.25 | -4.5 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| PS2 | A | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| PS2 | B | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| PS2 | C | 0.800 | 0.733 | 0.500 | 0.500 | 0.438 | 0.438 | 0.438 | 0.438 | 0.438 | 0.375 | 0.375 | 0.375 | 0.375 | 0.375 | 0.375 |
+| TIE3 | A | 0.750 | 0.812 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| TIE3 | B | 0.812 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| TIE3 | C | 0.688 | 0.812 | 0.875 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| TWO23 | A | 0.688 | 0.875 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| TWO23 | B | 0.750 | 0.875 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| TWO23 | C | 0.625 | 0.875 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| TWO34 | A | 0.812 | 0.938 | 0.938 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| TWO34 | B | 0.938 | 0.938 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| TWO34 | C | 0.875 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+
+- **In the fit window (eps <= 1e-3) the greedy pattern is learned first in 100 % of the escaped runs of
+  every cell and kind, except PS2 C (38 %)** (empirical). This includes the cells built to separate
+  the rules: TWO23 (depth-2 route at weight 0.2 beats a depth-3 route at weight 0.9), TWO34 (depth 3 at
+  0.3 beats depth 4 at 0.9; the depth-4 route is a splice that the pairwise rule would cost 5), and
+  the tie TIE3 (equal depth 3: the larger s_r A_r(J) = 0.78 wins over 0.39).
+- **Large eps: the rule fails, as it should asymptotically only** (empirical). At eps = 0.1 the
+  larger-weight deeper route wins in 12-38 % of the runs of TWO23 and 6-19 % of TWO34, and the smaller
+  tie partner in 19-31 % of TIE3; by eps = 10^-1.5 (TWO23) and 10^-1.75 (TWO34, TIE3) the greedy pattern
+  wins every run.
+- With unequal random dormant entries the per-direction winner is predicted by the isolated-route
+  times (argmin_r t_iso): 100 % of the window runs in 10 cells, 81-94 % in TIE3 (shared entries,
+  section 10), column `iso_winner`.
+- **PS2 C: the greedy rule fails, because the escape is the spectral shortcut, not a route**
+  (empirical). The Gaussian start builds the pair-star pieces of parent 000000 (an off-target two-core
+  piece 110000 and single-core rotations at nodes 4 and 5; off-target mass 0.0087 at escape, against
+  < 1e-7 in every other cell), which produce both residuals 110001 (depth 6) and 110010 (depth 5)
+  together: they cross s/2 within 1e-9 t_esc of each other (median), so "first" is a coin flip (38 %
+  greedy). The parent 000000 is forgotten in 228 of 238 runs and the network ends at {222222, 110001,
+  110010}: a swap of one learned pattern for two, which no route rule describes. Inside M* (A, B, Cp)
+  PS2 learns 110010 first in every run, as predicted.
+
+## 14. Corollary 8.6 (P7)
+
+0022111 seen from J = {0000000} (EX87_J0, depth 5) and from J' = {0000000, 1111111} (EX87_J01, depth
+2): static order 5.000 -> 2.000 in both spaces; strict saddle only at J' (Hessian eigenvalue -0.478);
+escape time from balanced starts at eps = 1e-4: 6.6667e11 (= eps^-3 / (3 x 0.5), eq. 6.16) -> 12.8
+(log law with slope 2.092 = 1/(0.5 x 0.956)); exponents 3.000 (all kinds) -> log law (all kinds).
+**Holds** (empirical illustration of a proven statement; `fig5_cor86`).
+
+## 15. Effective depth and off-target mass
+
+- Effective depth (`ttn.routes.effective_depth` on the first learned amplitude, window P/s in
+  [1e-4, 1e-2]; window runs, kinds A, A_bal, B, C) has median c + 0.002 (depth 2), c + 0.02-0.10
+  (depth 3), c + 0.13-0.16 (depth 4), c + 0.10-0.17 (depth 5). The estimator reads slightly high and its
+  bias grows with c (2 - 2/d is flat in d), but it identifies the route depth in every cell, including
+  the splices (EX87_J01: 2.006, pairwise cost 4; S3: 3.048, pairwise 4; U3HT 3.105, pairwise 5).
+  Exceptions: PS2 C (3.79-3.80, the shortcut: order 4) and the shifted U5B8 direction (up to 5.6).
+- Off-target mass at escape: exactly 0 inside M*; for Gaussian starts median 2e-11-1.4e-9, max 1e-7,
+  except PS2 C (0.0087, the shortcut). Escapes from Gaussian starts are on-target route escapes
+  wherever there is no shortcut.
+
+## 16. Run inventory, numerics, float64 floor
+
+| cell | kind | runs_escaped | runs_floor_flagged | runs_trapped | runs_unfinished | runs_failed |
+|---|---|---|---|---|---|---|
+| EX87_J01 | A | 220 | 0 | 0 | 0 | 0 |
+| EX87_J01 | A_bal | 13 | 0 | 0 | 0 | 0 |
+| EX87_J01 | B | 234 | 0 | 0 | 0 | 0 |
+| EX87_J01 | C | 240 | 0 | 0 | 0 | 0 |
+| EX87_J01 | Cp | 112 | 0 | 0 | 0 | 0 |
+| TWO23 | A | 224 | 0 | 0 | 0 | 0 |
+| TWO23 | A_bal | 14 | 0 | 0 | 0 | 0 |
+| TWO23 | B | 237 | 0 | 0 | 0 | 0 |
+| TWO23 | C | 240 | 0 | 0 | 0 | 0 |
+| TWO23 | Cp | 112 | 0 | 0 | 0 | 0 |
+| S3 | A | 239 | 0 | 0 | 0 | 0 |
+| S3 | A_bal | 15 | 0 | 0 | 0 | 0 |
+| S3 | B | 240 | 0 | 0 | 0 | 0 |
+| S3 | C | 240 | 0 | 0 | 0 | 0 |
+| S3 | Cp | 112 | 0 | 0 | 0 | 0 |
+| U3HT | A | 237 | 0 | 0 | 0 | 0 |
+| U3HT | A_bal | 15 | 0 | 0 | 0 | 0 |
+| U3HT | B | 240 | 0 | 0 | 0 | 0 |
+| U3HT | C | 240 | 0 | 0 | 0 | 0 |
+| U3HT | Cp | 112 | 0 | 0 | 0 | 0 |
+| TWO34 | A | 238 | 0 | 0 | 0 | 0 |
+| TWO34 | A_bal | 15 | 0 | 0 | 0 | 0 |
+| TWO34 | B | 240 | 0 | 0 | 0 | 0 |
+| TWO34 | C | 240 | 0 | 0 | 0 | 0 |
+| TWO34 | Cp | 112 | 0 | 0 | 0 | 0 |
+| TIE3 | A | 238 | 0 | 0 | 0 | 0 |
+| TIE3 | A_bal | 14 | 0 | 0 | 0 | 0 |
+| TIE3 | B | 240 | 0 | 0 | 0 | 0 |
+| TIE3 | C | 240 | 0 | 0 | 0 | 0 |
+| TIE3 | Cp | 112 | 0 | 0 | 0 | 0 |
+| S4 | A | 240 | 0 | 0 | 0 | 0 |
+| S4 | A_bal | 15 | 0 | 0 | 0 | 0 |
+| S4 | B | 240 | 0 | 0 | 0 | 0 |
+| S4 | C | 240 | 0 | 0 | 0 | 0 |
+| S4 | Cp | 112 | 0 | 0 | 0 | 0 |
+| U4B8 | A | 240 | 0 | 0 | 0 | 0 |
+| U4B8 | A_bal | 15 | 0 | 0 | 0 | 0 |
+| U4B8 | B | 240 | 0 | 0 | 0 | 0 |
+| U4B8 | C | 240 | 0 | 0 | 0 | 0 |
+| U4B8 | Cp | 112 | 0 | 0 | 0 | 0 |
+| EX87_J0 | A | 240 | 0 | 0 | 0 | 0 |
+| EX87_J0 | A_bal | 15 | 0 | 0 | 0 | 0 |
+| EX87_J0 | B | 240 | 0 | 0 | 0 | 0 |
+| EX87_J0 | C | 240 | 0 | 0 | 0 | 0 |
+| EX87_J0 | Cp | 112 | 0 | 0 | 0 | 0 |
+| U5B8 | A | 240 | 0 | 0 | 0 | 0 |
+| U5B8 | A_bal | 15 | 0 | 0 | 0 | 0 |
+| U5B8 | B | 240 | 0 | 0 | 0 | 0 |
+| U5B8 | C | 227 | 13 | 0 | 0 | 0 |
+| U5B8 | Cp | 112 | 0 | 0 | 0 | 0 |
+| PS2 | A | 240 | 0 | 0 | 0 | 0 |
+| PS2 | A_bal | 15 | 0 | 0 | 0 | 0 |
+| PS2 | B | 240 | 0 | 0 | 0 | 0 |
+| PS2 | C | 238 | 0 | 0 | 0 | 0 |
+| PS2 | Cp | 112 | 0 | 0 | 0 | 0 |
+
+- 9315 escape runs: 9245 escaped, 13 floor-flagged (all U5B8 C: 9 at eps = 10^-4.5, 2 at 10^-4.25,
+  and direction 9 also at 1e-4 and 10^-3.75; Phi up to 35 in direction 9, 0.012-0.06 otherwise), 57 "below_at_start" (eps >= 10^-1.5: L - L_J < -1e-3
+  already at t = 0, no escape time; outside the window), 0 trapped, 0 failed. Unfinished after the
+  reruns: PS2 C direction 1 at eps = 0.1 and 0.056 (see section 7 / the report; outside the window).
+- Deviations 1 / 1b (solver stalls) cost time only; reruns reproduce finished runs to 5e-8.
+- Floor index: at most 2.8e-3 in every run outside U5B8 C. In U5B8 C it grows as eps^-3 (largest
+  value per eps: 3.4e-5 at 1e-3, 3.3e-3 at 10^-3.5, 0.34 at 1e-4, 35 at 10^-4.5), dominated by the slow
+  direction 9. The bound is pessimistic (it accumulates the roundoff of damped directions as if it
+  were coherent), and the flagged runs of the other 8 directions lie on their eps^-3 lines (fits
+  including them: 2.996-3.034), but they are excluded as registered.
+
+## 17. Claims and status
+
+| # | claim | status |
+|---|---|---|
+| E1 | At all 15 cells the order inside M* equals c*_J (2, 3, 4 or 5) to 4e-4 (Thm 8.4(3)) | empirical illustration of a proven result |
+| E2 | In the full space the order equals c*_J at 12 cells and is 4 < c*_J = 5 at PS2, T92b, T92d, exactly where a learned parent has a pair-star spectral shortcut; the minimiser is the Example 4.5 construction at that parent (off-target two-core piece + single-core rotations, parent amplitude decreasing) | empirical |
+| E3 | Theorem 9.2's formula min over parents of min(k*_a, 2 l*_a) gives the full-space order at all 5 instances of its natural family, including a shortcut at the weaker parent | empirical |
+| E4 | theta_J is a strict saddle (negative Hessian eigenvalue -s_r A_r(J)) only when c*_J = 2; the order-4 shortcuts have a positive-semidefinite Hessian | empirical |
+| E5 | A start inside M* follows the reduced flow of Thm 7.7: escape times equal to <= 9.2e-7 relative in 6597 runs, output exactly on target | empirical illustration of a proven result |
+| E6 | For an isolated route, eq. 6.16 holds with its prefactor: balanced starts match eps^-(c-2) / ((c-2) s_r A_r(J)) to 0.03 % at eps = 10^-4.5 (c = 3, 4, 5) and the log-law slope 1/(s_r A_r(J)) to 6 digits (c = 2); random positive or signed starts match the isolated-route integral with their own factors to <= 1 % | empirical (eq. 6.16 is derived) |
+| E7 | When two missing routes share dormant entries (TIE3), the isolated-route law misses by up to a factor 2-3 (positive starts: earlier, ratio 0.54-0.91), while the reduced flow stays exact; the exponent is unchanged | empirical |
+| E8 | Escape exponents: all 441 directions inside M* at c*_J >= 3 within 0.005 of c*_J - 2; all 135 complete Gaussian directions at p >= 3 within 0.05 of p - 2 (p = static full-space order) | empirical |
+| E9 | At the shortcut cell PS2, Gaussian starts escape as eps^-2 (order 4), starts inside M* as eps^-3 (order 5 = c*_J): the shortcut is found by generic training | empirical |
+| E10 | Greedy rule: the shortest route (ties: larger s_r A_r(J)) is learned first in 100 % of window runs at every cell and kind except the shortcut cell PS2 with Gaussian starts (38 %); at eps ~ 0.1 the larger-weight deeper route or tie partner wins in 6-38 % of runs | empirical |
+| E11 | At the shortcut, both pair-star residuals are learned together and the parent is forgotten (228/238 runs): the network swaps one learned pattern for two | empirical |
+| E12 | Corollary 8.6 at EX87: depth 5 -> 2, order 5 -> 2, escape eps^-3 -> log(1/eps) | empirical illustration of a proven result |
+| E13 | In Gaussian starts at depth >= 4 the route entries at the ends of the routing region are drained on the time scale eps^-2 by off-target two-core pieces formed with "partner" entries outside M*; when a route entry is drained to zero the escape exponent rises by one (U5B8 direction 9: 4 instead of 3); projecting onto M* or zeroing the 30 partner entries removes the drain and restores eps^-3 | empirical (causal tests) |
+| E14 | Which side of the drain loses (route entry or partner) is set by the conserved bond Gram balance of their edge | conjecture |
+| E15 | Effective depth from the amplitude growth identifies c_J(r) in every cell (median within 0.2, reads high by up to 0.17 at c = 5), including splices whose pairwise cost is larger | empirical |
+
+## 18. Open and next
+
+- The selection rule of E14 is not tested: compute the conserved Gram difference on the region-end
+  edge at the start of each Gaussian direction and check that it predicts which directions are cut.
+  A theory of the drain would also say whether the fraction of cut directions grows with depth.
+- Shared dormant entries (TIE3) need the coupled reduced flow, not the isolated-route law; a
+  two-route closed form (shared factor + two private factors) would give the tie-break correctly.
+- The registered P5 rule cannot be met by a log law (section 11); for depth 2 the log-law slope test
+  is the right one.
+- PS2 C after the swap: what the next plateau is (000000 must be relearned from {222222, 110001,
+  110010}) was not followed.
+'''

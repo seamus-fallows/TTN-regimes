@@ -140,6 +140,8 @@ def thm92_table(static_summary):
 
 
 def outcome(o):
+    if o["t_esc"] is None and o["traj"]["dL"][0] < -1e-3:
+        return "below_at_start"  # the start is already past the escape threshold (largest eps only)
     if o["t_esc"] is not None:
         return "floor_flagged" if o["floor_phi"] > FLOOR else "escaped"
     if o["status"] == "trapped":
@@ -180,7 +182,7 @@ def diag_rows(o, r):
         summ(late[-1], "late")
     # depletion: the smallest ratio over the region's nodes of (lowest norm reached on the plateau) /
     # (norm at the switch checkpoint), and the node where it happens (a route entry being killed)
-    if sw and late:
+    if sw and late and late[-1]["t"] >= sw[0]["t"]:
         base = sw[0][key]
         lows = {v: min(x[key][v] for x in d if sw[0]["t"] <= x["t"] <= late[-1]["t"]) for v in base}
         ratio = {v: lows[v] / base[v] if base[v] > 0 else math.nan for v in base}
@@ -198,6 +200,11 @@ def escape_runs():
             continue
         for p in sorted((OUT / "escape" / name).glob("*.json")):
             o = json.loads(p.read_text())
+            # first learned = earliest upward crossing in time (the driver lists crossings found in
+            # the same solver step in pattern order)
+            learn = sorted((x for x in o["crossings"] if x["kind"] == "learn"), key=lambda x: x["t"])
+            if learn:
+                o["first_learned"], o["t_learn"] = learn[0]["pattern"], learn[0]["t"]
             g = c.greedy()
             row = dict(**ident(c), kind=o["kind"], seed=o["seed"], log_eps=o["log_eps"], eps=o["eps"],
                        c_star=c.c_star, greedy=c.pattern_strings[g], greedy_depth=c.depth(g),
@@ -352,7 +359,7 @@ def decisions(fits, runs):
             row["iso_frac_within_5pct"] = float((np.abs(rwi.ratio_iso - 1) <= 0.05).mean()) if len(rwi) else None
             row["iso_ratio_median"] = float(rwi.ratio_iso.median()) if len(rwi) else None
             row["iso_winner_frac_window"] = float((rw.first_learned == rw.iso_winner).mean()) if len(rw) else None
-        for o in ("escaped", "floor_flagged", "trapped", "unfinished", "failed"):
+        for o in ("escaped", "floor_flagged", "trapped", "unfinished", "failed", "below_at_start"):
             row[f"runs_{o}"] = int((r.outcome == o).sum())
         rows.append(row)
     return pd.DataFrame(rows)
@@ -369,9 +376,9 @@ def main():
     thm.to_csv(RES / "thm92.csv", index=False)
     runs = escape_runs()
     if len(runs):
-        runs.to_csv(RES / "escape_runs.csv", index=False)
+        runs.to_csv(RES / "escape_runs.csv", index=False, float_format="%.10g")
         fits = escape_fits(runs, summ)
-        fits.to_csv(RES / "escape_fits.csv", index=False)
+        fits.to_csv(RES / "escape_fits.csv", index=False, float_format="%.10g")
         dec = decisions(fits, runs)
         dec.to_csv(RES / "decisions.csv", index=False)
         pd.set_option("display.width", 250)

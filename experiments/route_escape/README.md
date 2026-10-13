@@ -10,7 +10,16 @@ law for c = 2; the greedy rule; Cor. 8.6; Thm 9.2), and where do they fail?
 Brief: `notes/briefs/route_theory.md` section 4.2. Pre-registration and results: `notes/route_escape.md`.
 Report: `agent-runs/route-escape/REPORT.md`.
 
-**Short answer.** See `notes/route_escape.md` Part II (filled in when the sweep is analysed).
+**Short answer.** Inside the aligned manifold M* everything matches to 3-6 digits: the static order is
+c*_J at all 15 cells, the full network follows the reduced flow (escape times to 1e-6), and escape times
+follow eq. 6.16 with its prefactor (exponents within 0.005 of c*_J - 2; the log law for depth 2). In the
+full space the order drops to 4 < c*_J = 5 exactly at the three pair-star cells (the Thm 9.2 formula holds
+on all 5 family instances), and Gaussian starts there escape as eps^-2, learn two patterns at once and
+forget a learned one. Elsewhere Gaussian starts follow c*_J - 2 (135/135 complete directions within 0.05),
+except one depth-5 direction shifted to exponent 4 by off-target clusters that drain a route entry
+(removed by projecting onto M* or zeroing 30 partner entries). The greedy rule holds in 100 % of window
+runs except at the shortcut; it fails at eps ~ 0.1. Shared dormant entries (a tie) break the
+isolated-route formula (factor up to 3), not the reduced flow. Details: `notes/route_escape.md` Part II.
 
 ## Setup
 
@@ -107,12 +116,12 @@ escape files add `kind`, `seed` (direction index) and `eps`.
 | seed | direction index (the same direction at every eps) |
 | log_eps, eps | perturbation size: dormant entries ~ eps (A, B: eps x N(0,1) magnitudes; C: eps x N(0,1) on every parameter) |
 | c_star, greedy, greedy_depth | as in cells.csv |
-| outcome | escaped; floor_flagged (escaped, but roundoff could have moved the dormant entries by > 1 %: excluded from fits); trapped (trap rule: L - L_J in (0, 1e-30) or all missing amplitudes < 1e-45 for a decade after t > 1e6); unfinished (wall clock 1800 s); failed (LSODA failure) |
+| outcome | escaped; floor_flagged (escaped, but roundoff could have moved the dormant entries by > 1 %: excluded from fits); trapped (trap rule: L - L_J in (0, 1e-30) or all missing amplitudes < 1e-45 for a decade after t > 1e6); unfinished (wall clock 1800 s); failed (LSODA failure); below_at_start (largest eps only: L - L_J < -1e-3 already at t = 0, so there is no escape time) |
 | status | driver status: learned, escaped_no_learn, trapped, wall, failed, t_max |
 | t_esc | escape time: first t with L < L_J - 1e-3 (refined to 1e-10 relative) |
 | t_esc_1e4, t_esc_1e2 | the same for thresholds 1e-4 and 1e-2 (linear interpolation between solver steps) |
 | floor_phi | floor index (accumulated roundoff bound on the non-active entries / their norm); flag > 0.01 |
-| first_learned, first_depth, t_learn | first missing pattern whose amplitude P_r = <U_r, W> crosses s_r/2 upward; its route depth; the time |
+| first_learned, first_depth, t_learn | first missing pattern whose amplitude P_r = <U_r, W> crosses s_r/2 upward (earliest crossing time); its route depth; the time |
 | first_is_greedy | first_learned == greedy |
 | esc_pattern | missing pattern with the largest s_r P_r at t_esc |
 | offmass_esc | off-target mass at t_esc: ||W on non-target strings||^2 / ||W||^2 |
@@ -120,7 +129,7 @@ escape files add `kind`, `seed` (direction index) and `eps`.
 | forgotten | learned patterns whose amplitude fell below s_a/4 before the run stopped |
 | J_end | patterns with P > s/2 when the run stopped (200 time units after the first learning event) |
 | P_greedy_0 | amplitude of the greedy pattern at t = 0 |
-| t_red, first_red, status_red | reduced flow on M* (A, A_bal, B): escape time, first learned, status |
+| t_red, first_red, status_red | reduced flow on M* (A, A_bal, B, Cp): escape time, first learned (caveat: if two patterns cross s/2 within one solver step of the reduced flow, the lower pattern index is reported), status |
 | rel_full_red | t_esc / t_red - 1 |
 | t_iso, t_616 | isolated-route prediction for the greedy pattern from the start's own dormant factors (eqs. 6.14-6.16 with Prop. 6.2; same threshold); leading term of eq. 6.16 with b(0) = eps |
 | iso_winner, t_iso_winner | the missing pattern with the smallest t_iso and its t_iso |
@@ -158,5 +167,17 @@ with the same first pattern) and the isolated-route test (fraction of window run
 |t_esc / t_iso - 1| <= 0.05, median ratio, fraction whose first pattern is the isolated-route winner),
 and run counts by outcome.
 
-## Figures (`results/`)
-Listed with their message in `notes/route_escape.md` Part II.
+## Figures (`results/`, drafts; .png and .pdf)
+
+| file | message |
+|---|---|
+| fig1_static_orders | Inside M* the saddle order equals the route depth c*_J in every cell; in the full space it drops below c*_J exactly where Thm 9.2 predicts a spectral shortcut |
+| fig2_inside_Mstar | Every start inside M*: measured escape time = isolated-route prediction; full network = reduced flow to ~1e-7; the formula fails only where two routes share entries (TIE3) |
+| fig3_exponents | Escape exponent per direction: inside M* always c*_J - 2; Gaussian starts follow the full-space order (PS2: 2); one U5B8 direction shifted to 4 |
+| fig4_first_learned | The greedy rule picks the first pattern at small eps (TWO23, TWO34, TIE3); at eps ~ 0.1 it fails in part of the runs |
+| fig5_cor86 | Corollary 8.6: learning 1111111 shortens the route of 0022111 from 5 to 2 cores; escape eps^-3 becomes log(1/eps) |
+| fig6_thm92 | Thm 9.2 family: the full-space order follows min over parents of min(k*, 2 l*) |
+| fig7_shift_mechanism | Why a Gaussian direction is shifted: a route entry at a region end is drained on the eps^-2 time scale; drained to zero -> exponent +1; removing the partner entries restores eps^-3 |
+
+`results/decisions.csv` holds the registered decisions per cell and kind; `tables.py` prints the
+Markdown tables of the note.

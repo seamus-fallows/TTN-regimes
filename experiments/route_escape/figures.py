@@ -16,6 +16,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.ticker  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
@@ -28,6 +29,9 @@ HERE = Path(__file__).resolve().parent
 RES = HERE / "results"
 DYN = ["EX87_J01", "TWO23", "S3", "U3HT", "TWO34", "TIE3", "S4", "U4B8", "EX87_J0", "U5B8", "PS2"]
 BLUE, ORANGE, GREEN, YELLOW, PINK, DGREEN = palette(6)
+STR = {c: str for c in ("greedy", "first_learned", "iso_winner", "esc_pattern", "first_red", "J", "J_end",
+                        "forgotten", "first_at_smallest")}
+RUNS = None
 KIND_COLOR = {"A": BLUE, "A_bal": INK, "B": ORANGE, "C": GREEN}
 KIND_LABEL = {"A": "A: inside M*, positive", "A_bal": "A_bal: inside M*, balanced",
               "B": "B: inside M*, random signs", "C": "C: Gaussian on all parameters"}
@@ -129,16 +133,33 @@ def fig_exponents(fits):
     for i, name in enumerate(DYN):
         f = fits[fits.cell == name]
         pred_M = get_cell(name).c_star - 2
-        predC = f[f.kind == "C"].gamma_pred.iloc[0] if (f.kind == "C").any() else pred_M
-        ax.plot([i - 0.4, i + 0.4], [pred_M] * 2, color=MUTED, lw=2.5, solid_capstyle="butt",
-                label="prediction c*_J - 2 (inside M*)" if i == 0 else None)
-        if predC != pred_M:
+        predC = float(f[f.kind == "C"].gamma_pred.iloc[0]) if (f.kind == "C").any() else pred_M
+        if pred_M == 0:  # log law: its own log-log slope over the window (from the balanced start's t_iso)
+            b = RUNS[(RUNS.cell == name) & (RUNS.kind == "A_bal") & (RUNS.log_eps >= -4.5 - 1e-9)
+                     & (RUNS.log_eps <= -3.0 + 1e-9)]
+            pred_M = float(np.polyfit(-np.log(b.eps), np.log(b.t_iso.astype(float)), 1)[0])
+            ax.plot([i - 0.4, i + 0.4], [pred_M] * 2, color=MUTED, lw=2.5, solid_capstyle="butt",
+                    label="depth 2: log law (its log-log slope in this window)" if name == "EX87_J01" else None)
+        else:
+            ax.plot([i - 0.4, i + 0.4], [pred_M] * 2, color=MUTED, lw=2.5, solid_capstyle="butt",
+                    label="prediction c*_J - 2 (inside M*)" if name == "S3" else None)
+        if float(predC) + 2 != get_cell(name).c_star:
             ax.plot([i + 0.05, i + 0.4], [predC] * 2, color=INK, lw=2.5, ls=(0, (2, 1)),
                     label="prediction for C: static full-space order - 2" if name == "PS2" else None)
         for k, dx in (("A", -0.27), ("B", -0.09), ("C", 0.18)):
             s = f[(f.kind == k) & f.complete]
             ax.plot(i + dx + rng.uniform(-0.05, 0.05, len(s)), s.gamma, "o", ms=5, color=KIND_COLOR[k],
                     alpha=0.75, mec="none", label=KIND_LABEL[k] if i == 0 else None)
+            inc = f[(f.kind == k) & (f["class"] == "incomplete")]
+            for _, row in inc.iterrows():  # fit including floor-flagged runs (not a registered fit)
+                w = RUNS[(RUNS.cell == name) & (RUNS.kind == k) & (RUNS.seed == row.seed)
+                         & (RUNS.log_eps >= -4.5 - 1e-9) & (RUNS.log_eps <= -3.0 + 1e-9) & RUNS.t_esc.notna()]
+                if len(w) >= 5:
+                    gm = float(np.polyfit(-np.log(w.eps), np.log(w.t_esc.astype(float)), 1)[0])
+                    ax.plot(i + dx + rng.uniform(-0.05, 0.05), gm, "o", ms=6, mfc="none", mec=KIND_COLOR[k],
+                            mew=1.3, label="C, fit incl. floor-flagged runs" if name == "U5B8" and
+                            not getattr(fig_exponents, "_lab", False) else None)
+                    fig_exponents._lab = True
             nt = int((f[f.kind == k]["class"] == "trapped").sum())
             ni = int((f[f.kind == k]["class"] == "incomplete").sum())
             lab = "\n".join(x for x in (f"{nt}T" if nt else "", f"{ni}I" if ni else "") if x)
@@ -147,10 +168,11 @@ def fig_exponents(fits):
     ax.set_xticks(range(len(DYN)), [cell_label(n) for n in DYN], rotation=30, ha="right",
                   rotation_mode="anchor", fontsize=9)
     ax.set_ylabel("escape exponent gamma\n(t_esc ~ eps^-gamma, fit over eps = 1e-4.5 ... 1e-3)")
-    ax.set_ylim(-1.1, 4.6)
+    ax.set_ylim(-1.1, 4.8)
     ax.legend(loc="upper left", ncol=2, fontsize=9)
-    ax.set_title("Escape exponent per direction: inside M* always c*_J - 2; Gaussian starts (C) mostly too"
-                 " (T = trapped, I = incomplete directions)", fontsize=11)
+    ax.set_title("Escape exponent per direction: every start inside M* gives c*_J - 2; Gaussian starts follow the"
+                 " full-space order\n(PS2: shortcut, 2 instead of 3); one U5B8 direction is shifted to 4"
+                 " (I = incomplete: a floor-flagged window run)", fontsize=11)
     savefig(fig, RES / "fig3_exponents")
     plt.close(fig)
 
@@ -192,27 +214,28 @@ def fig_first(runs):
 
 
 def fig_cor86(runs):
-    fig, ax = plt.subplots(figsize=(7.5, 5))
+    from common import isolated_route_time
+
+    fig, ax = plt.subplots(figsize=(8, 5.4))
     for name, col in (("EX87_J0", ORANGE), ("EX87_J01", BLUE)):
         c = get_cell(name)
         r = c.greedy()
-        for k, mk in (("A", "o"), ("C", "s")):
-            s = runs[(runs.cell == name) & (runs.kind == k) & (runs.outcome == "escaped")]
-            med = s.groupby("eps").t_esc.median()
-            ax.loglog(med.index, med.values, mk, color=col, ms=6, mfc=col if k == "A" else "none",
-                      label=f"J = {{{', '.join(c.pattern_strings[a] for a in c.J)}}}: kind {k} (median)")
-        e = np.logspace(-4.5, -1, 50)
-        b = runs[(runs.cell == name) & (runs.kind == "A_bal")]
-        pred = [c.weights[r] * c.A(r)]
-        from common import leading_616
-        ax.loglog(e, [leading_616(x, c.depth(r), c.A(r), c.weights[r]) for x in e], color=col, lw=1.2, ls="--",
-                  label=f"eq. 6.16, depth {c.depth(r)}" + (" (log law)" if c.depth(r) == 2 else ""))
+        Js = "{" + ", ".join(c.pattern_strings[a] for a in c.J) + "}"
+        b = runs[(runs.cell == name) & (runs.kind == "A_bal") & (runs.outcome == "escaped")]
+        ax.loglog(b.eps, b.t_esc, "o", color=col, ms=7, label=f"J = {Js}: balanced start (A_bal)")
+        s = runs[(runs.cell == name) & (runs.kind == "C") & (runs.outcome == "escaped")]
+        med = s.groupby("eps").t_esc.median()
+        ax.loglog(med.index, med.values, "s", color=col, ms=7, mfc="none", mew=1.3,
+                  label=f"J = {Js}: Gaussian starts (C), median of 16")
+        e = np.logspace(-4.5, -1 if c.depth(r) > 2 else -1.5, 40)  # depth 2 at eps > 0.03: start already escaped
+        ax.loglog(e, [isolated_route_time(np.full(c.depth(r), x), c.A(r), c.weights[r]) for x in e], color=col,
+                  lw=1.2, ls="--", label=f"eq. 6.16, route depth {c.depth(r)}" + (" (log law)" if c.depth(r) == 2 else ""))
     ax.set_xlabel("perturbation size eps")
     ax.set_ylabel("escape time (gradient-flow time units)")
     ax.invert_xaxis()
-    ax.legend(fontsize=8, loc="upper left")
-    ax.set_title("Corollary 8.6: once 1111111 is learned, 0022111 needs 2 new cores instead of 5\n"
-                 "(escape time eps^-3 becomes log(1/eps))", fontsize=11)
+    ax.legend(fontsize=9, loc="upper left")
+    ax.set_title("Corollary 8.6: once 1111111 is learned, 0022111 needs 2 new cores instead of 5:\n"
+                 "the escape time drops from eps^-3 to log(1/eps)", fontsize=11)
     savefig(fig, RES / "fig5_cor86")
     plt.close(fig)
 
@@ -222,7 +245,7 @@ def fig_cor86(runs):
 
 def fig_thm92(curves, thm):
     names = ["T92a", "T92b", "T92c", "T92d", "PS2"]
-    fig, axs = plt.subplots(1, len(names), figsize=(15, 4), sharey=False)
+    fig, axs = plt.subplots(1, len(names), figsize=(16, 4.6), sharey=False)
     for ax, name in zip(axs, names):
         c = get_cell(name)
         for space, col in (("Mstar", BLUE), ("full", ORANGE)):
@@ -237,6 +260,8 @@ def fig_thm92(curves, thm):
             ax.loglog(tt, m0 * (tt / t0) ** c.c_star, color=MUTED, ls=":", lw=1, label=f"slope {c.c_star} (c*_J)")
         ax.set_title(f"{name}: formula {f}, c*_J = {c.c_star}", fontsize=10)
         ax.set_xlabel("distance t from theta_J")
+        ax.set_xticks([0.02, 0.05, 0.1, 0.2], ["0.02", "0.05", "0.1", "0.2"])
+        ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
         ax.legend(fontsize=8, loc="lower right")
     axs[0].set_ylabel("largest loss decrease on the sphere\n-(min L - L_J)")
     fig.suptitle("Theorem 9.2 family: the full-space order follows min over parents of min(k*, 2 l*)",
@@ -273,6 +298,14 @@ def fig_shift(cell="U5B8", seeds=(9, 2, 5), node="0"):
         ok = rows[:, 2] == 0
         axs[1].loglog(rows[ok, 0], rows[ok, 1], "o", color=col, ms=6, label=f"direction {seed}")
         axs[1].loglog(rows[~ok, 0], rows[~ok, 1], "o", color=col, ms=6, mfc="none")
+    pts = []
+    for p in sorted((OUT / "diag").glob(f"partner_{cell}_{seeds[0]:02d}_*.json")):
+        o = json.loads(p.read_text())
+        pts.append((o["eps"], o["t_esc"]))
+    if pts:
+        pts = np.array(sorted(pts))
+        axs[1].loglog(pts[:, 0], pts[:, 1], "^", color=INK, ms=8,
+                      label=f"direction {seeds[0]} with its 30 partner entries set to 0")
     e = np.logspace(-4.5, -2.5, 20)
     anchors = {}
     for seed in seeds:
@@ -296,8 +329,8 @@ def fig_shift(cell="U5B8", seeds=(9, 2, 5), node="0"):
     axs[1].set_ylabel("escape time (gradient-flow time units)")
     axs[1].invert_xaxis()
     axs[1].legend(fontsize=8, loc="upper left")
-    axs[1].set_title("If it is drained to zero (direction 9) the escape exponent rises by one\n"
-                     "(open circles: floor-flagged runs)", fontsize=11)
+    axs[1].set_title("Drained to zero (direction 9): exponent 4 instead of 3; removing the partner\n"
+                     "entries restores eps^-3 (open circles: floor-flagged runs)", fontsize=11)
     fig.suptitle(f"{cell} (depth-5 route), Gaussian starts: why some directions escape later than eps^-3",
                  fontsize=12)
     savefig(fig, RES / "fig7_shift_mechanism")
@@ -312,8 +345,10 @@ def main():
     fig_static(orders, thm)
     fig_thm92(curves, thm)
     if (RES / "escape_runs.csv").exists():
-        runs = pd.read_csv(RES / "escape_runs.csv")
-        fits = pd.read_csv(RES / "escape_fits.csv")
+        runs = pd.read_csv(RES / "escape_runs.csv", dtype=STR)
+        fits = pd.read_csv(RES / "escape_fits.csv", dtype=STR)
+        global RUNS
+        RUNS = runs
         fig_inside(runs)
         fig_exponents(fits)
         fig_first(runs)
