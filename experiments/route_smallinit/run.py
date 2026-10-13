@@ -99,8 +99,8 @@ def route_time(p0: float, c: int, g: float, s: float, level: float = 0.5) -> flo
 # ----------------------------------------------------------------------------------- runs
 
 
-def run_full(cfg, sigma, seed, rtol=1e-10, atol=1e-15, wall=1800.0, arith="dense", start="lsoda"):
-    model = Model(cfg, arith=arith)
+def run_full(cfg, sigma, seed, rtol=1e-10, atol=1e-15, wall=1800.0, arith="dense", start="lsoda", cap=True):
+    model = Model(cfg, arith=arith, cap=cap)
     theta0 = model.spec.flatten(model.spec.init(sigma, seed=seed))
 
     def fun(y):

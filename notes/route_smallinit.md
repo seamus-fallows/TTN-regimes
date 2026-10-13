@@ -417,8 +417,13 @@ several; `runs.csv` `behaviour`, `history`):
   smallest at entry: 0.03-0.12 sigma, against 0.2-0.6 sigma in the seeds that escape) decays to ~1e-14
   sigma and the amplitude to ~1e-55. The routes that die (D4: 1111/2222/0000 as the last pattern; B4:
   1001) span the whole tree, including the end cores whose bond is capped at d (no spare channel).
-  [conjecture] Without a spare channel at the route's end the dormant entry cannot rotate away from the
-  direction in which it is suppressed; it is a seed property (same seeds at all sigma);
+  It is a seed property (same seeds at all sigma). **Post-hoc diagnostic** (not registered;
+  `diag_trapped.py`, `results/diag_trapped.csv`): with the bond cap removed, so that the end edges also
+  carry 2 spare channels (D4 bonds 5 5 5 instead of 3 5 3; B4 4 5 4 instead of 2 4 2), 0 of 80 D4 runs
+  and 0 of 80 B4 runs (40 seeds x sigma 1e-3, 1e-4) are trapped, against 13/40 and 5/40 at every sigma
+  with the cap [empirical]. (Changing the shapes changes the init, so this compares rates, not seeds.)
+  [conjecture] Without a spare channel at the route's end, a dormant entry that starts small cannot
+  rotate away from the direction in which it is suppressed, and the route dies;
 - **unfinished** 20 (PS, sigma <= 10^-3.5): all had learned the pair and were on the depth-5 plateau
   before 000000 after > 1 million solver steps; in 9 of them the 000000 amplitude had fallen to
   ~1e-33 (a dying route at the float64 floor, as in the trapped runs), in the others the solver crawled;

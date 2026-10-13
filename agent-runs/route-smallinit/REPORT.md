@@ -91,6 +91,8 @@ Failures of a prediction, each with its evidence:
    entry of the last route (the smallest at entry, 0.03-0.12 sigma vs 0.2-0.6 sigma in escaping seeds)
    decays to ~1e-14 sigma and the amplitude to ~1e-55; the run stops by the trap rule. Those routes
    span the whole tree including end cores whose bond is capped at d (no spare channel). Not predicted.
+   Diagnostic: with the cap removed (2 spare channels on every edge) no run traps (0/80 for D4, 0/80 for
+   B4, sigma 1e-3 and 1e-4; `results/diag_trapped.csv`): the traps come from the missing spare channel.
 7. **One-step-ahead from P_r** (the brief's form): fails because P_r at entry still holds transients
    (right after the first escape other patterns sit at 1-10% of their weight, then fall by up to 10
    orders of magnitude; `fig_example_run`).

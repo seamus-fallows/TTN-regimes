@@ -35,13 +35,13 @@ class SpareManifold(AlignedManifold):
     """AlignedManifold whose bond e has dimension min(blocks(e) + spare, max rank of the cut).
     (The library class takes one chi for all edges; the brief asks for blocks + 2 per edge.)"""
 
-    def __init__(self, target: RouteTarget, d: int, spare: int = 2):
+    def __init__(self, target: RouteTarget, d: int, spare: int = 2, cap: bool = True):
         tree = target.tree
         bonds = [1] * tree.n_nodes
         for e in tree.edges:
             below = len(tree.subtree_sites[e])
-            cap = min(d**below, d ** (tree.n_sites - below))
-            bonds[e] = max(target.n_blocks[e], min(target.n_blocks[e] + spare, cap))
+            limit = min(d**below, d ** (tree.n_sites - below)) if cap else 10**9
+            bonds[e] = max(target.n_blocks[e], min(target.n_blocks[e] + spare, limit))
         # build the parent with the largest chi, then rebuild the index maps on the per-edge spec
         super().__init__(target, d, chi=None)
         self.spec = TTNSpec(tree, (d,) * tree.n_sites, tuple(bonds))
@@ -78,14 +78,14 @@ def dense_expression(spec: TTNSpec, reorder: bool = False):
 
 
 class Model:
-    def __init__(self, cfg: dict, spare: int = 2, arith: str = "dense"):
+    def __init__(self, cfg: dict, spare: int = 2, arith: str = "dense", cap: bool = True):
         self.cfg = cfg
         # "dense" (E entrywise); floor checks: "reorder" (other contraction order) or "lib" (library
         # norm-form gradient, larger roundoff)
         self.arith = arith
         self.target = target = build_target(cfg)
         self.d = d = int(cfg["d"])
-        self.man = SpareManifold(target, d, spare)
+        self.man = SpareManifold(target, d, spare, cap=cap)
         self.spec = spec = self.man.spec
         self.P = spec.n_params
         self.expr = dense_expression(spec, reorder=(arith == "reorder"))

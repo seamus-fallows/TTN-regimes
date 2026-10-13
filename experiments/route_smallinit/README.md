@@ -51,6 +51,9 @@ A single run: `run.run_full(cfg, sigma, seed)` then `run.reduce_run(...)`.
 | `sweep.py`, `configs/sweep.yaml` | the registered grid |
 | `analyze.py` | tidy CSVs, floor check, per-seed exponents, per-cell decisions |
 | `figures.py` | draft figures `results/fig_*.png/pdf` |
+| `headline.py` | `results/headline.md`: every number quoted in the note and the report |
+| `diag_trapped.py` | post-hoc: D4 and B4 without the bond cap (spare channels on the end edges) -> `results/diag_trapped.csv` (columns as runs.csv plus `bond_cap`, `bonds`) |
+| `configs/sweep_ps_long.yaml` | rerun of the 20 PS runs unfinished after 1 h (3 h cap, BDF integrator) |
 
 ## CSV columns (all in `results/`)
 
