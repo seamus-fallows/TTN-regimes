@@ -1,6 +1,6 @@
 # route-escape: leaving a known multi-pattern plateau (route theory, brief section 4.2)
 
-Status: done - Branch: agent/route-escape - Updated: 2026-10-13 21:50 UTC
+Status: done - Branch: agent/route-escape - Updated: 2026-10-13 21:52 UTC
 
 **Bug in `ttn/routes.py`: none found.** All library functions I used (RouteTarget, AlignedManifold with
 partial_target / velocity / jacobian / mask / align / route_entry_norms, one_component_order,
@@ -16,7 +16,7 @@ nudge it by eps, and check three predictions of the paper: the saddle order (how
 start to fall), the escape-time law with its prefactor, and which missing pattern is learned first.
 I used 11 cells (route depths 2-5; mps, ht and binary trees; two missing patterns of different depth;
 a tie; Corollary 8.6; a predicted shortcut) plus 4 static-only Theorem 9.2 instances: 30 static order
-measurements and 9315 gradient-flow runs. **Almost everything matches, to 3-6 digits**: inside the
+measurements and 9317 gradient-flow runs. **Almost everything matches, to 3-6 digits**: inside the
 aligned manifold M* the order is the route depth c*_J in every cell, the full network follows the
 paper's reduced equations exactly, and the escape time follows eq. 6.16 including its prefactor;
 Gaussian starts escape with the exponent of the full-space order; the greedy rule picks the first
@@ -123,9 +123,10 @@ c + 0.17; splices included, e.g. EX87_J01 2.006 where the pairwise cost is 4); e
 the order-4 shortcut) and the shifted U5B8 direction. **Off-target mass at escape**: 0 inside M*,
 <= 1e-7 for Gaussian starts, except PS2 C (0.0087).
 
-**Run counts** (9315 escape runs, all kinds and eps): 9245 escaped, 13 floor-flagged (all U5B8 C,
+**Run counts** (9317 escape runs, all kinds and eps): 9245 escaped, 13 floor-flagged (all U5B8 C,
 eps <= 10^-3.75; excluded from fits), 57 below the escape threshold already at t = 0 (eps >= 10^-1.5,
-so no escape time), **0 trapped, 0 failed**, 2 unfinished (see Caveats). Nothing was cut from the grid.
+so no escape time), **0 trapped by the registered rule, 0 failed, 2 unfinished** (PS2 C direction 1 at
+eps = 0.1 and 0.056, effectively trapped: see Caveats). Nothing was cut from the grid.
 
 ## What was done
 
@@ -172,9 +173,11 @@ so no escape time), **0 trapped, 0 failed**, 2 unfinished (see Caveats). Nothing
 
 ## Caveats and next steps
 
-- **Unfinished:** PS2 C direction 1 at eps = 0.1 and 0.056 (the two largest eps, outside the fit
-  window) were still running when the work was wrapped up; they are missing from `escape_runs.csv`
-  (2 of 8085 grid runs). Nothing in the fits depends on them.
+- **Unfinished (effectively trapped):** PS2 C direction 1 at eps = 0.1 and 0.056 (the two largest
+  eps, outside the fit window) hit the 1800 s cap at t ~ 1e19 without escaping: the large Gaussian
+  kick (L - L_J = +0.85 and +0.18 at t = 0) relaxed back onto the plateau with both missing amplitudes
+  dead. The registered trap rule did not fire because L - L_J sits at ~1e-18 (roundoff), above its
+  1e-30 threshold. They are the only non-escaping runs; nothing in the fits depends on them.
 - The escape-time law for generic starts holds for typical directions only at depth >= 5 (1 of 48
   Gaussian directions at the depth-5 cells shifted). Next: test the conserved Gram balance of the
   region-end edge as a predictor of cut directions, and run more directions at depth 5-6.
@@ -199,6 +202,6 @@ so no escape time), **0 trapped, 0 failed**, 2 unfinished (see Caveats). Nothing
 - 20:45 Partner intervention: zeroing 30 partner entries removes the drain and restores eps^-3 in U5B8 direction 9.
 - 21:18 Second stall pattern (LSODA nonstiff from the first step on M* plateaus): stall rule switches to BDF (deviation 1b); 50 remaining or capped runs rerun; Cp sweep completed (1232 runs).
 - 21:30 Analysis, tables, figures, note Part II, README results.
-- 21:50 Final commit and push.
+- 21:50 Last two runs (PS2 C direction 1, eps 0.1 and 0.056) ended at the wall cap, effectively trapped; final commit and push.
 
 Status: done

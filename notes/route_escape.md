@@ -626,13 +626,15 @@ escape time from balanced starts at eps = 1e-4: 6.6667e11 (= eps^-3 / (3 x 0.5),
 | PS2 | A | 240 | 0 | 0 | 0 | 0 |
 | PS2 | A_bal | 15 | 0 | 0 | 0 | 0 |
 | PS2 | B | 240 | 0 | 0 | 0 | 0 |
-| PS2 | C | 238 | 0 | 0 | 0 | 0 |
+| PS2 | C | 238 | 0 | 0 | 2 | 0 |
 | PS2 | Cp | 112 | 0 | 0 | 0 | 0 |
 
-- 9315 escape runs: 9245 escaped, 13 floor-flagged (all U5B8 C: 9 at eps = 10^-4.5, 2 at 10^-4.25,
+- 9317 escape runs: 9245 escaped, 13 floor-flagged (all U5B8 C: 9 at eps = 10^-4.5, 2 at 10^-4.25,
   and direction 9 also at 1e-4 and 10^-3.75; Phi up to 35 in direction 9, 0.012-0.06 otherwise), 57 "below_at_start" (eps >= 10^-1.5: L - L_J < -1e-3
-  already at t = 0, no escape time; outside the window), 0 trapped, 0 failed. Unfinished after the
-  reruns: PS2 C direction 1 at eps = 0.1 and 0.056 (see section 7 / the report; outside the window).
+  already at t = 0, no escape time; outside the window), 0 trapped, 0 failed, and 2 unfinished:
+  PS2 C direction 1 at eps = 0.1 and 0.056 (outside the window) hit the wall cap at t ~ 1e19 after the
+  large kick relaxed back onto the plateau with both missing amplitudes dead; effectively trapped,
+  but L - L_J stays at ~1e-18 (roundoff), so the registered trap rule (L - L_J < 1e-30) did not fire.
 - Deviations 1 / 1b (solver stalls) cost time only; reruns reproduce finished runs to 5e-8.
 - Floor index: at most 2.8e-3 in every run outside U5B8 C. In U5B8 C it grows as eps^-3 (largest
   value per eps: 3.4e-5 at 1e-3, 3.3e-3 at 10^-3.5, 0.34 at 1e-4, 35 at 10^-4.5), dominated by the slow
