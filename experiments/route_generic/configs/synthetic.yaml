@@ -1,0 +1,20 @@
+# route_generic main sweep (pre-registered in notes/route_generic.md section 2).
+# sigma: 11 values, quarter decades from 10^-3.5 to 10^-1 (fit window: the 7 smallest usable).
+# pattern: 30 init seeds of one star target per tree; cp03 / cp06 / ttn: 5 teachers x 6 init seeds.
+defaults:
+  rtol: 1.0e-10
+  atol: 1.0e-15
+  tau_max: 1.0e+9
+  stop_rel: 1.0e-7
+  wall: 3600
+  max_steps: 400000
+  sigmas: [0.000316227766, 0.000562341325, 0.001, 0.00177827941, 0.00316227766, 0.00562341325, 0.01, 0.0177827941, 0.0316227766, 0.0562341325, 0.1]
+cases:
+  - {target: pattern, family: pattern, tree: mps6, d: 2, patterns: [[0,0,0,0,0,0],[0,0,1,1,0,0],[1,0,1,0,0,0],[1,1,1,1,1,0]], weights: [1.0, 0.7, 0.5, 0.35], seeds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]}
+  - {target: pattern, family: pattern, tree: binary8, d: 2, patterns: [[0,0,0,0,0,0,0,0],[0,0,0,0,0,1,1,1],[0,1,0,0,0,1,0,0],[1,0,1,0,0,1,0,0]], weights: [1.0, 0.7, 0.5, 0.35], seeds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]}
+  - {target: cp03, family: cp, tree: mps6, d: 3, n_comp: 3, overlap: 0.3, teacher_seeds: [1,2,3,4,5], seeds: [0,1,2,3,4,5]}
+  - {target: cp03, family: cp, tree: binary8, d: 3, n_comp: 3, overlap: 0.3, teacher_seeds: [1,2,3,4,5], seeds: [0,1,2,3,4,5]}
+  - {target: cp06, family: cp, tree: mps6, d: 3, n_comp: 3, overlap: 0.6, teacher_seeds: [1,2,3,4,5], seeds: [0,1,2,3,4,5]}
+  - {target: cp06, family: cp, tree: binary8, d: 3, n_comp: 3, overlap: 0.6, teacher_seeds: [1,2,3,4,5], seeds: [0,1,2,3,4,5]}
+  - {target: ttn, family: ttn, tree: mps6, d: 3, teacher_chi: 2, teacher_seeds: [1,2,3,4,5], seeds: [0,1,2,3,4,5]}
+  - {target: ttn, family: ttn, tree: binary8, d: 3, teacher_chi: 2, teacher_seeds: [1,2,3,4,5], seeds: [0,1,2,3,4,5]}

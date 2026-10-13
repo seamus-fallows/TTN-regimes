@@ -1,0 +1,5 @@
+# Timing pilot for the MNIST part (existing real_data pipeline, run.py unchanged).
+defaults: {t2: 2000, n_per_decade: 30, n_linear: 200, wall_limit: 5400, chi: 4, tag: rgpilot}
+cases:
+  - {tree: binary, ordering: quadtree, features: raw, sigmas: [0.01, 0.05], seeds: [0]}
+  - {tree: mps, ordering: snake, features: raw, sigmas: [0.01, 0.05], seeds: [0]}

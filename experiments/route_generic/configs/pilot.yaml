@@ -1,0 +1,11 @@
+# Timing pilot (not part of the results): smallest and largest sigma of the grid, one seed per family.
+defaults: {rtol: 1.0e-10, atol: 1.0e-15, tau_max: 1.0e+8, stop_rel: 1.0e-7, wall: 900}
+cases:
+  - {target: pattern, family: pattern, tree: mps6, d: 2, patterns: [[0,0,0,0,0,0],[0,0,1,1,0,0],[1,0,1,0,0,0],[1,1,1,1,1,0]], weights: [1.0, 0.7, 0.5, 0.35], sigmas: [0.001, 0.1], seeds: [0]}
+  - {target: pattern, family: pattern, tree: binary8, d: 2, patterns: [[0,0,0,0,0,0,0,0],[0,0,0,0,0,1,1,1],[0,1,0,0,0,1,0,0],[1,0,1,0,0,1,0,0]], weights: [1.0, 0.7, 0.5, 0.35], sigmas: [0.001, 0.1], seeds: [0]}
+  - {target: cp03, family: cp, tree: mps6, d: 3, n_comp: 3, overlap: 0.3, teacher_seeds: [1], sigmas: [0.001, 0.1], seeds: [0]}
+  - {target: cp03, family: cp, tree: binary8, d: 3, n_comp: 3, overlap: 0.3, teacher_seeds: [1], sigmas: [0.001, 0.1], seeds: [0]}
+  - {target: cp06, family: cp, tree: mps6, d: 3, n_comp: 3, overlap: 0.6, teacher_seeds: [1], sigmas: [0.001, 0.1], seeds: [0]}
+  - {target: cp06, family: cp, tree: binary8, d: 3, n_comp: 3, overlap: 0.6, teacher_seeds: [1], sigmas: [0.001, 0.1], seeds: [0]}
+  - {target: ttn, family: ttn, tree: mps6, d: 3, teacher_chi: 2, teacher_seeds: [1], sigmas: [0.001, 0.1], seeds: [0]}
+  - {target: ttn, family: ttn, tree: binary8, d: 3, teacher_chi: 2, teacher_seeds: [1], sigmas: [0.001, 0.1], seeds: [0]}
