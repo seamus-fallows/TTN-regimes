@@ -252,3 +252,211 @@ smallest sigma are too slow, log10 sigma = -3.5 (then -3.25) is cut for K = 6, 7
    construction a resolved plateau (deviation 1), so for these keys the rule is scored "fails (no
    plateau predicted)"; the registered exponent comparison is kept in the CSV
    (`frac_within_*`, `exp_*`).
+
+# Part II: results
+
+Everything below is from the full sweep (9,520 runs, 20 targets, all 40 seeds at every grid
+sigma) as analysed by `experiments/route_nonstar/analyze.py` and `headline.py`. Tables:
+`experiments/route_nonstar/results/` (`headline.md` = the numbers quoted here,
+`summary_by_target.md` = per-target tables, CSVs documented in the README). Figures `fig1`-`fig6`
+in the same folder. "Window" = log10 sigma <= -1.5. Status tags: section 6.
+
+## 9. Answer in short
+
+On pattern targets that break the star condition, gradient flow from small init still learns in
+steps separated by plateaus, but **the plateaus are often not partial-target points**: after the
+first escape, 68 % of the plateau points of non-star targets are not within 0.03 of any partial
+target (star controls: 0.4 %), and 59 % carry a *recombinant* string (a string made of the lower
+side of one target pattern and the upper side of another across one edge). These plateaus are
+the **rank-constrained optima** of `notes/locality.md` section 5 (18 of 19 such plateau types sit
+at a level of the numerical route-rule sequence within 5 %).
+
+- The paper's route depth, applied anyway, **fails at every such plateau**: with all patterns
+  already above half weight (or the missing ones at depth <= 1) it predicts that training is over
+  or proceeds without a plateau, while a plateau of length sigma^-1 to sigma^-3 follows
+  (13 of 25 fitted non-star plateau types: "no plateau predicted" but one exists; 3 more with the
+  wrong exponent). It **holds at the canonical plateaus** (9 of 9 canonical non-star types it can
+  score, except one spectral shortcut, below), and depth 0 ("produced for free as a recombinant")
+  is right in the narrow sense that such a pattern crosses half weight in the same drop as its
+  parents.
+- The pairwise (Prim) rule fails in exactly the same places (it agrees with the paper's depth on
+  all these targets).
+- **What replaces them: the numerical route rule at the actual plateau point** (smallest connected
+  core set whose local residual is non-zero, k*). It predicts the plateau-length exponent k* - 2
+  for 23 of 25 fitted non-star plateau types (every seed within 0.3 in 23 of them), the effective
+  depth of the escape (within 0.5 of k* in 94.7 % of 8,184 escapes), the escape type (strict saddle
+  iff k* = 2: 10 of 10 types; degenerate with smallest Hessian eigenvalue ~ sigma^(k*-2) for
+  k* >= 3: 32 of 32), and what is learned or removed next (89 % of 8,759 escapes; 99 % if a
+  "clean-up" escape counts as predicted when the route rule names the string that changes most,
+  target or not). **empirical**
+- Where it fails: (i) a **spectral shortcut**: the order is below k* (exponent 2 where k* - 2 = 3)
+  at the one-pattern plateau of the star control CTL1_mps6, where Theorem 3.2 predicts it exactly
+  (order min(k*, 2 l*) = min(5, 4) = 4; **proven** order, **empirical** exponent), and at a
+  canonical three-pattern plateau of RND1_mps6 (order 4, effective depth 3.9, route depth 5), where
+  no theorem applies and the parent-wise formula of Theorem 9.2 predicts 2 (wrong); (ii) a
+  **non-integer exponent** 0.61 [0.57, 0.70] at a canonical depth-3 plateau of RND3_mps6 whose
+  escape still has effective depth 3.03: the route enters the plateau larger than sigma
+  (Assumption C.1(1) fails); **empirical**, mechanism **conjecture** (section 13).
+- Learning on these targets also produces **dead routes** (training stuck for good at a
+  rank-constrained optimum with a recombinant, 146 runs on R4 / R4d, always the same 5-6 seeds at
+  every sigma) and **forgetting** at spectral escapes (section 14).
+
+## 10. P1: what the plateaus are (empirical)
+
+Plateau points after the first escape, window sigmas, every seed (`headline.md`):
+
+| targets | plateau points | canonical (d_near < 0.03) | carrying a recombinant string |
+|---|---|---|---|
+| non-star (17 targets) | 8,902 | 31.6 % | 59 % |
+| star controls (3) | 2,388 | 99.6 % | 0.9 % |
+
+By plateau type (target, key; >= 20 window points): non-star 14 canonical types and 19
+non-canonical ones (17 with a recombinant, 18 at a route-sequence level within 5 %); star
+controls 9 canonical types. The registered decision (>= 90 % canonical = "canonical", <= 10 % =
+"rank-constrained optimum") classifies every type; no type is mixed. Typical non-canonical
+plateaus (`summary_by_target.md`):
+
+| target | plateau (learned set J, loss) | off-target strings (recombinant across edge e: lower side a, upper side b) | distance to the nearest partial target |
+|---|---|---|---|
+| R3 | {000,100,001}, L = 0.01944 | 101 = e0: 100 \| 001, amplitude 0.166 | 0.16 |
+| R4 | {0000,1000,0001}, L = 0.01944 | 1001 = e0: 1000 \| 0001 | 0.16 |
+| R3d, R4d | all four patterns, L = 0.01953 | none; the amplitudes are those of the best product tensor | 0.15 |
+| NC_ht4 | {0000,1100}, L = 0.06376 then 0.05775 | 0010 = e2: 0000 \| 1110, 0001; then 0010, 0011 = e2: 0000 \| 1111 | 0.16, 0.19 |
+| NC_binary4 | {0000,1100}, L = 0.05775 | 0010, 0011 (edge e0) | 0.19 |
+| TD_mps6 | all three, L = 0.01518 | 110110 = e1: 110000 \| 000110 | 0.14 |
+| TD_binary8 | all three, L = 0.01518 | 11001100 = e0: 11000000 \| 00001100 | 0.14 |
+| RND2_binary8 | three of four, L = 0.1002 | 10001101, 00110001 (edge e2) | 0.19 |
+| RND3_binary8 | all three, L = 0.1142 | 01111000 = e2: 01111001 \| 11001000 | 0.33 |
+
+The recombinant family makes the mechanism explicit (**derived**, checked numerically): for
+q = 0..0 with the two end edits, W* restricted to the end sites is the 2 x 2 matrix
+[[1, 0.4], [0.6, 0]] (R3, R4) or [[1, 0.4], [0.6, 0.5]] (R3d, R4d). The first escape learns its best
+rank-1 (product) approximation: loss = (second singular value)^2 / 2 = 0.019445 (0.019527),
+exactly the measured levels, and the product puts amplitude 0.166 on the recombinant 10..01 (R3,
+R4). All three patterns pass half their weight in that one escape, so the learned set is complete
+while the loss is not zero. With 10..01 at the product weight 0.24 (R3p, R4p) W* is itself a
+product tensor and there is a single drop to zero loss, no later plateau (520 + 520 runs).
+
+Star controls behave as the paper says: their plateaus are canonical (median distance 1e-8 to
+4e-3), no off-target strings beyond 0.01 except transiently.
+
+## 11. P3 / P4 / P5: plateau lengths, effective depths, escape type (empirical)
+
+Registered per-seed fits (window, >= 5 sigmas over >= 1.5 decades, unflagged), plateau types with
+>= 5 fitted seeds (`headline.md`, `fit_summary.csv`):
+
+| predictor | non-star types (25): holds / fails | of which "no plateau predicted" | star types (6): holds / fails |
+|---|---|---|---|
+| paper's route depth (applied anyway) | 9 / 16 | 13 | 5 / 1 |
+| numerical route rule (k* at the plateau point) | **23 / 2** | 0 | 5 / 1 |
+| pairwise rule | 9 / 16 | 13 | 5 / 1 |
+| registered by-hand order (where defined) | 7 / 0 | - | 4 / 0 |
+
+"Holds" = median within 0.3 and >= 70 % of seeds within 0.3; in every "holds" row of the route
+rule the fraction within 0.3 is 1.00 and the quartiles span <= 0.05 (exponents 0.04-0.17 for k* = 2
+log-time plateaus, 1.00-1.03 for k* = 3, 2.00 for k* = 4). Depth-5 plateaus are floor-flagged at
+sigma <= 1e-3 and have no registered fit; the secondary fits (deviation 2; flagged points
+included) give 3.00 [2.99, 3.00] (TD_binary8 recombinant plateau; paper predicts no plateau),
+3.00 (RND1_binary8, CTL1_binary8 RS2), 3.13-3.15 (CTL1_mps6, RND1_mps6) against k* - 2 = 3.
+
+The by-hand orders hold everywhere they are registered: the rank-1 optima of R3, R3d (order 3,
+exponent 1.00 [1.00, 1.00], 40 seeds each) and R4, R4d (order 4, exponent 2.00 [2.00, 2.00], 31
+seeds; 9 seeds trapped), and every canonical one-pattern plateau via Theorem 3.2 (NC_ht4 {0000},
+NC_mps4 {0000}, RND3_binary8 {01111001}, CTL1_mps6 {100100}, {100011}, {010101}).
+
+The two route-rule failures (non-star) and the star failure:
+
+| target, plateau | measured exponent | route rule k* - 2 | paper / pairwise | what it is |
+|---|---|---|---|---|
+| CTL1_mps6 (star), J = {010101} | 2.00 [2.00, 2.01] (14 seeds), effective depth 4.00, lambda_min ~ sigma^1.99 | 3 | 3 / 3 | spectral shortcut, predicted exactly by Theorem 3.2: k* = 5, l* = 2, order 4 (**proven** order) |
+| RND1_mps6, J = {010110, 010100, 101110} (canonical), learning 110101 (weight 1, the largest) | 2.02 [2.01, 2.05] (19), effective depth 3.91, lambda_min ~ sigma^2.00 | 3 | 3 / 3 | order 4 < route depth 5 at a three-pattern saddle; parent-wise min(k*_a, 2 l*_a) (Theorem 9.2 outside its assumption) gives 4, 2, 4 per parent, so the minimum (2) is wrong |
+| RND3_mps6, J = {110100, 101100, 101010} (canonical), learning 000010 | 0.61 [0.57, 0.70] (40), effective depth 3.03, lambda_min ~ sigma^0.51 | 1 | 1 / 1 | depth-3 escape from a route that enters the plateau larger than sigma (section 13) |
+
+Effective depth of every escape (loss estimator, unflagged, window): within 0.5 of the route
+rule's k* in 94.7 % of 8,184 non-star escapes (median |difference| 0.03) and 88 % of 1,833 star
+escapes (the misses are the log-time k* = 2 escapes, whose estimator gives 1.7-1.9, and the
+spectral shortcut); within 0.5 of the paper's depth in 30.9 % (non-star) and 87 % (star).
+
+Escape type (`escape_type.csv`, 42 plateau types with >= 20 points): every k* = 2 type is strict
+(median lambda_min -0.12 to -0.6, independent of sigma: slope |x| < 0.01; plateau length grows
+like log(1/sigma), power-law slope 0.04-0.17), every k* >= 3 type is degenerate with slope
+x = 1.00-1.07 (k* = 3; except RND3_mps6 RS3, 0.51), 1.85-2.00 (k* = 4) and 2.69-3.04 (k* = 5;
+lower values come from the floor at the smallest sigma), i.e. lambda_min ~ sigma^(k* - 2), the
+same exponent as the plateau length. Recombinant plateaus are degenerate saddles of order k* =
+the size of the connected region that must open a new bond channel: 3 on R3 and NC_binary4, 3 on
+NC_ht4 and TD_mps6, 4 on R4, RND2/RND3_binary8, RND2_mps6, 5 on TD_binary8. **empirical**; for
+the recombinant family the order K is **derived** in section 2 and matches.
+
+## 12. P2: what is learned next (empirical)
+
+Per escape from a plateau, conditional on the learned set reached (window; `sequence.csv`):
+
+| targets | escapes | paper's greedy rule | route rule | route rule (any string) | pairwise | weight order |
+|---|---|---|---|---|---|---|
+| non-star | 8,759 | 0.545 | 0.894 | 0.988 | 0.545 | 0.474 |
+| star controls | 2,275 | 0.997 | 0.991 | 0.991 | 0.997 | 0.702 |
+
+45 % of the non-star escapes (3,953 of 8,759) are **clean-ups**: no pattern enters the learned set;
+the loss drops because an off-target string is removed and the amplitudes are corrected (R3, R4,
+R3d, R4d, TD_*, NC_ht4 RS1, RND1_*, RND3_binary8). The paper, the pairwise rule and weight order
+cannot predict these by construction. On escapes that do learn a pattern, the paper's next pattern
+is right in most cases (the misses are on NC_mps4, RND1_mps6, RND3_mps6). The route rule's string
+is the off-target string that is removed in 89 % of all escapes; the registered rule counts R3d /
+R4d clean-ups as misses because their plateau carries no off-target string (the string that changes
+most is the target string 10..01, which the route rule names: "any string" column).
+
+## 13. Head start: the non-integer exponent of RND3_mps6 (empirical; mechanism conjecture)
+
+At the canonical plateau J = {110100, 101100, 101010} of RND3_mps6 (learning 000010, route depth 3)
+the plateau length grows from 241 (sigma = 10^-1.5) to 5,293 (10^-3.5): local exponent 0.84 at the
+large end, 0.58 at the small end, median per-seed exponent 0.61; the escape itself has effective
+depth 3.03 and lambda_min ~ sigma^0.51. The amplitude of 000010 at the plateau point scales as
+sigma^2.33 (from 5.5e-6 to 1.2e-10), not sigma^3: the dormant route enters the plateau at about
+sigma^0.6-0.8, not sigma. This plateau follows two strict (log-time) plateaus; a candidate
+mechanism (**conjecture**) is that during a strict plateau of length ~ log(1/sigma)/lambda the
+dormant entries of the next route grow (or shrink) at a rate lambda', which turns sigma into
+sigma^(1 - lambda'/lambda) at entry and gives the exponent (c - 2)(1 - lambda'/lambda). This is a
+failure of Assumption C.1(1) (dormant entries of order sigma on entry) on a canonical plateau; it
+was not tested further.
+
+## 14. Runs that do something else (empirical)
+
+| what | runs | where | what happens |
+|---|---|---|---|
+| trapped (dead route) | 211 | R4 81, R4d 65, B4_mps4 65 (star control), at every sigma | the same 6 (R4), 5 (R4d), 5 (B4) seeds at all 13 sigmas (2 more R4 seeds at one or two sigmas); the depth-4 route through both chain ends dies: gradient 1e-16, all non-learned entries of W ~ 1e-15; R4 / R4d stay at the rank-1 optimum with the recombinant 1001 (or wrong amplitudes) for good; B4 stays at {0000, 0110} (locality's mps4 {0,3} dead routes) |
+| wall-clock cap (1800 s) | 79 | CTL1_mps6 58 (sigma <= 10^-2.25), TD_binary8 21 (sigma = 10^-3.5) | a depth-5 plateau at the float64 floor (gradient ~ 3e-16 to 6e-14), LSODA crawls; the trap rule did not fire because its checks are spaced in absolute time, which is ~1e17 on these runs; all are floor-flagged at that plateau |
+| floor-flagged plateau | 1,185 | depth-5 plateaus at sigma <= 1e-3, depth-4 at sigma <= 10^-3.75 | excluded from the registered fits; secondary fits in section 11 |
+| forgetting (a pattern falls below s/4 after passing s/2) | 452 | mostly inside the first escape (NC_ht4, RND2_binary8, CTL1_binary8, RND3_mps6, ...: the first escape passes a mixed state before settling); later only in CTL1_mps6 (213 runs: 21 of 40 seeds at every sigma <= 10^-1.75), RND1_mps6, RND3_mps6 | CTL1_mps6 (a star control): the spectral escape from J = {010101} learns 100011 and 100100 and destroys 010101 (the heaviest pattern), which is relearned only after a depth-5 plateau; 35 of the 58 CTL1_mps6 wall runs are of this kind |
+| transient segments merged (deviation 1) | 2,312 runs | everywhere | an escape whose loss drop has two stages |
+
+## 15. Claims and status
+
+1. On non-star targets, plateaus after the first escape are often rank-constrained optima carrying
+   recombinant strings, not partial-target points (68 % of plateau points; 17 of 19 non-canonical
+   types carry a recombinant). **empirical**
+2. For the recombinant family, the plateau is the best rank-1 approximation of W*, its order is K
+   (direct degree = the whole chain; no spectral shortcut), and its length grows as sigma^-(K-2).
+   **derived** (order) and **empirical** (exponent 1.00 and 2.00, every seed).
+3. The paper's route depth and the pairwise rule predict no plateau at these points; the plateaus
+   exist and last sigma^-1 to sigma^-3. **empirical**
+4. The numerical route rule at the measured plateau point predicts exponent, effective depth,
+   escape type and the next string for every plateau type except spectral shortcuts and one
+   head-start case. **empirical**
+5. At canonical one-pattern plateaus Theorem 3.2 gives the order also on non-star targets,
+   including a spectral shortcut (order 4 < k* = 5) on a star control. **proven** (order),
+   **empirical** (dynamics)
+6. At a canonical three-pattern plateau of RND1_mps6 the order is 4, below both the route depth
+   (5) and the route rule (5); a parent-wise min(k*, 2 l*) gives 2. The conjectured
+   min(direct, 2 x spectral) of Appendix B is consistent with 4 only if the spectral level is
+   computed with multi-pattern atoms, which was not done. **empirical**; formula **conjecture**.
+7. Dead routes make 15 % (R4) and 12.5 % (R4d, B4) of the seeds stop for good; whether a route
+   dies is a property of the seed, not of sigma. **empirical**
+
+## 16. Open and next
+
+- A static order measurement (sphere minimum, as in `route-escape`) at the rank-constrained
+  optima would turn claim 4 from "the escape behaves as order k*" into a measured order.
+- The spectral level at multi-pattern saddles (RND1_mps6) needs atoms built on the learned
+  channels; the parent-wise formula is not it.
+- The head start of section 13: record the route entries along the preceding strict plateaus.
+- Trap rule in relative time (it missed the 79 wall runs).
