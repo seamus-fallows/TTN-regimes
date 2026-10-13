@@ -15,7 +15,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
+import pandas as pd
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from load import read  # noqa: E402  # noqa: E402
 
 from ttn.plotting import MUTED, palette, savefig, set_style  # noqa: E402
 
@@ -52,7 +55,7 @@ def example_trajectories(raw: Path, res: Path, out: Path):
         ok = x > (0.1 if logx else -0.02 * x[-1])
         pats = [p for p in rec["crossings"]]
         weights = None
-        tgt = pd.read_csv(res / "runs.csv")  # noqa: F841  (presence check)
+        tgt = read("runs", res)  # noqa: F841  (presence check)
         cfg = __import__("yaml").safe_load((HERE / "configs" / "targets.yaml").read_text())
         weights = {t_["name"]: t_["weights"] for t_ in cfg["targets"]}[name]
         cols = palette(len(pats))
@@ -87,7 +90,7 @@ def example_trajectories(raw: Path, res: Path, out: Path):
 
 
 def plateau_identity(res: Path, out: Path):
-    tr = pd.read_csv(res / "transitions.csv.gz")
+    tr = read("transitions", res)
     tr = tr[(tr.segment >= 1) & tr.d_near.notna() & (tr.log10_sigma <= -1.5)]
     tr["recomb"] = tr.off_recombinants.fillna("").str.len() > 0
     g = tr.groupby(["target", "family", "key"]).agg(d=("d_near", "median"), n=("seed", "size"),
@@ -129,7 +132,7 @@ def plateau_identity(res: Path, out: Path):
 
 
 def exponents(res: Path, out: Path):
-    s0 = pd.read_csv(res / "fit_summary.csv")
+    s0 = read("fit_summary", res)
     s0 = s0[s0.key != "origin"]
     s = s0[s0.n_fitted >= 5].copy()
     # secondary (deviation 2): keys fitted only with floor-flagged sigmas included
@@ -189,7 +192,7 @@ def exponents(res: Path, out: Path):
 
 
 def effective_depth(res: Path, out: Path):
-    tr = pd.read_csv(res / "transitions.csv.gz")
+    tr = read("transitions", res)
     tr = tr[(tr.segment >= 1) & tr.next_eff_depth_loss.notna() & (tr.log10_sigma <= -1.5)
             & (tr.floor_flag == False)]  # noqa: E712
     g = tr.groupby(["target", "key"]).agg(eff=("next_eff_depth_loss", "median"),
@@ -226,10 +229,10 @@ def effective_depth(res: Path, out: Path):
 
 
 def escape_type(res: Path, out: Path):
-    tr = pd.read_csv(res / "transitions.csv.gz")
+    tr = read("transitions", res)
     tr = tr[(tr.segment >= 1) & tr.lam_min.notna() & (tr.floor_flag == False)]  # noqa: E712
-    et = pd.read_csv(res / "escape_type.csv")
-    fs = pd.read_csv(res / "fit_summary.csv")[["target", "key", "route_k_median"]]
+    et = read("escape_type", res)
+    fs = read("fit_summary", res)[["target", "key", "route_k_median"]]
     et = et.merge(fs, on=["target", "key"])
     fig, axes = plt.subplots(1, 2, figsize=(15, 6.5), sharey=True)
     cols = palette(6)
@@ -264,7 +267,7 @@ def escape_type(res: Path, out: Path):
 
 
 def sequence(res: Path, out: Path):
-    seq = pd.read_csv(res / "sequence.csv")
+    seq = read("sequence", res)
     seq = seq[seq.log10_sigma <= -1.5]
     w = seq.groupby("target")[["hit_paper", "hit_route", "hit_pair", "hit_weight"]].mean()
     order = sorted(w.index, key=lambda n: (n.startswith(("CTL", "B4")), n))

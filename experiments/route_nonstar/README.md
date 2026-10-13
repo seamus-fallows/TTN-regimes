@@ -60,6 +60,7 @@ Plain-words glossary (details in the note, section 1):
 uv run python experiments/route_nonstar/make_targets.py          # configs/targets.yaml (1 min)
 uv run python experiments/route_nonstar/run.py sweep --workers 120   # 9,520 runs, resumable
 uv run python experiments/route_nonstar/analyze.py               # results/*.csv
+uv run python experiments/route_nonstar/headline.py              # results/headline.md
 uv run python experiments/route_nonstar/figures.py               # results/fig*.png/.pdf
 uv run python experiments/route_nonstar/run.py one R3 -2 0       # one run, record to stdout
 ```
@@ -81,10 +82,14 @@ uv run python experiments/route_nonstar/run.py one R3 -2 0       # one run, reco
 | `run.py` | one run + its analysis; the resumable sweep |
 | `analyze.py` | CSVs, per-seed fits, decisions, escape types, sequence scores |
 | `figures.py` | draft figures |
+| `headline.py` | cross-target numbers -> `results/headline.md` |
+| `load.py` | `read(name)`: load a result CSV with pattern columns as text |
 | `results/` | CSVs (below) and figures |
 
 ## CSV columns (`results/`)
 
+**Read them with `load.read(name)`** (or `dtype=str` for the pattern columns listed in
+`load.PATTERN_COLUMNS`): pattern strings such as `0110` otherwise become the number 110.
 All CSVs are long format, one row per observation. Identifying columns (every CSV that has them):
 `target` (name in `configs/targets.yaml`), `tree` (kind + number of sites, e.g. `mps6`), `d`
 (physical dimension, 2), `chi` (largest bond dimension of the network), `sigma` (init scale),

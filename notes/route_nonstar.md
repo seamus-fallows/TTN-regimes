@@ -275,8 +275,10 @@ at a level of the numerical route-rule sequence within 5 %).
   already above half weight (or the missing ones at depth <= 1) it predicts that training is over
   or proceeds without a plateau, while a plateau of length sigma^-1 to sigma^-3 follows
   (13 of 25 fitted non-star plateau types: "no plateau predicted" but one exists; 3 more with the
-  wrong exponent). It **holds at the canonical plateaus** (9 of 9 canonical non-star types it can
-  score, except one spectral shortcut, below), and depth 0 ("produced for free as a recombinant")
+  wrong exponent). It **holds at the canonical plateaus** (8 of 10 fitted canonical non-star
+  types; the 2 misses are the spectral shortcut and the head start below, where the route rule
+  fails too), it names the next pattern correctly on 99.4 % of the escapes that learn a pattern,
+  and depth 0 ("produced for free as a recombinant")
   is right in the narrow sense that such a pattern crosses half weight in the same drop as its
   parents.
 - The pairwise (Prim) rule fails in exactly the same places (it agrees with the paper's depth on
@@ -288,7 +290,7 @@ at a level of the numerical route-rule sequence within 5 %).
   iff k* = 2: 10 of 10 types; degenerate with smallest Hessian eigenvalue ~ sigma^(k*-2) for
   k* >= 3: 32 of 32), and what is learned or removed next (89 % of 8,759 escapes; 99 % if a
   "clean-up" escape counts as predicted when the route rule names the string that changes most,
-  target or not). **empirical**
+  target or not; the paper's greedy rule: 54.5 %, all of its misses being clean-ups). **empirical**
 - Where it fails: (i) a **spectral shortcut**: the order is below k* (exponent 2 where k* - 2 = 3)
   at the one-pattern plateau of the star control CTL1_mps6, where Theorem 3.2 predicts it exactly
   (order min(k*, 2 l*) = min(5, 4) = 4; **proven** order, **empirical** exponent), and at a
@@ -378,10 +380,11 @@ escapes (the misses are the log-time k* = 2 escapes, whose estimator gives 1.7-1
 spectral shortcut); within 0.5 of the paper's depth in 30.9 % (non-star) and 87 % (star).
 
 Escape type (`escape_type.csv`, 42 plateau types with >= 20 points): every k* = 2 type is strict
-(median lambda_min -0.12 to -0.6, independent of sigma: slope |x| < 0.01; plateau length grows
+(median lambda_min -0.06 to -0.60, independent of sigma: slope |x| < 0.01; plateau length grows
 like log(1/sigma), power-law slope 0.04-0.17), every k* >= 3 type is degenerate with slope
-x = 1.00-1.07 (k* = 3; except RND3_mps6 RS3, 0.51), 1.85-2.00 (k* = 4) and 2.69-3.04 (k* = 5;
-lower values come from the floor at the smallest sigma), i.e. lambda_min ~ sigma^(k* - 2), the
+x = 1.00-1.07 (k* = 3; except RND3_mps6 RS3, 0.51), 1.85-1.99 (k* = 4) and 2.69-3.04 (k* = 5;
+lower values come from the floor at the smallest sigma; the two spectral-shortcut plateaus with
+k* = 5 have x = 1.99 and 2.00, i.e. order 4), i.e. lambda_min ~ sigma^(k* - 2), the
 same exponent as the plateau length. Recombinant plateaus are degenerate saddles of order k* =
 the size of the connected region that must open a new bond channel: 3 on R3 and NC_binary4, 3 on
 NC_ht4 and TD_mps6, 4 on R4, RND2/RND3_binary8, RND2_mps6, 5 on TD_binary8. **empirical**; for
@@ -399,8 +402,10 @@ Per escape from a plateau, conditional on the learned set reached (window; `sequ
 45 % of the non-star escapes (3,953 of 8,759) are **clean-ups**: no pattern enters the learned set;
 the loss drops because an off-target string is removed and the amplitudes are corrected (R3, R4,
 R3d, R4d, TD_*, NC_ht4 RS1, RND1_*, RND3_binary8). The paper, the pairwise rule and weight order
-cannot predict these by construction. On escapes that do learn a pattern, the paper's next pattern
-is right in most cases (the misses are on NC_mps4, RND1_mps6, RND3_mps6). The route rule's string
+cannot predict these by construction. On the 4,806 escapes that do learn a pattern, the paper's
+greedy next pattern is right in 99.4 % (pairwise 99.4 %, route rule 97.9 %, weight order 86.4 %;
+the lowest per target is RND3_mps6, 0.96 for the paper and 0.90 for the route rule). So the
+sequence failure of the paper on non-star targets is entirely the clean-up escapes. The route rule's string
 is the off-target string that is removed in 89 % of all escapes; the registered rule counts R3d /
 R4d clean-ups as misses because their plateau carries no off-target string (the string that changes
 most is the target string 10..01, which the route rule names: "any string" column).
