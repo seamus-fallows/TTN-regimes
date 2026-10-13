@@ -1,0 +1,246 @@
+"""Draft figures for experiment route_nonstar (from results/*.csv and, for the example
+trajectories, the raw records).
+
+usage: uv run python experiments/route_nonstar/figures.py [--raw DIR] [--res DIR]
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+
+from ttn.plotting import MUTED, palette, savefig, set_style  # noqa: E402
+
+HERE = Path(__file__).resolve().parent
+BIG = 12
+
+
+def style():
+    set_style("sans")
+    matplotlib.rcParams.update({"font.size": BIG, "axes.titlesize": BIG, "axes.labelsize": BIG,
+                                "xtick.labelsize": BIG - 1, "ytick.labelsize": BIG - 1,
+                                "legend.fontsize": BIG - 1, "figure.titlesize": BIG + 1,
+                                "lines.linewidth": 2.0})
+
+
+def example_trajectories(raw: Path, res: Path, out: Path):
+    """One run per target: amplitudes of the target patterns and of the largest off-target string."""
+    cases = [("R3", -2.0, 0, "recombinant 101 appears and is removed later"),
+             ("NC_ht4", -2.0, 0, "nested chain: 0010 and 0011 appear"),
+             ("TD_binary8", -2.0, 0, "two edits learned with their recombinant"),
+             ("CTL1_mps6", -2.0, 0, "star control: no off-target strings")]
+    fig, axes = plt.subplots(2, 2, figsize=(13, 9))
+    for ax, (name, ls, seed, msg) in zip(axes.flat, cases):
+        stem = raw / "raw" / name / f"s{ls:+.2f}_seed{seed}"
+        if not stem.with_suffix(".json").exists():
+            ax.set_visible(False)
+            continue
+        rec = json.loads(stem.with_suffix(".json").read_text())
+        z = np.load(stem.with_suffix(".npz"))
+        t, P, W, keep = z["t"], z["P"], z["W"], z["keep"]
+        drops = [d for d in rec["drops"] if d]
+        t0 = drops[0]["t_half"] if drops else 0.0
+        x = t - t0
+        ok = x > 0.1
+        pats = [p for p in rec["crossings"]]
+        weights = None
+        tgt = pd.read_csv(res / "runs.csv")  # noqa: F841  (presence check)
+        cfg = __import__("yaml").safe_load((HERE / "configs" / "targets.yaml").read_text())
+        weights = {t_["name"]: t_["weights"] for t_ in cfg["targets"]}[name]
+        cols = palette(len(pats))
+        for a, p in enumerate(pats):
+            ax.plot(x[ok], P[ok, a] / weights[a], color=cols[a], label=f"{p} (weight {weights[a]:g})")
+        # the off-target string with the largest |W| on any plateau
+        best, amp = None, 0.0
+        for s in rec["segments"]:
+            for o in (s or {}).get("off_strings", []) or []:
+                if abs(o["amp"]) > amp:
+                    best, amp = o["string"], abs(o["amp"])
+        if best is not None:
+            j = int(best, 2)
+            xk = x[keep]
+            okk = xk > 0.1
+            ax.plot(xk[okk], np.abs(W[okk, j]) / max(weights), color="black", ls="--", lw=2.2,
+                    label=f"{best} (not in target)")
+        ax.set_xscale("log")
+        ax.set_ylim(-0.05, 1.25)
+        ax.axhline(0.5, color=MUTED, lw=1, ls=":")
+        ax.set_xlabel("time after the first escape (gradient-flow time units)")
+        ax.set_ylabel("amplitude / its target weight")
+        ax.set_title(f"{name} ({rec['tree']}, sigma = 10^{ls:g}): {msg}", fontsize=BIG - 1)
+        ax.legend(loc="center left", fontsize=BIG - 3)
+    fig.suptitle("On targets that break the star condition, training stalls at points that "
+                 "contain a string outside the target (dashed)")
+    savefig(fig, out / "fig1_example_trajectories")
+    plt.close(fig)
+
+
+def plateau_identity(res: Path, out: Path):
+    tr = pd.read_csv(res / "transitions.csv")
+    tr = tr[(tr.segment >= 1) & tr.d_near.notna() & (tr.log10_sigma <= -1.5)]
+    g = tr.groupby(["target", "family", "key"]).agg(d=("d_near", "median"),
+                                                    n=("seed", "size")).reset_index()
+    g = g[g.n >= 20]
+    order = list(dict.fromkeys(tr.sort_values(["family", "target"]).target))
+    fams = {"recombinant": 0, "nested": 1, "two_edits": 2, "random": 3, "control": 5}
+    cols = palette(6)
+    fig, ax = plt.subplots(figsize=(11, 8))
+    for _, r in g.iterrows():
+        y = order.index(r.target)
+        ax.scatter(max(r.d, 1e-7), y, s=60, color=cols[fams[r.family]], edgecolor="black",
+                   lw=0.5, zorder=3)
+    ax.axvline(0.03, color="black", ls="--", lw=1.5)
+    ax.text(0.032, len(order) - 0.6, "canonical if left of this line (distance < 0.03)",
+            fontsize=BIG - 2)
+    ax.set_yticks(range(len(order)), order)
+    ax.set_xscale("log")
+    ax.set_xlabel("distance of the plateau point to the nearest partial target "
+                  "(relative to the target norm; median over seeds)")
+    for fam, c in fams.items():
+        ax.scatter([], [], color=cols[c], edgecolor="black", lw=0.5, s=60, label=fam)
+    ax.legend(title="target family", loc="lower right")
+    ax.set_title("Later plateaus of non-star targets are mostly not partial targets; "
+                 "star controls sit on them")
+    savefig(fig, out / "fig2_plateau_identity")
+    plt.close(fig)
+
+
+def exponents(res: Path, out: Path):
+    s = pd.read_csv(res / "fit_summary.csv")
+    s = s[(s.n_fitted >= 5) & (s.key != "origin")]
+    star = s.target.str.startswith(("CTL", "B4"))
+    fig, axes = plt.subplots(1, 3, figsize=(16, 6), sharey=True)
+    names = [("paper", "paper's route depth c*_J - 2\n(applied outside its scope)"),
+             ("route", "numerical route rule k* - 2\n(at the measured plateau point)"),
+             ("pair", "pairwise rule: min Steiner cost - 2")]
+    cols = palette(2)
+    for ax, (p, label) in zip(axes, names):
+        x = s[f"exp_{p}"].values + np.random.default_rng(0).uniform(-0.06, 0.06, len(s))
+        y = s["median"].values
+        err = np.vstack([y - s.q25.values, s.q75.values - y])
+        for mask, c, lab in [(~star, cols[1], "targets breaking the star condition"),
+                             (star, cols[0], "star-satisfying controls")]:
+            ax.errorbar(x[mask], y[mask], yerr=err[:, mask], fmt="o", color=c, ms=7, mec="black",
+                        mew=0.5, label=lab, capsize=3)
+        lim = [-0.5, 5.5]
+        ax.plot(lim, lim, color="black", lw=1.5, label="measured = predicted")
+        ax.fill_between(lim, [lim[0] - 0.3, lim[1] - 0.3], [lim[0] + 0.3, lim[1] + 0.3],
+                        color=MUTED, alpha=0.2, lw=0, label="within 0.3")
+        ax.set_xlim(lim)
+        ax.set_ylim(-0.7, 5.5)
+        ax.set_xlabel("predicted exponent: " + label)
+        ax.set_title({"paper": "Paper's route depth", "route": "Numerical route rule",
+                      "pair": "Pairwise rule"}[p])
+    axes[0].set_ylabel("measured exponent of plateau length vs sigma\n"
+                       "(median over seeds, bars = quartiles)")
+    axes[0].legend(loc="upper left", fontsize=BIG - 3)
+    fig.suptitle("Plateau lengths ~ sigma^-exponent: which rule predicts the exponent? "
+                 "(one point per target and plateau type)")
+    savefig(fig, out / "fig3_exponents_vs_predictors")
+    plt.close(fig)
+
+
+def effective_depth(res: Path, out: Path):
+    tr = pd.read_csv(res / "transitions.csv")
+    tr = tr[(tr.segment >= 1) & tr.next_eff_depth_loss.notna() & (tr.log10_sigma <= -1.5)
+            & (tr.floor_flag == False)]  # noqa: E712
+    g = tr.groupby(["target", "key"]).agg(eff=("next_eff_depth_loss", "median"),
+                                          q25=("next_eff_depth_loss", lambda v: v.quantile(.25)),
+                                          q75=("next_eff_depth_loss", lambda v: v.quantile(.75)),
+                                          k=("route_k", "median"), c=("pred_paper", "median"),
+                                          n=("seed", "size")).reset_index()
+    g = g[g.n >= 20]
+    g["c"] = g.c.fillna(0)
+    fig, axes = plt.subplots(1, 2, figsize=(13, 6), sharey=True)
+    cols = palette(2)
+    for ax, (col, lab) in zip(axes, [("c", "paper's route depth c*_J (0 = nothing missing)"),
+                                     ("k", "route rule k* at the plateau point")]):
+        x = g[col].values + np.random.default_rng(1).uniform(-0.08, 0.08, len(g))
+        y = g.eff.values
+        ax.errorbar(x, y, yerr=np.vstack([y - g.q25, g.q75 - y]), fmt="o", color=cols[1], ms=7,
+                    mec="black", mew=0.5, capsize=3, label="one plateau type (median over seeds)")
+        ax.plot([0, 7], [0, 7], color="black", lw=1.5, label="effective depth = predicted")
+        ax.set_xlabel(lab)
+        ax.set_xlim(-0.5, 7.5)
+        ax.set_ylim(0, 7.5)
+    axes[0].set_ylabel("effective depth of the escape\n(slope of the loss growth law)")
+    axes[0].legend(loc="upper left", fontsize=BIG - 2)
+    fig.suptitle("The escape from a plateau behaves like a route of depth k*, not of the "
+                 "paper's depth")
+    savefig(fig, out / "fig4_effective_depth")
+    plt.close(fig)
+
+
+def escape_type(res: Path, out: Path):
+    tr = pd.read_csv(res / "transitions.csv")
+    tr = tr[(tr.segment >= 1) & tr.lam_min.notna() & (tr.floor_flag == False)]  # noqa: E712
+    et = pd.read_csv(res / "escape_type.csv")
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
+    cols = palette(6)
+    for ax, kind in zip(axes, ["strict", "degenerate"]):
+        keys = et[et.type == kind].sort_values("n_points", ascending=False).head(6)
+        for i, (_, r) in enumerate(keys.iterrows()):
+            g = tr[(tr.target == r.target) & (tr.key == r.key)]
+            m = g.groupby("log10_sigma").lam_min.median()
+            ax.plot(10.0**m.index.values, np.abs(m.values), "o-", color=cols[i],
+                    label=f"{r.target}: {r.key[:28]}")
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlabel("initialization scale sigma")
+        ax.set_title({"strict": "strict saddles: curvature stays negative",
+                      "degenerate": "higher-order saddles: curvature -> 0 with sigma"}[kind])
+        ax.legend(fontsize=BIG - 4, loc="lower right")
+    axes[0].set_ylabel("|smallest Hessian eigenvalue| at the plateau\n(median over seeds)")
+    fig.suptitle("Escape type: order-2 plateaus keep a fixed negative curvature, "
+                 "higher-order ones flatten as sigma -> 0")
+    savefig(fig, out / "fig5_escape_type")
+    plt.close(fig)
+
+
+def sequence(res: Path, out: Path):
+    seq = pd.read_csv(res / "sequence.csv")
+    seq = seq[seq.log10_sigma <= -1.5]
+    w = seq.groupby("target")[["hit_paper", "hit_route", "hit_pair", "hit_weight"]].mean()
+    order = sorted(w.index, key=lambda n: (n.startswith(("CTL", "B4")), n))
+    w = w.loc[order]
+    fig, ax = plt.subplots(figsize=(15, 6))
+    cols = palette(4)
+    labels = ["paper's greedy rule (route depth)", "numerical route rule", "pairwise rule",
+              "largest weight first"]
+    for i, (c, lab) in enumerate(zip(w.columns, labels)):
+        ax.bar(np.arange(len(w)) + (i - 1.5) * 0.2, w[c].values, 0.2, color=cols[i], label=lab)
+    ax.set_xticks(range(len(w)), w.index, rotation=45, ha="right")
+    ax.set_ylim(0, 1.05)
+    ax.set_ylabel("fraction of escapes whose outcome\nthe rule predicts correctly")
+    ax.legend(ncol=2, loc="upper left", fontsize=BIG - 2)
+    ax.set_title("What is learned next: rules scored on every escape from a plateau "
+                 "(given the patterns already learned)")
+    savefig(fig, out / "fig6_sequence")
+    plt.close(fig)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--raw", default="/root/outputs/route-nonstar")
+    ap.add_argument("--res", default=str(HERE / "results"))
+    a = ap.parse_args()
+    style()
+    res = Path(a.res)
+    out = res
+    for f in (lambda: example_trajectories(Path(a.raw), res, out),
+              lambda: plateau_identity(res, out), lambda: exponents(res, out),
+              lambda: effective_depth(res, out), lambda: escape_type(res, out),
+              lambda: sequence(res, out)):
+        f()
+
+
+if __name__ == "__main__":
+    main()
