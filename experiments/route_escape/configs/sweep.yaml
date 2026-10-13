@@ -1,0 +1,5 @@
+# Escape grid (notes/route_escape.md sections 3-4).
+log_eps: [-1.0, -1.25, -1.5, -1.75, -2.0, -2.25, -2.5, -2.75, -3.0, -3.25, -3.5, -3.75, -4.0, -4.25, -4.5]
+directions: 16          # per kind A, B, C (A_bal has one)
+wall: 1800              # seconds per run
+window: [-4.5, -3.0]    # fit window in log10 eps (7 points, 1.5 decades)
