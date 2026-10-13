@@ -290,6 +290,36 @@ curves are multi-phase. The picture "number of cores that change" holds only whe
 route whose bonds start together and no cheaper sub-route exists: pattern targets, and sibling-pair events
 on the binary tree.
 
+## 11. Exploratory: the Hessian at the plateau before an event (added after the registration)
+
+`plateau_hessian.py`: from the stored state at the first escape the flow is re-integrated to the middle of
+the plateau before each event (seeds 0-1 of every teacher, sigma = 1e-3 and 1e-2), and the exact Hessian is
+diagonalized. A strict saddle has a sigma-independent negative eigenvalue; at a saddle of order c the
+negative curvature seen at a distance ~sigma from it scales like sigma^(c-2). Slope of log|lambda_min|
+against log sigma between 1e-3 and 1e-2 (median over events; `results/plateau_hessians_scaling.csv`):
+
+| target | tree | k_region | events | slope of abs(lambda_min) vs sigma | lambda_min at sigma = 1e-3 | cores carrying the most negative direction |
+|---|---|---|---|---|---|---|
+| pattern | mps6 | 3 | 2 | 0.97 | -7.6e-4 | 3 |
+| pattern | mps6 | 4 | 2 | 1.97 | -4.5e-7 | 4 |
+| random TTN | mps6 | 2-6 | 23 | -0.03 to 0.01 | -0.10 to -0.22 | 2 (54 of 58 events) |
+| CP 0.6 | mps6 | 6 | 17 | -0.01 | -0.10 | 2 (37 of 37) |
+| CP 0.3 | mps6 | 6 | 20 | 0.02 | -0.009 | 2-6 |
+| random TTN | binary8 | 3-7 | 23 | 0.99-1.00 | -2.5e-4 to -4.9e-4 | 3 (46 of 46) |
+| CP 0.6 | binary8 | 3 | 12 | 1.00 | -2.9e-4 | 3 |
+| CP 0.6 | binary8 | 7 | 15 | 0.00 (teachers 4, 5) / 0.98 (teachers 1-3) | -0.04 | 3 |
+
+*Empirical (exploratory).* On the pattern control the sigma-scaling of the plateau curvature gives the
+route order exactly (slopes 0.97, 1.97 for c = 3, 4). Before every generic event on the chain the plateau
+is a strict saddle (sigma-independent lambda_min) whose most negative direction sits on two adjacent
+cores, even when the event ends up changing all six cores: the event is started by a 2-core instability.
+On the binary tree the plateaus are order-3 saddles (lambda_min ∝ sigma) whose most negative direction
+sits on 3 cores (a sibling pair and its parent). One exception not followed up: for 2 of the 5 CP 0.6
+teachers on binary8 the plateau before the all-bond event also has a sigma-independent negative
+eigenvalue (-0.11 to -0.38, on a sibling triple), yet that event grows like depth 3 and lasts ~sigma^-1
+(p = 1.00, d_eff 3.02 for these teachers), so this negative direction is not the one that starts the
+event; these are also the cells with relearned singular values.
+
 ## 10. Floor flags, cuts, counts
 
 - Floor-flagged events (a rise below 1e-14 s_1 on its plateau; excluded from fits): only on binary8 and
@@ -323,3 +353,5 @@ on the binary tree.
    onset: the bonds that start the event), with `dd_lead`, `dp_lead` in exponents.csv. Added at 20:10
    after seeing, in a partial table of the smallest sigma, that events of generic targets often contain
    bonds that start growing well after the first ones.
+4. **Exploratory plateau Hessians** (section 11, `plateau_hessian.py`), added after the synthetic results
+   were known, to see what starts a multi-core event. Not part of the registered decisions.

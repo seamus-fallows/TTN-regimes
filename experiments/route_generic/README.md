@@ -62,6 +62,8 @@ stop_rel, wall, max_steps).
 | `mnist_events.py` | the same for MNIST runs of the real_data pipeline (data-weighted spectra) |
 | `analyze.py` | CSV tables: runs, events, rises, exponents (per-series fits), summary (decisions) |
 | `figures.py` | draft figures from the CSVs |
+| `tables.py` | markdown tables (`results/summary.md`) from the CSVs |
+| `plateau_hessian.py` | exploratory: Hessian at the middle of the plateau before each event (two sigma), from the stored state at the first escape |
 
 ## CSV columns (`results/`)
 
@@ -119,6 +121,15 @@ k = value), `n_series`, `n_series_both` (series with both d_eff and p), median a
 `dp`, `p`, `eff_depth`, `k_region`, `frac_dd_within_0.3`, `frac_dp_within_0.3`,
 `frac_p_vs_depth_within_0.3`, `frac_log_preferred`, `frac_disconnected` (n_components > 1), `verdict`
 (HOLDS / PARTIAL / FAILS / INCONCLUSIVE by the rules of notes/route_generic.md section 5).
+
+**plateau_hessians.csv** (exploratory; one row per event of seeds 0-1 of every teacher at sigma = 1e-3 and
+1e-2, for pattern / cp03 / cp06 / ttn on mps6 and cp06 / ttn on binary8): identifying columns, `event`,
+`rises`, `prior`, `bonds`, `k_region`, `eff_depth` (from events.csv), `t_prev`, `t_event` (plateau
+bounds, tau clock), `n_negative` (Hessian eigenvalues below -1e-6 max|lambda| at the plateau middle; at a
+higher-order saddle these are ~sigma-small, so use the scaling file), `lambda_min`, `lambda_min_rel`,
+`loss`, `cores_min_dir` / `n_cores_min_dir` (cores carrying >= 10 % of the most negative eigenvector).
+**plateau_hessians_scaling.csv**: the same event at sigma = 1e-3 (`_lo`) and 1e-2 (`_hi`), and
+`lambda_slope` = d log|lambda_min| / d log sigma (0: strict saddle; c - 2 at a saddle of order c).
 
 ## Results
 
