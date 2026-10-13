@@ -29,7 +29,9 @@ Report: `agent-runs/route-escape/REPORT.md`.
   Jacobian, events on solver steps) from theta_J + eps xi, kinds A (positive dormant entries of M*),
   A_bal (all dormant entries = eps), B (dormant entries of M* with random signs), C (Gaussian on every
   parameter); 16 directions per kind (1 for A_bal); eps = 10^-1 ... 10^-4.5 in quarter decades. For
-  A, A_bal, B also the reduced flow on M* and the isolated-route prediction.
+  A, A_bal, B also the reduced flow on M* and the isolated-route prediction. Added after the first
+  sweep (note section 7): Cp = the C direction projected onto M* (window eps only), a causal test of
+  what shifts the escape exponent in C.
 
 ## How to run
 
@@ -101,7 +103,7 @@ escape files add `kind`, `seed` (direction index) and `eps`.
 ### escape_runs.csv (one row per run)
 | column | meaning |
 |---|---|
-| kind | A, A_bal, B or C (see Setup) |
+| kind | A, A_bal, B, C or Cp (see Setup; Cp = the C direction of the same seed projected onto M*, added after the first sweep as a causal test) |
 | seed | direction index (the same direction at every eps) |
 | log_eps, eps | perturbation size: dormant entries ~ eps (A, B: eps x N(0,1) magnitudes; C: eps x N(0,1) on every parameter) |
 | c_star, greedy, greedy_depth | as in cells.csv |
@@ -126,6 +128,7 @@ escape files add `kind`, `seed` (direction index) and `eps`.
 | ratio_616 | t_esc / t_616 (meaningful for A_bal) |
 | P_greedy_0_sign | sign of the greedy pattern's amplitude at t = 0 (A, A_bal, B) |
 | route_min/max/gm_{t0,sw,late}, P_{t0,sw,late}, t_*, align_* | diagnostics of the greedy route from `AlignedManifold.align` + `route_entry_norms`: smallest / largest / geometric-mean route-entry norm divided by eps, the amplitude P_r, the time, and the alignment quality (smallest singular value of the normalised learned messages) at t = 0, at the first checkpoint after t = 200 (`sw`) and at the last checkpoint before t_esc / 3 (`late`) |
+| route_depletion, route_depleted_node | smallest ratio, over the nodes of the greedy route's region, of the lowest route-entry norm reached between the switch checkpoint and the late checkpoint to its value at the switch; the node where it occurs (a ratio near 0 = that route entry was killed on the plateau) |
 | n_steps, n_restart, n_fails, secs | solver steps, clock restarts, failed steps, wall seconds |
 
 ### escape_fits.csv (one row per direction: cell, kind, seed)

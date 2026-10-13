@@ -191,4 +191,19 @@ directions 12-15), and the windows are not moved.
 
 ## 7. Deviations from the pre-registration
 
-(none yet)
+1. **Solver stall: restarted solvers are BDF; runs without outcome rerun (20:13, numerics only).**
+   Three runs of the first sweep hit the 1800 s wall cap (EX87_J0 A seed 13 and U5B8 C seeds 12, 13,
+   all at eps = 10^-4.5): 231k-245k steps at a fixed t ~ 1e13-4e14 with L - L_J already negative.
+   Cause: after a clock restart (or a failed first step) a fresh scipy LSODA starts in nonstiff
+   (Adams) mode and stays pinned at the stability limit of the learned directions (the stall of
+   sdyn deviation 7). Fix: every restarted solver is scipy's BDF (always stiff, exact Jacobian, same
+   tolerances); the first solver stays LSODA. Check: EX87_J0 A 13, eps = 10^-4.5: escapes at
+   3.73327039e14 in 40 s, reduced flow 3.73327076e14 (relative difference 1e-7). Every run that
+   ends without an outcome (wall / failed / t_max) is rerun with this driver after the sweep, and
+   nothing else (not outcome-selective); the files record `solver`.
+2. **Added kind Cp (causal test; 20:05, after the first shifted C direction was seen).** U5B8 C seed 9
+   escapes with exponent 4 instead of 3, and the diagnostics show its route entry at leaf node 0
+   decaying to zero on the plateau. To test whether the entries outside M* cause this, kind Cp
+   uses the same Gaussian direction as C (same seed) projected onto M* (entries outside the mask left
+   at theta_J). Cp runs cover the fit window (log10 eps = -4.5 ... -3, 7 points) for all 16 seeds of
+   every dynamics cell. Cp is not part of any registered decision; it is reported as a diagnostic.

@@ -30,9 +30,10 @@ HERE = Path(__file__).resolve().parent
 GRID = yaml.safe_load((HERE / "configs" / "sweep.yaml").read_text())
 
 
-def escape_tasks(cells, kinds):
+def escape_tasks(cells, kinds, window_only=False):
     from common import CONFIG
 
+    lo, hi = GRID["window"]
     out = []
     for c in cells:
         if CONFIG["cells"][c]["role"] != "dyn":
@@ -41,6 +42,8 @@ def escape_tasks(cells, kinds):
             n_dir = 1 if k == "A_bal" else GRID["directions"]
             for i in range(n_dir):
                 for le in GRID["log_eps"]:
+                    if window_only and not (lo - 1e-9 <= le <= hi + 1e-9):
+                        continue
                     out.append(("escape", c, k, i, float(le)))
     return out
 
@@ -98,6 +101,9 @@ def main():
     ap.add_argument("--only", default="all")
     ap.add_argument("--cells", default=None)
     ap.add_argument("--kinds", default="A,A_bal,B,C")
+    ap.add_argument("--window-only", action="store_true", help="only the fit-window eps (used for Cp)")
+    ap.add_argument("--rerun-unfinished", action="store_true",
+                    help="delete and rerun every escape run that ended without an outcome (deviation 1)")
     args = ap.parse_args()
     from common import all_cells
 
@@ -106,9 +112,22 @@ def main():
     if args.only in ("all", "static"):
         tasks += static_tasks(cells)
     if args.only in ("all", "escape"):
-        tasks += escape_tasks(cells, args.kinds.split(","))
+        tasks += escape_tasks(cells, args.kinds.split(","), args.window_only)
     import escape
     import static
+
+    if args.rerun_unfinished:
+        for t in tasks:
+            if t[0] != "escape":
+                continue
+            p = escape.path_for(*t[1:])
+            if p.exists():
+                o = json.loads(p.read_text())
+                if o["t_esc"] is None and o["status"] in ("wall", "failed", "t_max"):
+                    old = p.parent / "unfinished_try1"
+                    old.mkdir(exist_ok=True)
+                    p.rename(old / p.name)
+                    print("rerun", t, o["status"], flush=True)
 
     todo = []
     for t in tasks:

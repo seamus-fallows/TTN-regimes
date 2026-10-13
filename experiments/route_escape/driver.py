@@ -14,9 +14,13 @@ import math
 import time
 
 import numpy as np
-from scipy.integrate import LSODA
+from scipy.integrate import BDF, LSODA
 
 RESTART_H = 1e-2
+# Restarted solvers are BDF (always stiff): a restarted LSODA starts in nonstiff (Adams) mode and can
+# stay pinned at the stability limit of the learned directions on a plateau (sdyn deviation 7; seen
+# here in 3 runs of the first sweep, notes/route_escape.md section 7).
+RESTART_STIFF = True
 TRAP_DL = 1e-30
 TRAP_P = 1e-45
 
@@ -94,13 +98,14 @@ def integrate(flow: Flow, y0, *, weights, J, missing, t_max=1e25, rtol=1e-10, at
         msg = solver.step()
         if solver.status == "failed":
             res["fails"].append((off + t_loc_old, str(msg)))
+            res["solver"] = "BDF" if RESTART_STIFF else "LSODA"
             if len(res["fails"]) > 5:
                 res["status"] = "failed"
                 break
             off += t_loc_old
             t_loc_old = 0.0
-            solver = LSODA(rhs, 0.0, ys_last, t_max - off, rtol=rtol, atol=atol, jac=jac,
-                           first_step=RESTART_H)
+            solver = (BDF if RESTART_STIFF else LSODA)(rhs, 0.0, ys_last, t_max - off, rtol=rtol,
+                                                        atol=atol, jac=jac, first_step=RESTART_H)
             continue
         t_loc, y = solver.t, np.array(solver.y, copy=True)
         t = off + t_loc
@@ -174,8 +179,8 @@ def integrate(flow: Flow, y0, *, weights, J, missing, t_max=1e25, rtol=1e-10, at
             off += t_loc
             t_loc_old = 0.0
             res["n_restart"] += 1
-            solver = LSODA(rhs, 0.0, y, t_max - off, rtol=rtol, atol=atol, jac=jac,
-                           first_step=RESTART_H)
+            solver = (BDF if RESTART_STIFF else LSODA)(rhs, 0.0, y, t_max - off, rtol=rtol, atol=atol,
+                                                        jac=jac, first_step=RESTART_H)
         if trap and t >= nxt and t_esc is None:
             nxt = t * 10**0.1
             dead = max(abs(P[r]) for r in missing) < TRAP_P
