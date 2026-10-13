@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791925792,
+  "reason": "user",
+  "outputs": {
+    "files": 19041,
+    "bytes": 2552025516,
+    "sample": [
+      "route-nonstar/logs/sweep.log",
+      "route-nonstar/raw/NC_ht4/s-3.50_seed17.npz",
+      "route-nonstar/raw/NC_ht4/s-3.50_seed17.json",
+      "route-nonstar/raw/NC_ht4/s-3.50_seed10.npz",
+      "route-nonstar/raw/NC_ht4/s-3.50_seed10.json"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}
