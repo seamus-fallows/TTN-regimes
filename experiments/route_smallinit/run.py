@@ -99,7 +99,7 @@ def route_time(p0: float, c: int, g: float, s: float, level: float = 0.5) -> flo
 # ----------------------------------------------------------------------------------- runs
 
 
-def run_full(cfg, sigma, seed, rtol=1e-10, atol=1e-15, wall=1800.0, arith="dense"):
+def run_full(cfg, sigma, seed, rtol=1e-10, atol=1e-15, wall=1800.0, arith="dense", start="lsoda"):
     model = Model(cfg, arith=arith)
     theta0 = model.spec.flatten(model.spec.init(sigma, seed=seed))
 
@@ -114,7 +114,9 @@ def run_full(cfg, sigma, seed, rtol=1e-10, atol=1e-15, wall=1800.0, arith="dense
         L, P, off = model.loss_terms(W, E)
         return (L, P, off, float(v.norm()))
 
-    traj, info = integrate(fun, jac, theta0.numpy(), observe, _stopper(model.s), rtol, atol, wall=wall)
+    traj, info = integrate(fun, jac, theta0.numpy(), observe, _stopper(model.s), rtol, atol, wall=wall,
+                           start=start)
+    info["integrator"] = start
     return model, traj, info
 
 

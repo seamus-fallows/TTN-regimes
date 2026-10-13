@@ -86,6 +86,70 @@ def floor_check(runs, events):
     return pd.DataFrame(rows)
 
 
+def history(raw: Path, runs, targets):
+    """Full s/2 crossing history of every dense/ref run from its saved trajectory, in step order:
+    a string like "+10101 +00201 +00000 -10101 ..." (+ up, - down), and per learning event whether the
+    interval since the previous learning event contains any other s/2 crossing or a forgetting
+    (then the event's J_before and duration do not describe a single plateau: "contaminated")."""
+    hist, contaminated, passes = {}, {}, []
+    for r in runs.itertuples():
+        if r.variant not in ("dense", "ref"):
+            continue
+        tag = f"ls{r.log10_sigma:+.2f}" + ("" if r.seed < 0 else f"_seed{int(r.seed):02d}")
+        f = raw / r.variant / r.target / f"{tag}.npz"
+        if not f.exists():
+            continue
+        z = np.load(f)
+        s = np.array(targets[r.target]["weights"], float)
+        x = z["P"] / s
+        pats = targets[r.target]["patterns"]
+        cross = []  # (step, pattern, +1/-1, level)
+        for lev in (0.5, 0.25):
+            above = x >= lev
+            for a in range(x.shape[1]):
+                ch = np.nonzero(above[1:, a] != above[:-1, a])[0] + 1
+                cross += [(int(i), a, 1 if above[i, a] else -1, lev) for i in ch]
+        cross.sort()
+        half = [c for c in cross if c[3] == 0.5]
+        # passes: every upward s/2 crossing, timed by linear interpolation of the stored step times
+        t = z["t"]
+        ups = [c for c in half if c[2] > 0]
+        prev_t = 0.0
+        final_step = {}
+        for i, a, d, _ in half:
+            if d > 0:
+                final_step[a] = i
+        for n_pass, (i, a, _, _) in enumerate(ups):
+            x0, x1 = x[i - 1, a], x[i, a]
+            tc = t[i - 1] + (0.5 - x0) / (x1 - x0) * (t[i] - t[i - 1])
+            J = [b for b in range(x.shape[1]) if b != a and x[i - 1, b] >= 0.5]
+            dur = tc - prev_t
+            res = np.spacing(max(tc, 1.0)) * 4 / dur if dur > 0 else np.inf  # float64 time resolution
+            passes.append(dict(variant=r.variant, target=r.target, tree=r.tree, d=r.d, chi=r.chi, sigma=r.sigma,
+                               log10_sigma=r.log10_sigma, seed=r.seed, n_pass=n_pass, pattern=a,
+                               pattern_str=pats[a], J_before="{" + ",".join(map(str, J)) + "}",
+                               J_before_str=" ".join(pats[b] for b in J), t_pass=tc, duration=dur,
+                               time_resolution=res, final=(final_step.get(a) == i and x[-1, a] >= 0.5),
+                               forgets_after=False))
+            prev_t = tc
+        hist[(r.variant, r.target, r.log10_sigma, r.seed)] = " ".join(
+            ("+" if d > 0 else "-") + pats[a] for _, a, d, _ in half)
+        # final upward crossing per pattern = learning events
+        last_up = {}
+        for i, a, d, lev in half:
+            if d > 0:
+                last_up[a] = i
+        final = {a: i for a, i in last_up.items() if x[-1, a] >= 0.5}
+        order = sorted(final.items(), key=lambda kv: kv[1])
+        prev = 0
+        for k, (a, i) in enumerate(order):
+            other = [c for c in cross if prev < c[0] <= i and not (c[1] == a and c[0] == i and c[3] == 0.5)
+                     and (c[3] == 0.5 or c[2] < 0)]
+            contaminated[(r.variant, r.target, r.log10_sigma, r.seed, a)] = bool(other)
+            prev = i
+    return hist, contaminated, pd.DataFrame(passes)
+
+
 def per_seed_fit(x, y):
     a, b = np.polyfit(x, y, 1)
     return a, b
@@ -155,6 +219,37 @@ def main():
         ev.loc[ev.variant == "ref", ["onestep_pred_time_B", "onestep_ratio_B"]] = np.nan
         pl.to_csv(out / "plateaus.csv", index=False, float_format="%.8g")
 
+    # ---- crossing histories; contaminated events ------------------------------------------------
+    hist, cont, ps = history(Path(args.raw), runs, targets)
+    runs["history"] = [hist.get(k) for k in zip(runs.variant, runs.target, runs.log10_sigma, runs.seed)]
+    ev["contaminated"] = [cont.get(k, False) for k in zip(ev.variant, ev.target, ev.log10_sigma, ev.seed, ev.pattern)]
+    # clean: nothing else crossed or was forgotten since the previous event, the pattern crossed once,
+    # and (k >= 1) the plateau before it was resolved
+    ev["clean"] = ~ev.contaminated & (ev.n_up == 1) & ev.has_entry.astype(bool)
+
+    if len(ps):
+        pk = pred.set_index(["target", "J", "missing"])
+        oc1 = {(t, j): o for t, j, o in zip(oc.target, oc.J, oc.one_component_order)}
+        def lookup(t, J, r, col):
+            if J == "{}":
+                return {"depth": ps_K[t], "pairwise": ps_K[t]}.get(col, np.nan)
+            try:
+                return pk.loc[(t, J, r), col]
+            except KeyError:
+                return np.nan
+        ps_K = {n: int(targets[n]["n_sites"]) for n in targets}
+        ps_K.update({n: v for n, v in zip(*np.unique(pred.target, return_index=True))} if False else {})
+        from model import build_target as _bt
+        ps_K = {n: _bt(targets[n]).tree.n_nodes for n in targets}
+        for col in ("depth", "pairwise", "pred_greedy", "pred_pairwise", "pred_weight", "tie", "gamma"):
+            ps[col] = [lookup(t, J, r, col) for t, J, r in zip(ps.target, ps.J_before, ps.pattern)]
+        ps["one_component_order"] = [oc1.get((t, j), np.nan) for t, j in zip(ps.target, ps.J_before)]
+        for rule in ("greedy", "pairwise", "weight"):
+            ps[f"agree_{rule}"] = ps.pattern == ps[f"pred_{rule}"]
+        ps["transition"] = ps.J_before + "->" + ps.pattern.astype(str)
+        ps["precise"] = ps.time_resolution < 1e-3
+        ps.to_csv(out / "passes.csv", index=False, float_format="%.8g")
+
     # ---- run classification ----------------------------------------------------------------------
     g = ev[ev.event > 0].groupby(["variant", "target", "log10_sigma", "seed"])
     nonc = g.apply(lambda x: int(((~x.canonical) & x.has_entry).sum()), include_groups=False)
@@ -192,7 +287,7 @@ def main():
         return "+".join(tags) if tags else "clean"
 
     runs["behaviour"] = runs.apply(behaviour, axis=1)
-    cols = ID + ["variant", "status", "behaviour", "n_learned", "order", "order_idx", "first_pattern",
+    cols = ID + ["variant", "status", "behaviour", "n_learned", "order", "order_idx", "first_pattern", "history",
                  "all_greedy", "n_forgotten", "forgotten", "first_escape_mixed", "n_unseparated", "n_unseparated_later",
                  "n_no_entry", "n_noncanonical",
                  "L_final", "t_final", "max_offtarget", "floor_flag", "floor_checked", "floor_flag_bound",
@@ -202,76 +297,94 @@ def main():
     ev = ev.sort_values(["variant", "target", "log10_sigma", "seed", "event"])
     ev.to_csv(out / "events.csv", index=False, float_format="%.8g")
 
-    # ---- exponents per seed and cell -----------------------------------------------------------------
-    use = ev[(~ev.floor_flag) & (ev.run_status == "done") & (ev.duration > 0)
-             & (ev.log10_sigma >= WINDOW[0] - 1e-9) & (ev.log10_sigma <= WINDOW[1] + 1e-9)]
-    erows = []
-    for (v, t, J, r, sd), x in use.groupby(["variant", "target", "J_before", "pattern", "seed"]):
-        x = x.drop_duplicates("log10_sigma")
-        if len(x) < 5 or x.log10_sigma.max() - x.log10_sigma.min() < 1.5 - 1e-9:
-            continue
-        ls = x.log10_sigma.to_numpy()
-        slope, _ = per_seed_fit(ls, np.log10(x.duration.to_numpy()))
-        lslope, _ = per_seed_fit(-ls * math.log(10), x.duration.to_numpy())  # duration vs ln(1/sigma)
-        c = int(x.depth.iloc[0])
-        erows.append(dict(variant=v, target=t, tree=x.tree.iloc[0], d=x.d.iloc[0], chi=x.chi.iloc[0],
-                          seed=sd, J_before=J, pattern=r, pattern_str=x.pattern_str.iloc[0],
-                          transition=f"{J}->{r}", depth=c, pairwise=int(x.pairwise.iloc[0]),
-                          one_component_order=x.one_component_order.iloc[0], gamma=x.gamma.iloc[0],
-                          n_points=len(x), log10_sigma_min=ls.min(), log10_sigma_max=ls.max(),
-                          exponent=-slope, pred_route=c - 2, pred_pairwise=x.pairwise.iloc[0] - 2,
-                          log_slope=lslope,
-                          pred_log_slope=1.0 / (targets[t]["weights"][r] * x.gamma.iloc[0])))
+    # ---- exponents per seed and cell (three bases) ------------------------------------------------
+    # event: the registered fits on every learning event; event_clean: only events whose interval
+    # since the previous event holds no other crossing or forgetting; pass: every upward crossing
+    def fits(df, basis):
+        rows = []
+        df = df[(df.duration > 0) & (df.log10_sigma >= WINDOW[0] - 1e-9) & (df.log10_sigma <= WINDOW[1] + 1e-9)]
+        df = df[[(t_, ls_, sd_) not in flagged for t_, ls_, sd_ in zip(df.target, df.log10_sigma, df.seed)]]
+        for (v, t, J, r, sd), x in df.groupby(["variant", "target", "J_before", "pattern", "seed"]):
+            x = x.drop_duplicates("log10_sigma")
+            if len(x) < 5 or x.log10_sigma.max() - x.log10_sigma.min() < 1.5 - 1e-9:
+                continue
+            ls = x.log10_sigma.to_numpy()
+            slope, _ = per_seed_fit(ls, np.log10(x.duration.to_numpy()))
+            lslope, _ = per_seed_fit(-ls * math.log(10), x.duration.to_numpy())  # duration vs ln(1/sigma)
+            c = int(x.depth.iloc[0])
+            rows.append(dict(variant=v, basis=basis, target=t, tree=x.tree.iloc[0], d=x.d.iloc[0],
+                             chi=x.chi.iloc[0], seed=sd, J_before=J, pattern=r, pattern_str=x.pattern_str.iloc[0],
+                             transition=f"{J}->{r}", depth=c, pairwise=int(x.pairwise.iloc[0]),
+                             one_component_order=x.one_component_order.iloc[0], gamma=x.gamma.iloc[0],
+                             n_points=len(x), log10_sigma_min=ls.min(), log10_sigma_max=ls.max(),
+                             exponent=-slope, pred_route=c - 2, pred_pairwise=x.pairwise.iloc[0] - 2,
+                             log_slope=lslope,
+                             pred_log_slope=(1.0 / (targets[t]["weights"][r] * x.gamma.iloc[0]) if J != "{}" else np.nan)))
+        return rows
+
+    base = ev[ev.run_status == "done"]
+    erows = fits(base, "event") + fits(base[base.clean], "event_clean")
+    if len(ps):
+        erows += fits(ps[ps.precise], "pass")
     ex = pd.DataFrame(erows)
     ex.to_csv(out / "exponents.csv", index=False, float_format="%.8g")
 
     # ---- cells: decisions ---------------------------------------------------------------------------
-    crows = []
-    small = ev[(ev.log10_sigma <= SMALL + 1e-9) & (~ev.floor_flag)]
-    for (v, t, J, r), x in ev.groupby(["variant", "target", "J_before", "pattern"]):
-        xs = small[(small.variant == v) & (small.target == t) & (small.J_before == J) & (small.pattern == r)]
-        c = int(x.depth.iloc[0])
-        row = dict(variant=v, target=t, J_before=J, pattern=r, pattern_str=x.pattern_str.iloc[0],
-                   transition=f"{J}->{r}", depth=c, pairwise=int(x.pairwise.iloc[0]),
-                   one_component_order=x.one_component_order.iloc[0],
-                   pred_greedy=int(x.pred_greedy.iloc[0]), pred_pairwise=int(x.pred_pairwise.iloc[0]),
-                   pred_weight=int(x.pred_weight.iloc[0]), n_events=len(x), n_events_small=len(xs),
-                   n_seeds=x.seed.nunique())
-        e = ex[(ex.variant == v) & (ex.target == t) & (ex.J_before == J) & (ex.pattern == r)] if len(ex) else ex
-        row["n_fitted"] = len(e)
-        if len(e):
-            q = e.exponent.quantile([0.25, 0.5, 0.75]).to_numpy()
-            row.update(exp_q1=q[0], exp_median=q[1], exp_q3=q[2],
-                       frac_within_0p3_route=float((abs(e.exponent - (c - 2)) <= 0.3).mean()),
-                       frac_within_0p3_pairwise=float((abs(e.exponent - (row["pairwise"] - 2)) <= 0.3).mean()),
-                       log_slope_median=float(e.log_slope.median()), pred_log_slope=float(e.pred_log_slope.iloc[0]))
-            if not math.isnan(row["one_component_order"]):
-                row["frac_within_0p3_order"] = float((abs(e.exponent - (row["one_component_order"] - 2)) <= 0.3).mean())
-            if c >= 3:
-                med = q[1]
-                if abs(med - (c - 2)) <= 0.15 and row["frac_within_0p3_route"] >= 0.8:
-                    dec = "SUPPORTED"
-                elif abs(med - (c - 2)) > 0.5 and len(e) >= 5:
-                    dec = "REFUTED"
-                else:
-                    dec = "INCONCLUSIVE"
+    def decide(e, c):
+        q = e.exponent.quantile([0.25, 0.5, 0.75]).to_numpy()
+        row = dict(n_fitted=len(e), exp_q1=q[0], exp_median=q[1], exp_q3=q[2],
+                   frac_within_0p3_route=float((abs(e.exponent - (c - 2)) <= 0.3).mean()),
+                   frac_within_0p3_pairwise=float((abs(e.exponent - e.pred_pairwise) <= 0.3).mean()),
+                   log_slope_median=float(e.log_slope.median()), pred_log_slope=float(e.pred_log_slope.iloc[0]))
+        o = e.one_component_order.iloc[0]
+        if not math.isnan(o):
+            row["frac_within_0p3_order"] = float((abs(e.exponent - (o - 2)) <= 0.3).mean())
+        if c >= 3:
+            if abs(q[1] - (c - 2)) <= 0.15 and row["frac_within_0p3_route"] >= 0.8:
+                dec = "SUPPORTED"
+            elif abs(q[1] - (c - 2)) > 0.5 and len(e) >= 5:
+                dec = "REFUTED"
             else:
-                ok = abs(row["log_slope_median"] / row["pred_log_slope"] - 1) <= 0.25 and q[1] < 0.3
-                dec = "SUPPORTED" if ok else "NOT SUPPORTED"
-            row["decision_exponent"] = dec
-        if len(xs):
-            row.update(
-                eff_depth_median=float(xs.eff_depth.median()),
-                frac_eff_match=float((abs(xs.eff_depth - c) <= 0.3).mean()),
-                frac_canonical=float(xs.canonical[xs.has_entry].mean()) if xs.has_entry.any() else math.nan,
-                frac_unseparated=float(xs.unseparated.mean()),
-                peak_off_median=float(xs.peak_offtarget.median()),
-                onestep_ratio_median=float(xs.onestep_ratio.median()),
-                onestep_ratio_B_median=float(xs.onestep_ratio_B.median()) if "onestep_ratio_B" in xs else math.nan,
-                onestep_winner_agree=float(xs.agree_onestep.dropna().mean()) if xs.agree_onestep.notna().any() else math.nan,
-                frac_P_entry_negative=float((xs.P_r_entry <= 0).mean()),
-            )
-        crows.append(row)
+                dec = "INCONCLUSIVE"
+        elif math.isnan(row["pred_log_slope"]):
+            dec = "n/a"
+        else:
+            ok = abs(row["log_slope_median"] / row["pred_log_slope"] - 1) <= 0.25 and q[1] < 0.3
+            dec = "SUPPORTED" if ok else "NOT SUPPORTED"
+        row["decision_exponent"] = dec
+        return row
+
+    crows = []
+    for basis, src in (("event", ev), ("event_clean", ev[ev.clean]), ("pass", ps)):
+        if not len(src):
+            continue
+        small = src[(src.log10_sigma <= SMALL + 1e-9)]
+        small = small[[(t_, ls_, sd_) not in flagged for t_, ls_, sd_ in zip(small.target, small.log10_sigma, small.seed)]]
+        for (v, t, J, r), x in src.groupby(["variant", "target", "J_before", "pattern"]):
+            xs = small[(small.variant == v) & (small.target == t) & (small.J_before == J) & (small.pattern == r)]
+            c = int(x.depth.iloc[0])
+            row = dict(variant=v, basis=basis, target=t, J_before=J, J_before_str=x.J_before_str.iloc[0],
+                       pattern=r, pattern_str=x.pattern_str.iloc[0], transition=f"{J}->{r}", depth=c,
+                       pairwise=x.pairwise.iloc[0], one_component_order=x.one_component_order.iloc[0],
+                       pred_greedy=x.pred_greedy.iloc[0], pred_pairwise=x.pred_pairwise.iloc[0],
+                       pred_weight=x.pred_weight.iloc[0], n_events=len(x), n_events_small=len(xs),
+                       n_seeds=x.seed.nunique(), n_fitted=0)
+            e = ex[(ex.basis == basis) & (ex.variant == v) & (ex.target == t) & (ex.J_before == J) & (ex.pattern == r)] if len(ex) else ex
+            if len(e):
+                row.update(decide(e, c))
+            if len(xs) and basis != "pass":
+                row.update(
+                    eff_depth_median=float(xs.eff_depth.median()),
+                    frac_eff_match=float((abs(xs.eff_depth - c) <= 0.3).mean()),
+                    frac_canonical=float(xs.canonical[xs.has_entry].mean()) if xs.has_entry.any() else math.nan,
+                    frac_unseparated=float(xs.unseparated.mean()),
+                    peak_off_median=float(xs.peak_offtarget.median()),
+                    onestep_ratio_median=float(xs.onestep_ratio.median()),
+                    onestep_ratio_B_median=float(xs.onestep_ratio_B.median()),
+                    onestep_winner_agree=float(xs.agree_onestep.dropna().mean()) if xs.agree_onestep.notna().any() else math.nan,
+                    frac_P_entry_negative=float((xs.P_r_entry <= 0).mean()),
+                )
+            crows.append(row)
     cells = pd.DataFrame(crows)
     cells.to_csv(out / "cells.csv", index=False, float_format="%.8g")
 
@@ -284,9 +397,19 @@ def main():
             if x.log10_sigma.nunique() < 4:
                 continue
             slope, _ = np.polyfit(x.log10_sigma, np.log10(x.ren_gmean_entry * x.sigma), 1)
+            per_seed = []
+            for _, y in x.groupby("seed"):
+                y = y.drop_duplicates("log10_sigma")
+                if len(y) >= 5 and y.log10_sigma.max() - y.log10_sigma.min() >= 1.5 - 1e-9:
+                    per_seed.append(np.polyfit(y.log10_sigma, np.log10(y.ren_gmean_entry * y.sigma), 1)[0])
+            per_seed = np.array(per_seed)
             c1.append(dict(target=t, J=J, missing=q, missing_str=x.missing_str.iloc[0], depth=int(x.depth.iloc[0]),
                            learned_next_frac=float(x.learned_next.mean()), n_rows=len(x),
-                           slope_log_ren_vs_log_sigma=slope,
+                           slope_log_ren_vs_log_sigma=slope, n_seed_slopes=len(per_seed),
+                           seed_slope_median=float(np.median(per_seed)) if len(per_seed) else math.nan,
+                           seed_slope_q1=float(np.quantile(per_seed, 0.25)) if len(per_seed) else math.nan,
+                           seed_slope_q3=float(np.quantile(per_seed, 0.75)) if len(per_seed) else math.nan,
+                           frac_seed_slope_within_0p1=float((abs(per_seed - 1) <= 0.1).mean()) if len(per_seed) else math.nan,
                            ren_gmean_over_sigma_median=float(x.ren_gmean_entry.median()),
                            spread_max_over_min_median=float(x.ren_spread_entry.median()),
                            gamma_ratio_mg_median=float(x.gamma_ratio_mg.median()),

@@ -88,43 +88,38 @@ def fig_rules_sigma(ev, out):
 
 
 def fig_durations(ev, ref, out):
-    """Median plateau duration vs sigma for one representative cell per route depth, with the
-    predicted power law sigma^-(c-2) (log law for c = 2)."""
-    e = ev[(ev.variant == "dense") & (ev.event > 0) & ~ev.floor_flag & (ev.run_status == "done")]
-    cells = e.groupby(["target", "transition", "depth"]).seed.nunique().reset_index()
-    picks = []
-    for c in (2, 3, 4, 5):
-        x = cells[cells.depth == c].sort_values("seed", ascending=False)
-        if len(x):
-            picks.append(x.iloc[0])
-    fig, axes = subplots(1, len(picks), width=11, panel_aspect=0.95)
-    axes = np.atleast_1d(axes)
-    for ax, p in zip(axes, picks):
-        x = e[(e.target == p.target) & (e.transition == p.transition)]
+    """Median plateau duration vs sigma for one cell per route depth (clean events), with the
+    predicted law: sigma^-(c-2), or the log law for c = 2 (slope 1/(s_r A_r(J)) per e-fold)."""
+    e = ev[(ev.variant == "dense") & (ev.event > 0) & ~ev.floor_flag & (ev.run_status == "done") & ev.clean]
+    picks = [("B8", "{0,1,2}->3"), ("B8", "{0}->1"), ("B8", "{0,1}->2"), ("PS", "{1,2}->0")]
+    fig, axes = subplots(1, len(picks), width=13, panel_aspect=1.0)
+    for k, (ax, (t, tr)) in enumerate(zip(axes, picks)):
+        x = e[(e.target == t) & (e.transition == tr)]
+        if not len(x):
+            continue
+        c = int(x.depth.iloc[0])
         g = x.groupby("sigma").duration.quantile([0.25, 0.5, 0.75]).unstack()
         ax.fill_between(g.index, g[0.25], g[0.75], color=palette(1)[0], alpha=0.25, lw=0)
-        ax.plot(g.index, g[0.5], "o-", color=palette(1)[0], label="training, median and quartiles")
-        r = ref[(ref.target == p.target) & (ref.transition == p.transition)].sort_values("sigma")
+        ax.plot(g.index, g[0.5], "o-", color=palette(1)[0], label="training (median, quartiles)")
+        r = ref[(ref.target == t) & (ref.transition == tr)].sort_values("sigma")
         if len(r):
-            ax.plot(r.sigma, r.duration, "s", mfc="none", color=palette(2)[1], label="aligned-manifold reference")
-        c = int(p.depth)
-        s0 = g.index.min()
-        y0 = g[0.5].loc[s0]
+            ax.plot(r.sigma, r.duration, "s", mfc="none", color=palette(2)[1], label="reference flow on M*")
         sig = np.array(sorted(g.index))
+        s0, y0 = sig[0], g[0.5].loc[sig[0]]
         if c > 2:
-            ax.plot(sig, y0 * (sig / s0) ** (-(c - 2)), "--", color=MUTED, label=f"prediction sigma^-{c - 2}")
+            ax.plot(sig, y0 * (sig / s0) ** (-(c - 2)), "--", color=MUTED, lw=2, label=f"prediction: sigma^-{c - 2}")
+            ax.set_yscale("log")
         else:
-            a = x.gamma.iloc[0] * x.pattern.map(lambda q: 1.0).iloc[0]
-            ax.plot(sig, y0 + np.log(s0 / sig) / (a * _weight(x)), "--", color=MUTED,
-                    label="prediction log(1/sigma)/(s A)")
+            slope = 1.0 / (x.pattern_weight.iloc[0] * x.gamma.iloc[0])
+            ax.plot(sig, y0 + slope * np.log(s0 / sig), "--", color=MUTED, lw=2, label="prediction: log(1/sigma)/(s A)")
         ax.set_xscale("log")
-        ax.set_yscale("log" if c > 2 else "linear")
         ax.set_xlabel("initialization scale sigma")
-        ax.set_title(f"{p.target} {p.transition}: depth c = {c}")
-        if ax is axes[0]:
+        before = x.J_before_str.iloc[0]
+        ax.set_title(f"{t}: after {before.replace(' ', ', ')}\nlearn {x.pattern_str.iloc[0]} (route depth c = {c})", fontsize=10)
+        if k == 0:
             ax.set_ylabel("plateau duration (gradient-flow time)")
         ax.legend(fontsize=8.5, loc="upper right")
-    fig.suptitle("Plateau durations follow sigma^-(c-2), c = route depth (log law for c = 2)", fontsize=12.5)
+    fig.suptitle("Plateau durations follow the route-depth law sigma^-(c-2) (log law for c = 2)", fontsize=12.5)
     savefig(fig, out / "fig_durations")
     plt.close(fig)
 
@@ -134,21 +129,22 @@ def _weight(x):
 
 
 def fig_exponents(ex, out):
-    """Per-seed exponents against the route-depth prediction c - 2 (c >= 3 cells)."""
-    e = ex[(ex.variant == "dense") & (ex.depth >= 3)]
-    fig, ax = subplots(1, 1, width=6.5, panel_aspect=0.7)
+    """Per-seed exponents (clean events, sigma in [1e-5, 1e-3]) against the prediction c - 2."""
+    e = ex[(ex.variant == "dense") & (ex.basis == "event_clean") & (ex.depth >= 3)]
+    fig, ax = subplots(1, 1, width=7.0, panel_aspect=0.75)
     rng = np.random.default_rng(0)
-    cols = palette(4)
-    for k, c in enumerate(sorted(e.depth.unique())):
-        x = e[e.depth == c]
-        ax.scatter(c - 2 + rng.uniform(-0.15, 0.15, len(x)), x.exponent, s=10, alpha=0.5, color=cols[k % 4],
-                   label=f"route depth c = {c} ({len(x)} seed fits)")
-    lo, hi = 0.5, e.depth.max() - 1.5 if len(e) else 3.5
-    ax.plot([lo, hi], [lo, hi], "--", color=MUTED, label="prediction: exponent = c - 2")
+    first = e.J_before == "{}"
+    for k, (mask, lab, mk) in enumerate([(~first, "later plateau (route depth c of the learned pattern)", "o"),
+                                         (first, "first plateau, from the origin (c = K cores)", "^")]):
+        x = e[mask]
+        ax.scatter(x.depth - 2 + rng.uniform(-0.18, 0.18, len(x)), x.exponent, s=14, alpha=0.45,
+                   color=palette(2)[k], marker=mk, label=f"{lab}: {len(x)} seed fits")
+    hi = e.depth.max() - 2 + 0.5
+    ax.plot([0.5, hi], [0.5, hi], "--", color=MUTED, lw=2, label="prediction: exponent = c - 2")
     ax.set_xlabel("predicted exponent c - 2")
-    ax.set_ylabel("fitted exponent per seed\n(duration ~ sigma^-exponent, sigma in [1e-5, 1e-3])")
-    ax.set_title("Per-seed duration exponents sit on the route-depth prediction c - 2")
-    ax.legend(fontsize=9)
+    ax.set_ylabel("fitted exponent per seed\n(duration ~ sigma^-exponent)")
+    ax.set_title("Per-seed duration exponents sit on the route-depth prediction c - 2\n(clean transitions; outliers: see the forgetting and shortcut figures)")
+    ax.legend(fontsize=9, loc="upper left")
     savefig(fig, out / "fig_exponents")
     plt.close(fig)
 
@@ -209,22 +205,21 @@ def fig_offtarget(ev, out):
 
 def fig_census(runs, out):
     r = runs[runs.variant == "dense"]
-    cats = ["clean", "two patterns at once", "forgetting", "non-canonical plateau", "trapped", "other"]
+    cats = ["clean", "only the first escape mixed", "two patterns at once (later)", "forgetting",
+            "trapped (a route dies)", "other (non-canonical plateau, unfinished)"]
 
     def cat(b):
         if b == "clean":
-            return "clean"
+            return cats[0]
         if "trapped" in b:
-            return "trapped"
-        if "unfinished" in b or "failed" in b or "error" in b:
-            return "other"
-        if "two_at_once" in b:
-            return "two patterns at once"
+            return cats[4]
         if "forgetting" in b:
-            return "forgetting"
-        if "noncanonical" in b:
-            return "non-canonical plateau"
-        return "other"
+            return cats[3]
+        if "two_at_once" in b:
+            return cats[2]
+        if b == "first_escape_mixed":
+            return cats[1]
+        return cats[5]
 
     r = r.assign(cat=r.behaviour.map(cat))
     names = [t for t in ORDER if t in set(r.target)]
@@ -238,14 +233,52 @@ def fig_census(runs, out):
     ax.set_xticks(range(len(names)), names)
     ax.set_ylabel("fraction of runs (all sigma, 40 seeds)")
     ax.set_title("Most runs follow a clean saddle-to-saddle path;\nthe deviations are specific to some targets")
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=3, fontsize=9.5)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=2, fontsize=9.5)
     savefig(fig, out / "fig_census")
     plt.close(fig)
 
 
 
 
-def fig_example(out, name="B8", lsig=-4.0, seed=0):
+def fig_shortcut(res, out):
+    """PS: the plateau at J = {000000} (from its pass to the next pass) vs sigma, against Theorem 3.2
+    (order 4: sigma^-2) and the route depth (5: sigma^-3); and the relearning of 000000 (depth 5)."""
+    ps = read_csv(res / "passes.csv")
+    runs = read_csv(res / "runs.csv")
+    ps = ps[(ps.variant == "dense") & (ps.target == "PS")]
+    hist = runs[(runs.variant == "dense") & (runs.target == "PS")].set_index(["log10_sigma", "seed"]).history
+    ps = ps.assign(history=[hist.get((a, b)) for a, b in zip(ps.log10_sigma, ps.seed)])
+    q_first = ps[ps["history"].fillna("").str.startswith("+000000 -000000")]
+    plateau = q_first[q_first.n_pass == 1]  # the pass after 000000: the pair escapes from J = {000000}
+    relearn = ps[(ps.pattern == 0) & (ps.J_before == "{1,2}")]
+    fig, axes = subplots(1, 2, width=11, panel_aspect=0.8)
+    for ax, x, preds, title in [
+        (axes[0], plateau, [(2, "Theorem 3.2 (order 4, spectral shortcut): sigma^-2", "--"),
+                            (3, "route depth 5: sigma^-3", ":")],
+         f"PS: plateau after learning 000000 first\n({plateau.seed.nunique()} of 40 seeds take this path)"),
+        (axes[1], relearn, [(3, "route depth 5: sigma^-3", "--"), (4, "origin escape K = 6: sigma^-4", ":")],
+         "PS: learning 000000 after the pair 110001, 110010"),
+    ]:
+        g = x.groupby("sigma").duration.quantile([0.25, 0.5, 0.75]).unstack()
+        ax.fill_between(g.index, g[0.25], g[0.75], color=palette(1)[0], alpha=0.25, lw=0)
+        ax.plot(g.index, g[0.5], "o-", color=palette(1)[0], label="training (median, quartiles)")
+        sig = np.array(sorted(g.index))
+        s0 = sig[len(sig) // 2]
+        y0 = g[0.5].loc[s0]
+        for k, (ex_, lab, ls) in enumerate(preds):
+            ax.plot(sig, y0 * (sig / s0) ** (-ex_), ls, color=MUTED if k == 0 else "k", lw=2, label=lab)
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlabel("initialization scale sigma")
+        ax.set_ylabel("plateau duration (gradient-flow time)")
+        ax.set_title(title, fontsize=10.5)
+        ax.legend(fontsize=8.5)
+    fig.suptitle("Pair-star target: the first plateau follows the spectral-shortcut order, not the route depth", fontsize=12.5)
+    savefig(fig, out / "fig_shortcut_PS")
+    plt.close(fig)
+
+
+def fig_example(out, name="B8", lsig=-4.0, seed=0, tag="fig_example_run", msg=None):
     """One run, one panel per plateau: amplitudes P_a/s_a against the time since the previous
     learning event (exact), with the learned pattern's route depth."""
     import sys
@@ -263,8 +296,12 @@ def fig_example(out, name="B8", lsig=-4.0, seed=0):
     model, traj, info = run_full(cfg, 10.0**lsig, seed)
     P = np.array([o[1] for o in traj.obs])
     s = np.array(target.weights)
-    events, _, _ = learning_events(traj, P, s)
-    fig, axes = subplots(1, len(events), width=12, panel_aspect=0.9, sharey=True)
+    _, _, cross = learning_events(traj, P, s)
+    # every upward crossing of half the weight ("pass"), in time order (= the learning events when
+    # nothing is forgotten)
+    events = sorted([dict(pattern=a, t=c[0], i=c[2]) for a in range(target.n) for c in cross[(a, 0.5)] if c[1] > 0],
+                    key=lambda e: e["t"])
+    fig, axes = subplots(1, len(events), width=2.6 * len(events) + 1.5, panel_aspect=1.1, sharey=True)
     cols = palette(target.n)
     prev, i_prev = Fraction(0), 0
     J = []
@@ -278,6 +315,7 @@ def fig_example(out, name="B8", lsig=-4.0, seed=0):
             ax.plot(t[ok], np.abs(P[i_prev:i_end + 1, a][ok]) / s[a], color=cols[a],
                     label="".join(map(str, target.patterns[a])) + f" (weight {s[a]:g})")
         r = ev["pattern"]
+        J = [a for a in range(target.n) if a != r and P[ev["i"] - 1, a] > 0.5 * s[a]]
         c = target.depth(J, r) if J else target.tree.n_nodes
         pr = predictions(cfg, target, J)["greedy"] if J else None
         ax.set_xscale("linear" if k == 0 else "log")
@@ -290,15 +328,18 @@ def fig_example(out, name="B8", lsig=-4.0, seed=0):
         else:
             ok_ = "matches" if pr == r else "differs from"
             sub = f"route depth c = {c}; {ok_} greedy"
-        ax.set_title(f"plateau {k} -> learns {what}\n{sub}", fontsize=10)
+        lost = [b for b in range(target.n) if P[i_prev, b] > 0.5 * s[b] and P[ev["i"], b] < 0.5 * s[b]]
+        if lost:
+            sub += "\nloses " + ", ".join("".join(map(str, target.patterns[b])) for b in lost)
+        ax.set_title(f"plateau {k} -> learns {what}\n{sub}", fontsize=9.5)
         ax.set_xlabel("time / first-event time" if k == 0 else "time since previous event")
-        J = J + [r]
         prev, i_prev = ev["t"], ev["i"]
     axes[0].set_ylabel("|amplitude P_a| / weight s_a")
     axes[0].legend(fontsize=8.5, loc="lower right")
-    fig.suptitle(f"One training run ({name}, sigma = 1e{lsig:g}, seed {seed}): patterns are learned one at a time,\n"
-                 "each after a plateau whose length is set by its route depth (dotted line: half the weight = learned)", fontsize=12)
-    savefig(fig, out / "fig_example_run")
+    msg = msg or ("patterns are learned one at a time,\neach after a plateau whose length is set by its route depth "
+                  "(dotted line: half the weight = learned)")
+    fig.suptitle(f"One training run ({name}, sigma = 1e{lsig:g}, seed {seed}): {msg}", fontsize=12)
+    savefig(fig, out / tag)
     plt.close(fig)
 
 
@@ -328,7 +369,11 @@ def main():
     fig_onestep(ev, res)
     fig_offtarget(ev, res)
     fig_census(runs, res)
+    fig_shortcut(res, res)
     fig_example(res)
+    fig_example(res, name="S5A", lsig=-4.0, seed=1, tag="fig_example_forgetting",
+                msg="a lighter pair is learned first;\nthe heavy 00000 takes over in log time and erases 10101 and 00201, "
+                    "which are relearned later")
 
 
 if __name__ == "__main__":

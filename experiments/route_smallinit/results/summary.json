@@ -1,18 +1,18 @@
 {
- "n_runs": 5970,
+ "n_runs": 5977,
  "status": {
-  "done": 5700,
+  "done": 5707,
   "trapped": 270
  },
  "behaviour": {
-  "clean": 3692,
+  "clean": 3691,
   "first_escape_mixed": 478,
-  "first_escape_mixed+two_at_once+forgetting": 361,
-  "noncanonical_plateau": 275,
-  "first_escape_mixed+two_at_once": 243,
+  "first_escape_mixed+two_at_once+forgetting": 362,
+  "noncanonical_plateau": 276,
+  "first_escape_mixed+two_at_once": 245,
   "trapped": 240,
   "forgetting": 148,
-  "first_escape_mixed+noncanonical_plateau": 134,
+  "first_escape_mixed+noncanonical_plateau": 136,
   "first_escape_mixed+forgetting": 110,
   "two_at_once+forgetting": 77,
   "two_at_once": 64,
@@ -24,8 +24,9 @@
   "first_escape_mixed+two_at_once+noncanonical_plateau": 5,
   "forgetting+floor_flag": 5,
   "two_at_once+noncanonical_plateau": 4,
-  "first_escape_mixed+two_at_once+forgetting+floor_flag": 3
+  "first_escape_mixed+two_at_once+forgetting+floor_flag": 4,
+  "floor_flag": 1
  },
- "floor_checked": 1188,
- "floor_flagged": 8
+ "floor_checked": 1208,
+ "floor_flagged": 10
 }

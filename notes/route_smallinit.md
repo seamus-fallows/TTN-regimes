@@ -213,11 +213,12 @@ seeds; PS stragglers in section 8), 150 reference runs on M*, 1206 floor-check d
 On star-satisfying pattern targets the route theory describes training from small random init very
 well along the main path, and fails in four specific, reproducible ways. **Holds [empirical]:** plateaus
 sit at the canonical partial targets (98.7% within 1% of ||W*||); after the first pattern, the next
-pattern is the greedy one in every transition without a depth tie (6147 of 6147 clean transitions at
+pattern is the greedy one in every transition without a depth tie (6867 of 6867 transitions at
 sigma <= 1e-3), including all 747 transitions where the greedy and pairwise rules name different
 patterns (the splice is real; the pairwise rule is right in none of them); per-seed duration exponents
-equal c - 2 to within 0.3 in 98% of the 648 clean fits with c >= 3 (median deviation 1e-4), and the
-log law of c = 2 holds with the predicted slope 1/(s_r A_r(J)) to 1% in 6 of 7 cells; effective depths
+equal c - 2 to within 0.3 in 98% of the 648 clean fits with c >= 3 (median deviation 1e-4; the
+exceptions are all PS), and the log law of c = 2 holds with the predicted slope 1/(s_r A_r(J)) to 1% in
+6 of 7 cells; effective depths
 equal the route depth (medians 2.02, 3.02, 4.09, 5.16 for c = 2, 3, 4, 5); training stays on the
 aligned manifold (peak off-target mass over a transition: median 8e-9); the scalar route equation
 predicts the remaining plateau from the size of the dormant route entries (observed/predicted median
@@ -256,20 +257,20 @@ Unresolved plateaus (never reach the entry criterion): PS 273, S5A 89, S5B 27 (a
 
 Scored per transition with J = the learned set actually reached (J nonempty), sigma <= 1e-3:
 
-| rule | all transitions (n = 8765) | where the rules disagree (n = 3654) | greedy vs pairwise disagree (n = 747: B8, H4, S5A) |
+| rule | all transitions (n = 8767) | where the rules disagree (n = 3655) | greedy vs pairwise disagree (n = 747: B8, H4, S5A) |
 |---|---|---|---|
 | greedy (route depth, then s_r A_r(J)) | 0.961 | 0.985 | 1.000 |
 | pairwise (Prim rule, eq. C.8) | 0.876 | 0.781 | 0.000 |
 | weight order | 0.551 | 0.000 | - |
 
-- **Without a tie in route depth the greedy rule is never wrong [empirical]:** 6147/6147 clean
-  transitions at sigma <= 1e-3, and 0.996-1.000 at every sigma up to 10^-1.5. It also holds for the
-  907 "contaminated" events (intervals with forgetting). The splice cases where the greedy and pairwise
+- **Without a tie in route depth the greedy rule is never wrong [empirical]:** 6867/6867 transitions
+  at sigma <= 1e-3 (6007/6007 clean ones), and 0.996-1.000 at every sigma up to 10^-1.5; this includes
+  the "contaminated" events (intervals with forgetting). The splice cases where the greedy and pairwise
   rules name different patterns (B8 at {00000000, 00001101}: greedy 10000001 (depth 4, splice), pairwise
   10000100 (5); H4 at {0000, 2200}: greedy 0201 (4), pairwise 1001 (5); S5A at {00000, 10101}) are all
   decided for the greedy rule. Registered decision: SUPPORTED (>= 90%).
 - **Ties are decided by the init, not by the weight [empirical; failure of the tie-break of App. C]:**
-  1711 tied transitions, greedy (= heavier) 0.80. Per cell: D4 after 0000: 0.63 (n = 216), after 1111:
+  1900 tied transitions, greedy (= heavier) 0.82. Per cell: D4 after 0000: 0.63 (n = 216), after 1111:
   0.64, after 2222: 0.00 (18); S5A after 00000: 0.92; S7 after 0000000: 0.91; S5B after 02201: 0.67;
   DB4 and TIE: 1.00. The winner of a tie is a property of the seed: for 99.5% of (target, J, seed) the
   same pattern wins at every sigma. [conjecture] With equal depth c the escape time is
@@ -292,11 +293,11 @@ trapped runs excluded. Three bases (`exponents.csv`): `event` (registered: every
 
 | route depth c | clean later-plateau fits | exponent median [quartiles] | within 0.3 of c - 2 |
 |---|---|---|---|
-| 2 (log law) | 191 | 0.115 [0.104, 0.122] | log slope / 1/(s A) = 1.00 in 6 cells; B4: 0.70; PS pair: 0 |
+| 2 (log law) | 174 | 0.116 [0.108, 0.122] | log slope / 1/(s A) = 1.00 in 6 cells; B4: 0.70 |
 | 3 | 399 | 1.000 [1.000, 1.000] | 1.00 |
 | 4 | 227 | 2.000 [2.000, 2.000] | 1.00 |
 | 5 (PS only) | 22 | 3.30 [3.00, 3.97] | 0.50 |
-| first escape, c = K | 346 | K - 2 exactly (median deviation 0) | 0.96 |
+| first escape, c = K | 338 | K - 2 exactly (median deviation 0) | 1.00 |
 
 - **The route-depth law holds [empirical]:** 98% of the 648 clean fits with c >= 3 are within 0.3 of
   c - 2. In every splice cell (route depth below the pairwise cost: B8 {0,1}->2, H4 {0,3}->1, S5B
@@ -397,7 +398,7 @@ Behaviour tags (a run can have several; `runs.csv` `behaviour`, `history`):
 - **two patterns at once later** 793: PS pair 477, S5A 172, TIE 69, S5B 51;
 - **forgetting** 807: PS 242 (the pair erases 000000), S5A 195, S5B 175, S7 120 (lighter-first runs:
   the heavy all-zero pattern erases learned light patterns), H4 30, TIE 22, DB4 11, B8 10;
-- **non-canonical plateau** 552 (mostly at large sigma; at sigma <= 1e-3 the 63 listed in section 2);
+- **non-canonical plateau** 552 (mostly at large sigma; at sigma <= 1e-3 the 107 listed in section 2);
 - **trapped** 270: after learning two patterns, the third route dies: one of its dormant entries (the
   smallest at entry: 0.03-0.12 sigma, against 0.2-0.6 sigma in the seeds that escape) decays to ~1e-14
   sigma and the amplitude to ~1e-55. The routes that die (D4: 1111/2222/0000 as the last pattern; B4:

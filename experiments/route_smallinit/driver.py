@@ -118,6 +118,7 @@ def integrate(
     t_max=1e40,
     wall=1800.0,
     max_fail=8,
+    start="lsoda",
 ):
     """Integrate dy/dt = fun(y) from y0. observe(y) -> obs (stored per step); stop(traj) -> None or
     a status string ("done", "trapped", ...). Returns (traj, info)."""
@@ -128,8 +129,8 @@ def integrate(
     f = lambda t, y: fun(y)  # noqa: E731
     jf = lambda t, y: jac(y)  # noqa: E731
     seg = 0
-    solver = _Lsoda(f, jf, y0, t_max, rtol, atol, None)
-    kind = "lsoda"
+    kind = start
+    solver = (_Vode if kind == "vode" else _Lsoda)(f, jf, y0, t_max, rtol, atol, None if kind == "lsoda" else RESTART_H)
     fails, restarts, adams_run, vode_segments = [], 0, 0, 0
     status = None
     while status is None:
