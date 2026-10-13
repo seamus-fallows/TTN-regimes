@@ -119,9 +119,11 @@ def plateau_identity(res: Path, out: Path):
                label="plateau without off-target strings")
     ax.scatter([], [], color=cols[1], edgecolor="black", lw=0.5, s=90, marker="D",
                label="plateau carrying a recombinant string")
-    ax.legend(loc="lower left", fontsize=BIG - 1)
-    ax.set_title("Plateaus that carry a recombinant string are far from every partial target;\n"
-                 "all others sit on one (one marker per target and plateau type)")
+    ax.legend(loc="upper left", fontsize=BIG - 1)
+    ax.set_title("After the first escape, plateaus of non-star targets are often not partial "
+                 "targets:\nthey carry a recombinant string (diamonds) or, for R3d / R4d, wrong "
+                 "amplitudes;\nstar controls always sit on partial targets "
+                 "(one marker per target and plateau type)")
     savefig(fig, out / "fig2_plateau_identity")
     plt.close(fig)
 
