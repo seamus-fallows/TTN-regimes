@@ -362,8 +362,9 @@ def main():
         dec.to_csv(RES / "decisions.csv", index=False)
         pd.set_option("display.width", 250)
         pd.set_option("display.max_columns", 30)
-        print(dec[["cell", "kind", "n_complete", "n_at_pred", "n_shifted", "n_trapped", "n_incomplete",
-                   "gamma_pred", "gamma_median", "frac_within_03", "P5", "greedy_frac_window"]].to_string())
+        cols = ["cell", "kind", "n_complete", "n_at_pred", "n_shifted", "n_trapped", "n_incomplete",
+                "gamma_pred", "gamma_median", "frac_within_03", "P5", "greedy_frac_window"]
+        print(dec[[c for c in cols if c in dec.columns]].to_string())
     print(summ[["cell", "space", "c_star", "order", "order_prev", "decision"]].to_string())
     if len(thm):
         print(thm[["cell", "parent", "k_star", "l_star", "parent_order", "formula", "order_full", "holds"]].to_string())
