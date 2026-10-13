@@ -109,11 +109,22 @@ def group(rs: list[dict]) -> list[list[dict]]:
     return groups
 
 
-def depth_on_plateau(tt, y, s, t_lo, t_hi):
-    sel = (tt > t_lo) & (tt <= t_hi)
+def depth_on_plateau(tt, y, s, t_lo, t_hi, lo=1e-4, hi=1e-2):
+    sel = (tt > t_lo) & (tt <= t_hi) & np.isfinite(y)
     if sel.sum() < 6:
         return None
-    return effective_depth(tt[sel], y[sel], s)
+    return effective_depth(tt[sel], y[sel], s, lo=lo, hi=hi)
+
+
+def bond_components(tree, edges) -> list[set[int]]:
+    """Connected components of the end-node pairs of `edges` (pairs sharing a core are joined)."""
+    comps: list[set[int]] = []
+    for e in edges:
+        pair = {e, tree.parent[e]}
+        hit = [c for c in comps if c & pair]
+        merged = set(pair).union(*hit) if hit else set(pair)
+        comps = [c for c in comps if not (c & pair)] + [merged]
+    return comps
 
 
 def run_events(run: dict, tree) -> tuple[list[dict], list[dict]]:
@@ -131,7 +142,7 @@ def run_events(run: dict, tree) -> tuple[list[dict], list[dict]]:
     for j, g in enumerate(groups):
         t_ev = min(r["t_half"] for r in g)
         bonds = sorted({r["edge"] for r in g})
-        depths, floors = [], []
+        depths, depths2, floors = [], [], []
         for r in g:
             y = spec[:, cols[(r["edge"], r["k"])]]
             top = spec[:, cols[(r["edge"], 0)]]
@@ -145,6 +156,10 @@ def run_events(run: dict, tree) -> tuple[list[dict], list[dict]]:
             r["depth_points"] = 0 if d is None else d["points"]
             if d is not None:
                 depths.append(d["depth"])
+            d2 = depth_on_plateau(clock, y, r["target"], t_lo, t_hi, lo=1e-3, hi=1e-1)
+            r["depth_wide"] = None if d2 is None else d2["depth"]
+            if d2 is not None:
+                depths2.append(d2["depth"])
             if j > 0:
                 sel = (tt > prev_t) & (tt <= r["t_on"])
                 rel = (y[sel] / top[sel]) if sel.any() else np.array([np.nan])
@@ -154,6 +169,7 @@ def run_events(run: dict, tree) -> tuple[list[dict], list[dict]]:
             r["event"] = j
             floors.append(r["floor_min"])
         flagged = any(np.isfinite(f) and f < FLOOR for f in floors)
+        comps = bond_components(tree, bonds)
         ev = dict(
             event=j,
             rises=";".join(f"{r['edge']}:{r['k']}" for r in sorted(g, key=lambda r: (r["edge"], r["k"]))),
@@ -167,9 +183,16 @@ def run_events(run: dict, tree) -> tuple[list[dict], list[dict]]:
             eff_depth_min=float(np.min(depths)) if depths else math.nan,
             eff_depth_max=float(np.max(depths)) if depths else math.nan,
             n_depth=len(depths),
+            eff_depth_wide=float(np.median(depths2)) if depths2 else math.nan,
+            n_components=len(comps),
+            k_max_component=max(len(c) for c in comps),
             floor_min=float(np.nanmin(floors)) if np.isfinite(floors).any() else math.nan,
             floor_flag=bool(flagged),
             relearn=int(sum(max(r["n_up"] - 1, 0) for r in g)),
+            # exploratory (added after registration): do the bonds start together or one after another?
+            first_bond=min(g, key=lambda r: r["t_on"])["edge"],
+            onset_spread_rel=((max(r["t_on"] for r in g) - min(r["t_on"] for r in g)) / (t_ev - prev_t)
+                              if j > 0 and t_ev > prev_t else math.nan),
         )
         events.append(ev)
         prev_t = t_ev

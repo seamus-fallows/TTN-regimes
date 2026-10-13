@@ -25,3 +25,4 @@ Status: working - Branch: agent/route-generic - Updated: 2026-10-13 19:31 UTC
 - 19:34 Read brief (sections 1-3, 4.4), paper (abstract, 1, 2, 7, 8, 10, App. C), data_teacher / real_data notes and reviews, saddle_dyn section 8. MNIST downloaded to /root/outputs/route-generic/data (torchvision mirror, OK).
 - 19:38 Pilots: 16 synthetic runs (8-150 s each, all converged), 4 MNIST runs (tau = 2000: 150-250 s).
 - 19:40 Pre-registration committed (f31079c, notes/route_generic.md Part I). Sweeps launched: synthetic 2640 runs (64 workers), MNIST 180 runs (56 workers).
+- 19:44 Jacobian switched to the library's contraction-based exact Hessian (Problem.hessian, 0.12 s vs 2.5 s for the dense double-backward; identical to 1e-21); synthetic sweep restarted, the 30 finished runs kept (numerics-only, Part III of the note).

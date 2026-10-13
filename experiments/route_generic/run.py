@@ -36,6 +36,7 @@ from threadpoolctl import threadpool_limits
 sys.path.insert(0, str(Path(__file__).parent))
 from common import build_target, dense_teacher, get_tree, target_ranks, teacher_spectra  # noqa: E402
 
+from ttn.dynamics import Problem  # noqa: E402
 from ttn.network import to_dense  # noqa: E402
 from ttn.teachers import CPTeacher  # noqa: E402
 
@@ -71,6 +72,9 @@ class Model:
         self.ranks = target_ranks(self.ref)
         self.keep = {e: min(len(self.ref[e]), self.ranks[e] + 1) for e in self.tree.edges}
         self.factors = self.teacher.factors if isinstance(self.teacher, CPTeacher) else None
+        # exact Hessian by the library's contraction-based double backward: same loss up to roundoff,
+        # ~20x faster than differentiating the dense tensor twice (it is only LSODA's Newton matrix)
+        self.problem = Problem(self.spec, self.teacher)
         self.n = self.tree.n_sites
         self.d = self.spec.phys_dims[0]
         self.cut_perm = {}
@@ -93,7 +97,7 @@ class Model:
         return float(loss.detach()), g.numpy()
 
     def hessian(self, y: np.ndarray) -> np.ndarray:
-        return torch.func.hessian(self.loss_t)(torch.from_numpy(y)).numpy()
+        return self.problem.hessian(torch.from_numpy(y)).numpy()
 
     def measure(self, y: np.ndarray):
         with torch.no_grad():
