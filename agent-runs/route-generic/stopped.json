@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791928347,
+  "reason": "user",
+  "outputs": {
+    "files": 3061,
+    "bytes": 3830487137,
+    "sample": [
+      "route-generic/mnist_extra_waiter.sh",
+      "route-generic/logs/download.log",
+      "route-generic/logs/mnist_pilot.log",
+      "route-generic/logs/pilot.log",
+      "route-generic/logs/pilot2.log"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}
