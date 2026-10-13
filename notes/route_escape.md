@@ -200,7 +200,13 @@ directions 12-15), and the windows are not moved.
    tolerances); the first solver stays LSODA. Check: EX87_J0 A 13, eps = 10^-4.5: escapes at
    3.73327039e14 in 40 s, reduced flow 3.73327076e14 (relative difference 1e-7). Every run that
    ends without an outcome (wall / failed / t_max) is rerun with this driver after the sweep, and
-   nothing else (not outcome-selective); the files record `solver`.
+   nothing else (not outcome-selective).
+   *Amended 20:40:* the stall kept hitting S4 A/B runs (13 wall-capped runs by 20:39, each costing a
+   worker 30 min), so the first sweep was stopped at 3990 finished runs and restarted with the fixed
+   driver for the remaining 4161 runs (files record `driver = "bdf_restart"`); the 13 wall-capped
+   runs were moved to `unfinished_try1/` and rerun at the same time. Runs that had finished with the
+   old driver are kept (a stall costs time, not accuracy; the fixed driver reproduces a finished run:
+   U5B8 C seed 13 at eps = 10^-4.5 escapes at 1.05523e13 in 102 s).
 2. **Added kind Cp (causal test; 20:05, after the first shifted C direction was seen).** U5B8 C seed 9
    escapes with exponent 4 instead of 3, and the diagnostics show its route entry at leaf node 0
    decaying to zero on the plateau. To test whether the entries outside M* cause this, kind Cp

@@ -95,7 +95,7 @@ def run(cell_name: str, kind: str, i: int, log_eps: float, wall: float = 1800.0)
     eps = 10.0**log_eps
     xi = direction(cell, kind, i)
     theta0 = cell.theta_J.numpy() + eps * xi
-    out = dict(cell=cell_name, target=cell.name, tree=cell.tree_name, d=cell.d, chi=cell.chi,
+    out = dict(driver="bdf_restart", cell=cell_name, target=cell.name, tree=cell.tree_name, d=cell.d, chi=cell.chi,
                kind=kind, seed=i, log_eps=log_eps, eps=eps, c_star=cell.c_star, L_J=cell.L_J,
                missing=cell.missing, greedy=cell.greedy())
     model = FullModel(cell)
