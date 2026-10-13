@@ -1,0 +1,18 @@
+{
+  "stopped_at": 1791928404,
+  "reason": "user",
+  "outputs": {
+    "files": 9396,
+    "bytes": 1385531031,
+    "sample": [
+      "route-escape/logs/sweep1.log",
+      "route-escape/logs/sweep_cp1.log",
+      "route-escape/logs/sweep2.log",
+      "route-escape/logs/diag_partner_U5B8_9.log",
+      "route-escape/logs/sweep3.log"
+    ]
+  },
+  "large_files": [],
+  "not_committed": [],
+  "not_committed_count": 0
+}
